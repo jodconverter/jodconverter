@@ -62,6 +62,10 @@ public class DocumentFormat {
         this.loadProperties = loadProperties;
     }
 
+    public Map<DocumentFamily, Map<String, ?>> getStorePropertiesByFamily() {
+        return storePropertiesByFamily;
+    }
+
     public void setStorePropertiesByFamily(Map<DocumentFamily, Map<String,?>> storePropertiesByFamily) {
         this.storePropertiesByFamily = storePropertiesByFamily;
     }

@@ -1,0 +1,81 @@
+package net.sf.jodconverter.json;
+
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.jodconverter.DefaultDocumentFormatRegistry;
+import net.sf.jodconverter.DocumentFamily;
+import net.sf.jodconverter.DocumentFormat;
+import net.sf.jodconverter.SimpleDocumentFormatRegistry;
+import net.sf.jodconverter.util.ReflectionUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+/**
+ * Exectable class that dumps a JSON version of the {@link DefaultDocumentFormatRegistry}
+ */
+public class DumpJsonDefaultDocumentFormatRegistry {
+
+    private static class SortedJsonObject extends JSONObject {
+         public SortedJsonObject() {
+             try {
+                 Field field = JSONObject.class.getDeclaredField("myHashMap");
+                 field.setAccessible(true);
+                 field.set(this, new LinkedHashMap<String,Object>());
+             } catch (Exception exception) {
+                 // pass; will not be sorted
+             }
+        }
+    }
+
+    private static JSONObject toJson(DocumentFormat format) throws JSONException {
+        JSONObject jsonFormat = new SortedJsonObject();
+        jsonFormat.put("name", format.getName());
+        jsonFormat.put("extension", format.getExtension());
+        jsonFormat.put("mediaType", format.getMediaType());
+        if (format.getInputFamily() != null) {
+            jsonFormat.put("inputFamily", format.getInputFamily().name());
+        }
+        if (format.getLoadProperties() != null) {
+            jsonFormat.put("loadProperties", toJson(format.getLoadProperties()));
+        }
+        if (format.getStorePropertiesByFamily() != null) {
+            JSONObject jsonStorePropertiesByFamily = new SortedJsonObject();
+            for (Map.Entry<DocumentFamily,Map<String,?>> entry : format.getStorePropertiesByFamily().entrySet()) {
+                jsonStorePropertiesByFamily.put(entry.getKey().name(), toJson(entry.getValue()));
+            }
+            jsonFormat.put("storePropertiesByFamily", jsonStorePropertiesByFamily);
+        }
+        return jsonFormat;
+    }
+    
+    private static JSONObject toJson(Map<String,?> properties) throws JSONException {
+        JSONObject jsonProperties = new SortedJsonObject();
+        for (Map.Entry<String,?> entry : properties.entrySet()) {
+            if (entry.getValue() instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String,?> jsonValue = (Map<String,?>) entry.getValue();
+                jsonProperties.put(entry.getKey(), toJson(jsonValue));
+            } else {
+                jsonProperties.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return jsonProperties;
+    }
+
+    public static void main(String[] args) throws Exception {
+        DefaultDocumentFormatRegistry registry = new DefaultDocumentFormatRegistry();
+        @SuppressWarnings("unchecked")
+        List<DocumentFormat> formats = (List<DocumentFormat>) ReflectionUtils.getPrivateField(SimpleDocumentFormatRegistry.class, registry, "documentFormats");
+        JSONArray array = new JSONArray();
+        for (DocumentFormat format : formats) {
+            array.put(toJson(format));
+        }
+        System.out.println(array.toString(2));
+    }
+
+}

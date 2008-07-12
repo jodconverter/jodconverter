@@ -1,7 +1,7 @@
 package net.sf.jodconverter;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
@@ -37,12 +37,12 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 		
 		DocumentFormat odt = new DocumentFormat("OpenDocument Text", "odt", "application/vnd.oasis.opendocument.text");
 		odt.setInputFamily(DocumentFamily.TEXT);
-		html.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "writer8"));
+		odt.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "writer8"));
 		addFormat(odt);
 
 		DocumentFormat sxw = new DocumentFormat("OpenOffice.org 1.0 Text Document", "sxw", "application/vnd.sun.xml.writer");
 		sxw.setInputFamily(DocumentFamily.TEXT);
-		html.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "StarOffice XML (Writer)"));
+		sxw.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "StarOffice XML (Writer)"));
 		addFormat(sxw);
 
 		DocumentFormat doc = new DocumentFormat("Microsoft Word", "doc", "application/msword");
@@ -65,7 +65,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
 		DocumentFormat txt = new DocumentFormat("Plain Text", "txt", "text/plain");
 		txt.setInputFamily(DocumentFamily.TEXT);
-		Map<String,Object> txtLoadAndStoreProperties = new HashMap<String,Object>();
+		Map<String,Object> txtLoadAndStoreProperties = new LinkedHashMap<String,Object>();
 		txtLoadAndStoreProperties.put("FilterName", "Text (encoded)");
 		txtLoadAndStoreProperties.put("FilterOptions", "utf8");
 		txt.setLoadProperties(txtLoadAndStoreProperties);
@@ -97,7 +97,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
         DocumentFormat csv = new DocumentFormat("Comma Separated Values", "csv", "text/csv");
         csv.setInputFamily(DocumentFamily.SPREADSHEET);
-        Map<String,Object> csvLoadAndStoreProperties = new HashMap<String,Object>();
+        Map<String,Object> csvLoadAndStoreProperties = new LinkedHashMap<String,Object>();
         csvLoadAndStoreProperties.put("FilterName", "Text - txt - csv (StarCalc)");
         csvLoadAndStoreProperties.put("FilterOptions", "44,34,0");  // Field Separator: ','; Text Delimiter: '"' 
         csv.setLoadProperties(csvLoadAndStoreProperties);
@@ -106,7 +106,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
         DocumentFormat tsv = new DocumentFormat("Tab Separated Values", "tsv", "text/tab-separated-values");
         tsv.setInputFamily(DocumentFamily.SPREADSHEET);
-        Map<String,Object> tsvLoadAndStoreProperties = new HashMap<String,Object>();
+        Map<String,Object> tsvLoadAndStoreProperties = new LinkedHashMap<String,Object>();
         tsvLoadAndStoreProperties.put("FilterName", "Text - txt - csv (StarCalc)");
         tsvLoadAndStoreProperties.put("FilterOptions", "9,34,0");  // Field Separator: '\t'; Text Delimiter: '"' 
         tsv.setLoadProperties(tsvLoadAndStoreProperties);
