@@ -1,7 +1,9 @@
 package net.sf.jodconverter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
 
@@ -23,6 +25,16 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
 			}
 		}
 		return null;
+	}
+
+	public Set<DocumentFormat> getOutputFormats(DocumentFamily family) {
+	    Set<DocumentFormat> formats = new HashSet<DocumentFormat>();
+        for (DocumentFormat format : documentFormats) {
+            if (format.getStoreProperties(family) != null) {
+                formats.add(format);
+            }
+        }
+	    return formats;
 	}
 
 }

@@ -19,11 +19,12 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 		swf.setStoreProperties(DocumentFamily.DRAWING, Collections.singletonMap("FilterName", "draw_flash_Export"));
 		addFormat(swf);
 		
-		DocumentFormat xhtml = new DocumentFormat("XHTML", "xhtml", "application/xhtml+xml");
-        xhtml.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "XHTML Writer File"));
-        xhtml.setStoreProperties(DocumentFamily.SPREADSHEET, Collections.singletonMap("FilterName", "XHTML Calc File"));
-        xhtml.setStoreProperties(DocumentFamily.PRESENTATION, Collections.singletonMap("FilterName", "XHTML Impress File"));
-		addFormat(xhtml);
+		// disabled because it's not always available
+		//DocumentFormat xhtml = new DocumentFormat("XHTML", "xhtml", "application/xhtml+xml");
+		//xhtml.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "XHTML Writer File"));
+		//xhtml.setStoreProperties(DocumentFamily.SPREADSHEET, Collections.singletonMap("FilterName", "XHTML Calc File"));
+		//xhtml.setStoreProperties(DocumentFamily.PRESENTATION, Collections.singletonMap("FilterName", "XHTML Impress File"));
+		//addFormat(xhtml);
 
 		DocumentFormat html = new DocumentFormat("HTML", "html", "text/html");
         // HTML is treated as Text when supplied as input, but as an output it is also
