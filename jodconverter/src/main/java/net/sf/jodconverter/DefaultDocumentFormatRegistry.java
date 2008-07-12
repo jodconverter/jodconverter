@@ -49,6 +49,10 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 		doc.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "MS Word 97"));
 		addFormat(doc);
 
+		DocumentFormat docx = new DocumentFormat("Microsoft Word 2007 XML", "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+		docx.setInputFamily(DocumentFamily.TEXT);
+        addFormat(docx);
+
 		DocumentFormat rtf = new DocumentFormat("Rich Text Format", "rtf", "text/rtf");
 		rtf.setInputFamily(DocumentFamily.TEXT);
 		rtf.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "Rich Text Format"));
@@ -86,6 +90,10 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 		xls.setStoreProperties(DocumentFamily.SPREADSHEET, Collections.singletonMap("FilterName", "MS Excel 97"));
 		addFormat(xls);
 
+		DocumentFormat xlsx = new DocumentFormat("Microsoft Excel 2007 XML", "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		xlsx.setInputFamily(DocumentFamily.SPREADSHEET);
+        addFormat(xlsx);
+
         DocumentFormat csv = new DocumentFormat("Comma Separated Values", "csv", "text/csv");
         csv.setInputFamily(DocumentFamily.SPREADSHEET);
         Map<String,Object> csvLoadAndStoreProperties = new HashMap<String,Object>();
@@ -118,14 +126,19 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 		ppt.setInputFamily(DocumentFamily.PRESENTATION);
 		ppt.setStoreProperties(DocumentFamily.PRESENTATION, Collections.singletonMap("FilterName", "MS PowerPoint 97"));
 		addFormat(ppt);
+
+		DocumentFormat pptx = new DocumentFormat("Microsoft PowerPoint 2007 XML", "pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+		pptx.setInputFamily(DocumentFamily.PRESENTATION);
+        addFormat(pptx);
         
-        final DocumentFormat odg = new DocumentFormat("OpenDocument Drawing", "odg", "application/vnd.oasis.opendocument.graphics");
+        DocumentFormat odg = new DocumentFormat("OpenDocument Drawing", "odg", "application/vnd.oasis.opendocument.graphics");
         odg.setInputFamily(DocumentFamily.DRAWING);
         odg.setStoreProperties(DocumentFamily.DRAWING, Collections.singletonMap("FilterName", "draw8"));
         addFormat(odg);
         
-        final DocumentFormat svg = new DocumentFormat("Scalable Vector Graphics", "svg", "image/svg+xml");
+        DocumentFormat svg = new DocumentFormat("Scalable Vector Graphics", "svg", "image/svg+xml");
         svg.setStoreProperties(DocumentFamily.DRAWING, Collections.singletonMap("FilterName", "draw_svg_Export"));
         addFormat(svg);
   	}
+
 }
