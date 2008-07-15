@@ -15,12 +15,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="functional")
-public class OfficeConverterFunctionalTests {
+public class OfficeDocumentConverterFunctionalTest {
 
     private static final File OFFICE_HOME = TestUtils.getOfficeHome();
     private static final String CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
 
-    public void convertAll() throws IOException {
+    public void runAllPossibleConversions() throws IOException {
         OfficeManager officeManager = new ManagedProcessOfficeManager(OFFICE_HOME, CONNECT_STRING);
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
         DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
