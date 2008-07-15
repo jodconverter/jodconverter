@@ -22,6 +22,7 @@ import static org.testng.Assert.*;
 
 import java.io.File;
 
+import net.sf.jodconverter.test.TestUtils;
 import net.sf.jodconverter.util.ReflectionUtils;
 
 import org.testng.annotations.Test;
@@ -30,12 +31,12 @@ import org.testng.annotations.Test;
 public class ExternalOfficeManagerTest {
 
     public void executeTask() throws Exception {
-        File officeHome = new File("/usr/lib/openoffice");  //TODO make configurable
+        File officeHome = TestUtils.getOfficeHome();
         String connectString = ExternalOfficeManager.DEFAULT_CONNECT_STRING;
         
         OfficeProcess officeProcess = new OfficeProcess(officeHome, connectString);
         officeProcess.start();
-        Thread.sleep(500);
+        Thread.sleep(2000);
         
         ExternalOfficeManager manager = new ExternalOfficeManager();
         manager.start();

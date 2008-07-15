@@ -41,8 +41,8 @@ public class ManagedOfficeProcess {
 
     private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("ManagedOfficeProcessThread");
 
-    private static final long RETRY_INTERVAL = 200L;
-    private static final long RETRY_TIMEOUT = 10000L;
+    private static final long RETRY_INTERVAL = 250;
+    private static final long RETRY_TIMEOUT = 30 * 1000;
 
     private final OfficeProcess process;
     private final OfficeConnection connection;

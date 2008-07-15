@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeoutException;
 
+import net.sf.jodconverter.test.TestUtils;
 import net.sf.jodconverter.util.ReflectionUtils;
 
 import org.testng.annotations.Test;
@@ -13,9 +14,9 @@ import org.testng.annotations.Test;
 @Test(groups="integration")
 public class SingleOfficeManagerTest {
 
-    private static final File OFFICE_HOME = new File("/usr/lib/openoffice");  //TODO make configurable
+    private static final File OFFICE_HOME = TestUtils.getOfficeHome();
     private static final String CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
-    private static final long RESTART_WAIT_TIME = 2000L;
+    private static final long RESTART_WAIT_TIME = 2 * 1000;
 
     public void executeTask() throws Exception {
         SingleOfficeManager officeManager = new SingleOfficeManager(OFFICE_HOME, CONNECT_STRING);
@@ -50,7 +51,7 @@ public class SingleOfficeManagerTest {
         
         new Thread() {
             public void run() {
-                MockOfficeTask badTask = new MockOfficeTask(1000L);
+                MockOfficeTask badTask = new MockOfficeTask(10 * 1000);
                 try {
                     officeManager.execute(badTask);
                     fail("task should be cancelled");
@@ -81,7 +82,7 @@ public class SingleOfficeManagerTest {
 
     public void restartAfterTaskTimeout() throws Exception {
         final SingleOfficeManager officeManager = new SingleOfficeManager(OFFICE_HOME, CONNECT_STRING);
-        officeManager.setTaskExecutionTimeout(900L);
+        officeManager.setTaskExecutionTimeout(1500);
         
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
@@ -92,7 +93,7 @@ public class SingleOfficeManagerTest {
         assertTrue(process.isRunning());
         assertTrue(connection.isConnected());
         
-        MockOfficeTask longTask = new MockOfficeTask(1000L);
+        MockOfficeTask longTask = new MockOfficeTask(2000);
         try {
             officeManager.execute(longTask);
             fail("task should be timed out");

@@ -3,11 +3,13 @@ package net.sf.jodconverter;
 import static org.testng.Assert.*;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Set;
 
 import net.sf.jodconverter.office.OfficeManager;
 import net.sf.jodconverter.office.SingleOfficeManager;
+import net.sf.jodconverter.test.TestUtils;
 
 import org.apache.commons.io.FilenameUtils;
 import org.testng.annotations.Test;
@@ -15,7 +17,7 @@ import org.testng.annotations.Test;
 @Test(groups="functional")
 public class OfficeConverterFunctionalTests {
 
-    private static final File OFFICE_HOME = new File("/home/mirko/apps/openoffice.org-2.4.0");
+    private static final File OFFICE_HOME = TestUtils.getOfficeHome();
     private static final String CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
 
     public void convertAll() throws IOException {
@@ -26,9 +28,15 @@ public class OfficeConverterFunctionalTests {
         officeManager.start();
         try {
             File dir = new File("src/test/resources/documents");
-            for (File inputFile : dir.listFiles()) {
+            File[] files = dir.listFiles(new FilenameFilter() {
+            	public boolean accept(File dir, String name) {
+            		return !name.startsWith(".");
+            	}
+            });
+			for (File inputFile : files) {
                 String inputExtension = FilenameUtils.getExtension(inputFile.getName());
                 DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
+                assertNotNull(inputFormat, "unknown input format: " + inputExtension);
                 Set<DocumentFormat> outputFormats = formatRegistry.getOutputFormats(inputFormat.getInputFamily());
                 for (DocumentFormat outputFormat : outputFormats) {
                     File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
