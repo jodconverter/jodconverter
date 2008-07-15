@@ -40,7 +40,7 @@ import java.net.ConnectException;
  * behaviour as JODConverter 2.x, including using <em>synchronized</em> blocks
  * for serialising office operations.
  */
-public class ExternalOfficeManager implements OfficeManager {
+public class ExternalProcessOfficeManager implements OfficeManager {
 
     public static final String DEFAULT_CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
     
@@ -48,11 +48,11 @@ public class ExternalOfficeManager implements OfficeManager {
 
     private boolean connectOnStart = true;
 
-    public ExternalOfficeManager() {
+    public ExternalProcessOfficeManager() {
         this(DEFAULT_CONNECT_STRING);
     }
 
-    public ExternalOfficeManager(String connectString) {
+    public ExternalProcessOfficeManager(String connectString) {
         connection = new OfficeConnection(connectString);
     }
 

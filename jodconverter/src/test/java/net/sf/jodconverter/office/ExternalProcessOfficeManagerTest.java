@@ -28,17 +28,17 @@ import net.sf.jodconverter.util.ReflectionUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="integration")
-public class ExternalOfficeManagerTest {
+public class ExternalProcessOfficeManagerTest {
 
     public void executeTask() throws Exception {
         File officeHome = TestUtils.getOfficeHome();
-        String connectString = ExternalOfficeManager.DEFAULT_CONNECT_STRING;
+        String connectString = ExternalProcessOfficeManager.DEFAULT_CONNECT_STRING;
         
         OfficeProcess officeProcess = new OfficeProcess(officeHome, connectString);
         officeProcess.start();
         Thread.sleep(2000);
         
-        ExternalOfficeManager manager = new ExternalOfficeManager();
+        ExternalProcessOfficeManager manager = new ExternalProcessOfficeManager();
         manager.start();
         
         MockOfficeTask task = new MockOfficeTask();

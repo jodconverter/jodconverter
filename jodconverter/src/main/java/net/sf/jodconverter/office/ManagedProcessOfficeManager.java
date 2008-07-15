@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import net.sf.jodconverter.util.NamedThreadFactory;
 import net.sf.jodconverter.util.SuspendableThreadPoolExecutor;
 
-public class SingleOfficeManager implements OfficeManager {
+public class ManagedProcessOfficeManager implements OfficeManager {
 
     private static final String DEFAULT_ACCEPT_STRING = "socket,host=127.0.0.1,port=8100";
     private static final File DEFAULT_PROFILE_DIR = new File(System.getProperty("java.io.tmpdir"), "jodconverter");
@@ -70,19 +70,19 @@ public class SingleOfficeManager implements OfficeManager {
         }
     };
 
-    public SingleOfficeManager(File officeHome) {
+    public ManagedProcessOfficeManager(File officeHome) {
         this(officeHome, DEFAULT_ACCEPT_STRING, DEFAULT_PROFILE_DIR);
     }
 
-    public SingleOfficeManager(File officeHome, String acceptString) {
+    public ManagedProcessOfficeManager(File officeHome, String acceptString) {
         this(officeHome, acceptString, DEFAULT_PROFILE_DIR);
     }
 
-    public SingleOfficeManager(File officeHome, String acceptString, File profileDir) {
+    public ManagedProcessOfficeManager(File officeHome, String acceptString, File profileDir) {
         this(officeHome, acceptString, profileDir, DEFAULT_TASK_QUEUE_TIMEOUT);
     }
 
-    public SingleOfficeManager(File officeHome, String acceptString, File profileDir, long taskQueueTimeout) {
+    public ManagedProcessOfficeManager(File officeHome, String acceptString, File profileDir, long taskQueueTimeout) {
         managedOfficeProcess = new ManagedOfficeProcess(officeHome, acceptString, profileDir);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
         taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY, taskQueueTimeout, TimeUnit.MILLISECONDS);

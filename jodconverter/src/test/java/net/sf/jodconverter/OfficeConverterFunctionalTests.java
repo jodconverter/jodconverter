@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import net.sf.jodconverter.office.OfficeManager;
-import net.sf.jodconverter.office.SingleOfficeManager;
+import net.sf.jodconverter.office.ManagedProcessOfficeManager;
 import net.sf.jodconverter.test.TestUtils;
 
 import org.apache.commons.io.FilenameUtils;
@@ -21,7 +21,7 @@ public class OfficeConverterFunctionalTests {
     private static final String CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
 
     public void convertAll() throws IOException {
-        OfficeManager officeManager = new SingleOfficeManager(OFFICE_HOME, CONNECT_STRING);
+        OfficeManager officeManager = new ManagedProcessOfficeManager(OFFICE_HOME, CONNECT_STRING);
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
         DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
         
