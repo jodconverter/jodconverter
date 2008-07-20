@@ -18,10 +18,11 @@ import org.testng.annotations.Test;
 public class OfficeDocumentConverterFunctionalTest {
 
     private static final File OFFICE_HOME = TestUtils.getOfficeHome();
+    private static final File OFFICE_PROFILE = TestUtils.getOfficeProfile();
     private static final String CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
 
     public void runAllPossibleConversions() throws IOException {
-        OfficeManager officeManager = new ManagedProcessOfficeManager(OFFICE_HOME, CONNECT_STRING);
+        OfficeManager officeManager = new ManagedProcessOfficeManager(OFFICE_HOME, OFFICE_PROFILE, CONNECT_STRING);
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
         DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
         
@@ -40,6 +41,7 @@ public class OfficeDocumentConverterFunctionalTest {
                 Set<DocumentFormat> outputFormats = formatRegistry.getOutputFormats(inputFormat.getInputFamily());
                 for (DocumentFormat outputFormat : outputFormats) {
                     File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
+                    outputFile.deleteOnExit();
                     System.out.printf("-- converting %s to %s... ", inputFormat.getExtension(), outputFormat.getExtension());
                     converter.convert(inputFile, outputFile, outputFormat);
                     System.out.printf("done.\n");

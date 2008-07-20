@@ -46,16 +46,34 @@ public class ManagedOfficeProcess {
 
     private final OfficeProcess process;
     private final OfficeConnection connection;
-    private final File profileDir;
+
+    private File profileDir;
 
     private ExecutorService executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public ManagedOfficeProcess(File officeHome, String acceptString, File profileDir) {
-        process = new OfficeProcess(officeHome, acceptString, profileDir);
+    public ManagedOfficeProcess(File officeHome, File templateProfileDir, String acceptString) throws OfficeException {
+        try {
+            profileDir = createProfileDir(templateProfileDir, acceptString);
+        } catch (IOException ioException) {
+            throw new OfficeException("could not create profile dir: " + profileDir, ioException);
+        }
+        process = new OfficeProcess(officeHome, acceptString, templateProfileDir);
         connection = new OfficeConnection(acceptString);
-        this.profileDir = profileDir;
+    }
+
+    private File createProfileDir(File templateProfileDir, String acceptString) throws IOException {
+        if (!templateProfileDir.exists()) {
+            throw new IllegalArgumentException("template profile dir does not exist: " + templateProfileDir);
+        }
+        File profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + acceptString);
+        if (profileDir.exists()) {
+            logger.warning(String.format("profile dir already exists; recreating: '%s'", profileDir));
+            FileUtils.deleteDirectory(profileDir);
+        }
+        FileUtils.copyDirectory(templateProfileDir, profileDir);
+        return profileDir;
     }
 
     public OfficeConnection getConnection() {
@@ -152,13 +170,15 @@ public class ManagedOfficeProcess {
     }
 
     private void doDeleteProfileDir() {
-        try {
-            FileUtils.deleteDirectory(profileDir);
-        } catch (IOException ioException) {
-            logger.warning(ioException.getMessage());
+        if (profileDir != null) {
+            try {
+                FileUtils.deleteDirectory(profileDir);
+            } catch (IOException ioException) {
+                logger.warning(ioException.getMessage());
+            }
         }
     }
-    
+
     private void doEnsureProcessExited() throws OfficeException {
         try {
             int exitCode = process.getExitCode(RETRY_INTERVAL, RETRY_TIMEOUT);

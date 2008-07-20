@@ -26,17 +26,17 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 import net.sf.jodconverter.util.NamedThreadFactory;
+import net.sf.jodconverter.util.OsUtils;
 import net.sf.jodconverter.util.SuspendableThreadPoolExecutor;
 
 public class ManagedProcessOfficeManager implements OfficeManager {
 
     private static final String DEFAULT_ACCEPT_STRING = "socket,host=127.0.0.1,port=8100";
-    private static final File DEFAULT_PROFILE_DIR = new File(System.getProperty("java.io.tmpdir"), "jodconverter");
     private static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30 * 1000;
     private static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120 * 1000;
     private static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
 
-    private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("SingleOfficeManagerThread");
+    private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("OfficeManagerThread");
 
     private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
     private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
@@ -71,21 +71,29 @@ public class ManagedProcessOfficeManager implements OfficeManager {
     };
 
     public ManagedProcessOfficeManager(File officeHome) {
-        this(officeHome, DEFAULT_ACCEPT_STRING, DEFAULT_PROFILE_DIR);
+        this(officeHome, guessDefaultProfileDir(), DEFAULT_ACCEPT_STRING);
     }
 
-    public ManagedProcessOfficeManager(File officeHome, String acceptString) {
-        this(officeHome, acceptString, DEFAULT_PROFILE_DIR);
+    public ManagedProcessOfficeManager(File officeHome, File templateProfileDir) {
+        this(officeHome, templateProfileDir, DEFAULT_ACCEPT_STRING);
     }
 
-    public ManagedProcessOfficeManager(File officeHome, String acceptString, File profileDir) {
-        this(officeHome, acceptString, profileDir, DEFAULT_TASK_QUEUE_TIMEOUT);
+    public ManagedProcessOfficeManager(File officeHome, File templateProfileDir, String acceptString) {
+        this(officeHome, templateProfileDir, acceptString, DEFAULT_TASK_QUEUE_TIMEOUT);
     }
 
-    public ManagedProcessOfficeManager(File officeHome, String acceptString, File profileDir, long taskQueueTimeout) {
-        managedOfficeProcess = new ManagedOfficeProcess(officeHome, acceptString, profileDir);
+    public ManagedProcessOfficeManager(File officeHome, File templateProfileDir, String acceptString, long taskQueueTimeout) {
+        managedOfficeProcess = new ManagedOfficeProcess(officeHome, templateProfileDir, acceptString);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
         taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY, taskQueueTimeout, TimeUnit.MILLISECONDS);
+    }
+
+    private static File guessDefaultProfileDir() {
+        if (OsUtils.isWindows()) {
+            return new File(System.getenv("APPDATA"), "OpenOffice.org2");
+        } else {
+            return new File(System.getProperty("user.home"), ".openoffice.org2");
+        }
     }
 
     /**

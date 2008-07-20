@@ -33,8 +33,9 @@ public class ExternalProcessOfficeManagerTest {
     public void executeTask() throws Exception {
         File officeHome = TestUtils.getOfficeHome();
         String connectString = ExternalProcessOfficeManager.DEFAULT_CONNECT_STRING;
+        File templateProfileDir = TestUtils.getOfficeProfile();
         
-        OfficeProcess officeProcess = new OfficeProcess(officeHome, connectString);
+        OfficeProcess officeProcess = new OfficeProcess(officeHome, connectString, templateProfileDir);
         officeProcess.start();
         Thread.sleep(2000);
         

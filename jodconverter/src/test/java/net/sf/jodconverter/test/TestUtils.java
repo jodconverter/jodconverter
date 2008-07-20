@@ -12,4 +12,12 @@ public abstract class TestUtils {
 		return new File(home);
 	}
 
+	public static File getOfficeProfile() {
+        String profile = System.getProperty("office.profile");
+        if (profile == null) {
+            throw new RuntimeException("please set the 'office.profile' system property before running tests");
+        }
+        return new File(profile);
+	}
+	
 }
