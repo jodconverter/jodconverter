@@ -27,6 +27,11 @@ import org.testng.annotations.Test;
 public class UnixProcessUtilsTest {
 
     public void getPidAndKillProcess() throws Exception {
+        if (OsUtils.isWindows()) {
+            //TODO should use testng config instead
+            System.out.println("-- test disabled on Windows");
+            return;
+        }
         Process process = new ProcessBuilder("sleep", "10").start();
         assertTrue(isUnixProcess(process));
         assertTrue(getUnixPid(process) > 0);
