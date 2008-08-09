@@ -16,9 +16,9 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package net.sf.jodconverter.office;
+package org.artofsolving.jodconverter.office;
 
-import static net.sf.jodconverter.util.UnixProcessUtils.*;
+import static org.artofsolving.jodconverter.util.UnixProcessUtils.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import net.sf.jodconverter.util.RetryTimeoutException;
-import net.sf.jodconverter.util.Retryable;
-import net.sf.jodconverter.util.TemporaryException;
-import net.sf.jodconverter.util.UnixProcessException;
+import org.artofsolving.jodconverter.util.RetryTimeoutException;
+import org.artofsolving.jodconverter.util.Retryable;
+import org.artofsolving.jodconverter.util.TemporaryException;
+import org.artofsolving.jodconverter.util.UnixProcessException;
 
 public class OfficeProcess {
 

@@ -16,7 +16,7 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package net.sf.jodconverter.office;
+package org.artofsolving.jodconverter.office;
 
 import java.net.ConnectException;
 

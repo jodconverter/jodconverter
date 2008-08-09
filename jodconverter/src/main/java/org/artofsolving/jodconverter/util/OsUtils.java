@@ -1,4 +1,4 @@
-package net.sf.jodconverter.util;
+package org.artofsolving.jodconverter.util;
 
 public abstract class OsUtils {
 

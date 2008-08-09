@@ -16,16 +16,16 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package net.sf.jodconverter;
+package org.artofsolving.jodconverter;
 
-import static net.sf.jodconverter.office.UnoUtils.*;
+import static org.artofsolving.jodconverter.office.UnoUtils.*;
 
 import java.io.File;
 import java.util.Map;
 
-import net.sf.jodconverter.office.OfficeContext;
-import net.sf.jodconverter.office.OfficeException;
-import net.sf.jodconverter.office.OfficeTask;
+import org.artofsolving.jodconverter.office.OfficeContext;
+import org.artofsolving.jodconverter.office.OfficeException;
+import org.artofsolving.jodconverter.office.OfficeTask;
 
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XStorable;

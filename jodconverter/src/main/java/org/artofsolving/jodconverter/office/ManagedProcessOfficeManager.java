@@ -16,7 +16,7 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package net.sf.jodconverter.office;
+package org.artofsolving.jodconverter.office;
 
 import java.io.File;
 import java.util.concurrent.Future;
@@ -25,9 +25,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-import net.sf.jodconverter.util.NamedThreadFactory;
-import net.sf.jodconverter.util.OsUtils;
-import net.sf.jodconverter.util.SuspendableThreadPoolExecutor;
+import org.artofsolving.jodconverter.util.NamedThreadFactory;
+import org.artofsolving.jodconverter.util.OsUtils;
+import org.artofsolving.jodconverter.util.SuspendableThreadPoolExecutor;
 
 public class ManagedProcessOfficeManager implements OfficeManager {
 

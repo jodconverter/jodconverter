@@ -1,4 +1,4 @@
-package net.sf.jodconverter.office;
+package org.artofsolving.jodconverter.office;
 
 import static org.testng.Assert.*;
 
@@ -6,9 +6,8 @@ import java.io.File;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeoutException;
 
-import net.sf.jodconverter.test.TestUtils;
-import net.sf.jodconverter.util.ReflectionUtils;
-
+import org.artofsolving.jodconverter.test.TestUtils;
+import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="integration")

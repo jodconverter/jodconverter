@@ -16,18 +16,17 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package net.sf.jodconverter.json;
+package org.artofsolving.jodconverter.json;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.jodconverter.DocumentFamily;
-import net.sf.jodconverter.DocumentFormat;
-import net.sf.jodconverter.SimpleDocumentFormatRegistry;
-
 import org.apache.commons.io.IOUtils;
+import org.artofsolving.jodconverter.DocumentFamily;
+import org.artofsolving.jodconverter.DocumentFormat;
+import org.artofsolving.jodconverter.SimpleDocumentFormatRegistry;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

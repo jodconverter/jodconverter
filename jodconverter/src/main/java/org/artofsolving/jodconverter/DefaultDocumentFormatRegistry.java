@@ -16,7 +16,7 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package net.sf.jodconverter;
+package org.artofsolving.jodconverter;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -92,7 +92,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
         DocumentFormat wikitext = new DocumentFormat("MediaWiki wikitext", "wiki", "text/x-wiki");
         wikitext.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "MediaWiki"));
-        addFormat(wikitext);
+        //addFormat(wikitext);
 		
 		DocumentFormat ods = new DocumentFormat("OpenDocument Spreadsheet", "ods", "application/vnd.oasis.opendocument.spreadsheet");
 		ods.setInputFamily(DocumentFamily.SPREADSHEET);

@@ -16,9 +16,9 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package net.sf.jodconverter.util;
+package org.artofsolving.jodconverter.util;
 
-import static net.sf.jodconverter.util.UnixProcessUtils.*;
+import static org.artofsolving.jodconverter.util.UnixProcessUtils.*;
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;

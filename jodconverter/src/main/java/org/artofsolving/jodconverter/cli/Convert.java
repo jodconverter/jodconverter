@@ -1,11 +1,6 @@
-package net.sf.jodconverter.cli;
+package org.artofsolving.jodconverter.cli;
 
 import java.io.File;
-
-import net.sf.jodconverter.OfficeDocumentConverter;
-import net.sf.jodconverter.office.ManagedProcessOfficeManager;
-import net.sf.jodconverter.office.OfficeManager;
-import net.sf.jodconverter.util.OsUtils;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -15,6 +10,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.FilenameUtils;
+import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
+import org.artofsolving.jodconverter.office.OfficeManager;
+import org.artofsolving.jodconverter.util.OsUtils;
 
 /**
  * Command line interface executable.

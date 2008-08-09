@@ -16,15 +16,14 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package net.sf.jodconverter;
+package org.artofsolving.jodconverter;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-
-import net.sf.jodconverter.office.OfficeManager;
+import org.artofsolving.jodconverter.office.OfficeManager;
 
 public class OfficeDocumentConverter {
 
