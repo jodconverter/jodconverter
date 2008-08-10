@@ -1,6 +1,7 @@
 package org.artofsolving.jodconverter.cli;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -9,11 +10,16 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.artofsolving.jodconverter.DefaultDocumentFormatRegistry;
+import org.artofsolving.jodconverter.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.artofsolving.jodconverter.json.JsonDocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.util.OsUtils;
+import org.json.JSONException;
 
 /**
  * Command line interface executable.
@@ -25,7 +31,8 @@ public class Convert {
     public static final int STATUS_INVALID_ARGUMENTS = 255;
 
     private static final Option OPTION_OUTPUT_FORMAT = new Option("f", "output-format", true, "output format (e.g. pdf)");
-    private static final Option OPTION_PORT = new Option("p", "port", true, "office socket port (default: 8100)");
+    private static final Option OPTION_PORT = new Option("p", "port", true, "office socket port (optional; defaults to 8100)");
+    private static final Option OPTION_REGISTRY = new Option("r", "registry", true, "document formats registry configuration file (optional)");
     private static final Options OPTIONS = initOptions();
 
     private static final int DEFAULT_OFFICE_PORT = 8100;
@@ -34,10 +41,11 @@ public class Convert {
         Options options = new Options();
         options.addOption(OPTION_OUTPUT_FORMAT);
         options.addOption(OPTION_PORT);
+        options.addOption(OPTION_REGISTRY);
         return options;
     }
 
-    public static void main(String[] arguments) throws ParseException {
+    public static void main(String[] arguments) throws ParseException, JSONException, IOException {
         CommandLineParser commandLineParser = new PosixParser();
         CommandLine commandLine = commandLineParser.parse(OPTIONS, arguments);
 
@@ -60,9 +68,17 @@ public class Convert {
             System.exit(STATUS_INVALID_ARGUMENTS);
         }
         
+        DocumentFormatRegistry registry;
+        if (commandLine.hasOption(OPTION_REGISTRY.getOpt())) {
+            File registryFile = new File(commandLine.getOptionValue(OPTION_REGISTRY.getOpt()));
+            registry = new JsonDocumentFormatRegistry(FileUtils.readFileToString(registryFile));
+        } else {
+            registry = new DefaultDocumentFormatRegistry();
+        }
+        
         OfficeManager officeManager = getOfficeManager(port);
         officeManager.start();
-        OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
+        OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
         try {
             if (outputFormat == null) {
                 File inputFile = new File(fileNames[0]);
