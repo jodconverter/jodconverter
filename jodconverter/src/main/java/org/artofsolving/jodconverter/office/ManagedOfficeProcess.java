@@ -46,33 +46,33 @@ public class ManagedOfficeProcess {
     private final OfficeProcess process;
     private final OfficeConnection connection;
 
-    private File profileDir;
+    private final File templateProfileDir;
+    private final File profileDir;
 
     private ExecutorService executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
 
     private final Logger logger = Logger.getLogger(getClass().getName());
-
+    
     public ManagedOfficeProcess(File officeHome, File templateProfileDir, String acceptString) throws OfficeException {
-        try {
-            profileDir = createProfileDir(templateProfileDir, acceptString);
-        } catch (IOException ioException) {
-            throw new OfficeException("could not create profile dir: " + profileDir, ioException);
-        }
-        process = new OfficeProcess(officeHome, acceptString, templateProfileDir);
+        this.templateProfileDir = templateProfileDir;
+        profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + acceptString);
+        process = new OfficeProcess(officeHome, acceptString, profileDir);
         connection = new OfficeConnection(acceptString);
     }
 
-    private File createProfileDir(File templateProfileDir, String acceptString) throws IOException {
+    private void recreateProfileDir() throws OfficeException {
         if (!templateProfileDir.exists()) {
-            throw new IllegalArgumentException("template profile dir does not exist: " + templateProfileDir);
+            throw new IllegalStateException("template profile dir does not exist: " + templateProfileDir);
         }
-        File profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + acceptString);
         if (profileDir.exists()) {
-            logger.warning(String.format("profile dir already exists; recreating: '%s'", profileDir));
-            FileUtils.deleteDirectory(profileDir);
+            logger.warning(String.format("profile dir '%s' already exists; deleting", profileDir));
+            doDeleteProfileDir();
         }
-        FileUtils.copyDirectory(templateProfileDir, profileDir);
-        return profileDir;
+        try {
+            FileUtils.copyDirectory(templateProfileDir, profileDir);
+        } catch (IOException ioException) {
+            throw new OfficeException("failed to create profileDir", ioException);
+        }
     }
 
     public OfficeConnection getConnection() {
@@ -96,7 +96,6 @@ public class ManagedOfficeProcess {
         Future<?> future = executor.submit(new Runnable() {
             public void run() {
                 doStopProcess();
-                doDeleteProfileDir();
             }
         });
         try {
@@ -110,7 +109,6 @@ public class ManagedOfficeProcess {
         Future<?> future = executor.submit(new Runnable() {
            public void run() {
                doStopProcess();
-               doDeleteProfileDir();
                doStartProcessAndConnect();
             } 
         });
@@ -126,7 +124,6 @@ public class ManagedOfficeProcess {
            public void run() {
                 doTerminateProcess();
                 // will cause unexpected disconnection and subsequent restart
-                doDeleteProfileDir();
             } 
         });
     }
@@ -135,13 +132,13 @@ public class ManagedOfficeProcess {
         executor.execute(new Runnable() {
             public void run() {
                 doEnsureProcessExited();
-                doDeleteProfileDir();
                 doStartProcessAndConnect();
             } 
          });
     }
 
     private void doStartProcessAndConnect() throws OfficeException {
+        recreateProfileDir();
         try {
             process.start();
             new Retryable() {
@@ -185,14 +182,15 @@ public class ManagedOfficeProcess {
         } catch (RetryTimeoutException retryTimeoutException) {
             doTerminateProcess();
         }
+        doDeleteProfileDir();
     }
 
     private void doTerminateProcess() {
         try {
             int exitCode = process.forciblyTerminate(RETRY_INTERVAL, RETRY_TIMEOUT);
             logger.info("process forcibly terminated with code " + exitCode);
-        } catch (RetryTimeoutException retryTimeoutException2) {
-            throw new OfficeException("could not terminate process", retryTimeoutException2);
+        } catch (RetryTimeoutException retryTimeoutException) {
+            throw new OfficeException("could not terminate process", retryTimeoutException);
         }
     }
 
