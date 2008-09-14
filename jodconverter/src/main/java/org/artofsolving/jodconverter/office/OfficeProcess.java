@@ -24,8 +24,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
+import org.artofsolving.jodconverter.util.OsUtils;
 import org.artofsolving.jodconverter.util.RetryTimeoutException;
 import org.artofsolving.jodconverter.util.Retryable;
 import org.artofsolving.jodconverter.util.TemporaryException;
@@ -68,6 +71,9 @@ public class OfficeProcess {
         command.add("-nologo");
         command.add("-norestore");
         ProcessBuilder processBuilder = new ProcessBuilder(command);
+        if (OsUtils.isWindows()) {
+            addBasisAndUrePaths(processBuilder);
+        }
         logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", acceptString, profileDir));
         process = processBuilder.start();
         int pid = -1;
@@ -79,6 +85,33 @@ public class OfficeProcess {
             }
         }
         logger.info("started process; pid " + pid);
+    }
+
+    private void addBasisAndUrePaths(ProcessBuilder processBuilder) throws IOException {
+        // see http://wiki.services.openoffice.org/wiki/ODF_Toolkit/Efforts/Three-Layer_OOo
+        File basisLink = new File(officeHome, "basis-link");
+        if (!basisLink.isFile()) {
+            logger.fine("no %OFFICE_HOME%/basis-link found; assuming it's OOo 2.x and we don't need to append URE and Basic paths");
+            return;
+        }
+        String basisLinkText = FileUtils.readFileToString(basisLink).trim();
+        File basisHome = new File(basisLinkText);
+        File basisProgram = new File(basisHome, "program");
+        File ureLink = new File(basisHome, "ure-link");
+        String ureLinkText = FileUtils.readFileToString(ureLink).trim();
+        File ureBin = new File(ureLinkText, "bin");
+        Map<String,String> environment = processBuilder.environment();
+        // Windows environment variables are case insensitive but Java maps are not :-/
+        // so let's make sure we modify the existing key
+        String pathKey = "PATH";
+        for (String key : environment.keySet()) {
+            if ("PATH".equalsIgnoreCase(key)) {
+                pathKey = key;
+            }
+        }
+        String path = environment.get(pathKey) + ";" + ureBin.getAbsolutePath() + ";" + basisProgram.getAbsolutePath();
+        logger.info(String.format("setting %s to \"%s\"", pathKey, path));
+        environment.put(pathKey, path);
     }
 
     public boolean isRunning() {
