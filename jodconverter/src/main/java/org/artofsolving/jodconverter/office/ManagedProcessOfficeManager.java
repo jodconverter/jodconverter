@@ -26,7 +26,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 import org.artofsolving.jodconverter.util.NamedThreadFactory;
-import org.artofsolving.jodconverter.util.OsUtils;
 import org.artofsolving.jodconverter.util.SuspendableThreadPoolExecutor;
 
 public class ManagedProcessOfficeManager implements OfficeManager {
@@ -70,10 +69,6 @@ public class ManagedProcessOfficeManager implements OfficeManager {
         }
     };
 
-    public ManagedProcessOfficeManager(File officeHome) {
-        this(officeHome, guessDefaultProfileDir(), DEFAULT_ACCEPT_STRING);
-    }
-
     public ManagedProcessOfficeManager(File officeHome, File templateProfileDir) {
         this(officeHome, templateProfileDir, DEFAULT_ACCEPT_STRING);
     }
@@ -86,14 +81,6 @@ public class ManagedProcessOfficeManager implements OfficeManager {
         managedOfficeProcess = new ManagedOfficeProcess(officeHome, templateProfileDir, acceptString);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
         taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY, taskQueueTimeout, TimeUnit.MILLISECONDS);
-    }
-
-    private static File guessDefaultProfileDir() {
-        if (OsUtils.isWindows()) {
-            return new File(System.getenv("APPDATA"), "OpenOffice.org2");
-        } else {
-            return new File(System.getProperty("user.home"), ".openoffice.org2");
-        }
     }
 
     /**

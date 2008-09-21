@@ -61,7 +61,7 @@ public class OfficeProcess {
         command.add(new File(officeHome, EXECUTABLE_PATH).getAbsolutePath());
         command.add("-accept=" + acceptString + ";urp;");
         if (profileDir != null) {
-            command.add("-env:UserInstallation=" + UnoUtils.toUrl(profileDir));
+            command.add("-env:UserInstallation=" + OfficeUtils.toUrl(profileDir));
         }
         command.add("-headless");
         command.add("-nocrashreport");
@@ -110,7 +110,7 @@ public class OfficeProcess {
             }
         }
         String path = environment.get(pathKey) + ";" + ureBin.getAbsolutePath() + ";" + basisProgram.getAbsolutePath();
-        logger.info(String.format("setting %s to \"%s\"", pathKey, path));
+        logger.fine(String.format("setting %s to \"%s\"", pathKey, path));
         environment.put(pathKey, path);
     }
 

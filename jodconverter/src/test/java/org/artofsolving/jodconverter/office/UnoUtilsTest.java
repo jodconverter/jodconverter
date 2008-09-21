@@ -18,7 +18,7 @@
 //
 package org.artofsolving.jodconverter.office;
 
-import static org.artofsolving.jodconverter.office.UnoUtils.*;
+import static org.artofsolving.jodconverter.office.OfficeUtils.*;
 import static org.testng.Assert.*;
 
 import java.io.File;

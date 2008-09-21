@@ -24,7 +24,7 @@ import java.util.Map;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.uno.UnoRuntime;
 
-public abstract class UnoUtils {
+public abstract class OfficeUtils {
 
     public static final String SERVICE_DESKTOP = "com.sun.star.frame.Desktop";
 

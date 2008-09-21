@@ -18,7 +18,7 @@
 //
 package org.artofsolving.jodconverter.office;
 
-import static org.artofsolving.jodconverter.office.UnoUtils.*;
+import static org.artofsolving.jodconverter.office.OfficeUtils.*;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.frame.XComponentLoader;

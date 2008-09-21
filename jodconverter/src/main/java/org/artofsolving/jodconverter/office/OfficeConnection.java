@@ -76,16 +76,16 @@ public class OfficeConnection implements OfficeContext {
         try {
             XComponentContext localContext = Bootstrap.createInitialComponentContext(null);
             XMultiComponentFactory localServiceManager = localContext.getServiceManager();
-            XConnector connector = UnoUtils.cast(XConnector.class, localServiceManager.createInstanceWithContext("com.sun.star.connection.Connector", localContext));
+            XConnector connector = OfficeUtils.cast(XConnector.class, localServiceManager.createInstanceWithContext("com.sun.star.connection.Connector", localContext));
             XConnection connection = connector.connect(connectString);
-            XBridgeFactory bridgeFactory = UnoUtils.cast(XBridgeFactory.class, localServiceManager.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", localContext));
+            XBridgeFactory bridgeFactory = OfficeUtils.cast(XBridgeFactory.class, localServiceManager.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", localContext));
             String bridgeName = "jodconverter_" + bridgeIndex++;
             XBridge bridge = bridgeFactory.createBridge(bridgeName, "urp", connection, null);
-            bridgeComponent = UnoUtils.cast(XComponent.class, bridge);
+            bridgeComponent = OfficeUtils.cast(XComponent.class, bridge);
             bridgeComponent.addEventListener(bridgeListener);
-            serviceManager = UnoUtils.cast(XMultiComponentFactory.class, bridge.getInstance("StarOffice.ServiceManager"));
-            XPropertySet properties = UnoUtils.cast(XPropertySet.class, serviceManager);
-            componentContext = UnoUtils.cast(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
+            serviceManager = OfficeUtils.cast(XMultiComponentFactory.class, bridge.getInstance("StarOffice.ServiceManager"));
+            XPropertySet properties = OfficeUtils.cast(XPropertySet.class, serviceManager);
+            componentContext = OfficeUtils.cast(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
             connected = true;
             logger.info(String.format("connected: '%s'", connectString));
             OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);

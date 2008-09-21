@@ -157,7 +157,7 @@ public class ManagedOfficeProcess {
 
     private void doStopProcess() {
         try {
-            XDesktop desktop = UnoUtils.cast(XDesktop.class, connection.getService(UnoUtils.SERVICE_DESKTOP));
+            XDesktop desktop = OfficeUtils.cast(XDesktop.class, connection.getService(OfficeUtils.SERVICE_DESKTOP));
             desktop.terminate();
         } catch (DisposedException disposedException) {
             // expected

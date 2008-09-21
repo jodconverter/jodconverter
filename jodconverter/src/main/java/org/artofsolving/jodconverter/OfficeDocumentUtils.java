@@ -18,7 +18,7 @@
 //
 package org.artofsolving.jodconverter;
 
-import static org.artofsolving.jodconverter.office.UnoUtils.*;
+import static org.artofsolving.jodconverter.office.OfficeUtils.*;
 
 import org.artofsolving.jodconverter.office.OfficeException;
 
