@@ -19,7 +19,7 @@
 package org.artofsolving.jodconverter;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
@@ -30,7 +30,7 @@ public class OfficeDocumentConverter {
     private final OfficeManager officeManager;
     private final DocumentFormatRegistry formatRegistry;
 
-    private Map<String,?> defaultLoadProperties = Collections.singletonMap("Hidden", true);
+    private Map<String,?> defaultLoadProperties = createDefaultLoadProperties();
 
     public OfficeDocumentConverter(OfficeManager officeManager) {
         this(officeManager, new DefaultDocumentFormatRegistry());
@@ -39,6 +39,13 @@ public class OfficeDocumentConverter {
     public OfficeDocumentConverter(OfficeManager officeManager, DocumentFormatRegistry formatRegistry) {
         this.officeManager = officeManager;
         this.formatRegistry = formatRegistry;
+    }
+
+    private Map<String,Object> createDefaultLoadProperties() {
+        Map<String,Object> loadProperties = new HashMap<String,Object>();
+        loadProperties.put("Hidden", true);
+        loadProperties.put("ReadOnly", true);
+        return loadProperties;
     }
 
     public void setDefaultLoadProperties(Map<String, ?> defaultLoadProperties) {
