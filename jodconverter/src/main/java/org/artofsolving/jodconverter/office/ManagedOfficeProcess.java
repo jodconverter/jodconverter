@@ -55,7 +55,7 @@ public class ManagedOfficeProcess {
     
     public ManagedOfficeProcess(File officeHome, File templateProfileDir, String acceptString) throws OfficeException {
         this.templateProfileDir = templateProfileDir;
-        profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + acceptString);
+        profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + acceptString.replace(',', '_').replace('=', '-'));
         process = new OfficeProcess(officeHome, acceptString, profileDir);
         connection = new OfficeConnection(acceptString);
     }
