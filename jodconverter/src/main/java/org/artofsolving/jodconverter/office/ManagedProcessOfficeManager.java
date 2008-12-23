@@ -69,6 +69,14 @@ public class ManagedProcessOfficeManager implements OfficeManager {
         }
     };
 
+    public ManagedProcessOfficeManager() {
+        this(OfficeUtils.getDefaultOfficeHome());
+    }
+
+    public ManagedProcessOfficeManager(File officeHome) {
+        this(officeHome, OfficeUtils.getDefaultProfileDir());
+    }
+
     public ManagedProcessOfficeManager(File officeHome, File templateProfileDir) {
         this(officeHome, templateProfileDir, DEFAULT_ACCEPT_STRING);
     }

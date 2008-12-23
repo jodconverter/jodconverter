@@ -54,6 +54,12 @@ public class ManagedOfficeProcess {
     private final Logger logger = Logger.getLogger(getClass().getName());
     
     public ManagedOfficeProcess(File officeHome, File templateProfileDir, String acceptString) throws OfficeException {
+        if (!officeHome.isDirectory()) {
+            throw new IllegalArgumentException("officeHome doesn't exist: " + officeHome);
+        }
+        if (!templateProfileDir.isDirectory()) {
+            throw new IllegalArgumentException("templateProfileDir doesn't exist: " + templateProfileDir);
+        }
         this.templateProfileDir = templateProfileDir;
         profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + acceptString.replace(',', '_').replace('=', '-'));
         process = new OfficeProcess(officeHome, acceptString, profileDir);

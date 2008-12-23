@@ -18,7 +18,7 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.json.JsonDocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
 import org.artofsolving.jodconverter.office.OfficeManager;
-import org.artofsolving.jodconverter.util.OsUtils;
+import org.artofsolving.jodconverter.office.OfficeUtils;
 import org.json.JSONException;
 
 /**
@@ -98,22 +98,8 @@ public class Convert {
     }
 
     private static OfficeManager getOfficeManager(int port) {
-        String officeHome = System.getenv("OFFICE_HOME");
-        if (officeHome == null) {
-            //TODO try searching in standard locations
-            throw new RuntimeException("Please set your OFFICE_HOME environment variable.");
-        }
         String acceptString = "socket,host=127.0.0.1,port=" + port;
-        return new ManagedProcessOfficeManager(new File(officeHome), guessDefaultProfileDir(), acceptString);
+        return new ManagedProcessOfficeManager(OfficeUtils.getDefaultOfficeHome(), OfficeUtils.getDefaultProfileDir(), acceptString);
     }
     
-
-    private static File guessDefaultProfileDir() {
-        if (OsUtils.isWindows()) {
-            return new File(System.getenv("APPDATA"), "OpenOffice.org2");
-        } else {
-            return new File(System.getProperty("user.home"), ".openoffice.org2");
-        }
-    }
-
 }

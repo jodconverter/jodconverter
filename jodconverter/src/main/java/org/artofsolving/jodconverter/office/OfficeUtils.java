@@ -64,4 +64,34 @@ public abstract class OfficeUtils {
         }
     }
 
+    public static File getDefaultOfficeHome() {
+        if (System.getProperty("office.home") != null) {
+            return new File(System.getProperty("office.home"));
+        }
+        String osName = System.getProperty("os.name");
+        if (osName.startsWith("Windows")) {
+            return new File(System.getenv("ProgramFiles"), "OpenOffice.org 3");
+        } else if (osName.startsWith("Mac")) {
+            return new File("/Applications/OpenOffice.org.app/Contents");
+        } else {
+            // Linux or Solaris
+            return new File("/opt/openoffice.org3");
+        }
+    }
+
+    public static File getDefaultProfileDir() {
+        if (System.getProperty("office.profile") != null) {
+            return new File(System.getProperty("office.profile"));
+        }
+        String osName = System.getProperty("os.name");
+        if (osName.startsWith("Windows")) {
+            return new File(System.getenv("APPDATA"), "OpenOffice.org/3");
+        } else if (osName.startsWith("Mac")) {
+            return new File("/Users/" + System.getProperty("user.name") + "/Library/Application Support/OpenOffice.org/3");
+        } else {
+            // Linux or Solaris
+            return new File(System.getProperty("user.home"), ".openoffice.org/3");
+        }
+    }
+
 }
