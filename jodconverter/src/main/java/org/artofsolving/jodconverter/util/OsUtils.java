@@ -6,4 +6,8 @@ public abstract class OsUtils {
         return System.getProperty("os.name").startsWith("Windows");
     }
 
+    public static boolean isMac() {
+        return System.getProperty("os.name").startsWith("Mac");
+    }
+
 }

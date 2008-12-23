@@ -21,6 +21,8 @@ package org.artofsolving.jodconverter.office;
 import java.io.File;
 import java.util.Map;
 
+import org.artofsolving.jodconverter.util.OsUtils;
+
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.uno.UnoRuntime;
 
@@ -68,10 +70,9 @@ public abstract class OfficeUtils {
         if (System.getProperty("office.home") != null) {
             return new File(System.getProperty("office.home"));
         }
-        String osName = System.getProperty("os.name");
-        if (osName.startsWith("Windows")) {
+        if (OsUtils.isWindows()) {
             return new File(System.getenv("ProgramFiles"), "OpenOffice.org 3");
-        } else if (osName.startsWith("Mac")) {
+        } else if (OsUtils.isMac()) {
             return new File("/Applications/OpenOffice.org.app/Contents");
         } else {
             // Linux or Solaris
@@ -83,10 +84,9 @@ public abstract class OfficeUtils {
         if (System.getProperty("office.profile") != null) {
             return new File(System.getProperty("office.profile"));
         }
-        String osName = System.getProperty("os.name");
-        if (osName.startsWith("Windows")) {
+        if (OsUtils.isWindows()) {
             return new File(System.getenv("APPDATA"), "OpenOffice.org/3");
-        } else if (osName.startsWith("Mac")) {
+        } else if (OsUtils.isMac()) {
             return new File("/Users/" + System.getProperty("user.name") + "/Library/Application Support/OpenOffice.org/3");
         } else {
             // Linux or Solaris

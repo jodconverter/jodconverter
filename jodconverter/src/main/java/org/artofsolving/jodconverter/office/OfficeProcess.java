@@ -36,8 +36,6 @@ import org.artofsolving.jodconverter.util.UnixProcessException;
 
 public class OfficeProcess {
 
-    private static final String EXECUTABLE_PATH = "/program/soffice.bin";
-
     private final File officeHome;
     private final String acceptString;
     private final File profileDir;
@@ -58,7 +56,7 @@ public class OfficeProcess {
 
     public void start() throws IOException {
         List<String> command = new ArrayList<String>();
-        command.add(new File(officeHome, EXECUTABLE_PATH).getAbsolutePath());
+        command.add(new File(officeHome, getExecutablePath()).getAbsolutePath());
         command.add("-accept=" + acceptString + ";urp;");
         if (profileDir != null) {
             command.add("-env:UserInstallation=" + OfficeUtils.toUrl(profileDir));
@@ -85,6 +83,14 @@ public class OfficeProcess {
             }
         }
         logger.info("started process; pid " + pid);
+    }
+
+    private String getExecutablePath() {
+        if (OsUtils.isMac()) {
+            return "MacOS/soffice.bin";
+        } else {
+            return "program/soffice.bin";
+        }
     }
 
     private void addBasisAndUrePaths(ProcessBuilder processBuilder) throws IOException {
