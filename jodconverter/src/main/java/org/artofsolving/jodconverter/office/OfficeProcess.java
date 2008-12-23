@@ -95,11 +95,12 @@ public class OfficeProcess {
             return;
         }
         String basisLinkText = FileUtils.readFileToString(basisLink).trim();
-        File basisHome = new File(basisLinkText);
+        File basisHome = new File(officeHome, basisLinkText);
         File basisProgram = new File(basisHome, "program");
         File ureLink = new File(basisHome, "ure-link");
         String ureLinkText = FileUtils.readFileToString(ureLink).trim();
-        File ureBin = new File(ureLinkText, "bin");
+        File ureHome = new File(basisHome, ureLinkText);
+        File ureBin = new File(ureHome, "bin");
         Map<String,String> environment = processBuilder.environment();
         // Windows environment variables are case insensitive but Java maps are not :-/
         // so let's make sure we modify the existing key
