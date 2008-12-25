@@ -42,23 +42,23 @@
     <dependency>
       <groupId>org.openoffice</groupId>
       <artifactId>juh</artifactId>
-      <version>2.4.1</version>
+      <version>3.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.openoffice</groupId>
       <artifactId>ridl</artifactId>
-      <version>2.4.1</version>
+      <version>3.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.openoffice</groupId>
       <artifactId>unoil</artifactId>
-      <version>2.4.1</version>
+      <version>3.0.0</version>
     </dependency>
 
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20070829</version>
+      <version>20080701</version>
       <optional>true</optional>
     </dependency>
       <dependency>
