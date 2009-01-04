@@ -16,8 +16,8 @@
   <url>http://jodconverter.sourceforge.net</url>
   <licenses>
     <license>
-      <name>GNU Lesser General Public License, Version 2.1 or later</name>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+      <name>GNU Lesser General Public License, Version 3 or later</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
     </license>
   </licenses>
   <scm>
