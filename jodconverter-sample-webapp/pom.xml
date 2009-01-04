@@ -21,8 +21,8 @@
     </license>
   </licenses>
   <scm>
-    <url>http://jodconverter.svn.sourceforge.net/viewvc/jodconverter/branches/3.0.x/jodconverter/</url>
-    <connection>scm:svn:https://jodconverter.svn.sourceforge.net/svnroot/jodconverter/branches/3.0.x/jodconverter</connection>
+    <url>http://jodconverter.googlecode.com/svn/trunk/jodconverter-sample-webapp</url>
+    <connection>scm:svn:https://jodconverter.googlecode.com/svn/trunk/jodconverter-sample-webapp</connection>
   </scm>
   <inceptionYear>2003</inceptionYear>
   <developers>
