@@ -1,4 +1,4 @@
-package org.artofsolving.jodconverter.sample.web;
+package net.sf.jodconverter.sample.web;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,13 +12,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.jodconverter.DocumentFormat;
+import net.sf.jodconverter.OfficeDocumentConverter;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.artofsolving.jodconverter.DocumentFormat;
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
 
 public class ConverterServlet extends HttpServlet {
 

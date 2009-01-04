@@ -1,4 +1,4 @@
-package org.artofsolving.jodconverter.sample.web;
+package net.sf.jodconverter.sample.web;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

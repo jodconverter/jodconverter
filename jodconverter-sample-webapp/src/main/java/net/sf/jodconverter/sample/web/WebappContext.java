@@ -1,17 +1,17 @@
-package org.artofsolving.jodconverter.sample.web;
+package net.sf.jodconverter.sample.web;
 
 import java.io.File;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
+import net.sf.jodconverter.OfficeDocumentConverter;
+import net.sf.jodconverter.office.ManagedProcessOfficeManager;
+import net.sf.jodconverter.office.OfficeManager;
+import net.sf.jodconverter.office.OfficeUtils;
 
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
-import org.artofsolving.jodconverter.office.OfficeManager;
-import org.artofsolving.jodconverter.office.OfficeUtils;
 
 public class WebappContext {
 

@@ -25,12 +25,12 @@
   -->
 
   <listener>
-    <listener-class>org.artofsolving.jodconverter.sample.web.WebappContextListener</listener-class>
+    <listener-class>net.sf.jodconverter.sample.web.WebappContextListener</listener-class>
   </listener>
 
   <servlet>
     <servlet-name>ConverterServlet</servlet-name>
-    <servlet-class>org.artofsolving.jodconverter.sample.web.ConverterServlet</servlet-class>
+    <servlet-class>net.sf.jodconverter.sample.web.ConverterServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
