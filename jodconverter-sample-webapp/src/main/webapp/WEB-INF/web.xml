@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-app_2_4.xsd"
+         version="2.4">
+
+  <display-name>JODConverter</display-name>
+  <description>JODConverter Sample Web Application</description>
+
+  <context-param>
+    <param-name>fileupload.fileSizeMax</param-name>
+    <param-value>5242880</param-value><!-- 5MB -->
+  </context-param>
+
+  <!-- uncomment and edit if using non standard locations -->
+  <!--
+  <context-param>
+    <param-name>office.home</param-name>
+    <param-value>/opt/openoffice.org3</param-value>
+  </context-param>
+  <context-param>
+    <param-name>office.profile</param-name>
+    <param-value>/home/converter/.openoffice.org/3</param-value>
+  </context-param>
+  -->
+
+  <listener>
+    <listener-class>org.artofsolving.jodconverter.sample.web.WebappContextListener</listener-class>
+  </listener>
+
+  <servlet>
+    <servlet-name>ConverterServlet</servlet-name>
+    <servlet-class>org.artofsolving.jodconverter.sample.web.ConverterServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ConverterServlet</servlet-name>
+    <url-pattern>/converted/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>
