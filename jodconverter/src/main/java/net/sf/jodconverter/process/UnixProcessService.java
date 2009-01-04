@@ -1,11 +1,11 @@
-package org.artofsolving.process;
+package net.sf.jodconverter.process;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.artofsolving.jodconverter.util.ReflectionUtils;
-import org.artofsolving.jodconverter.util.UnixProcessUtils;
+import net.sf.jodconverter.util.ReflectionUtils;
+import net.sf.jodconverter.util.UnixProcessUtils;
 
 /**
  * Process service for unix.

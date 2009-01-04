@@ -1,4 +1,4 @@
-package org.artofsolving.process;
+package net.sf.jodconverter.process;
 
 /**
  * Abstraction to allows Java to deal with native processes via the a Process Identifier or 'PID'. A

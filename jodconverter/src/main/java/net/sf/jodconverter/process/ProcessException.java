@@ -1,4 +1,4 @@
-package org.artofsolving.process;
+package net.sf.jodconverter.process;
 
 /**
  * Runtime exception thrown by process classes. 

@@ -1,4 +1,4 @@
-package org.artofsolving.process;
+package net.sf.jodconverter.process;
 
 import java.util.HashMap;
 import java.util.Map;

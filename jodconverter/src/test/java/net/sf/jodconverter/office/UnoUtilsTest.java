@@ -16,9 +16,9 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package org.artofsolving.jodconverter.office;
+package net.sf.jodconverter.office;
 
-import static org.artofsolving.jodconverter.office.OfficeUtils.*;
+import static net.sf.jodconverter.office.OfficeUtils.*;
 import static org.testng.Assert.*;
 
 import java.io.File;

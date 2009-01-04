@@ -1,4 +1,4 @@
-package org.artofsolving.jodconverter.cli;
+package net.sf.jodconverter.cli;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,13 +12,13 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.artofsolving.jodconverter.DefaultDocumentFormatRegistry;
-import org.artofsolving.jodconverter.DocumentFormatRegistry;
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.json.JsonDocumentFormatRegistry;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
-import org.artofsolving.jodconverter.office.OfficeManager;
-import org.artofsolving.jodconverter.office.OfficeUtils;
+import net.sf.jodconverter.DefaultDocumentFormatRegistry;
+import net.sf.jodconverter.DocumentFormatRegistry;
+import net.sf.jodconverter.OfficeDocumentConverter;
+import net.sf.jodconverter.json.JsonDocumentFormatRegistry;
+import net.sf.jodconverter.office.ManagedProcessOfficeManager;
+import net.sf.jodconverter.office.OfficeManager;
+import net.sf.jodconverter.office.OfficeUtils;
 import org.json.JSONException;
 
 /**

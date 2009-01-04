@@ -1,4 +1,4 @@
-package org.artofsolving.jodconverter.test;
+package net.sf.jodconverter.test;
 
 import java.io.File;
 

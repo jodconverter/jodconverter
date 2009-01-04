@@ -1,4 +1,4 @@
-package org.artofsolving.process;
+package net.sf.jodconverter.process;
 
 /**
  * Use this when an old windows version is used and no access to third party executables.

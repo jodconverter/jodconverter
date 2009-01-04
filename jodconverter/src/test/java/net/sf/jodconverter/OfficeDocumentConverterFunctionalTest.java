@@ -1,4 +1,4 @@
-package org.artofsolving.jodconverter;
+package net.sf.jodconverter;
 
 import static org.testng.Assert.*;
 
@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
-import org.artofsolving.jodconverter.office.OfficeManager;
-import org.artofsolving.jodconverter.test.TestUtils;
+import net.sf.jodconverter.office.ManagedProcessOfficeManager;
+import net.sf.jodconverter.office.OfficeManager;
+import net.sf.jodconverter.test.TestUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="functional")

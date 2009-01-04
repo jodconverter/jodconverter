@@ -16,7 +16,7 @@
 // License along with this library; if not, you can find it online
 // at http://www.gnu.org/licenses/lgpl-2.1.html.
 //
-package org.artofsolving.jodconverter.office;
+package net.sf.jodconverter.office;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,10 +28,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.artofsolving.jodconverter.util.NamedThreadFactory;
-import org.artofsolving.jodconverter.util.RetryTimeoutException;
-import org.artofsolving.jodconverter.util.Retryable;
-import org.artofsolving.jodconverter.util.TemporaryException;
+import net.sf.jodconverter.util.NamedThreadFactory;
+import net.sf.jodconverter.util.RetryTimeoutException;
+import net.sf.jodconverter.util.Retryable;
+import net.sf.jodconverter.util.TemporaryException;
 
 import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.DisposedException;

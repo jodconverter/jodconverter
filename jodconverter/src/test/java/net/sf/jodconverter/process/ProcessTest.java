@@ -1,9 +1,9 @@
-package org.artofsolving.process;
+package net.sf.jodconverter.process;
 
 import static org.testng.Assert.assertTrue;
 
-import org.artofsolving.process.ProcessService;
-import org.artofsolving.process.ProcessServiceFactory;
+import net.sf.jodconverter.process.ProcessService;
+import net.sf.jodconverter.process.ProcessServiceFactory;
 import org.testng.annotations.Test;
 
 /**
@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
  * @author Sean Greenhow
  *
  */
-@Test(groups="functional")
+//@Test(groups="functional")
 public class ProcessTest {
 
 	public static void main(String[]args){	
