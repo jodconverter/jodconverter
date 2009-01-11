@@ -18,21 +18,25 @@
 //
 package net.sf.jodconverter.office;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.io.File;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeoutException;
 
-import net.sf.jodconverter.test.TestUtils;
 import net.sf.jodconverter.util.ReflectionUtils;
+
 import org.testng.annotations.Test;
 
 @Test(groups="integration")
 public class ManagedProcessOfficeManagerTest {
 
-    private static final File OFFICE_HOME = TestUtils.getOfficeHome();
-    private static final File OFFICE_PROFILE = TestUtils.getOfficeProfile();
+    private static final File OFFICE_HOME = OfficeUtils.getDefaultOfficeHome();
+    private static final File OFFICE_PROFILE = OfficeUtils.getDefaultProfileDir();
     private static final String CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
     private static final long RESTART_WAIT_TIME = 2 * 1000;
 

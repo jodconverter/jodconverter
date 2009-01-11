@@ -28,14 +28,14 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import net.sf.jodconverter.office.ManagedProcessOfficeManager;
 import net.sf.jodconverter.office.OfficeManager;
-import net.sf.jodconverter.test.TestUtils;
+import net.sf.jodconverter.office.OfficeUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="functional")
 public class OfficeDocumentConverterFunctionalTest {
 
-    private static final File OFFICE_HOME = TestUtils.getOfficeHome();
-    private static final File OFFICE_PROFILE = TestUtils.getOfficeProfile();
+    private static final File OFFICE_HOME = OfficeUtils.getDefaultOfficeHome();
+    private static final File OFFICE_PROFILE = OfficeUtils.getDefaultProfileDir();
     private static final String CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
 
     public void runAllPossibleConversions() throws IOException {

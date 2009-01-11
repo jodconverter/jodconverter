@@ -18,21 +18,21 @@
 //
 package net.sf.jodconverter.office;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertTrue;
 
 import java.io.File;
 
-import net.sf.jodconverter.test.TestUtils;
 import net.sf.jodconverter.util.ReflectionUtils;
+
 import org.testng.annotations.Test;
 
 @Test(groups="integration")
 public class ExternalProcessOfficeManagerTest {
 
     public void executeTask() throws Exception {
-        File officeHome = TestUtils.getOfficeHome();
+        File officeHome = OfficeUtils.getDefaultOfficeHome();
         String connectString = ExternalProcessOfficeManager.DEFAULT_CONNECT_STRING;
-        File templateProfileDir = TestUtils.getOfficeProfile();
+        File templateProfileDir = OfficeUtils.getDefaultProfileDir();
         
         OfficeProcess officeProcess = new OfficeProcess(officeHome, connectString, templateProfileDir);
         officeProcess.start();
