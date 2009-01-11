@@ -12,6 +12,7 @@
     <fileSet>
       <includes>
         <include>LICENSE.txt</include>
+        <include>README.txt</include>
       </includes>
     </fileSet>
   </fileSets>
