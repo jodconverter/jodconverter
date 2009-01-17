@@ -87,7 +87,7 @@ public abstract class OfficeUtils {
         if (OsUtils.isWindows()) {
             return new File(System.getenv("APPDATA"), "OpenOffice.org/3");
         } else if (OsUtils.isMac()) {
-            return new File("/Users/" + System.getProperty("user.name") + "/Library/Application Support/OpenOffice.org/3");
+            return new File(System.getProperty("user.home"), "Library/Application Support/OpenOffice.org/3");
         } else {
             // Linux or Solaris
             return new File(System.getProperty("user.home"), ".openoffice.org/3");
