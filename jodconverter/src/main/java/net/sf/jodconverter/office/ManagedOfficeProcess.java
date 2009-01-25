@@ -61,7 +61,7 @@ public class ManagedOfficeProcess {
             throw new IllegalArgumentException("templateProfileDir doesn't exist: " + templateProfileDir);
         }
         this.templateProfileDir = templateProfileDir;
-        profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + connectionMode.toString().replace(',', '_').replace('=', '-'));
+        profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + connectionMode.getAcceptString().replace(',', '_').replace('=', '-'));
         process = new OfficeProcess(connectionMode, officeHome, profileDir);
         connection = new OfficeConnection(connectionMode);
     }
