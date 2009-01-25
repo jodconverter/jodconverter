@@ -30,7 +30,6 @@ import net.sf.jodconverter.util.SuspendableThreadPoolExecutor;
 
 public class ManagedProcessOfficeManager implements OfficeManager {
 
-    private static final String DEFAULT_ACCEPT_STRING = "socket,host=127.0.0.1,port=8100";
     private static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30 * 1000;
     private static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120 * 1000;
     private static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
@@ -69,24 +68,20 @@ public class ManagedProcessOfficeManager implements OfficeManager {
         }
     };
 
-    public ManagedProcessOfficeManager() {
-        this(OfficeUtils.getDefaultOfficeHome());
+    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode) {
+        this(connectionMode, OfficeUtils.getDefaultOfficeHome());
     }
 
-    public ManagedProcessOfficeManager(File officeHome) {
-        this(officeHome, OfficeUtils.getDefaultProfileDir());
+    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode, File officeHome) {
+        this(connectionMode, officeHome, OfficeUtils.getDefaultProfileDir());
     }
 
-    public ManagedProcessOfficeManager(File officeHome, File templateProfileDir) {
-        this(officeHome, templateProfileDir, DEFAULT_ACCEPT_STRING);
+    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode, File officeHome, File templateProfileDir) {
+        this(connectionMode, officeHome, templateProfileDir, DEFAULT_TASK_QUEUE_TIMEOUT);
     }
 
-    public ManagedProcessOfficeManager(File officeHome, File templateProfileDir, String acceptString) {
-        this(officeHome, templateProfileDir, acceptString, DEFAULT_TASK_QUEUE_TIMEOUT);
-    }
-
-    public ManagedProcessOfficeManager(File officeHome, File templateProfileDir, String acceptString, long taskQueueTimeout) {
-        managedOfficeProcess = new ManagedOfficeProcess(officeHome, templateProfileDir, acceptString);
+    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode, File officeHome, File templateProfileDir, long taskQueueTimeout) {
+        managedOfficeProcess = new ManagedOfficeProcess(officeHome, templateProfileDir, connectionMode);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
         taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY, taskQueueTimeout, TimeUnit.MILLISECONDS);
     }

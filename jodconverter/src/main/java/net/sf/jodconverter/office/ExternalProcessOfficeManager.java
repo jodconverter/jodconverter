@@ -42,18 +42,12 @@ import java.net.ConnectException;
  */
 public class ExternalProcessOfficeManager implements OfficeManager {
 
-    public static final String DEFAULT_CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
-    
     private final OfficeConnection connection;
 
     private boolean connectOnStart = true;
 
-    public ExternalProcessOfficeManager() {
-        this(DEFAULT_CONNECT_STRING);
-    }
-
-    public ExternalProcessOfficeManager(String connectString) {
-        connection = new OfficeConnection(connectString);
+    public ExternalProcessOfficeManager(OfficeConnectionMode connectionMode) {
+        connection = new OfficeConnection(connectionMode);
     }
 
     /**

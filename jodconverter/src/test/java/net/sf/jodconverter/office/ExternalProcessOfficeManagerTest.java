@@ -31,14 +31,14 @@ public class ExternalProcessOfficeManagerTest {
 
     public void executeTask() throws Exception {
         File officeHome = OfficeUtils.getDefaultOfficeHome();
-        String connectString = ExternalProcessOfficeManager.DEFAULT_CONNECT_STRING;
+        OfficeConnectionMode connectionMode = OfficeConnectionMode.socket(8100);
         File templateProfileDir = OfficeUtils.getDefaultProfileDir();
         
-        OfficeProcess officeProcess = new OfficeProcess(officeHome, connectString, templateProfileDir);
+        OfficeProcess officeProcess = new OfficeProcess(connectionMode, officeHome, templateProfileDir);
         officeProcess.start();
         Thread.sleep(2000);
         
-        ExternalProcessOfficeManager manager = new ExternalProcessOfficeManager();
+        ExternalProcessOfficeManager manager = new ExternalProcessOfficeManager(connectionMode);
         manager.start();
         
         MockOfficeTask task = new MockOfficeTask();

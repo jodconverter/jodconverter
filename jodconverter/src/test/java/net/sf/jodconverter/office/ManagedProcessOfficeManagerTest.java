@@ -24,7 +24,6 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-import java.io.File;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeoutException;
 
@@ -35,13 +34,11 @@ import org.testng.annotations.Test;
 @Test(groups="integration")
 public class ManagedProcessOfficeManagerTest {
 
-    private static final File OFFICE_HOME = OfficeUtils.getDefaultOfficeHome();
-    private static final File OFFICE_PROFILE = OfficeUtils.getDefaultProfileDir();
-    private static final String CONNECT_STRING = "socket,host=127.0.0.1,port=8100";
+    private static final OfficeConnectionMode CONNECTION_MODE = OfficeConnectionMode.socket(8100);
     private static final long RESTART_WAIT_TIME = 2 * 1000;
 
     public void executeTask() throws Exception {
-        ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(OFFICE_HOME, OFFICE_PROFILE, CONNECT_STRING);
+        ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(CONNECTION_MODE);
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
         OfficeConnection connection = (OfficeConnection) ReflectionUtils.getPrivateField(managedOfficeProcess, "connection");
@@ -61,7 +58,7 @@ public class ManagedProcessOfficeManagerTest {
     }
 
     public void restartAfterCrash() throws Exception {
-        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(OFFICE_HOME, OFFICE_PROFILE, CONNECT_STRING);
+        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(CONNECTION_MODE);
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
         OfficeConnection connection = (OfficeConnection) ReflectionUtils.getPrivateField(managedOfficeProcess, "connection");
@@ -103,7 +100,7 @@ public class ManagedProcessOfficeManagerTest {
     }
 
     public void restartAfterTaskTimeout() throws Exception {
-        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(OFFICE_HOME, OFFICE_PROFILE, CONNECT_STRING);
+        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(CONNECTION_MODE);
         officeManager.setTaskExecutionTimeout(1500);
         
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
@@ -138,7 +135,7 @@ public class ManagedProcessOfficeManagerTest {
     }
 
     public void restartWhenMaxTasksPerProcessReached() throws Exception {
-        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(OFFICE_HOME, OFFICE_PROFILE, CONNECT_STRING);
+        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(CONNECTION_MODE);
         officeManager.setMaxTasksPerProcess(3);
         
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");

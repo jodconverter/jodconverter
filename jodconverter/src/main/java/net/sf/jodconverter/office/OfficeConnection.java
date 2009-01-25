@@ -40,7 +40,7 @@ public class OfficeConnection implements OfficeContext {
 
     private static volatile int bridgeIndex = 0;
 
-    private final String connectString;
+    private final OfficeConnectionMode connectionMode;
 
     private XComponent bridgeComponent;
     private XMultiComponentFactory serviceManager;
@@ -53,7 +53,7 @@ public class OfficeConnection implements OfficeContext {
     private XEventListener bridgeListener = new XEventListener() {
         public void disposing(EventObject event) {
             connected = false;
-            logger.info(String.format("disconnected: '%s'", connectString));
+            logger.info(String.format("disconnected: '%s'", connectionMode));
             OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(OfficeConnection.this);
             for (OfficeConnectionEventListener listener : connectionEventListeners) {
                 listener.disconnected(connectionEvent);
@@ -63,8 +63,8 @@ public class OfficeConnection implements OfficeContext {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public OfficeConnection(String connectString) {
-        this.connectString = connectString;
+    public OfficeConnection(OfficeConnectionMode connectionMode) {
+        this.connectionMode = connectionMode;
     }
 
     public void addConnectionEventListener(OfficeConnectionEventListener connectionEventListener) {
@@ -72,12 +72,12 @@ public class OfficeConnection implements OfficeContext {
     }
 
     public void connect() throws ConnectException {
-        logger.fine(String.format("connecting with connectString '%s'", connectString));
+        logger.fine(String.format("connecting with connectString '%s'", connectionMode));
         try {
             XComponentContext localContext = Bootstrap.createInitialComponentContext(null);
             XMultiComponentFactory localServiceManager = localContext.getServiceManager();
             XConnector connector = OfficeUtils.cast(XConnector.class, localServiceManager.createInstanceWithContext("com.sun.star.connection.Connector", localContext));
-            XConnection connection = connector.connect(connectString);
+            XConnection connection = connector.connect(connectionMode.getConnectString());
             XBridgeFactory bridgeFactory = OfficeUtils.cast(XBridgeFactory.class, localServiceManager.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", localContext));
             String bridgeName = "jodconverter_" + bridgeIndex++;
             XBridge bridge = bridgeFactory.createBridge(bridgeName, "urp", connection, null);
@@ -87,15 +87,15 @@ public class OfficeConnection implements OfficeContext {
             XPropertySet properties = OfficeUtils.cast(XPropertySet.class, serviceManager);
             componentContext = OfficeUtils.cast(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
             connected = true;
-            logger.info(String.format("connected: '%s'", connectString));
+            logger.info(String.format("connected: '%s'", connectionMode));
             OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
             for (OfficeConnectionEventListener listener : connectionEventListeners) {
                 listener.connected(connectionEvent);
             }
         } catch (NoConnectException connectException) {
-            throw new ConnectException(String.format("connection failed: '%s'; %s", connectString, connectException.getMessage()));
+            throw new ConnectException(String.format("connection failed: '%s'; %s", connectionMode, connectException.getMessage()));
         } catch (Exception exception) {
-            throw new OfficeException("connection failed: "+ connectString, exception);
+            throw new OfficeException("connection failed: "+ connectionMode, exception);
         }
     }
 
@@ -104,7 +104,7 @@ public class OfficeConnection implements OfficeContext {
     }
 
     public synchronized void disconnect() {
-        logger.fine(String.format("disconnecting: '%s'", connectString));
+        logger.fine(String.format("disconnecting: '%s'", connectionMode));
         bridgeComponent.dispose();
     }
 

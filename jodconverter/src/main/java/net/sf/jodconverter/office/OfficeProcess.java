@@ -18,7 +18,10 @@
 //
 package net.sf.jodconverter.office;
 
-import static net.sf.jodconverter.util.UnixProcessUtils.*;
+import static net.sf.jodconverter.util.UnixProcessUtils.SIGNAL_KILL;
+import static net.sf.jodconverter.util.UnixProcessUtils.getUnixPid;
+import static net.sf.jodconverter.util.UnixProcessUtils.isUnixProcess;
+import static net.sf.jodconverter.util.UnixProcessUtils.killUnixProcess;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,37 +30,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import net.sf.jodconverter.util.OsUtils;
 import net.sf.jodconverter.util.RetryTimeoutException;
 import net.sf.jodconverter.util.Retryable;
 import net.sf.jodconverter.util.TemporaryException;
 import net.sf.jodconverter.util.UnixProcessException;
 
+import org.apache.commons.io.FileUtils;
+
 public class OfficeProcess {
 
     private final File officeHome;
-    private final String acceptString;
+    private final OfficeConnectionMode connectionMode;
     private final File profileDir;
 
     private Process process;
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public OfficeProcess(File officeHome, String acceptString) {
-        this(officeHome, acceptString, null);
+    public OfficeProcess(OfficeConnectionMode connectionMode, File officeHome) {
+        this(connectionMode, officeHome, null);
     }
 
-    public OfficeProcess(File officeHome, String acceptString, File profileDir) {
+    public OfficeProcess(OfficeConnectionMode connectionMode, File officeHome, File profileDir) {
+        this.connectionMode = connectionMode;
         this.officeHome = officeHome;
-        this.acceptString = acceptString;
         this.profileDir = profileDir;
     }
 
     public void start() throws IOException {
         List<String> command = new ArrayList<String>();
         command.add(new File(officeHome, getExecutablePath()).getAbsolutePath());
-        command.add("-accept=" + acceptString + ";urp;");
+        command.add("-accept=" + connectionMode.getAcceptString() + ";urp;");
         if (profileDir != null) {
             command.add("-env:UserInstallation=" + OfficeUtils.toUrl(profileDir));
         }
@@ -72,7 +76,7 @@ public class OfficeProcess {
         if (OsUtils.isWindows()) {
             addBasisAndUrePaths(processBuilder);
         }
-        logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", acceptString, profileDir));
+        logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", connectionMode, profileDir));
         process = processBuilder.start();
         int pid = -1;
         if (isUnixProcess(process)) {
@@ -164,7 +168,7 @@ public class OfficeProcess {
     }
 
     public int forciblyTerminate(long retryInterval, long retryTimeout) throws RetryTimeoutException {
-        logger.info(String.format("trying to forcibly terminate process: '%s'", acceptString));
+        logger.info(String.format("trying to forcibly terminate process: '%s'", connectionMode));
         process.destroy();
         try {
             return getExitCode(retryInterval, retryTimeout);

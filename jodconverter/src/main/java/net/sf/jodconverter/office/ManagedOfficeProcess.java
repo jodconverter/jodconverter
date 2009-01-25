@@ -53,7 +53,7 @@ public class ManagedOfficeProcess {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
     
-    public ManagedOfficeProcess(File officeHome, File templateProfileDir, String acceptString) throws OfficeException {
+    public ManagedOfficeProcess(File officeHome, File templateProfileDir, OfficeConnectionMode connectionMode) throws OfficeException {
         if (!officeHome.isDirectory()) {
             throw new IllegalArgumentException("officeHome doesn't exist: " + officeHome);
         }
@@ -61,9 +61,9 @@ public class ManagedOfficeProcess {
             throw new IllegalArgumentException("templateProfileDir doesn't exist: " + templateProfileDir);
         }
         this.templateProfileDir = templateProfileDir;
-        profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + acceptString.replace(',', '_').replace('=', '-'));
-        process = new OfficeProcess(officeHome, acceptString, profileDir);
-        connection = new OfficeConnection(acceptString);
+        profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + connectionMode.toString().replace(',', '_').replace('=', '-'));
+        process = new OfficeProcess(connectionMode, officeHome, profileDir);
+        connection = new OfficeConnection(connectionMode);
     }
 
     private void recreateProfileDir() throws OfficeException {

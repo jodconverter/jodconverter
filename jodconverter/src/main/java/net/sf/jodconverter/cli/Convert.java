@@ -21,6 +21,14 @@ package net.sf.jodconverter.cli;
 import java.io.File;
 import java.io.IOException;
 
+import net.sf.jodconverter.DefaultDocumentFormatRegistry;
+import net.sf.jodconverter.DocumentFormatRegistry;
+import net.sf.jodconverter.OfficeDocumentConverter;
+import net.sf.jodconverter.json.JsonDocumentFormatRegistry;
+import net.sf.jodconverter.office.ManagedProcessOfficeManager;
+import net.sf.jodconverter.office.OfficeConnectionMode;
+import net.sf.jodconverter.office.OfficeManager;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -30,13 +38,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import net.sf.jodconverter.DefaultDocumentFormatRegistry;
-import net.sf.jodconverter.DocumentFormatRegistry;
-import net.sf.jodconverter.OfficeDocumentConverter;
-import net.sf.jodconverter.json.JsonDocumentFormatRegistry;
-import net.sf.jodconverter.office.ManagedProcessOfficeManager;
-import net.sf.jodconverter.office.OfficeManager;
-import net.sf.jodconverter.office.OfficeUtils;
 import org.json.JSONException;
 
 /**
@@ -94,7 +95,7 @@ public class Convert {
             registry = new DefaultDocumentFormatRegistry();
         }
         
-        OfficeManager officeManager = getOfficeManager(port);
+        OfficeManager officeManager = new ManagedProcessOfficeManager(OfficeConnectionMode.socket(port));
         officeManager.start();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
         try {
@@ -113,11 +114,6 @@ public class Convert {
         } finally {
             officeManager.stop();
         }
-    }
-
-    private static OfficeManager getOfficeManager(int port) {
-        String acceptString = "socket,host=127.0.0.1,port=" + port;
-        return new ManagedProcessOfficeManager(OfficeUtils.getDefaultOfficeHome(), OfficeUtils.getDefaultProfileDir(), acceptString);
     }
     
 }
