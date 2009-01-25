@@ -12,8 +12,12 @@
     <param-value>5242880</param-value><!-- 5MB -->
   </context-param>
 
-  <!-- uncomment and edit if using non standard locations -->
+  <!-- uncomment and edit if needed -->
   <!--
+  <context-param>
+    <param-name>office.port</param-name>
+    <param-value>8100</param-value>
+  </context-param>
   <context-param>
     <param-name>office.home</param-name>
     <param-value>/opt/openoffice.org3</param-value>

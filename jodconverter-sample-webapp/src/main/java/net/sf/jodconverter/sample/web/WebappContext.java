@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 
 import net.sf.jodconverter.OfficeDocumentConverter;
 import net.sf.jodconverter.office.ManagedProcessOfficeManager;
+import net.sf.jodconverter.office.OfficeConnectionMode;
 import net.sf.jodconverter.office.OfficeManager;
 import net.sf.jodconverter.office.OfficeUtils;
 
@@ -15,6 +16,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 public class WebappContext {
 
+    public static final String PARAMETER_OFFICE_PORT = "office.port";
 	public static final String PARAMETER_OFFICE_HOME = "office.home";
 	public static final String PARAMETER_OFFICE_PROFILE = "office.profile";
 	public static final String PARAMETER_FILEUPLOAD_FILE_SIZE_MAX = "fileupload.fileSizeMax";
@@ -39,12 +41,14 @@ public class WebappContext {
 			logger.warning("max file upload size not set");
 		}
 
+		String officePortParam = servletContext.getInitParameter(PARAMETER_OFFICE_PORT);
+		int officePort = officePortParam != null ? Integer.parseInt(officePortParam) : 8100;
 		String officeHomeParam = servletContext.getInitParameter(PARAMETER_OFFICE_HOME);
 		File officeHome = officeHomeParam != null ? new File(officeHomeParam) : OfficeUtils.getDefaultOfficeHome();
 		String officeProfileParam = servletContext.getInitParameter(PARAMETER_OFFICE_PROFILE);
 		File officeProfile = officeProfileParam != null ? new File(officeProfileParam) : OfficeUtils.getDefaultProfileDir();
 		
-		ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(officeHome, officeProfile);
+		ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(OfficeConnectionMode.socket(officePort), officeHome, officeProfile);
 		officeManager.setMaxTasksPerProcess(50);
 		officeManager.setTaskExecutionTimeout(30000L);
 		this.officeManager = officeManager;
