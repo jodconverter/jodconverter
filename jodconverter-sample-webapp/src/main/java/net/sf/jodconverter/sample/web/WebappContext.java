@@ -46,9 +46,11 @@ public class WebappContext {
 		String officeHomeParam = servletContext.getInitParameter(PARAMETER_OFFICE_HOME);
 		File officeHome = officeHomeParam != null ? new File(officeHomeParam) : OfficeUtils.getDefaultOfficeHome();
 		String officeProfileParam = servletContext.getInitParameter(PARAMETER_OFFICE_PROFILE);
-		File officeProfile = officeProfileParam != null ? new File(officeProfileParam) : OfficeUtils.getDefaultProfileDir();
-		
-		ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(OfficeConnectionMode.socket(officePort), officeHome, officeProfile);
+
+		ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(OfficeConnectionMode.socket(officePort), officeHome);
+		if (officeProfileParam != null) {
+		    officeManager.setTemplateProfileDir(new File(officeProfileParam));
+		}
 		officeManager.setMaxTasksPerProcess(50);
 		officeManager.setTaskExecutionTimeout(30000L);
 		this.officeManager = officeManager;
