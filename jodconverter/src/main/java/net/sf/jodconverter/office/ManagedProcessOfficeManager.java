@@ -73,17 +73,17 @@ public class ManagedProcessOfficeManager implements OfficeManager {
     }
 
     public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode, File officeHome) {
-        this(connectionMode, officeHome, OfficeUtils.getDefaultProfileDir());
+        this(connectionMode, officeHome, DEFAULT_TASK_QUEUE_TIMEOUT);
     }
 
-    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode, File officeHome, File templateProfileDir) {
-        this(connectionMode, officeHome, templateProfileDir, DEFAULT_TASK_QUEUE_TIMEOUT);
-    }
-
-    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode, File officeHome, File templateProfileDir, long taskQueueTimeout) {
-        managedOfficeProcess = new ManagedOfficeProcess(officeHome, templateProfileDir, connectionMode);
+    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode, File officeHome, long taskQueueTimeout) {
+        managedOfficeProcess = new ManagedOfficeProcess(officeHome, connectionMode);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
         taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY, taskQueueTimeout, TimeUnit.MILLISECONDS);
+    }
+
+    public void setTemplateProfileDir(File templateProfileDir) {
+        managedOfficeProcess.setTemplateProfileDir(templateProfileDir);
     }
 
     /**

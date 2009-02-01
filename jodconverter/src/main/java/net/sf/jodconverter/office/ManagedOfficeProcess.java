@@ -45,39 +45,41 @@ public class ManagedOfficeProcess {
 
     private final OfficeProcess process;
     private final OfficeConnection connection;
-
-    private final File templateProfileDir;
     private final File profileDir;
+
+    private File templateProfileDir;
 
     private ExecutorService executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
 
     private final Logger logger = Logger.getLogger(getClass().getName());
-    
-    public ManagedOfficeProcess(File officeHome, File templateProfileDir, OfficeConnectionMode connectionMode) throws OfficeException {
+
+    public ManagedOfficeProcess(File officeHome, OfficeConnectionMode connectionMode) throws OfficeException {
         if (!officeHome.isDirectory()) {
             throw new IllegalArgumentException("officeHome doesn't exist: " + officeHome);
         }
-        if (!templateProfileDir.isDirectory()) {
+        if (templateProfileDir != null && !templateProfileDir.isDirectory()) {
             throw new IllegalArgumentException("templateProfileDir doesn't exist: " + templateProfileDir);
         }
-        this.templateProfileDir = templateProfileDir;
         profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + connectionMode.getAcceptString().replace(',', '_').replace('=', '-'));
         process = new OfficeProcess(connectionMode, officeHome, profileDir);
         connection = new OfficeConnection(connectionMode);
     }
 
-    private void recreateProfileDir() throws OfficeException {
-        if (!templateProfileDir.exists()) {
-            throw new IllegalStateException("template profile dir does not exist: " + templateProfileDir);
-        }
+    public void setTemplateProfileDir(File templateProfileDir) {
+        this.templateProfileDir = templateProfileDir;
+    }
+
+    private void prepareProfileDir() throws OfficeException {
         if (profileDir.exists()) {
             logger.warning(String.format("profile dir '%s' already exists; deleting", profileDir));
             doDeleteProfileDir();
         }
-        try {
-            FileUtils.copyDirectory(templateProfileDir, profileDir);
-        } catch (IOException ioException) {
-            throw new OfficeException("failed to create profileDir", ioException);
+        if (templateProfileDir != null) {
+            try {
+                FileUtils.copyDirectory(templateProfileDir, profileDir);
+            } catch (IOException ioException) {
+                throw new OfficeException("failed to create profileDir", ioException);
+            }
         }
     }
 
@@ -144,7 +146,7 @@ public class ManagedOfficeProcess {
     }
 
     private void doStartProcessAndConnect() throws OfficeException {
-        recreateProfileDir();
+        prepareProfileDir();
         try {
             process.start();
             new Retryable() {

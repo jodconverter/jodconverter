@@ -68,7 +68,7 @@ public class OfficeProcess {
         command.add("-headless");
         command.add("-nocrashreport");
         command.add("-nodefault");
-        //command.add("-nofirststartwizard");
+        command.add("-nofirststartwizard");
         command.add("-nolockcheck");
         command.add("-nologo");
         command.add("-norestore");
