@@ -56,6 +56,9 @@ public abstract class AbstractConversionTask implements OfficeTask {
         try {
             Map<String,?> loadProperties = getLoadProperties(inputFile);
             document = loader.loadComponentFromURL(toUrl(inputFile), "_blank", 0, toUnoProperties(loadProperties));
+            if (document == null) {
+                throw new OfficeException("input document could not be loaded: " + inputFile);
+            }
             XRefreshable refreshable = cast(XRefreshable.class, document);
             if (refreshable != null) {
                 refreshable.refresh();
@@ -67,10 +70,17 @@ public abstract class AbstractConversionTask implements OfficeTask {
         } catch (IllegalArgumentException illegalArgumentException) {
             throw new OfficeException("conversion failed", illegalArgumentException);
         } finally {
-            try {
-                cast(XCloseable.class, document).close(true);
-            } catch (CloseVetoException closeVetoException) {
-                // whoever raised the veto should close the document
+            if (document != null) {
+                XCloseable closeable = cast(XCloseable.class, document);
+                if (closeable != null) {
+                    try {
+                        closeable.close(true);
+                    } catch (CloseVetoException closeVetoException) {
+                        // whoever raised the veto should close the document
+                    }
+                } else {
+                    document.dispose();
+                }
             }
         }
     }
