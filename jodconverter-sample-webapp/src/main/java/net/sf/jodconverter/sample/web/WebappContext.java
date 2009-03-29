@@ -7,9 +7,9 @@ import javax.servlet.ServletContext;
 
 import net.sf.jodconverter.OfficeDocumentConverter;
 import net.sf.jodconverter.office.ManagedProcessOfficeManager;
+import net.sf.jodconverter.office.ManagedProcessOfficeManagerConfiguration;
 import net.sf.jodconverter.office.OfficeConnectionMode;
 import net.sf.jodconverter.office.OfficeManager;
-import net.sf.jodconverter.office.OfficeUtils;
 
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -41,19 +41,23 @@ public class WebappContext {
 			logger.warning("max file upload size not set");
 		}
 
+		int officePort = 8100;
 		String officePortParam = servletContext.getInitParameter(PARAMETER_OFFICE_PORT);
-		int officePort = officePortParam != null ? Integer.parseInt(officePortParam) : 8100;
-		String officeHomeParam = servletContext.getInitParameter(PARAMETER_OFFICE_HOME);
-		File officeHome = officeHomeParam != null ? new File(officeHomeParam) : OfficeUtils.getDefaultOfficeHome();
-		String officeProfileParam = servletContext.getInitParameter(PARAMETER_OFFICE_PROFILE);
-
-		ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(OfficeConnectionMode.socket(officePort), officeHome);
-		if (officeProfileParam != null) {
-		    officeManager.setTemplateProfileDir(new File(officeProfileParam));
+		if (officePortParam != null) {
+		    officePort = Integer.parseInt(officePortParam);
 		}
-		officeManager.setMaxTasksPerProcess(50);
-		officeManager.setTaskExecutionTimeout(30000L);
-		this.officeManager = officeManager;
+		OfficeConnectionMode connectionMode = OfficeConnectionMode.socket(officePort);
+        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(connectionMode);
+		String officeHomeParam = servletContext.getInitParameter(PARAMETER_OFFICE_HOME);
+		if (officeHomeParam != null) {
+		    configuration.setOfficeHome(new File(officeHomeParam));
+		}
+		String officeProfileParam = servletContext.getInitParameter(PARAMETER_OFFICE_PROFILE);
+		if (officeProfileParam != null) {
+		    configuration.setTemplateProfileDir(new File(officeProfileParam));
+		}
+
+		officeManager = new ManagedProcessOfficeManager(configuration);
 		documentConverter = new OfficeDocumentConverter(officeManager);
 	}
 
