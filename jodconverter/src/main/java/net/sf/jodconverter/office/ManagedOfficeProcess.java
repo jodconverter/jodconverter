@@ -36,37 +36,37 @@ import net.sf.jodconverter.util.TemporaryException;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.DisposedException;
 
-public class ManagedOfficeProcess {
+class ManagedOfficeProcess {
 
     private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("ManagedOfficeProcessThread");
 
-    private static final long RETRY_INTERVAL = 250;
-    private static final long RETRY_TIMEOUT = 30 * 1000;
+    private final ManagedOfficeProcessConfiguration configuration;
 
     private final OfficeProcess process;
     private final OfficeConnection connection;
     private final File profileDir;
 
-    private File templateProfileDir;
-
     private ExecutorService executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public ManagedOfficeProcess(File officeHome, OfficeConnectionMode connectionMode) throws OfficeException {
-        if (!officeHome.isDirectory()) {
-            throw new IllegalArgumentException("officeHome doesn't exist: " + officeHome);
-        }
-        if (templateProfileDir != null && !templateProfileDir.isDirectory()) {
-            throw new IllegalArgumentException("templateProfileDir doesn't exist: " + templateProfileDir);
-        }
-        profileDir = new File(System.getProperty("java.io.tmpdir"), ".jodconverter_" + connectionMode.getAcceptString().replace(',', '_').replace('=', '-'));
-        process = new OfficeProcess(connectionMode, officeHome, profileDir);
-        connection = new OfficeConnection(connectionMode);
+    public ManagedOfficeProcess(ManagedOfficeProcessConfiguration configuration) throws OfficeException {
+        // TODO validate configuration (here or in ManagedProcessOfficeManager?)
+//        if (!officeHome.isDirectory()) {
+//            throw new IllegalArgumentException("officeHome doesn't exist: " + officeHome);
+//        }
+//        if (templateProfileDir != null && !templateProfileDir.isDirectory()) {
+//            throw new IllegalArgumentException("templateProfileDir doesn't exist: " + templateProfileDir);
+//        }
+        this.configuration = configuration;
+        profileDir = getProfileDir(configuration.getConnectionMode());
+        process = new OfficeProcess(configuration.getConnectionMode(), configuration.getOfficeHome(), profileDir);
+        connection = new OfficeConnection(configuration.getConnectionMode());
     }
 
-    public void setTemplateProfileDir(File templateProfileDir) {
-        this.templateProfileDir = templateProfileDir;
+    private File getProfileDir(OfficeConnectionMode connectionMode) {
+        String dirName = ".jodconverter_" + connectionMode.getAcceptString().replace(',', '_').replace('=', '-');
+        return new File(System.getProperty("java.io.tmpdir"), dirName);
     }
 
     private void prepareProfileDir() throws OfficeException {
@@ -74,9 +74,9 @@ public class ManagedOfficeProcess {
             logger.warning(String.format("profile dir '%s' already exists; deleting", profileDir));
             doDeleteProfileDir();
         }
-        if (templateProfileDir != null) {
+        if (configuration.getTemplateProfileDir() != null) {
             try {
-                FileUtils.copyDirectory(templateProfileDir, profileDir);
+                FileUtils.copyDirectory(configuration.getTemplateProfileDir(), profileDir);
             } catch (IOException ioException) {
                 throw new OfficeException("failed to create profileDir", ioException);
             }
@@ -157,7 +157,7 @@ public class ManagedOfficeProcess {
                         throw new TemporaryException(connectException);
                     }
                 }
-            }.execute(RETRY_INTERVAL, RETRY_TIMEOUT);
+            }.execute(configuration.getRetryInterval(), configuration.getRetryTimeout());
         } catch (Exception exception) {
             throw new OfficeException("could not establish connection", exception);
         }
@@ -185,7 +185,7 @@ public class ManagedOfficeProcess {
 
     private void doEnsureProcessExited() throws OfficeException {
         try {
-            int exitCode = process.getExitCode(RETRY_INTERVAL, RETRY_TIMEOUT);
+            int exitCode = process.getExitCode(configuration.getRetryInterval(), configuration.getRetryTimeout());
             logger.info("process exited with code " + exitCode);
         } catch (RetryTimeoutException retryTimeoutException) {
             doTerminateProcess();
@@ -195,7 +195,7 @@ public class ManagedOfficeProcess {
 
     private void doTerminateProcess() {
         try {
-            int exitCode = process.forciblyTerminate(RETRY_INTERVAL, RETRY_TIMEOUT);
+            int exitCode = process.forciblyTerminate(configuration.getRetryInterval(), configuration.getRetryTimeout());
             logger.info("process forcibly terminated with code " + exitCode);
         } catch (RetryTimeoutException retryTimeoutException) {
             throw new OfficeException("could not terminate process", retryTimeoutException);

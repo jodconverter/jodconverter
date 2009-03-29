@@ -38,7 +38,7 @@ import net.sf.jodconverter.util.UnixProcessException;
 
 import org.apache.commons.io.FileUtils;
 
-public class OfficeProcess {
+class OfficeProcess {
 
     private final File officeHome;
     private final OfficeConnectionMode connectionMode;

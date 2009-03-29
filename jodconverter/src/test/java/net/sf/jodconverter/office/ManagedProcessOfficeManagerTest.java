@@ -100,8 +100,9 @@ public class ManagedProcessOfficeManagerTest {
     }
 
     public void restartAfterTaskTimeout() throws Exception {
-        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(CONNECTION_MODE);
-        officeManager.setTaskExecutionTimeout(1500);
+        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(CONNECTION_MODE);
+        configuration.setTaskExecutionTimeout(1500L);
+        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(configuration);
         
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
@@ -135,8 +136,9 @@ public class ManagedProcessOfficeManagerTest {
     }
 
     public void restartWhenMaxTasksPerProcessReached() throws Exception {
-        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(CONNECTION_MODE);
-        officeManager.setMaxTasksPerProcess(3);
+        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(CONNECTION_MODE);
+        configuration.setMaxTasksPerProcess(3);
+        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(configuration);
         
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");

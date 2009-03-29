@@ -20,7 +20,7 @@ package net.sf.jodconverter.office;
 
 import java.util.EventListener;
 
-public interface OfficeConnectionEventListener extends EventListener {
+interface OfficeConnectionEventListener extends EventListener {
 
     void connected(OfficeConnectionEvent event);
 

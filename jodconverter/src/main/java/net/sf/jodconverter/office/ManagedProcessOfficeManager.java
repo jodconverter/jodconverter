@@ -18,7 +18,6 @@
 //
 package net.sf.jodconverter.office;
 
-import java.io.File;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -30,15 +29,9 @@ import net.sf.jodconverter.util.SuspendableThreadPoolExecutor;
 
 public class ManagedProcessOfficeManager implements OfficeManager {
 
-    private static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30 * 1000;
-    private static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120 * 1000;
-    private static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
-
     private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("OfficeManagerThread");
 
-    private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
-    private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
-
+    private final ManagedProcessOfficeManagerConfiguration configuration;
     private final ManagedOfficeProcess managedOfficeProcess;
     private final SuspendableThreadPoolExecutor taskExecutor;
 
@@ -69,42 +62,21 @@ public class ManagedProcessOfficeManager implements OfficeManager {
     };
 
     public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode) {
-        this(connectionMode, OfficeUtils.getDefaultOfficeHome());
+        this(new ManagedProcessOfficeManagerConfiguration(connectionMode));
     }
 
-    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode, File officeHome) {
-        this(connectionMode, officeHome, DEFAULT_TASK_QUEUE_TIMEOUT);
-    }
-
-    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode, File officeHome, long taskQueueTimeout) {
-        managedOfficeProcess = new ManagedOfficeProcess(officeHome, connectionMode);
+    public ManagedProcessOfficeManager(ManagedProcessOfficeManagerConfiguration configuration) {
+        this.configuration = configuration;
+        managedOfficeProcess = new ManagedOfficeProcess(configuration);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
-        taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY, taskQueueTimeout, TimeUnit.MILLISECONDS);
-    }
-
-    public void setTemplateProfileDir(File templateProfileDir) {
-        managedOfficeProcess.setTemplateProfileDir(templateProfileDir);
-    }
-
-    /**
-     * @param taskExecutionTimeout defaults to 2 minutes
-     */
-    public void setTaskExecutionTimeout(long taskExecutionTimeout) {
-        this.taskExecutionTimeout = taskExecutionTimeout;
-    }
-
-    /**
-     * @param maxTasksPerProcess defaults to 200; 0 means unlimited
-     */
-    public void setMaxTasksPerProcess(int maxTasksPerProcess) {
-        this.maxTasksPerProcess = maxTasksPerProcess;
+        taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY, configuration.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
     }
 
     public void execute(final OfficeTask task) throws OfficeException {
         Future<?> futureTask = taskExecutor.submit(new Runnable() {
             public void run() {
-                if (maxTasksPerProcess > 0 && ++taskCount == maxTasksPerProcess + 1) {
-                    logger.info(String.format("reached limit of %d maxTasksPerProcess: restarting", maxTasksPerProcess));
+                if (configuration.getMaxTasksPerProcess() > 0 && ++taskCount == configuration.getMaxTasksPerProcess() + 1) {
+                    logger.info(String.format("reached limit of %d maxTasksPerProcess: restarting", configuration.getMaxTasksPerProcess()));
                     taskExecutor.setAvailable(false);
                     stopping = true;
                     managedOfficeProcess.restartAndWait();
@@ -115,7 +87,7 @@ public class ManagedProcessOfficeManager implements OfficeManager {
          });
          currentTask = futureTask;
          try {
-             futureTask.get(taskExecutionTimeout, TimeUnit.MILLISECONDS);
+             futureTask.get(configuration.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
          } catch (TimeoutException timeoutException) {
              managedOfficeProcess.restartDueToTaskTimeout();
              throw new OfficeException("task did not complete within timeout", timeoutException);

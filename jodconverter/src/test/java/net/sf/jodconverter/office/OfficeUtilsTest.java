@@ -23,7 +23,7 @@ import static org.testng.Assert.*;
 
 import java.io.File;
 
-public class UnoUtilsTest {
+public class OfficeUtilsTest {
 
     public void testToUrl() {
         //TODO create separate tests for Windows

@@ -20,7 +20,7 @@ package net.sf.jodconverter.office;
 
 import java.util.EventObject;
 
-public class OfficeConnectionEvent extends EventObject {
+class OfficeConnectionEvent extends EventObject {
 
     private static final long serialVersionUID = 2060652797570876077L;
 

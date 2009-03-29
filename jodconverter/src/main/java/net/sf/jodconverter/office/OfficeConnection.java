@@ -36,7 +36,7 @@ import com.sun.star.lang.XEventListener;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uno.XComponentContext;
 
-public class OfficeConnection implements OfficeContext {
+class OfficeConnection implements OfficeContext {
 
     private static volatile int bridgeIndex = 0;
 
