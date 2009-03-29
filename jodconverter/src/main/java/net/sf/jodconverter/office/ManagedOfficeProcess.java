@@ -27,11 +27,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import net.sf.jodconverter.util.NamedThreadFactory;
 import net.sf.jodconverter.util.RetryTimeoutException;
 import net.sf.jodconverter.util.Retryable;
 import net.sf.jodconverter.util.TemporaryException;
+
+import org.apache.commons.io.FileUtils;
 
 import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.DisposedException;
@@ -60,7 +61,7 @@ class ManagedOfficeProcess {
 //        }
         this.configuration = configuration;
         profileDir = getProfileDir(configuration.getConnectionMode());
-        process = new OfficeProcess(configuration.getConnectionMode(), configuration.getOfficeHome(), profileDir);
+        process = new OfficeProcess(configuration, profileDir);
         connection = new OfficeConnection(configuration.getConnectionMode());
     }
 
@@ -197,8 +198,8 @@ class ManagedOfficeProcess {
         try {
             int exitCode = process.forciblyTerminate(configuration.getRetryInterval(), configuration.getRetryTimeout());
             logger.info("process forcibly terminated with code " + exitCode);
-        } catch (RetryTimeoutException retryTimeoutException) {
-            throw new OfficeException("could not terminate process", retryTimeoutException);
+        } catch (Exception exception) {
+            throw new OfficeException("could not terminate process", exception);
         }
     }
 

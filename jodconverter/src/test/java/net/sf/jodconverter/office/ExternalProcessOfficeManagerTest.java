@@ -19,9 +19,6 @@
 package net.sf.jodconverter.office;
 
 import static org.testng.Assert.assertTrue;
-
-import java.io.File;
-
 import net.sf.jodconverter.util.ReflectionUtils;
 
 import org.testng.annotations.Test;
@@ -30,11 +27,8 @@ import org.testng.annotations.Test;
 public class ExternalProcessOfficeManagerTest {
 
     public void executeTask() throws Exception {
-        File officeHome = OfficeUtils.getDefaultOfficeHome();
         OfficeConnectionMode connectionMode = OfficeConnectionMode.socket(8100);
-        File templateProfileDir = OfficeUtils.getDefaultProfileDir();
-        
-        OfficeProcess officeProcess = new OfficeProcess(connectionMode, officeHome, templateProfileDir);
+        OfficeProcess officeProcess = new OfficeProcess(new OfficeProcessConfiguration(connectionMode));
         officeProcess.start();
         Thread.sleep(2000);
         

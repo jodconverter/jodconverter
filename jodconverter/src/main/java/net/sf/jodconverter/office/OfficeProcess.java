@@ -18,47 +18,49 @@
 //
 package net.sf.jodconverter.office;
 
-import static net.sf.jodconverter.util.UnixProcessUtils.SIGNAL_KILL;
-import static net.sf.jodconverter.util.UnixProcessUtils.getUnixPid;
-import static net.sf.jodconverter.util.UnixProcessUtils.isUnixProcess;
-import static net.sf.jodconverter.util.UnixProcessUtils.killUnixProcess;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
+import net.sf.jodconverter.process.ProcessManager;
 import net.sf.jodconverter.util.OsUtils;
 import net.sf.jodconverter.util.RetryTimeoutException;
 import net.sf.jodconverter.util.Retryable;
 import net.sf.jodconverter.util.TemporaryException;
-import net.sf.jodconverter.util.UnixProcessException;
 
 import org.apache.commons.io.FileUtils;
 
 class OfficeProcess {
 
-    private final File officeHome;
     private final OfficeConnectionMode connectionMode;
+    private final File officeHome;
     private final File profileDir;
+    private final ProcessManager processManager;
 
     private Process process;
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public OfficeProcess(OfficeConnectionMode connectionMode, File officeHome) {
-        this(connectionMode, officeHome, null);
+    public OfficeProcess(OfficeProcessConfiguration configuration) {
+        this(configuration, null);
     }
 
-    public OfficeProcess(OfficeConnectionMode connectionMode, File officeHome, File profileDir) {
-        this.connectionMode = connectionMode;
-        this.officeHome = officeHome;
+    public OfficeProcess(OfficeProcessConfiguration configuration, File profileDir) {
+        this.connectionMode = configuration.getConnectionMode();
+        this.officeHome = configuration.getOfficeHome();
         this.profileDir = profileDir;
+        this.processManager = configuration.getProcessManager();
     }
 
     public void start() throws IOException {
+        String existingPid = processManager.findPid("soffice.*" + Pattern.quote(connectionMode.getAcceptString()));
+        if (existingPid != null) {
+            throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %s", connectionMode.getAcceptString(), existingPid));
+        }
         List<String> command = new ArrayList<String>();
         command.add(new File(officeHome, getExecutablePath()).getAbsolutePath());
         command.add("-accept=" + connectionMode.getAcceptString() + ";urp;");
@@ -78,15 +80,7 @@ class OfficeProcess {
         }
         logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", connectionMode, profileDir));
         process = processBuilder.start();
-        int pid = -1;
-        if (isUnixProcess(process)) {
-            try {
-                pid = getUnixPid(process);
-            } catch (UnixProcessException unixProcessException) {
-                // pass
-            }
-        }
-        logger.info("started process; pid " + pid);
+        logger.info("started process; pid " + processManager.getPid(process));
     }
 
     private String getExecutablePath() {
@@ -167,25 +161,10 @@ class OfficeProcess {
         }
     }
 
-    public int forciblyTerminate(long retryInterval, long retryTimeout) throws RetryTimeoutException {
+    public int forciblyTerminate(long retryInterval, long retryTimeout) throws IOException, RetryTimeoutException {
         logger.info(String.format("trying to forcibly terminate process: '%s'", connectionMode));
-        process.destroy();
-        try {
-            return getExitCode(retryInterval, retryTimeout);
-        } catch (RetryTimeoutException retryTimeoutException) {
-            if (isUnixProcess(process)) {
-                logger.warning(String.format("process still did not exit; sending KILL signal"));
-                try {
-                    killUnixProcess(process, SIGNAL_KILL);
-                    return getExitCode(retryInterval, retryTimeout);
-                } catch (UnixProcessException unixProcessException) {
-                    logger.warning("could not kill process: " + unixProcessException.getMessage());
-                    throw retryTimeoutException;
-                }
-            } else {
-                throw retryTimeoutException;
-            }
-        }
+        processManager.kill(process);
+        return getExitCode(retryInterval, retryTimeout);
     }
 
 }
