@@ -38,6 +38,7 @@ class OfficeProcess {
 
     private final OfficeConnectionMode connectionMode;
     private final File officeHome;
+    private final File templateProfileDir;
     private final File profileDir;
     private final ProcessManager processManager;
 
@@ -46,13 +47,10 @@ class OfficeProcess {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     public OfficeProcess(OfficeProcessConfiguration configuration) {
-        this(configuration, null);
-    }
-
-    public OfficeProcess(OfficeProcessConfiguration configuration, File profileDir) {
         this.connectionMode = configuration.getConnectionMode();
         this.officeHome = configuration.getOfficeHome();
-        this.profileDir = profileDir;
+        this.templateProfileDir = configuration.getTemplateProfileDir();
+        this.profileDir = getProfileDir(configuration.getConnectionMode());
         this.processManager = configuration.getProcessManager();
     }
 
@@ -61,12 +59,11 @@ class OfficeProcess {
         if (existingPid != null) {
             throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %s", connectionMode.getAcceptString(), existingPid));
         }
+        prepareProfileDir();
         List<String> command = new ArrayList<String>();
         command.add(new File(officeHome, getExecutablePath()).getAbsolutePath());
         command.add("-accept=" + connectionMode.getAcceptString() + ";urp;");
-        if (profileDir != null) {
-            command.add("-env:UserInstallation=" + OfficeUtils.toUrl(profileDir));
-        }
+        command.add("-env:UserInstallation=" + OfficeUtils.toUrl(profileDir));
         command.add("-headless");
         command.add("-nocrashreport");
         command.add("-nodefault");
@@ -81,6 +78,35 @@ class OfficeProcess {
         logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", connectionMode, profileDir));
         process = processBuilder.start();
         logger.info("started process; pid " + processManager.getPid(process));
+    }
+
+    private File getProfileDir(OfficeConnectionMode connectionMode) {
+        String dirName = ".jodconverter_" + connectionMode.getAcceptString().replace(',', '_').replace('=', '-');
+        return new File(System.getProperty("java.io.tmpdir"), dirName);
+    }
+
+    private void prepareProfileDir() throws OfficeException {
+        if (profileDir.exists()) {
+            logger.warning(String.format("profile dir '%s' already exists; deleting", profileDir));
+            deleteProfileDir();
+        }
+        if (templateProfileDir != null) {
+            try {
+                FileUtils.copyDirectory(templateProfileDir, profileDir);
+            } catch (IOException ioException) {
+                throw new OfficeException("failed to create profileDir", ioException);
+            }
+        }
+    }
+
+    public void deleteProfileDir() {
+        if (profileDir != null) {
+            try {
+                FileUtils.deleteDirectory(profileDir);
+            } catch (IOException ioException) {
+                logger.warning(ioException.getMessage());
+            }
+        }
     }
 
     private String getExecutablePath() {

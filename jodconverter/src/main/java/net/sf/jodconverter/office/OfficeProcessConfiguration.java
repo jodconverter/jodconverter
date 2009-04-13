@@ -10,6 +10,7 @@ class OfficeProcessConfiguration {
     private final OfficeConnectionMode connectionMode;
 
     private File officeHome = OfficeUtils.getDefaultOfficeHome();
+    private File templateProfileDir;
     private ProcessManager processManager = new PureJavaProcessManager();
 
     public OfficeProcessConfiguration(OfficeConnectionMode connectionMode) {
@@ -26,6 +27,14 @@ class OfficeProcessConfiguration {
 
     public void setOfficeHome(File officeHome) {
         this.officeHome = officeHome;
+    }
+
+    public File getTemplateProfileDir() {
+        return templateProfileDir;
+    }
+
+    public void setTemplateProfileDir(File templateProfileDir) {
+        this.templateProfileDir = templateProfileDir;
     }
 
     public ProcessManager getProcessManager() {
