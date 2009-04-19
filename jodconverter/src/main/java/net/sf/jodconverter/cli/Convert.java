@@ -26,6 +26,7 @@ import net.sf.jodconverter.DocumentFormatRegistry;
 import net.sf.jodconverter.OfficeDocumentConverter;
 import net.sf.jodconverter.json.JsonDocumentFormatRegistry;
 import net.sf.jodconverter.office.ManagedProcessOfficeManager;
+import net.sf.jodconverter.office.ManagedProcessOfficeManagerConfiguration;
 import net.sf.jodconverter.office.OfficeConnectionMode;
 import net.sf.jodconverter.office.OfficeManager;
 
@@ -95,7 +96,10 @@ public class Convert {
             registry = new DefaultDocumentFormatRegistry();
         }
         
-        OfficeManager officeManager = new ManagedProcessOfficeManager(OfficeConnectionMode.socket(port));
+        OfficeConnectionMode connectionMode = OfficeConnectionMode.socket(port);
+        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(connectionMode);
+        configuration.setTaskExecutionTimeout(Long.MAX_VALUE);
+        OfficeManager officeManager = new ManagedProcessOfficeManager(configuration);
         officeManager.start();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
         try {
