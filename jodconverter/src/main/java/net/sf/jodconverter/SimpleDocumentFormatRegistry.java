@@ -36,13 +36,26 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
             return null;
         }
         String lowerExtension = extension.toLowerCase();
-        //TODO create a documentByExtension map instead
+        //TODO keep a documentByExtension map instead
 		for (DocumentFormat format : documentFormats) {
 			if (format.getExtension().equals(lowerExtension)) {
 				return format;
 			}
 		}
 		return null;
+	}
+
+	public DocumentFormat getFormatByMediaType(String mediaType) {
+        if (mediaType == null) {
+            return null;
+        }
+        //TODO keep a documentByMediaType map instead
+        for (DocumentFormat format : documentFormats) {
+            if (format.getMediaType().equals(mediaType)) {
+                return format;
+            }
+        }
+	    return null;
 	}
 
 	public Set<DocumentFormat> getOutputFormats(DocumentFamily family) {
