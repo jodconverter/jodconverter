@@ -23,5 +23,12 @@
         <include>jodconverter-${project.version}-sources.jar</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>src/main/resources</directory>
+      <outputDirectory>/conf</outputDirectory>
+      <includes>
+        <include>document-formats.js</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>
