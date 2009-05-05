@@ -18,6 +18,7 @@
 //
 package net.sf.jodconverter.office;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -91,8 +92,14 @@ public class ManagedProcessOfficeManager implements OfficeManager {
          } catch (TimeoutException timeoutException) {
              managedOfficeProcess.restartDueToTaskTimeout();
              throw new OfficeException("task did not complete within timeout", timeoutException);
+         } catch (ExecutionException executionException) {
+             if (executionException.getCause() instanceof OfficeException) {
+                 throw (OfficeException) executionException.getCause();
+             } else {
+                 throw new OfficeException("task failed", executionException.getCause());
+             }
          } catch (Exception exception) {
-             throw new OfficeException("could not complete task", exception);
+             throw new OfficeException("task failed", exception);
          }
     }
 

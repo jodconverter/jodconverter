@@ -18,7 +18,10 @@
 //
 package net.sf.jodconverter;
 
-import static net.sf.jodconverter.office.OfficeUtils.*;
+import static net.sf.jodconverter.office.OfficeUtils.SERVICE_DESKTOP;
+import static net.sf.jodconverter.office.OfficeUtils.cast;
+import static net.sf.jodconverter.office.OfficeUtils.toUnoProperties;
+import static net.sf.jodconverter.office.OfficeUtils.toUrl;
 
 import java.io.File;
 import java.util.Map;
@@ -32,6 +35,7 @@ import com.sun.star.frame.XStorable;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
+import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 import com.sun.star.util.XRefreshable;
@@ -51,24 +55,14 @@ public abstract class AbstractConversionTask implements OfficeTask {
     protected abstract Map<String,?> getStoreProperties(File outputFile, XComponent document);
 
     public void execute(OfficeContext context) throws OfficeException {
-        XComponentLoader loader = cast(XComponentLoader.class, context.getService(SERVICE_DESKTOP));
         XComponent document = null;
         try {
-            Map<String,?> loadProperties = getLoadProperties(inputFile);
-            document = loader.loadComponentFromURL(toUrl(inputFile), "_blank", 0, toUnoProperties(loadProperties));
-            if (document == null) {
-                throw new OfficeException("input document could not be loaded: " + inputFile);
-            }
-            XRefreshable refreshable = cast(XRefreshable.class, document);
-            if (refreshable != null) {
-                refreshable.refresh();
-            }
-            Map<String,?> storeProperties = getStoreProperties(outputFile, document);
-            cast(XStorable.class, document).storeToURL(toUrl(outputFile), toUnoProperties(storeProperties));
-        } catch (IOException ioException) {
-            throw new OfficeException("conversion failed", ioException);
-        } catch (IllegalArgumentException illegalArgumentException) {
-            throw new OfficeException("conversion failed", illegalArgumentException);
+            document = loadDocument(context, inputFile);
+            storeDocument(document, outputFile);
+        } catch (OfficeException officeException) {
+            throw officeException;
+        } catch (Exception exception) {
+            throw new OfficeException("conversion failed", exception);
         } finally {
             if (document != null) {
                 XCloseable closeable = cast(XCloseable.class, document);
@@ -82,6 +76,46 @@ public abstract class AbstractConversionTask implements OfficeTask {
                     document.dispose();
                 }
             }
+        }
+    }
+
+    private XComponent loadDocument(OfficeContext context, File inputFile) throws OfficeException {
+        if (!inputFile.exists()) {
+            throw new OfficeException("input document not found");
+        }
+        XComponentLoader loader = cast(XComponentLoader.class, context.getService(SERVICE_DESKTOP));
+        Map<String,?> loadProperties = getLoadProperties(inputFile);
+        XComponent document = null;
+        try {
+            document = loader.loadComponentFromURL(toUrl(inputFile), "_blank", 0, toUnoProperties(loadProperties));
+        } catch (IllegalArgumentException illegalArgumentException) {
+            throw new OfficeException("could not load document: " + inputFile.getName(), illegalArgumentException);
+        } catch (ErrorCodeIOException errorCodeIOException) {
+            throw new OfficeException("could not load document: "  + inputFile.getName() + "; errorCode: " + errorCodeIOException.ErrCode, errorCodeIOException);
+        } catch (IOException ioException) {
+            throw new OfficeException("could not load document: "  + inputFile.getName(), ioException);
+        }
+        if (document == null) {
+            throw new OfficeException("could not load document: "  + inputFile.getName());
+        }
+        XRefreshable refreshable = cast(XRefreshable.class, document);
+        if (refreshable != null) {
+            refreshable.refresh();
+        }
+        return document;
+    }
+
+    private void storeDocument(XComponent document, File outputFile) throws OfficeException {
+        Map<String,?> storeProperties = getStoreProperties(outputFile, document);
+        if (storeProperties == null) {
+            throw new OfficeException("unsupported conversion");
+        }
+        try {
+            cast(XStorable.class, document).storeToURL(toUrl(outputFile), toUnoProperties(storeProperties));
+        } catch (ErrorCodeIOException errorCodeIOException) {
+            throw new OfficeException("could not store document: " + outputFile.getName() + "; errorCode: " + errorCodeIOException.ErrCode, errorCodeIOException);
+        } catch (IOException ioException) {
+            throw new OfficeException("could not store document: " + outputFile.getName(), ioException);
         }
     }
 
