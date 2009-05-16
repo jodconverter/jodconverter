@@ -5,14 +5,13 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import net.sf.jodconverter.OfficeDocumentConverter;
-import net.sf.jodconverter.office.ManagedProcessOfficeManager;
-import net.sf.jodconverter.office.ManagedProcessOfficeManagerConfiguration;
-import net.sf.jodconverter.office.OfficeConnectionMode;
-import net.sf.jodconverter.office.OfficeManager;
-
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
+import org.artofsolving.jodconverter.office.ManagedProcessOfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.OfficeConnectionMode;
+import org.artofsolving.jodconverter.office.OfficeManager;
 
 public class WebappContext {
 

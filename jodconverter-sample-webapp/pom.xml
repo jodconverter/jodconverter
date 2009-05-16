@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>net.sf.jodconverter</groupId>
+  <groupId>org.artofsolving.jodconverter</groupId>
   <artifactId>jodconverter-sample-webapp</artifactId>
   <version>3.0-SNAPSHOT</version>
   <packaging>war</packaging>
@@ -13,7 +13,7 @@
   <description>
     JODConverter converts office documents using OpenOffice.org
   </description>
-  <url>http://jodconverter.sourceforge.net</url>
+  <url>http://jodconverter.googlecode.com</url>
   <licenses>
     <license>
       <name>GNU Lesser General Public License, Version 3 or later</name>
@@ -36,7 +36,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jodconverter</artifactId>
+      <artifactId>jodconverter-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
