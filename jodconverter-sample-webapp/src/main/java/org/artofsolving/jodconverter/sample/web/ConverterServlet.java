@@ -1,4 +1,4 @@
-package net.sf.jodconverter.sample.web;
+package org.artofsolving.jodconverter.sample.web;
 
 import java.io.File;
 import java.io.FileInputStream;
