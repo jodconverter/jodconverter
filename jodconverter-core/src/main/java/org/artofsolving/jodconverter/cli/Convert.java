@@ -22,7 +22,6 @@ package org.artofsolving.jodconverter.cli;
 import java.io.File;
 import java.io.IOException;
 
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -36,10 +35,8 @@ import org.artofsolving.jodconverter.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.json.JsonDocumentFormatRegistry;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManagerConfiguration;
-import org.artofsolving.jodconverter.office.UnoUrl;
 import org.artofsolving.jodconverter.office.OfficeManager;
+import org.artofsolving.jodconverter.office.OfficeManagerConfiguration;
 import org.json.JSONException;
 
 /**
@@ -97,10 +94,7 @@ public class Convert {
             registry = new DefaultDocumentFormatRegistry();
         }
         
-        UnoUrl unoUrl = UnoUrl.socket(port);
-        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(unoUrl);
-        configuration.setTaskExecutionTimeout(Long.MAX_VALUE);
-        OfficeManager officeManager = new ManagedProcessOfficeManager(configuration);
+        OfficeManager officeManager = new OfficeManagerConfiguration().setPortNumber(port).buildOfficeManager();
         officeManager.start();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
         try {

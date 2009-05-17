@@ -32,12 +32,12 @@ import org.testng.annotations.Test;
 public class ExternalProcessOfficeManagerTest {
 
     public void executeTask() throws Exception {
-        UnoUrl unoUrl = UnoUrl.socket(8100);
+        UnoUrl unoUrl = UnoUrl.socket(2002);
         OfficeProcess officeProcess = new OfficeProcess(new OfficeProcessConfiguration(unoUrl));
         officeProcess.start();
         Thread.sleep(2000);
         
-        ExternalProcessOfficeManager manager = new ExternalProcessOfficeManager(unoUrl);
+        ExternalProcessOfficeManager manager = new ExternalProcessOfficeManager(2002);
         manager.start();
         
         MockOfficeTask task = new MockOfficeTask();

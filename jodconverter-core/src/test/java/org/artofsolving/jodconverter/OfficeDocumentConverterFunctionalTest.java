@@ -27,23 +27,16 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Set;
 
-
 import org.apache.commons.io.FilenameUtils;
-import org.artofsolving.jodconverter.DocumentFormat;
-import org.artofsolving.jodconverter.DocumentFormatRegistry;
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
-import org.artofsolving.jodconverter.office.UnoUrl;
 import org.artofsolving.jodconverter.office.OfficeManager;
+import org.artofsolving.jodconverter.office.OfficeManagerConfiguration;
 import org.testng.annotations.Test;
 
 @Test(groups="functional")
 public class OfficeDocumentConverterFunctionalTest {
 
-    private static final UnoUrl CONNECTION_MODE = UnoUrl.socket(8100);
-
     public void runAllPossibleConversions() throws IOException {
-        OfficeManager officeManager = new ManagedProcessOfficeManager(CONNECTION_MODE);
+        OfficeManager officeManager = new OfficeManagerConfiguration().buildOfficeManager();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
         DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
         

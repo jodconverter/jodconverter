@@ -33,7 +33,7 @@ package org.artofsolving.jodconverter.office;
  * See <a href="http://wiki.services.openoffice.org/wiki/Documentation/DevGuide/ProUNO/Opening_a_Connection">Opening a Connection</a>
  * in the OpenOffice.org Developer's Guide for more details.
  */
-public class UnoUrl {
+class UnoUrl {
 
     private final String acceptString;
     private final String connectString;

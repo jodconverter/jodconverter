@@ -29,8 +29,7 @@ import java.util.logging.Logger;
 import org.artofsolving.jodconverter.util.NamedThreadFactory;
 import org.artofsolving.jodconverter.util.SuspendableThreadPoolExecutor;
 
-
-public class ManagedProcessOfficeManager implements OfficeManager {
+class ManagedProcessOfficeManager implements OfficeManager {
 
     private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("OfficeManagerThread");
 

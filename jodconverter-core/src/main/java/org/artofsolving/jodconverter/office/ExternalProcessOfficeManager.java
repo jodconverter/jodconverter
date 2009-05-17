@@ -28,7 +28,7 @@ import java.net.ConnectException;
  * The external Office process needs to be started manually, e.g. from the
  * command line with
  * <pre>
- * soffice -accept="socket,host=127.0.0.1,port=8100;urp;"
+ * soffice -accept="socket,host=127.0.0.1,port=2002;urp;"
  * </pre>
  * <p>
  * Since this implementation does not manage the Office process, it does not
@@ -47,8 +47,12 @@ public class ExternalProcessOfficeManager implements OfficeManager {
 
     private boolean connectOnStart = true;
 
-    public ExternalProcessOfficeManager(UnoUrl unoUrl) {
-        connection = new OfficeConnection(unoUrl);
+    public ExternalProcessOfficeManager(int portNumber) {
+        connection = new OfficeConnection(UnoUrl.socket(portNumber));
+    }
+
+    public ExternalProcessOfficeManager(String pipeName) {
+        connection = new OfficeConnection(UnoUrl.pipe(pipeName));
     }
 
     /**
