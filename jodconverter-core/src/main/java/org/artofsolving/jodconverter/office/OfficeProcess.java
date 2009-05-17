@@ -37,7 +37,7 @@ import org.artofsolving.jodconverter.util.TemporaryException;
 
 class OfficeProcess {
 
-    private final OfficeConnectionMode connectionMode;
+    private final UnoUrl unoUrl;
     private final File officeHome;
     private final File templateProfileDir;
     private final File profileDir;
@@ -48,22 +48,22 @@ class OfficeProcess {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     public OfficeProcess(OfficeProcessConfiguration configuration) {
-        this.connectionMode = configuration.getConnectionMode();
+        this.unoUrl = configuration.getUnoUrl();
         this.officeHome = configuration.getOfficeHome();
         this.templateProfileDir = configuration.getTemplateProfileDir();
-        this.profileDir = getProfileDir(configuration.getConnectionMode());
+        this.profileDir = getProfileDir(configuration.getUnoUrl());
         this.processManager = configuration.getProcessManager();
     }
 
     public void start() throws IOException {
-        String existingPid = processManager.findPid("soffice.*" + Pattern.quote(connectionMode.getAcceptString()));
+        String existingPid = processManager.findPid("soffice.*" + Pattern.quote(unoUrl.getAcceptString()));
         if (existingPid != null) {
-            throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %s", connectionMode.getAcceptString(), existingPid));
+            throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %s", unoUrl.getAcceptString(), existingPid));
         }
         prepareProfileDir();
         List<String> command = new ArrayList<String>();
         command.add(new File(officeHome, getExecutablePath()).getAbsolutePath());
-        command.add("-accept=" + connectionMode.getAcceptString() + ";urp;");
+        command.add("-accept=" + unoUrl.getAcceptString() + ";urp;");
         command.add("-env:UserInstallation=" + OfficeUtils.toUrl(profileDir));
         command.add("-headless");
         command.add("-nocrashreport");
@@ -76,13 +76,13 @@ class OfficeProcess {
         if (OsUtils.isWindows()) {
             addBasisAndUrePaths(processBuilder);
         }
-        logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", connectionMode, profileDir));
+        logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", unoUrl, profileDir));
         process = processBuilder.start();
         logger.info("started process; pid " + processManager.getPid(process));
     }
 
-    private File getProfileDir(OfficeConnectionMode connectionMode) {
-        String dirName = ".jodconverter_" + connectionMode.getAcceptString().replace(',', '_').replace('=', '-');
+    private File getProfileDir(UnoUrl unoUrl) {
+        String dirName = ".jodconverter_" + unoUrl.getAcceptString().replace(',', '_').replace('=', '-');
         return new File(System.getProperty("java.io.tmpdir"), dirName);
     }
 
@@ -189,7 +189,7 @@ class OfficeProcess {
     }
 
     public int forciblyTerminate(long retryInterval, long retryTimeout) throws IOException, RetryTimeoutException {
-        logger.info(String.format("trying to forcibly terminate process: '%s'", connectionMode));
+        logger.info(String.format("trying to forcibly terminate process: '%s'", unoUrl));
         processManager.kill(process);
         return getExitCode(retryInterval, retryTimeout);
     }

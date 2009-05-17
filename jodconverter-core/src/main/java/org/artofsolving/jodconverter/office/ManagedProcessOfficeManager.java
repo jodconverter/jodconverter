@@ -64,8 +64,8 @@ public class ManagedProcessOfficeManager implements OfficeManager {
         }
     };
 
-    public ManagedProcessOfficeManager(OfficeConnectionMode connectionMode) {
-        this(new ManagedProcessOfficeManagerConfiguration(connectionMode));
+    public ManagedProcessOfficeManager(UnoUrl unoUrl) {
+        this(new ManagedProcessOfficeManagerConfiguration(unoUrl));
     }
 
     public ManagedProcessOfficeManager(ManagedProcessOfficeManagerConfiguration configuration) {

@@ -58,7 +58,7 @@ class ManagedOfficeProcess {
 //        }
         this.configuration = configuration;
         process = new OfficeProcess(configuration);
-        connection = new OfficeConnection(configuration.getConnectionMode());
+        connection = new OfficeConnection(configuration.getUnoUrl());
     }
 
     public OfficeConnection getConnection() {

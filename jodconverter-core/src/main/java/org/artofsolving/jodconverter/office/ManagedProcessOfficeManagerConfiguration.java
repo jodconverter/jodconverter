@@ -29,8 +29,8 @@ public class ManagedProcessOfficeManagerConfiguration extends ManagedOfficeProce
     private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
     private long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
 
-    public ManagedProcessOfficeManagerConfiguration(OfficeConnectionMode connectionMode) {
-        super(connectionMode);
+    public ManagedProcessOfficeManagerConfiguration(UnoUrl unoUrl) {
+        super(unoUrl);
     }
 
     public long getTaskExecutionTimeout() {

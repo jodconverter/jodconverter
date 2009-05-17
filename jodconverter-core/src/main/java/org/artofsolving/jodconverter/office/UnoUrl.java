@@ -33,24 +33,24 @@ package org.artofsolving.jodconverter.office;
  * See <a href="http://wiki.services.openoffice.org/wiki/Documentation/DevGuide/ProUNO/Opening_a_Connection">Opening a Connection</a>
  * in the OpenOffice.org Developer's Guide for more details.
  */
-public class OfficeConnectionMode {
+public class UnoUrl {
 
     private final String acceptString;
     private final String connectString;
 
-    private OfficeConnectionMode(String acceptString, String connectString) {
+    private UnoUrl(String acceptString, String connectString) {
         this.acceptString = acceptString;
         this.connectString = connectString;
     }
 
-    public static OfficeConnectionMode socket(int port) {
+    public static UnoUrl socket(int port) {
         String socketString = "socket,host=127.0.0.1,port=" + port;
-        return new OfficeConnectionMode(socketString, socketString + ",tcpNoDelay=1");
+        return new UnoUrl(socketString, socketString + ",tcpNoDelay=1");
     }
 
-    public static OfficeConnectionMode pipe(String pipeName) {
+    public static UnoUrl pipe(String pipeName) {
         String pipeString = "pipe,name=" + pipeName;
-        return new OfficeConnectionMode(pipeString, pipeString);
+        return new UnoUrl(pipeString, pipeString);
     }
 
     public String getAcceptString() {

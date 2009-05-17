@@ -27,8 +27,8 @@ class ManagedOfficeProcessConfiguration extends OfficeProcessConfiguration {
     private long retryTimeout = DEFAULT_RETRY_TIMEOUT;
     private long retryInterval = DEFAULT_RETRY_INTERVAL;
 
-    public ManagedOfficeProcessConfiguration(OfficeConnectionMode connectionMode) {
-        super(connectionMode);
+    public ManagedOfficeProcessConfiguration(UnoUrl unoUrl) {
+        super(unoUrl);
     }
 
     public long getRetryTimeout() {

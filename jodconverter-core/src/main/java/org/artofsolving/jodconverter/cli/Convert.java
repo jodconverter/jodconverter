@@ -38,7 +38,7 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.json.JsonDocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
 import org.artofsolving.jodconverter.office.ManagedProcessOfficeManagerConfiguration;
-import org.artofsolving.jodconverter.office.OfficeConnectionMode;
+import org.artofsolving.jodconverter.office.UnoUrl;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.json.JSONException;
 
@@ -97,8 +97,8 @@ public class Convert {
             registry = new DefaultDocumentFormatRegistry();
         }
         
-        OfficeConnectionMode connectionMode = OfficeConnectionMode.socket(port);
-        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(connectionMode);
+        UnoUrl unoUrl = UnoUrl.socket(port);
+        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(unoUrl);
         configuration.setTaskExecutionTimeout(Long.MAX_VALUE);
         OfficeManager officeManager = new ManagedProcessOfficeManager(configuration);
         officeManager.start();

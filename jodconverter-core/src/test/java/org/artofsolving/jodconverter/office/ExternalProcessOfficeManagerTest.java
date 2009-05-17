@@ -22,7 +22,7 @@ package org.artofsolving.jodconverter.office;
 import static org.testng.Assert.assertTrue;
 
 import org.artofsolving.jodconverter.office.ExternalProcessOfficeManager;
-import org.artofsolving.jodconverter.office.OfficeConnectionMode;
+import org.artofsolving.jodconverter.office.UnoUrl;
 import org.artofsolving.jodconverter.office.OfficeProcess;
 import org.artofsolving.jodconverter.office.OfficeProcessConfiguration;
 import org.artofsolving.jodconverter.util.ReflectionUtils;
@@ -32,12 +32,12 @@ import org.testng.annotations.Test;
 public class ExternalProcessOfficeManagerTest {
 
     public void executeTask() throws Exception {
-        OfficeConnectionMode connectionMode = OfficeConnectionMode.socket(8100);
-        OfficeProcess officeProcess = new OfficeProcess(new OfficeProcessConfiguration(connectionMode));
+        UnoUrl unoUrl = UnoUrl.socket(8100);
+        OfficeProcess officeProcess = new OfficeProcess(new OfficeProcessConfiguration(unoUrl));
         officeProcess.start();
         Thread.sleep(2000);
         
-        ExternalProcessOfficeManager manager = new ExternalProcessOfficeManager(connectionMode);
+        ExternalProcessOfficeManager manager = new ExternalProcessOfficeManager(unoUrl);
         manager.start();
         
         MockOfficeTask task = new MockOfficeTask();

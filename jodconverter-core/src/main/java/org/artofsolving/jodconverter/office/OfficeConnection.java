@@ -41,7 +41,7 @@ class OfficeConnection implements OfficeContext {
 
     private static volatile int bridgeIndex = 0;
 
-    private final OfficeConnectionMode connectionMode;
+    private final UnoUrl unoUrl;
 
     private XComponent bridgeComponent;
     private XMultiComponentFactory serviceManager;
@@ -54,7 +54,7 @@ class OfficeConnection implements OfficeContext {
     private XEventListener bridgeListener = new XEventListener() {
         public void disposing(EventObject event) {
             connected = false;
-            logger.info(String.format("disconnected: '%s'", connectionMode));
+            logger.info(String.format("disconnected: '%s'", unoUrl));
             OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(OfficeConnection.this);
             for (OfficeConnectionEventListener listener : connectionEventListeners) {
                 listener.disconnected(connectionEvent);
@@ -64,8 +64,8 @@ class OfficeConnection implements OfficeContext {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public OfficeConnection(OfficeConnectionMode connectionMode) {
-        this.connectionMode = connectionMode;
+    public OfficeConnection(UnoUrl unoUrl) {
+        this.unoUrl = unoUrl;
     }
 
     public void addConnectionEventListener(OfficeConnectionEventListener connectionEventListener) {
@@ -73,12 +73,12 @@ class OfficeConnection implements OfficeContext {
     }
 
     public void connect() throws ConnectException {
-        logger.fine(String.format("connecting with connectString '%s'", connectionMode));
+        logger.fine(String.format("connecting with connectString '%s'", unoUrl));
         try {
             XComponentContext localContext = Bootstrap.createInitialComponentContext(null);
             XMultiComponentFactory localServiceManager = localContext.getServiceManager();
             XConnector connector = OfficeUtils.cast(XConnector.class, localServiceManager.createInstanceWithContext("com.sun.star.connection.Connector", localContext));
-            XConnection connection = connector.connect(connectionMode.getConnectString());
+            XConnection connection = connector.connect(unoUrl.getConnectString());
             XBridgeFactory bridgeFactory = OfficeUtils.cast(XBridgeFactory.class, localServiceManager.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", localContext));
             String bridgeName = "jodconverter_" + bridgeIndex++;
             XBridge bridge = bridgeFactory.createBridge(bridgeName, "urp", connection, null);
@@ -88,15 +88,15 @@ class OfficeConnection implements OfficeContext {
             XPropertySet properties = OfficeUtils.cast(XPropertySet.class, serviceManager);
             componentContext = OfficeUtils.cast(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
             connected = true;
-            logger.info(String.format("connected: '%s'", connectionMode));
+            logger.info(String.format("connected: '%s'", unoUrl));
             OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
             for (OfficeConnectionEventListener listener : connectionEventListeners) {
                 listener.connected(connectionEvent);
             }
         } catch (NoConnectException connectException) {
-            throw new ConnectException(String.format("connection failed: '%s'; %s", connectionMode, connectException.getMessage()));
+            throw new ConnectException(String.format("connection failed: '%s'; %s", unoUrl, connectException.getMessage()));
         } catch (Exception exception) {
-            throw new OfficeException("connection failed: "+ connectionMode, exception);
+            throw new OfficeException("connection failed: "+ unoUrl, exception);
         }
     }
 
@@ -105,7 +105,7 @@ class OfficeConnection implements OfficeContext {
     }
 
     public synchronized void disconnect() {
-        logger.fine(String.format("disconnecting: '%s'", connectionMode));
+        logger.fine(String.format("disconnecting: '%s'", unoUrl));
         bridgeComponent.dispose();
     }
 

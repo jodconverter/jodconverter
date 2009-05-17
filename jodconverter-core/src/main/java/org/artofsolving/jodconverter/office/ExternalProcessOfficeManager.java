@@ -47,8 +47,8 @@ public class ExternalProcessOfficeManager implements OfficeManager {
 
     private boolean connectOnStart = true;
 
-    public ExternalProcessOfficeManager(OfficeConnectionMode connectionMode) {
-        connection = new OfficeConnection(connectionMode);
+    public ExternalProcessOfficeManager(UnoUrl unoUrl) {
+        connection = new OfficeConnection(unoUrl);
     }
 
     /**

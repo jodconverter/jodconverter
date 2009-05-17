@@ -26,18 +26,18 @@ import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 
 class OfficeProcessConfiguration {
 
-    private final OfficeConnectionMode connectionMode;
+    private final UnoUrl unoUrl;
 
     private File officeHome = OfficeUtils.getDefaultOfficeHome();
     private File templateProfileDir;
     private ProcessManager processManager = new PureJavaProcessManager();
 
-    public OfficeProcessConfiguration(OfficeConnectionMode connectionMode) {
-        this.connectionMode = connectionMode;
+    public OfficeProcessConfiguration(UnoUrl unoUrl) {
+        this.unoUrl = unoUrl;
     }
 
-    public OfficeConnectionMode getConnectionMode() {
-        return connectionMode;
+    public UnoUrl getUnoUrl() {
+        return unoUrl;
     }
 
     public File getOfficeHome() {

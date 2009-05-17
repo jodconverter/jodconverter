@@ -33,7 +33,7 @@ import org.artofsolving.jodconverter.office.ManagedOfficeProcess;
 import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
 import org.artofsolving.jodconverter.office.ManagedProcessOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeConnection;
-import org.artofsolving.jodconverter.office.OfficeConnectionMode;
+import org.artofsolving.jodconverter.office.UnoUrl;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeProcess;
 import org.artofsolving.jodconverter.util.ReflectionUtils;
@@ -42,7 +42,7 @@ import org.testng.annotations.Test;
 @Test(groups="integration")
 public class ManagedProcessOfficeManagerTest {
 
-    private static final OfficeConnectionMode CONNECTION_MODE = OfficeConnectionMode.socket(8100);
+    private static final UnoUrl CONNECTION_MODE = UnoUrl.socket(8100);
     private static final long RESTART_WAIT_TIME = 2 * 1000;
 
     public void executeTask() throws Exception {
