@@ -9,14 +9,15 @@ class PoolingOfficeManager implements OfficeManager {
 
     private final BlockingQueue<ManagedProcessOfficeManager> pool;
     private final ManagedProcessOfficeManager[] pooledManagers;
+    private final long taskQueueTimeout;
 
-    public PoolingOfficeManager(File officeHome, UnoUrl[] unoUrls) {
+    public PoolingOfficeManager(File officeHome, UnoUrl[] unoUrls, long taskQueueTimeout) {
+        this.taskQueueTimeout = taskQueueTimeout;
         pool = new ArrayBlockingQueue<ManagedProcessOfficeManager>(unoUrls.length);
         pooledManagers = new ManagedProcessOfficeManager[unoUrls.length];
         for (int i = 0; i < unoUrls.length; i++) {
             ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(unoUrls[i]);
             configuration.setOfficeHome(officeHome);
-            configuration.setTaskQueueTimeout(0L);
             pooledManagers[i] = new ManagedProcessOfficeManager(configuration);
         }
     }
@@ -52,7 +53,7 @@ class PoolingOfficeManager implements OfficeManager {
 
     private ManagedProcessOfficeManager acquireManager() {
         try {
-            return pool.poll(30, TimeUnit.SECONDS);
+            return pool.poll(taskQueueTimeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException interruptedException) {
             throw new OfficeException("interrupted", interruptedException);
         }

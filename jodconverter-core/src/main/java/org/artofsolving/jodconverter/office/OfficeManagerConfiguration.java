@@ -10,6 +10,7 @@ public class OfficeManagerConfiguration {
     private ConnectionProtocol connectionProtocol = ConnectionProtocol.SOCKET;
     private int[] portNumbers = new int[] { 2002 };
     private String[] pipeNames = new String[] { "office" };
+    private long taskQueueTimeout = 30000L;
 
     public OfficeManagerConfiguration setOfficeHome(String officeHome) {
         return setOfficeHome(new File(officeHome));
@@ -45,13 +46,17 @@ public class OfficeManagerConfiguration {
         return this;
     }
 
+    public void setTaskQueueTimeout(long taskQueueTimeout) {
+        this.taskQueueTimeout = taskQueueTimeout;
+    }
+
     public OfficeManager buildOfficeManager() {
         int numInstances = connectionProtocol == ConnectionProtocol.PIPE ? pipeNames.length : portNumbers.length;
         UnoUrl[] unoUrls = new UnoUrl[numInstances];
         for (int i = 0; i < numInstances; i++) {
             unoUrls[i] = (connectionProtocol == ConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
-        return new PoolingOfficeManager(officeHome, unoUrls);
+        return new PoolingOfficeManager(officeHome, unoUrls, taskQueueTimeout);
     }
 
 }

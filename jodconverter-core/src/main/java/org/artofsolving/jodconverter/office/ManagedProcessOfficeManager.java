@@ -71,7 +71,7 @@ class ManagedProcessOfficeManager implements OfficeManager {
         this.configuration = configuration;
         managedOfficeProcess = new ManagedOfficeProcess(configuration);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
-        taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY, configuration.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
+        taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY);
     }
 
     public void execute(final OfficeTask task) throws OfficeException {
