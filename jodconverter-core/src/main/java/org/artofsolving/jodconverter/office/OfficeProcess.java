@@ -75,7 +75,8 @@ class OfficeProcess {
         }
         logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", unoUrl, instanceProfileDir));
         process = processBuilder.start();
-        logger.info("started process; pid " + processManager.getPid(process));
+        String pid = processManager.getPid(process);
+        logger.info("started process" + (pid != null ? "; pid = " + pid : ""));
     }
 
     private File getInstanceProfileDir(UnoUrl unoUrl) {
