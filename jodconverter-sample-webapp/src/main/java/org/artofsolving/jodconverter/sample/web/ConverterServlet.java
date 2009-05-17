@@ -17,8 +17,8 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.artofsolving.jodconverter.DocumentFormat;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.artofsolving.jodconverter.document.DocumentFormat;
 
 public class ConverterServlet extends HttpServlet {
 
