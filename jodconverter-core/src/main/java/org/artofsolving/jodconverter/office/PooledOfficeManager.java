@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-
 class PooledOfficeManager implements OfficeManager {
 
     private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("OfficeManagerThread");
@@ -109,8 +108,8 @@ class PooledOfficeManager implements OfficeManager {
     public void stop() throws OfficeException {
         taskExecutor.setAvailable(false);
         stopping = true;
-        managedOfficeProcess.stopAndWait();
         taskExecutor.shutdownNow();
+        managedOfficeProcess.stopAndWait();
     }
 
 }

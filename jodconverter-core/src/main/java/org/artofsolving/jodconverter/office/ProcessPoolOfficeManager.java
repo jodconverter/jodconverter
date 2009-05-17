@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.artofsolving.jodconverter.process.ProcessManager;
 
@@ -31,6 +32,10 @@ class ProcessPoolOfficeManager implements OfficeManager {
     private final BlockingQueue<PooledOfficeManager> pool;
     private final PooledOfficeManager[] pooledManagers;
     private final long taskQueueTimeout;
+
+    private volatile boolean running = false;
+
+    private final Logger logger = Logger.getLogger(ProcessPoolOfficeManager.class.getName());
 
     public ProcessPoolOfficeManager(File officeHome, UnoUrl[] unoUrls, File templateProfileDir,
             long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess, ProcessManager processManager) {
@@ -48,14 +53,18 @@ class ProcessPoolOfficeManager implements OfficeManager {
         }
     }
 
-    public void start() throws OfficeException {
+    public synchronized void start() throws OfficeException {
         for (int i = 0; i < pooledManagers.length; i++) {
             pooledManagers[i].start();
             releaseManager(pooledManagers[i]);
         }
+        running = true;
     }
 
-    public void execute(OfficeTask task) throws OfficeException {
+    public void execute(OfficeTask task) throws IllegalStateException, OfficeException {
+        if (!running) {
+            throw new IllegalStateException("this OfficeManager is currently stopped");
+        }
         PooledOfficeManager manager = null;
         try {
             manager = acquireManager();
@@ -70,11 +79,14 @@ class ProcessPoolOfficeManager implements OfficeManager {
         }
     }
 
-    public void stop() throws OfficeException {
+    public synchronized void stop() throws OfficeException {
+        running = false;
+        logger.info("stopping");
         pool.clear();
         for (int i = 0; i < pooledManagers.length; i++) {
             pooledManagers[i].stop();
         }
+        logger.info("stopped");
     }
 
     private PooledOfficeManager acquireManager() {
