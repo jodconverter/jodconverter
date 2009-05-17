@@ -30,8 +30,8 @@ import java.util.concurrent.TimeoutException;
 
 
 import org.artofsolving.jodconverter.office.ManagedOfficeProcess;
-import org.artofsolving.jodconverter.office.ProcessOfficeManager;
-import org.artofsolving.jodconverter.office.ProcessOfficeManagerSettings;
+import org.artofsolving.jodconverter.office.PooledOfficeManager;
+import org.artofsolving.jodconverter.office.PooledOfficeManagerSettings;
 import org.artofsolving.jodconverter.office.OfficeConnection;
 import org.artofsolving.jodconverter.office.UnoUrl;
 import org.artofsolving.jodconverter.office.OfficeException;
@@ -46,7 +46,7 @@ public class ProcessOfficeManagerTest {
     private static final long RESTART_WAIT_TIME = 2 * 1000;
 
     public void executeTask() throws Exception {
-        ProcessOfficeManager officeManager = new ProcessOfficeManager(CONNECTION_MODE);
+        PooledOfficeManager officeManager = new PooledOfficeManager(CONNECTION_MODE);
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
         OfficeConnection connection = (OfficeConnection) ReflectionUtils.getPrivateField(managedOfficeProcess, "connection");
@@ -66,7 +66,7 @@ public class ProcessOfficeManagerTest {
     }
 
     public void restartAfterCrash() throws Exception {
-        final ProcessOfficeManager officeManager = new ProcessOfficeManager(CONNECTION_MODE);
+        final PooledOfficeManager officeManager = new PooledOfficeManager(CONNECTION_MODE);
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
         OfficeConnection connection = (OfficeConnection) ReflectionUtils.getPrivateField(managedOfficeProcess, "connection");
@@ -108,9 +108,9 @@ public class ProcessOfficeManagerTest {
     }
 
     public void restartAfterTaskTimeout() throws Exception {
-        ProcessOfficeManagerSettings configuration = new ProcessOfficeManagerSettings(CONNECTION_MODE);
+        PooledOfficeManagerSettings configuration = new PooledOfficeManagerSettings(CONNECTION_MODE);
         configuration.setTaskExecutionTimeout(1500L);
-        final ProcessOfficeManager officeManager = new ProcessOfficeManager(configuration);
+        final PooledOfficeManager officeManager = new PooledOfficeManager(configuration);
         
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
@@ -144,9 +144,9 @@ public class ProcessOfficeManagerTest {
     }
 
     public void restartWhenMaxTasksPerProcessReached() throws Exception {
-        ProcessOfficeManagerSettings configuration = new ProcessOfficeManagerSettings(CONNECTION_MODE);
+        PooledOfficeManagerSettings configuration = new PooledOfficeManagerSettings(CONNECTION_MODE);
         configuration.setMaxTasksPerProcess(3);
-        final ProcessOfficeManager officeManager = new ProcessOfficeManager(configuration);
+        final PooledOfficeManager officeManager = new PooledOfficeManager(configuration);
         
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");

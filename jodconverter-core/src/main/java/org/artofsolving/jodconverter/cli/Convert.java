@@ -36,7 +36,7 @@ import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.JsonDocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.OfficeManager;
-import org.artofsolving.jodconverter.office.OfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.json.JSONException;
 
 /**
@@ -94,7 +94,7 @@ public class Convert {
             registry = new DefaultDocumentFormatRegistry();
         }
         
-        OfficeManager officeManager = new OfficeManagerConfiguration().setPortNumber(port).buildOfficeManager();
+        OfficeManager officeManager = new DefaultOfficeManagerConfiguration().setPortNumber(port).buildOfficeManager();
         officeManager.start();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
         try {

@@ -31,14 +31,14 @@ import org.apache.commons.io.FilenameUtils;
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.OfficeManager;
-import org.artofsolving.jodconverter.office.OfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.testng.annotations.Test;
 
 @Test(groups="functional")
 public class OfficeDocumentConverterFunctionalTest {
 
     public void runAllPossibleConversions() throws IOException {
-        OfficeManager officeManager = new OfficeManagerConfiguration().buildOfficeManager();
+        OfficeManager officeManager = new DefaultOfficeManagerConfiguration().buildOfficeManager();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
         DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
         

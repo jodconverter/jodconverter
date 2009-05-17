@@ -26,7 +26,7 @@ import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="integration")
-public class ConnectionOfficeManagerTest {
+public class ExternalOfficeManagerTest {
 
     public void executeTask() throws Exception {
         UnoUrl unoUrl = UnoUrl.socket(2002);
@@ -34,7 +34,7 @@ public class ConnectionOfficeManagerTest {
         officeProcess.start();
         Thread.sleep(2000);
         
-        ConnectionOfficeManager manager = new ConnectionOfficeManager(2002);
+        ExternalOfficeManager manager = new ExternalOfficeManager(2002);
         manager.start();
         
         MockOfficeTask task = new MockOfficeTask();

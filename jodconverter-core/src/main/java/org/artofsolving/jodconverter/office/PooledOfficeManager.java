@@ -27,11 +27,11 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 
-class ProcessOfficeManager implements OfficeManager {
+class PooledOfficeManager implements OfficeManager {
 
     private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("OfficeManagerThread");
 
-    private final ProcessOfficeManagerSettings settings;
+    private final PooledOfficeManagerSettings settings;
     private final ManagedOfficeProcess managedOfficeProcess;
     private final SuspendableThreadPoolExecutor taskExecutor;
 
@@ -61,11 +61,11 @@ class ProcessOfficeManager implements OfficeManager {
         }
     };
 
-    public ProcessOfficeManager(UnoUrl unoUrl) {
-        this(new ProcessOfficeManagerSettings(unoUrl));
+    public PooledOfficeManager(UnoUrl unoUrl) {
+        this(new PooledOfficeManagerSettings(unoUrl));
     }
 
-    public ProcessOfficeManager(ProcessOfficeManagerSettings settings) {
+    public PooledOfficeManager(PooledOfficeManagerSettings settings) {
         this.settings = settings;
         managedOfficeProcess = new ManagedOfficeProcess(settings);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
