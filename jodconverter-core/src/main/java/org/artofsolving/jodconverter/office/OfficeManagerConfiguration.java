@@ -56,7 +56,7 @@ public class OfficeManagerConfiguration {
         for (int i = 0; i < numInstances; i++) {
             unoUrls[i] = (connectionProtocol == ConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
-        return new PoolingOfficeManager(officeHome, unoUrls, taskQueueTimeout);
+        return new ProcessPoolOfficeManager(officeHome, unoUrls, taskQueueTimeout);
     }
 
 }

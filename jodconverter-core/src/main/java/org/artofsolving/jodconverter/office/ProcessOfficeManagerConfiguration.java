@@ -19,7 +19,7 @@
 //
 package org.artofsolving.jodconverter.office;
 
-class ManagedProcessOfficeManagerConfiguration extends ManagedOfficeProcessConfiguration {
+class ProcessOfficeManagerConfiguration extends ManagedOfficeProcessConfiguration {
 
     public static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120000L;
     public static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
@@ -27,7 +27,7 @@ class ManagedProcessOfficeManagerConfiguration extends ManagedOfficeProcessConfi
     private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
     private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
-    public ManagedProcessOfficeManagerConfiguration(UnoUrl unoUrl) {
+    public ProcessOfficeManagerConfiguration(UnoUrl unoUrl) {
         super(unoUrl);
     }
 

@@ -30,8 +30,8 @@ import java.util.concurrent.TimeoutException;
 
 
 import org.artofsolving.jodconverter.office.ManagedOfficeProcess;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.ProcessOfficeManager;
+import org.artofsolving.jodconverter.office.ProcessOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeConnection;
 import org.artofsolving.jodconverter.office.UnoUrl;
 import org.artofsolving.jodconverter.office.OfficeException;
@@ -40,13 +40,13 @@ import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="integration")
-public class ManagedProcessOfficeManagerTest {
+public class ProcessOfficeManagerTest {
 
     private static final UnoUrl CONNECTION_MODE = UnoUrl.socket(8100);
     private static final long RESTART_WAIT_TIME = 2 * 1000;
 
     public void executeTask() throws Exception {
-        ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(CONNECTION_MODE);
+        ProcessOfficeManager officeManager = new ProcessOfficeManager(CONNECTION_MODE);
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
         OfficeConnection connection = (OfficeConnection) ReflectionUtils.getPrivateField(managedOfficeProcess, "connection");
@@ -66,7 +66,7 @@ public class ManagedProcessOfficeManagerTest {
     }
 
     public void restartAfterCrash() throws Exception {
-        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(CONNECTION_MODE);
+        final ProcessOfficeManager officeManager = new ProcessOfficeManager(CONNECTION_MODE);
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
         OfficeConnection connection = (OfficeConnection) ReflectionUtils.getPrivateField(managedOfficeProcess, "connection");
@@ -108,9 +108,9 @@ public class ManagedProcessOfficeManagerTest {
     }
 
     public void restartAfterTaskTimeout() throws Exception {
-        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(CONNECTION_MODE);
+        ProcessOfficeManagerConfiguration configuration = new ProcessOfficeManagerConfiguration(CONNECTION_MODE);
         configuration.setTaskExecutionTimeout(1500L);
-        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(configuration);
+        final ProcessOfficeManager officeManager = new ProcessOfficeManager(configuration);
         
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");
@@ -144,9 +144,9 @@ public class ManagedProcessOfficeManagerTest {
     }
 
     public void restartWhenMaxTasksPerProcessReached() throws Exception {
-        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(CONNECTION_MODE);
+        ProcessOfficeManagerConfiguration configuration = new ProcessOfficeManagerConfiguration(CONNECTION_MODE);
         configuration.setMaxTasksPerProcess(3);
-        final ManagedProcessOfficeManager officeManager = new ManagedProcessOfficeManager(configuration);
+        final ProcessOfficeManager officeManager = new ProcessOfficeManager(configuration);
         
         ManagedOfficeProcess managedOfficeProcess = (ManagedOfficeProcess) ReflectionUtils.getPrivateField(officeManager, "managedOfficeProcess");
         OfficeProcess process = (OfficeProcess) ReflectionUtils.getPrivateField(managedOfficeProcess, "process");

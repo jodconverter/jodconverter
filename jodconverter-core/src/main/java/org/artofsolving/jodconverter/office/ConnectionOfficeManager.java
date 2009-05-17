@@ -41,17 +41,17 @@ import java.net.ConnectException;
  * behaviour as JODConverter 2.x, including using <em>synchronized</em> blocks
  * for serialising office operations.
  */
-public class ExternalProcessOfficeManager implements OfficeManager {
+public class ConnectionOfficeManager implements OfficeManager {
 
     private final OfficeConnection connection;
 
     private boolean connectOnStart = true;
 
-    public ExternalProcessOfficeManager(int portNumber) {
+    public ConnectionOfficeManager(int portNumber) {
         connection = new OfficeConnection(UnoUrl.socket(portNumber));
     }
 
-    public ExternalProcessOfficeManager(String pipeName) {
+    public ConnectionOfficeManager(String pipeName) {
         connection = new OfficeConnection(UnoUrl.pipe(pipeName));
     }
 

@@ -29,11 +29,11 @@ import java.util.logging.Logger;
 import org.artofsolving.jodconverter.util.NamedThreadFactory;
 import org.artofsolving.jodconverter.util.SuspendableThreadPoolExecutor;
 
-class ManagedProcessOfficeManager implements OfficeManager {
+class ProcessOfficeManager implements OfficeManager {
 
     private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("OfficeManagerThread");
 
-    private final ManagedProcessOfficeManagerConfiguration configuration;
+    private final ProcessOfficeManagerConfiguration configuration;
     private final ManagedOfficeProcess managedOfficeProcess;
     private final SuspendableThreadPoolExecutor taskExecutor;
 
@@ -63,11 +63,11 @@ class ManagedProcessOfficeManager implements OfficeManager {
         }
     };
 
-    public ManagedProcessOfficeManager(UnoUrl unoUrl) {
-        this(new ManagedProcessOfficeManagerConfiguration(unoUrl));
+    public ProcessOfficeManager(UnoUrl unoUrl) {
+        this(new ProcessOfficeManagerConfiguration(unoUrl));
     }
 
-    public ManagedProcessOfficeManager(ManagedProcessOfficeManagerConfiguration configuration) {
+    public ProcessOfficeManager(ProcessOfficeManagerConfiguration configuration) {
         this.configuration = configuration;
         managedOfficeProcess = new ManagedOfficeProcess(configuration);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);

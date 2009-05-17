@@ -5,20 +5,20 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-class PoolingOfficeManager implements OfficeManager {
+class ProcessPoolOfficeManager implements OfficeManager {
 
-    private final BlockingQueue<ManagedProcessOfficeManager> pool;
-    private final ManagedProcessOfficeManager[] pooledManagers;
+    private final BlockingQueue<ProcessOfficeManager> pool;
+    private final ProcessOfficeManager[] pooledManagers;
     private final long taskQueueTimeout;
 
-    public PoolingOfficeManager(File officeHome, UnoUrl[] unoUrls, long taskQueueTimeout) {
+    public ProcessPoolOfficeManager(File officeHome, UnoUrl[] unoUrls, long taskQueueTimeout) {
         this.taskQueueTimeout = taskQueueTimeout;
-        pool = new ArrayBlockingQueue<ManagedProcessOfficeManager>(unoUrls.length);
-        pooledManagers = new ManagedProcessOfficeManager[unoUrls.length];
+        pool = new ArrayBlockingQueue<ProcessOfficeManager>(unoUrls.length);
+        pooledManagers = new ProcessOfficeManager[unoUrls.length];
         for (int i = 0; i < unoUrls.length; i++) {
-            ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(unoUrls[i]);
+            ProcessOfficeManagerConfiguration configuration = new ProcessOfficeManagerConfiguration(unoUrls[i]);
             configuration.setOfficeHome(officeHome);
-            pooledManagers[i] = new ManagedProcessOfficeManager(configuration);
+            pooledManagers[i] = new ProcessOfficeManager(configuration);
         }
     }
 
@@ -30,7 +30,7 @@ class PoolingOfficeManager implements OfficeManager {
     }
 
     public void execute(OfficeTask task) throws OfficeException {
-        ManagedProcessOfficeManager manager = null;
+        ProcessOfficeManager manager = null;
         try {
             manager = acquireManager();
             if (manager == null) {
@@ -51,7 +51,7 @@ class PoolingOfficeManager implements OfficeManager {
         }
     }
 
-    private ManagedProcessOfficeManager acquireManager() {
+    private ProcessOfficeManager acquireManager() {
         try {
             return pool.poll(taskQueueTimeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException interruptedException) {
@@ -59,7 +59,7 @@ class PoolingOfficeManager implements OfficeManager {
         }
     }
 
-    private void releaseManager(ManagedProcessOfficeManager manager) {
+    private void releaseManager(ProcessOfficeManager manager) {
         try {
             pool.put(manager);
         } catch (InterruptedException interruptedException) {
