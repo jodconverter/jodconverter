@@ -15,16 +15,20 @@ public class OfficeManagerConfiguration {
     private long taskExecutionTimeout = 120000L;  // 2 minutes
     private int maxTasksPerProcess = 200;
 
-    public OfficeManagerConfiguration setOfficeHome(String officeHome) {
+    public OfficeManagerConfiguration setOfficeHome(String officeHome) throws NullPointerException, IllegalArgumentException {
+        checkArgumentNotNull("officeHome", officeHome);
         return setOfficeHome(new File(officeHome));
     }
 
-    public OfficeManagerConfiguration setOfficeHome(File officeHome) {
+    public OfficeManagerConfiguration setOfficeHome(File officeHome) throws NullPointerException, IllegalArgumentException  {
+        checkArgumentNotNull("officeHome", officeHome);
+        checkArgument("officeHome", officeHome.isDirectory(), "must exist and be a directory");
         this.officeHome = officeHome;
         return this;
     }
 
-    public OfficeManagerConfiguration setConnectionProtocol(ConnectionProtocol connectionProtocol) {
+    public OfficeManagerConfiguration setConnectionProtocol(ConnectionProtocol connectionProtocol) throws NullPointerException {
+        checkArgumentNotNull("connectionProtocol", connectionProtocol);
         this.connectionProtocol = connectionProtocol;
         return this;
     }
@@ -34,22 +38,30 @@ public class OfficeManagerConfiguration {
         return this;
     }
 
-    public OfficeManagerConfiguration setPortNumbers(int... portNumbers) {
+    public OfficeManagerConfiguration setPortNumbers(int... portNumbers) throws NullPointerException, IllegalArgumentException {
+        checkArgumentNotNull("portNumbers", portNumbers);
+        checkArgument("portNumbers", portNumbers.length > 0, "must not be empty");
         this.portNumbers = portNumbers;
         return this;
     }
 
-    public OfficeManagerConfiguration setPipeName(String pipeName) {
+    public OfficeManagerConfiguration setPipeName(String pipeName) throws NullPointerException {
+        checkArgumentNotNull("pipeName", pipeName);
         this.pipeNames = new String[] { pipeName };
         return this;
     }
 
-    public OfficeManagerConfiguration setPipeNames(String... pipeNames) {
+    public OfficeManagerConfiguration setPipeNames(String... pipeNames) throws NullPointerException, IllegalArgumentException {
+        checkArgumentNotNull("pipeNames", pipeNames);
+        checkArgument("pipeNames", pipeNames.length > 0, "must not be empty");
         this.pipeNames = pipeNames;
         return this;
     }
 
-    public OfficeManagerConfiguration setTemplateProfileDir(File templateProfileDir) {
+    public OfficeManagerConfiguration setTemplateProfileDir(File templateProfileDir) throws IllegalArgumentException {
+        if (templateProfileDir != null) {
+            checkArgument("templateProfileDir", templateProfileDir.isDirectory(), "must exist and be a directory");
+        }
         this.templateProfileDir = templateProfileDir;
         return this;
     }
@@ -76,6 +88,18 @@ public class OfficeManagerConfiguration {
             unoUrls[i] = (connectionProtocol == ConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
         return new ProcessPoolOfficeManager(officeHome, unoUrls, templateProfileDir, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess);
+    }
+
+    private void checkArgumentNotNull(String argName, Object argValue) throws NullPointerException {
+        if (argValue == null) {
+            throw new NullPointerException(argName + " must not be null");
+        }
+    }
+
+    private void checkArgument(String argName, boolean condition, String message) throws IllegalArgumentException {
+        if (!condition) {
+            throw new IllegalArgumentException(argName + " " + message);
+        }
     }
 
 }
