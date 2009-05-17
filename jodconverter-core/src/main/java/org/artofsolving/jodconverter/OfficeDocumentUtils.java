@@ -21,13 +21,18 @@ package org.artofsolving.jodconverter;
 
 import static org.artofsolving.jodconverter.office.OfficeUtils.*;
 
+import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.office.OfficeException;
 
 
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
 
-public abstract class OfficeDocumentUtils {
+class OfficeDocumentUtils {
+
+    private OfficeDocumentUtils() {
+        throw new AssertionError("utility class must not be instantiated");
+    }
 
     public static DocumentFamily getDocumentFamily(XComponent document) throws OfficeException {
         XServiceInfo serviceInfo = cast(XServiceInfo.class, document);

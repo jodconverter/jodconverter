@@ -23,6 +23,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.artofsolving.jodconverter.document.DocumentFamily;
+import org.artofsolving.jodconverter.document.DocumentFormat;
+
 import com.sun.star.lang.XComponent;
 
 public class StandardConversionTask extends AbstractConversionTask {

@@ -17,7 +17,7 @@
 // Public License along with JODConverter.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-package org.artofsolving.jodconverter.json;
+package org.artofsolving.jodconverter.document;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -25,10 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.artofsolving.jodconverter.DefaultDocumentFormatRegistry;
-import org.artofsolving.jodconverter.DocumentFamily;
-import org.artofsolving.jodconverter.DocumentFormat;
-import org.artofsolving.jodconverter.SimpleDocumentFormatRegistry;
 import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +33,7 @@ import org.json.JSONObject;
 /**
  * Exectable class that dumps a JSON version of the {@link DefaultDocumentFormatRegistry}
  */
-public class DumpJsonDefaultDocumentFormatRegistry {
+class DumpJsonDefaultDocumentFormatRegistry {
 
     private static class SortedJsonObject extends JSONObject {
          public SortedJsonObject() {

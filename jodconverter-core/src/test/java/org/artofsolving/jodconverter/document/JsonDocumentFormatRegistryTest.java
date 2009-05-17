@@ -17,7 +17,7 @@
 // Public License along with JODConverter.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-package org.artofsolving.jodconverter.json;
+package org.artofsolving.jodconverter.document;
 
 import static org.testng.Assert.*;
 
@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.artofsolving.jodconverter.DocumentFamily;
-import org.artofsolving.jodconverter.DocumentFormat;
-import org.artofsolving.jodconverter.DocumentFormatRegistry;
-import org.artofsolving.jodconverter.json.JsonDocumentFormatRegistry;
+import org.artofsolving.jodconverter.document.DocumentFamily;
+import org.artofsolving.jodconverter.document.DocumentFormat;
+import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
+import org.artofsolving.jodconverter.document.JsonDocumentFormatRegistry;
 
 import org.json.JSONException;
 import org.testng.annotations.Test;

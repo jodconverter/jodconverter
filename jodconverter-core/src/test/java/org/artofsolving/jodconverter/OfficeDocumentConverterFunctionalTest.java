@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.artofsolving.jodconverter.document.DocumentFormat;
+import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.OfficeManagerConfiguration;
 import org.testng.annotations.Test;
