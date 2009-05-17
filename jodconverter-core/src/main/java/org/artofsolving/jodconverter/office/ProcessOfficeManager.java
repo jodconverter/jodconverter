@@ -26,14 +26,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-import org.artofsolving.jodconverter.util.NamedThreadFactory;
-import org.artofsolving.jodconverter.util.SuspendableThreadPoolExecutor;
 
 class ProcessOfficeManager implements OfficeManager {
 
     private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("OfficeManagerThread");
 
-    private final ProcessOfficeManagerConfiguration configuration;
+    private final ProcessOfficeManagerSettings settings;
     private final ManagedOfficeProcess managedOfficeProcess;
     private final SuspendableThreadPoolExecutor taskExecutor;
 
@@ -64,12 +62,12 @@ class ProcessOfficeManager implements OfficeManager {
     };
 
     public ProcessOfficeManager(UnoUrl unoUrl) {
-        this(new ProcessOfficeManagerConfiguration(unoUrl));
+        this(new ProcessOfficeManagerSettings(unoUrl));
     }
 
-    public ProcessOfficeManager(ProcessOfficeManagerConfiguration configuration) {
-        this.configuration = configuration;
-        managedOfficeProcess = new ManagedOfficeProcess(configuration);
+    public ProcessOfficeManager(ProcessOfficeManagerSettings settings) {
+        this.settings = settings;
+        managedOfficeProcess = new ManagedOfficeProcess(settings);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
         taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY);
     }
@@ -77,8 +75,8 @@ class ProcessOfficeManager implements OfficeManager {
     public void execute(final OfficeTask task) throws OfficeException {
         Future<?> futureTask = taskExecutor.submit(new Runnable() {
             public void run() {
-                if (configuration.getMaxTasksPerProcess() > 0 && ++taskCount == configuration.getMaxTasksPerProcess() + 1) {
-                    logger.info(String.format("reached limit of %d maxTasksPerProcess: restarting", configuration.getMaxTasksPerProcess()));
+                if (settings.getMaxTasksPerProcess() > 0 && ++taskCount == settings.getMaxTasksPerProcess() + 1) {
+                    logger.info(String.format("reached limit of %d maxTasksPerProcess: restarting", settings.getMaxTasksPerProcess()));
                     taskExecutor.setAvailable(false);
                     stopping = true;
                     managedOfficeProcess.restartAndWait();
@@ -89,7 +87,7 @@ class ProcessOfficeManager implements OfficeManager {
          });
          currentTask = futureTask;
          try {
-             futureTask.get(configuration.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
+             futureTask.get(settings.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
          } catch (TimeoutException timeoutException) {
              managedOfficeProcess.restartDueToTaskTimeout();
              throw new OfficeException("task did not complete within timeout", timeoutException);

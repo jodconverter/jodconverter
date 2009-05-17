@@ -17,9 +17,9 @@
 // Public License along with JODConverter.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-package org.artofsolving.jodconverter.util;
+package org.artofsolving.jodconverter.office;
 
-public abstract class Retryable {
+abstract class Retryable {
 
     /**
      * @throws TemporaryException for an error condition that can be temporary - i.e. retrying later could be successful

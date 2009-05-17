@@ -17,17 +17,13 @@
 // Public License along with JODConverter.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-package org.artofsolving.jodconverter.util;
+package org.artofsolving.jodconverter.office;
 
-/**
- * Represents an error condition that can be temporary, i.e. that could go
- * away by simply retrying the same operation after an interval.  
- */
-public class TemporaryException extends Exception {
+class RetryTimeoutException extends Exception {
 
-    private static final long serialVersionUID = 7237380113208327295L;
+    private static final long serialVersionUID = -3704437769955257514L;
 
-    public TemporaryException(Throwable cause) {
+    public RetryTimeoutException(Throwable cause) {
         super(cause);
     }
 

@@ -25,7 +25,7 @@ import java.io.IOException;
 import org.artofsolving.jodconverter.process.MacProcessManager;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.UnixProcessManager;
-import org.artofsolving.jodconverter.util.OsUtils;
+import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
@@ -34,7 +34,7 @@ import org.testng.annotations.Test;
 public class ProcessManagerTest {
 
     public void unixProcessManager() throws IOException {
-        if (OsUtils.isMac() || OsUtils.isWindows()) {
+        if (PlatformUtils.isMac() || PlatformUtils.isWindows()) {
             throw new SkipException("UnixProcessManager only works on Unix");
         }
         ProcessManager processManager = new UnixProcessManager();
@@ -47,7 +47,7 @@ public class ProcessManagerTest {
     }
 
     public void macProcessManager() throws IOException {
-        if (!OsUtils.isMac()) {
+        if (!PlatformUtils.isMac()) {
             throw new SkipException("MacProcessManager only works on Mac");
         }
         ProcessManager processManager = new MacProcessManager();

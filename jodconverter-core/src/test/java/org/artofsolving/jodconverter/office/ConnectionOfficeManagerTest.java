@@ -21,10 +21,7 @@ package org.artofsolving.jodconverter.office;
 
 import static org.testng.Assert.assertTrue;
 
-import org.artofsolving.jodconverter.office.ConnectionOfficeManager;
-import org.artofsolving.jodconverter.office.UnoUrl;
-import org.artofsolving.jodconverter.office.OfficeProcess;
-import org.artofsolving.jodconverter.office.OfficeProcessConfiguration;
+import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.testng.annotations.Test;
 
@@ -33,7 +30,7 @@ public class ConnectionOfficeManagerTest {
 
     public void executeTask() throws Exception {
         UnoUrl unoUrl = UnoUrl.socket(2002);
-        OfficeProcess officeProcess = new OfficeProcess(new OfficeProcessConfiguration(unoUrl));
+        OfficeProcess officeProcess = new OfficeProcess(OfficeUtils.getDefaultOfficeHome(), unoUrl, null, new PureJavaProcessManager());
         officeProcess.start();
         Thread.sleep(2000);
         

@@ -17,7 +17,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
         pool = new ArrayBlockingQueue<ProcessOfficeManager>(unoUrls.length);
         pooledManagers = new ProcessOfficeManager[unoUrls.length];
         for (int i = 0; i < unoUrls.length; i++) {
-            ProcessOfficeManagerConfiguration configuration = new ProcessOfficeManagerConfiguration(unoUrls[i]);
+            ProcessOfficeManagerSettings configuration = new ProcessOfficeManagerSettings(unoUrls[i]);
             configuration.setTemplateProfileDir(templateProfileDir);
             configuration.setOfficeHome(officeHome);
             configuration.setTaskExecutionTimeout(taskExecutionTimeout);

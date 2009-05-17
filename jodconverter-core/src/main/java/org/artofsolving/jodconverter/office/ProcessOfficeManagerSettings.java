@@ -19,32 +19,32 @@
 //
 package org.artofsolving.jodconverter.office;
 
-class ManagedOfficeProcessConfiguration extends OfficeProcessConfiguration {
+class ProcessOfficeManagerSettings extends ManagedOfficeProcessSettings {
 
-    public static final long DEFAULT_RETRY_TIMEOUT = 30000L;
-    public static final long DEFAULT_RETRY_INTERVAL = 250L;
+    public static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120000L;
+    public static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
 
-    private long retryTimeout = DEFAULT_RETRY_TIMEOUT;
-    private long retryInterval = DEFAULT_RETRY_INTERVAL;
+    private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
+    private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
-    public ManagedOfficeProcessConfiguration(UnoUrl unoUrl) {
+    public ProcessOfficeManagerSettings(UnoUrl unoUrl) {
         super(unoUrl);
     }
 
-    public long getRetryTimeout() {
-        return retryTimeout;
+    public long getTaskExecutionTimeout() {
+        return taskExecutionTimeout;
     }
 
-    public void setRetryTimeout(long retryTimeout) {
-        this.retryTimeout = retryTimeout;
+    public void setTaskExecutionTimeout(long taskExecutionTimeout) {
+        this.taskExecutionTimeout = taskExecutionTimeout;
     }
 
-    public long getRetryInterval() {
-        return retryInterval;
+    public int getMaxTasksPerProcess() {
+        return maxTasksPerProcess;
     }
 
-    public void setRetryInterval(long retryInterval) {
-        this.retryInterval = retryInterval;
+    public void setMaxTasksPerProcess(int maxTasksPerProcess) {
+        this.maxTasksPerProcess = maxTasksPerProcess;
     }
 
 }

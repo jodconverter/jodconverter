@@ -24,15 +24,19 @@ import java.io.File;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 
-class OfficeProcessConfiguration {
+class ManagedOfficeProcessSettings {
+
+    public static final long DEFAULT_RETRY_TIMEOUT = 30000L;
+    public static final long DEFAULT_RETRY_INTERVAL = 250L;
 
     private final UnoUrl unoUrl;
-
     private File officeHome = OfficeUtils.getDefaultOfficeHome();
     private File templateProfileDir;
     private ProcessManager processManager = new PureJavaProcessManager();
+    private long retryTimeout = DEFAULT_RETRY_TIMEOUT;
+    private long retryInterval = DEFAULT_RETRY_INTERVAL;
 
-    public OfficeProcessConfiguration(UnoUrl unoUrl) {
+    public ManagedOfficeProcessSettings(UnoUrl unoUrl) {
         this.unoUrl = unoUrl;
     }
 
@@ -62,6 +66,22 @@ class OfficeProcessConfiguration {
 
     public void setProcessManager(ProcessManager processManager) {
         this.processManager = processManager;
+    }
+
+    public long getRetryTimeout() {
+        return retryTimeout;
+    }
+
+    public void setRetryTimeout(long retryTimeout) {
+        this.retryTimeout = retryTimeout;
+    }
+
+    public long getRetryInterval() {
+        return retryInterval;
+    }
+
+    public void setRetryInterval(long retryInterval) {
+        this.retryInterval = retryInterval;
     }
 
 }

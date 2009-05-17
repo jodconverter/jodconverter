@@ -17,7 +17,7 @@
 // Public License along with JODConverter.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-package org.artofsolving.jodconverter.util;
+package org.artofsolving.jodconverter.office;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * A {@link ThreadFactory} that allows for custom thread names
  */
-public class NamedThreadFactory implements ThreadFactory {
+class NamedThreadFactory implements ThreadFactory {
 
     private static final AtomicInteger threadIndex = new AtomicInteger(0);
 

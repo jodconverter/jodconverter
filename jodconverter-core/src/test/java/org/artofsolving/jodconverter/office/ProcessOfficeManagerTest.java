@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.artofsolving.jodconverter.office.ManagedOfficeProcess;
 import org.artofsolving.jodconverter.office.ProcessOfficeManager;
-import org.artofsolving.jodconverter.office.ProcessOfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.ProcessOfficeManagerSettings;
 import org.artofsolving.jodconverter.office.OfficeConnection;
 import org.artofsolving.jodconverter.office.UnoUrl;
 import org.artofsolving.jodconverter.office.OfficeException;
@@ -108,7 +108,7 @@ public class ProcessOfficeManagerTest {
     }
 
     public void restartAfterTaskTimeout() throws Exception {
-        ProcessOfficeManagerConfiguration configuration = new ProcessOfficeManagerConfiguration(CONNECTION_MODE);
+        ProcessOfficeManagerSettings configuration = new ProcessOfficeManagerSettings(CONNECTION_MODE);
         configuration.setTaskExecutionTimeout(1500L);
         final ProcessOfficeManager officeManager = new ProcessOfficeManager(configuration);
         
@@ -144,7 +144,7 @@ public class ProcessOfficeManagerTest {
     }
 
     public void restartWhenMaxTasksPerProcessReached() throws Exception {
-        ProcessOfficeManagerConfiguration configuration = new ProcessOfficeManagerConfiguration(CONNECTION_MODE);
+        ProcessOfficeManagerSettings configuration = new ProcessOfficeManagerSettings(CONNECTION_MODE);
         configuration.setMaxTasksPerProcess(3);
         final ProcessOfficeManager officeManager = new ProcessOfficeManager(configuration);
         

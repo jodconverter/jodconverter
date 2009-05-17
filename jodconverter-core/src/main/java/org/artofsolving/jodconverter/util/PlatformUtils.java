@@ -19,14 +19,20 @@
 //
 package org.artofsolving.jodconverter.util;
 
-public abstract class OsUtils {
+public class PlatformUtils {
+
+    private static final String OS_NAME = System.getProperty("os.name");
+    
+    private PlatformUtils() {
+        throw new AssertionError("utility class must not be instantiated");
+    }
 
     public static boolean isWindows() {
-        return System.getProperty("os.name").startsWith("Windows");
+        return OS_NAME.startsWith("Windows");
     }
 
     public static boolean isMac() {
-        return System.getProperty("os.name").startsWith("Mac");
+        return OS_NAME.startsWith("Mac");
     }
 
 }

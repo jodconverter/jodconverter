@@ -22,15 +22,19 @@ package org.artofsolving.jodconverter.office;
 import java.io.File;
 import java.util.Map;
 
-import org.artofsolving.jodconverter.util.OsUtils;
+import org.artofsolving.jodconverter.util.PlatformUtils;
 
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.uno.UnoRuntime;
 
-public abstract class OfficeUtils {
+public class OfficeUtils {
 
     public static final String SERVICE_DESKTOP = "com.sun.star.frame.Desktop";
+
+    private OfficeUtils() {
+        throw new AssertionError("utility class must not be instantiated");
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> T cast(Class<T> type, Object object) {
@@ -72,9 +76,9 @@ public abstract class OfficeUtils {
         if (System.getProperty("office.home") != null) {
             return new File(System.getProperty("office.home"));
         }
-        if (OsUtils.isWindows()) {
+        if (PlatformUtils.isWindows()) {
             return new File(System.getenv("ProgramFiles"), "OpenOffice.org 3");
-        } else if (OsUtils.isMac()) {
+        } else if (PlatformUtils.isMac()) {
             return new File("/Applications/OpenOffice.org.app/Contents");
         } else {
             // Linux or Solaris
@@ -86,9 +90,9 @@ public abstract class OfficeUtils {
         if (System.getProperty("office.profile") != null) {
             return new File(System.getProperty("office.profile"));
         }
-        if (OsUtils.isWindows()) {
+        if (PlatformUtils.isWindows()) {
             return new File(System.getenv("APPDATA"), "OpenOffice.org/3");
-        } else if (OsUtils.isMac()) {
+        } else if (PlatformUtils.isMac()) {
             return new File(System.getProperty("user.home"), "Library/Application Support/OpenOffice.org/3");
         } else {
             // Linux or Solaris

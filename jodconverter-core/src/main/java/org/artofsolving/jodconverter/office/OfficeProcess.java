@@ -30,29 +30,26 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.artofsolving.jodconverter.process.ProcessManager;
-import org.artofsolving.jodconverter.util.OsUtils;
-import org.artofsolving.jodconverter.util.RetryTimeoutException;
-import org.artofsolving.jodconverter.util.Retryable;
-import org.artofsolving.jodconverter.util.TemporaryException;
+import org.artofsolving.jodconverter.util.PlatformUtils;
 
 class OfficeProcess {
 
-    private final UnoUrl unoUrl;
     private final File officeHome;
+    private final UnoUrl unoUrl;
     private final File templateProfileDir;
-    private final File profileDir;
+    private final File instanceProfileDir;
     private final ProcessManager processManager;
 
     private Process process;
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public OfficeProcess(OfficeProcessConfiguration configuration) {
-        this.unoUrl = configuration.getUnoUrl();
-        this.officeHome = configuration.getOfficeHome();
-        this.templateProfileDir = configuration.getTemplateProfileDir();
-        this.profileDir = getProfileDir(configuration.getUnoUrl());
-        this.processManager = configuration.getProcessManager();
+    public OfficeProcess(File officeHome, UnoUrl unoUrl, File templateProfileDir, ProcessManager processManager) {
+        this.officeHome = officeHome;
+        this.unoUrl = unoUrl;
+        this.templateProfileDir = templateProfileDir;
+        this.instanceProfileDir = getInstanceProfileDir(unoUrl);
+        this.processManager = processManager;
     }
 
     public void start() throws IOException {
@@ -60,11 +57,11 @@ class OfficeProcess {
         if (existingPid != null) {
             throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %s", unoUrl.getAcceptString(), existingPid));
         }
-        prepareProfileDir();
+        prepareInstanceProfileDir();
         List<String> command = new ArrayList<String>();
         command.add(new File(officeHome, getExecutablePath()).getAbsolutePath());
         command.add("-accept=" + unoUrl.getAcceptString() + ";urp;");
-        command.add("-env:UserInstallation=" + OfficeUtils.toUrl(profileDir));
+        command.add("-env:UserInstallation=" + OfficeUtils.toUrl(instanceProfileDir));
         command.add("-headless");
         command.add("-nocrashreport");
         command.add("-nodefault");
@@ -73,27 +70,27 @@ class OfficeProcess {
         command.add("-nologo");
         command.add("-norestore");
         ProcessBuilder processBuilder = new ProcessBuilder(command);
-        if (OsUtils.isWindows()) {
+        if (PlatformUtils.isWindows()) {
             addBasisAndUrePaths(processBuilder);
         }
-        logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", unoUrl, profileDir));
+        logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", unoUrl, instanceProfileDir));
         process = processBuilder.start();
         logger.info("started process; pid " + processManager.getPid(process));
     }
 
-    private File getProfileDir(UnoUrl unoUrl) {
+    private File getInstanceProfileDir(UnoUrl unoUrl) {
         String dirName = ".jodconverter_" + unoUrl.getAcceptString().replace(',', '_').replace('=', '-');
         return new File(System.getProperty("java.io.tmpdir"), dirName);
     }
 
-    private void prepareProfileDir() throws OfficeException {
-        if (profileDir.exists()) {
-            logger.warning(String.format("profile dir '%s' already exists; deleting", profileDir));
+    private void prepareInstanceProfileDir() throws OfficeException {
+        if (instanceProfileDir.exists()) {
+            logger.warning(String.format("profile dir '%s' already exists; deleting", instanceProfileDir));
             deleteProfileDir();
         }
         if (templateProfileDir != null) {
             try {
-                FileUtils.copyDirectory(templateProfileDir, profileDir);
+                FileUtils.copyDirectory(templateProfileDir, instanceProfileDir);
             } catch (IOException ioException) {
                 throw new OfficeException("failed to create profileDir", ioException);
             }
@@ -101,9 +98,9 @@ class OfficeProcess {
     }
 
     public void deleteProfileDir() {
-        if (profileDir != null) {
+        if (instanceProfileDir != null) {
             try {
-                FileUtils.deleteDirectory(profileDir);
+                FileUtils.deleteDirectory(instanceProfileDir);
             } catch (IOException ioException) {
                 logger.warning(ioException.getMessage());
             }
@@ -111,7 +108,7 @@ class OfficeProcess {
     }
 
     private String getExecutablePath() {
-        if (OsUtils.isMac()) {
+        if (PlatformUtils.isMac()) {
             return "MacOS/soffice.bin";
         } else {
             return "program/soffice.bin";

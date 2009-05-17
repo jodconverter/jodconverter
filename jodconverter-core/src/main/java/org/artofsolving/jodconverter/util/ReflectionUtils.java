@@ -21,7 +21,11 @@ package org.artofsolving.jodconverter.util;
 
 import java.lang.reflect.Field;
 
-public abstract class ReflectionUtils {
+public class ReflectionUtils {
+
+    private ReflectionUtils() {
+        throw new AssertionError("utility class must not be instantiated");
+    }
 
     public static Object getPrivateField(Object instance, String fieldName) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         return getPrivateField(instance.getClass(), instance, fieldName);

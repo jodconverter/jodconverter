@@ -17,7 +17,7 @@
 // Public License along with JODConverter.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-package org.artofsolving.jodconverter.util;
+package org.artofsolving.jodconverter.office;
 
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
+class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
 
     private boolean available = false;
     private ReentrantLock suspendLock = new ReentrantLock();

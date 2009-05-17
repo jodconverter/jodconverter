@@ -26,10 +26,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
 
-import org.artofsolving.jodconverter.util.NamedThreadFactory;
-import org.artofsolving.jodconverter.util.RetryTimeoutException;
-import org.artofsolving.jodconverter.util.Retryable;
-import org.artofsolving.jodconverter.util.TemporaryException;
 
 
 import com.sun.star.frame.XDesktop;
@@ -39,7 +35,7 @@ class ManagedOfficeProcess {
 
     private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("ManagedOfficeProcessThread");
 
-    private final ManagedOfficeProcessConfiguration configuration;
+    private final ManagedOfficeProcessSettings settings;
 
     private final OfficeProcess process;
     private final OfficeConnection connection;
@@ -48,17 +44,10 @@ class ManagedOfficeProcess {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public ManagedOfficeProcess(ManagedOfficeProcessConfiguration configuration) throws OfficeException {
-        // TODO validate configuration (here or in ManagedProcessOfficeManager?)
-//        if (!officeHome.isDirectory()) {
-//            throw new IllegalArgumentException("officeHome doesn't exist: " + officeHome);
-//        }
-//        if (templateProfileDir != null && !templateProfileDir.isDirectory()) {
-//            throw new IllegalArgumentException("templateProfileDir doesn't exist: " + templateProfileDir);
-//        }
-        this.configuration = configuration;
-        process = new OfficeProcess(configuration);
-        connection = new OfficeConnection(configuration.getUnoUrl());
+    public ManagedOfficeProcess(ManagedOfficeProcessSettings settings) throws OfficeException {
+        this.settings = settings;
+        process = new OfficeProcess(settings.getOfficeHome(), settings.getUnoUrl(), settings.getTemplateProfileDir(), settings.getProcessManager());
+        connection = new OfficeConnection(settings.getUnoUrl());
     }
 
     public OfficeConnection getConnection() {
@@ -134,7 +123,7 @@ class ManagedOfficeProcess {
                         throw new TemporaryException(connectException);
                     }
                 }
-            }.execute(configuration.getRetryInterval(), configuration.getRetryTimeout());
+            }.execute(settings.getRetryInterval(), settings.getRetryTimeout());
         } catch (Exception exception) {
             throw new OfficeException("could not establish connection", exception);
         }
@@ -152,7 +141,7 @@ class ManagedOfficeProcess {
 
     private void doEnsureProcessExited() throws OfficeException {
         try {
-            int exitCode = process.getExitCode(configuration.getRetryInterval(), configuration.getRetryTimeout());
+            int exitCode = process.getExitCode(settings.getRetryInterval(), settings.getRetryTimeout());
             logger.info("process exited with code " + exitCode);
         } catch (RetryTimeoutException retryTimeoutException) {
             doTerminateProcess();
@@ -162,7 +151,7 @@ class ManagedOfficeProcess {
 
     private void doTerminateProcess() {
         try {
-            int exitCode = process.forciblyTerminate(configuration.getRetryInterval(), configuration.getRetryTimeout());
+            int exitCode = process.forciblyTerminate(settings.getRetryInterval(), settings.getRetryTimeout());
             logger.info("process forcibly terminated with code " + exitCode);
         } catch (Exception exception) {
             throw new OfficeException("could not terminate process", exception);
