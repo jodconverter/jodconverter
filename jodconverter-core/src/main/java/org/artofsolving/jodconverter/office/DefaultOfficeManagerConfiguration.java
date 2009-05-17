@@ -1,3 +1,22 @@
+//
+// JODConverter - Java OpenDocument Converter
+// Copyright 2009 Art of Solving Ltd
+// Copyright 2004-2009 Mirko Nasato
+//
+// JODConverter is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation, either version 3 of
+// the License, or (at your option) any later version.
+//
+// JODConverter is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General
+// Public License along with JODConverter.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
 package org.artofsolving.jodconverter.office;
 
 import java.io.File;
@@ -7,10 +26,8 @@ import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 
 public class DefaultOfficeManagerConfiguration {
 
-    public static enum ConnectionProtocol { PIPE, SOCKET };
-
     private File officeHome = OfficeUtils.getDefaultOfficeHome();
-    private ConnectionProtocol connectionProtocol = ConnectionProtocol.SOCKET;
+    private OfficeConnectionProtocol connectionProtocol = OfficeConnectionProtocol.SOCKET;
     private int[] portNumbers = new int[] { 2002 };
     private String[] pipeNames = new String[] { "office" };
     private File templateProfileDir = null;
@@ -31,7 +48,7 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
-    public DefaultOfficeManagerConfiguration setConnectionProtocol(ConnectionProtocol connectionProtocol) throws NullPointerException {
+    public DefaultOfficeManagerConfiguration setConnectionProtocol(OfficeConnectionProtocol connectionProtocol) throws NullPointerException {
         checkArgumentNotNull("connectionProtocol", connectionProtocol);
         this.connectionProtocol = connectionProtocol;
         return this;
@@ -92,10 +109,10 @@ public class DefaultOfficeManagerConfiguration {
     }
 
     public OfficeManager buildOfficeManager() {
-        int numInstances = connectionProtocol == ConnectionProtocol.PIPE ? pipeNames.length : portNumbers.length;
+        int numInstances = connectionProtocol == OfficeConnectionProtocol.PIPE ? pipeNames.length : portNumbers.length;
         UnoUrl[] unoUrls = new UnoUrl[numInstances];
         for (int i = 0; i < numInstances; i++) {
-            unoUrls[i] = (connectionProtocol == ConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
+            unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
         return new ProcessPoolOfficeManager(officeHome, unoUrls, templateProfileDir,
                 taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);

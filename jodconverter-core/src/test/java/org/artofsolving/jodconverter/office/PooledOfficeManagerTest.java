@@ -40,7 +40,7 @@ import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="integration")
-public class ProcessOfficeManagerTest {
+public class PooledOfficeManagerTest {
 
     private static final UnoUrl CONNECTION_MODE = UnoUrl.socket(8100);
     private static final long RESTART_WAIT_TIME = 2 * 1000;

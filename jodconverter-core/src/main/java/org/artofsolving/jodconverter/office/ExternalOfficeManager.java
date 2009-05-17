@@ -44,26 +44,16 @@ import java.net.ConnectException;
 class ExternalOfficeManager implements OfficeManager {
 
     private final OfficeConnection connection;
-
-    private boolean connectOnStart = true;
-
-    public ExternalOfficeManager(int portNumber) {
-        connection = new OfficeConnection(UnoUrl.socket(portNumber));
-    }
-
-    public ExternalOfficeManager(String pipeName) {
-        connection = new OfficeConnection(UnoUrl.pipe(pipeName));
-    }
+    private final boolean connectOnStart;
 
     /**
-     * Should a connection be attempted on {@link #start()}?
-     * <p>
-     * Default is <em>true</em>. If <em>false</em>, a connection will be
-     * attempted the first time an {@link OfficeTask} is executed.
-     * 
-     * @param connectOnStart
+     * @param unoUrl
+     * @param connectOnStart should a connection be attempted on
+     *   {@link #start()}? Default is <em>true</em>. If <em>false</em>, a
+     *   connection will only be attempted the first time an {@link OfficeTask} is executed.
      */
-    public void setConnectOnStart(boolean connectOnStart) {
+    public ExternalOfficeManager(UnoUrl unoUrl, boolean connectOnStart) {
+        connection = new OfficeConnection(unoUrl);
         this.connectOnStart = connectOnStart;
     }
 
