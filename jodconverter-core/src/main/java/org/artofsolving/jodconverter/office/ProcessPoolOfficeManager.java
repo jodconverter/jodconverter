@@ -5,24 +5,27 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.artofsolving.jodconverter.process.ProcessManager;
+
 class ProcessPoolOfficeManager implements OfficeManager {
 
     private final BlockingQueue<ProcessOfficeManager> pool;
     private final ProcessOfficeManager[] pooledManagers;
     private final long taskQueueTimeout;
 
-    public ProcessPoolOfficeManager(File officeHome, UnoUrl[] unoUrls,
-            File templateProfileDir, long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess) {
+    public ProcessPoolOfficeManager(File officeHome, UnoUrl[] unoUrls, File templateProfileDir,
+            long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess, ProcessManager processManager) {
         this.taskQueueTimeout = taskQueueTimeout;
         pool = new ArrayBlockingQueue<ProcessOfficeManager>(unoUrls.length);
         pooledManagers = new ProcessOfficeManager[unoUrls.length];
         for (int i = 0; i < unoUrls.length; i++) {
-            ProcessOfficeManagerSettings configuration = new ProcessOfficeManagerSettings(unoUrls[i]);
-            configuration.setTemplateProfileDir(templateProfileDir);
-            configuration.setOfficeHome(officeHome);
-            configuration.setTaskExecutionTimeout(taskExecutionTimeout);
-            configuration.setMaxTasksPerProcess(maxTasksPerProcess);
-            pooledManagers[i] = new ProcessOfficeManager(configuration);
+            ProcessOfficeManagerSettings settings = new ProcessOfficeManagerSettings(unoUrls[i]);
+            settings.setTemplateProfileDir(templateProfileDir);
+            settings.setOfficeHome(officeHome);
+            settings.setTaskExecutionTimeout(taskExecutionTimeout);
+            settings.setMaxTasksPerProcess(maxTasksPerProcess);
+            settings.setProcessManager(processManager);
+            pooledManagers[i] = new ProcessOfficeManager(settings);
         }
     }
 
