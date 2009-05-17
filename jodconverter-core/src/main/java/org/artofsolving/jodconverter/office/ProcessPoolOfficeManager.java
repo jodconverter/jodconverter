@@ -11,13 +11,17 @@ class ProcessPoolOfficeManager implements OfficeManager {
     private final ProcessOfficeManager[] pooledManagers;
     private final long taskQueueTimeout;
 
-    public ProcessPoolOfficeManager(File officeHome, UnoUrl[] unoUrls, long taskQueueTimeout) {
+    public ProcessPoolOfficeManager(File officeHome, UnoUrl[] unoUrls,
+            File templateProfileDir, long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess) {
         this.taskQueueTimeout = taskQueueTimeout;
         pool = new ArrayBlockingQueue<ProcessOfficeManager>(unoUrls.length);
         pooledManagers = new ProcessOfficeManager[unoUrls.length];
         for (int i = 0; i < unoUrls.length; i++) {
             ProcessOfficeManagerConfiguration configuration = new ProcessOfficeManagerConfiguration(unoUrls[i]);
+            configuration.setTemplateProfileDir(templateProfileDir);
             configuration.setOfficeHome(officeHome);
+            configuration.setTaskExecutionTimeout(taskExecutionTimeout);
+            configuration.setMaxTasksPerProcess(maxTasksPerProcess);
             pooledManagers[i] = new ProcessOfficeManager(configuration);
         }
     }
