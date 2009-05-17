@@ -8,10 +8,8 @@ import javax.servlet.ServletContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManager;
-import org.artofsolving.jodconverter.office.ManagedProcessOfficeManagerConfiguration;
-import org.artofsolving.jodconverter.office.OfficeConnectionMode;
 import org.artofsolving.jodconverter.office.OfficeManager;
+import org.artofsolving.jodconverter.office.OfficeManagerConfiguration;
 
 public class WebappContext {
 
@@ -40,13 +38,11 @@ public class WebappContext {
 			logger.warning("max file upload size not set");
 		}
 
-		int officePort = 8100;
+		OfficeManagerConfiguration configuration = new OfficeManagerConfiguration();
 		String officePortParam = servletContext.getInitParameter(PARAMETER_OFFICE_PORT);
 		if (officePortParam != null) {
-		    officePort = Integer.parseInt(officePortParam);
+		    configuration.setPortNumber(Integer.parseInt(officePortParam));
 		}
-		OfficeConnectionMode connectionMode = OfficeConnectionMode.socket(officePort);
-        ManagedProcessOfficeManagerConfiguration configuration = new ManagedProcessOfficeManagerConfiguration(connectionMode);
 		String officeHomeParam = servletContext.getInitParameter(PARAMETER_OFFICE_HOME);
 		if (officeHomeParam != null) {
 		    configuration.setOfficeHome(new File(officeHomeParam));
@@ -56,7 +52,7 @@ public class WebappContext {
 		    configuration.setTemplateProfileDir(new File(officeProfileParam));
 		}
 
-		officeManager = new ManagedProcessOfficeManager(configuration);
+		officeManager = configuration.buildOfficeManager();
 		documentConverter = new OfficeDocumentConverter(officeManager);
 	}
 
