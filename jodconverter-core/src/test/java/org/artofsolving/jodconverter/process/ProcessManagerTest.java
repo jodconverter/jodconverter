@@ -19,8 +19,8 @@
 //
 package org.artofsolving.jodconverter.process;
 
+import org.artofsolving.jodconverter.ReflectionUtils;
 import org.artofsolving.jodconverter.util.PlatformUtils;
-import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.Test;

@@ -29,6 +29,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeoutException;
 
 
+import org.artofsolving.jodconverter.ReflectionUtils;
 import org.artofsolving.jodconverter.office.ManagedOfficeProcess;
 import org.artofsolving.jodconverter.office.PooledOfficeManager;
 import org.artofsolving.jodconverter.office.PooledOfficeManagerSettings;
@@ -36,7 +37,6 @@ import org.artofsolving.jodconverter.office.OfficeConnection;
 import org.artofsolving.jodconverter.office.UnoUrl;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeProcess;
-import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="integration")

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.artofsolving.jodconverter.util.ReflectionUtils;
+import org.artofsolving.jodconverter.ReflectionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -21,8 +21,8 @@ package org.artofsolving.jodconverter.office;
 
 import static org.testng.Assert.assertTrue;
 
+import org.artofsolving.jodconverter.ReflectionUtils;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
-import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.testng.annotations.Test;
 
 @Test(groups="integration")
