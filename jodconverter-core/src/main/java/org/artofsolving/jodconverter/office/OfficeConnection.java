@@ -53,12 +53,15 @@ class OfficeConnection implements OfficeContext {
 
     private XEventListener bridgeListener = new XEventListener() {
         public void disposing(EventObject event) {
-            connected = false;
-            logger.info(String.format("disconnected: '%s'", unoUrl));
-            OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(OfficeConnection.this);
-            for (OfficeConnectionEventListener listener : connectionEventListeners) {
-                listener.disconnected(connectionEvent);
+            if (connected) {
+                connected = false;
+                logger.info(String.format("disconnected: '%s'", unoUrl));
+                OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(OfficeConnection.this);
+                for (OfficeConnectionEventListener listener : connectionEventListeners) {
+                    listener.disconnected(connectionEvent);
+                }
             }
+            // else we tried to connect to a server that doesn't speak URP
         }
     };
 
