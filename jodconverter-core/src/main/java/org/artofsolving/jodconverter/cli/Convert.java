@@ -53,7 +53,7 @@ public class Convert {
     private static final Option OPTION_REGISTRY = new Option("r", "registry", true, "document formats registry configuration file (optional)");
     private static final Options OPTIONS = initOptions();
 
-    private static final int DEFAULT_OFFICE_PORT = 8100;
+    private static final int DEFAULT_OFFICE_PORT = 2002;
 
     private static Options initOptions() {
         Options options = new Options();
