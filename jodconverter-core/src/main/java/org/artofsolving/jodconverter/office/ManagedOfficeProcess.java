@@ -135,6 +135,9 @@ class ManagedOfficeProcess {
             desktop.terminate();
         } catch (DisposedException disposedException) {
             // expected
+        } catch (Exception exception) {
+            // in case we can't get hold of the desktop
+            doTerminateProcess();
         }
         doEnsureProcessExited();
     }
