@@ -19,13 +19,8 @@
 //
 package org.artofsolving.jodconverter.process;
 
-import java.io.IOException;
-
-
-import org.artofsolving.jodconverter.process.MacProcessManager;
-import org.artofsolving.jodconverter.process.ProcessManager;
-import org.artofsolving.jodconverter.process.UnixProcessManager;
 import org.artofsolving.jodconverter.util.PlatformUtils;
+import org.artofsolving.jodconverter.util.ReflectionUtils;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
@@ -33,29 +28,29 @@ import org.testng.annotations.Test;
 @Test
 public class ProcessManagerTest {
 
-    public void unixProcessManager() throws IOException {
+    public void unixProcessManager() throws Exception {
         if (PlatformUtils.isMac() || PlatformUtils.isWindows()) {
             throw new SkipException("UnixProcessManager only works on Unix");
         }
         ProcessManager processManager = new UnixProcessManager();
         Process process = new ProcessBuilder("sleep", "5s").start();
-        String pid = processManager.getPid(process);
+        String pid = processManager.findPid("sleep 5s");
         Assert.assertNotNull(pid);
-        Assert.assertEquals(pid, processManager.findPid("sleep 5s"));
-        processManager.kill(process);
+        Assert.assertEquals(pid, ReflectionUtils.getPrivateField(process, "pid").toString());
+        processManager.kill(process, pid);
         Assert.assertNull(processManager.findPid("sleep 5s"));
     }
 
-    public void macProcessManager() throws IOException {
+    public void macProcessManager() throws Exception {
         if (!PlatformUtils.isMac()) {
             throw new SkipException("MacProcessManager only works on Mac");
         }
         ProcessManager processManager = new MacProcessManager();
         Process process = new ProcessBuilder("sleep", "5s").start();
-        String pid = processManager.getPid(process);
+        String pid = processManager.findPid("sleep 5s");
         Assert.assertNotNull(pid);
-        Assert.assertEquals(pid, processManager.findPid("sleep 5s"));
-        processManager.kill(process);
+        Assert.assertEquals(pid, ReflectionUtils.getPrivateField(process, "pid").toString());
+        processManager.kill(process, pid);
         Assert.assertNull(processManager.findPid("sleep 5s"));
     }
 

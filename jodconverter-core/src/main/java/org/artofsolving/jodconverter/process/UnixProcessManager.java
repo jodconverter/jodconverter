@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import org.apache.commons.io.IOUtils;
-import org.artofsolving.jodconverter.util.ReflectionUtils;
 
 /**
  * {@link ProcessManager} implementation for *nix systems. Uses the <tt>ps</tt>
@@ -59,17 +57,8 @@ public class UnixProcessManager implements ProcessManager {
         return null;
     }
 
-    public String getPid(Process process) {
-        try {
-            int pid = (Integer) ReflectionUtils.getPrivateField(process, "pid");
-            return Integer.toString(pid);
-        } catch (Exception exception) {
-            throw new RuntimeException("couldn't get pid", exception);
-        }
-    }
-
-    public void kill(Process process) throws IOException {
-        execute("/bin/kill", "-KILL", getPid(process));
+    public void kill(Process process, String pid) throws IOException {
+        execute("/bin/kill", "-KILL", pid);
     }
 
     private List<String> execute(String... command) throws IOException {

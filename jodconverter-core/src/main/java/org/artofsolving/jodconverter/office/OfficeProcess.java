@@ -40,6 +40,7 @@ class OfficeProcess {
     private final ProcessManager processManager;
 
     private Process process;
+    private String pid;
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
@@ -52,7 +53,8 @@ class OfficeProcess {
     }
 
     public void start() throws IOException {
-        String existingPid = processManager.findPid("soffice.*" + Pattern.quote(unoUrl.getAcceptString()));
+        String processRegex = "soffice.*" + Pattern.quote(unoUrl.getAcceptString());
+        String existingPid = processManager.findPid(processRegex);
         if (existingPid != null) {
             throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %s", unoUrl.getAcceptString(), existingPid));
         }
@@ -75,7 +77,7 @@ class OfficeProcess {
         }
         logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", unoUrl, instanceProfileDir));
         process = processBuilder.start();
-        String pid = processManager.getPid(process);
+        pid = processManager.findPid(processRegex);
         logger.info("started process" + (pid != null ? "; pid = " + pid : ""));
     }
 
@@ -179,8 +181,8 @@ class OfficeProcess {
     }
 
     public int forciblyTerminate(long retryInterval, long retryTimeout) throws IOException, RetryTimeoutException {
-        logger.info(String.format("trying to forcibly terminate process: '%s'", unoUrl));
-        processManager.kill(process);
+        logger.info(String.format("trying to forcibly terminate process: '" + unoUrl + "'" + (pid != null ? " (pid " + pid  + ")" : "")));
+        processManager.kill(process, pid);
         return getExitCode(retryInterval, retryTimeout);
     }
 

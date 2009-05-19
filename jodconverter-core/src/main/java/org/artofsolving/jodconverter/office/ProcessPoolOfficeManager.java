@@ -51,6 +51,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
             settings.setProcessManager(processManager);
             pooledManagers[i] = new PooledOfficeManager(settings);
         }
+        logger.info("ProcessManager implementation is " + processManager.getClass().getSimpleName());
     }
 
     public synchronized void start() throws OfficeException {

@@ -25,11 +25,7 @@ public class PureJavaProcessManager implements ProcessManager {
         return null;
     }
 
-    public String getPid(Process process) {
-        return null;
-    }
-
-    public void kill(Process process) {
+    public void kill(Process process, String pid) {
         process.destroy();
     }
 
