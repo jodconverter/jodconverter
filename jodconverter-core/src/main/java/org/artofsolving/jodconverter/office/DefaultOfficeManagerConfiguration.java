@@ -108,14 +108,22 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
-    public OfficeManager buildOfficeManager() {
+    public OfficeManager buildOfficeManager() throws IllegalStateException {
+        if (!officeHome.isDirectory()) {
+            throw new IllegalStateException("officeHome doesn't exist or is not a directory: " + officeHome);
+        } else if (!OfficeUtils.getOfficeExecutable(officeHome).isFile()) {
+            throw new IllegalStateException("invalid officeHome: it doesn't contain soffice.bin: " + officeHome);
+        }
+        if (templateProfileDir != null && !isValidProfileDir(templateProfileDir)) {
+            throw new IllegalStateException("invalid templateProfileDir: " + templateProfileDir);
+        }
+        
         int numInstances = connectionProtocol == OfficeConnectionProtocol.PIPE ? pipeNames.length : portNumbers.length;
         UnoUrl[] unoUrls = new UnoUrl[numInstances];
         for (int i = 0; i < numInstances; i++) {
             unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
-        return new ProcessPoolOfficeManager(officeHome, unoUrls, templateProfileDir,
-                taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
+        return new ProcessPoolOfficeManager(officeHome, unoUrls, templateProfileDir, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
     }
 
     private void checkArgumentNotNull(String argName, Object argValue) throws NullPointerException {
@@ -128,6 +136,11 @@ public class DefaultOfficeManagerConfiguration {
         if (!condition) {
             throw new IllegalArgumentException(argName + " " + message);
         }
+    }
+
+    private boolean isValidProfileDir(File profileDir) {
+        File setupXcu = new File(profileDir, "registry/data/org/openoffice/Setup.xcu");
+        return setupXcu.exists();
     }
 
 }

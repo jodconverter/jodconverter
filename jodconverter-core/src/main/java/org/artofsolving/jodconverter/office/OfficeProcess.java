@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-
 import org.apache.commons.io.FileUtils;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.util.PlatformUtils;
@@ -59,7 +58,8 @@ class OfficeProcess {
         }
         prepareInstanceProfileDir();
         List<String> command = new ArrayList<String>();
-        command.add(new File(officeHome, getExecutablePath()).getAbsolutePath());
+        File executable = OfficeUtils.getOfficeExecutable(officeHome);
+        command.add(executable.getAbsolutePath());
         command.add("-accept=" + unoUrl.getAcceptString() + ";urp;");
         command.add("-env:UserInstallation=" + OfficeUtils.toUrl(instanceProfileDir));
         command.add("-headless");
@@ -105,14 +105,6 @@ class OfficeProcess {
             } catch (IOException ioException) {
                 logger.warning(ioException.getMessage());
             }
-        }
-    }
-
-    private String getExecutablePath() {
-        if (PlatformUtils.isMac()) {
-            return "MacOS/soffice.bin";
-        } else {
-            return "program/soffice.bin";
         }
     }
 
