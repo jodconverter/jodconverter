@@ -22,6 +22,7 @@ package org.artofsolving.jodconverter.office;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import com.sun.star.beans.XPropertySet;
@@ -39,7 +40,7 @@ import com.sun.star.uno.XComponentContext;
 
 class OfficeConnection implements OfficeContext {
 
-    private static volatile int bridgeIndex = 0;
+    private static AtomicInteger bridgeIndex = new AtomicInteger();
 
     private final UnoUrl unoUrl;
 
@@ -83,7 +84,7 @@ class OfficeConnection implements OfficeContext {
             XConnector connector = OfficeUtils.cast(XConnector.class, localServiceManager.createInstanceWithContext("com.sun.star.connection.Connector", localContext));
             XConnection connection = connector.connect(unoUrl.getConnectString());
             XBridgeFactory bridgeFactory = OfficeUtils.cast(XBridgeFactory.class, localServiceManager.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", localContext));
-            String bridgeName = "jodconverter_" + bridgeIndex++;
+            String bridgeName = "jodconverter_" + bridgeIndex.getAndIncrement();
             XBridge bridge = bridgeFactory.createBridge(bridgeName, "urp", connection, null);
             bridgeComponent = OfficeUtils.cast(XComponent.class, bridge);
             bridgeComponent.addEventListener(bridgeListener);
