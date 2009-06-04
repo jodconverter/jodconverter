@@ -23,24 +23,19 @@ import java.net.ConnectException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
-
-
 
 import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.DisposedException;
 
 class ManagedOfficeProcess {
 
-    private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("ManagedOfficeProcessThread");
-
     private final ManagedOfficeProcessSettings settings;
 
     private final OfficeProcess process;
     private final OfficeConnection connection;
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
+    private ExecutorService executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("OfficeProcessThread"));
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 

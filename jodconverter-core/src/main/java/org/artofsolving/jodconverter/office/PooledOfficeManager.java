@@ -21,14 +21,11 @@ package org.artofsolving.jodconverter.office;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 class PooledOfficeManager implements OfficeManager {
-
-    private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("OfficeManagerThread");
 
     private final PooledOfficeManagerSettings settings;
     private final ManagedOfficeProcess managedOfficeProcess;
@@ -68,7 +65,7 @@ class PooledOfficeManager implements OfficeManager {
         this.settings = settings;
         managedOfficeProcess = new ManagedOfficeProcess(settings);
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
-        taskExecutor = new SuspendableThreadPoolExecutor(THREAD_FACTORY);
+        taskExecutor = new SuspendableThreadPoolExecutor(new NamedThreadFactory("OfficeTaskThread"));
     }
 
     public void execute(final OfficeTask task) throws OfficeException {
