@@ -21,8 +21,12 @@ package org.artofsolving.jodconverter.office;
 
 import java.io.File;
 
+import org.artofsolving.jodconverter.process.MacProcessManager;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
+import org.artofsolving.jodconverter.process.UnixProcessManager;
+import org.artofsolving.jodconverter.process.WindowsProcessManager;
+import org.artofsolving.jodconverter.util.PlatformUtils;
 
 public class DefaultOfficeManagerConfiguration {
 
@@ -34,7 +38,7 @@ public class DefaultOfficeManagerConfiguration {
     private long taskQueueTimeout = 30000L;  // 30 seconds
     private long taskExecutionTimeout = 120000L;  // 2 minutes
     private int maxTasksPerProcess = 200;
-    private ProcessManager processManager = new PureJavaProcessManager();
+    private ProcessManager processManager = null;  // lazily initialised
 
     public DefaultOfficeManagerConfiguration setOfficeHome(String officeHome) throws NullPointerException, IllegalArgumentException {
         checkArgumentNotNull("officeHome", officeHome);
@@ -118,12 +122,31 @@ public class DefaultOfficeManagerConfiguration {
             throw new IllegalStateException("invalid templateProfileDir: " + templateProfileDir);
         }
         
+        if (processManager == null) {
+            processManager = findBestProcessManager();
+        }
+        
         int numInstances = connectionProtocol == OfficeConnectionProtocol.PIPE ? pipeNames.length : portNumbers.length;
         UnoUrl[] unoUrls = new UnoUrl[numInstances];
         for (int i = 0; i < numInstances; i++) {
             unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
         return new ProcessPoolOfficeManager(officeHome, unoUrls, templateProfileDir, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
+    }
+
+    private ProcessManager findBestProcessManager() {
+        if (PlatformUtils.isLinux()) {
+            return new UnixProcessManager();
+        } else  if (PlatformUtils.isMac()) {
+            return new MacProcessManager();
+        } else if (PlatformUtils.isWindows()) {
+            WindowsProcessManager windowsProcessManager = new WindowsProcessManager();
+            return windowsProcessManager.isUsable() ? windowsProcessManager : new PureJavaProcessManager();
+        } else {
+            // NOTE: UnixProcessManager can't be trusted to work on Solaris
+            // because of the 80-char limit on ps output there  
+            return new PureJavaProcessManager();
+        }
     }
 
     private void checkArgumentNotNull(String argName, Object argValue) throws NullPointerException {

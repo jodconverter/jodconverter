@@ -37,6 +37,16 @@ public class WindowsProcessManager implements ProcessManager {
         execute("taskkill", "/t", "/f", "/pid", pid);
     }
 
+    public boolean isUsable() {
+        try {
+            execute("wmic", "quit");
+            execute("taskkill", "/?");
+            return true;
+        } catch (IOException ioException) {
+            return false;
+        }
+    }
+
     private List<String> execute(String... command) throws IOException {
         Process process = new ProcessBuilder(command).start();
         process.getOutputStream().close(); // don't wait for stdin
