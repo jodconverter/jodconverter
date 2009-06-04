@@ -19,7 +19,7 @@
 //
 package org.artofsolving.jodconverter.office;
 
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +33,7 @@ class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
     private Condition availableCondition = suspendLock.newCondition();
 
     public SuspendableThreadPoolExecutor(ThreadFactory threadFactory) {
-        super(1, 1, 0L, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>(), threadFactory);
+        super(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), threadFactory);
     }
 
     @Override
