@@ -19,8 +19,8 @@
       <directory>target</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>jodconverter-${project.version}-javadoc.jar</include>
-        <include>jodconverter-${project.version}-sources.jar</include>
+        <include>${project.artifactId}-${project.version}-javadoc.jar</include>
+        <include>${project.artifactId}-${project.version}-sources.jar</include>
       </includes>
     </fileSet>
     <fileSet>
