@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.artofsolving.jodconverter.util.PlatformUtils;
 
-
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.uno.UnoRuntime;
 
@@ -64,12 +63,9 @@ public class OfficeUtils {
     }
 
     public static String toUrl(File file) {
-        String url = "file://" + file.toURI().getRawPath();
-        if (url.endsWith("/")) {
-            return url.substring(0, url.length() - 1);
-        } else {
-            return url;
-        }
+        String path = file.toURI().getRawPath();
+        String url = path.startsWith("//") ? "file:" + path : "file://" + path;
+        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
     public static File getDefaultOfficeHome() {
