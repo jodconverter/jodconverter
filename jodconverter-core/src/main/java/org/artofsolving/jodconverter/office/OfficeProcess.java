@@ -105,7 +105,12 @@ class OfficeProcess {
             try {
                 FileUtils.deleteDirectory(instanceProfileDir);
             } catch (IOException ioException) {
-                logger.warning(ioException.getMessage());
+                File oldProfileDir = new File(instanceProfileDir.getParentFile(), instanceProfileDir.getName() + ".old." + System.currentTimeMillis());
+                if (instanceProfileDir.renameTo(oldProfileDir)) {
+                    logger.warning("could not delete profileDir: " + ioException.getMessage() + "; renamed it to " + oldProfileDir);
+                } else {
+                    logger.severe("could not delete profileDir: " + ioException.getMessage());
+                }
             }
         }
     }
