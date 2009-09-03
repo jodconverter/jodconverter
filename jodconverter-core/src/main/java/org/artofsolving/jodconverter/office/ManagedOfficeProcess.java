@@ -23,6 +23,7 @@ import java.net.ConnectException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.star.frame.XDesktop;
@@ -101,8 +102,12 @@ class ManagedOfficeProcess {
     public void restartDueToLostConnection() {
         executor.execute(new Runnable() {
             public void run() {
-                doEnsureProcessExited();
-                doStartProcessAndConnect();
+                try {
+                    doEnsureProcessExited();
+                    doStartProcessAndConnect();
+                } catch (OfficeException officeException) {
+                    logger.log(Level.SEVERE, "could not restart process", officeException);
+                }
             } 
          });
     }
@@ -147,7 +152,7 @@ class ManagedOfficeProcess {
         process.deleteProfileDir();
     }
 
-    private void doTerminateProcess() {
+    private void doTerminateProcess() throws OfficeException {
         try {
             int exitCode = process.forciblyTerminate(settings.getRetryInterval(), settings.getRetryTimeout());
             logger.info("process forcibly terminated with code " + exitCode);
