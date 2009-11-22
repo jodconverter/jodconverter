@@ -42,7 +42,7 @@ class ManagedOfficeProcess {
 
     public ManagedOfficeProcess(ManagedOfficeProcessSettings settings) throws OfficeException {
         this.settings = settings;
-        process = new OfficeProcess(settings.getOfficeHome(), settings.getUnoUrl(), settings.getTemplateProfileDir(), settings.getProcessManager());
+        process = new OfficeProcess(settings.getOfficeHome(), settings.getUnoUrl(), settings.getRunAsArgs(), settings.getTemplateProfileDir(), settings.getProcessManager());
         connection = new OfficeConnection(settings.getUnoUrl());
     }
 

@@ -22,6 +22,7 @@ package org.artofsolving.jodconverter.office;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -35,6 +36,7 @@ class OfficeProcess {
 
     private final File officeHome;
     private final UnoUrl unoUrl;
+    private final String[] runAsArgs;
     private final File templateProfileDir;
     private final File instanceProfileDir;
     private final ProcessManager processManager;
@@ -44,23 +46,27 @@ class OfficeProcess {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public OfficeProcess(File officeHome, UnoUrl unoUrl, File templateProfileDir, ProcessManager processManager) {
+    public OfficeProcess(File officeHome, UnoUrl unoUrl, String[] runAsArgs, File templateProfileDir, ProcessManager processManager) {
         this.officeHome = officeHome;
         this.unoUrl = unoUrl;
+        this.runAsArgs = runAsArgs;
         this.templateProfileDir = templateProfileDir;
         this.instanceProfileDir = getInstanceProfileDir(unoUrl);
         this.processManager = processManager;
     }
 
     public void start() throws IOException {
-        String processRegex = "soffice.*" + Pattern.quote(unoUrl.getAcceptString());
-        String existingPid = processManager.findPid(processRegex);
-        if (existingPid != null) {
-            throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %s", unoUrl.getAcceptString(), existingPid));
+    	String processRegex = "soffice.*" + Pattern.quote(unoUrl.getAcceptString());
+    	String existingPid = findExistingPid(processRegex);
+    	if (existingPid != null) {
+			throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %s", unoUrl.getAcceptString(), existingPid));
         }
         prepareInstanceProfileDir();
         List<String> command = new ArrayList<String>();
         File executable = OfficeUtils.getOfficeExecutable(officeHome);
+        if (runAsArgs != null) {
+        	command.addAll(Arrays.asList(runAsArgs));
+        }
         command.add(executable.getAbsolutePath());
         command.add("-accept=" + unoUrl.getAcceptString() + ";urp;");
         command.add("-env:UserInstallation=" + OfficeUtils.toUrl(instanceProfileDir));
@@ -79,6 +85,20 @@ class OfficeProcess {
         process = processBuilder.start();
         pid = processManager.findPid(processRegex);
         logger.info("started process" + (pid != null ? "; pid = " + pid : ""));
+    }
+
+    private String findExistingPid(String processRegex) throws IOException {
+        String existingPid = processManager.findPid(processRegex);
+        if (existingPid != null) {
+        	// retry in case the process table is returning a stale result from a process we just killed
+    		try {
+				Thread.sleep(100);
+			} catch (InterruptedException interruptedException) {
+				// continue
+			}
+			return processManager.findPid(processRegex);
+        }
+        return null;
     }
 
     private File getInstanceProfileDir(UnoUrl unoUrl) {

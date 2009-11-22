@@ -34,6 +34,7 @@ public class DefaultOfficeManagerConfiguration {
     private OfficeConnectionProtocol connectionProtocol = OfficeConnectionProtocol.SOCKET;
     private int[] portNumbers = new int[] { 2002 };
     private String[] pipeNames = new String[] { "office" };
+    private String[] runAsArgs = null;
     private File templateProfileDir = null;
     private long taskQueueTimeout = 30000L;  // 30 seconds
     private long taskExecutionTimeout = 120000L;  // 2 minutes
@@ -83,6 +84,11 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
+    public DefaultOfficeManagerConfiguration setRunAsArgs(String... runAsArgs) {
+		this.runAsArgs = runAsArgs;
+		return this;
+	}
+
     public DefaultOfficeManagerConfiguration setTemplateProfileDir(File templateProfileDir) throws IllegalArgumentException {
         if (templateProfileDir != null) {
             checkArgument("templateProfileDir", templateProfileDir.isDirectory(), "must exist and be a directory");
@@ -131,7 +137,7 @@ public class DefaultOfficeManagerConfiguration {
         for (int i = 0; i < numInstances; i++) {
             unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
-        return new ProcessPoolOfficeManager(officeHome, unoUrls, templateProfileDir, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
+        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
     }
 
     private ProcessManager findBestProcessManager() {

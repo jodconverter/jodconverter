@@ -67,12 +67,12 @@ class DumpJsonDefaultDocumentFormatRegistry {
         }
         return jsonFormat;
     }
-    
+
+    @SuppressWarnings("unchecked")
     private static JSONObject toJson(Map<String,?> properties) throws JSONException {
         JSONObject jsonProperties = new SortedJsonObject();
         for (Map.Entry<String,?> entry : properties.entrySet()) {
             if (entry.getValue() instanceof Map) {
-                @SuppressWarnings("unchecked")
                 Map<String,?> jsonValue = (Map<String,?>) entry.getValue();
                 jsonProperties.put(entry.getKey(), toJson(jsonValue));
             } else {

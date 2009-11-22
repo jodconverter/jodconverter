@@ -47,13 +47,13 @@ public class OfficeUtils {
         return propertyValue;
     }
 
+    @SuppressWarnings("unchecked")
     public static PropertyValue[] toUnoProperties(Map<String,?> properties) {
         PropertyValue[] propertyValues = new PropertyValue[properties.size()];
         int i = 0;
         for (Map.Entry<String,?> entry : properties.entrySet()) {
             Object value = entry.getValue();
             if (value instanceof Map) {
-                @SuppressWarnings("unchecked")
                 Map<String,Object> subProperties = (Map<String,Object>) value;
                 value = toUnoProperties(subProperties);
             }
