@@ -31,7 +31,6 @@ import org.artofsolving.jodconverter.office.OfficeContext;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeTask;
 
-
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XStorable;
 import com.sun.star.io.IOException;
@@ -40,7 +39,6 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
-import com.sun.star.util.XRefreshable;
 
 public abstract class AbstractConversionTask implements OfficeTask {
 
@@ -60,6 +58,7 @@ public abstract class AbstractConversionTask implements OfficeTask {
         XComponent document = null;
         try {
             document = loadDocument(context, inputFile);
+            modifyDocument(document);
             storeDocument(document, outputFile);
         } catch (OfficeException officeException) {
             throw officeException;
@@ -100,11 +99,20 @@ public abstract class AbstractConversionTask implements OfficeTask {
         if (document == null) {
             throw new OfficeException("could not load document: "  + inputFile.getName());
         }
-        XRefreshable refreshable = cast(XRefreshable.class, document);
-        if (refreshable != null) {
-            refreshable.refresh();
-        }
         return document;
+    }
+
+    /**
+     * Override to modify the document after it has been loaded and before it gets
+     * saved in the new format.
+     * <p>
+     * Does nothing by default.
+     * 
+     * @param document
+     * @throws OfficeException
+     */
+    protected void modifyDocument(XComponent document) throws OfficeException {
+    	// noop
     }
 
     private void storeDocument(XComponent document, File outputFile) throws OfficeException {

@@ -19,14 +19,18 @@
 //
 package org.artofsolving.jodconverter;
 
+import static org.artofsolving.jodconverter.office.OfficeUtils.cast;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.document.DocumentFormat;
+import org.artofsolving.jodconverter.office.OfficeException;
 
 import com.sun.star.lang.XComponent;
+import com.sun.star.util.XRefreshable;
 
 public class StandardConversionTask extends AbstractConversionTask {
 
@@ -46,6 +50,14 @@ public class StandardConversionTask extends AbstractConversionTask {
 
     public void setInputFormat(DocumentFormat inputFormat) {
         this.inputFormat = inputFormat;
+    }
+
+    @Override
+    protected void modifyDocument(XComponent document) throws OfficeException {
+        XRefreshable refreshable = cast(XRefreshable.class, document);
+        if (refreshable != null) {
+            refreshable.refresh();
+        }
     }
 
     @Override
