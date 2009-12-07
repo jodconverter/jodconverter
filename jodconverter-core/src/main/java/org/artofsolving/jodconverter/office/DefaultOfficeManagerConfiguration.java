@@ -142,7 +142,11 @@ public class DefaultOfficeManagerConfiguration {
 
     private ProcessManager findBestProcessManager() {
         if (PlatformUtils.isLinux()) {
-            return new UnixProcessManager();
+        	UnixProcessManager unixProcessManager = new UnixProcessManager();
+        	if (runAsArgs != null) {
+        		unixProcessManager.setRunAsArgs(runAsArgs);
+        	}
+        	return unixProcessManager;
         } else  if (PlatformUtils.isMac()) {
             return new MacProcessManager();
         } else if (PlatformUtils.isWindows()) {

@@ -57,7 +57,7 @@ class OfficeProcess {
 
     public void start() throws IOException {
     	String processRegex = "soffice.*" + Pattern.quote(unoUrl.getAcceptString());
-    	String existingPid = findExistingPid(processRegex);
+        String existingPid = processManager.findPid(processRegex);
     	if (existingPid != null) {
 			throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %s", unoUrl.getAcceptString(), existingPid));
         }
@@ -85,20 +85,6 @@ class OfficeProcess {
         process = processBuilder.start();
         pid = processManager.findPid(processRegex);
         logger.info("started process" + (pid != null ? "; pid = " + pid : ""));
-    }
-
-    private String findExistingPid(String processRegex) throws IOException {
-        String existingPid = processManager.findPid(processRegex);
-        if (existingPid != null) {
-        	// retry in case the process table is returning a stale result from a process we just killed
-    		try {
-				Thread.sleep(100);
-			} catch (InterruptedException interruptedException) {
-				// continue
-			}
-			return processManager.findPid(processRegex);
-        }
-        return null;
     }
 
     private File getInstanceProfileDir(UnoUrl unoUrl) {

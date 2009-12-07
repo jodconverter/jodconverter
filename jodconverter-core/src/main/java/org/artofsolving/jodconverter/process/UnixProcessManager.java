@@ -38,6 +38,12 @@ public class UnixProcessManager implements ProcessManager {
 
     private static final Pattern PS_OUTPUT_LINE = Pattern.compile("^\\s*(\\d+)\\s+(.*)$"); 
 
+    private String[] runAsArgs;
+
+    public void setRunAsArgs(String... runAsArgs) {
+		this.runAsArgs = runAsArgs;
+	}
+
     protected String[] psCommand() {
         return new String[] { "/bin/ps", "-e", "-o", "pid,args" };
     }
@@ -61,7 +67,15 @@ public class UnixProcessManager implements ProcessManager {
         execute("/bin/kill", "-KILL", pid);
     }
 
-    private List<String> execute(String... command) throws IOException {
+    private List<String> execute(String... args) throws IOException {
+    	String[] command;
+    	if (runAsArgs != null) {
+    		command = new String[runAsArgs.length + args.length];
+    		System.arraycopy(runAsArgs, 0, command, 0, runAsArgs.length);
+    		System.arraycopy(args, 0, command, runAsArgs.length, args.length);
+    	} else {
+    		command = args;
+    	}
         Process process = new ProcessBuilder(command).start();
         @SuppressWarnings("unchecked")
         List<String> lines = IOUtils.readLines(process.getInputStream());
