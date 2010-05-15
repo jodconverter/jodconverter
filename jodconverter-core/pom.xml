@@ -42,17 +42,17 @@
     <dependency>
       <groupId>org.openoffice</groupId>
       <artifactId>juh</artifactId>
-      <version>3.1.0</version>
+      <version>3.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.openoffice</groupId>
       <artifactId>ridl</artifactId>
-      <version>3.1.0</version>
+      <version>3.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.openoffice</groupId>
       <artifactId>unoil</artifactId>
-      <version>3.1.0</version>
+      <version>3.2.0</version>
     </dependency>
 
     <dependency>
