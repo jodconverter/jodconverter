@@ -26,7 +26,7 @@ import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 
 class ManagedOfficeProcessSettings {
 
-    public static final long DEFAULT_RETRY_TIMEOUT = 30000L;
+    public static final long DEFAULT_RETRY_TIMEOUT = 120000L;
     public static final long DEFAULT_RETRY_INTERVAL = 250L;
 
     private final UnoUrl unoUrl;
