@@ -30,6 +30,8 @@ import org.artofsolving.jodconverter.util.PlatformUtils;
 
 public class DefaultOfficeManagerConfiguration {
 
+    public static final long DEFAULT_RETRY_TIMEOUT = 120000L;
+
     private File officeHome = OfficeUtils.getDefaultOfficeHome();
     private OfficeConnectionProtocol connectionProtocol = OfficeConnectionProtocol.SOCKET;
     private int[] portNumbers = new int[] { 2002 };
@@ -39,6 +41,8 @@ public class DefaultOfficeManagerConfiguration {
     private long taskQueueTimeout = 30000L;  // 30 seconds
     private long taskExecutionTimeout = 120000L;  // 2 minutes
     private int maxTasksPerProcess = 200;
+    private long retryTimeout = DEFAULT_RETRY_TIMEOUT;
+
     private ProcessManager processManager = null;  // lazily initialised
 
     public DefaultOfficeManagerConfiguration setOfficeHome(String officeHome) throws NullPointerException, IllegalArgumentException {
@@ -118,6 +122,18 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
+    /**
+     * Retry timeout set in milliseconds. Used for retrying office process calls.
+     * If not set, it defaults to 2 minutes
+     * 
+     * @param retryTimeout in milliseconds
+     * @return
+     */
+    public DefaultOfficeManagerConfiguration setRetryTimeout(long retryTimeout) {
+        this.retryTimeout = retryTimeout;
+        return this;
+    }
+
     public OfficeManager buildOfficeManager() throws IllegalStateException {
         if (!officeHome.isDirectory()) {
             throw new IllegalStateException("officeHome doesn't exist or is not a directory: " + officeHome);
@@ -137,7 +153,7 @@ public class DefaultOfficeManagerConfiguration {
         for (int i = 0; i < numInstances; i++) {
             unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
-        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
+        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, retryTimeout, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
     }
 
     private ProcessManager findBestProcessManager() {
