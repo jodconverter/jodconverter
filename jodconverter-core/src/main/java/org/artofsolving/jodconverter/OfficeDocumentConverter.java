@@ -29,6 +29,8 @@ import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
+import com.sun.star.document.UpdateDocMode;
+
 public class OfficeDocumentConverter {
 
     private final OfficeManager officeManager;
@@ -49,6 +51,7 @@ public class OfficeDocumentConverter {
         Map<String,Object> loadProperties = new HashMap<String,Object>();
         loadProperties.put("Hidden", true);
         loadProperties.put("ReadOnly", true);
+        loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
         return loadProperties;
     }
 
