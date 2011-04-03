@@ -35,7 +35,6 @@ public class OfficeUtils {
         throw new AssertionError("utility class must not be instantiated");
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T cast(Class<T> type, Object object) {
         return (T) UnoRuntime.queryInterface(type, object);
     }

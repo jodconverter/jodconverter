@@ -23,8 +23,15 @@ import java.io.IOException;
 
 public interface ProcessManager {
 
-    void kill(Process process, String pid) throws IOException;
+    public static final long PID_UNKNOWN = -1;
 
-    String findPid(String regex) throws IOException;
+    void kill(Process process, long pid) throws IOException;
+
+    /**
+     * @param query
+     * @return the pid or {@link #PID_UNKNOWN}
+     * @throws IOException
+     */
+    long findPid(ProcessQuery query) throws IOException;
 
 }

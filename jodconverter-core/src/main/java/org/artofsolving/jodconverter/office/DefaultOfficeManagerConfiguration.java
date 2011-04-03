@@ -21,11 +21,10 @@ package org.artofsolving.jodconverter.office;
 
 import java.io.File;
 
-import org.artofsolving.jodconverter.process.MacProcessManager;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
-import org.artofsolving.jodconverter.process.UnixProcessManager;
-import org.artofsolving.jodconverter.process.WindowsProcessManager;
+import org.artofsolving.jodconverter.process.LinuxProcessManager;
+import org.artofsolving.jodconverter.process.SigarProcessManager;
 import org.artofsolving.jodconverter.util.PlatformUtils;
 
 public class DefaultOfficeManagerConfiguration {
@@ -116,6 +115,17 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
+    /**
+     * Provide a specific {@link ProcessManager} implementation
+     * <p>
+     * The default is to use {@link SigarProcessManager} if sigar.jar is
+     * available in the classpath, otherwise {@link LinuxProcessManager}
+     * on Linux and {@link PureJavaProcessManager} on other platforms.
+     * 
+     * @param processManager
+     * @return
+     * @throws NullPointerException
+     */
     public DefaultOfficeManagerConfiguration setProcessManager(ProcessManager processManager) throws NullPointerException {
         checkArgumentNotNull("processManager", processManager);
         this.processManager = processManager;
@@ -157,21 +167,27 @@ public class DefaultOfficeManagerConfiguration {
     }
 
     private ProcessManager findBestProcessManager() {
-        if (PlatformUtils.isLinux()) {
-        	UnixProcessManager unixProcessManager = new UnixProcessManager();
+        if (isSigarAvailable()) {
+            return new SigarProcessManager();
+        } else if (PlatformUtils.isLinux()) {
+        	LinuxProcessManager processManager = new LinuxProcessManager();
         	if (runAsArgs != null) {
-        		unixProcessManager.setRunAsArgs(runAsArgs);
+        		processManager.setRunAsArgs(runAsArgs);
         	}
-        	return unixProcessManager;
-        } else  if (PlatformUtils.isMac()) {
-            return new MacProcessManager();
-        } else if (PlatformUtils.isWindows()) {
-            WindowsProcessManager windowsProcessManager = new WindowsProcessManager();
-            return windowsProcessManager.isUsable() ? windowsProcessManager : new PureJavaProcessManager();
+        	return processManager;
         } else {
             // NOTE: UnixProcessManager can't be trusted to work on Solaris
             // because of the 80-char limit on ps output there  
             return new PureJavaProcessManager();
+        }
+    }
+
+    private boolean isSigarAvailable() {
+        try {
+            Class.forName("org.hyperic.sigar.Sigar", false, getClass().getClassLoader());
+            return true;
+        } catch (ClassNotFoundException classNotFoundException) {
+            return false;
         }
     }
 

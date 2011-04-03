@@ -19,39 +19,49 @@
 //
 package org.artofsolving.jodconverter.process;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+
 import org.artofsolving.jodconverter.ReflectionUtils;
 import org.artofsolving.jodconverter.util.PlatformUtils;
-import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 @Test
 public class ProcessManagerTest {
 
-    public void unixProcessManager() throws Exception {
-        if (PlatformUtils.isMac() || PlatformUtils.isWindows()) {
-            throw new SkipException("UnixProcessManager only works on Unix");
+    public void linuxProcessManager() throws Exception {
+        if (!PlatformUtils.isLinux()) {
+            throw new SkipException("LinuxProcessManager can only be tested on Linux");
         }
-        ProcessManager processManager = new UnixProcessManager();
+
+        ProcessManager processManager = new LinuxProcessManager();
         Process process = new ProcessBuilder("sleep", "5s").start();
-        String pid = processManager.findPid("sleep 5s");
-        Assert.assertNotNull(pid);
-        Assert.assertEquals(pid, ReflectionUtils.getPrivateField(process, "pid").toString());
+        ProcessQuery query = new ProcessQuery("sleep", "5s");
+        
+        long pid = processManager.findPid(query);
+        assertFalse(pid == ProcessManager.PID_UNKNOWN);
+        Integer javaPid = (Integer) ReflectionUtils.getPrivateField(process, "pid");
+        assertEquals(pid, javaPid.longValue());
+        
         processManager.kill(process, pid);
-        Assert.assertNull(processManager.findPid("sleep 5s"));
+        assertEquals(processManager.findPid(query), ProcessManager.PID_UNKNOWN);
     }
 
-    public void macProcessManager() throws Exception {
-        if (!PlatformUtils.isMac()) {
-            throw new SkipException("MacProcessManager only works on Mac");
-        }
-        ProcessManager processManager = new MacProcessManager();
+    public void sigarProcessManager() throws Exception {
+        ProcessManager processManager = new SigarProcessManager();
         Process process = new ProcessBuilder("sleep", "5s").start();
-        String pid = processManager.findPid("sleep 5s");
-        Assert.assertNotNull(pid);
-        Assert.assertEquals(pid, ReflectionUtils.getPrivateField(process, "pid").toString());
+        ProcessQuery query = new ProcessQuery("sleep", "5s");
+        
+        long pid = processManager.findPid(query);
+        assertFalse(pid == ProcessManager.PID_UNKNOWN);
+        if (PlatformUtils.isLinux()) {
+            Integer javaPid = (Integer) ReflectionUtils.getPrivateField(process, "pid");
+            assertEquals(pid, javaPid.longValue());
+        }
+
         processManager.kill(process, pid);
-        Assert.assertNull(processManager.findPid("sleep 5s"));
+        assertEquals(processManager.findPid(query), ProcessManager.PID_UNKNOWN);
     }
 
 }

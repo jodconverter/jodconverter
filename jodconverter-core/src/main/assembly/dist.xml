@@ -6,6 +6,9 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
+      <excludes>
+        <exclude>org.hyperic:sigar</exclude>
+      </excludes>
     </dependencySet>
   </dependencySets>
   <fileSets>

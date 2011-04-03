@@ -27,14 +27,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 
 /**
- * {@link ProcessManager} implementation for *nix systems. Uses the <tt>ps</tt>
+ * {@link ProcessManager} implementation for Linux. Uses the <tt>ps</tt>
  * and <tt>kill</tt> commands.
  * <p>
- * Works for Linux. Works for Solaris too, except that the command line string
+ * Should Work on Solaris too, except that the command line string
  * returned by <tt>ps</tt> there is limited to 80 characters and this affects
  * {@link #findPid(String)}.
  */
-public class UnixProcessManager implements ProcessManager {
+public class LinuxProcessManager implements ProcessManager {
 
     private static final Pattern PS_OUTPUT_LINE = Pattern.compile("^\\s*(\\d+)\\s+(.*)$"); 
 
@@ -48,7 +48,8 @@ public class UnixProcessManager implements ProcessManager {
         return new String[] { "/bin/ps", "-e", "-o", "pid,args" };
     }
 
-    public String findPid(String regex) throws IOException {
+    public long findPid(ProcessQuery query) throws IOException {
+        String regex = Pattern.quote(query.getCommand()) + ".*" + Pattern.quote(query.getArgument());
         Pattern commandPattern = Pattern.compile(regex);
         for (String line : execute(psCommand())) {
             Matcher lineMatcher = PS_OUTPUT_LINE.matcher(line);
@@ -56,15 +57,15 @@ public class UnixProcessManager implements ProcessManager {
                 String command = lineMatcher.group(2);
                 Matcher commandMatcher = commandPattern.matcher(command);
                 if (commandMatcher.find()) {
-                    return lineMatcher.group(1);
+                    return Long.parseLong(lineMatcher.group(1));
                 }
             }
         }
-        return null;
+        return PID_UNKNOWN;
     }
 
-    public void kill(Process process, String pid) throws IOException {
-        execute("/bin/kill", "-KILL", pid);
+    public void kill(Process process, long pid) throws IOException {
+        execute("/bin/kill", "-KILL", Long.toString(pid));
     }
 
     private List<String> execute(String... args) throws IOException {
