@@ -27,11 +27,17 @@
   <inceptionYear>2003</inceptionYear>
   <developers>
     <developer>
-      <id>mnasato</id>
+      <id>mirko.nasato</id>
       <name>Mirko Nasato</name>
       <email>mirko@artofsolving.com</email>
     </developer>
   </developers>
+  <contributors>
+    <contributor>
+      <name>Shervin Asgari</name>
+      <email>shervin@asgari.no</email>
+    </contributor>
+  </contributors>
 
   <repositories>
     <repository>
