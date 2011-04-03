@@ -41,7 +41,7 @@ import org.testng.annotations.Test;
 @Test(groups="integration")
 public class PooledOfficeManagerTest {
 
-    private static final UnoUrl CONNECTION_MODE = UnoUrl.socket(8100);
+    private static final UnoUrl CONNECTION_MODE = UnoUrl.socket(2002);
     private static final long RESTART_WAIT_TIME = 2 * 1000;
 
     public void executeTask() throws Exception {

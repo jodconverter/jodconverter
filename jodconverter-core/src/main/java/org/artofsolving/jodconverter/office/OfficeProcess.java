@@ -57,7 +57,7 @@ class OfficeProcess {
     }
 
     public void start() throws IOException {
-        ProcessQuery processQuery = new ProcessQuery("soffice", unoUrl.getAcceptString());
+        ProcessQuery processQuery = new ProcessQuery("soffice.bin", unoUrl.getAcceptString());
         long existingPid = processManager.findPid(processQuery);
     	if (existingPid != PID_UNKNOWN) {
 			throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %d",
