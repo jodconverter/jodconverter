@@ -86,7 +86,7 @@
       <!-- for JSON configuration -->
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20080701</version>
+      <version>20090211</version>
       <optional>true</optional>
     </dependency>
 

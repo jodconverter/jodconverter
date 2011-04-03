@@ -1,6 +1,3 @@
-//
-// JODConverter Document Formats Configuration
-//
 [
   {
     "name": "Portable Document Format",
