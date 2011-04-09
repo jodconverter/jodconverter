@@ -203,8 +203,7 @@ public class DefaultOfficeManagerConfiguration {
     }
 
     private boolean isValidProfileDir(File profileDir) {
-        File setupXcu = new File(profileDir, "user");
-        return setupXcu.exists();
+        return new File(profileDir, "user").isDirectory();
     }
 
 }
