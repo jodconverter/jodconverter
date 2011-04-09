@@ -150,7 +150,7 @@ public class DefaultOfficeManagerConfiguration {
             throw new IllegalStateException("invalid officeHome: it doesn't contain soffice.bin: " + officeHome);
         }
         if (templateProfileDir != null && !isValidProfileDir(templateProfileDir)) {
-            throw new IllegalStateException("invalid templateProfileDir: " + templateProfileDir);
+            throw new IllegalStateException("templateProfileDir doesn't appear to contain a user profile: " + templateProfileDir);
         }
         
         if (processManager == null) {
@@ -203,7 +203,7 @@ public class DefaultOfficeManagerConfiguration {
     }
 
     private boolean isValidProfileDir(File profileDir) {
-        File setupXcu = new File(profileDir, "user/registry/data/org/openoffice/Setup.xcu");
+        File setupXcu = new File(profileDir, "user");
         return setupXcu.exists();
     }
 
