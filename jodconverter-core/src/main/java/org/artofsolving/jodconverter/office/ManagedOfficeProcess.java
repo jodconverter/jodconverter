@@ -119,7 +119,11 @@ class ManagedOfficeProcess {
                     try {
                         connection.connect();
                     } catch (ConnectException connectException) {
-                        throw new TemporaryException(connectException);
+                        if (process.isRunning()) {
+                            throw new TemporaryException(connectException);
+                        } else {
+                            throw new OfficeException("office process died");
+                        }
                     }
                 }
             }.execute(settings.getRetryInterval(), settings.getRetryTimeout());
