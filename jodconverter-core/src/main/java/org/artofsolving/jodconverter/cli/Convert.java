@@ -50,6 +50,7 @@ public class Convert {
     private static final Option OPTION_OUTPUT_FORMAT = new Option("o", "output-format", true, "output format (e.g. pdf)");
     private static final Option OPTION_PORT = new Option("p", "port", true, "office socket port (optional; defaults to 2002)");
     private static final Option OPTION_REGISTRY = new Option("r", "registry", true, "document formats registry configuration file (optional)");
+    private static final Option OPTION_TIMEOUT = new Option("t", "timeout", true, "maximum conversion time in seconds (optional; defaults to 120)");
     private static final Option OPTION_USER_PROFILE = new Option("u", "user-profile", true, "use settings from the given user installation dir (optional)");
     private static final Options OPTIONS = initOptions();
 
@@ -60,6 +61,7 @@ public class Convert {
         options.addOption(OPTION_OUTPUT_FORMAT);
         options.addOption(OPTION_PORT);
         options.addOption(OPTION_REGISTRY);
+        options.addOption(OPTION_TIMEOUT);
         options.addOption(OPTION_USER_PROFILE);
         return options;
     }
@@ -94,9 +96,13 @@ public class Convert {
         } else {
             registry = new DefaultDocumentFormatRegistry();
         }
-        
+
         DefaultOfficeManagerConfiguration configuration = new DefaultOfficeManagerConfiguration();
         configuration.setPortNumber(port);
+        if (commandLine.hasOption(OPTION_TIMEOUT.getOpt())) {
+            int timeout = Integer.parseInt(commandLine.getOptionValue(OPTION_TIMEOUT.getOpt()));
+            configuration.setTaskExecutionTimeout(timeout * 1000);
+        }
         if (commandLine.hasOption(OPTION_USER_PROFILE.getOpt())) {
             String templateProfileDir = commandLine.getOptionValue(OPTION_USER_PROFILE.getOpt());
             configuration.setTemplateProfileDir(new File(templateProfileDir));
