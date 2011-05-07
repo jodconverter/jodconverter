@@ -32,6 +32,11 @@ public class ExternalOfficeManagerTest {
         OfficeProcess officeProcess = new OfficeProcess(OfficeUtils.getDefaultOfficeHome(), unoUrl, null, null, new PureJavaProcessManager());
         officeProcess.start();
         Thread.sleep(2000);
+        Integer exitCode = officeProcess.getExitCode();
+        if (exitCode != null && exitCode.equals(Integer.valueOf(81))) {
+            officeProcess.start(true);
+            Thread.sleep(2000);
+        }
         
         ExternalOfficeManager manager = new ExternalOfficeManager(unoUrl, true);
         manager.start();

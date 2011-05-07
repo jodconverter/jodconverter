@@ -30,6 +30,8 @@ import com.sun.star.lang.DisposedException;
 
 class ManagedOfficeProcess {
 
+    private static final Integer EXIT_CODE_NEW_INSTALLATION = Integer.valueOf(81);
+
     private final ManagedOfficeProcessSettings settings;
 
     private final OfficeProcess process;
@@ -119,10 +121,18 @@ class ManagedOfficeProcess {
                     try {
                         connection.connect();
                     } catch (ConnectException connectException) {
-                        if (process.isRunning()) {
+                        Integer exitCode = process.getExitCode();
+                        if (exitCode == null) {
+                            // process is running; retry later
+                            throw new TemporaryException(connectException);
+                        } else if (exitCode.equals(EXIT_CODE_NEW_INSTALLATION)) {
+                            // restart and retry later
+                            // see http://code.google.com/p/jodconverter/issues/detail?id=84
+                            logger.log(Level.WARNING, "office process died with exit code 81; restarting it");
+                            process.start(true);
                             throw new TemporaryException(connectException);
                         } else {
-                            throw new OfficeException("office process died");
+                            throw new OfficeException("office process died with exit code " + exitCode);
                         }
                     }
                 }

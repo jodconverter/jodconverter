@@ -57,13 +57,19 @@ class OfficeProcess {
     }
 
     public void start() throws IOException {
+        start(false);
+    }
+
+    public void start(boolean restart) throws IOException {
         ProcessQuery processQuery = new ProcessQuery("soffice.bin", unoUrl.getAcceptString());
         long existingPid = processManager.findPid(processQuery);
     	if (existingPid != PID_UNKNOWN) {
 			throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %d",
 			        unoUrl.getAcceptString(), existingPid));
         }
-        prepareInstanceProfileDir();
+    	if (!restart) {
+    	    prepareInstanceProfileDir();
+    	}
         List<String> command = new ArrayList<String>();
         File executable = OfficeUtils.getOfficeExecutable(officeHome);
         if (runAsArgs != null) {
@@ -155,12 +161,7 @@ class OfficeProcess {
         if (process == null) {
             return false;
         }
-        try {
-            process.exitValue();
-            return false;
-        } catch (IllegalThreadStateException exception) {
-            return true;
-        }
+        return getExitCode() == null;
     }
 
     private class ExitCodeRetryable extends Retryable {
@@ -180,7 +181,15 @@ class OfficeProcess {
         }
 
     }
-    
+
+    public Integer getExitCode() {
+        try {
+            return process.exitValue();
+        } catch (IllegalThreadStateException exception) {
+            return null;
+        }
+    }
+
     public int getExitCode(long retryInterval, long retryTimeout) throws RetryTimeoutException {
         try {
             ExitCodeRetryable retryable = new ExitCodeRetryable();
