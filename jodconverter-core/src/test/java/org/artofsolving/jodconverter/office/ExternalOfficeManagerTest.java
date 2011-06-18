@@ -20,6 +20,8 @@ package org.artofsolving.jodconverter.office;
 
 import static org.testng.Assert.assertTrue;
 
+import java.io.File;
+
 import org.artofsolving.jodconverter.ReflectionUtils;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 import org.testng.annotations.Test;
@@ -29,7 +31,8 @@ public class ExternalOfficeManagerTest {
 
     public void executeTask() throws Exception {
         UnoUrl unoUrl = UnoUrl.socket(2002);
-        OfficeProcess officeProcess = new OfficeProcess(OfficeUtils.getDefaultOfficeHome(), unoUrl, null, null, new PureJavaProcessManager());
+        OfficeProcess officeProcess = new OfficeProcess(OfficeUtils.getDefaultOfficeHome(), unoUrl,
+            null, null, new File(System.getProperty("java.io.tmpdir")), new PureJavaProcessManager());
         officeProcess.start();
         Thread.sleep(2000);
         Integer exitCode = officeProcess.getExitCode();

@@ -36,6 +36,7 @@ public class DefaultOfficeManagerConfiguration {
     private String[] pipeNames = new String[] { "office" };
     private String[] runAsArgs = null;
     private File templateProfileDir = null;
+    private File workDir = new File(System.getProperty("java.io.tmpdir"));
     private long taskQueueTimeout = 30000L;  // 30 seconds
     private long taskExecutionTimeout = 120000L;  // 2 minutes
     private int maxTasksPerProcess = 200;
@@ -99,6 +100,20 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
+    /**
+     * Sets the directory where temporary office profiles will be created.
+     * <p>
+     * Defaults to the system temporary directory as specified by the <code>java.io.tmpdir</code> system property.
+     * 
+     * @param workDir
+     * @return
+     */
+    public DefaultOfficeManagerConfiguration setWorkDir(File workDir) {
+        checkArgumentNotNull("workDir", workDir);
+        this.workDir = workDir;
+        return this;
+    }
+
     public DefaultOfficeManagerConfiguration setTaskQueueTimeout(long taskQueueTimeout) {
         this.taskQueueTimeout = taskQueueTimeout;
         return this;
@@ -152,7 +167,10 @@ public class DefaultOfficeManagerConfiguration {
         if (templateProfileDir != null && !isValidProfileDir(templateProfileDir)) {
             throw new IllegalStateException("templateProfileDir doesn't appear to contain a user profile: " + templateProfileDir);
         }
-        
+        if (!workDir.isDirectory()) {
+            throw new IllegalStateException("workDir doesn't exist or is not a directory: " + workDir);
+        }
+
         if (processManager == null) {
             processManager = findBestProcessManager();
         }
@@ -162,7 +180,7 @@ public class DefaultOfficeManagerConfiguration {
         for (int i = 0; i < numInstances; i++) {
             unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
-        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, retryTimeout, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
+        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, workDir, retryTimeout, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
     }
 
     private ProcessManager findBestProcessManager() {

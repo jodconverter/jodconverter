@@ -47,12 +47,12 @@ class OfficeProcess {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public OfficeProcess(File officeHome, UnoUrl unoUrl, String[] runAsArgs, File templateProfileDir, ProcessManager processManager) {
+    public OfficeProcess(File officeHome, UnoUrl unoUrl, String[] runAsArgs, File templateProfileDir, File workDir, ProcessManager processManager) {
         this.officeHome = officeHome;
         this.unoUrl = unoUrl;
         this.runAsArgs = runAsArgs;
         this.templateProfileDir = templateProfileDir;
-        this.instanceProfileDir = getInstanceProfileDir(unoUrl);
+        this.instanceProfileDir = getInstanceProfileDir(workDir, unoUrl);
         this.processManager = processManager;
     }
 
@@ -95,9 +95,9 @@ class OfficeProcess {
         logger.info("started process" + (pid != PID_UNKNOWN ? "; pid = " + pid : ""));
     }
 
-    private File getInstanceProfileDir(UnoUrl unoUrl) {
+    private File getInstanceProfileDir(File workDir, UnoUrl unoUrl) {
         String dirName = ".jodconverter_" + unoUrl.getAcceptString().replace(',', '_').replace('=', '-');
-        return new File(System.getProperty("java.io.tmpdir"), dirName);
+        return new File(workDir, dirName);
     }
 
     private void prepareInstanceProfileDir() throws OfficeException {

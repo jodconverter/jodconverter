@@ -31,6 +31,7 @@ class ManagedOfficeProcessSettings {
     private File officeHome = OfficeUtils.getDefaultOfficeHome();
     private String[] runAsArgs;
     private File templateProfileDir;
+    private File workDir;
     private ProcessManager processManager = new PureJavaProcessManager();
     private long retryTimeout = DefaultOfficeManagerConfiguration.DEFAULT_RETRY_TIMEOUT;
     private long retryInterval = DEFAULT_RETRY_INTERVAL;
@@ -65,6 +66,14 @@ class ManagedOfficeProcessSettings {
 
     public void setTemplateProfileDir(File templateProfileDir) {
         this.templateProfileDir = templateProfileDir;
+    }
+
+    public File getWorkDir() {
+        return workDir;
+    }
+
+    public void setWorkDir(File workDir) {
+        this.workDir = workDir;
     }
 
     public ProcessManager getProcessManager() {
