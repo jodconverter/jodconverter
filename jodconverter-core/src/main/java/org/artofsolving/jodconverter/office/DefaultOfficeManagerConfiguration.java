@@ -159,7 +159,9 @@ public class DefaultOfficeManagerConfiguration {
     }
 
     public OfficeManager buildOfficeManager() throws IllegalStateException {
-        if (!officeHome.isDirectory()) {
+        if (officeHome == null) {
+            throw new IllegalStateException("officeHome not set and could not be auto-detected");
+        } else if (!officeHome.isDirectory()) {
             throw new IllegalStateException("officeHome doesn't exist or is not a directory: " + officeHome);
         } else if (!OfficeUtils.getOfficeExecutable(officeHome).isFile()) {
             throw new IllegalStateException("invalid officeHome: it doesn't contain soffice.bin: " + officeHome);

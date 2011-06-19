@@ -71,27 +71,35 @@ public class OfficeUtils {
             return new File(System.getProperty("office.home"));
         }
         if (PlatformUtils.isWindows()) {
-            return new File(System.getenv("ProgramFiles"), "OpenOffice.org 3");
+            return findOfficeHome(
+                System.getenv("ProgramFiles") + File.separator + "OpenOffice.org 3",
+                System.getenv("ProgramFiles") + File.separator + "LibreOffice 3",
+                System.getenv("ProgramFiles(x86)") + File.separator + "OpenOffice.org 3",
+                System.getenv("ProgramFiles(x86)") + File.separator + "LibreOffice 3"
+            );
         } else if (PlatformUtils.isMac()) {
-            return new File("/Applications/OpenOffice.org.app/Contents");
+            return findOfficeHome(
+                "/Applications/OpenOffice.org.app/Contents",
+                "/Applications/LibreOffice.app/Contents"
+            );
         } else {
-            // Linux or Solaris
-            return new File("/opt/openoffice.org3");
+            // Linux or other *nix variants
+            return findOfficeHome(
+                "/opt/openoffice.org3",
+                "/usr/lib/openoffice",
+                "/usr/lib/libreoffice"
+            );
         }
     }
 
-    public static File getDefaultProfileDir() {
-        if (System.getProperty("office.profile") != null) {
-            return new File(System.getProperty("office.profile"));
+    private static File findOfficeHome(String... knownPaths) {
+        for (String path : knownPaths) {
+            File home = new File(path);
+            if (getOfficeExecutable(home).isFile()) {
+                return home;
+            }
         }
-        if (PlatformUtils.isWindows()) {
-            return new File(System.getenv("APPDATA"), "OpenOffice.org/3");
-        } else if (PlatformUtils.isMac()) {
-            return new File(System.getProperty("user.home"), "Library/Application Support/OpenOffice.org/3");
-        } else {
-            // Linux or Solaris
-            return new File(System.getProperty("user.home"), ".openoffice.org/3");
-        }
+        return null;
     }
 
     public static File getOfficeExecutable(File officeHome) {
