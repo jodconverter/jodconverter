@@ -71,11 +71,14 @@ public class OfficeUtils {
             return new File(System.getProperty("office.home"));
         }
         if (PlatformUtils.isWindows()) {
+            // %ProgramFiles(x86)% on 64-bit machines; %ProgramFiles% on 32-bit ones
+            String programFiles = System.getenv("ProgramFiles(x86)");
+            if (programFiles == null) {
+                programFiles = System.getenv("ProgramFiles");
+            }
             return findOfficeHome(
-                System.getenv("ProgramFiles") + File.separator + "OpenOffice.org 3",
-                System.getenv("ProgramFiles") + File.separator + "LibreOffice 3",
-                System.getenv("ProgramFiles(x86)") + File.separator + "OpenOffice.org 3",
-                System.getenv("ProgramFiles(x86)") + File.separator + "LibreOffice 3"
+                programFiles + File.separator + "OpenOffice.org 3",
+                programFiles + File.separator + "LibreOffice 3"
             );
         } else if (PlatformUtils.isMac()) {
             return findOfficeHome(
@@ -86,6 +89,7 @@ public class OfficeUtils {
             // Linux or other *nix variants
             return findOfficeHome(
                 "/opt/openoffice.org3",
+                "/opt/libreoffice",
                 "/usr/lib/openoffice",
                 "/usr/lib/libreoffice"
             );
