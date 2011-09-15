@@ -32,4 +32,5 @@ public interface OfficeManager {
 
     void stop() throws OfficeException;
 
+    boolean isRunning();
 }

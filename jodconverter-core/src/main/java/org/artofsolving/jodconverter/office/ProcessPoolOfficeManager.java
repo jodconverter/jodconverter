@@ -109,4 +109,8 @@ class ProcessPoolOfficeManager implements OfficeManager {
         }
     }
 
+	public boolean isRunning() {
+		return running;
+	}
+
 }

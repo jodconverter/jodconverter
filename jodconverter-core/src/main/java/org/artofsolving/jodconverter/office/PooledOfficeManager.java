@@ -108,4 +108,8 @@ class PooledOfficeManager implements OfficeManager {
         managedOfficeProcess.stopAndWait();
     }
 
+	public boolean isRunning() {
+		return managedOfficeProcess.isConnected();
+	}
+
 }
