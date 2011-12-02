@@ -57,7 +57,7 @@ public class SigarProcessManager implements ProcessManager {
     public void kill(Process process, long pid) throws IOException {
         Sigar sigar = new Sigar();
         try {
-            sigar.kill(pid, "KILL");
+            sigar.kill(pid, Sigar.getSigNum("KILL"));
         } catch (SigarException sigarException) {
             throw new IOException("kill failed", sigarException);
         } finally {
