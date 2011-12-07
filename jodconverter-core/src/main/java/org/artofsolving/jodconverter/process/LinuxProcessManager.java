@@ -64,6 +64,9 @@ public class LinuxProcessManager implements ProcessManager {
     }
 
     public void kill(Process process, long pid) throws IOException {
+    	if (pid <= 0) {
+    		throw new IllegalArgumentException("invalid pid: " + pid);
+    	}
         execute("/bin/kill", "-KILL", Long.toString(pid));
     }
 
