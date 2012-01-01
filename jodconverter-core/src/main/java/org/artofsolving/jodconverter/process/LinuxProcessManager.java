@@ -60,7 +60,7 @@ public class LinuxProcessManager implements ProcessManager {
                 }
             }
         }
-        return PID_UNKNOWN;
+        return PID_NOT_FOUND;
     }
 
     public void kill(Process process, long pid) throws IOException {

@@ -46,7 +46,7 @@ public class SigarProcessManager implements ProcessManager {
                     return pids[i];
                 }
             }
-            return PID_UNKNOWN;
+            return PID_NOT_FOUND;
         } catch (SigarException sigarException) {
             throw new IOException("findPid failed", sigarException);
         } finally {

@@ -39,12 +39,12 @@ public class ProcessManagerTest {
         ProcessQuery query = new ProcessQuery("sleep", "5s");
         
         long pid = processManager.findPid(query);
-        assertFalse(pid == ProcessManager.PID_UNKNOWN);
+        assertFalse(pid == ProcessManager.PID_NOT_FOUND);
         Integer javaPid = (Integer) ReflectionUtils.getPrivateField(process, "pid");
         assertEquals(pid, javaPid.longValue());
         
         processManager.kill(process, pid);
-        assertEquals(processManager.findPid(query), ProcessManager.PID_UNKNOWN);
+        assertEquals(processManager.findPid(query), ProcessManager.PID_NOT_FOUND);
     }
 
     public void sigarProcessManager() throws Exception {
@@ -53,14 +53,14 @@ public class ProcessManagerTest {
         ProcessQuery query = new ProcessQuery("sleep", "5s");
         
         long pid = processManager.findPid(query);
-        assertFalse(pid == ProcessManager.PID_UNKNOWN);
+        assertFalse(pid == ProcessManager.PID_NOT_FOUND);
         if (PlatformUtils.isLinux()) {
             Integer javaPid = (Integer) ReflectionUtils.getPrivateField(process, "pid");
             assertEquals(pid, javaPid.longValue());
         }
 
         processManager.kill(process, pid);
-        assertEquals(processManager.findPid(query), ProcessManager.PID_UNKNOWN);
+        assertEquals(processManager.findPid(query), ProcessManager.PID_NOT_FOUND);
     }
 
 }

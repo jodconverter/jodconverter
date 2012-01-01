@@ -18,8 +18,8 @@
 //
 package org.artofsolving.jodconverter.office;
 
+import static org.artofsolving.jodconverter.process.ProcessManager.PID_NOT_FOUND;
 import static org.artofsolving.jodconverter.process.ProcessManager.PID_UNKNOWN;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ class OfficeProcess {
     public void start(boolean restart) throws IOException {
         ProcessQuery processQuery = new ProcessQuery("soffice.bin", unoUrl.getAcceptString());
         long existingPid = processManager.findPid(processQuery);
-    	if (existingPid != PID_UNKNOWN) {
+    	if (!(existingPid == PID_NOT_FOUND || existingPid == PID_UNKNOWN)) {
 			throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %d",
 			        unoUrl.getAcceptString(), existingPid));
         }
@@ -92,6 +92,10 @@ class OfficeProcess {
         logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", unoUrl, instanceProfileDir));
         process = processBuilder.start();
         pid = processManager.findPid(processQuery);
+        if (pid == PID_NOT_FOUND) {
+            throw new IllegalStateException(String.format("process with acceptString '%s' started but its pid could not be found",
+                    unoUrl.getAcceptString()));
+        }
         logger.info("started process" + (pid != PID_UNKNOWN ? "; pid = " + pid : ""));
     }
 
