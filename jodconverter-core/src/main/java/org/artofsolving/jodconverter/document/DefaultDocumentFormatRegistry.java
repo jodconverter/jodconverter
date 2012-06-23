@@ -1,20 +1,14 @@
 //
 // JODConverter - Java OpenDocument Converter
-// Copyright 2004-2011 Mirko Nasato and contributors
+// Copyright 2004-2012 Mirko Nasato and contributors
 //
-// JODConverter is free software: you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public License
-// as published by the Free Software Foundation, either version 3 of
-// the License, or (at your option) any later version.
+// JODConverter is Open Source software, you can redistribute it and/or
+// modify it under either (at your option) of the following licenses
 //
-// JODConverter is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General
-// Public License along with JODConverter.  If not, see
-// <http://www.gnu.org/licenses/>.
+// 1. The GNU Lesser General Public License v3 (or later)
+//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// 2. The Apache License, Version 2.0
+//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.document;
 
