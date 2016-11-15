@@ -1,0 +1,9 @@
+# Build
+target
+test-output
+
+# Eclipse
+.classpath
+.project
+.settings
+.checkstyle
