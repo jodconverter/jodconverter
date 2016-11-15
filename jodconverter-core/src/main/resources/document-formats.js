@@ -45,17 +45,18 @@
     "storePropertiesByFamily": {"TEXT": {"FilterName": "StarOffice XML (Writer)"}}
   },
   {
-    "name": "Microsoft Word",
+    "name": "Microsoft Word 97-2003",
     "extension": "doc",
     "mediaType": "application/msword",
     "inputFamily": "TEXT",
     "storePropertiesByFamily": {"TEXT": {"FilterName": "MS Word 97"}}
   },
   {
-    "name": "Microsoft Word 2007 XML",
+    "name": "Microsoft Word 2007-2013 XML",
     "extension": "docx",
     "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "inputFamily": "TEXT"
+    "inputFamily": "TEXT",
+    "storePropertiesByFamily": {"TEXT": {"FilterName": "MS Word 2007 XML}}
   },
   {
     "name": "Rich Text Format",
@@ -105,17 +106,18 @@
     "storePropertiesByFamily": {"SPREADSHEET": {"FilterName": "StarOffice XML (Calc)"}}
   },
   {
-    "name": "Microsoft Excel",
+    "name": "Microsoft Excel 97-2003",
     "extension": "xls",
     "mediaType": "application/vnd.ms-excel",
     "inputFamily": "SPREADSHEET",
     "storePropertiesByFamily": {"SPREADSHEET": {"FilterName": "MS Excel 97"}}
   },
   {
-    "name": "Microsoft Excel 2007 XML",
+    "name": "Microsoft Excel 2007-2013 XML",
     "extension": "xlsx",
     "mediaType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "inputFamily": "SPREADSHEET"
+    "inputFamily": "SPREADSHEET",
+    "storePropertiesByFamily": {"SPREADSHEET": {"FilterName": "Calc MS Excel 2007 XML"}}
   },
   {
     "name": "Comma Separated Values",
@@ -160,17 +162,18 @@
     "storePropertiesByFamily": {"PRESENTATION": {"FilterName": "StarOffice XML (Impress)"}}
   },
   {
-    "name": "Microsoft PowerPoint",
+    "name": "Microsoft PowerPoint 97-2003",
     "extension": "ppt",
     "mediaType": "application/vnd.ms-powerpoint",
     "inputFamily": "PRESENTATION",
     "storePropertiesByFamily": {"PRESENTATION": {"FilterName": "MS PowerPoint 97"}}
   },
   {
-    "name": "Microsoft PowerPoint 2007 XML",
+    "name": "Microsoft PowerPoint 2007-2013 XML",
     "extension": "pptx",
     "mediaType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    "inputFamily": "PRESENTATION"
+    "inputFamily": "PRESENTATION",
+    "storePropertiesByFamily": {"PRESENTATION": {"FilterName": "Impress MS PowerPoint 2007 XML"}}
   },
   {
     "name": "OpenDocument Drawing",
@@ -184,5 +187,16 @@
     "extension": "svg",
     "mediaType": "image/svg+xml",
     "storePropertiesByFamily": {"DRAWING": {"FilterName": "draw_svg_Export"}}
+  },
+  {
+    "name": "Portable Network Graphics",
+    "extension": "png",
+    "mediaType": "image/png",
+    "storePropertiesByFamily": {
+      "DRAWING": {"FilterName": "draw_png_Export"},
+      "SPREADSHEET": {"FilterName": "calc_png_Export"},
+      "PRESENTATION": {"FilterName": "impress_png_Export"},
+      "TEXT": {"FilterName": "writer_png_Export"}
+    }
   }
 ]
