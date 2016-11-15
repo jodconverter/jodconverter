@@ -138,7 +138,6 @@ class PooledOfficeManager implements OfficeManager {
                 }
 
                 // Execute the task
-                logger.debug("Executing task..");
                 task.execute(managedOfficeProcess.getConnection());
             }
         });

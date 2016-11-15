@@ -151,23 +151,6 @@ class OfficeConnection implements OfficeContext, XEventListener {
         }
     }
 
-//
-//    @Override
-//    public Object createDesktopService() {
-//
-//        return createServiceInstance("com.sun.star.frame.Desktop");
-//    }
-//
-//    @Override
-//    public Object createServiceInstance(String serviceName) {
-//
-//        try {
-//            return officeMultiComponentFactory.createInstanceWithContext(serviceName, officeComponentContext);
-//        } catch (Exception exception) {
-//            throw new OfficeException(String.format("failed to obtain service '%s'", serviceName), exception);
-//        }
-//    }
-
     /**
      * Closes the connection.
      */
