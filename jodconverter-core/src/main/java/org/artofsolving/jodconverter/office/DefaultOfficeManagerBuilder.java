@@ -49,10 +49,10 @@ public class DefaultOfficeManagerBuilder {
         portNumbers = new int[] { 2002 };
         pipeNames = new String[] { "office" };
         workingDir = new File(System.getProperty("java.io.tmpdir"));
-        taskQueueTimeout = 30000L; // 30 seconds
+        taskQueueTimeout = ManagedOfficeProcessSettings.DEFAULT_TASK_QUEUE_TIMEOUT;
         taskExecutionTimeout = PooledOfficeManagerSettings.DEFAULT_TASK_EXECUTION_TIMEOUT;
-        retryTimeout = 120000L; // 2 minutes
-        retryInterval = 250L; // 0.25 sec
+        retryTimeout = ManagedOfficeProcessSettings.DEFAULT_RETRY_TIMEOUT;
+        retryInterval = ManagedOfficeProcessSettings.DEFAULT_RETRY_INTERVAL;
         maxTasksPerProcess = PooledOfficeManagerSettings.DEFAULT_MAX_TASK_PER_PROCESS;
         killExistingProcess = true;
     }
@@ -259,7 +259,7 @@ public class DefaultOfficeManagerBuilder {
     }
 
     /**
-     * Retry interval set in milliseconds. Used for waiting between office process call tries
+     * Retry interval set in milliseconds. Used for waiting between office process call attempts
      * (start/terminate). If not set, it defaults to 0.25 secs.
      * 
      * @param retryInterval
