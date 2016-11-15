@@ -33,9 +33,8 @@ public class PooledOfficeManagerTest {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(PooledOfficeManagerTest.class);
 
     private static final UnoUrl CONNECTION_MODE = UnoUrlUtils.socket(2002);
-    private static final long RESTART_WAIT_TIME = 2 * 1000; // 2 seconds is not enough... 
-    //private static final long RESTART_WAIT_TIME = 5 * 1000; // 2 seconds is not enough... 
-    //private static final long RESTART_WAIT_TIME = 30 * 1000;
+    //private static final long RESTART_WAIT_TIME = 2 * 1000;
+    private static final long RESTART_WAIT_TIME = 5 * 1000; // 2 seconds is not enough...
 
     public void executeTask() throws Exception {
 
