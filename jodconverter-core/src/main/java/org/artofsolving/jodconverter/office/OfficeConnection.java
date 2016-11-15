@@ -46,8 +46,6 @@ class OfficeConnection implements OfficeContext, XEventListener {
     private Object desktopService;
     private XComponent bridgeComponent;
     private XComponentLoader officeComponentLoader;
-    //private XMultiComponentFactory officeMultiComponentFactory;
-    // private XComponentContext officeComponentContext;
     private final List<OfficeConnectionEventListener> connectionEventListeners;
     private volatile boolean connected;
 
@@ -63,13 +61,20 @@ class OfficeConnection implements OfficeContext, XEventListener {
         this.connectionEventListeners = new ArrayList<OfficeConnectionEventListener>();
     }
 
+    /**
+     * Adds a listener to the connection event listener list of this connection.
+     * 
+     * @param connectionEventListener
+     *            the listener to add. It will be notified when a connection is established with an
+     *            office process and when a connection is lost.
+     */
     public void addConnectionEventListener(OfficeConnectionEventListener connectionEventListener) {
 
         connectionEventListeners.add(connectionEventListener);
     }
 
     /**
-     * Establishes the connection to the office.
+     * Establishes the connection to an office instance.
      */
     public synchronized void connect() throws ConnectException {
 
@@ -108,7 +113,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
                 throw new com.sun.star.uno.Exception("Server didn't provide an instance for '" + rootOid + "'", null);
             }
 
-            // Query the initial object for its main factory interface (and keep it).
+            // Query the initial object for its main factory interface.
             XMultiComponentFactory officeMultiComponentFactory = UnoRuntime.queryInterface(XMultiComponentFactory.class, x);
 
             // Retrieve the component context (it's not yet exported from the office)
@@ -124,14 +129,12 @@ class OfficeConnection implements OfficeContext, XEventListener {
             // Now create the desktop service
             // NOTE: use the office component context here !
             desktopService = officeMultiComponentFactory.createInstanceWithContext("com.sun.star.frame.Desktop", officeComponentContext);
-            logger.trace("Setting officeComponentLoader to SOMETHING");
             officeComponentLoader = (XComponentLoader) UnoRuntime.queryInterface(XComponentLoader.class, desktopService);
             if (officeComponentLoader == null) {
                 throw new com.sun.star.uno.Exception("Couldn't instantiate com.sun.star.frame.Desktop", null);
             }
 
             // We are now connected
-            logger.trace("Setting connected to TRUE");
             connected = true;
             logger.info("Connected: '{}'", connectPart);
 
@@ -181,9 +184,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
 
         if (connected) {
             // Remote bridge has gone down, because the office crashed or was terminated.
-            logger.trace("Setting connected to TRUE");
             connected = false;
-            logger.trace("Setting officeComponentLoader to null");
             officeComponentLoader = null;
 
             logger.info("Disconnected: '{}'", unoUrl.getConnectionAndParametersAsString());
