@@ -26,7 +26,19 @@ import com.sun.star.beans.PropertyValue;
 
 public class OfficeUtils {
 
+    private static final String EXECUTABLE_DEFAULT = "program/soffice.bin";
+    private static final String EXECUTABLE_MAC = "program/soffice";
+    private static final String EXECUTABLE_MAC_41 = "MacOS/soffice.bin";
+    private static final String EXECUTABLE_WINDOWS = "program/soffice.exe";
+
+    /**
+     * Find the best process manager that will be used to retrieve a process PID and to kill a
+     * process by PID.
+     * 
+     * @return the best process manager according to the current OS.
+     */
     public static ProcessManager findBestProcessManager() {
+
         if (PlatformUtils.isLinux()) {
             return new UnixProcessManager();
         } else if (PlatformUtils.isMac()) {
@@ -41,20 +53,28 @@ public class OfficeUtils {
         }
     }
 
-    private static File findOfficeHome(String... knownPaths) {
-        for (String path : knownPaths) {
-            File home = new File(path);
-            if (getOfficeExecutable(home).isFile()) {
-                return home;
+    private static File findOfficeHome(String executablePath, String[] homePaths) {
+
+        for (String homePath : homePaths) {
+            File homeDir = new File(homePath);
+            if (new File(homeDir, executablePath).isFile()) {
+                return homeDir;
             }
         }
         return null;
     }
 
+    /**
+     * Gets the default office home directory.
+     * 
+     * @return A instance file to the directory which is the office home directory.
+     */
     public static File getDefaultOfficeHome() {
+
         if (System.getProperty("office.home") != null) {
             return new File(System.getProperty("office.home"));
         }
+
         if (PlatformUtils.isWindows()) {
 
             // Try to find the most recent version of LibreOffice or OpenOffice,
@@ -64,62 +84,134 @@ public class OfficeUtils {
             String programFiles32 = System.getenv("ProgramFiles(x86)");
             //@formatter:off
             return findOfficeHome(
-                    programFiles64 + File.separator + "LibreOffice 5",
-                    programFiles64 + File.separator + "LibreOffice 4",
-                    programFiles64 + File.separator + "LibreOffice 3",
-                    programFiles32 + File.separator + "LibreOffice 5",
-                    programFiles32 + File.separator + "LibreOffice 4",
-                    programFiles32 + File.separator + "LibreOffice 3",
-                    programFiles32 + File.separator + "OpenOffice.org 3");
+                    EXECUTABLE_WINDOWS,
+                    new String[]{
+                        programFiles64 + File.separator + "LibreOffice 5",
+                        programFiles64 + File.separator + "LibreOffice 4",
+                        programFiles64 + File.separator + "LibreOffice 3",
+                        programFiles32 + File.separator + "LibreOffice 5",
+                        programFiles32 + File.separator + "LibreOffice 4",
+                        programFiles32 + File.separator + "LibreOffice 3",
+                        programFiles32 + File.separator + "OpenOffice.org 3"
+                    });
             //@formatter:on
 
         } else if (PlatformUtils.isMac()) {
+
             //@formatter:off
-            return findOfficeHome(
-                    "/Applications/LibreOffice.app/Contents",
-                    "/Applications/OpenOffice.org.app/Contents");
+            File homeDir = findOfficeHome(
+                    EXECUTABLE_MAC_41,
+                    new String[]{
+                            "/Applications/LibreOffice.app/Contents",
+                            "/Applications/OpenOffice.org.app/Contents"
+                    });
             //@formatter:on
+
+            if (homeDir == null) {
+                //@formatter:off
+                homeDir = findOfficeHome(
+                        EXECUTABLE_MAC,
+                        new String[]{
+                                "/Applications/LibreOffice.app/Contents",
+                                "/Applications/OpenOffice.org.app/Contents"
+                        });
+                //@formatter:on
+            }
+
+            return homeDir;
         } else {
+
             // Linux or other *nix variants
             //@formatter:off
             return findOfficeHome(
-                    "/usr/lib64/libreoffice",
-                    "/usr/lib/libreoffice",
-                    "/opt/libreoffice",
-                    "/usr/lib64/openoffice",
-                    "/usr/lib64/openoffice.org3",
-                    "/usr/lib64/openoffice.org",
-                    "/usr/lib/openoffice",
-                    "/usr/lib/openoffice.org3",
-                    "/usr/lib/openoffice.org",
-                    "/opt/openoffice.org3");
+                    EXECUTABLE_DEFAULT,
+                    new String[]{
+                        "/usr/lib64/libreoffice",
+                        "/usr/lib/libreoffice",
+                        "/opt/libreoffice",
+                        "/usr/lib64/openoffice",
+                        "/usr/lib64/openoffice.org3",
+                        "/usr/lib64/openoffice.org",
+                        "/usr/lib/openoffice",
+                        "/usr/lib/openoffice.org3",
+                        "/usr/lib/openoffice.org",
+                        "/opt/openoffice.org3"
+                    });
             //@formatter:on
         }
     }
 
+    /**
+     * Gets the office executable within an office installation.
+     * 
+     * @param officeHome
+     *            the root (home) directory of the office installation.
+     * @return A instance of the executable file.
+     */
     public static File getOfficeExecutable(File officeHome) {
+
+        // Mac
         if (PlatformUtils.isMac()) {
-            // Starting with LibreOffice 4.1 the location of the executable has changed on Mac.
-            // It's now in program/soffice. Handle both cases!
-            File executableFile = new File(officeHome, "MacOS/soffice.bin");
-            if (!executableFile.isFile()) {
-                executableFile = new File(officeHome, "program/soffice");
-            }
-            return executableFile;
-        } else if (PlatformUtils.isWindows()) {
-            return new File(officeHome, "program/soffice.exe");
-        } else {
-            return new File(officeHome, "program/soffice.bin");
+            return getOfficeExecutableMac(officeHome);
         }
+
+        // Windows
+        if (PlatformUtils.isWindows()) {
+            return getOfficeExecutableWindows(officeHome);
+        }
+
+        // Everything else
+        return getOfficeExecutableDefault(officeHome);
     }
 
+    // Get the default office executable within an office installation
+    private static File getOfficeExecutableDefault(File officeHome) {
+        return new File(officeHome, EXECUTABLE_DEFAULT);
+    }
+
+    // Get the office executable for a Mac OS within an office installation
+    private static File getOfficeExecutableMac(File officeHome) {
+
+        // Starting with LibreOffice 4.1 the location of the executable has changed on Mac.
+        // It's now in program/soffice. Handle both cases!
+        File executableFile = new File(officeHome, EXECUTABLE_MAC_41);
+        if (!executableFile.isFile()) {
+            executableFile = new File(officeHome, EXECUTABLE_MAC);
+        }
+        return executableFile;
+    }
+
+    // Get the office executable for a Windows OS within an office installation
+    private static File getOfficeExecutableWindows(File officeHome) {
+
+        return new File(officeHome, EXECUTABLE_WINDOWS);
+    }
+
+    /**
+     * Creates a {@code PropertyValue} with the specified name and value.
+     * 
+     * @param name
+     *            the property name.
+     * @param value
+     *            the property value.
+     * @return the created {@code PropertyValue}.
+     */
     public static PropertyValue property(String name, Object value) {
-        PropertyValue propertyValue = new PropertyValue();
-        propertyValue.Name = name;
-        propertyValue.Value = value;
-        return propertyValue;
+
+        PropertyValue prop = new PropertyValue();
+        prop.Name = name;
+        prop.Value = value;
+        return prop;
     }
 
+    /**
+     * Converts a regular java map to an array of {@code PropertyValue}, usable as arguments with
+     * UNO interface types.
+     * 
+     * @param properties
+     *            the map to convert.
+     * @return an array of {@code PropertyValue}.
+     */
     public static PropertyValue[] toUnoProperties(Map<String, ?> properties) {
 
         PropertyValue[] propertyValues = new PropertyValue[properties.size()];
@@ -136,7 +228,15 @@ public class OfficeUtils {
         return propertyValues;
     }
 
+    /**
+     * Constructs an URL from the specified file as expected by office.
+     * 
+     * @param file
+     *            the file for which an URL will be constructed.
+     * @return a valid office URL.
+     */
     public static String toUrl(File file) {
+
         String path = file.toURI().getRawPath();
         String url = path.startsWith("//") ? "file:" + path : "file://" + path;
         return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
@@ -146,5 +246,4 @@ public class OfficeUtils {
     private OfficeUtils() {
         throw new AssertionError("utility class must not be instantiated");
     }
-
 }
