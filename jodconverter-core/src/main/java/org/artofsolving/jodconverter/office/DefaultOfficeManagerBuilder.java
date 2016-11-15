@@ -20,14 +20,9 @@ import org.artofsolving.jodconverter.process.ProcessManager;
 import com.sun.star.lib.uno.helper.UnoUrl;
 
 /**
- * Default configuration of a manager.
+ * Helper class used to creates {@code ProcessPoolOfficeManager} instances.
  */
 public class DefaultOfficeManagerBuilder {
-
-    public static final long DEFAULT_RETRY_TIMEOUT = 120000L; // 2 minutes
-    public static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds
-    public static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120000L; // 2 minutes
-    public static final int DEFAULT_MAX_TASK_PER_PROCESS = 200;
 
     private File officeHome;
     private OfficeConnectionProtocol connectionProtocol;
@@ -39,6 +34,7 @@ public class DefaultOfficeManagerBuilder {
     private long taskQueueTimeout;
     private long taskExecutionTimeout;
     private long retryTimeout;
+    private long retryInterval;
     private int maxTasksPerProcess;
     private boolean killExistingProcess;
     private ProcessManager processManager;
@@ -54,16 +50,17 @@ public class DefaultOfficeManagerBuilder {
         pipeNames = new String[] { "office" };
         workingDir = new File(System.getProperty("java.io.tmpdir"));
         taskQueueTimeout = 30000L; // 30 seconds
-        taskExecutionTimeout = 120000L; // 2 minutes
+        taskExecutionTimeout = PooledOfficeManagerSettings.DEFAULT_TASK_EXECUTION_TIMEOUT;
         retryTimeout = 120000L; // 2 minutes
-        maxTasksPerProcess = 200;
+        retryInterval = 250L; // 0.25 sec
+        maxTasksPerProcess = PooledOfficeManagerSettings.DEFAULT_MAX_TASK_PER_PROCESS;
         killExistingProcess = true;
     }
 
     /**
-     * Buils a {@link ProcessPoolOfficeManager} with the current configuration.
+     * Builds a {@code ProcessPoolOfficeManager} with the current configuration.
      * 
-     * @return
+     * @return the created OfficeManager
      * @throws IllegalStateException
      */
     public OfficeManager build() throws IllegalStateException {
@@ -86,12 +83,34 @@ public class DefaultOfficeManagerBuilder {
             processManager = OfficeUtils.findBestProcessManager();
         }
 
+        // TODO: Constants
+        if (retryInterval > ManagedOfficeProcessSettings.MAX_RETRY_INTERVAL) {
+            throw new IllegalStateException("retryInterval cannot be grater than " + ManagedOfficeProcessSettings.MAX_RETRY_INTERVAL + ", was: " + retryInterval);
+        }
+
         int numInstances = connectionProtocol == OfficeConnectionProtocol.PIPE ? pipeNames.length : portNumbers.length;
         UnoUrl[] unoUrls = new UnoUrl[numInstances];
         for (int i = 0; i < numInstances; i++) {
             unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrlUtils.pipe(pipeNames[i]) : UnoUrlUtils.socket(portNumbers[i]);
         }
-        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, workingDir, retryTimeout, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager, killExistingProcess);
+        //@formatter:off
+        return new ProcessPoolOfficeManager(
+                // ManageOfficeProcess
+                unoUrls,
+                officeHome,
+                workingDir,
+                processManager,
+                runAsArgs,
+                templateProfileDir,
+                retryTimeout,
+                retryInterval,
+                killExistingProcess,
+                // ProcessPoolOfficeManager
+                taskQueueTimeout,
+                // PooledOfficeManager
+                taskExecutionTimeout,
+                maxTasksPerProcess);
+        //@formatter:on
     }
 
     private boolean isValidProfileDir(File profileDir) {
@@ -141,7 +160,7 @@ public class DefaultOfficeManagerBuilder {
     }
 
     /**
-     * Sets the home office directory.
+     * Sets the office home directory.
      * 
      * @param officeHome
      *            the new home directory to set.
@@ -226,10 +245,10 @@ public class DefaultOfficeManagerBuilder {
     }
 
     /**
-     * Provide a specific {@link ProcessManager} implementation
-     * <p>
+     * Provides a specific {@code ProcessManager} implementation.
      * 
      * @param processManager
+     *            the provided process manager.
      * @return the updated configuration.
      */
     public DefaultOfficeManagerBuilder setProcessManager(ProcessManager processManager) {
@@ -240,8 +259,22 @@ public class DefaultOfficeManagerBuilder {
     }
 
     /**
-     * Retry timeout set in milliseconds. Used for retrying office process calls. If not set, it
-     * defaults to 2 minutes.
+     * Retry interval set in milliseconds. Used for waiting between office process call tries
+     * (start/terminate). If not set, it defaults to 0.25 secs.
+     * 
+     * @param retryInterval
+     *            the retry interval, in milliseconds.
+     * @return the updated configuration.
+     */
+    public DefaultOfficeManagerBuilder setRetryInterval(long retryInterval) {
+
+        this.retryInterval = retryInterval;
+        return this;
+    }
+
+    /**
+     * Retry timeout set in milliseconds. Used for retrying office process calls (start/terminate).
+     * If not set, it defaults to 2 minutes.
      * 
      * @param retryTimeout
      *            the retry timeout, in milliseconds.
@@ -296,11 +329,10 @@ public class DefaultOfficeManagerBuilder {
     }
 
     /**
-     * Sets the list of pipe names that will be use to communicate with office. An instance of
-     * office will be launched for each pipe name.
+     * Sets the directory to copy to the temporary office profile directories to be created.
      * 
-     * @param portNumbers
-     *            the port numbers to use.
+     * @param templateProfileDir
+     *            the new template profile directory.
      * @return the updated configuration.
      */
     public DefaultOfficeManagerBuilder setTemplateProfileDir(File templateProfileDir) throws IllegalArgumentException {

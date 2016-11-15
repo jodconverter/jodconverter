@@ -42,22 +42,20 @@ class ProcessPoolOfficeManager implements OfficeManager {
     /**
      * Constructs a new instance of the class with the specified settings.
      */
-    public ProcessPoolOfficeManager(File officeHome, UnoUrl[] unoUrls, String[] runAsArgs, File templateProfileDir, File workDir, long retryTimeout, long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess, ProcessManager processManager, boolean killExistingProcess) {
+    public ProcessPoolOfficeManager(UnoUrl[] unoUrls, File officeHome, File workingDir, ProcessManager processManager, String[] runAsArgs, File templateProfileDir, long retryTimeout, long retryInterval, boolean killExistingProcess, long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess) {
 
         this.taskQueueTimeout = taskQueueTimeout;
         pool = new ArrayBlockingQueue<PooledOfficeManager>(unoUrls.length);
         pooledManagers = new PooledOfficeManager[unoUrls.length];
         for (int i = 0; i < unoUrls.length; i++) {
-            PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(unoUrls[i]);
+            PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(unoUrls[i], officeHome, workingDir, processManager);
             settings.setRunAsArgs(runAsArgs);
             settings.setTemplateProfileDir(templateProfileDir);
-            settings.setWorkingDir(workDir);
-            settings.setOfficeHome(officeHome);
             settings.setRetryTimeout(retryTimeout);
+            settings.setRetryInterval(retryInterval);
+            settings.setKillExistingProcess(killExistingProcess);
             settings.setTaskExecutionTimeout(taskExecutionTimeout);
             settings.setMaxTasksPerProcess(maxTasksPerProcess);
-            settings.setProcessManager(processManager);
-            settings.setKillExistingProcess(killExistingProcess);
             pooledManagers[i] = new PooledOfficeManager(settings);
         }
         logger.debug("ProcessManager implementation is '{}'", processManager.getClass().getSimpleName());

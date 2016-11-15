@@ -15,14 +15,25 @@ package org.artofsolving.jodconverter.office;
 import com.sun.star.lib.uno.helper.UnoUrl;
 
 /**
- * Helper class used to creates {@link ExternalOfficeManager} insatnces.
+ * Helper class used to creates {@link ExternalOfficeManager} instances.
  */
 public class ExternalOfficeManagerBuilder {
 
-    private OfficeConnectionProtocol connectionProtocol = OfficeConnectionProtocol.SOCKET;
-    private int portNumber = 2002;
+    private OfficeConnectionProtocol connectionProtocol;
+    private int portNumber;
     private String pipeName = "office";
     private boolean connectOnStart = true;
+
+    /**
+     * Creates a new instance of the class.
+     */
+    public ExternalOfficeManagerBuilder() {
+
+        connectionProtocol = OfficeConnectionProtocol.SOCKET;
+        portNumber = 2002;
+        pipeName = "office";
+        connectOnStart = true;
+    }
 
     /**
      * Builds a new {@link ExternalOfficeManager}.
