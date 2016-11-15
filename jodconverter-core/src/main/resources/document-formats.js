@@ -56,7 +56,7 @@
     "extension": "docx",
     "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "inputFamily": "TEXT",
-    "storePropertiesByFamily": {"TEXT": {"FilterName": "MS Word 2007 XML}}
+    "storePropertiesByFamily": {"TEXT": {"FilterName": "MS Word 2007 XML"}}
   },
   {
     "name": "Rich Text Format",
