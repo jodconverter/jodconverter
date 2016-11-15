@@ -69,7 +69,7 @@ public class OfficeDocumentConverter {
      * @param outputFile
      *            the target output file.
      * @throws OfficeException
-     *             of the conversion fails.
+     *             if the conversion fails.
      */
     public void convert(File inputFile, File outputFile) throws OfficeException {
 
@@ -89,7 +89,7 @@ public class OfficeDocumentConverter {
      * @param outputFormat
      *            the target output format.
      * @throws OfficeException
-     *             of the conversion fails.
+     *             if the conversion fails.
      */
     public void convert(File inputFile, File outputFile, DocumentFormat outputFormat) throws OfficeException {
 
