@@ -6,9 +6,9 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.process;
 

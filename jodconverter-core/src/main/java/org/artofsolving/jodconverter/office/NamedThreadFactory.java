@@ -6,9 +6,9 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.office;
 
@@ -22,20 +22,37 @@ class NamedThreadFactory implements ThreadFactory {
 
     private static final AtomicInteger threadIndex = new AtomicInteger(0);
 
-    private final String baseName;
+    private final String basename;
     private final boolean daemon;
 
-    public NamedThreadFactory(String baseName) {
-        this(baseName, true);
+    /**
+     * Creates a new instance of the factory.
+     * 
+     * @param basename
+     *            basename of a new tread created by this factory.
+     */
+    public NamedThreadFactory(String basename) {
+        this(basename, true);
     }
 
-    public NamedThreadFactory(String baseName, boolean daemon) {
-        this.baseName = baseName;
+    /**
+     * Creates a new instance of the factory.
+     * 
+     * @param basename
+     *            basename of a new tread created by this factory.
+     * @param daemon
+     *            if true, marks new thread as a daemon thread
+     */
+    public NamedThreadFactory(String basename, boolean daemon) {
+
+        this.basename = basename;
         this.daemon = daemon;
     }
 
+    @Override
     public Thread newThread(Runnable runnable) {
-        Thread thread = new Thread(runnable, baseName + "-" + threadIndex.getAndIncrement());
+
+        Thread thread = new Thread(runnable, basename + "-" + threadIndex.getAndIncrement());
         thread.setDaemon(daemon);
         return thread;
     }

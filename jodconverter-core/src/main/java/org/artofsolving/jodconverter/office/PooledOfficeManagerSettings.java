@@ -6,11 +6,13 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.office;
+
+import com.sun.star.lib.uno.helper.UnoUrl;
 
 class PooledOfficeManagerSettings extends ManagedOfficeProcessSettings {
 
@@ -24,20 +26,20 @@ class PooledOfficeManagerSettings extends ManagedOfficeProcessSettings {
         super(unoUrl);
     }
 
-    public long getTaskExecutionTimeout() {
-        return taskExecutionTimeout;
-    }
-
-    public void setTaskExecutionTimeout(long taskExecutionTimeout) {
-        this.taskExecutionTimeout = taskExecutionTimeout;
-    }
-
     public int getMaxTasksPerProcess() {
         return maxTasksPerProcess;
     }
 
+    public long getTaskExecutionTimeout() {
+        return taskExecutionTimeout;
+    }
+
     public void setMaxTasksPerProcess(int maxTasksPerProcess) {
         this.maxTasksPerProcess = maxTasksPerProcess;
+    }
+
+    public void setTaskExecutionTimeout(long taskExecutionTimeout) {
+        this.taskExecutionTimeout = taskExecutionTimeout;
     }
 
 }

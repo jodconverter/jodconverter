@@ -6,9 +6,9 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.document;
 
@@ -17,8 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
-import org.artofsolving.jodconverter.ReflectionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,14 +28,14 @@ import org.json.JSONObject;
 class DumpJsonDefaultDocumentFormatRegistry {
 
     private static class SortedJsonObject extends JSONObject {
-         public SortedJsonObject() {
-             try {
-                 Field field = JSONObject.class.getDeclaredField("myHashMap");
-                 field.setAccessible(true);
-                 field.set(this, new LinkedHashMap<String,Object>());
-             } catch (Exception exception) {
-                 // pass; will not be sorted
-             }
+        public SortedJsonObject() {
+            try {
+                Field field = JSONObject.class.getDeclaredField("myHashMap");
+                field.setAccessible(true);
+                field.set(this, new LinkedHashMap<String, Object>());
+            } catch (Exception exception) {
+                // pass; will not be sorted
+            }
         }
     }
 
@@ -53,7 +52,7 @@ class DumpJsonDefaultDocumentFormatRegistry {
         }
         if (format.getStorePropertiesByFamily() != null) {
             JSONObject jsonStorePropertiesByFamily = new SortedJsonObject();
-            for (Map.Entry<DocumentFamily,Map<String,?>> entry : format.getStorePropertiesByFamily().entrySet()) {
+            for (Map.Entry<DocumentFamily, Map<String, ?>> entry : format.getStorePropertiesByFamily().entrySet()) {
                 jsonStorePropertiesByFamily.put(entry.getKey().name(), toJson(entry.getValue()));
             }
             jsonFormat.put("storePropertiesByFamily", jsonStorePropertiesByFamily);
@@ -62,11 +61,11 @@ class DumpJsonDefaultDocumentFormatRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    private static JSONObject toJson(Map<String,?> properties) throws JSONException {
+    private static JSONObject toJson(Map<String, ?> properties) throws JSONException {
         JSONObject jsonProperties = new SortedJsonObject();
-        for (Map.Entry<String,?> entry : properties.entrySet()) {
+        for (Map.Entry<String, ?> entry : properties.entrySet()) {
             if (entry.getValue() instanceof Map) {
-                Map<String,?> jsonValue = (Map<String,?>) entry.getValue();
+                Map<String, ?> jsonValue = (Map<String, ?>) entry.getValue();
                 jsonProperties.put(entry.getKey(), toJson(jsonValue));
             } else {
                 jsonProperties.put(entry.getKey(), entry.getValue());
@@ -78,7 +77,7 @@ class DumpJsonDefaultDocumentFormatRegistry {
     public static void main(String[] args) throws Exception {
         DefaultDocumentFormatRegistry registry = new DefaultDocumentFormatRegistry();
         @SuppressWarnings("unchecked")
-        List<DocumentFormat> formats = (List<DocumentFormat>) ReflectionUtils.getPrivateField(SimpleDocumentFormatRegistry.class, registry, "documentFormats");
+        List<DocumentFormat> formats = (List<DocumentFormat>) FieldUtils.readDeclaredField(registry, "documentFormats", true);
         JSONArray array = new JSONArray();
         for (DocumentFormat format : formats) {
             array.put(toJson(format));

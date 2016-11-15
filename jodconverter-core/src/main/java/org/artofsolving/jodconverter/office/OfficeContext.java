@@ -6,14 +6,27 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.office;
 
+import com.sun.star.frame.XComponentLoader;
+import com.sun.star.frame.XDesktop;
+
+/**
+ * Represents an office context.
+ */
 public interface OfficeContext {
 
-    Object getService(String serviceName);
+    /**
+     * Gets the office component loader for this context.
+     */
+    XComponentLoader getComponentLoader();
 
+    /**
+     * Gets the office desktop for this context.
+     */
+    XDesktop getDesktop();
 }

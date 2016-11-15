@@ -6,171 +6,256 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.office;
 
-import java.net.ConnectException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.sun.star.frame.XDesktop;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.lang.DisposedException;
 
+/**
+ * A ManagedOfficeProcess is responsible to manage an office process and the connection (bridge) to
+ * this office process.
+ * 
+ * @see OfficeProcess
+ * @see OfficeConnection
+ */
 class ManagedOfficeProcess {
 
-	private static final Integer EXIT_CODE_NEW_INSTALLATION = Integer.valueOf(81);
+    private static final Logger logger = LoggerFactory.getLogger(ManagedOfficeProcess.class);
 
-	private final ManagedOfficeProcessSettings settings;
+    private final OfficeProcess process;
+    private final OfficeConnection connection;
+    private final ManagedOfficeProcessSettings settings;
+    private final ExecutorService executor;
 
-	private final OfficeProcess process;
-	private final OfficeConnection connection;
+    /**
+     * Creates a new instance of the class with the specified settings.
+     * 
+     * @param settings
+     *            the managed office process settings.
+     */
+    public ManagedOfficeProcess(ManagedOfficeProcessSettings settings) {
 
-	private ExecutorService executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("OfficeProcessThread"));
+        this.settings = settings;
+        process = new OfficeProcess(settings.getOfficeHome(), settings.getUnoUrl(), settings.getRunAsArgs(), settings.getTemplateProfileDir(), settings.getWorkingDir(), settings.getProcessManager(), settings.isKillExistingProcess());
+        connection = new OfficeConnection(settings.getUnoUrl());
+        executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("OfficeProcessThread"));
+    }
 
-	private final Logger logger = Logger.getLogger(getClass().getName());
+    /**
+     * Ensures that the process exited.
+     * 
+     * @throws OfficeException
+     *             if an exception occurs.
+     */
+    private void doEnsureProcessExited() throws OfficeException {
+        logger.trace("> doEnsureProcessExited");
 
-	public ManagedOfficeProcess(ManagedOfficeProcessSettings settings) throws OfficeException {
-		this.settings = settings;
-		process = new OfficeProcess(settings.getOfficeHome(), settings.getUnoUrl(), settings.getRunAsArgs(), settings.getTemplateProfileDir(), settings.getWorkDir(), settings
-				.getProcessManager());
-		connection = new OfficeConnection(settings.getUnoUrl());
-	}
+        try {
+            int exitCode = process.getExitCode(settings.getRetryInterval(), settings.getRetryTimeout());
+            logger.info("process exited with code " + exitCode);
+        } catch (RetryTimeoutException retryTimeoutException) {
+            doTerminateProcess();
+        } finally {
+            process.deleteProfileDir();
+            logger.trace("< doEnsureProcessExited");
+        }
+    }
 
-	public OfficeConnection getConnection() {
-		return connection;
-	}
+    /**
+     * Starts the office process managed by this class and connect to the process.
+     */
+    private void doStartProcessAndConnect() throws OfficeException {
+        logger.trace("> doStartProcessAndConnect");
 
-	public void startAndWait() throws OfficeException {
-		Future<?> future = executor.submit(new Runnable() {
-			public void run() {
-				doStartProcessAndConnect();
-			}
-		});
-		try {
-			future.get();
-		} catch (Exception exception) {
-			throw new OfficeException("failed to start and connect", exception);
-		}
-	}
+        try {
+            process.start();
+            new ConnectRetryable(process, connection).execute(settings.getRetryInterval(), settings.getRetryTimeout());
+        } catch (Exception exception) {
+            throw new OfficeException("Could not establish connection", exception);
+        } finally {
+            logger.trace("< doStartProcessAndConnect");
+        }
+    }
 
-	public void stopAndWait() throws OfficeException {
-		Future<?> future = executor.submit(new Runnable() {
-			public void run() {
-				doStopProcess();
-			}
-		});
-		try {
-			future.get();
-		} catch (Exception exception) {
-			throw new OfficeException("failed to start and connect", exception);
-		}
-	}
+    /**
+     * Stops the office process managed by this class.
+     */
+    private void doStopProcess() {
+        logger.trace("> doStopProcess");
 
-	public void restartAndWait() {
-		Future<?> future = executor.submit(new Runnable() {
-			public void run() {
-				doStopProcess();
-				doStartProcessAndConnect();
-			}
-		});
-		try {
-			future.get();
-		} catch (Exception exception) {
-			throw new OfficeException("failed to restart", exception);
-		}
-	}
+        try {
+            connection.getDesktop().terminate();
+        } catch (DisposedException disposedException) {
+            // expected
+        } catch (Exception exception) {
+            // in case we can't get hold of the desktop
+            doTerminateProcess();
+        } finally {
+            doEnsureProcessExited();
+            logger.trace("< doStopProcess");
+        }
+    }
 
-	public void restartDueToTaskTimeout() {
-		executor.execute(new Runnable() {
-			public void run() {
-				doTerminateProcess();
-				// will cause unexpected disconnection and subsequent restart
-			}
-		});
-	}
+    /**
+     * Ensures that the process exited.
+     * 
+     * @throws OfficeException
+     *             if an exception occurs.
+     */
+    private void doTerminateProcess() throws OfficeException {
+        logger.trace("> doTerminateProcess");
 
-	public void restartDueToLostConnection() {
-		executor.execute(new Runnable() {
-			public void run() {
-				try {
-					doEnsureProcessExited();
-					doStartProcessAndConnect();
-				} catch (OfficeException officeException) {
-					logger.log(Level.SEVERE, "could not restart process", officeException);
-				}
-			}
-		});
-	}
+        try {
+            int exitCode = process.forciblyTerminate(settings.getRetryInterval(), settings.getRetryTimeout());
+            logger.info("process forcibly terminated with code " + exitCode);
+        } catch (Exception exception) {
+            throw new OfficeException("could not terminate process", exception);
+        } finally {
+            logger.trace("< doTerminateProcess");
+        }
+    }
 
-	private void doStartProcessAndConnect() throws OfficeException {
-		try {
-			process.start();
-			new Retryable() {
-				protected void attempt() throws TemporaryException, Exception {
-					try {
-						connection.connect();
-					} catch (ConnectException connectException) {
-						Integer exitCode = process.getExitCode();
-						if (exitCode == null) {
-							// process is running; retry later
-							throw new TemporaryException(connectException);
-						} else if (exitCode.equals(EXIT_CODE_NEW_INSTALLATION)) {
-							// restart and retry later
-							// see http://code.google.com/p/jodconverter/issues/detail?id=84
-							logger.log(Level.WARNING, "office process died with exit code 81; restarting it");
-							process.start(true);
-							throw new TemporaryException(connectException);
-						} else {
-							throw new OfficeException("office process died with exit code " + exitCode);
-						}
-					}
-				}
-			}.execute(settings.getRetryInterval(), settings.getRetryTimeout());
-		} catch (Exception exception) {
-			throw new OfficeException("could not establish connection", exception);
-		}
-	}
+    /**
+     * Gets the connection of this managed office process.
+     * 
+     * @return the {@link OfficeConnection} of this managed office process.
+     */
+    public OfficeConnection getConnection() {
+        return connection;
+    }
 
-	private void doStopProcess() {
-		try {
-			XDesktop desktop = OfficeUtils.cast(XDesktop.class, connection.getService(OfficeUtils.SERVICE_DESKTOP));
-			desktop.terminate();
-		} catch (DisposedException disposedException) {
-			// expected
-		} catch (Exception exception) {
-			// in case we can't get hold of the desktop
-			doTerminateProcess();
-		}
-		doEnsureProcessExited();
-	}
+    /**
+     * Gets whether the connection to the office instance is opened.
+     */
+    public boolean isConnected() {
+        return connection.isConnected();
+    }
 
-	private void doEnsureProcessExited() throws OfficeException {
-		try {
-			int exitCode = process.getExitCode(settings.getRetryInterval(), settings.getRetryTimeout());
-			logger.info("process exited with code " + exitCode);
-		} catch (RetryTimeoutException retryTimeoutException) {
-			doTerminateProcess();
-		}
-		process.deleteProfileDir();
-	}
+    /**
+     * Restarts an office process and wait until we are connected to the retarted process.
+     * 
+     * @throws OfficeException
+     *             if we are not able to restart the office process.
+     */
+    public void restartAndWait() {
+        logger.trace("> restartAndWait");
 
-	private void doTerminateProcess() throws OfficeException {
-		try {
-			int exitCode = process.forciblyTerminate(settings.getRetryInterval(), settings.getRetryTimeout());
-			logger.info("process forcibly terminated with code " + exitCode);
-		} catch (Exception exception) {
-			throw new OfficeException("could not terminate process", exception);
-		}
-	}
+        logger.info("Restarting and waiting...");
+        Future<?> future = executor.submit(new Runnable() {
+            public void run() {
+                doStopProcess();
+                doStartProcessAndConnect();
+            }
+        });
+        try {
+            future.get();
+        } catch (Exception exception) {
+            throw new OfficeException("Failed to restart", exception);
+        } finally {
+            logger.trace("< restartAndWait");
+        }
+    }
 
-	boolean isConnected() {
-		return connection.isConnected();
-	}
+    /**
+     * Restarts the office process when the connection is lost.
+     */
+    public void restartDueToLostConnection() {
+        logger.trace("> restartDueToLostConnection");
+
+        logger.info("Restarting due to lost connection...");
+        executor.execute(new Runnable() {
+            public void run() {
+                try {
+                    doEnsureProcessExited();
+                    doStartProcessAndConnect();
+                } catch (OfficeException officeException) {
+                    logger.error("Could not restart process", officeException);
+                } finally {
+                    logger.trace("< restartDueToLostConnection");
+                }
+            }
+        });
+    }
+
+    /**
+     * Restarts the office process when there is a timeout while executing a task.
+     */
+    public void restartDueToTaskTimeout() {
+        logger.trace("> restartDueToTaskTimeout");
+
+        logger.info("Restarting due to task timeout connection...");
+        executor.execute(new Runnable() {
+            public void run() {
+                try {
+                    doTerminateProcess();
+                    // will cause unexpected disconnection and subsequent restart
+                    //doTerminateProcess();
+                    //doStartProcessAndConnect();
+                    //} catch (OfficeException officeException) {
+                    //    logger.error("Could not restart process", officeException);
+                } finally {
+                    logger.trace("< restartDueToTaskTimeout");
+                }
+            }
+        });
+    }
+
+    /**
+     * Starts an office process and wait until we are connected to the running process.
+     * 
+     * @throws OfficeException
+     *             if we are not able to start and connect to the office process.
+     */
+    public void startAndWait() throws OfficeException {
+        logger.trace("> startAndWait");
+
+        logger.info("Starting and waiting...");
+        Future<?> future = executor.submit(new Runnable() {
+            public void run() {
+                doStartProcessAndConnect();
+            }
+        });
+        try {
+            future.get();
+        } catch (Exception exception) {
+            throw new OfficeException("failed to start and connect", exception);
+        } finally {
+            logger.trace("< startAndWait");
+        }
+    }
+
+    /**
+     * Stop an office process and wait until the process is stopped.
+     * 
+     * @throws OfficeException
+     *             if we are not able to stop the office process.
+     */
+    public void stopAndWait() throws OfficeException {
+        logger.trace("> stopAndWait");
+
+        logger.info("Stopping and waiting...");
+        Future<?> future = executor.submit(new Runnable() {
+            public void run() {
+                doStopProcess();
+            }
+        });
+        try {
+            future.get();
+        } catch (Exception exception) {
+            throw new OfficeException("failed to stop and connect", exception);
+        } finally {
+            logger.trace("< stopAndWait");
+        }
+    }
 
 }

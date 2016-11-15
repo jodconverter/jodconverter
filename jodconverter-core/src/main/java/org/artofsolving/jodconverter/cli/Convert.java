@@ -6,9 +6,9 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.cli;
 
@@ -29,7 +29,7 @@ import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.JsonDocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.OfficeManager;
-import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.json.JSONException;
 
 /**
@@ -76,8 +76,7 @@ public class Convert {
 
         String[] fileNames = commandLine.getArgs();
         if ((outputFormat == null && fileNames.length != 2) || fileNames.length < 1) {
-            String syntax = "java -jar jodconverter-core.jar [options] input-file output-file\n"
-                    + "or [options] -o output-format input-file [input-file...]";
+            String syntax = "java -jar jodconverter-core.jar [options] input-file output-file\n" + "or [options] -o output-format input-file [input-file...]";
             HelpFormatter helpFormatter = new HelpFormatter();
             helpFormatter.printHelp(syntax, OPTIONS);
             System.exit(STATUS_INVALID_ARGUMENTS);
@@ -86,12 +85,12 @@ public class Convert {
         DocumentFormatRegistry registry;
         if (commandLine.hasOption(OPTION_REGISTRY.getOpt())) {
             File registryFile = new File(commandLine.getOptionValue(OPTION_REGISTRY.getOpt()));
-            registry = new JsonDocumentFormatRegistry(FileUtils.readFileToString(registryFile));
+            registry = new JsonDocumentFormatRegistry(FileUtils.readFileToString(registryFile, "UTF-8"));
         } else {
             registry = new DefaultDocumentFormatRegistry();
         }
 
-        DefaultOfficeManagerConfiguration configuration = new DefaultOfficeManagerConfiguration();
+        DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
         configuration.setPortNumber(port);
         if (commandLine.hasOption(OPTION_TIMEOUT.getOpt())) {
             int timeout = Integer.parseInt(commandLine.getOptionValue(OPTION_TIMEOUT.getOpt()));
@@ -102,7 +101,7 @@ public class Convert {
             configuration.setTemplateProfileDir(new File(templateProfileDir));
         }
 
-        OfficeManager officeManager = configuration.buildOfficeManager();
+        OfficeManager officeManager = configuration.build();
         officeManager.start();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
         try {
@@ -122,5 +121,5 @@ public class Convert {
             officeManager.stop();
         }
     }
-    
+
 }

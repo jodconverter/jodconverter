@@ -6,9 +6,9 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.document;
 
@@ -25,7 +25,7 @@ import org.json.JSONObject;
 public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
     public JsonDocumentFormatRegistry(InputStream input) throws JSONException, IOException {
-        readJsonArray(IOUtils.toString(input));
+        readJsonArray(IOUtils.toString(input, "UTF-8"));
     }
 
     public JsonDocumentFormatRegistry(String source) throws JSONException {
@@ -33,13 +33,11 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
     }
 
     private void readJsonArray(String source) throws JSONException {
+
         JSONArray array = new JSONArray(source);
         for (int i = 0; i < array.length(); i++) {
             JSONObject jsonFormat = array.getJSONObject(i);
-            DocumentFormat format = new DocumentFormat();
-            format.setName(jsonFormat.getString("name"));
-            format.setExtension(jsonFormat.getString("extension"));
-            format.setMediaType(jsonFormat.getString("mediaType"));
+            DocumentFormat format = new DocumentFormat(jsonFormat.getString("name"), jsonFormat.getString("extension"), jsonFormat.getString("mediaType"));
             if (jsonFormat.has("inputFamily")) {
                 format.setInputFamily(DocumentFamily.valueOf(jsonFormat.getString("inputFamily")));
             }
@@ -49,7 +47,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
             if (jsonFormat.has("storePropertiesByFamily")) {
                 JSONObject jsonStorePropertiesByFamily = jsonFormat.getJSONObject("storePropertiesByFamily");
                 for (String key : JSONObject.getNames(jsonStorePropertiesByFamily)) {
-                    Map<String,?> storeProperties = toJavaMap(jsonStorePropertiesByFamily.getJSONObject(key));
+                    Map<String, ?> storeProperties = toJavaMap(jsonStorePropertiesByFamily.getJSONObject(key));
                     format.setStoreProperties(DocumentFamily.valueOf(key), storeProperties);
                 }
             }
@@ -57,8 +55,9 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
         }
     }
 
-    private Map<String,?> toJavaMap(JSONObject jsonMap) throws JSONException {
-        Map<String,Object> map = new HashMap<String,Object>();
+    private Map<String, Object> toJavaMap(JSONObject jsonMap) throws JSONException {
+
+        Map<String, Object> map = new HashMap<String, Object>();
         for (String key : JSONObject.getNames(jsonMap)) {
             Object value = jsonMap.get(key);
             if (value instanceof JSONObject) {

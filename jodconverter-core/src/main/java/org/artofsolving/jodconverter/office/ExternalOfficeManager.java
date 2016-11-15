@@ -6,13 +6,15 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter.office;
 
 import java.net.ConnectException;
+
+import com.sun.star.lib.uno.helper.UnoUrl;
 
 /**
  * {@link OfficeManager} implementation that connects to an external Office process.
@@ -23,64 +25,78 @@ import java.net.ConnectException;
  * soffice -accept="socket,host=127.0.0.1,port=2002;urp;"
  * </pre>
  * <p>
- * Since this implementation does not manage the Office process, it does not support auto-restarting the process if it exits unexpectedly.
+ * Since this implementation does not manage the Office process, it does not support auto-restarting
+ * the process if it exits unexpectedly.
  * <p>
  * It will however auto-reconnect to the external process if the latter is manually restarted.
  * <p>
- * This {@link OfficeManager} implementation basically provides the same behaviour as JODConverter 2.x, including using <em>synchronized</em> blocks for serialising office
- * operations.
+ * This {@link OfficeManager} implementation basically provides the same behaviour as JODConverter
+ * 2.x, including using <em>synchronized</em> blocks for serialising office operations.
  */
 class ExternalOfficeManager implements OfficeManager {
 
-	private final OfficeConnection connection;
-	private final boolean connectOnStart;
+    private final OfficeConnection connection;
+    private final boolean connectOnStart;
 
-	/**
-	 * @param unoUrl
-	 * @param connectOnStart
-	 *            should a connection be attempted on {@link #start()}? Default is <em>true</em>. If <em>false</em>, a connection will only be attempted the first time an
-	 *            {@link OfficeTask} is executed.
-	 */
-	public ExternalOfficeManager(UnoUrl unoUrl, boolean connectOnStart) {
-		connection = new OfficeConnection(unoUrl);
-		this.connectOnStart = connectOnStart;
-	}
+    /**
+     * Construcst a new instance of the class.
+     * 
+     * @param unoUrl
+     *            the uno URL.
+     * @param connectOnStart
+     *            should a connection be attempted on {@link #start()}? Default is <em>true</em>. If
+     *            <em>false</em>, a connection will only be attempted the first time an
+     *            {@link OfficeTask} is executed.
+     */
+    public ExternalOfficeManager(UnoUrl unoUrl, boolean connectOnStart) {
 
-	public void start() throws OfficeException {
-		if (connectOnStart) {
-			synchronized (connection) {
-				connect();
-			}
-		}
-	}
+        connection = new OfficeConnection(unoUrl);
+        this.connectOnStart = connectOnStart;
+    }
 
-	public void stop() {
-		synchronized (connection) {
-			if (connection.isConnected()) {
-				connection.disconnect();
-			}
-		}
-	}
+    private void connect() {
 
-	public void execute(OfficeTask task) throws OfficeException {
-		synchronized (connection) {
-			if (!connection.isConnected()) {
-				connect();
-			}
-			task.execute(connection);
-		}
-	}
+        try {
+            connection.connect();
+        } catch (ConnectException connectException) {
+            throw new OfficeException("could not connect to external office process", connectException);
+        }
+    }
 
-	private void connect() {
-		try {
-			connection.connect();
-		} catch (ConnectException connectException) {
-			throw new OfficeException("could not connect to external office process", connectException);
-		}
-	}
+    @Override
+    public void execute(OfficeTask task) throws OfficeException {
 
-	public boolean isRunning() {
-		return connection.isConnected();
-	}
+        synchronized (connection) {
+            if (!connection.isConnected()) {
+                connect();
+            }
+            task.execute(connection);
+        }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return connection.isConnected();
+    }
+
+    @Override
+    public void start() throws OfficeException {
+
+        if (connectOnStart) {
+            synchronized (connection) {
+                connect();
+            }
+        }
+    }
+
+    @Override
+    public void stop() {
+
+        synchronized (connection) {
+            if (connection.isConnected()) {
+                connection.disconnect();
+            }
+        }
+    }
 
 }

@@ -8,7 +8,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
 public class WebappContext {
@@ -38,7 +38,7 @@ public class WebappContext {
 			logger.warning("max file upload size not set");
 		}
 
-		DefaultOfficeManagerConfiguration configuration = new DefaultOfficeManagerConfiguration();
+		DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
 		String officePortParam = servletContext.getInitParameter(PARAMETER_OFFICE_PORT);
 		if (officePortParam != null) {
 		    configuration.setPortNumber(Integer.parseInt(officePortParam));
@@ -52,7 +52,7 @@ public class WebappContext {
 		    configuration.setTemplateProfileDir(new File(officeProfileParam));
 		}
 
-		officeManager = configuration.buildOfficeManager();
+		officeManager = configuration.build();
 		documentConverter = new OfficeDocumentConverter(officeManager);
 	}
 

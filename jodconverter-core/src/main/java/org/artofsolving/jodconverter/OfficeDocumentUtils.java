@@ -6,20 +6,18 @@
 // modify it under either (at your option) of the following licenses
 //
 // 1. The GNU Lesser General Public License v3 (or later)
-//    -> http://www.gnu.org/licenses/lgpl-3.0.txt
+// -> http://www.gnu.org/licenses/lgpl-3.0.txt
 // 2. The Apache License, Version 2.0
-//    -> http://www.apache.org/licenses/LICENSE-2.0.txt
+// -> http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 package org.artofsolving.jodconverter;
-
-import static org.artofsolving.jodconverter.office.OfficeUtils.*;
 
 import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.office.OfficeException;
 
-
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
+import com.sun.star.uno.UnoRuntime;
 
 class OfficeDocumentUtils {
 
@@ -28,7 +26,8 @@ class OfficeDocumentUtils {
     }
 
     public static DocumentFamily getDocumentFamily(XComponent document) throws OfficeException {
-        XServiceInfo serviceInfo = cast(XServiceInfo.class, document);
+
+        XServiceInfo serviceInfo = UnoRuntime.queryInterface(XServiceInfo.class, document);
         if (serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")) {
             // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
             // but this further distinction doesn't seem to matter for conversions
