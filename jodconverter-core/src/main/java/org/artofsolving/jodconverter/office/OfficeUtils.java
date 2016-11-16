@@ -92,7 +92,8 @@ public class OfficeUtils {
                         programFiles32 + File.separator + "LibreOffice 5",
                         programFiles32 + File.separator + "LibreOffice 4",
                         programFiles32 + File.separator + "LibreOffice 3",
-                        programFiles32 + File.separator + "OpenOffice.org 3"
+                        programFiles32 + File.separator + "OpenOffice.org 3",
+                        programFiles32 + File.separator + "OpenOffice 4"
                     });
             //@formatter:on
 
