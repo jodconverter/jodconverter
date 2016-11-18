@@ -42,7 +42,7 @@ public class DefaultConversionTask extends AbstractConversionTask {
 
         this.inputFormat = inputFormat;
         this.outputFormat = outputFormat;
-        this.transformerSteps = new ArrayList<>();
+        this.transformerSteps = new ArrayList<TransformerStep>();
 
     }
 

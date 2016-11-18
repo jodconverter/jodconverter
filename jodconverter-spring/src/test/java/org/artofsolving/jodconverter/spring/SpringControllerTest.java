@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SpringControllerTest {
-	@Configuration
+	@Configuration("SpringControllerTestConfiguration")
     static class ContextConfiguration {
 
         // this bean will be injected into the OrderServiceTest class
