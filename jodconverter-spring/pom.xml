@@ -23,6 +23,12 @@
     <artifactId>commons-io</artifactId>
     </dependency>
   
+    <dependency>
+    <groupId>org.artofsolving.jodconverter</groupId>
+  	<artifactId>jodconverter-core</artifactId>
+  	<version>3.1-SBRA-SNAPSHOT</version>
+    
+    </dependency>
   
 	<dependency>
     	<groupId>org.projectlombok</groupId>

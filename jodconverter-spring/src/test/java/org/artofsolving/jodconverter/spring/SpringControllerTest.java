@@ -31,6 +31,8 @@ public class SpringControllerTest {
 	File TXTinputFile=null;
 	File RTFoutputFile=null;
 	File DOCoutputFile=null;
+	File PDFoutputFile=null;
+	File DOCXoutputFile=null;
 	
 	@Autowired
 	private SpringJodConverter testClass=null;
@@ -49,6 +51,8 @@ public class SpringControllerTest {
 		}
 		RTFoutputFile=new File("output.rtf");
 		DOCoutputFile=new File("output.doc");
+		PDFoutputFile = new File ("output.pdf");
+		DOCXoutputFile = new File("output.DOCX");
 	}
 
 	@After
@@ -56,18 +60,37 @@ public class SpringControllerTest {
 		TXTinputFile.delete();
 		RTFoutputFile.delete();
 		DOCoutputFile.delete();
+		PDFoutputFile.delete();
+		DOCXoutputFile.delete();
 	}
 
 	@Test
+	public void testAvailableFormats() throws Exception {
+		testClass.availableFormats();
+	}
+	
+	@Test
 	public void testTXTToRTF() throws Exception {
 		testClass.convert(TXTinputFile.toString(),RTFoutputFile.toString());
-		if(!RTFoutputFile.exists()) throw new Exception("There is not RTF File!.");
+		if(!RTFoutputFile.exists()) throw new Exception("There is not a RTF File!.");
 	}
 	
 	@Test
 	public void testTXTToDOC() throws Exception {
 		testClass.convert(TXTinputFile.toString(),DOCoutputFile.toString());
-		if(!DOCoutputFile.exists()) throw new Exception("There is not DOC File!.");
+		if(!DOCoutputFile.exists()) throw new Exception("There is not a DOC File!.");
+	}
+	
+	@Test
+	public void testTXTToDOCX() throws Exception {
+		testClass.convert(TXTinputFile.toString(),DOCXoutputFile.toString());
+		if(!DOCXoutputFile.exists()) throw new Exception("There is not a DOCX File!.");
+	}
+	
+	@Test
+	public void testTXTToPDF() throws Exception {
+		testClass.convert(TXTinputFile.toString(),PDFoutputFile.toString());
+		if(!PDFoutputFile.exists()) throw new Exception("There is not a PDF File!.");
 	}
 
 }
