@@ -89,6 +89,7 @@
           <!-- don't run tests in parallel -->
           <perCoreThreadCount>false</perCoreThreadCount>
           <threadCount>1</threadCount>
+          <skipTests>true</skipTests>
         </configuration>
       </plugin>
       <plugin>

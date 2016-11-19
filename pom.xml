@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
  *
  * See the NOTICE file distributed with this work for additional
@@ -20,12 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
--->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.artofsolving.jodconverter</groupId>
   <artifactId>jodconverter-pom</artifactId>
@@ -61,6 +55,7 @@
   <modules>
     <module>jodconverter-core</module>
     <module>jodconverter-sample-webapp</module>
+    <module>jodconverter-spring</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/sbraconnier/jodconverter.git</connection>
@@ -110,8 +105,8 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.6.0</version>
           <configuration>
-            <source>1.7</source>
-            <target>1.7</target>
+            <source>1.6</source>
+            <target>1.6</target>
           </configuration>
         </plugin>
         <plugin>

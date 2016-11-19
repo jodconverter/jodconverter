@@ -22,8 +22,8 @@ import java.util.Set;
  */
 public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
 
-    private Map<String, DocumentFormat> documentFormatsByExtension = new HashMap<>();
-    private Map<String, DocumentFormat> documentFormatsByMediaType = new HashMap<>();
+    private Map<String, DocumentFormat> documentFormatsByExtension = new HashMap<String, DocumentFormat>();
+    private Map<String, DocumentFormat> documentFormatsByMediaType = new HashMap<String, DocumentFormat>();
 
     /**
      * Add a new format to the registry.
