@@ -1,70 +1,57 @@
-<?xml version="1.0"  ?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.artofsolving.jodconverter</groupId>
     <artifactId>jodconverter-pom</artifactId>
     <version>3.1-SBRA-SNAPSHOT</version>
   </parent>
-  
-  <groupId>org.artofsolving.jodconverter</groupId>
   <artifactId>jodconverter-spring</artifactId>
-  <version>0.0.1.SNAPSHOT</version>
-  <name>jodconverter-spring</name>
- 
+  <packaging>jar</packaging>
+  <name>JODConverter - Spring</name>
+  <description>
+    Spring Component for JODConverter
+  </description>
+  
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring.version>4.3.4.RELEASE</spring.version>
   </properties>
+  
   <dependencies>
-  
-  <dependency>
-    <groupId>commons-io</groupId>
-    <artifactId>commons-io</artifactId>
-    </dependency>
-  
+    <!--  Required dependencies -->
     <dependency>
-    <groupId>org.artofsolving.jodconverter</groupId>
-  	<artifactId>jodconverter-core</artifactId>
-  	<version>3.1-SBRA-SNAPSHOT</version>
-    
+      <groupId>${project.groupId}</groupId>
+      <artifactId>jodconverter-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
-  
-	<dependency>
-    	<groupId>org.projectlombok</groupId>
-    	<artifactId>lombok</artifactId>
-    	<version>1.16.10</version>
-	</dependency>
-	  
-	<dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-   
-	<dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-core</artifactId>
-	    <version>4.3.3.RELEASE</version>
-	</dependency>
-	
-		<dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-context</artifactId>
-	    <version>4.3.3.RELEASE</version>
-	</dependency>
-	
-	<dependency>
-	    <groupId>junit</groupId>
-	    <artifactId>junit</artifactId>
-	    <version>4.12</version>
-	    <scope>test</scope>
-	</dependency>
-	
-	<dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-test</artifactId>
-	    <version>4.3.3.RELEASE</version>
-	    <scope>test</scope>
-	</dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <!--  Test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>${spring.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
