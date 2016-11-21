@@ -66,7 +66,7 @@ public class DefaultConversionTask extends AbstractConversionTask {
     }
 
     @Override
-    protected Map<String, ?> getLoadProperties() {
+    protected Map<String, ?> getLoadProperties() throws OfficeException {
 
         Map<String, Object> loadProperties = new HashMap<String, Object>();
         if (defaultLoadProperties != null) {
@@ -79,7 +79,7 @@ public class DefaultConversionTask extends AbstractConversionTask {
     }
 
     @Override
-    protected Map<String, ?> getStoreProperties(XComponent document) {
+    protected Map<String, ?> getStoreProperties(XComponent document) throws OfficeException {
 
         DocumentFamily family = OfficeDocumentUtils.getDocumentFamily(document);
         return outputFormat.getStoreProperties(family);

@@ -61,9 +61,8 @@ public class DefaultOfficeManagerBuilder {
      * Builds a {@code ProcessPoolOfficeManager} with the current configuration.
      * 
      * @return the created OfficeManager
-     * @throws IllegalStateException
      */
-    public OfficeManager build() throws IllegalStateException {
+    public OfficeManager build()  {
 
         if (officeHome == null) {
             throw new IllegalStateException("officeHome not set and could not be auto-detected");
@@ -83,7 +82,6 @@ public class DefaultOfficeManagerBuilder {
             processManager = OfficeUtils.findBestProcessManager();
         }
 
-        // TODO: Constants
         if (retryInterval > ManagedOfficeProcessSettings.MAX_RETRY_INTERVAL) {
             throw new IllegalStateException("retryInterval cannot be grater than " + ManagedOfficeProcessSettings.MAX_RETRY_INTERVAL + ", was: " + retryInterval);
         }
@@ -124,7 +122,7 @@ public class DefaultOfficeManagerBuilder {
      *            the new protocol to set.
      * @return the updated configuration.
      */
-    public DefaultOfficeManagerBuilder setConnectionProtocol(OfficeConnectionProtocol connectionProtocol) throws NullPointerException {
+    public DefaultOfficeManagerBuilder setConnectionProtocol(OfficeConnectionProtocol connectionProtocol) {
 
         Validate.notNull(connectionProtocol);
         this.connectionProtocol = connectionProtocol;
@@ -194,7 +192,7 @@ public class DefaultOfficeManagerBuilder {
      *            the pipe name to use.
      * @return the updated configuration.
      */
-    public DefaultOfficeManagerBuilder setPipeName(String pipeName) throws NullPointerException {
+    public DefaultOfficeManagerBuilder setPipeName(String pipeName) {
 
         Validate.notNull(pipeName);
         return setPipeNames(new String[] { pipeName });
@@ -208,7 +206,7 @@ public class DefaultOfficeManagerBuilder {
      *            the pipe names to use.
      * @return the updated configuration.
      */
-    public DefaultOfficeManagerBuilder setPipeNames(String... pipeNames) throws NullPointerException, IllegalArgumentException {
+    public DefaultOfficeManagerBuilder setPipeNames(String... pipeNames) {
 
         Validate.notNull(pipeNames);
         Validate.isTrue(portNumbers.length > 0, "The pipe name list must not be empty");
@@ -236,7 +234,7 @@ public class DefaultOfficeManagerBuilder {
      *            the port numbers to use.
      * @return the updated configuration.
      */
-    public DefaultOfficeManagerBuilder setPortNumbers(int... portNumbers) throws NullPointerException, IllegalArgumentException {
+    public DefaultOfficeManagerBuilder setPortNumbers(int... portNumbers) {
 
         Validate.notNull(portNumbers);
         Validate.isTrue(portNumbers.length > 0, "The port number list must not be empty");
@@ -335,7 +333,7 @@ public class DefaultOfficeManagerBuilder {
      *            the new template profile directory.
      * @return the updated configuration.
      */
-    public DefaultOfficeManagerBuilder setTemplateProfileDir(File templateProfileDir) throws IllegalArgumentException {
+    public DefaultOfficeManagerBuilder setTemplateProfileDir(File templateProfileDir) {
 
         if (templateProfileDir != null) {
             Validate.isTrue(templateProfileDir.isDirectory(), "The template profile directory must exist and be a directory");

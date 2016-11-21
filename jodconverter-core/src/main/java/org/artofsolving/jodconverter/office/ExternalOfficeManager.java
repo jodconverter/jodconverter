@@ -12,8 +12,6 @@
 //
 package org.artofsolving.jodconverter.office;
 
-import java.net.ConnectException;
-
 import com.sun.star.lib.uno.helper.UnoUrl;
 
 /**
@@ -54,12 +52,12 @@ class ExternalOfficeManager implements OfficeManager {
         this.connectOnStart = connectOnStart;
     }
 
-    private void connect() {
+    private void connect() throws OfficeException {
 
         try {
             connection.connect();
-        } catch (ConnectException connectException) {
-            throw new OfficeException("could not connect to external office process", connectException);
+        } catch (OfficeConnectionException connectionEx) {
+            throw new OfficeException("Could not connect to external office process", connectionEx);
         }
     }
 

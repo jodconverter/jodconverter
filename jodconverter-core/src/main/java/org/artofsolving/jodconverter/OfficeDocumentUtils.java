@@ -22,7 +22,7 @@ import com.sun.star.uno.UnoRuntime;
 class OfficeDocumentUtils {
 
     private OfficeDocumentUtils() {
-        throw new AssertionError("utility class must not be instantiated");
+        throw new AssertionError("Utility class must not be instantiated");
     }
 
     public static DocumentFamily getDocumentFamily(XComponent document) throws OfficeException {
@@ -39,7 +39,7 @@ class OfficeDocumentUtils {
         } else if (serviceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
             return DocumentFamily.DRAWING;
         } else {
-            throw new OfficeException("document of unknown family: " + serviceInfo.getImplementationName());
+            throw new OfficeException("Document of unknown family: " + serviceInfo.getImplementationName());
         }
     }
 

@@ -117,8 +117,8 @@ public class StressTest {
                 logger.info("-- converting %s to %s... ", inputFormat.getExtension(), outputFormat.getExtension());
                 converter.convert(inputFile, outputFile, outputFormat);
                 logger.info("done.\n");
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }

@@ -60,7 +60,7 @@ abstract class Retryable {
      * @throws Exception
      *             for all other error conditions
      */
-    public void execute(long delay, long interval, long timeout) throws RetryTimeoutException, Exception {
+    public void execute(long delay, long interval, long timeout) throws  RetryTimeoutException, Exception {
 
         long start = System.currentTimeMillis();
         if (delay > 0L) {
@@ -70,12 +70,12 @@ abstract class Retryable {
             try {
                 attempt();
                 return;
-            } catch (TemporaryException temporaryException) {
+            } catch (TemporaryException temporaryEx) {
                 if (System.currentTimeMillis() - start < timeout) {
                     sleep(interval);
                     // continue
                 } else {
-                    throw new RetryTimeoutException(temporaryException.getCause());
+                    throw new RetryTimeoutException(temporaryEx.getCause());
                 }
             }
         }
@@ -84,7 +84,7 @@ abstract class Retryable {
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);
-        } catch (InterruptedException interruptedException) {
+        } catch (InterruptedException interruptedEx) {
             // continue
         }
     }

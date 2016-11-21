@@ -33,7 +33,7 @@ class DumpJsonDefaultDocumentFormatRegistry {
                 Field field = JSONObject.class.getDeclaredField("myHashMap");
                 field.setAccessible(true);
                 field.set(this, new LinkedHashMap<String, Object>());
-            } catch (Exception exception) {
+            } catch (Exception ex) {
                 // pass; will not be sorted
             }
         }

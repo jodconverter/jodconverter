@@ -24,10 +24,9 @@ import org.slf4j.LoggerFactory;
 import com.sun.star.lib.uno.helper.UnoUrl;
 
 /**
- * A ProcessPoolOfficeManager is responsible to maintain a pool of {@link PooledOfficeManager} that
- * will be used to execute {@link OfficeTask}. The manager will use the first
- * {@link PooledOfficeManager} to execute a given task when the {@link #execute(OfficeTask)}
- * function is called.
+ * A ProcessPoolOfficeManager is responsible to maintain a pool of {@link PooledOfficeManager} that will be used to
+ * execute {@link OfficeTask}. The manager will use the first {@link PooledOfficeManager} to execute a given task when
+ * the {@link #execute(OfficeTask)} function is called.
  */
 class ProcessPoolOfficeManager implements OfficeManager {
 
@@ -42,13 +41,16 @@ class ProcessPoolOfficeManager implements OfficeManager {
     /**
      * Constructs a new instance of the class with the specified settings.
      */
-    public ProcessPoolOfficeManager(UnoUrl[] unoUrls, File officeHome, File workingDir, ProcessManager processManager, String[] runAsArgs, File templateProfileDir, long retryTimeout, long retryInterval, boolean killExistingProcess, long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess) {
+    public ProcessPoolOfficeManager(UnoUrl[] unoUrls, File officeHome, File workingDir, ProcessManager processManager,
+            String[] runAsArgs, File templateProfileDir, long retryTimeout, long retryInterval,
+            boolean killExistingProcess, long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess) {
 
         this.taskQueueTimeout = taskQueueTimeout;
         pool = new ArrayBlockingQueue<PooledOfficeManager>(unoUrls.length);
         pooledManagers = new PooledOfficeManager[unoUrls.length];
         for (int i = 0; i < unoUrls.length; i++) {
-            PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(unoUrls[i], officeHome, workingDir, processManager);
+            PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(unoUrls[i], officeHome, workingDir,
+                    processManager);
             settings.setRunAsArgs(runAsArgs);
             settings.setTemplateProfileDir(templateProfileDir);
             settings.setRetryTimeout(retryTimeout);
@@ -62,24 +64,22 @@ class ProcessPoolOfficeManager implements OfficeManager {
     }
 
     /**
-     * Acquires a {@link PooledOfficeManager}, waiting the configured timeout for a manager to
-     * become available.
+     * Acquires a {@link PooledOfficeManager}, waiting the configured timeout for a manager to become available.
      * 
      * @return A {@link PooledOfficeManager} that was available.
+     * @throws OfficeException if we are unable to acquire a manager.
      */
-    private PooledOfficeManager acquireManager() {
+    private PooledOfficeManager acquireManager() throws OfficeException {
 
         try {
             return pool.poll(taskQueueTimeout, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException interruptedException) {
-            throw new OfficeException("interrupted", interruptedException);
+        } catch (InterruptedException interruptedEx) {
+            throw new OfficeException("interrupted", interruptedEx);
         }
     }
 
-    /**
-     * Executes the given task.
-     */
-    public void execute(OfficeTask task) throws IllegalStateException, OfficeException {
+    @Override
+    public void execute(OfficeTask task) throws OfficeException {
 
         if (!running) {
             throw new IllegalStateException("This office manager is currently stopped.");
@@ -103,11 +103,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
         }
     }
 
-    /**
-     * Gets whether this office manager is running.
-     * 
-     * @return {@code true} if the manager is running, {@code false} otherwise.
-     */
+    @Override
     public boolean isRunning() {
         return running;
     }
@@ -115,22 +111,20 @@ class ProcessPoolOfficeManager implements OfficeManager {
     /**
      * Make the given {@link PooledOfficeManager} available to executes tasks.
      * 
-     * @param manager
-     *            A {@link PooledOfficeManager} to put into the pool.
+     * @param manager A {@link PooledOfficeManager} to put into the pool.
+     * @throws OfficeException if we are unable to release the manager.
      */
-    private void releaseManager(PooledOfficeManager manager) {
+    private void releaseManager(PooledOfficeManager manager) throws OfficeException {
 
         try {
             pool.put(manager);
-        } catch (InterruptedException interruptedException) {
+        } catch (InterruptedException interruptedEx) {
             // Not supposed to happened
-            throw new OfficeException("interrupted", interruptedException);
+            throw new OfficeException("interrupted", interruptedEx);
         }
     }
 
-    /**
-     * Starts the manager.
-     */
+    @Override
     public synchronized void start() throws OfficeException {
 
         // Start all PooledOfficeManager and make them available to execute tasks.
@@ -141,9 +135,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
         running = true;
     }
 
-    /**
-     * Stops the manager.
-     */
+    @Override
     public synchronized void stop() throws OfficeException {
 
         running = false;

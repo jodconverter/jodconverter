@@ -61,10 +61,10 @@ public abstract class AbstractConversionTask implements OfficeTask {
             document = loadDocument(context);
             modifyDocument(context, document);
             storeDocument(document);
-        } catch (OfficeException officeException) {
-            throw officeException;
-        } catch (Exception exception) {
-            throw new OfficeException("Conversion failed", exception);
+        } catch (OfficeException officeEx) {
+            throw officeEx;
+        } catch (Exception ex) {
+            throw new OfficeException("Conversion failed", ex);
         } finally {
             if (document != null) {
 
@@ -74,7 +74,7 @@ public abstract class AbstractConversionTask implements OfficeTask {
                 if (closeable != null) {
                     try {
                         closeable.close(true);
-                    } catch (CloseVetoException closeVetoException) {
+                    } catch (CloseVetoException closeVetoEx) {
                         // whoever raised the veto should close the document
                     }
                 } else {
@@ -87,34 +87,34 @@ public abstract class AbstractConversionTask implements OfficeTask {
     /**
      * Gets the office properties to apply when the input file will be loaded.
      */
-    protected abstract Map<String, ?> getLoadProperties();
+    protected abstract Map<String, ?> getLoadProperties() throws OfficeException;
 
     /**
      * Gets the office properties to apply when the converted document will be saved as the output
      * file.
      */
-    protected abstract Map<String, ?> getStoreProperties(XComponent document);
+    protected abstract Map<String, ?> getStoreProperties(XComponent document) throws OfficeException;
 
     // Load the document to convert
     private XComponent loadDocument(OfficeContext context) throws OfficeException {
 
         // Check if the file exists
         if (!inputFile.exists()) {
-            throw new OfficeException("input document not found");
+            throw new OfficeException("Input document not found");
         }
 
         XComponent document = null;
         try {
             document = context.getComponentLoader().loadComponentFromURL(toUrl(inputFile), "_blank", 0, toUnoProperties(getLoadProperties()));
-        } catch (IllegalArgumentException illegalArgumentException) {
-            throw new OfficeException("could not load document: " + inputFile.getName(), illegalArgumentException);
-        } catch (ErrorCodeIOException errorCodeIOException) {
-            throw new OfficeException("could not load document: " + inputFile.getName() + "; errorCode: " + errorCodeIOException.ErrCode, errorCodeIOException);
-        } catch (IOException ioException) {
-            throw new OfficeException("could not load document: " + inputFile.getName(), ioException);
+        } catch (IllegalArgumentException illegalArgumentEx) {
+            throw new OfficeException("Could not load document: " + inputFile.getName(), illegalArgumentEx);
+        } catch (ErrorCodeIOException errorCodeIOEx) {
+            throw new OfficeException("Could not load document: " + inputFile.getName() + "; errorCode: " + errorCodeIOEx.ErrCode, errorCodeIOEx);
+        } catch (IOException ioEx) {
+            throw new OfficeException("Could not load document: " + inputFile.getName(), ioEx);
         }
         if (document == null) {
-            throw new OfficeException("could not load document: " + inputFile.getName());
+            throw new OfficeException("Could not load document: " + inputFile.getName());
         }
         return document;
     }
@@ -143,10 +143,10 @@ public abstract class AbstractConversionTask implements OfficeTask {
         }
         try {
             UnoRuntime.queryInterface(XStorable.class, document).storeToURL(toUrl(outputFile), toUnoProperties(storeProperties));
-        } catch (ErrorCodeIOException errorCodeIOException) {
-            throw new OfficeException("could not store document: " + outputFile.getName() + "; errorCode: " + errorCodeIOException.ErrCode, errorCodeIOException);
-        } catch (IOException ioException) {
-            throw new OfficeException("could not store document: " + outputFile.getName(), ioException);
+        } catch (ErrorCodeIOException errorCodeIOEx) {
+            throw new OfficeException("could not store document: " + outputFile.getName() + "; errorCode: " + errorCodeIOEx.ErrCode, errorCodeIOEx);
+        } catch (IOException ioEx) {
+            throw new OfficeException("could not store document: " + outputFile.getName(), ioEx);
         }
     }
 

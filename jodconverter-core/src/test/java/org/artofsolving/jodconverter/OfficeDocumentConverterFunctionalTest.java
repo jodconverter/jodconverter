@@ -25,12 +25,13 @@ import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.artofsolving.jodconverter.office.OfficeException;
 import org.testng.annotations.Test;
 
 @Test(groups = "functional")
 public class OfficeDocumentConverterFunctionalTest {
 
-    public void runAllPossibleConversions() throws IOException {
+    public void runAllPossibleConversions() throws IOException, OfficeException {
         OfficeManager officeManager = new DefaultOfficeManagerBuilder().build();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
         DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();

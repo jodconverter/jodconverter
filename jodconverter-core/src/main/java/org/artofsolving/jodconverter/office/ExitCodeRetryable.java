@@ -29,12 +29,12 @@ public class ExitCodeRetryable extends Retryable {
     }
 
     @Override
-    protected void attempt() throws TemporaryException, Exception {
+    protected void attempt() throws TemporaryException {
 
         try {
             exitCode = process.exitValue();
-        } catch (IllegalThreadStateException illegalThreadStateException) {
-            throw new TemporaryException(illegalThreadStateException);
+        } catch (IllegalThreadStateException illegalThreadStateEx) {
+            throw new TemporaryException(illegalThreadStateEx);
         }
     }
 

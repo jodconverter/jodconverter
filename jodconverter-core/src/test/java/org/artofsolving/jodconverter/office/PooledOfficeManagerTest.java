@@ -84,8 +84,8 @@ public class PooledOfficeManagerTest {
                         officeManager.execute(badTask);
                         fail("task should be cancelled");
                         //FIXME being in a separate thread the test won't actually fail
-                    } catch (OfficeException officeException) {
-                        assertTrue(officeException.getCause() instanceof CancellationException);
+                    } catch (OfficeException officeEx) {
+                        assertTrue(officeEx.getCause() instanceof CancellationException);
                     }
                 }
             }.start();

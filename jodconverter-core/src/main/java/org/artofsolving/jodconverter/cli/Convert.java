@@ -30,7 +30,7 @@ import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.JsonDocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
-import org.json.JSONException;
+import org.artofsolving.jodconverter.office.OfficeException;
 
 /**
  * Command line interface executable.
@@ -41,11 +41,16 @@ public class Convert {
     public static final int STATUS_MISSING_INPUT_FILE = 1;
     public static final int STATUS_INVALID_ARGUMENTS = 255;
 
-    private static final Option OPTION_OUTPUT_FORMAT = new Option("o", "output-format", true, "output format (e.g. pdf)");
-    private static final Option OPTION_PORT = new Option("p", "port", true, "office socket port (optional; defaults to 2002)");
-    private static final Option OPTION_REGISTRY = new Option("r", "registry", true, "document formats registry configuration file (optional)");
-    private static final Option OPTION_TIMEOUT = new Option("t", "timeout", true, "maximum conversion time in seconds (optional; defaults to 120)");
-    private static final Option OPTION_USER_PROFILE = new Option("u", "user-profile", true, "use settings from the given user installation dir (optional)");
+    private static final Option OPTION_OUTPUT_FORMAT = new Option("o", "output-format", true,
+            "output format (e.g. pdf)");
+    private static final Option OPTION_PORT = new Option("p", "port", true,
+            "office socket port (optional; defaults to 2002)");
+    private static final Option OPTION_REGISTRY = new Option("r", "registry", true,
+            "document formats registry configuration file (optional)");
+    private static final Option OPTION_TIMEOUT = new Option("t", "timeout", true,
+            "maximum conversion time in seconds (optional; defaults to 120)");
+    private static final Option OPTION_USER_PROFILE = new Option("u", "user-profile", true,
+            "use settings from the given user installation dir (optional)");
     private static final Options OPTIONS = initOptions();
 
     private static final int DEFAULT_OFFICE_PORT = 2002;
@@ -60,7 +65,7 @@ public class Convert {
         return options;
     }
 
-    public static void main(String[] arguments) throws ParseException, JSONException, IOException {
+    public static void main(String[] arguments) throws ParseException, IOException, OfficeException {
         CommandLineParser commandLineParser = new PosixParser();
         CommandLine commandLine = commandLineParser.parse(OPTIONS, arguments);
 
@@ -76,7 +81,8 @@ public class Convert {
 
         String[] fileNames = commandLine.getArgs();
         if ((outputFormat == null && fileNames.length != 2) || fileNames.length < 1) {
-            String syntax = "java -jar jodconverter-core.jar [options] input-file output-file\n" + "or [options] -o output-format input-file [input-file...]";
+            String syntax = "java -jar jodconverter-core.jar [options] input-file output-file\n"
+                    + "or [options] -o output-format input-file [input-file...]";
             HelpFormatter helpFormatter = new HelpFormatter();
             helpFormatter.printHelp(syntax, OPTIONS);
             System.exit(STATUS_INVALID_ARGUMENTS);
@@ -103,8 +109,8 @@ public class Convert {
 
         OfficeManager officeManager = configuration.build();
         officeManager.start();
-        OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
         try {
+            OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
             if (outputFormat == null) {
                 File inputFile = new File(fileNames[0]);
                 File outputFile = new File(fileNames[1]);

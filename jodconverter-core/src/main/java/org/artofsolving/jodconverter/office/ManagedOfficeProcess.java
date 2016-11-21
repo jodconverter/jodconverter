@@ -12,6 +12,8 @@
 //
 package org.artofsolving.jodconverter.office;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -22,8 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.star.lang.DisposedException;
 
 /**
- * A ManagedOfficeProcess is responsible to manage an office process and the connection (bridge) to
- * this office process.
+ * A ManagedOfficeProcess is responsible to manage an office process and the connection (bridge) to this office process.
  * 
  * @see OfficeProcess
  * @see OfficeConnection
@@ -40,13 +41,14 @@ class ManagedOfficeProcess {
     /**
      * Creates a new instance of the class with the specified settings.
      * 
-     * @param settings
-     *            the managed office process settings.
+     * @param settings the managed office process settings.
      */
     public ManagedOfficeProcess(ManagedOfficeProcessSettings settings) {
 
         this.settings = settings;
-        process = new OfficeProcess(settings.getOfficeHome(), settings.getUnoUrl(), settings.getRunAsArgs(), settings.getTemplateProfileDir(), settings.getWorkingDir(), settings.getProcessManager(), settings.isKillExistingProcess());
+        process = new OfficeProcess(settings.getOfficeHome(), settings.getUnoUrl(), settings.getRunAsArgs(),
+                settings.getTemplateProfileDir(), settings.getWorkingDir(), settings.getProcessManager(),
+                settings.isKillExistingProcess());
         connection = new OfficeConnection(settings.getUnoUrl());
         executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("OfficeProcessThread"));
     }
@@ -54,8 +56,7 @@ class ManagedOfficeProcess {
     /**
      * Ensures that the process exited.
      * 
-     * @throws OfficeException
-     *             if an exception occurs.
+     * @throws OfficeException if an exception occurs.
      */
     private void doEnsureProcessExited() throws OfficeException {
         logger.trace("> doEnsureProcessExited");
@@ -63,8 +64,10 @@ class ManagedOfficeProcess {
         try {
             int exitCode = process.getExitCode(settings.getRetryInterval(), settings.getRetryTimeout());
             logger.info("process exited with code " + exitCode);
-        } catch (RetryTimeoutException retryTimeoutException) {
+
+        } catch (RetryTimeoutException retryTimeoutEx) {
             doTerminateProcess();
+
         } finally {
             process.deleteProfileDir();
             logger.trace("< doEnsureProcessExited");
@@ -80,8 +83,10 @@ class ManagedOfficeProcess {
         try {
             process.start();
             new ConnectRetryable(process, connection).execute(settings.getRetryInterval(), settings.getRetryTimeout());
-        } catch (Exception exception) {
-            throw new OfficeException("Could not establish connection", exception);
+
+        } catch (Exception ex) {
+            throw new OfficeException("Could not establish connection", ex);
+
         } finally {
             logger.trace("< doStartProcessAndConnect");
         }
@@ -90,16 +95,21 @@ class ManagedOfficeProcess {
     /**
      * Stops the office process managed by this class.
      */
-    private void doStopProcess() {
+    private void doStopProcess() throws OfficeException {
         logger.trace("> doStopProcess");
 
         try {
             connection.getDesktop().terminate();
-        } catch (DisposedException disposedException) {
+
+        } catch (DisposedException disposedEx) {
+            logger.debug("DisposedException catched and ignored in doStopProcess");
             // expected
-        } catch (Exception exception) {
+
+        } catch (Exception ex) {
+            logger.debug("Exception catched in doStopProcess");
             // in case we can't get hold of the desktop
             doTerminateProcess();
+
         } finally {
             doEnsureProcessExited();
             logger.trace("< doStopProcess");
@@ -109,8 +119,7 @@ class ManagedOfficeProcess {
     /**
      * Ensures that the process exited.
      * 
-     * @throws OfficeException
-     *             if an exception occurs.
+     * @throws OfficeException if an exception occurs.
      */
     private void doTerminateProcess() throws OfficeException {
         logger.trace("> doTerminateProcess");
@@ -118,11 +127,24 @@ class ManagedOfficeProcess {
         try {
             int exitCode = process.forciblyTerminate(settings.getRetryInterval(), settings.getRetryTimeout());
             logger.info("process forcibly terminated with code " + exitCode);
-        } catch (Exception exception) {
-            throw new OfficeException("could not terminate process", exception);
+
+        } catch (Exception ex) {
+            logger.debug("Exception catched in doTerminateProcess");
+            throw new OfficeException("Could not terminate process", ex);
+
         } finally {
             logger.trace("< doTerminateProcess");
         }
+    }
+
+    // Executes the specified task without waiting for the completion of the task
+    private void execute(String taskName, Runnable task) {
+        logger.trace("> execute - '{}'", taskName);
+
+        logger.info("Executing task '{}'...", taskName);
+        executor.execute(task);
+
+        logger.trace("< execute - '{}'", taskName);
     }
 
     /**
@@ -144,118 +166,145 @@ class ManagedOfficeProcess {
     /**
      * Restarts an office process and wait until we are connected to the retarted process.
      * 
-     * @throws OfficeException
-     *             if we are not able to restart the office process.
+     * @throws OfficeException if we are not able to restart the office process.
      */
-    public void restartAndWait() {
-        logger.trace("> restartAndWait");
+    public void restartAndWait() throws OfficeException {
 
-        logger.info("Restarting and waiting...");
-        Future<?> future = executor.submit(new Runnable() {
-            public void run() {
+        // Create the restart task to be execute
+        Callable<Void> restartTask = new Callable<Void>() {
+
+            @Override
+            public Void call() throws Exception {
                 doStopProcess();
                 doStartProcessAndConnect();
+
+                return null;
             }
-        });
-        try {
-            future.get();
-        } catch (Exception exception) {
-            throw new OfficeException("Failed to restart", exception);
-        } finally {
-            logger.trace("< restartAndWait");
-        }
+        };
+
+        // Submit the task to the executor and wait
+        submitAndWait("Restart", restartTask);
     }
 
     /**
      * Restarts the office process when the connection is lost.
      */
     public void restartDueToLostConnection() {
-        logger.trace("> restartDueToLostConnection");
 
-        logger.info("Restarting due to lost connection...");
-        executor.execute(new Runnable() {
+        // Create the restart task to be execute
+        Runnable restartTask = new Runnable() {
+
+            @Override
             public void run() {
+
                 try {
                     doEnsureProcessExited();
                     doStartProcessAndConnect();
-                } catch (OfficeException officeException) {
-                    logger.error("Could not restart process", officeException);
-                } finally {
-                    logger.trace("< restartDueToLostConnection");
+
+                } catch (OfficeException officeEx) {
+                    logger.error("Could not restart process", officeEx);
                 }
             }
-        });
+        };
+
+        // Execute the task
+        execute("Restart After Lost Connection", restartTask);
     }
 
     /**
      * Restarts the office process when there is a timeout while executing a task.
      */
     public void restartDueToTaskTimeout() {
-        logger.trace("> restartDueToTaskTimeout");
 
-        logger.info("Restarting due to task timeout connection...");
-        executor.execute(new Runnable() {
+        // Create the restart task to be execute
+        Runnable restartTask = new Runnable() {
+
+            @Override
             public void run() {
+
                 try {
                     doTerminateProcess();
                     // will cause unexpected disconnection and subsequent restart
-                    //doTerminateProcess();
-                    //doStartProcessAndConnect();
-                    //} catch (OfficeException officeException) {
-                    //    logger.error("Could not restart process", officeException);
-                } finally {
-                    logger.trace("< restartDueToTaskTimeout");
+
+                } catch (OfficeException officeException) {
+                    logger.error("Could not restart process", officeException);
                 }
             }
-        });
+        };
+
+        // Execute the task
+        execute("Restart After Timeout", restartTask);
     }
 
     /**
      * Starts an office process and wait until we are connected to the running process.
      * 
-     * @throws OfficeException
-     *             if we are not able to start and connect to the office process.
+     * @throws OfficeException if we are not able to start and connect to the office process.
      */
     public void startAndWait() throws OfficeException {
-        logger.trace("> startAndWait");
 
-        logger.info("Starting and waiting...");
-        Future<?> future = executor.submit(new Runnable() {
-            public void run() {
+        // Create the start task to be execute
+        Callable<Void> startTask = new Callable<Void>() {
+
+            @Override
+            public Void call() throws Exception {
                 doStartProcessAndConnect();
+
+                return null;
             }
-        });
-        try {
-            future.get();
-        } catch (Exception exception) {
-            throw new OfficeException("failed to start and connect", exception);
-        } finally {
-            logger.trace("< startAndWait");
-        }
+        };
+
+        // Submit the task to the executor and wait
+        submitAndWait("Start", startTask);
     }
 
     /**
      * Stop an office process and wait until the process is stopped.
      * 
-     * @throws OfficeException
-     *             if we are not able to stop the office process.
+     * @throws OfficeException if we are not able to stop the office process.
      */
     public void stopAndWait() throws OfficeException {
-        logger.trace("> stopAndWait");
 
-        logger.info("Stopping and waiting...");
-        Future<?> future = executor.submit(new Runnable() {
-            public void run() {
+        // Create the stop task to be execute
+        Callable<Void> stopTask = new Callable<Void>() {
+
+            @Override
+            public Void call() throws Exception {
                 doStopProcess();
+
+                return null;
             }
-        });
-        try {
-            future.get();
-        } catch (Exception exception) {
-            throw new OfficeException("failed to stop and connect", exception);
-        } finally {
-            logger.trace("< stopAndWait");
-        }
+        };
+
+        // Submit the task to the executor and wait
+        submitAndWait("Stop", stopTask);
     }
 
+    // Submits the specified task to the executor and waits for its completion
+    private void submitAndWait(String taskName, Callable<Void> task) throws OfficeException {
+        logger.trace("> submitAndWait - '{}'", taskName);
+
+        logger.info("Submitting task '{}' and waiting...", taskName);
+        Future<Void> future = executor.submit(task);
+
+        // Wait for completion of the restart task
+        try {
+            future.get();
+            logger.debug("Task '{}' executed successfully", taskName);
+
+        } catch (ExecutionException executionEx) {
+
+            // Rethrow the original (cause) exception
+            if (executionEx.getCause() instanceof OfficeException) {
+                throw (OfficeException) executionEx.getCause();
+            }
+            throw new OfficeException("Failed to execute task '" + taskName + "'", executionEx.getCause());
+
+        } catch (InterruptedException interruptedEx) {
+            Thread.currentThread().interrupt(); // ignore/reset
+
+        } finally {
+            logger.trace("< submitAndWait - '{}'", taskName);
+        }
+    }
 }
