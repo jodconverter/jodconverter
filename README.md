@@ -24,10 +24,10 @@ In order to be able to apply changes to the JODConverter project, I had to under
 
 ## Thanks To...
 
-I cannot say exactly where you could find some similitude between my source code and the one of there forks I tried to use before I created my own but here are my favorite forks (after my own obviously!):
+I cannot say exactly where you could find some similitude between my source code and the one of these forks I tried to use before I created my own but here are my favorite forks (after my own obviously!):
 
-[XWiki fork](https://github.com/xwiki/jodconverter): Nice choice if you can afford using the SIGAR tools (which I couldn't sadly).
-[Nuxeo fork](https://github.com/nuxeo/jodconverter): Nice choice if you don't want to use SIGAR and don't came across an unresponsive office process following a timeout exception that drives you crazy.
+- [XWiki fork](https://github.com/xwiki/jodconverter): Nice choice if you can afford using the SIGAR tools (which I couldn't sadly).
+- [Nuxeo fork](https://github.com/nuxeo/jodconverter): Nice choice if you don't want to use SIGAR and don't came across an unresponsive office process following a timeout exception that drives you crazy.
 
 ### A special thanks to:
 The dude who created a pull request in these two forks with a stress test that made my office process to crash every times! I cannot named him because I don't know him but my first commit was when I was able to build my things with his stress test on!!  
