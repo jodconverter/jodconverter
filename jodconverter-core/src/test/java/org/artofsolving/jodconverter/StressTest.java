@@ -43,7 +43,7 @@ public class StressTest {
         
         // Configure the office manager in a way that maximizes possible race conditions.
         DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
-        configuration.setPortNumbers(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009);
+        configuration.setPortNumbers(new int[]{2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009});
         configuration.setMaxTasksPerProcess(MAX_TASKS_PER_PROCESS);
 
         OfficeManager officeManager = configuration.build();

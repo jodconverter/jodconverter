@@ -206,7 +206,7 @@ public class DefaultOfficeManagerBuilder {
      *            the pipe names to use.
      * @return the updated configuration.
      */
-    public DefaultOfficeManagerBuilder setPipeNames(String... pipeNames) {
+    public DefaultOfficeManagerBuilder setPipeNames(String[] pipeNames) {
 
         Validate.notNull(pipeNames);
         Validate.isTrue(portNumbers.length > 0, "The pipe name list must not be empty");
@@ -234,7 +234,7 @@ public class DefaultOfficeManagerBuilder {
      *            the port numbers to use.
      * @return the updated configuration.
      */
-    public DefaultOfficeManagerBuilder setPortNumbers(int... portNumbers) {
+    public DefaultOfficeManagerBuilder setPortNumbers(int[] portNumbers) {
 
         Validate.notNull(portNumbers);
         Validate.isTrue(portNumbers.length > 0, "The port number list must not be empty");
@@ -291,7 +291,7 @@ public class DefaultOfficeManagerBuilder {
      *            the sudo arguments for a unix os.
      * @return the updated configuration.
      */
-    public DefaultOfficeManagerBuilder setRunAsArgs(String... runAsArgs) {
+    public DefaultOfficeManagerBuilder setRunAsArgs(String[] runAsArgs) {
 
         this.runAsArgs = runAsArgs;
         return this;
