@@ -1,0 +1,13 @@
+logging:
+  level:
+    root: INFO
+    
+jodconverter:
+  enabled: true
+  port-numbers: 2005, 2006
+  kill-existing-process: true
+  max-tasks-per-process: 5
+  
+  
+  
+  
