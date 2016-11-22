@@ -23,7 +23,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.artofsolving.jodconverter</groupId>
   <artifactId>jodconverter-pom</artifactId>
-  <version>3.1-SBRA-SNAPSHOT</version>
+  <version>4.0-EX-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>JODConverter - Parent POM</name>
   <description>Parent POM for the Java OpenDocument Converter modules.</description>
