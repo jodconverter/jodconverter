@@ -13,7 +13,7 @@ In order to be able to apply changes to the JODConverter project, I had to under
 - **Tests**: This fork has been tested only on Windows.
 
 - **What's next**: I'm still on learning mode, but my goals are to:
-	- Add some transformer steps (still looking for a better name by the way) in order to be able to add text, images, and whatever we are able to change while converting a document.
+	- Add some filters in order to be able to add text, images, and whatever we are able to change while converting a document.
 	- Improve project comments.
 	- Switch to Gradle instead of Maven.
 	- Switch to JUnit (since the new spring-boot module).
