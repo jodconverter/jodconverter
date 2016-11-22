@@ -14,7 +14,6 @@ package org.artofsolving.jodconverter.document;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -22,23 +21,50 @@ import org.artofsolving.jodconverter.util.JSONUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office
+ * that has been loaded loaded from a JSON source.
+ */
 public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
-    public JsonDocumentFormatRegistry(InputStream input) throws IOException {
-        readJsonArray(IOUtils.toString(input, "UTF-8"));
+    /**
+     * Creates a JsonDocumentFormatRegistry from the given InputStream.
+     * 
+     * @param source
+     *            the InputStream (JSON format) containing the DocumentFormat collection.
+     * @return the created JsonDocumentFormatRegistry.
+     * @throws IOException
+     *             if an I/O error occurs.
+     */
+    public static JsonDocumentFormatRegistry create(InputStream source) throws IOException {
+
+        return create(IOUtils.toString(source, "UTF-8"));
     }
 
-    public JsonDocumentFormatRegistry(String source) {
-        readJsonArray(source);
+    /**
+     * Creates a JsonDocumentFormatRegistry from the given source.
+     * 
+     * @param source
+     *            the string (JSON format) containing the DocumentFormat collection.
+     * @return the created JsonDocumentFormatRegistry.
+     */
+    public static JsonDocumentFormatRegistry create(String source) {
+
+        JsonDocumentFormatRegistry registry = new JsonDocumentFormatRegistry();
+        registry.readJsonArray(source);
+        return registry;
     }
 
+    // Force static function call
+    private JsonDocumentFormatRegistry() {}
+
+    // Fill the registry from the given JSON source
     private void readJsonArray(String source) {
 
         JSONArray array = new JSONArray(source);
         for (int i = 0; i < array.length(); i++) {
             JSONObject jsonFormat = array.getJSONObject(i);
-            DocumentFormat format = new DocumentFormat(jsonFormat.getString("name"), jsonFormat.getString("extension"),
-                    jsonFormat.getString("mediaType"));
+            DocumentFormat format = new DocumentFormat(jsonFormat.getString("name"), jsonFormat.getString("extension"), jsonFormat.getString("mediaType"));
             if (jsonFormat.has("inputFamily")) {
                 format.setInputFamily(DocumentFamily.valueOf(jsonFormat.getString("inputFamily")));
             }

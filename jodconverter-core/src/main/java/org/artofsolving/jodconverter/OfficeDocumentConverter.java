@@ -43,7 +43,7 @@ public class OfficeDocumentConverter {
      */
     public OfficeDocumentConverter(OfficeManager officeManager) {
 
-        this(officeManager, new DefaultDocumentFormatRegistry());
+        this(officeManager, DefaultDocumentFormatRegistry.create());
     }
 
     /**
