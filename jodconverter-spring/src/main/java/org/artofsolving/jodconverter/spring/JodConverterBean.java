@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
@@ -27,9 +28,9 @@ import org.springframework.beans.factory.InitializingBean;
  * 
  * @author Jose Luis López López
  */
-public class SpringJodConverter implements InitializingBean, DisposableBean {
+public class JodConverterBean implements InitializingBean, DisposableBean {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpringJodConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(JodConverterBean.class);
 
     private String officeHome;
     private String portNumbers;
@@ -59,14 +60,9 @@ public class SpringJodConverter implements InitializingBean, DisposableBean {
         }
 
         if (!StringUtils.isBlank(portNumbers)) {
-            Set<Integer> portNumbers = buildPortNumbers(this.portNumbers);
-            if (portNumbers.size() != 0) {
-                int i = 0;
-                int[] aports = new int[portNumbers.size()];
-                for (Integer port : portNumbers) {
-                    aports[i++] = port.intValue();
-                }
-                builder.setPortNumbers(aports);
+            Set<Integer> ports = buildPortNumbers(this.portNumbers);
+            if (!ports.isEmpty()) {
+                builder.setPortNumbers(ArrayUtils.toPrimitive(ports.toArray(new Integer[]{})));
             }
         }
 
@@ -147,14 +143,19 @@ public class SpringJodConverter implements InitializingBean, DisposableBean {
     private Set<Integer> buildPortNumbers(String str) {
 
         Set<Integer> iports = new HashSet<Integer>();
-        if (!StringUtils.isBlank(str)) {
-            String[] portNumbers = StringUtils.split(str, ", ");
-            if (portNumbers.length != 0) {
-                for (String portNumber : portNumbers) {
-                    if (!StringUtils.isBlank(portNumber)) {
-                        iports.add(Integer.parseInt(StringUtils.trim(portNumber)));
-                    }
-                }
+
+        if (StringUtils.isBlank(str)) {
+            return iports;
+        }
+
+        String[] portNumbers = StringUtils.split(str, ", ");
+        if (portNumbers.length == 0) {
+            return iports;
+        }
+
+        for (String portNumber : portNumbers) {
+            if (!StringUtils.isBlank(portNumber)) {
+                iports.add(Integer.parseInt(StringUtils.trim(portNumber)));
             }
         }
         return iports;
@@ -173,7 +174,23 @@ public class SpringJodConverter implements InitializingBean, DisposableBean {
      */
     public void convert(String inputFile, String outputFile) throws Exception {
 
-        documentConverter.convert(new File(inputFile), new File(outputFile));
+        convert(new File(inputFile), new File(outputFile));
+    }
+
+    /**
+     * Converts an input file into a file of another format. The file extensions are taken to know
+     * the conversion formats.
+     * 
+     * @param inputFile
+     *            The file whose content is to be converted.
+     * @param outputFile
+     *            The output file (target) of the conversion.
+     * @throws Exception
+     *             Thrown if an error occurs while converting the file.
+     */
+    public void convert(File inputFile, File outputFile) throws Exception {
+
+        documentConverter.convert(inputFile, outputFile);
     }
 
     @Override
