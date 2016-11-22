@@ -4,6 +4,7 @@ test-output
 
 # Eclipse
 .classpath
+.factorypath
 .project
 .settings
 .checkstyle
