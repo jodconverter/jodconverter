@@ -20,6 +20,7 @@ In order to be able to apply changes to the JODConverter project, I had to under
 	- Use the great SonarQube platform for code quality.
 	- Add integration tests.
 	- Fix reported bugs (will always be the priority).
+	- Take a look at [Oshi](https://github.com/oshi/oshi) for processes management (SIGAR replacement). Seems promising... (Advice and comments always welcome).
 	- Have fun!
 
 ## Thanks To...
