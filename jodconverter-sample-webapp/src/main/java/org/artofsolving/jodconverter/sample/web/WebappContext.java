@@ -9,6 +9,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
 public class WebappContext {
@@ -56,13 +57,13 @@ public class WebappContext {
 		documentConverter = new OfficeDocumentConverter(officeManager);
 	}
 
-	protected static void init(ServletContext servletContext) {
+	protected static void init(ServletContext servletContext) throws OfficeException {
 		WebappContext instance = new WebappContext(servletContext);
 		servletContext.setAttribute(KEY, instance);
 		instance.officeManager.start();
 	}
 
-	protected static void destroy(ServletContext servletContext) {
+	protected static void destroy(ServletContext servletContext) throws OfficeException {
 		WebappContext instance = get(servletContext);
 		instance.officeManager.stop();
 	}
