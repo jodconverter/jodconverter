@@ -109,7 +109,7 @@ public class SpringJodConverter implements InitializingBean, DisposableBean {
      */
     public void availableFormats() {
 
-        DefaultDocumentFormatRegistry ref = new DefaultDocumentFormatRegistry();
+        DefaultDocumentFormatRegistry ref = DefaultDocumentFormatRegistry.getInstance();
         Set<DocumentFormat> group = ref.getOutputFormats(DocumentFamily.TEXT);
         Iterator<DocumentFormat> it = group.iterator();
         logger.info("Supported Text Document Formats are:");
