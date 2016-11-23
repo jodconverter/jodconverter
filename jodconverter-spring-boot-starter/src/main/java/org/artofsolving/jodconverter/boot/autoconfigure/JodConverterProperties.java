@@ -9,82 +9,71 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JodConverterProperties {
 
     /**
-     * Enable JODConverter, which means that office instances will be launched.
-     * <p>
-     * If not set, it defaults to false.
+     * Enable JODConverter, which means that office instances will be launched. If not set, it
+     * defaults to false.
      */
     private boolean enabled = false;
 
     /**
-     * Represents the office home directory.
-     * <p>
-     * If not set, it defaults to an auto detected home directory (most recent version first).
+     * Represents the office home directory. If not set, it defaults to an auto detected home
+     * directory (most recent version first).
      */
     private String officeHome;
 
     /**
-     * List of ports, separated by commas, used by each JODConverter processing thread. The number of office instances
-     * is equal to the number of ports, since 1 office will be launched for each port number.
-     * <p>
-     * If not set, it defaults to a list with a single port, 2002.
+     * List of ports, separated by commas, used by each JODConverter processing thread. The number
+     * of office instances is equal to the number of ports, since 1 office will be launched for each
+     * port number. If not set, it defaults to a list with a single port, 2002.
      */
     private String portNumbers = "2002";
 
     /**
-     * Directory where temporary office profiles will be created.
-     * <p>
-     * If not set, it defaults to the system temporary directory as specified by the <code>java.io.tmpdir</code> system
-     * property.
+     * Directory where temporary office profiles will be created. If not set, it defaults to the
+     * system temporary directory as specified by the java.io.tmpdir system property.
      */
     private String workingDir;
 
     /**
-     * Template profile directory to copy to a created office profile directory when an office processed is launched.
+     * Template profile directory to copy to a created office profile directory when an office
+     * processed is launched.
      */
     private String templateProfileDir;
 
     /**
-     * Retry timeout (milliseconds).Used for retrying office process calls (start/terminate).
-     * <p>
-     * If not set, it defaults to 120000 (2 minutes).
+     * Retry timeout (milliseconds).Used for retrying office process calls (start/terminate). If not
+     * set, it defaults to 120000 (2 minutes).
      */
     private long retryTimeout = 120000L;
 
     /**
-     * Retry interval (milliseconds).Used for waiting between office process call tries (start/terminate).
-     * <p>
-     * If not set, it defaults to 250.
+     * Retry interval (milliseconds).Used for waiting between office process call tries
+     * (start/terminate). If not set, it defaults to 250.
      */
     private long retryInterval = 250;
 
     /**
-     * Indicates whether we must kill existing office process when an office process already exists for the same
-     * connection string.
-     * <p>
-     * If not set, it defaults to true.
+     * Indicates whether we must kill existing office process when an office process already exists
+     * for the same connection string. If not set, it defaults to true.
      */
     private boolean killExistingProcess = true;
 
     /**
-     * Maximum living time of a task in the conversion queue. The task will be removed from the queue if the waiting
-     * time is longer than this timeout.
-     * <p>
-     * If not set, it defaults to 30000 (30 seconds).
+     * Maximum living time of a task in the conversion queue. The task will be removed from the
+     * queue if the waiting time is longer than this timeout. If not set, it defaults to 30000 (30
+     * seconds).
      */
     private long taskQueueTimeout = 30000L;
 
     /**
-     * Maximum time allowed to process a task. If the processing time of a task is longer than this timeout, this task
-     * will be aborted and the next task is processed.
-     * <p>
-     * If not set, it defaults to 120000 (2 minutes).
+     * Maximum time allowed to process a task. If the processing time of a task is longer than this
+     * timeout, this task will be aborted and the next task is processed. If not set, it defaults to
+     * 120000 (2 minutes).
      */
     private long taskExecutionTimeout = 120000L;
 
     /**
-     * Maximum number of tasks an office process can execute before restarting.
-     * <p>
-     * If not set, it defaults to 200.
+     * Maximum number of tasks an office process can execute before restarting. If not set, it
+     * defaults to 200.
      */
     private int maxTasksPerProcess = 200;
 

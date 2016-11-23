@@ -8,11 +8,11 @@
     <artifactId>jodconverter-pom</artifactId>
     <version>4.0-EX-SNAPSHOT</version>
   </parent>
-  <artifactId>jodconverter-spring-boot</artifactId>
+  <artifactId>jodconverter-spring-boot-starter</artifactId>
   <packaging>jar</packaging>
-  <name>JODConverter - Spring Boot</name>
+  <name>JODConverter - Spring Boot Starter</name>
   <description>
-    Spring Boot Component for JODConverter
+    Spring Boot Starter for JODConverter
   </description>
   
   <properties>
@@ -39,14 +39,12 @@
       <scope>test</scope>
     </dependency>
     <!--  Optional dependencies -->
-    <!--
-    Uncomment to re-generate the spring-configuration-metadata.json
     <dependency>
+        <!-- spring-configuration-metadata.json generation -->
     	<groupId>org.springframework.boot</groupId>
     	<artifactId>spring-boot-configuration-processor</artifactId>
         <version>${spring-boot.version}</version>
     	<optional>true</optional>
     </dependency>
-     -->
   </dependencies>
 </project>

@@ -38,7 +38,7 @@
     <module>jodconverter-core</module>
     <module>jodconverter-sample-webapp</module>
     <module>jodconverter-spring</module>
-    <module>jodconverter-spring-boot</module>
+    <module>jodconverter-spring-boot-starter</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/sbraconnier/jodconverter.git</connection>
