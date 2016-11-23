@@ -9,6 +9,7 @@ import com.sun.star.uno.RuntimeException;
 
 public class WebappContextListener implements ServletContextListener {
 
+    @Override
     public void contextInitialized(ServletContextEvent event) {
 
         try {
@@ -18,6 +19,7 @@ public class WebappContextListener implements ServletContextListener {
         }
     }
 
+    @Override
     public void contextDestroyed(ServletContextEvent event) {
         try {
             WebappContext.destroy(event.getServletContext());
