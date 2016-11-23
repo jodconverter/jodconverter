@@ -25,7 +25,7 @@ public class SpringControllerTest {
     @Configuration("SpringControllerTestConfiguration")
     static class ContextConfiguration {
 
-        // this bean will be injected into the OrderServiceTest class
+        // this bean will be injected into the SpringControllerTest class
         @Bean
         public JodConverterBean springJoDConverter() {
             JodConverterBean sjd = new JodConverterBean();
