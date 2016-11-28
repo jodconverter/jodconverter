@@ -84,8 +84,8 @@ public class PooledOfficeManagerTest {
                         officeManager.execute(badTask);
                         fail("task should be cancelled");
                         //FIXME being in a separate thread the test won't actually fail
-                    } catch (OfficeException officeException) {
-                        assertTrue(officeException.getCause() instanceof CancellationException);
+                    } catch (OfficeException officeEx) {
+                        assertTrue(officeEx.getCause() instanceof CancellationException);
                     }
                 }
             }.start();
@@ -131,21 +131,11 @@ public class PooledOfficeManagerTest {
             try {
                 officeManager.execute(task);
                 fail("task should be timed out");
-            } catch (OfficeException officeException) {
-                assertTrue(officeException.getCause() instanceof TimeoutException);
+            } catch (OfficeException officeEx) {
+                assertTrue(officeEx.getCause() instanceof TimeoutException);
             }
 
             Thread.sleep(RESTART_WAIT_TIME);
-            // Thread.sleep(30000);
-
-//            // Try to execute another task, but this time shorter than the timeout
-//            task = new MockOfficeTask(1000);
-//            try {
-//                officeManager.execute(task);
-//            } catch (OfficeException officeException) {
-//                // won't happened
-//                officeException.printStackTrace();
-//            }
 
             assertTrue(process.isRunning());
             assertTrue(connection.isConnected());

@@ -15,13 +15,16 @@ package org.artofsolving.jodconverter.office;
 import java.util.EventObject;
 
 /**
- * 
- * @author simon
- *
+ * Event raised when an office connection gets opened or closed.
  */
 class OfficeConnectionEvent extends EventObject {
     private static final long serialVersionUID = 2060652797570876077L;
 
+    /**
+     * Constructs a new event for the specified connection.
+     *
+     * @param source The connection on which the event initially occurred.
+     */
     public OfficeConnectionEvent(OfficeConnection source) {
         super(source);
     }

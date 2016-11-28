@@ -17,17 +17,55 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Default document format registry. It contains the document formats that should be enough to cover
- * most of our needs.
+ * Default {@code DocumentFormat} registry. It contains the {@code DocumentFormat} that should be
+ * enough to cover most of our needs.
  * 
  * LibreOffice filters:
- * http://opengrok.libreoffice.org/xref/core/filter/source/config/fragments/filters/
- * OpenOffice filters:
+ * http://opengrok.libreoffice.org/xref/core/filter/source/config/fragments/filters/ OpenOffice
+ * filters:
  * https://svn.apache.org/repos/asf/openoffice/trunk/main/filter/source/config/fragments/filters/
  */
 public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
-    public DefaultDocumentFormatRegistry() {
+    /**
+     * The InstanceHolder inner class is used to initialize the static INSTANCE on demand (the
+     * instance will be initialized the first time it is used). Working this way allow us to create
+     * (and thus load default document format) the static INSTANCE only if needed.
+     */
+    private static class InstanceHolder {
+        public static DefaultDocumentFormatRegistry INSTANCE;
+        static {
+            INSTANCE = new DefaultDocumentFormatRegistry();
+            INSTANCE.loadDefaults();
+        }
+    }
+
+    /**
+     * Creates a DefaultDocumentFormatRegistry.
+     * 
+     * @return the created DefaultDocumentFormatRegistry.
+     */
+    public static DefaultDocumentFormatRegistry create() {
+
+        DefaultDocumentFormatRegistry registry = new DefaultDocumentFormatRegistry();
+        registry.loadDefaults();
+        return registry;
+    }
+
+    /**
+     * Gets the default instance of the class.
+     * 
+     * @return the ResourceManager used at this class hierarchy level.
+     */
+    public static DefaultDocumentFormatRegistry getInstance() {
+        return InstanceHolder.INSTANCE;
+    }
+
+    // Force static function call
+    private DefaultDocumentFormatRegistry() {}
+
+    // Load all the default supported DocumentFormat.
+    private void loadDefaults() {
 
         DocumentFormat pdf = new DocumentFormat("Portable Document Format", "pdf", "application/pdf");
         pdf.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "writer_pdf_Export"));

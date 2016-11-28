@@ -12,6 +12,9 @@
 //
 package org.artofsolving.jodconverter.office;
 
+/**
+ * Gets the exit code value of an office process.
+ */
 public class ExitCodeRetryable extends Retryable {
 
     private Process process;
@@ -25,16 +28,17 @@ public class ExitCodeRetryable extends Retryable {
      */
     public ExitCodeRetryable(Process process) {
         super();
+        
         this.process = process;
     }
 
     @Override
-    protected void attempt() throws TemporaryException, Exception {
+    protected void attempt() throws TemporaryException {
 
         try {
             exitCode = process.exitValue();
-        } catch (IllegalThreadStateException illegalThreadStateException) {
-            throw new TemporaryException(illegalThreadStateException);
+        } catch (IllegalThreadStateException illegalThreadStateEx) {
+            throw new TemporaryException(illegalThreadStateEx);
         }
     }
 

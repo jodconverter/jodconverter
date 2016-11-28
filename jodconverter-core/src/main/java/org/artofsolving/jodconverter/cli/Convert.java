@@ -30,7 +30,7 @@ import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.JsonDocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
-import org.json.JSONException;
+import org.artofsolving.jodconverter.office.OfficeException;
 
 /**
  * Command line interface executable.
@@ -60,7 +60,7 @@ public class Convert {
         return options;
     }
 
-    public static void main(String[] arguments) throws ParseException, JSONException, IOException {
+    public static void main(String[] arguments) throws ParseException, IOException, OfficeException {
         CommandLineParser commandLineParser = new PosixParser();
         CommandLine commandLine = commandLineParser.parse(OPTIONS, arguments);
 
@@ -85,9 +85,9 @@ public class Convert {
         DocumentFormatRegistry registry;
         if (commandLine.hasOption(OPTION_REGISTRY.getOpt())) {
             File registryFile = new File(commandLine.getOptionValue(OPTION_REGISTRY.getOpt()));
-            registry = new JsonDocumentFormatRegistry(FileUtils.readFileToString(registryFile, "UTF-8"));
+            registry = JsonDocumentFormatRegistry.create(FileUtils.readFileToString(registryFile, "UTF-8"));
         } else {
-            registry = new DefaultDocumentFormatRegistry();
+            registry = DefaultDocumentFormatRegistry.create();
         }
 
         DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
@@ -103,8 +103,8 @@ public class Convert {
 
         OfficeManager officeManager = configuration.build();
         officeManager.start();
-        OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
         try {
+            OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, registry);
             if (outputFormat == null) {
                 File inputFile = new File(fileNames[0]);
                 File outputFile = new File(fileNames[1]);

@@ -12,7 +12,6 @@
 //
 package org.artofsolving.jodconverter.office;
 
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,7 +23,6 @@ import com.sun.star.beans.XPropertySet;
 import com.sun.star.bridge.XBridge;
 import com.sun.star.bridge.XBridgeFactory;
 import com.sun.star.comp.helper.Bootstrap;
-import com.sun.star.connection.NoConnectException;
 import com.sun.star.connection.XConnection;
 import com.sun.star.connection.XConnector;
 import com.sun.star.frame.XComponentLoader;
@@ -52,8 +50,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
     /**
      * Constructs a new connection for the specified UNO URL.
      * 
-     * @param unoUrl
-     *            the URL for which the connection is created.
+     * @param unoUrl the URL for which the connection is created.
      */
     public OfficeConnection(UnoUrl unoUrl) {
 
@@ -64,8 +61,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
     /**
      * Adds a listener to the connection event listener list of this connection.
      * 
-     * @param connectionEventListener
-     *            the listener to add. It will be notified when a connection is established with an
+     * @param connectionEventListener the listener to add. It will be notified when a connection is established with an
      *            office process and when a connection is lost.
      */
     public void addConnectionEventListener(OfficeConnectionEventListener connectionEventListener) {
@@ -76,7 +72,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
     /**
      * Establishes the connection to an office instance.
      */
-    public synchronized void connect() throws ConnectException {
+    public synchronized void connect() throws OfficeConnectionException {
 
         String connectPart = unoUrl.getConnectionAndParametersAsString();
         logger.debug("Connecting with connectString '{}'", connectPart);
@@ -99,22 +95,25 @@ class OfficeConnection implements OfficeContext, XEventListener {
 
             // Create a remote bridge with no instance provider using the urp protocol.
             String bridgeName = "jodconverter_" + bridgeIndex.getAndIncrement();
-            XBridge bridge = bridgeFactory.createBridge(bridgeName, unoUrl.getProtocolAndParametersAsString(), connection, null);
+            XBridge bridge = bridgeFactory.createBridge(bridgeName, unoUrl.getProtocolAndParametersAsString(),
+                    connection, null);
 
             // Query for the XComponent interface and add this as event listener.
             bridgeComponent = UnoRuntime.queryInterface(XComponent.class, bridge);
             bridgeComponent.addEventListener(this);
 
-            // Get the remote instance 
+            // Get the remote instance
             String rootOid = unoUrl.getRootOid();
             x = bridge.getInstance(rootOid);
             // Did the remote server export this object ?
             if (x == null) {
-                throw new com.sun.star.uno.Exception("Server didn't provide an instance for '" + rootOid + "'", null);
+                throw new OfficeConnectionException("Server didn't provide an instance for '" + rootOid + "'",
+                        connectPart);
             }
 
             // Query the initial object for its main factory interface.
-            XMultiComponentFactory officeMultiComponentFactory = UnoRuntime.queryInterface(XMultiComponentFactory.class, x);
+            XMultiComponentFactory officeMultiComponentFactory = UnoRuntime.queryInterface(XMultiComponentFactory.class,
+                    x);
 
             // Retrieve the component context (it's not yet exported from the office)
             // Query for the XPropertySet interface.
@@ -128,10 +127,11 @@ class OfficeConnection implements OfficeContext, XEventListener {
 
             // Now create the desktop service
             // NOTE: use the office component context here !
-            desktopService = officeMultiComponentFactory.createInstanceWithContext("com.sun.star.frame.Desktop", officeComponentContext);
-            officeComponentLoader = (XComponentLoader) UnoRuntime.queryInterface(XComponentLoader.class, desktopService);
+            desktopService = officeMultiComponentFactory.createInstanceWithContext("com.sun.star.frame.Desktop",
+                    officeComponentContext);
+            officeComponentLoader = UnoRuntime.queryInterface(XComponentLoader.class, desktopService);
             if (officeComponentLoader == null) {
-                throw new com.sun.star.uno.Exception("Couldn't instantiate com.sun.star.frame.Desktop", null);
+                throw new OfficeConnectionException("Couldn't instantiate com.sun.star.frame.Desktop", connectPart);
             }
 
             // We are now connected
@@ -144,10 +144,12 @@ class OfficeConnection implements OfficeContext, XEventListener {
                 listener.connected(connectionEvent);
             }
 
-        } catch (NoConnectException connectException) {
-            throw new ConnectException(String.format("Connection failed: '%s'; %s", connectPart, connectException.getMessage()));
-        } catch (Exception exception) {
-            throw new OfficeException("Connection failed: " + connectPart, exception);
+        } catch (OfficeConnectionException connectionEx) {
+            throw connectionEx;
+
+        } catch (Exception ex) {
+            throw new OfficeConnectionException(
+                    String.format("Connection failed: '%s'; %s", connectPart, ex.getMessage()), connectPart, ex);
         }
     }
 

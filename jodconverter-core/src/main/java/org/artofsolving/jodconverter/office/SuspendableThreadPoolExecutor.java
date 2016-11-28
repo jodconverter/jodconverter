@@ -37,7 +37,7 @@ class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
             while (!available) {
                 availableCondition.await();
             }
-        } catch (InterruptedException interruptedException) {
+        } catch (InterruptedException interruptedEx) {
             thread.interrupt();
         } finally {
             suspendLock.unlock();

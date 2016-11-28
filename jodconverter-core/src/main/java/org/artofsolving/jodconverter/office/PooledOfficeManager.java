@@ -13,6 +13,7 @@
 //
 package org.artofsolving.jodconverter.office;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -24,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A PooledOfficeManager is responsible to execute tasks submitted through a
- * {@link ProcessPoolOfficeManager}. It will submit tasks to its inner {@link ManagedOfficeProcess}
- * and wait until the task is done or a configured task execution timeout is reached.
+ * A PooledOfficeManager is responsible to execute tasks submitted through a {@link ProcessPoolOfficeManager}. It will
+ * submit tasks to its inner {@link ManagedOfficeProcess} and wait until the task is done or a configured task execution
+ * timeout is reached.
  * <p>
- * A PooledOfficeManager is also responsible to restart an office process when the maximum number of
- * tasks per process is reached.
+ * A PooledOfficeManager is also responsible to restart an office process when the maximum number of tasks per process
+ * is reached.
  * 
  * @see ManagedOfficeProcess
  * @see ProcessPoolOfficeManager
@@ -47,8 +48,8 @@ class PooledOfficeManager implements OfficeManager {
     private AtomicInteger taskCount = new AtomicInteger(0);
 
     /**
-     * This connection event listener will be notified when a connection is established or
-     * closed/lost to/from an office instance.
+     * This connection event listener will be notified when a connection is established or closed/lost to/from an office
+     * instance.
      */
     private OfficeConnectionEventListener connectionEventListener = new OfficeConnectionEventListener() {
 
@@ -85,7 +86,6 @@ class PooledOfficeManager implements OfficeManager {
                 if (currentTask != null) {
                     currentTask.cancel(true);
                 }
-                //managedOfficeProcess.restartAndWait();
                 managedOfficeProcess.restartDueToLostConnection();
             }
 
@@ -96,8 +96,7 @@ class PooledOfficeManager implements OfficeManager {
     /**
      * Creates a new instance of the class with the specified settings.
      * 
-     * @param settings
-     *            the settings used to initialize the instance.
+     * @param settings the settings used to initialize the instance.
      */
     public PooledOfficeManager(PooledOfficeManagerSettings settings) {
 
@@ -109,20 +108,20 @@ class PooledOfficeManager implements OfficeManager {
         managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
     }
 
-    /**
-     * Executes a task.
-     */
+    @Override
     public void execute(final OfficeTask task) throws OfficeException {
 
-        Future<?> futureTask = taskExecutor.submit(new Runnable() {
+        // Create the command to be executed
+        Callable<Void> command = new Callable<Void>() {
 
             @Override
-            public void run() {
+            public Void call() throws Exception {
 
                 // First check if the office process must be restarted
                 int count = taskCount.getAndIncrement();
                 if (settings.getMaxTasksPerProcess() > 0 && count == settings.getMaxTasksPerProcess()) {
-                    logger.info("Reached limit of {} maximum tasks per process; restarting...", settings.getMaxTasksPerProcess());
+                    logger.info("Reached limit of {} maximum tasks per process; restarting...",
+                            settings.getMaxTasksPerProcess());
 
                     // The executor is no longer available
                     taskExecutor.setAvailable(false);
@@ -139,34 +138,42 @@ class PooledOfficeManager implements OfficeManager {
 
                 // Execute the task
                 task.execute(managedOfficeProcess.getConnection());
-            }
-        });
 
-        currentTask = futureTask;
+                return null;
+            }
+        };
+
+        // Submit the task to the executor
+        currentTask = taskExecutor.submit(command);
+
+        // Wait for completion of the task, (maximum wait time is the
+        // configured task execution timeout)
         try {
-            // Try to get the result of the task, waiting the configured task execution timeout
             logger.debug("Waiting for task to complete...");
-            futureTask.get(settings.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
-        } catch (TimeoutException timeoutException) {
+            currentTask.get(settings.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
+            logger.debug("Task executed successfully");
+
+        } catch (TimeoutException timeoutEx) {
 
             // The task did not complete withing the configured timeout...
-            // Restart the office instance.
-            //managedOfficeProcess.restartAndWait();
             managedOfficeProcess.restartDueToTaskTimeout();
-            throw new OfficeException("task did not complete within timeout", timeoutException);
+            throw new OfficeException("task did not complete within timeout", timeoutEx);
 
-        } catch (ExecutionException executionException) {
+        } catch (ExecutionException executionEx) {
 
-            if (executionException.getCause() instanceof OfficeException) {
-                throw (OfficeException) executionException.getCause();
-            } else {
-                throw new OfficeException("Task failed", executionException.getCause());
+            // Rethrow the original (cause) exception
+            if (executionEx.getCause() instanceof OfficeException) {
+                throw (OfficeException) executionEx.getCause();
             }
+            throw new OfficeException("Task failed", executionEx.getCause());
 
-        } catch (Exception exception) {
+        } catch (Exception ex) {
 
-            // Unexcpected exception
-            throw new OfficeException("Task failed", exception);
+            // Unexpected exception
+            throw new OfficeException("Task failed", ex);
+
+        } finally {
+            currentTask = null;
         }
     }
 

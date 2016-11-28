@@ -42,7 +42,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
             execute("wmic", "quit");
             execute("taskkill", "/?");
             return true;
-        } catch (IOException ioException) {
+        } catch (IOException ioEx) {
             return false;
         }
     }

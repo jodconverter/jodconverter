@@ -14,7 +14,6 @@ package org.artofsolving.jodconverter.document;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -23,7 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Exectable class that dumps a JSON version of the {@link DefaultDocumentFormatRegistry}
+ * Executable class that dumps a JSON version of the {@link DefaultDocumentFormatRegistry}.
  */
 class DumpJsonDefaultDocumentFormatRegistry {
 
@@ -33,7 +32,7 @@ class DumpJsonDefaultDocumentFormatRegistry {
                 Field field = JSONObject.class.getDeclaredField("myHashMap");
                 field.setAccessible(true);
                 field.set(this, new LinkedHashMap<String, Object>());
-            } catch (Exception exception) {
+            } catch (Exception ex) {
                 // pass; will not be sorted
             }
         }
@@ -75,11 +74,12 @@ class DumpJsonDefaultDocumentFormatRegistry {
     }
 
     public static void main(String[] args) throws Exception {
-        DefaultDocumentFormatRegistry registry = new DefaultDocumentFormatRegistry();
+
+        DefaultDocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
         @SuppressWarnings("unchecked")
-        List<DocumentFormat> formats = (List<DocumentFormat>) FieldUtils.readDeclaredField(registry, "documentFormats", true);
+        Map<String, DocumentFormat> formats = (Map<String, DocumentFormat>) FieldUtils.readField(registry, "documentFormatsByExtension", true);
         JSONArray array = new JSONArray();
-        for (DocumentFormat format : formats) {
+        for (DocumentFormat format : formats.values()) {
             array.put(toJson(format));
         }
         System.out.println(array.toString(2));

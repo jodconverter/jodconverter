@@ -1,0 +1,10 @@
+logging:
+  level:
+    root: INFO
+    org.artofsolving.jodconverter: DEBUG
+    
+jodconverter:
+  enabled: true
+  port-numbers: 2005
+  kill-existing-process: true
+  max-tasks-per-process: 2

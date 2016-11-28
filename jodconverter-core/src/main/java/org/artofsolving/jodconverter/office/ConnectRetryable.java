@@ -12,8 +12,6 @@
 //
 package org.artofsolving.jodconverter.office;
 
-import java.net.ConnectException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,30 +42,30 @@ public class ConnectRetryable extends Retryable {
     }
 
     @Override
-    protected void attempt() throws TemporaryException, Exception {
+    protected void attempt() throws Exception {
 
         try {
             // Try to connect
             connection.connect();
 
-        } catch (ConnectException connectException) {
+        } catch (OfficeConnectionException connectionEx) {
 
             Integer exitCode = process.getExitCode();
             if (exitCode == null) {
 
                 // Process is running; retry later
-                throw new TemporaryException(connectException);
+                throw new TemporaryException(connectionEx);
 
             } else if (exitCode.equals(EXIT_CODE_NEW_INSTALLATION)) {
 
                 // Restart and retry later
                 // see http://code.google.com/p/jodconverter/issues/detail?id=84
-                logger.warn("office process died with exit code 81; restarting it");
+                logger.warn("Office process died with exit code 81; restarting it");
                 process.start(true);
-                throw new TemporaryException(connectException);
+                throw new TemporaryException(connectionEx);
 
             } else {
-                throw new OfficeException("office process died with exit code " + exitCode);
+                throw new OfficeException("Office process died with exit code " + exitCode);
             }
         }
     }

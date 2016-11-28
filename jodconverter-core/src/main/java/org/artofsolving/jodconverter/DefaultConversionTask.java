@@ -13,17 +13,14 @@
 package org.artofsolving.jodconverter;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.document.DocumentFormat;
+import org.artofsolving.jodconverter.filter.FilterChain;
 import org.artofsolving.jodconverter.office.OfficeContext;
 import org.artofsolving.jodconverter.office.OfficeException;
-import org.artofsolving.jodconverter.step.RefreshStep;
-import org.artofsolving.jodconverter.step.TransformerStep;
 
 import com.sun.star.lang.XComponent;
 
@@ -32,41 +29,20 @@ import com.sun.star.lang.XComponent;
  */
 public class DefaultConversionTask extends AbstractConversionTask {
 
-    private List<TransformerStep> transformerSteps;
-    private Map<String, ?> defaultLoadProperties;
     private DocumentFormat inputFormat;
     private final DocumentFormat outputFormat;
+    private Map<String, ?> defaultLoadProperties;
+    private FilterChain filterChain;
 
     public DefaultConversionTask(File inputFile, File outputFile, DocumentFormat inputFormat, DocumentFormat outputFormat) {
         super(inputFile, outputFile);
 
         this.inputFormat = inputFormat;
         this.outputFormat = outputFormat;
-        this.transformerSteps = new ArrayList<TransformerStep>();
-
-    }
-
-    /**
-     * Adda the default transformer steps to this conversion task.
-     */
-    protected void addDefaultTransformerSteps() {
-
-        addTransformerStep(new RefreshStep());
-    }
-
-    /**
-     * Adds a tranformer step to be applied after the document is loaded and before it is stored in
-     * the new document format. A transformer step is used to modify the document before the
-     * conversion. Transformer steps are applied in the same order there are added to this
-     * conversion task.
-     */
-    public void addTransformerStep(TransformerStep step) {
-
-        transformerSteps.add(step);
     }
 
     @Override
-    protected Map<String, ?> getLoadProperties() {
+    protected Map<String, ?> getLoadProperties() throws OfficeException {
 
         Map<String, Object> loadProperties = new HashMap<String, Object>();
         if (defaultLoadProperties != null) {
@@ -79,26 +55,40 @@ public class DefaultConversionTask extends AbstractConversionTask {
     }
 
     @Override
-    protected Map<String, ?> getStoreProperties(XComponent document) {
+    protected Map<String, ?> getStoreProperties(XComponent document) throws OfficeException {
 
         DocumentFamily family = OfficeDocumentUtils.getDocumentFamily(document);
         return outputFormat.getStoreProperties(family);
     }
 
+    // Don't allow override
     @Override
-    protected void modifyDocument(OfficeContext context, XComponent document) throws OfficeException {
+    protected final void modifyDocument(OfficeContext context, XComponent document) throws OfficeException {
 
-        for (TransformerStep step : transformerSteps) {
-            step.transform(context, document);
+        if (filterChain != null) {
+            filterChain.doFilter(context, document);
         }
     }
 
     /**
      * Sets the default properties to be applied when the input document is loaded.
+     * 
+     * @param defaultLoadProperties
+     *            the default properties to ne applied when loading the document.
      */
     public void setDefaultLoadProperties(Map<String, ?> defaultLoadProperties) {
 
         this.defaultLoadProperties = defaultLoadProperties;
     }
 
+    /**
+     * Sets the filter chain to be applied when modifying the document.
+     * 
+     * @param filterChain
+     *            filterChain to use with this task.
+     */
+    public void setFilterChain(FilterChain filterChain) {
+
+        this.filterChain = filterChain;
+    }
 }

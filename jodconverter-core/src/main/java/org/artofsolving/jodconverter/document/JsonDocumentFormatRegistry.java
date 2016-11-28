@@ -14,25 +14,52 @@ package org.artofsolving.jodconverter.document;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.artofsolving.jodconverter.util.JSONUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office
+ * that has been loaded loaded from a JSON source.
+ */
 public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
-    public JsonDocumentFormatRegistry(InputStream input) throws JSONException, IOException {
-        readJsonArray(IOUtils.toString(input, "UTF-8"));
+    /**
+     * Creates a JsonDocumentFormatRegistry from the given InputStream.
+     * 
+     * @param source
+     *            the InputStream (JSON format) containing the DocumentFormat collection.
+     * @return the created JsonDocumentFormatRegistry.
+     * @throws IOException
+     *             if an I/O error occurs.
+     */
+    public static JsonDocumentFormatRegistry create(InputStream source) throws IOException {
+
+        return create(IOUtils.toString(source, "UTF-8"));
     }
 
-    public JsonDocumentFormatRegistry(String source) throws JSONException {
-        readJsonArray(source);
+    /**
+     * Creates a JsonDocumentFormatRegistry from the given source.
+     * 
+     * @param source
+     *            the string (JSON format) containing the DocumentFormat collection.
+     * @return the created JsonDocumentFormatRegistry.
+     */
+    public static JsonDocumentFormatRegistry create(String source) {
+
+        JsonDocumentFormatRegistry registry = new JsonDocumentFormatRegistry();
+        registry.readJsonArray(source);
+        return registry;
     }
 
-    private void readJsonArray(String source) throws JSONException {
+    // Force static function call
+    private JsonDocumentFormatRegistry() {}
+
+    // Fill the registry from the given JSON source
+    private void readJsonArray(String source) {
 
         JSONArray array = new JSONArray(source);
         for (int i = 0; i < array.length(); i++) {
@@ -42,31 +69,17 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
                 format.setInputFamily(DocumentFamily.valueOf(jsonFormat.getString("inputFamily")));
             }
             if (jsonFormat.has("loadProperties")) {
-                format.setLoadProperties(toJavaMap(jsonFormat.getJSONObject("loadProperties")));
+                format.setLoadProperties(JSONUtils.toMap(jsonFormat.getJSONObject("loadProperties")));
             }
             if (jsonFormat.has("storePropertiesByFamily")) {
                 JSONObject jsonStorePropertiesByFamily = jsonFormat.getJSONObject("storePropertiesByFamily");
                 for (String key : JSONObject.getNames(jsonStorePropertiesByFamily)) {
-                    Map<String, ?> storeProperties = toJavaMap(jsonStorePropertiesByFamily.getJSONObject(key));
+                    Map<String, ?> storeProperties = JSONUtils.toMap(jsonStorePropertiesByFamily.getJSONObject(key));
                     format.setStoreProperties(DocumentFamily.valueOf(key), storeProperties);
                 }
             }
             addFormat(format);
         }
-    }
-
-    private Map<String, Object> toJavaMap(JSONObject jsonMap) throws JSONException {
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (String key : JSONObject.getNames(jsonMap)) {
-            Object value = jsonMap.get(key);
-            if (value instanceof JSONObject) {
-                map.put(key, toJavaMap((JSONObject) value));
-            } else {
-                map.put(key, value);
-            }
-        }
-        return map;
     }
 
 }

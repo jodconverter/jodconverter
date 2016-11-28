@@ -23,14 +23,18 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
+import org.artofsolving.jodconverter.filter.DefaultFilterChain;
+import org.artofsolving.jodconverter.filter.FilterChain;
+import org.artofsolving.jodconverter.filter.RefreshFilter;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.artofsolving.jodconverter.office.OfficeException;
 import org.testng.annotations.Test;
 
 @Test(groups = "functional")
 public class OfficeDocumentConverterFunctionalTest {
 
-    public void runAllPossibleConversions() throws IOException {
+    public void runAllPossibleConversions() throws IOException, OfficeException {
         OfficeManager officeManager = new DefaultOfficeManagerBuilder().build();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
         DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
@@ -43,6 +47,10 @@ public class OfficeDocumentConverterFunctionalTest {
                     return !name.startsWith(".");
                 }
             });
+            
+            // Here we can reuse a unique FilterChain
+            FilterChain chain = new DefaultFilterChain(RefreshFilter.INSTANCE);
+            
             for (File inputFile : files) {
                 String inputExtension = FilenameUtils.getExtension(inputFile.getName());
                 DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
@@ -69,7 +77,7 @@ public class OfficeDocumentConverterFunctionalTest {
                     File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
                     outputFile.deleteOnExit();
                     System.out.printf("-- converting %s to %s... ", inputFormat.getExtension(), outputFormat.getExtension());
-                    converter.convert(inputFile, outputFile, outputFormat);
+                    converter.convert(chain, inputFile, outputFile, outputFormat);
                     System.out.printf("done.\n");
                     assertTrue(outputFile.isFile() && outputFile.length() > 0);
                     //TODO use file detection to make sure outputFile is in the expected format

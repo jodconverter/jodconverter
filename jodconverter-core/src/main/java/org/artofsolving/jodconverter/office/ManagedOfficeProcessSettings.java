@@ -234,7 +234,7 @@ class ManagedOfficeProcessSettings {
      * @param workingDir
      *            the new working directory.
      */
-    public void setWorkingDir(File workDir) {
-        this.workingDir = workDir;
+    public void setWorkingDir(File workingDir) {
+        this.workingDir = workingDir;
     }
 }

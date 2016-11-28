@@ -31,7 +31,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
      *            a string array containing the program and its arguments.
      * @return the execution output.
      * @throws IOException
-     *             if an IO error occurs.
+     *             if an I/O error occurs.
      */
     protected List<String> execute(String... command) throws IOException {
 
@@ -40,7 +40,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
         List<String> lines = IOUtils.readLines(process.getInputStream(), "UTF-8");
         try {
             process.waitFor();
-        } catch (InterruptedException interruptedException) {
+        } catch (InterruptedException interruptedEx) {
             // sorry for the interruption
         }
         return lines;

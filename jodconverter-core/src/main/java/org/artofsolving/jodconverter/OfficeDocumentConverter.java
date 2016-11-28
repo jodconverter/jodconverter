@@ -20,6 +20,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
+import org.artofsolving.jodconverter.filter.DefaultFilterChain;
+import org.artofsolving.jodconverter.filter.FilterChain;
+import org.artofsolving.jodconverter.filter.RefreshFilter;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
@@ -43,7 +46,7 @@ public class OfficeDocumentConverter {
      */
     public OfficeDocumentConverter(OfficeManager officeManager) {
 
-        this(officeManager, new DefaultDocumentFormatRegistry());
+        this(officeManager, DefaultDocumentFormatRegistry.create());
     }
 
     /**
@@ -95,9 +98,104 @@ public class OfficeDocumentConverter {
 
         String inputExtension = FilenameUtils.getExtension(inputFile.getName());
         DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
-        DefaultConversionTask conversionTask = new DefaultConversionTask(inputFile, outputFile, inputFormat, outputFormat);
-        conversionTask.setDefaultLoadProperties(defaultLoadProperties);
-        officeManager.execute(conversionTask);
+        convert(inputFile, outputFile, inputFormat, outputFormat);
+    }
+
+    /**
+     * Converts an input file to an output file.
+     * 
+     * @param inputFile
+     *            the input file to convert.
+     * @param outputFile
+     *            the target output file.
+     * @param inputFormat
+     *            the source input format.
+     * @param outputFormat
+     *            the target output format.
+     * @throws OfficeException
+     *             if the conversion fails.
+     */
+    public void convert(File inputFile, File outputFile, DocumentFormat inputFormat, DocumentFormat outputFormat) throws OfficeException {
+
+        DefaultConversionTask task = new DefaultConversionTask(inputFile, outputFile, inputFormat, outputFormat);
+        task.setDefaultLoadProperties(defaultLoadProperties);
+        task.setFilterChain(new DefaultFilterChain(RefreshFilter.INSTANCE));
+        officeManager.execute(task);
+    }
+
+    /**
+     * Converts an input file to an output file. The files extensions are used to determine the
+     * input and output {@link DocumentFormat}.
+     * 
+     * @param filterChain
+     *            the FilterChain to be applied after the document is loaded and before it is stored
+     *            (converted) in the new document format. A FilterChain is used to modify the
+     *            document before the conversion. Filters are applied in the same order they appear
+     *            in the chain.
+     * @param inputFile
+     *            the input file to convert.
+     * @param outputFile
+     *            the target output file.
+     * @throws OfficeException
+     *             if the conversion fails.
+     */
+    public void convert(FilterChain filterChain, File inputFile, File outputFile) throws OfficeException {
+
+        String outputExtension = FilenameUtils.getExtension(outputFile.getName());
+        DocumentFormat outputFormat = formatRegistry.getFormatByExtension(outputExtension);
+        convert(filterChain, inputFile, outputFile, outputFormat);
+    }
+
+    /**
+     * Converts an input file to an output file. The input file extension is used to determine the
+     * input {@link DocumentFormat}.
+     * 
+     * @param filterChain
+     *            the FilterChain to be applied after the document is loaded and before it is stored
+     *            (converted) in the new document format. A FilterChain is used to modify the
+     *            document before the conversion. Filters are applied in the same order they appear
+     *            in the chain.
+     * @param inputFile
+     *            the input file to convert.
+     * @param outputFile
+     *            the target output file.
+     * @param outputFormat
+     *            the target output format.
+     * @throws OfficeException
+     *             if the conversion fails.
+     */
+    public void convert(FilterChain filterChain, File inputFile, File outputFile, DocumentFormat outputFormat) throws OfficeException {
+
+        String inputExtension = FilenameUtils.getExtension(inputFile.getName());
+        DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
+        convert(filterChain, inputFile, outputFile, inputFormat, outputFormat);
+    }
+
+    /**
+     * Converts an input file to an output file.
+     * 
+     * @param filterChain
+     *            the FilterChain to be applied after the document is loaded and before it is stored
+     *            (converted) in the new document format. A FilterChain is used to modify the
+     *            document before the conversion. Filters are applied in the same order they appear
+     *            in the chain.
+     * @param inputFile
+     *            the input file to convert.
+     * @param outputFile
+     *            the target output file.
+     * @param inputFormat
+     *            the source input format.
+     * @param outputFormat
+     *            the target output format.
+     * @throws OfficeException
+     *             if the conversion fails.
+     */
+    public void convert(FilterChain filterChain, File inputFile, File outputFile, DocumentFormat inputFormat, DocumentFormat outputFormat) throws OfficeException {
+
+        DefaultConversionTask task = new DefaultConversionTask(inputFile, outputFile, inputFormat, outputFormat);
+        task.setDefaultLoadProperties(defaultLoadProperties);
+        task.setFilterChain(filterChain);
+        officeManager.execute(task);
     }
 
     // Provides default properties to use when we load (open) a document before
