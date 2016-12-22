@@ -201,4 +201,9 @@ class PooledOfficeManager implements OfficeManager {
         }
     }
 
+	@Override
+	public OfficeContext getContext() throws OfficeException {
+		return this.managedOfficeProcess.getConnection();
+	}
+
 }

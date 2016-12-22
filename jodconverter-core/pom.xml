@@ -70,6 +70,14 @@
       <version>6.9.10</version>
       <scope>test</scope>
     </dependency>
+<!-- https://mvnrepository.com/artifact/junit/junit -->
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.12</version>
+    <scope>test</scope>
+</dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -86,7 +94,7 @@
           <!-- don't run tests in parallel -->
           <perCoreThreadCount>false</perCoreThreadCount>
           <threadCount>1</threadCount>
-          <skipTests>true</skipTests>
+          <skipTests>false</skipTests>
         </configuration>
       </plugin>
       <plugin>
