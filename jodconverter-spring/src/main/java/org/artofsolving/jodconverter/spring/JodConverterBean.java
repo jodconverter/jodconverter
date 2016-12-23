@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.OfficeDocumentUtils;
+import org.artofsolving.jodconverter.SaveAndCloseOfficeTask;
 import org.artofsolving.jodconverter.TextReplaceOfficeTask;
 import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFamily;
@@ -480,5 +481,22 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
 
     	TextReplaceOfficeTask task=new TextReplaceOfficeTask(document, mark, replacement);
 		officeManager.execute(task);
+    }
+    
+    /**
+     * Requests the controller to perform the Document Task of "Save and Close"
+     * 
+     * @throws OfficeException
+     *             Thrown if an error occurs while performing the save and close operation or the document is null
+     */
+    public void saveAndClose() throws OfficeException {
+    	if(document==null) {
+    		throw new OfficeException("There is no document to apply the Document Task. Please load a document.");
+    	}
+
+    	SaveAndCloseOfficeTask task=new SaveAndCloseOfficeTask(document);
+		officeManager.execute(task);
+		//The task will save the document, dispose it, and clear the document variable of the manager to null.
+		
     }
 }
