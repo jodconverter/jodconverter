@@ -51,4 +51,12 @@ public interface OfficeManager {
      *             is the manager cannot be stopped.
      */
     void stop() throws OfficeException;
+    
+    /**
+     * 
+     * Returns the Context
+     * 
+     */
+    
+    OfficeContext getContext() throws OfficeException;
 }

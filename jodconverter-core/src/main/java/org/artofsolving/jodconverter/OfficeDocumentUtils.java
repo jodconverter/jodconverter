@@ -12,14 +12,28 @@
 //
 package org.artofsolving.jodconverter;
 
+import static org.artofsolving.jodconverter.office.OfficeUtils.toUnoProperties;
+import static org.artofsolving.jodconverter.office.OfficeUtils.toUrl;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.artofsolving.jodconverter.document.DocumentFamily;
+import org.artofsolving.jodconverter.office.OfficeContext;
 import org.artofsolving.jodconverter.office.OfficeException;
 
+import com.sun.star.document.UpdateDocMode;
+import com.sun.star.io.IOException;
+import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
+import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.uno.UnoRuntime;
 
-class OfficeDocumentUtils {
+public class OfficeDocumentUtils {
+	
+	private static Map<String, Object> defaultLoadProperties=null;
 
     private OfficeDocumentUtils() {
         throw new AssertionError("Utility class must not be instantiated");
@@ -42,5 +56,66 @@ class OfficeDocumentUtils {
             throw new OfficeException("Document of unknown family: " + serviceInfo.getImplementationName());
         }
     }
+    
+    public static XComponent loadDocument(String source, OfficeContext context) throws OfficeException {
+    	XComponent document=null;
+    	File inputFile=new File(source);
+    	
+		defaultLoadProperties=createDefaultLoadProperties();
+
+        // Check if the file exists
+        if (!inputFile.exists()) {
+            throw new OfficeException("Input document not found");
+        }
+
+        try {
+            document = context.getComponentLoader().loadComponentFromURL(toUrl(inputFile), "_blank", 0, toUnoProperties(getLoadProperties()));
+        } catch (IllegalArgumentException illegalArgumentEx) {
+            throw new OfficeException("Could not load document: " + inputFile.getName(), illegalArgumentEx);
+        } catch (ErrorCodeIOException errorCodeIOEx) {
+            throw new OfficeException("Could not load document: " + inputFile.getName() + "; errorCode: " + errorCodeIOEx.ErrCode, errorCodeIOEx);
+        } catch (IOException ioEx) {
+            throw new OfficeException("Could not load document: " + inputFile.getName(), ioEx);
+        }
+        if (document == null) {
+            throw new OfficeException("Could not load document: " + inputFile.getName());
+        }
+    	
+    	return document;
+  
+    }
+
+	protected static Map<String, ?> getLoadProperties() throws OfficeException {
+	
+	    Map<String, Object> loadProperties = new HashMap<String, Object>();
+	    if (defaultLoadProperties != null) {
+	        loadProperties.putAll(defaultLoadProperties);
+	    }
+	    
+	    return loadProperties;
+	}
+	
+	/**
+	 * Sets the default properties to be applied when the input document is loaded.
+	 * 
+	 * @param defaultLoadProperties
+	 *            the default properties to ne applied when loading the document.
+	 */
+	protected void setDefaultLoadProperties(HashMap<String, Object> defaultLoadProperties) {
+	
+	    OfficeDocumentUtils.defaultLoadProperties = defaultLoadProperties;
+	}
+	
+	
+	// Provides default properties to use when we load (open) a document before
+	// a conversion, regardless the input type of the document.
+	protected static Map<String, Object> createDefaultLoadProperties() {
+	
+	    Map<String, Object> loadProperties = new HashMap<String, Object>();
+	    loadProperties.put("Hidden", true);
+	    loadProperties.put("ReadOnly", false);
+	    loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
+	    return loadProperties;
+	}
 
 }

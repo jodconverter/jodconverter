@@ -8,15 +8,21 @@ import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.artofsolving.jodconverter.OfficeDocumentUtils;
+import org.artofsolving.jodconverter.SaveAndCloseOfficeTask;
+import org.artofsolving.jodconverter.TextReplaceOfficeTask;
 import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+
+import com.sun.star.lang.XComponent;
 
 /**
  * The purpose of this class is to provide to the Spring Container a Bean that encapsulates the
@@ -26,12 +32,16 @@ import org.springframework.beans.factory.InitializingBean;
  * The Controller shall launch the OO processes. The Controller shall stop the OO processes when
  * it´s time to shutdown the application
  * 
+ * Also, The controller shall allow the user to open a document. Then, the user shall be able to apply a number of
+ * document tasks over it, such as TextReplace, etc, without the need to open and close the document each time.
+ *  
  * @author Jose Luis López López
  */
 public class JodConverterBean implements InitializingBean, DisposableBean {
 
     private static final Logger logger = LoggerFactory.getLogger(JodConverterBean.class);
 
+    //These are the variables that are used for the DefaultConversionTask
     private String officeHome;
     private String portNumbers;
     private String workingDir;
@@ -45,6 +55,10 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
 
     private OfficeManager officeManager = null;
     private OfficeDocumentConverter documentConverter = null;
+    
+    //These are the variables that are used to execute DocumentTasks. If the document is null, then the tasks will 
+    //fail with OfficeException.
+    private XComponent document=null;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -98,6 +112,8 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
         officeManager = builder.build();
         documentConverter = new OfficeDocumentConverter(officeManager);
         officeManager.start();
+        
+        
     }
 
     /**
@@ -419,5 +435,68 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
      */
     public void setWorkingDir(String workingDir) {
         this.workingDir = workingDir;
+    }
+    
+    
+    /**
+     * Opens a document and store a reference to it, so that subsequent calls to Document Tasks will be performed
+     * over this document, until the close operation is invoked or an error occurs.
+     * 
+     * @param inputFile
+     *            The path to the source file that will be opened and stored internally.
+
+     * @throws OfficeException
+     *             Thrown if an error occurs while performing the text replace operation or the document is null
+     */
+    public void loadDocument(String inputFile) throws OfficeException {
+    	if(document==null) {
+    		document=OfficeDocumentUtils.loadDocument(inputFile, this.officeManager.getContext());
+    	}else {
+    		//TODO: Close current document and apply changes or not depending on some parameter.
+    		document.dispose();
+    		document=null;
+    		document=OfficeDocumentUtils.loadDocument(inputFile, this.officeManager.getContext());
+    	}
+    }
+    
+    
+    
+    /**
+     * Requests the controller to perform the Document Task of "TextReplace"
+     * 
+     * @param document
+     *            The previously opened document. You should call the operation "loadDocument(String inputFile) before
+     *            requesting any of the Document Tasks.
+     * @param mark
+     *            The String to search, that will be replaced
+     * @param replacement
+     * 			  The String to replace the mark with
+     * @throws OfficeException
+     *             Thrown if an error occurs while performing the text replace operation or the document is null
+     */
+    public void searchAndReplace(String mark, String replacement) throws OfficeException {
+    	if(document==null) {
+    		throw new OfficeException("There is no document to apply the Document Task. Please load a document.");
+    	}
+
+    	TextReplaceOfficeTask task=new TextReplaceOfficeTask(document, mark, replacement);
+		officeManager.execute(task);
+    }
+    
+    /**
+     * Requests the controller to perform the Document Task of "Save and Close"
+     * 
+     * @throws OfficeException
+     *             Thrown if an error occurs while performing the save and close operation or the document is null
+     */
+    public void saveAndClose() throws OfficeException {
+    	if(document==null) {
+    		throw new OfficeException("There is no document to apply the Document Task. Please load a document.");
+    	}
+
+    	SaveAndCloseOfficeTask task=new SaveAndCloseOfficeTask(document);
+		officeManager.execute(task);
+		//The task will save the document, dispose it, and clear the document variable of the manager to null.
+		
     }
 }

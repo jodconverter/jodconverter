@@ -147,4 +147,9 @@ class ProcessPoolOfficeManager implements OfficeManager {
         logger.info("Office manager stopped");
     }
 
+	@Override
+	public OfficeContext getContext() throws OfficeException {
+		return this.acquireManager().getContext();
+	}
+
 }
