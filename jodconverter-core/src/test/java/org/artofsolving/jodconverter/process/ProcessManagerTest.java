@@ -16,16 +16,14 @@
 
 package org.artofsolving.jodconverter.process;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assume.assumeTrue;
 
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.testng.SkipException;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
-import org.artofsolving.jodconverter.util.PlatformUtils;
-
-@Test
 public class ProcessManagerTest {
 
   /**
@@ -33,10 +31,10 @@ public class ProcessManagerTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void unixProcessManager() throws Exception {
-    if (PlatformUtils.isMac() || PlatformUtils.isWindows()) {
-      throw new SkipException("UnixProcessManager only works on Unix");
-    }
+    assumeTrue(SystemUtils.IS_OS_UNIX);
+
     final ProcessManager processManager = new UnixProcessManager();
     final Process process = new ProcessBuilder("sleep", "5s").start();
     final ProcessQuery query = new ProcessQuery("sleep", "5s");
@@ -55,10 +53,10 @@ public class ProcessManagerTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void macProcessManager() throws Exception {
-    if (!PlatformUtils.isMac()) {
-      throw new SkipException("MacProcessManager only works on Mac");
-    }
+    assumeTrue(SystemUtils.IS_OS_MAC);
+
     final ProcessManager processManager = new MacProcessManager();
     final Process process = new ProcessBuilder("sleep", "5s").start();
     final ProcessQuery query = new ProcessQuery("sleep", "5s");
@@ -78,10 +76,10 @@ public class ProcessManagerTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void windowsProcessManager() throws Exception {
-    if (!PlatformUtils.isWindows()) {
-      throw new SkipException("WindowsProcessManager only works on Windows");
-    }
+    assumeTrue(SystemUtils.IS_OS_WINDOWS);
+
     final ProcessManager processManager = new WindowsProcessManager();
     final Process process = new ProcessBuilder("ping", "127.0.0.1", "-n", "5").start();
     final ProcessQuery query = new ProcessQuery("ping", "127.0.0.1 -n 5");

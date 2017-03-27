@@ -16,17 +16,17 @@
 
 package org.artofsolving.jodconverter;
 
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
@@ -36,7 +36,6 @@ import org.artofsolving.jodconverter.filter.RefreshFilter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
-@Test(groups = "functional")
 public class OfficeDocumentConverterFunctionalTest {
 
   private static final Logger logger =
@@ -47,6 +46,7 @@ public class OfficeDocumentConverterFunctionalTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void runAllPossibleConversions() throws Exception {
 
     final OfficeManager officeManager = new DefaultOfficeManagerBuilder().build();
@@ -70,7 +70,7 @@ public class OfficeDocumentConverterFunctionalTest {
       for (final File inputFile : files) {
         final String inputExtension = FilenameUtils.getExtension(inputFile.getName());
         final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
-        assertNotNull(inputFormat, "unknown input format: " + inputExtension);
+        assertNotNull("unknown input format: " + inputExtension, inputFormat);
         final Set<DocumentFormat> outputFormats =
             formatRegistry.getOutputFormats(inputFormat.getInputFamily());
         for (final DocumentFormat outputFormat : outputFormats) {

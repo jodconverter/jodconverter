@@ -16,18 +16,17 @@
 
 package org.artofsolving.jodconverter.office;
 
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
 
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 
-@Test(groups = "integration")
 public class ExternalOfficeManagerTest {
 
   //TODO test auto-reconnection
@@ -37,6 +36,7 @@ public class ExternalOfficeManagerTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void executeTask() throws Exception {
     final UnoUrl unoUrl = UnoUrlUtils.socket(2002);
     final OfficeProcess officeProcess =

@@ -17,26 +17,23 @@
 package org.artofsolving.jodconverter.office;
 
 import static org.artofsolving.jodconverter.office.OfficeUtils.toUrl;
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 
-import org.testng.SkipException;
-import org.testng.annotations.Test;
+import org.apache.commons.lang.SystemUtils;
+import org.junit.Test;
 
-import org.artofsolving.jodconverter.util.PlatformUtils;
-
-@Test(groups = "functional")
 public class OfficeUtilsTest {
 
   // TODO create separate tests for Windows
 
   /** Tests the OfficeUtils.toUrl function. */
+  @Test
   public void unixToUrl() {
 
-    if (PlatformUtils.isMac() || PlatformUtils.isWindows()) {
-      throw new SkipException("Unix test can only be done on Unix");
-    }
+    assumeTrue(SystemUtils.IS_OS_UNIX);
 
     assertEquals(toUrl(new File("/tmp/document.odt")), "file:///tmp/document.odt");
     assertEquals(

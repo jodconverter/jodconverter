@@ -16,7 +16,7 @@ In order to be able to apply changes to the JODConverter project, I had to under
 	- Add some filters in order to be able to add text, images, and whatever we are able to change while converting a document.
 	- Improve project comments.
 	- ~~Switch to Gradle instead of Maven.~~ *Done*
-	- Switch to JUnit (since the new spring-boot module).
+	- ~~Switch to JUnit.~~ *Done*
 	- Use the great SonarQube platform for code quality.
 	- Add tests.
 	- Fix reported bugs (will always be the priority).

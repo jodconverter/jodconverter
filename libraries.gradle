@@ -38,7 +38,7 @@ ext {
             servlet_api                        : "javax.servlet:servlet-api:$servletApiVersion",
 
             // Tests
-            testng                             : "org.testng:testng:$testngVersion",
+            assertj                            : "org.assertj:assertj-core:$assertjVersion",
             junit                              : "junit:junit:$junitVersion",
             jsr305                             : "com.google.code.findbugs:jsr305:$findbugsVersion",
             findbugs                           : "com.google.code.findbugs:findbugs:$findbugsVersion"

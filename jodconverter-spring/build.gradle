@@ -6,6 +6,5 @@ dependencies {
     compile libraries.spring_core
     compile libraries.spring_context
 
-    testCompile libraries.junit
     compile libraries.spring_test
 }

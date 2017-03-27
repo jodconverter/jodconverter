@@ -18,16 +18,15 @@ package org.artofsolving.jodconverter;
 
 import java.io.File;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
-@Test(groups = "functional")
 public class StressTest {
 
   private static final Logger logger = LoggerFactory.getLogger(StressTest.class);
@@ -46,6 +45,7 @@ public class StressTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void runParallelConversions() throws Exception {
 
     // Configure the office manager in a way that maximizes possible race conditions.

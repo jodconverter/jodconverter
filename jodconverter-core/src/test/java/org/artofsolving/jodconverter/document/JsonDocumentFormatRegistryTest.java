@@ -16,15 +16,14 @@
 
 package org.artofsolving.jodconverter.document;
 
-import static org.testng.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
-@Test
 public class JsonDocumentFormatRegistryTest {
 
   /**
@@ -32,6 +31,7 @@ public class JsonDocumentFormatRegistryTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void readJsonRegistry() throws IOException {
 
     final InputStream input = getClass().getResourceAsStream("/document-formats.js");

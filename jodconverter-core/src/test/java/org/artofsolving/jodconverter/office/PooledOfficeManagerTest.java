@@ -16,22 +16,21 @@
 
 package org.artofsolving.jodconverter.office;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Test;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
 
-@Test(groups = "integration")
 public class PooledOfficeManagerTest {
   private static final org.slf4j.Logger logger =
       LoggerFactory.getLogger(PooledOfficeManagerTest.class);
@@ -45,6 +44,7 @@ public class PooledOfficeManagerTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void executeTask() throws Exception {
 
     final PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(CONNECTION_MODE);
@@ -76,6 +76,7 @@ public class PooledOfficeManagerTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void restartAfterCrash() throws Exception {
 
     final PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(CONNECTION_MODE);
@@ -131,6 +132,7 @@ public class PooledOfficeManagerTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void restartAfterTaskTimeout() throws Exception {
     final PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(CONNECTION_MODE);
     settings.setProcessManager(OfficeUtils.findBestProcessManager());
@@ -176,6 +178,7 @@ public class PooledOfficeManagerTest {
    *
    * @throws Exception if an error occurs.
    */
+  @Test
   public void restartWhenMaxTasksPerProcessReached() throws Exception {
     final PooledOfficeManagerSettings configuration =
         new PooledOfficeManagerSettings(CONNECTION_MODE);
