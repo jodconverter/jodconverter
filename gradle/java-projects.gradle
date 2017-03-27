@@ -1,0 +1,128 @@
+// Adds Java compilation along with testing and bundling capabilities
+apply plugin: 'java'
+// Add integration tests support (Add new SourceSet, task, etc.)
+apply plugin: 'nebula.integtest'
+// Spotless is a general-purpose formatting plugin
+apply plugin: "com.diffplug.gradle.spotless"
+
+repositories {
+    mavenCentral()
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Dependencies setup
+
+// Appropriately inject the common dependencies into each java projects
+dependencies {
+    testCompile libraries.findbugs
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Compilation setup
+
+// Configure the source and target compatibility
+sourceCompatibility = rootProject.baselineJavaVersion
+targetCompatibility = rootProject.baselineJavaVersion
+
+// Ensure the Java compiler uses UTF-8
+[compileJava, compileTestJava, compileIntegTestJava]*.options*.encoding = rootProject.sourceEncoding
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// JaCoCo setup
+
+apply plugin: 'jacoco' // Provides code coverage metrics for Java code
+
+jacoco {
+    toolVersion = jacocoVersion
+}
+
+// Configures the jacocoTestReport task
+jacocoTestReport {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+
+    dependsOn tasks.withType(Test)
+    reports {
+        html.enabled = true
+        xml.enabled = false
+        csv.enabled = false
+    }
+}
+check.dependsOn jacocoTestReport
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IDE Options
+
+// Configure eclipse
+eclipse {
+    jdt {
+        sourceCompatibility = rootProject.baselineJavaVersion
+        targetCompatibility = rootProject.baselineJavaVersion
+    }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Checkstyle setup
+
+apply plugin: 'checkstyle' // Performs quality checks on Java source files and generates reports
+
+// Configures the checkstyle task
+checkstyle {
+    toolVersion = checkstyleVersion
+    config = rootProject.resources.text.fromFile('etc/checkstyle/rules.xml')
+}
+
+// Disable checkstyle for test code
+//[checkstyleTest, checkstyleIntegTest]*.enabled = false
+
+// Configures the checkstyle tasks
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// pmd setup
+
+apply plugin: 'pmd' // Also performs quality checks on Java source files and generates reports
+
+// Configures the pmd task
+pmd {
+    toolVersion = pmdVersion
+    ruleSetConfig = rootProject.resources.text.fromFile('etc/pmd/ruleset.xml')
+    ignoreFailures = true
+    rulePriority = 2
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Spotless setup
+
+spotless {
+
+    java {
+        // Format code using google java format
+        googleJavaFormat()
+        
+        // Import order
+        importOrderFile "$rootDir/IMPORT_ORDER"
+
+        // Java Source Header File
+        licenseHeaderFile("$rootDir/LICENSE")
+    }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

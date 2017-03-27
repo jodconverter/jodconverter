@@ -15,7 +15,7 @@ In order to be able to apply changes to the JODConverter project, I had to under
 - **What's next**: I'm still on learning mode, but my goals are to:
 	- Add some filters in order to be able to add text, images, and whatever we are able to change while converting a document.
 	- Improve project comments.
-	- Switch to Gradle instead of Maven.
+	- ~~Switch to Gradle instead of Maven.~~ *Done*
 	- Switch to JUnit (since the new spring-boot module).
 	- Use the great SonarQube platform for code quality.
 	- Add tests.
@@ -37,7 +37,7 @@ The dude who created a pull request in these two forks with a stress test that m
 ## Building the Project
 
 ```Shell
-mvn clean install -DskipTests
+gradlew clean build -x test
 ```
 
 ## Original JODConverter

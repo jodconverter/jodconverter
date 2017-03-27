@@ -1,3 +1,19 @@
+/*
+ * Copyright 2004 - 2012 Mirko Nasato and contributors
+ *           2016 - 2017 Simon Braconnier and contributors
+ *
+ * This file is part of JODConverter - Java OpenDocument Converter.
+ *
+ * JODConverter is an Open Source software: you can redistribute it and/or
+ * modify it under the terms of either (at your option) of the following
+ * licenses:
+ *
+ * 1. The GNU Lesser General Public License v3 (or later)
+ *    http://www.gnu.org/licenses/lgpl-3.0.txt
+ * 2. The Apache License, Version 2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package org.artofsolving.jodconverter.boot;
 
 import static org.junit.Assert.assertTrue;
@@ -8,7 +24,6 @@ import java.io.PrintWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,76 +32,78 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import org.artofsolving.jodconverter.OfficeDocumentConverter;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class JodConverterTest {
 
-    private File inputFileTXT = null;
-    private File outputFileRTF = null;
-    private File outputFileDOC = null;
-    private File outputFilePDF = null;
-    private File outputFileDOCX = null;
+  private File inputFileTxt;
+  private File outputFileRtf;
+  private File outputFileDoc;
+  private File outputFilePdf;
+  private File outputFileDocx;
 
-    @Autowired
-    private OfficeDocumentConverter converter = null;
+  @Autowired private OfficeDocumentConverter converter;
 
-    @Before
-    public void setUp() throws Exception {
+  /** Method called before each test method annotated with the @Test annotation. */
+  @Before
+  public void setUp() throws Exception {
 
-        inputFileTXT = File.createTempFile("JodConverterTest", ".txt");
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(inputFileTXT);
-            pw.println("This is the first line of the input file.");
-            pw.println("This is the second line of the input file.");
-        } catch (Exception e) {
-            IOUtils.closeQuietly(pw);
-        }
-
-        File parent = inputFileTXT.getParentFile();
-        String basename = FilenameUtils.getBaseName(inputFileTXT.getName());
-        outputFileRTF = new File(parent, basename + ".rtf");
-        outputFileDOC = new File(parent, basename + ".doc");
-        outputFilePDF = new File(parent, basename + ".pdf");
-        outputFileDOCX = new File(parent, basename + ".docx");
+    inputFileTxt = File.createTempFile("JodConverterTest", ".txt");
+    PrintWriter pw = null;
+    try {
+      pw = new PrintWriter(inputFileTxt);
+      pw.println("This is the first line of the input file.");
+      pw.println("This is the second line of the input file.");
+    } catch (Exception e) {
+      IOUtils.closeQuietly(pw);
     }
 
-    @After
-    public void tearDown() throws Exception {
+    final File parent = inputFileTxt.getParentFile();
+    final String basename = FilenameUtils.getBaseName(inputFileTxt.getName());
+    outputFileRtf = new File(parent, basename + ".rtf");
+    outputFileDoc = new File(parent, basename + ".doc");
+    outputFilePdf = new File(parent, basename + ".pdf");
+    outputFileDocx = new File(parent, basename + ".docx");
+  }
 
-        FileUtils.deleteQuietly(inputFileTXT);
-        FileUtils.deleteQuietly(outputFileRTF);
-        FileUtils.deleteQuietly(outputFileDOC);
-        FileUtils.deleteQuietly(outputFilePDF);
-        FileUtils.deleteQuietly(outputFileDOCX);
-    }
+  /** Method called after each test method annotated with the @Test annotation. */
+  @After
+  public void tearDown() throws Exception {
 
-    @Test
-    public void testTXTToRTF() throws Exception {
+    FileUtils.deleteQuietly(inputFileTxt);
+    FileUtils.deleteQuietly(outputFileRtf);
+    FileUtils.deleteQuietly(outputFileDoc);
+    FileUtils.deleteQuietly(outputFilePdf);
+    FileUtils.deleteQuietly(outputFileDocx);
+  }
 
-        converter.convert(inputFileTXT, outputFileRTF);
-        assertTrue("RTF File not created.", outputFileRTF.exists());
-    }
+  @Test
+  public void testTxtToRtf() throws Exception {
 
-    @Test
-    public void testTXTToDOC() throws Exception {
+    converter.convert(inputFileTxt, outputFileRtf);
+    assertTrue("RTF File not created.", outputFileRtf.exists());
+  }
 
-        converter.convert(inputFileTXT, outputFileDOC);
-        assertTrue("DOC File not created.", outputFileDOC.exists());
-    }
+  @Test
+  public void testTxtToDoc() throws Exception {
 
-    @Test
-    public void testTXTToDOCX() throws Exception {
+    converter.convert(inputFileTxt, outputFileDoc);
+    assertTrue("DOC File not created.", outputFileDoc.exists());
+  }
 
-        converter.convert(inputFileTXT, outputFileDOCX);
-        assertTrue("DOCX File not created.", outputFileDOCX.exists());
-    }
+  @Test
+  public void testTxtToDocx() throws Exception {
 
-    @Test
-    public void testTXTToPDF() throws Exception {
+    converter.convert(inputFileTxt, outputFileDocx);
+    assertTrue("DOCX File not created.", outputFileDocx.exists());
+  }
 
-        converter.convert(inputFileTXT, outputFilePDF);
-        assertTrue("PDF File not created.", outputFilePDF.exists());
-    }
+  @Test
+  public void testTxtToPdf() throws Exception {
 
+    converter.convert(inputFileTxt, outputFilePdf);
+    assertTrue("PDF File not created.", outputFilePdf.exists());
+  }
 }

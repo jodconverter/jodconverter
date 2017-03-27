@@ -1,0 +1,46 @@
+// build a map of the dependency artifacts to use. Allows centralized definition
+// of the version of artifacts to use.  In that respect it serves a role similar
+// to <dependencyManagement> in Maven
+
+ext {
+    libraries = [
+
+            // Apache Commons Libraries
+            commons_cli                        : "commons-cli:commons-cli:$commonsCliVersion",
+            commons_fileupload                 : "commons-fileupload:commons-fileupload:$commonsFileUploadVersion",
+            commons_io                         : "commons-io:commons-io:$commonsIoVersion",
+            commons_lang3                      : "org.apache.commons:commons-lang3:$commonsLang3Version",
+
+            // Libre Office Libraries
+            office_juh                         : "org.libreoffice:juh:$officeVersion",
+            office_jurt                        : "org.libreoffice:jurt:$officeVersion",
+            office_ridl                        : "org.libreoffice:ridl:$officeVersion",
+            office_unoil                       : "org.libreoffice:unoil:$officeVersion",
+
+            // Spring Libraries
+            spring_core                        : "org.springframework:spring-core:$springVersion",
+            spring_context                     : "org.springframework:spring-context:$springVersion",
+            spring_test                        : "org.springframework:spring-test:$springVersion",
+            spring_context                     : "org.springframework:spring-context:$springVersion",
+
+            // Spring Boot libraries
+            spring_boot_dependencies           : "org.springframework.boot:spring-boot-dependencies:$springBootVersion",
+            spring_boot_starter                : 'org.springframework.boot:spring-boot-starter',
+            spring_boot_configuration_processor: 'org.springframework.boot:spring-boot-configuration-processor',
+            spring_boot_starter_test           : 'org.springframework.boot:spring-boot-starter-test',
+
+            // Logging Libraries
+            slf4j_api                          : "org.slf4j:slf4j-api:$slf4jVersion",
+            slf4j_log4j                        : "org.slf4j:slf4j-log4j12:$slf4jVersion",
+
+            // Other Libraries
+            json_java                          : "org.json:json:$jsonJavaVersion",
+            servlet_api                        : "javax.servlet:servlet-api:$servletApiVersion",
+
+            // Tests
+            testng                             : "org.testng:testng:$testngVersion",
+            junit                              : "junit:junit:$junitVersion",
+            jsr305                             : "com.google.code.findbugs:jsr305:$findbugsVersion",
+            findbugs                           : "com.google.code.findbugs:findbugs:$findbugsVersion"
+    ]
+}

@@ -1,0 +1,13 @@
+apply plugin: 'war'
+
+description = 'JODConverter - Sample Web Application'
+
+dependencies {
+    compile project(':jodconverter-core')
+    compile libraries.commons_io
+    compile libraries.commons_fileupload
+    compile libraries.slf4j_api
+    compile libraries.slf4j_log4j
+
+    providedCompile libraries.servlet_api
+}

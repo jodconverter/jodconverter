@@ -1,0 +1,15 @@
+checkstyle/rules.xml comes from:
+https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml
+
+eclipse/eclipse-java-google-style.xml comes from:
+https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml
+but is outdated. See https://github.com/google/styleguide/issues/164
+
+intellij-java-google-style.xml comes from:
+https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml
+
+###
+###
+See https://github.com/google/google-java-format for eclipse and intellij plugins
+that reformat Java source code to comply with Google Java Style. Using those plugins
+should be the preferred way to make sure your code conforms to Google's style.

@@ -1,15 +1,19 @@
-//
-// JODConverter - Java OpenDocument Converter
-// Copyright 2004-2012 Mirko Nasato and contributors
-//
-// JODConverter is Open Source software, you can redistribute it and/or
-// modify it under either (at your option) of the following licenses
-//
-// 1. The GNU Lesser General Public License v3 (or later)
-// -> http://www.gnu.org/licenses/lgpl-3.0.txt
-// 2. The Apache License, Version 2.0
-// -> http://www.apache.org/licenses/LICENSE-2.0.txt
-//
+/*
+ * Copyright 2004 - 2012 Mirko Nasato and contributors
+ *           2016 - 2017 Simon Braconnier and contributors
+ *
+ * This file is part of JODConverter - Java OpenDocument Converter.
+ *
+ * JODConverter is an Open Source software: you can redistribute it and/or
+ * modify it under the terms of either (at your option) of the following
+ * licenses:
+ *
+ * 1. The GNU Lesser General Public License v3 (or later)
+ *    http://www.gnu.org/licenses/lgpl-3.0.txt
+ * 2. The Apache License, Version 2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package org.artofsolving.jodconverter;
 
 import static org.testng.Assert.assertNotNull;
@@ -17,75 +21,90 @@ import static org.testng.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
+
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.filter.DefaultFilterChain;
 import org.artofsolving.jodconverter.filter.FilterChain;
 import org.artofsolving.jodconverter.filter.RefreshFilter;
-import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
-import org.artofsolving.jodconverter.office.OfficeException;
-import org.testng.annotations.Test;
+import org.artofsolving.jodconverter.office.OfficeManager;
 
 @Test(groups = "functional")
 public class OfficeDocumentConverterFunctionalTest {
 
-    public void runAllPossibleConversions() throws IOException, OfficeException {
-        OfficeManager officeManager = new DefaultOfficeManagerBuilder().build();
-        OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
-        DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
+  private static final Logger logger =
+      LoggerFactory.getLogger(OfficeDocumentConverterFunctionalTest.class);
 
-        officeManager.start();
-        try {
-            File dir = new File("src/test/resources/documents");
-            File[] files = dir.listFiles(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return !name.startsWith(".");
+  /**
+   * Test the conversion of all the supported documents format.
+   *
+   * @throws Exception if an error occurs.
+   */
+  public void runAllPossibleConversions() throws Exception {
+
+    final OfficeManager officeManager = new DefaultOfficeManagerBuilder().build();
+    final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
+    final DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
+
+    officeManager.start();
+    try {
+      final File dir = new File("src/test/resources/documents");
+      final File[] files =
+          dir.listFiles(
+              new FilenameFilter() {
+                public boolean accept(final File dir, final String name) {
+                  return name.charAt(0) != '.';
                 }
-            });
-            
-            // Here we can reuse a unique FilterChain
-            FilterChain chain = new DefaultFilterChain(RefreshFilter.INSTANCE);
-            
-            for (File inputFile : files) {
-                String inputExtension = FilenameUtils.getExtension(inputFile.getName());
-                DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
-                assertNotNull(inputFormat, "unknown input format: " + inputExtension);
-                Set<DocumentFormat> outputFormats = formatRegistry.getOutputFormats(inputFormat.getInputFamily());
-                for (DocumentFormat outputFormat : outputFormats) {
-                    // LibreOffice 4 fails natively on those one
-                    if (inputFormat.getExtension().equals("odg") && outputFormat.getExtension().equals("svg")) {
-                        System.out.println("-- skipping odg to svg test... ");
-                        continue;
-                    }
-                    if (outputFormat.getExtension().equals("sxc")) {
-                        System.out.println("-- skipping * to sxc test... ");
-                        continue;
-                    }
-                    if (outputFormat.getExtension().equals("sxw")) {
-                        System.out.println("-- skipping * to sxw test... ");
-                        continue;
-                    }
-                    if (outputFormat.getExtension().equals("sxi")) {
-                        System.out.println("-- skipping * to sxi test... ");
-                        continue;
-                    }
-                    File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
-                    outputFile.deleteOnExit();
-                    System.out.printf("-- converting %s to %s... ", inputFormat.getExtension(), outputFormat.getExtension());
-                    converter.convert(chain, inputFile, outputFile, outputFormat);
-                    System.out.printf("done.\n");
-                    assertTrue(outputFile.isFile() && outputFile.length() > 0);
-                    //TODO use file detection to make sure outputFile is in the expected format
-                }
-            }
-        } finally {
-            officeManager.stop();
+              });
+
+      // Here we can reuse a unique FilterChain
+      final FilterChain chain = new DefaultFilterChain(RefreshFilter.INSTANCE);
+
+      for (final File inputFile : files) {
+        final String inputExtension = FilenameUtils.getExtension(inputFile.getName());
+        final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
+        assertNotNull(inputFormat, "unknown input format: " + inputExtension);
+        final Set<DocumentFormat> outputFormats =
+            formatRegistry.getOutputFormats(inputFormat.getInputFamily());
+        for (final DocumentFormat outputFormat : outputFormats) {
+          // LibreOffice 4 fails natively on those one
+          if (inputFormat.getExtension().equals("odg")
+              && outputFormat.getExtension().equals("svg")) {
+            logger.info("-- skipping odg to svg test... ");
+            continue;
+          }
+          if (outputFormat.getExtension().equals("sxc")) {
+            logger.info("-- skipping * to sxc test... ");
+            continue;
+          }
+          if (outputFormat.getExtension().equals("sxw")) {
+            logger.info("-- skipping * to sxw test... ");
+            continue;
+          }
+          if (outputFormat.getExtension().equals("sxi")) {
+            logger.info("-- skipping * to sxi test... ");
+            continue;
+          }
+          final File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
+          outputFile.deleteOnExit();
+          logger.info(
+              "-- converting %s to %s... ",
+              inputFormat.getExtension(), outputFormat.getExtension());
+          converter.convert(chain, inputFile, outputFile, outputFormat);
+          logger.info("done.\n");
+          assertTrue(outputFile.isFile() && outputFile.length() > 0);
+          //TODO use file detection to make sure outputFile is in the expected format
         }
+      }
+    } finally {
+      officeManager.stop();
     }
-
+  }
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2004 - 2012 Mirko Nasato and contributors
+ *           2016 - 2017 Simon Braconnier and contributors
+ *
+ * This file is part of JODConverter - Java OpenDocument Converter.
+ *
+ * JODConverter is an Open Source software: you can redistribute it and/or
+ * modify it under the terms of either (at your option) of the following
+ * licenses:
+ *
+ * 1. The GNU Lesser General Public License v3 (or later)
+ *    http://www.gnu.org/licenses/lgpl-3.0.txt
+ * 2. The Apache License, Version 2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package org.artofsolving.jodconverter.spring;
 
 import java.io.File;
@@ -7,417 +23,388 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
-import org.artofsolving.jodconverter.document.DocumentFamily;
-import org.artofsolving.jodconverter.document.DocumentFormat;
-import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
-import org.artofsolving.jodconverter.office.OfficeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
+import org.artofsolving.jodconverter.document.DocumentFamily;
+import org.artofsolving.jodconverter.document.DocumentFormat;
+import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.artofsolving.jodconverter.office.OfficeException;
+import org.artofsolving.jodconverter.office.OfficeManager;
+
 /**
  * The purpose of this class is to provide to the Spring Container a Bean that encapsulates the
  * functionality already present in the JODConverter-CORE library. The target of this bean is to
  * provide the functionality of the PocessPoolOfficeManager.
- * 
- * The Controller shall launch the OO processes. The Controller shall stop the OO processes when
+ *
+ * <p>The Controller shall launch the OO processes. The Controller shall stop the OO processes when
  * it´s time to shutdown the application
- * 
+ *
  * @author Jose Luis López López
  */
 public class JodConverterBean implements InitializingBean, DisposableBean {
 
-    private static final Logger logger = LoggerFactory.getLogger(JodConverterBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(JodConverterBean.class);
 
-    private String officeHome;
-    private String portNumbers;
-    private String workingDir;
-    private String templateProfileDir;
-    private Long retryTimeout;
-    private Long retryInterval;
-    private Boolean killExistingProcess;
-    private Long taskQueueTimeout;
-    private Long taskExecutionTimeout;
-    private Integer maxTasksPerProcess;
+  private String officeHome;
+  private String portNumbers;
+  private String workingDir;
+  private String templateProfileDir;
+  private Long retryTimeout;
+  private Long retryInterval;
+  private Boolean killExistingProcess;
+  private Long taskQueueTimeout;
+  private Long taskExecutionTimeout;
+  private Integer maxTasksPerProcess;
 
-    private OfficeManager officeManager = null;
-    private OfficeDocumentConverter documentConverter = null;
+  private OfficeManager officeManager;
+  private OfficeDocumentConverter documentConverter;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+  @Override
+  public void afterPropertiesSet() throws OfficeException {
 
-        DefaultOfficeManagerBuilder builder = new DefaultOfficeManagerBuilder();
+    final DefaultOfficeManagerBuilder builder = new DefaultOfficeManagerBuilder();
 
-        if (!StringUtils.isBlank(officeHome)) {
-            builder.setOfficeHome(officeHome);
-        }
-
-        if (!StringUtils.isBlank(workingDir)) {
-            builder.setWorkingDir(new File(workingDir));
-        }
-
-        if (!StringUtils.isBlank(portNumbers)) {
-            Set<Integer> ports = buildPortNumbers(this.portNumbers);
-            if (!ports.isEmpty()) {
-                builder.setPortNumbers(ArrayUtils.toPrimitive(ports.toArray(new Integer[]{})));
-            }
-        }
-
-        if (!StringUtils.isBlank(templateProfileDir)) {
-            builder.setTemplateProfileDir(new File(templateProfileDir));
-        }
-
-        if (retryTimeout != null) {
-            builder.setRetryTimeout(retryTimeout);
-        }
-
-        if (retryInterval != null) {
-            builder.setRetryInterval(retryInterval);
-        }
-
-        if (killExistingProcess != null) {
-            builder.setKillExistingProcess(killExistingProcess);
-        }
-
-        if (taskQueueTimeout != null) {
-            builder.setTaskQueueTimeout(taskQueueTimeout);
-        }
-
-        if (taskExecutionTimeout != null) {
-            builder.setTaskExecutionTimeout(taskExecutionTimeout);
-        }
-
-        if (maxTasksPerProcess != null) {
-            builder.setMaxTasksPerProcess(maxTasksPerProcess);
-        }
-
-        // Starts the manager
-        officeManager = builder.build();
-        documentConverter = new OfficeDocumentConverter(officeManager);
-        officeManager.start();
+    if (!StringUtils.isBlank(officeHome)) {
+      builder.setOfficeHome(officeHome);
     }
 
-    /**
-     * Prints the available formats provided by the JODConverter module.
-     */
-    public void availableFormats() {
-
-        DefaultDocumentFormatRegistry ref = DefaultDocumentFormatRegistry.getInstance();
-        Set<DocumentFormat> group = ref.getOutputFormats(DocumentFamily.TEXT);
-        Iterator<DocumentFormat> it = group.iterator();
-        logger.info("Supported Text Document Formats are:");
-        while (it.hasNext()) {
-            DocumentFormat df = it.next();
-            logger.info(df.getName());
-        }
-
-        group = ref.getOutputFormats(DocumentFamily.SPREADSHEET);
-        it = group.iterator();
-        logger.info("Supported SpreadSheet Document Formats are:");
-        while (it.hasNext()) {
-            DocumentFormat df = it.next();
-            logger.info(df.getName());
-        }
-
-        group = ref.getOutputFormats(DocumentFamily.PRESENTATION);
-        it = group.iterator();
-        logger.info("Supported Presentation Document Formats are:");
-        while (it.hasNext()) {
-            DocumentFormat df = it.next();
-            logger.info(df.getName());
-        }
-
-        group = ref.getOutputFormats(DocumentFamily.DRAWING);
-        it = group.iterator();
-        logger.info("Supported Drawing Document Formats are:");
-        while (it.hasNext()) {
-            DocumentFormat df = it.next();
-            logger.info(df.getName());
-        }
+    if (!StringUtils.isBlank(workingDir)) {
+      builder.setWorkingDir(new File(workingDir));
     }
 
-    // Create a set of port numbers from a string
-    private Set<Integer> buildPortNumbers(String str) {
-
-        Set<Integer> iports = new HashSet<Integer>();
-
-        if (StringUtils.isBlank(str)) {
-            return iports;
-        }
-
-        String[] portNumbers = StringUtils.split(str, ", ");
-        if (portNumbers.length == 0) {
-            return iports;
-        }
-
-        for (String portNumber : portNumbers) {
-            if (!StringUtils.isBlank(portNumber)) {
-                iports.add(Integer.parseInt(StringUtils.trim(portNumber)));
-            }
-        }
-        return iports;
+    final Set<Integer> ports = buildPortNumbers(this.portNumbers);
+    if (!ports.isEmpty()) {
+      builder.setPortNumbers(ArrayUtils.toPrimitive(ports.toArray(new Integer[] {})));
     }
 
-    /**
-     * Converts an input file into a file of another format. The file extensions are taken to know
-     * the conversion formats.
-     * 
-     * @param inputFile
-     *            The file whose content is to be converted.
-     * @param outputFile
-     *            The output file (target) of the conversion.
-     * @throws Exception
-     *             Thrown if an error occurs while converting the file.
-     */
-    public void convert(String inputFile, String outputFile) throws Exception {
-
-        convert(new File(inputFile), new File(outputFile));
+    if (!StringUtils.isBlank(templateProfileDir)) {
+      builder.setTemplateProfileDir(new File(templateProfileDir));
     }
 
-    /**
-     * Converts an input file into a file of another format. The file extensions are taken to know
-     * the conversion formats.
-     * 
-     * @param inputFile
-     *            The file whose content is to be converted.
-     * @param outputFile
-     *            The output file (target) of the conversion.
-     * @throws Exception
-     *             Thrown if an error occurs while converting the file.
-     */
-    public void convert(File inputFile, File outputFile) throws Exception {
-
-        documentConverter.convert(inputFile, outputFile);
+    if (retryTimeout != null) {
+      builder.setRetryTimeout(retryTimeout);
     }
 
-    @Override
-    public void destroy() throws Exception {
-
-        if (officeManager != null) {
-            officeManager.stop();
-        }
+    if (retryInterval != null) {
+      builder.setRetryInterval(retryInterval);
     }
 
-    /**
-     * Gets whether we must kill existing office process when an office process already exists for
-     * the same connection string. If not set, it defaults to true.
-     * 
-     * @return {@code true} to kill existing process, {@code false} otherwise.
-     */
-    public Boolean getKillExistingProcess() {
-        return killExistingProcess;
+    if (killExistingProcess != null) {
+      builder.setKillExistingProcess(killExistingProcess);
     }
 
-    /**
-     * Gets the maximum number of tasks an office process can execute before restarting. Default is
-     * 200.
-     * 
-     * @return the maximum value.
-     */
-    public Integer getMaxTasksPerProcess() {
-        return maxTasksPerProcess;
+    if (taskQueueTimeout != null) {
+      builder.setTaskQueueTimeout(taskQueueTimeout);
     }
 
-    /**
-     * Gets the office home directory.
-     * 
-     * @return the office home directory.
-     */
-    public String getOfficeHome() {
-        return officeHome;
+    if (taskExecutionTimeout != null) {
+      builder.setTaskExecutionTimeout(taskExecutionTimeout);
     }
 
-    /**
-     * Gets the list of ports, separated by commas, used by each JODConverter processing thread. The
-     * number of office instances is equal to the number of ports, since 1 office will be launched
-     * for each port number.
-     * 
-     * @return the port numbers to use.
-     */
-    public String getPortNumbers() {
-        return portNumbers;
+    if (maxTasksPerProcess != null) {
+      builder.setMaxTasksPerProcess(maxTasksPerProcess);
     }
 
-    /**
-     * Get the retry interval (milliseconds).Used for waiting between office process call tries
-     * (start/terminate). Default is 250.
-     * 
-     * @return the retry interval, in milliseconds.
-     */
-    public Long getRetryInterval() {
-        return retryInterval;
+    // Starts the manager
+    officeManager = builder.build();
+    documentConverter = new OfficeDocumentConverter(officeManager);
+    officeManager.start();
+  }
+
+  // Create a set of port numbers from a string
+  private Set<Integer> buildPortNumbers(final String str) {
+
+    final Set<Integer> iports = new HashSet<Integer>();
+
+    if (StringUtils.isBlank(str)) {
+      return iports;
     }
 
-    /**
-     * Set the retry timeout (milliseconds).Used for retrying office process calls
-     * (start/terminate). If not set, it defaults to 2 minutes.
-     * 
-     * @return the retry timeout, in milliseconds.
-     */
-    public Long getRetryTimeout() {
-        return retryTimeout;
+    final String[] portNums = StringUtils.split(str, ", ");
+    if (portNums.length == 0) {
+      return iports;
     }
 
-    /**
-     * Gets the maximum time allowed to process a task. If the processing time of a task is longer
-     * than this timeout, this task will be aborted and the next task is processed. Default is
-     * 120000 (2 minutes).
-     * 
-     * @return the timeout value.
-     */
-    public Long getTaskExecutionTimeout() {
-        return taskExecutionTimeout;
+    for (final String portNumber : portNums) {
+      if (!StringUtils.isBlank(portNumber)) {
+        iports.add(Integer.parseInt(StringUtils.trim(portNumber)));
+      }
     }
+    return iports;
+  }
 
-    /**
-     * Gets the maximum living time of a task in the conversion queue. The task will be removed from
-     * the queue if the waiting time is longer than this timeout. Default is 30000 (30 seconds).
-     * 
-     * @return timeout value.
-     */
-    public Long getTaskQueueTimeout() {
-        return taskQueueTimeout;
-    }
+  /**
+   * Converts an input file into a file of another format. The file extensions are taken to know the
+   * conversion formats.
+   *
+   * @param inputFile The file whose content is to be converted.
+   * @param outputFile The output file (target) of the conversion.
+   * @throws OfficeException Thrown if an error occurs while converting the file.
+   */
+  public void convert(final File inputFile, final File outputFile) throws OfficeException {
 
-    /**
-     * Gets the directory to copy to the temporary office profile directories to be created.
-     * 
-     * @return the template profile directory.
-     */
-    public String getTemplateProfileDir() {
-        return templateProfileDir;
-    }
+    documentConverter.convert(inputFile, outputFile);
+  }
 
-    /**
-     * Gets the directory where temporary office profiles will be created.
-     * <p>
-     * Defaults to the system temporary directory as specified by the <code>java.io.tmpdir</code>
-     * system property.
-     * 
-     * @return the working directory.
-     */
-    public String getWorkingDir() {
-        return workingDir;
-    }
+  /**
+   * Converts an input file into a file of another format. The file extensions are taken to know the
+   * conversion formats.
+   *
+   * @param inputFile The file whose content is to be converted.
+   * @param outputFile The output file (target) of the conversion.
+   * @throws OfficeException Thrown if an error occurs while converting the file.
+   */
+  public void convert(final String inputFile, final String outputFile) throws OfficeException {
 
-    /**
-     * Gets whether we must kill existing office process when an office process already exists for
-     * the same connection string. If not set, it defaults to true.
-     * 
-     * @return {@code true} to kill existing process, {@code false} otherwise.
-     */
-    public boolean isKillExistingProcess() {
-        return killExistingProcess;
-    }
+    convert(new File(inputFile), new File(outputFile));
+  }
 
-    /**
-     * Sets whether we must kill existing office process when an office process already exists for
-     * the same connection string.
-     * 
-     * @param killExistingProcess
-     *            {@code true} to kill existing process, {@code false} otherwise.
-     */
-    public void setKillExistingProcess(Boolean killExistingProcess) {
-        this.killExistingProcess = killExistingProcess;
-    }
+  @Override
+  public void destroy() throws OfficeException {
 
-    /**
-     * Sets the maximum number of tasks an office process can execute before restarting.
-     * 
-     * @param maxTasksPerProcess
-     *            the new value to set.
-     */
-    public void setMaxTasksPerProcess(Integer maxTasksPerProcess) {
-        this.maxTasksPerProcess = maxTasksPerProcess;
+    if (officeManager != null) {
+      officeManager.stop();
     }
+  }
 
-    /**
-     * Sets the office home directory.
-     * 
-     * @param officeHome
-     *            the new home directory to set.
-     */
-    public void setOfficeHome(String officeHome) {
-        this.officeHome = officeHome;
-    }
+  /**
+   * Gets whether we must kill existing office process when an office process already exists for the
+   * same connection string. If not set, it defaults to true.
+   *
+   * @return {@code true} to kill existing process, {@code false} otherwise.
+   */
+  public Boolean getKillExistingProcess() {
+    return killExistingProcess;
+  }
 
-    /**
-     * Sets the list of ports, separated by commas, used by each JODConverter processing thread. The
-     * number of office instances is equal to the number of ports, since 1 office will be launched
-     * for each port number.
-     * 
-     * @param portNumbers
-     *            the port numbers to use.
-     */
-    public void setPortNumbers(String portNumbers) {
-        this.portNumbers = portNumbers;
-    }
+  /**
+   * Gets the maximum number of tasks an office process can execute before restarting. Default is
+   * 200.
+   *
+   * @return the maximum value.
+   */
+  public Integer getMaxTasksPerProcess() {
+    return maxTasksPerProcess;
+  }
 
-    /**
-     * Set the retry interval (milliseconds).Used for waiting between office process call tries
-     * (start/terminate).
-     * 
-     * @param retryInterval
-     *            the retry interval, in milliseconds.
-     */
-    public void setRetryInterval(Long retryInterval) {
-        this.retryInterval = retryInterval;
-    }
+  /**
+   * Gets the office home directory.
+   *
+   * @return the office home directory.
+   */
+  public String getOfficeHome() {
+    return officeHome;
+  }
 
-    /**
-     * Set the retry timeout (milliseconds). Used for retrying office process calls
-     * (start/terminate).
-     * 
-     * @param retryTimeout
-     *            the retry timeout, in milliseconds.
-     */
-    public void setRetryTimeout(Long retryTimeout) {
-        this.retryTimeout = retryTimeout;
-    }
+  /**
+   * Gets the list of ports, separated by commas, used by each JODConverter processing thread. The
+   * number of office instances is equal to the number of ports, since 1 office will be launched for
+   * each port number.
+   *
+   * @return the port numbers to use.
+   */
+  public String getPortNumbers() {
+    return portNumbers;
+  }
 
-    /**
-     * Sets the maximum time allowed to process a task. If the processing time of a task is longer
-     * than this timeout, this task will be aborted and the next task is processed. Default is
-     * 120000 (2 minutes).
-     * 
-     * @param taskExecutionTimeout
-     *            the new timeout value.
-     */
-    public void setTaskExecutionTimeout(Long taskExecutionTimeout) {
-        this.taskExecutionTimeout = taskExecutionTimeout;
-    }
+  /**
+   * Get the retry interval (milliseconds).Used for waiting between office process call tries
+   * (start/terminate). Default is 250.
+   *
+   * @return the retry interval, in milliseconds.
+   */
+  public Long getRetryInterval() {
+    return retryInterval;
+  }
 
-    /**
-     * Sets the maximum living time of a task in the conversion queue. The task will be removed from
-     * the queue if the waiting time is longer than this timeout.
-     * 
-     * @param taskQueueTimeout
-     *            the new timeout value.
-     */
-    public void setTaskQueueTimeout(Long taskQueueTimeout) {
-        this.taskQueueTimeout = taskQueueTimeout;
-    }
+  /**
+   * Set the retry timeout (milliseconds).Used for retrying office process calls (start/terminate).
+   * If not set, it defaults to 2 minutes.
+   *
+   * @return the retry timeout, in milliseconds.
+   */
+  public Long getRetryTimeout() {
+    return retryTimeout;
+  }
 
-    /**
-     * Sets the directory to copy to the temporary office profile directories to be created.
-     * 
-     * @param templateProfileDir
-     *            the new template profile directory.
-     */
-    public void setTemplateProfileDir(String templateProfileDir) {
-        this.templateProfileDir = templateProfileDir;
-    }
+  /**
+   * Gets the maximum time allowed to process a task. If the processing time of a task is longer
+   * than this timeout, this task will be aborted and the next task is processed. Default is 120000
+   * (2 minutes).
+   *
+   * @return the timeout value.
+   */
+  public Long getTaskExecutionTimeout() {
+    return taskExecutionTimeout;
+  }
 
-    /**
-     * Sets the directory where temporary office profiles will be created.
-     * 
-     * @param workingDir
-     *            the new working directory.
-     */
-    public void setWorkingDir(String workingDir) {
-        this.workingDir = workingDir;
+  /**
+   * Gets the maximum living time of a task in the conversion queue. The task will be removed from
+   * the queue if the waiting time is longer than this timeout. Default is 30000 (30 seconds).
+   *
+   * @return timeout value.
+   */
+  public Long getTaskQueueTimeout() {
+    return taskQueueTimeout;
+  }
+
+  /**
+   * Gets the directory to copy to the temporary office profile directories to be created.
+   *
+   * @return the template profile directory.
+   */
+  public String getTemplateProfileDir() {
+    return templateProfileDir;
+  }
+
+  /**
+   * Gets the directory where temporary office profiles will be created.
+   *
+   * <p>Defaults to the system temporary directory as specified by the <code>java.io.tmpdir</code>
+   * system property.
+   *
+   * @return the working directory.
+   */
+  public String getWorkingDir() {
+    return workingDir;
+  }
+
+  /**
+   * Gets whether we must kill existing office process when an office process already exists for the
+   * same connection string. If not set, it defaults to true.
+   *
+   * @return {@code true} to kill existing process, {@code false} otherwise.
+   */
+  public boolean isKillExistingProcess() {
+    return killExistingProcess;
+  }
+
+  /** Prints the available formats provided by the JODConverter module. */
+  public void logAvailableFormats() {
+
+    final DefaultDocumentFormatRegistry ref = DefaultDocumentFormatRegistry.getInstance();
+
+    logSupportedGroupFormats(
+        "Supported Text Document Formats are:", ref.getOutputFormats(DocumentFamily.TEXT));
+    logSupportedGroupFormats(
+        "Supported SpreadSheet Document Formats are:",
+        ref.getOutputFormats(DocumentFamily.SPREADSHEET));
+    logSupportedGroupFormats(
+        "Supported Presentation Document Formats are:",
+        ref.getOutputFormats(DocumentFamily.PRESENTATION));
+    logSupportedGroupFormats(
+        "Supported Drawing Document Formats are:", ref.getOutputFormats(DocumentFamily.DRAWING));
+  }
+
+  /** Prints the available formats provided by the JODConverter module. */
+  private void logSupportedGroupFormats(final String text, final Set<DocumentFormat> formats) {
+
+    logger.info(text);
+    final Iterator<DocumentFormat> iter = formats.iterator();
+    while (iter.hasNext()) {
+      logger.info(iter.next().getName());
     }
+  }
+
+  /**
+   * Sets whether we must kill existing office process when an office process already exists for the
+   * same connection string.
+   *
+   * @param killExistingProcess {@code true} to kill existing process, {@code false} otherwise.
+   */
+  public void setKillExistingProcess(final Boolean killExistingProcess) {
+    this.killExistingProcess = killExistingProcess;
+  }
+
+  /**
+   * Sets the maximum number of tasks an office process can execute before restarting.
+   *
+   * @param maxTasksPerProcess the new value to set.
+   */
+  public void setMaxTasksPerProcess(final Integer maxTasksPerProcess) {
+    this.maxTasksPerProcess = maxTasksPerProcess;
+  }
+
+  /**
+   * Sets the office home directory.
+   *
+   * @param officeHome the new home directory to set.
+   */
+  public void setOfficeHome(final String officeHome) {
+    this.officeHome = officeHome;
+  }
+
+  /**
+   * Sets the list of ports, separated by commas, used by each JODConverter processing thread. The
+   * number of office instances is equal to the number of ports, since 1 office will be launched for
+   * each port number.
+   *
+   * @param portNumbers the port numbers to use.
+   */
+  public void setPortNumbers(final String portNumbers) {
+    this.portNumbers = portNumbers;
+  }
+
+  /**
+   * Set the retry interval (milliseconds).Used for waiting between office process call tries
+   * (start/terminate).
+   *
+   * @param retryInterval the retry interval, in milliseconds.
+   */
+  public void setRetryInterval(final Long retryInterval) {
+    this.retryInterval = retryInterval;
+  }
+
+  /**
+   * Set the retry timeout (milliseconds). Used for retrying office process calls (start/terminate).
+   *
+   * @param retryTimeout the retry timeout, in milliseconds.
+   */
+  public void setRetryTimeout(final Long retryTimeout) {
+    this.retryTimeout = retryTimeout;
+  }
+
+  /**
+   * Sets the maximum time allowed to process a task. If the processing time of a task is longer
+   * than this timeout, this task will be aborted and the next task is processed. Default is 120000
+   * (2 minutes).
+   *
+   * @param taskExecutionTimeout the new timeout value.
+   */
+  public void setTaskExecutionTimeout(final Long taskExecutionTimeout) {
+    this.taskExecutionTimeout = taskExecutionTimeout;
+  }
+
+  /**
+   * Sets the maximum living time of a task in the conversion queue. The task will be removed from
+   * the queue if the waiting time is longer than this timeout.
+   *
+   * @param taskQueueTimeout the new timeout value.
+   */
+  public void setTaskQueueTimeout(final Long taskQueueTimeout) {
+    this.taskQueueTimeout = taskQueueTimeout;
+  }
+
+  /**
+   * Sets the directory to copy to the temporary office profile directories to be created.
+   *
+   * @param templateProfileDir the new template profile directory.
+   */
+  public void setTemplateProfileDir(final String templateProfileDir) {
+    this.templateProfileDir = templateProfileDir;
+  }
+
+  /**
+   * Sets the directory where temporary office profiles will be created.
+   *
+   * @param workingDir the new working directory.
+   */
+  public void setWorkingDir(final String workingDir) {
+    this.workingDir = workingDir;
+  }
 }

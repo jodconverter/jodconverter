@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<ruleset name="LeanStacks PMD Ruleset" xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+    <description>
+        This is the JODConverter Official PMD ruleset.
+    </description>
+
+    <!-- Use the entire 'basic' ruleset -->
+    <rule ref="rulesets/java/basic.xml"/>
+
+    <!-- Use the entire 'clone' ruleset -->
+    <rule ref="rulesets/java/clone.xml"/>
+
+    <!-- Use the entire 'code size' ruleset -->
+    <rule ref="rulesets/java/codesize.xml"/>
+    <rule ref="rulesets/java/codesize.xml/NPathComplexity">
+        <properties>
+            <!-- The default 200.0 is too restrictive. -->
+            <property name="minimum" value="1200.0"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/java/codesize.xml/ExcessiveClassLength">
+        <properties>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath" value="
+				//ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/java/codesize.xml/ExcessivePublicCount">
+        <properties>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath" value="
+				//ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/java/codesize.xml/TooManyMethods">
+        <properties>
+            <!-- The default 10 is too restrictive (test classes have way more methods).
+                 It would be better to use a violationSuppressXPath but it doesn't exist
+                 for this rule. -->
+            <property name="maxmethods" value="100"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/java/codesize.xml/CyclomaticComplexity">
+        <properties>
+            <!-- The default 10 is too restrictive. -->
+            <property name="reportLevel" value="15"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/java/codesize.xml/StdCyclomaticComplexity">
+        <properties>
+            <!-- The default 10 is too restrictive. -->
+            <property name="reportLevel" value="15"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/java/codesize.xml/ModifiedCyclomaticComplexity">
+        <properties>
+            <!-- The default 10 is too restrictive. -->
+            <property name="reportLevel" value="15"/>
+        </properties>
+    </rule>
+
+	<!-- Use the entire 'controversial' ruleset -->
+	<rule ref="rulesets/java/controversial.xml">
+	    <exclude name="AtLeastOneConstructor" />
+		<exclude name="OnlyOneReturn" />
+	</rule>
+	<rule ref="rulesets/java/controversial.xml/DataflowAnomalyAnalysis">
+		<properties>
+			<property name="violationSuppressXPath" value="
+				//ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+
+	<!-- Use the entire 'coupling' ruleset -->
+	<rule ref="rulesets/java/coupling.xml">
+		<exclude name="LawOfDemeter" />
+		<exclude name="LoosePackageCoupling" />
+	</rule>
+	<rule ref="rulesets/java/coupling.xml/ExcessiveImports">
+		<properties>
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath" value="
+				//ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+	
+	<!-- Use the entire 'design' ruleset -->
+	<rule ref="rulesets/java/design.xml">
+		<exclude name="AbstractClassWithoutAbstractMethod" />
+		<exclude name="FieldDeclarationsShouldBeAtStartOfClass" />
+		<exclude name="UncommentedEmptyConstructor" />
+		<exclude name="UseUtilityClass" />
+		<exclude name="ConstantsInInterface" />
+	</rule>
+
+    <!-- Use the entire 'empty' ruleset -->
+    <rule ref="rulesets/java/empty.xml"/>
+
+    <!-- Use the entire 'finalizers' ruleset -->
+    <rule ref="rulesets/java/finalizers.xml"/>
+
+    <!-- Use the entire 'javabeans' ruleset -->
+	<rule ref="rulesets/java/javabeans.xml">
+		<exclude name="BeanMembersShouldSerialize" />
+	</rule>
+
+    <!-- Use the entire 'java logging' ruleset -->
+    <rule ref="rulesets/java/logging-java.xml"/>
+
+    <!-- Use the entire 'junit' ruleset -->
+    <rule ref="rulesets/java/junit.xml"/>
+    <rule ref="rulesets/java/junit.xml/JUnitTestContainsTooManyAsserts">
+        <properties>
+            <!-- The default '1' is too restrictive -->
+            <property name="maximumAsserts" value="10"/>
+        </properties>
+    </rule>
+
+    <!-- Use the entire 'optimizations' ruleset -->
+    <rule ref="rulesets/java/optimizations.xml"/>
+
+    <!-- Use the entire 'sun security' ruleset -->
+    <rule ref="rulesets/java/sunsecure.xml"/>
+
+    <!-- Use the entire 'strict exceptions' ruleset -->
+	<rule ref="rulesets/java/strictexception.xml">
+		<exclude name="AvoidCatchingGenericException" />
+		<exclude name="AvoidThrowingRawExceptionTypes" />
+		<exclude name="SignatureDeclareThrowsException" />
+	</rule>
+
+    <!-- Use the entire 'type resolution' ruleset -->
+    <rule ref="rulesets/java/typeresolution.xml"/>
+	<rule ref="rulesets/java/typeresolution.xml/SignatureDeclareThrowsException">
+        <properties>
+            <!-- Ignore Test resources -->
+            <property name="IgnoreJUnitCompletely" value="true" />
+        </properties>
+	</rule>
+
+    <!-- Use the entire 'unnecessary' ruleset -->
+    <rule ref="rulesets/java/unnecessary.xml"/>
+
+    <!-- Use the entire 'unused code' ruleset -->
+    <rule ref="rulesets/java/unusedcode.xml"/>
+
+    <!-- Use the entire 'strings' ruleset -->
+    <rule ref="rulesets/java/strings.xml"/>
+    <rule ref="rulesets/java/strings.xml/AvoidDuplicateLiterals">
+        <properties>
+            <!-- Ignore Test resources -->
+            <property name="violationSuppressXPath" value="
+				//ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+        </properties>
+    </rule>
+
+</ruleset>

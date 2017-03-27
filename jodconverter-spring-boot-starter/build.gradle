@@ -1,0 +1,18 @@
+apply plugin: 'io.spring.dependency-management' // Provides spring dependency management functionality
+
+description = 'JODConverter - Spring Boot Starter'
+
+// See https://github.com/spring-gradle-plugins/dependency-management-plugin
+dependencyManagement {
+    imports {
+        mavenBom libraries.spring_boot_dependencies
+    }
+}
+
+dependencies {
+    compile project(':jodconverter-core')
+    compile libraries.spring_boot_starter
+    compile libraries.spring_boot_configuration_processor
+
+    testCompile libraries.spring_boot_starter_test
+}

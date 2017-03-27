@@ -1,4 +1,7 @@
 # Build
+out
+bin
+build
 target
 test-output
 
@@ -8,3 +11,10 @@ test-output
 .project
 .settings
 .checkstyle
+
+# IntelliJ IDEA
+.idea
+*.iml
+
+# Gradle
+.gradle
