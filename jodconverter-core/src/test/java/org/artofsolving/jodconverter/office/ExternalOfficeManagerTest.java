@@ -30,6 +30,8 @@ import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 @Test(groups = "integration")
 public class ExternalOfficeManagerTest {
 
+  //TODO test auto-reconnection
+
   /**
    * Test a conversion task execution though the ExternalOfficeManager class.
    *
@@ -47,11 +49,11 @@ public class ExternalOfficeManagerTest {
             new PureJavaProcessManager(),
             true);
     officeProcess.start();
-    Thread.sleep(2000);
+    Thread.sleep(2000); // NOSONAR
     final Integer exitCode = officeProcess.getExitCode();
     if (exitCode != null && exitCode.equals(Integer.valueOf(81))) {
       officeProcess.start(true);
-      Thread.sleep(2000);
+      Thread.sleep(2000); // NOSONAR
     }
 
     final ExternalOfficeManager manager = new ExternalOfficeManager(unoUrl, true);
@@ -66,7 +68,4 @@ public class ExternalOfficeManagerTest {
     final Process process = (Process) FieldUtils.readDeclaredField(officeProcess, "process", true);
     process.destroy();
   }
-
-  //TODO test auto-reconnection
-
 }

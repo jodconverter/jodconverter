@@ -60,7 +60,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
       final int maxTasksPerProcess) {
 
     this.taskQueueTimeout = taskQueueTimeout;
-    pool = new ArrayBlockingQueue<PooledOfficeManager>(unoUrls.length);
+    pool = new ArrayBlockingQueue<>(unoUrls.length);
     pooledManagers = new PooledOfficeManager[unoUrls.length];
     for (int i = 0; i < unoUrls.length; i++) {
       final PooledOfficeManagerSettings settings =
@@ -89,7 +89,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
 
     try {
       return pool.poll(taskQueueTimeout, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException interruptedEx) {
+    } catch (InterruptedException interruptedEx) { // NOSONAR
       throw new OfficeException("interrupted", interruptedEx);
     }
   }
@@ -134,7 +134,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
 
     try {
       pool.put(manager);
-    } catch (InterruptedException interruptedEx) {
+    } catch (InterruptedException interruptedEx) { // NOSONAR
       // Not supposed to happened
       throw new OfficeException("interrupted", interruptedEx);
     }

@@ -103,14 +103,14 @@ public class PooledOfficeManagerTest {
           }
         }
       }.start();
-      Thread.sleep(500);
+      Thread.sleep(500); // NOSONAR
       final Process underlyingProcess =
           (Process) FieldUtils.readDeclaredField(process, "process", true);
       assertNotNull(underlyingProcess);
       logger.debug("Simulating the crash");
       underlyingProcess.destroy(); // simulate crash
 
-      Thread.sleep(RESTART_WAIT_TIME);
+      Thread.sleep(RESTART_WAIT_TIME); // NOSONAR
       assertTrue(process.isRunning());
       assertTrue(connection.isConnected());
 
@@ -154,7 +154,7 @@ public class PooledOfficeManagerTest {
         assertTrue(officeEx.getCause() instanceof TimeoutException);
       }
 
-      Thread.sleep(RESTART_WAIT_TIME);
+      Thread.sleep(RESTART_WAIT_TIME); // NOSONAR
 
       assertTrue(process.isRunning());
       assertTrue(connection.isConnected());

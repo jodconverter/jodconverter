@@ -122,7 +122,7 @@ class OfficeProcess {
     if (templateProfileDir != null) {
       try {
         FileUtils.deleteDirectory(instanceProfileDir);
-      } catch (IOException ioEx) {
+      } catch (IOException ioEx) { // NOSONAR
         final File oldProfileDir =
             new File(
                 instanceProfileDir.getParentFile(),
@@ -148,13 +148,13 @@ class OfficeProcess {
    * @throws OfficeException if we are unable to kill the process due to an I/O error occurs.
    * @throws RetryTimeoutException if we are unable to get the exit code of the process.
    */
-  public int forciblyTerminate(final long retryInterval, final long retryTimeout)
+  public int forciblyTerminate(final long retryInterval, final long retryTimeout) // NOSONAR
       throws OfficeException, RetryTimeoutException {
 
     logger.info(
         "Trying to forcibly terminate process: '{}'{}",
         unoUrl.getConnectionParametersAsString(),
-        (pid == PID_UNKNOWN ? "" : " (pid " + pid + ")"));
+        pid == PID_UNKNOWN ? "" : " (pid " + pid + ")");
 
     try {
       processManager.kill(process, pid);
@@ -174,6 +174,7 @@ class OfficeProcess {
     try {
       return process.exitValue();
     } catch (IllegalThreadStateException illegalThreadStateEx) {
+      logger.debug("IllegalThreadStateException catch in getExitCode", illegalThreadStateEx);
       return null;
     }
   }
@@ -188,7 +189,7 @@ class OfficeProcess {
    * @throws OfficeException if we are unable to kill the process.
    * @throws RetryTimeoutException if we are unable to get the exit code of the process.
    */
-  public int getExitCode(final long retryInterval, final long retryTimeout)
+  public int getExitCode(final long retryInterval, final long retryTimeout) // NOSONAR
       throws OfficeException, RetryTimeoutException {
 
     try {
@@ -270,7 +271,7 @@ class OfficeProcess {
   private ProcessBuilder prepareProcessBuilder(final String acceptString) {
 
     // Create the command used to launch the office process
-    final List<String> command = new ArrayList<String>();
+    final List<String> command = new ArrayList<>();
     final File executable = OfficeUtils.getOfficeExecutable(officeHome);
     if (runAsArgs != null) {
       command.addAll(Arrays.asList(runAsArgs));
@@ -335,7 +336,7 @@ class OfficeProcess {
     try {
       process = processBuilder.start();
       pid = processManager.findPid(processQuery);
-      logger.info("Started process{}", (pid == PID_UNKNOWN ? "" : "; pid = " + pid));
+      logger.info("Started process{}", pid == PID_UNKNOWN ? "" : "; pid = " + pid);
     } catch (IOException ioEx) {
       throw new OfficeException(
           String.format(

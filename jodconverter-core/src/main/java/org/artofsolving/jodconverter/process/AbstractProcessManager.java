@@ -40,7 +40,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
     final List<String> lines = IOUtils.readLines(process.getInputStream(), "UTF-8");
     try {
       process.waitFor();
-    } catch (InterruptedException interruptedEx) {
+    } catch (InterruptedException interruptedEx) { // NOSONAR
       // sorry for the interruption
     }
     return lines;

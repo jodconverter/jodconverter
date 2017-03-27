@@ -26,8 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 /** A SimpleDocumentFormatRegistry contains a collection of document formats supported by office. */
 public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
 
-  private Map<String, DocumentFormat> fmtsByExtension = new HashMap<String, DocumentFormat>();
-  private Map<String, DocumentFormat> fmtsByMediaType = new HashMap<String, DocumentFormat>();
+  private Map<String, DocumentFormat> fmtsByExtension = new HashMap<>();
+  private Map<String, DocumentFormat> fmtsByMediaType = new HashMap<>();
 
   /**
    * Add a new format to the registry.
@@ -36,7 +36,6 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
    */
   public void addFormat(final DocumentFormat documentFormat) {
 
-    // TODO: Should we check if already there ?
     fmtsByExtension.put(StringUtils.lowerCase(documentFormat.getExtension()), documentFormat);
     fmtsByMediaType.put(StringUtils.lowerCase(documentFormat.getMediaType()), documentFormat);
   }
@@ -62,7 +61,7 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
   @Override
   public Set<DocumentFormat> getOutputFormats(final DocumentFamily family) {
 
-    final Set<DocumentFormat> formats = new HashSet<DocumentFormat>();
+    final Set<DocumentFormat> formats = new HashSet<>();
 
     if (family != null) {
       for (final DocumentFormat format : fmtsByExtension.values()) {

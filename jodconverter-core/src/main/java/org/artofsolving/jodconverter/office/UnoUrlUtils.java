@@ -33,7 +33,7 @@ import com.sun.star.lib.uno.helper.UnoUrl;
  * "http://wiki.services.openoffice.org/wiki/Documentation/DevGuide/ProUNO/Opening_a_Connection">
  * Opening a Connection</a> in the OpenOffice.org Developer's Guide for more details.
  */
-class UnoUrlUtils {
+final class UnoUrlUtils {
 
   /**
    * Creates an UnoUrl for the specified pipe.
@@ -53,6 +53,13 @@ class UnoUrlUtils {
    */
   public static UnoUrl socket(final int port) {
     return UnoUrl.parseUnoUrl(
-        "socket,host=127.0.0.1,port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+        "socket,host=127.0.0.1,port=" // NOSONAR
+            + port
+            + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+  }
+
+  // Private ctor.
+  private UnoUrlUtils() { // NOSONAR
+    throw new AssertionError("utility class must not be instantiated");
   }
 }

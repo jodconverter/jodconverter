@@ -60,7 +60,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
   public OfficeConnection(final UnoUrl unoUrl) {
 
     this.unoUrl = unoUrl;
-    this.connectionEventListeners = new ArrayList<OfficeConnectionEventListener>();
+    this.connectionEventListeners = new ArrayList<>();
   }
 
   /**

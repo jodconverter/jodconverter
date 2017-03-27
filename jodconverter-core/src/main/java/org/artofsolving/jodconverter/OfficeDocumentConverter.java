@@ -206,7 +206,7 @@ public class OfficeDocumentConverter {
   // a conversion, regardless the input type of the document.
   private Map<String, Object> createDefaultLoadProperties() {
 
-    final Map<String, Object> loadProperties = new HashMap<String, Object>();
+    final Map<String, Object> loadProperties = new HashMap<>();
     loadProperties.put("Hidden", true);
     loadProperties.put("ReadOnly", true);
     loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);

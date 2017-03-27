@@ -29,7 +29,7 @@ abstract class Retryable {
    *     could be successful
    * @throws Exception for all other error conditions
    */
-  protected abstract void attempt() throws Exception;
+  protected abstract void attempt() throws Exception; // NOSONAR
 
   /**
    * Executes the task without a starting delay.
@@ -39,8 +39,8 @@ abstract class Retryable {
    * @throws RetryTimeoutException if we have reached the timeout.
    * @throws Exception for all other error conditions
    */
-  public void execute(final long interval, final long timeout)
-      throws RetryTimeoutException, Exception {
+  public void execute(final long interval, final long timeout) // NOSONAR
+      throws RetryTimeoutException, Exception { // NOSONAR
 
     execute(0L, interval, timeout);
   }
@@ -54,8 +54,8 @@ abstract class Retryable {
    * @throws RetryTimeoutException if we have reached the timeout.
    * @throws Exception for all other error conditions
    */
-  public void execute(final long delay, final long interval, final long timeout)
-      throws RetryTimeoutException, Exception {
+  public void execute(final long delay, final long interval, final long timeout) // NOSONAR
+      throws RetryTimeoutException, Exception { // NOSONAR
 
     final long start = System.currentTimeMillis();
     if (delay > 0L) {
@@ -65,7 +65,7 @@ abstract class Retryable {
       try {
         attempt();
         return;
-      } catch (TemporaryException temporaryEx) {
+      } catch (TemporaryException temporaryEx) { // NOSONAR
         if (System.currentTimeMillis() - start < timeout) {
           sleep(interval);
           // continue
@@ -79,7 +79,7 @@ abstract class Retryable {
   private void sleep(final long millis) {
     try {
       Thread.sleep(millis);
-    } catch (InterruptedException interruptedEx) {
+    } catch (InterruptedException interruptedEx) { // NOSONAR
       // continue
     }
   }

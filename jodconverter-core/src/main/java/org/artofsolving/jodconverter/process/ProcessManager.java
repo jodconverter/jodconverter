@@ -19,7 +19,7 @@ package org.artofsolving.jodconverter.process;
 import java.io.IOException;
 
 /** Provides services required to manage a running process. */
-public interface ProcessManager {
+public interface ProcessManager { // NOSONAR
 
   long PID_NOT_FOUND = -2;
   long PID_UNKNOWN = -1;

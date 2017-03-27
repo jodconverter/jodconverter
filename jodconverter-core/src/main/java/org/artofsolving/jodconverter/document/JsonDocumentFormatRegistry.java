@@ -57,7 +57,7 @@ public final class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegist
   }
 
   // Force static function call
-  private JsonDocumentFormatRegistry() {
+  private JsonDocumentFormatRegistry() { // NOSONAR
     super();
   }
 

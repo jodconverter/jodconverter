@@ -32,8 +32,8 @@ import com.sun.star.lib.uno.helper.UnoUrl;
  *
  * <p>It will however auto-reconnect to the external process if the latter is manually restarted.
  *
- * <p>This {@link OfficeManager} implementation basically provides the same behaviour as
- * JODConverter 2.x, including using <em>synchronized</em> blocks for serialising office operations.
+ * <p>This {@link OfficeManager} implementation basically provides the same behavior as JODConverter
+ * 2.x, including using <em>synchronized</em> blocks for serializing office operations.
  */
 class ExternalOfficeManager implements OfficeManager {
 

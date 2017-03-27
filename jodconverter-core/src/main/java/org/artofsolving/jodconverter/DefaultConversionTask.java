@@ -86,7 +86,7 @@ public class DefaultConversionTask extends AbstractConversionTask {
   @Override
   protected Map<String, ?> getLoadProperties() throws OfficeException {
 
-    final Map<String, Object> loadProperties = new HashMap<String, Object>();
+    final Map<String, Object> loadProperties = new HashMap<>();
     if (defaultLoadProperties != null) {
       loadProperties.putAll(defaultLoadProperties);
     }

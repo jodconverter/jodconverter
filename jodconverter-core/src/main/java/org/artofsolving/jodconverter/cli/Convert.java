@@ -35,7 +35,7 @@ import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
 /** Command line interface executable. */
-public class Convert {
+public final class Convert {
 
   public static final int STATUS_OK = 0;
   public static final int STATUS_MISSING_INPUT_FILE = 1;
@@ -56,8 +56,8 @@ public class Convert {
           "user-profile",
           true,
           "use settings from the given user installation dir (optional)");
-  private static final Options OPTIONS = initOptions();
 
+  private static final Options OPTIONS = initOptions();
   private static final int DEFAULT_OFFICE_PORT = 2002;
 
   private static Options initOptions() {
@@ -77,7 +77,7 @@ public class Convert {
    * @param arguments program arguments.
    * @throws Exception if an error occurs.
    */
-  public static void main(final String[] arguments) throws Exception {
+  public static void main(final String[] arguments) throws Exception { // NOSONAR
 
     final CommandLineParser commandLineParser = new DefaultParser();
     final CommandLine commandLine = commandLineParser.parse(OPTIONS, arguments);
@@ -116,7 +116,7 @@ public class Convert {
     configuration.setPortNumber(port);
     if (commandLine.hasOption(OPTION_TIMEOUT.getOpt())) {
       configuration.setTaskExecutionTimeout(
-          Integer.parseInt(commandLine.getOptionValue(OPTION_TIMEOUT.getOpt())) * 1000);
+          Long.parseLong(commandLine.getOptionValue(OPTION_TIMEOUT.getOpt())) * 1000L);
     }
     if (commandLine.hasOption(OPTION_USER_PROFILE.getOpt())) {
       configuration.setTemplateProfileDir(
@@ -144,5 +144,10 @@ public class Convert {
     } finally {
       officeManager.stop();
     }
+  }
+
+  // Private ctor.
+  private Convert() { // NOSONAR
+    throw new AssertionError("utility class must not be instantiated");
   }
 }

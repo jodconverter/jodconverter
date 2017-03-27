@@ -65,7 +65,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   private OfficeDocumentConverter documentConverter;
 
   @Override
-  public void afterPropertiesSet() throws OfficeException {
+  public void afterPropertiesSet() throws OfficeException { // NOSONAR
 
     final DefaultOfficeManagerBuilder builder = new DefaultOfficeManagerBuilder();
 
@@ -119,7 +119,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   // Create a set of port numbers from a string
   private Set<Integer> buildPortNumbers(final String str) {
 
-    final Set<Integer> iports = new HashSet<Integer>();
+    final Set<Integer> iports = new HashSet<>();
 
     if (StringUtils.isBlank(str)) {
       return iports;

@@ -34,6 +34,7 @@ import com.sun.star.util.XCloseable;
 import org.artofsolving.jodconverter.office.OfficeContext;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeTask;
+import org.artofsolving.jodconverter.office.ValidateUtils;
 
 /** Base class for all tasks that can be executed by an office process. */
 public abstract class AbstractConversionTask implements OfficeTask {
@@ -100,9 +101,7 @@ public abstract class AbstractConversionTask implements OfficeTask {
   private XComponent loadDocument(final OfficeContext context) throws OfficeException {
 
     // Check if the file exists
-    if (!inputFile.exists()) {
-      throw new OfficeException("Input document not found");
-    }
+    ValidateUtils.fileExists(inputFile, "Input document not found: %1");
 
     XComponent document = null;
     try {
@@ -120,9 +119,9 @@ public abstract class AbstractConversionTask implements OfficeTask {
     } catch (IOException ioEx) {
       throw new OfficeException(ERROR_MESSAGE_LOAD + inputFile.getName(), ioEx);
     }
-    if (document == null) {
-      throw new OfficeException(ERROR_MESSAGE_LOAD + inputFile.getName());
-    }
+
+    // The document cannot be null
+    ValidateUtils.notNull(document, ERROR_MESSAGE_LOAD + inputFile.getName());
     return document;
   }
 
@@ -141,9 +140,10 @@ public abstract class AbstractConversionTask implements OfficeTask {
   private void storeDocument(final XComponent document) throws OfficeException {
 
     final Map<String, ?> storeProperties = getStoreProperties(document);
-    if (storeProperties == null) {
-      throw new OfficeException("Unsupported conversion");
-    }
+
+    // The properties cannot be null
+    ValidateUtils.notNull(storeProperties, "Unsupported conversion");
+
     try {
       UnoRuntime.queryInterface(XStorable.class, document)
           .storeToURL(toUrl(outputFile), toUnoProperties(storeProperties));

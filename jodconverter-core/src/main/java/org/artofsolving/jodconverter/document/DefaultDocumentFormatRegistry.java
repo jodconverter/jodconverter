@@ -39,8 +39,8 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
    * instance will be initialized the first time it is used). Working this way allow us to create
    * (and thus load default document format) the static INSTANCE only if needed.
    */
-  private static class InstanceHolder {
-    public static DefaultDocumentFormatRegistry INSTANCE;
+  private static class InstanceHolder { // NOSONAR
+    public static DefaultDocumentFormatRegistry INSTANCE; // NOSONAR
 
     static {
       INSTANCE = new DefaultDocumentFormatRegistry();
@@ -70,7 +70,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
   }
 
   // Force static function call
-  private DefaultDocumentFormatRegistry() {
+  private DefaultDocumentFormatRegistry() { // NOSONAR
     super();
   }
 
@@ -78,7 +78,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
     final DocumentFormat csv = new DocumentFormat("Comma Separated Values", "csv", "text/csv");
     csv.setInputFamily(DocumentFamily.SPREADSHEET);
-    final Map<String, Object> csvLoadAndStoreProperties = new LinkedHashMap<String, Object>();
+    final Map<String, Object> csvLoadAndStoreProperties = new LinkedHashMap<>();
     csvLoadAndStoreProperties.put(KEY_FILTER_NAME, "Text - txt - csv (StarCalc)");
     csvLoadAndStoreProperties.put(
         KEY_FILTER_OPTIONS, "44,34,0"); // Field Separator: ','; Text Delimiter: '"'
@@ -325,7 +325,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
     final DocumentFormat tsv =
         new DocumentFormat("Tab Separated Values", "tsv", "text/tab-separated-values");
     tsv.setInputFamily(DocumentFamily.SPREADSHEET);
-    final Map<String, Object> tsvLoadAndStoreProperties = new LinkedHashMap<String, Object>();
+    final Map<String, Object> tsvLoadAndStoreProperties = new LinkedHashMap<>();
     tsvLoadAndStoreProperties.put(KEY_FILTER_NAME, "Text - txt - csv (StarCalc)");
     tsvLoadAndStoreProperties.put(
         KEY_FILTER_OPTIONS, "9,34,0"); // Field Separator: '\t'; Text Delimiter: '"'
@@ -338,7 +338,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
     final DocumentFormat txt = new DocumentFormat("Plain Text", "txt", "text/plain");
     txt.setInputFamily(DocumentFamily.TEXT);
-    final Map<String, Object> txtLoadAndStoreProperties = new LinkedHashMap<String, Object>();
+    final Map<String, Object> txtLoadAndStoreProperties = new LinkedHashMap<>();
     txtLoadAndStoreProperties.put(KEY_FILTER_NAME, "Text (encoded)");
     txtLoadAndStoreProperties.put(KEY_FILTER_OPTIONS, "utf8");
     txt.setLoadProperties(txtLoadAndStoreProperties);

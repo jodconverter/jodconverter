@@ -55,7 +55,7 @@ class PooledOfficeManager implements OfficeManager {
    * to/from an office instance.
    */
   private final OfficeConnectionEventListener connectionEventListener =
-      new OfficeConnectionEventListener() {
+      new OfficeConnectionEventListener() { // NOSONAR
 
         // A connection is established.
         @Override
@@ -116,8 +116,7 @@ class PooledOfficeManager implements OfficeManager {
   public void execute(final OfficeTask task) throws OfficeException {
 
     // Create the command to be executed
-    final Callable<Void> command =
-        new Callable<Void>() {
+    final Callable<Void> command = new Callable<Void>() { // NOSONAR
 
           @Override
           public Void call() throws Exception {
@@ -165,7 +164,7 @@ class PooledOfficeManager implements OfficeManager {
       managedOfficeProcess.restartDueToTaskTimeout();
       throw new OfficeException("task did not complete within timeout", timeoutEx);
 
-    } catch (ExecutionException executionEx) {
+    } catch (ExecutionException executionEx) { // NOSONAR
 
       // Rethrow the original (cause) exception
       if (executionEx.getCause() instanceof OfficeException) {

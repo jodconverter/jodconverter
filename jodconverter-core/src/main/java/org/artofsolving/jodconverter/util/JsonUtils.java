@@ -36,7 +36,7 @@ public final class JsonUtils {
    */
   public static List<Object> toList(final JSONArray array) {
 
-    final List<Object> list = new ArrayList<Object>();
+    final List<Object> list = new ArrayList<>();
     for (int i = 0; i < array.length(); i++) {
       Object value = array.get(i);
       if (value instanceof JSONArray) {
@@ -61,7 +61,7 @@ public final class JsonUtils {
       return null;
     }
 
-    final Map<String, Object> map = new HashMap<String, Object>();
+    final Map<String, Object> map = new HashMap<>();
 
     final Iterator<String> keysItr = object.keySet().iterator();
     while (keysItr.hasNext()) {
@@ -80,7 +80,7 @@ public final class JsonUtils {
   }
 
   // Private ctor
-  private JsonUtils() {
+  private JsonUtils() { // NOSONAR
     throw new AssertionError("Utility class must not be instantiated");
   }
 }

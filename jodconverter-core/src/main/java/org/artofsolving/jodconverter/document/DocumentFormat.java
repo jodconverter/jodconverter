@@ -16,7 +16,7 @@
 
 package org.artofsolving.jodconverter.document;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /** Contains the required information used to deal with a specific document format . */
@@ -125,7 +125,7 @@ public class DocumentFormat {
       final DocumentFamily family, final Map<String, ?> storeProperties) {
 
     if (storePropertiesByFamily == null) {
-      storePropertiesByFamily = new HashMap<DocumentFamily, Map<String, ?>>();
+      storePropertiesByFamily = new EnumMap<>(DocumentFamily.class);
     }
     storePropertiesByFamily.put(family, storeProperties);
   }

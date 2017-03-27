@@ -63,7 +63,7 @@ public abstract class FilterChainBase implements FilterChain {
 
     this.readOnly = readOnly;
     this.pos = 0;
-    this.filters = new ArrayList<Filter>();
+    this.filters = new ArrayList<>();
 
     if (filters != null) {
       for (final Filter filter : filters) {

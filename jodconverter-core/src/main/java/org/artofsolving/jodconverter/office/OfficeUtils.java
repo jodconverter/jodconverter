@@ -204,7 +204,7 @@ public final class OfficeUtils {
    */
   public static PropertyValue property(final String name, final Object value) {
 
-    final PropertyValue prop = new PropertyValue();
+    final PropertyValue prop = new PropertyValue(); // NOSONAR
     prop.Name = name;
     prop.Value = value;
     return prop;
@@ -300,7 +300,7 @@ public final class OfficeUtils {
   }
 
   // Private ctor.
-  private OfficeUtils() {
+  private OfficeUtils() { // NOSONAR
     throw new AssertionError("utility class must not be instantiated");
   }
 }
