@@ -16,6 +16,9 @@
 
 package org.artofsolving.jodconverter.filter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.lang.XComponent;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XRefreshable;
@@ -25,6 +28,8 @@ import org.artofsolving.jodconverter.office.OfficeException;
 
 /** This filter is used to refresh a document. */
 public class RefreshFilter implements Filter {
+  
+  private static Logger logger = LoggerFactory.getLogger(RefreshFilter.class);
 
   public static final RefreshFilter INSTANCE = new RefreshFilter();
 
@@ -33,8 +38,11 @@ public class RefreshFilter implements Filter {
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws OfficeException {
 
+    logger.debug("Applying the RefreshFilter");
+
     final XRefreshable refreshable = UnoRuntime.queryInterface(XRefreshable.class, document);
     if (refreshable != null) {
+      logger.debug("Refreshing...");
       refreshable.refresh();
     }
     chain.doFilter(context, document);

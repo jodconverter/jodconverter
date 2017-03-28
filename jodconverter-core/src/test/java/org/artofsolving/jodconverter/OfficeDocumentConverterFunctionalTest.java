@@ -24,6 +24,7 @@ import java.io.FilenameFilter;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,25 +78,17 @@ public class OfficeDocumentConverterFunctionalTest {
           // LibreOffice 4 fails natively on those one
           if (inputFormat.getExtension().equals("odg")
               && outputFormat.getExtension().equals("svg")) {
-            logger.info("-- skipping odg to svg test... ");
+            logger.info("-- skipping odg to svg test... ");
             continue;
           }
-          if (outputFormat.getExtension().equals("sxc")) {
-            logger.info("-- skipping * to sxc test... ");
-            continue;
-          }
-          if (outputFormat.getExtension().equals("sxw")) {
-            logger.info("-- skipping * to sxw test... ");
-            continue;
-          }
-          if (outputFormat.getExtension().equals("sxi")) {
-            logger.info("-- skipping * to sxi test... ");
+          if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxw", "sxi")) {
+            logger.info("-- skipping {} to {} test... ", inputExtension, outputFormat.getExtension());
             continue;
           }
           final File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
           outputFile.deleteOnExit();
           logger.info(
-              "-- converting %s to %s... ",
+              "-- converting {} to {}... ",
               inputFormat.getExtension(), outputFormat.getExtension());
           converter.convert(chain, inputFile, outputFile, outputFormat);
           logger.info("done.\n");
