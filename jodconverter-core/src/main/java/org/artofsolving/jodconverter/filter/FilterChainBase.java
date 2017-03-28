@@ -44,12 +44,6 @@ public abstract class FilterChainBase implements FilterChain {
    */
   public FilterChainBase(final Filter... filters) {
     this(false, filters);
-
-    if (filters != null) {
-      for (final Filter filter : filters) {
-        this.filters.add(filter);
-      }
-    }
   }
 
   /**
