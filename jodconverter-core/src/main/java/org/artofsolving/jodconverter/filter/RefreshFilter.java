@@ -28,8 +28,8 @@ import org.artofsolving.jodconverter.office.OfficeException;
 
 /** This filter is used to refresh a document. */
 public class RefreshFilter implements Filter {
-  
-  private static Logger logger = LoggerFactory.getLogger(RefreshFilter.class);
+
+  private static final Logger logger = LoggerFactory.getLogger(RefreshFilter.class);
 
   public static final RefreshFilter INSTANCE = new RefreshFilter();
 

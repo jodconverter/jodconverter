@@ -81,14 +81,16 @@ public class OfficeDocumentConverterFunctionalTest {
             continue;
           }
           if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxw", "sxi")) {
-            logger.info("-- skipping {} to {} test... ", inputExtension, outputFormat.getExtension());
+            logger.info(
+                "-- skipping {} to {} test... ", inputExtension, outputFormat.getExtension());
             continue;
           }
           final File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
           outputFile.deleteOnExit();
           logger.info(
               "-- converting {} to {}... ",
-              inputFormat.getExtension(), outputFormat.getExtension());
+              inputFormat.getExtension(),
+              outputFormat.getExtension());
           converter.convert(chain, inputFile, outputFile, outputFormat);
           logger.info("done.\n");
           assertTrue(outputFile.isFile() && outputFile.length() > 0);
