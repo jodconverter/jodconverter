@@ -29,7 +29,7 @@ import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 
 public class ExternalOfficeManagerTest {
 
-  //TODO test auto-reconnection
+  // TODO test auto-reconnection
 
   /**
    * Test a conversion task execution though the ExternalOfficeManager class.
@@ -64,7 +64,8 @@ public class ExternalOfficeManagerTest {
     assertTrue(task.isCompleted());
 
     manager.stop();
-    //TODO replace when OfficeProcess has a forciblyTerminate()
+
+    // TODO replace when OfficeProcess has a forciblyTerminate()
     final Process process = (Process) FieldUtils.readDeclaredField(officeProcess, "process", true);
     process.destroy();
   }

@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.star.lib.uno.helper.UnoUrl;
 
 public class PooledOfficeManagerTest {
+
   private static final org.slf4j.Logger logger =
       LoggerFactory.getLogger(PooledOfficeManagerTest.class);
 
@@ -64,6 +65,7 @@ public class PooledOfficeManagerTest {
       assertTrue(task.isCompleted());
 
     } finally {
+
       officeManager.stop();
       assertFalse(connection.isConnected());
       assertFalse(process.isRunning());
@@ -120,6 +122,7 @@ public class PooledOfficeManagerTest {
       assertTrue(goodTask.isCompleted());
 
     } finally {
+
       officeManager.stop();
       assertFalse(connection.isConnected());
       assertFalse(process.isRunning());
@@ -164,6 +167,7 @@ public class PooledOfficeManagerTest {
       final MockOfficeTask goodTask = new MockOfficeTask();
       officeManager.execute(goodTask);
       assertTrue(goodTask.isCompleted());
+
     } finally {
 
       officeManager.stop();
@@ -209,6 +213,7 @@ public class PooledOfficeManagerTest {
       assertEquals(taskCount, 1);
 
     } finally {
+
       officeManager.stop();
       assertFalse(connection.isConnected());
       assertFalse(process.isRunning());
