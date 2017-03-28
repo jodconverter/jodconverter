@@ -120,10 +120,10 @@ spotless {
         googleJavaFormat()
         
         // Import order
-        importOrderFile "$rootDir/IMPORT_ORDER"
+        importOrderFile "$rootDir/SPOTLESS_IMPORT_ORDER"
 
         // Java Source Header File
-        licenseHeaderFile("$rootDir/LICENSE")
+        licenseHeaderFile("$rootDir/SPOTLESS_LICENSE_HEADER")
     }
 }
 
