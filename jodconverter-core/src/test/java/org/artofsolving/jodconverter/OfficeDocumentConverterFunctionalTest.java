@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.filter.DefaultFilterChain;
-import org.artofsolving.jodconverter.filter.FilterChain;
 import org.artofsolving.jodconverter.filter.RefreshFilter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeManager;
@@ -66,7 +65,7 @@ public class OfficeDocumentConverterFunctionalTest {
               });
 
       // Here we can reuse a unique FilterChain
-      final FilterChain chain = new DefaultFilterChain(RefreshFilter.INSTANCE);
+      final DefaultFilterChain chain = new DefaultFilterChain(RefreshFilter.INSTANCE);
 
       for (final File inputFile : files) {
         final String inputExtension = FilenameUtils.getExtension(inputFile.getName());
@@ -94,6 +93,9 @@ public class OfficeDocumentConverterFunctionalTest {
           logger.info("done.\n");
           assertTrue(outputFile.isFile() && outputFile.length() > 0);
           //TODO use file detection to make sure outputFile is in the expected format
+
+          // Reset the chain in order to reuse it.
+          chain.reset();
         }
       }
     } finally {
