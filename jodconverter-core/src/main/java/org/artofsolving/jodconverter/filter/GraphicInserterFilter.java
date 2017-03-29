@@ -35,16 +35,20 @@ import com.sun.star.awt.Size;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameContainer;
 import com.sun.star.drawing.XShape;
+import com.sun.star.frame.XController;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.text.RelOrientation;
 import com.sun.star.text.TextContentAnchorType;
 import com.sun.star.text.VertOrientation;
 import com.sun.star.text.WrapTextMode;
+import com.sun.star.text.XPageCursor;
 import com.sun.star.text.XText;
 import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
+import com.sun.star.text.XTextViewCursor;
+import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.uno.UnoRuntime;
 
 import org.artofsolving.jodconverter.office.OfficeContext;
@@ -60,6 +64,43 @@ public class GraphicInserterFilter implements Filter {
 
   private static final Logger logger = LoggerFactory.getLogger(GraphicInserterFilter.class);
 
+  /**
+   * Creates the default properties that would insert a graphic at the specified position on the
+   * first page of a document.
+   *
+   * @param imageHorizontalPosition The horizontal position where to insert the image on the
+   *     document (millimeters).
+   * @param imageVerticalPosition The vertical position where to insert the image on the document
+   *     (millimeters).
+   * @return A map containing the default properties.
+   */
+  public static Map<String, Object> createDefaultProperties(
+      int imageHorizontalPosition, int imageVerticalPosition) {
+
+    Map<String, Object> props = new LinkedHashMap<>();
+
+    // For all the available properties, see
+    // https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes
+
+    // Setting the anchor type
+    props.put("AnchorType", TextContentAnchorType.AT_PAGE);
+
+    // Setting the horizontal position (1 = 0.01 mm)
+    props.put("HoriOrient", VertOrientation.NONE);
+    props.put("HoriOrientPosition", imageHorizontalPosition * 100);
+    props.put("HoriOrientRelation", RelOrientation.PAGE_FRAME);
+
+    // Setting the vertical position (1 = 0.01 mm)
+    props.put("VertOrient", VertOrientation.NONE);
+    props.put("VertOrientPosition", imageVerticalPosition * 100);
+    props.put("VertOrientRelation", RelOrientation.PAGE_FRAME);
+
+    // Setting the the wrap behavior
+    props.put("Surround", WrapTextMode.THROUGHT);
+
+    return props;
+  }
+
   private final String imagePath;
   private final Dimension imageSize;
   private Map<String, Object> filterProperties;
@@ -70,9 +111,9 @@ public class GraphicInserterFilter implements Filter {
    *
    * @param imagePath the path to the image (file) on disk.
    * @param imageHorizontalPosition The horizontal position where to insert the image on the
-   *     document (1/100 mm).
+   *     document (millimeters).
    * @param imageVerticalPosition The vertical position where to insert the image on the document
-   *     (1/100 mm).
+   *     (millimeters).
    * @throws OfficeException if the size of the image cannot be detected.
    */
   public GraphicInserterFilter(
@@ -91,13 +132,13 @@ public class GraphicInserterFilter implements Filter {
    *
    * @param imagePath the path to the image (file) on disk.
    * @param imageWidth the width of the graphic to insert. The original image will be resize if
-   *     required (1/100 mm).
+   *     required (millimeters).
    * @param imageHeight the height of the image. The original image will be resize if required
-   *     (1/100 mm).
+   *     (millimeters).
    * @param imageHorizontalPosition The horizontal position where to insert the image on the
-   *     document (1/100 mm).
+   *     document (millimeters).
    * @param imageVerticalPosition The vertical position where to insert the image on the document
-   *     (1/100 mm).
+   *     (millimeters).
    */
   public GraphicInserterFilter(
       String imagePath,
@@ -118,9 +159,9 @@ public class GraphicInserterFilter implements Filter {
    *
    * @param imagePath the path to the image (file) on disk.
    * @param imageWidth the width of the graphic to insert. The original image will be resize if
-   *     required (1/100 mm).
+   *     required (millimeters).
    * @param imageHeight the height of the image. The original image will be resize if required
-   *     (1/100 mm).
+   *     (millimeters).
    * @param graphicShapeProperties the properties to apply to the created graphic shape.
    * @see <a
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
@@ -156,43 +197,6 @@ public class GraphicInserterFilter implements Filter {
     this.filterProperties = new LinkedHashMap<>(graphicShapeProperties);
   }
 
-  /**
-   * Creates the default properties that will insert the image at the specified position into the
-   * document.
-   *
-   * @param imageHorizontalPosition The horizontal position where to insert the image on the
-   *     document (1/100 mm).
-   * @param imageVerticalPosition The vertical position where to insert the image on the document
-   *     (1/100 mm).
-   * @return A map containing the default properties.
-   */
-  protected Map<String, Object> createDefaultProperties(
-      int imageHorizontalPosition, int imageVerticalPosition) {
-
-    Map<String, Object> props = new LinkedHashMap<>();
-
-    // For all the available properties, see
-    // https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes
-
-    // Setting the anchor type
-    props.put("AnchorType", TextContentAnchorType.AT_PAGE);
-
-    // Setting the horizontal position (1 = 0.01 mm)
-    props.put("HoriOrient", VertOrientation.NONE);
-    props.put("HoriOrientPosition", imageHorizontalPosition);
-    props.put("HoriOrientRelation", RelOrientation.PAGE_FRAME);
-
-    // Setting the vertical position (1 = 0.01 mm)
-    props.put("VertOrient", VertOrientation.NONE);
-    props.put("VertOrientPosition", imageVerticalPosition);
-    props.put("VertOrientRelation", RelOrientation.PAGE_FRAME);
-
-    // Setting the the wrap behavior
-    props.put("Surround", WrapTextMode.THROUGHT);
-
-    return props;
-  }
-
   @Override
   public void doFilter(
       final OfficeContext context, final XComponent document, final FilterChain chain)
@@ -212,7 +216,7 @@ public class GraphicInserterFilter implements Filter {
 
       // Customizing graphic shape size
       XShape shapeSettings = UnoRuntime.queryInterface(XShape.class, graphicShape);
-      shapeSettings.setSize(new Size(imageSize.width, imageSize.height));
+      shapeSettings.setSize(new Size(imageSize.width * 100, imageSize.height * 100));
 
     } catch (Exception ex) {
       throw new OfficeException("Could not create graphic shape service.", ex);
@@ -261,6 +265,19 @@ public class GraphicInserterFilter implements Filter {
     // Getting text cursor
     XTextCursor textCursor = text.createTextCursor();
 
+    // The following bloc seems to be required for some output format
+    // (doc, docx, rtf) instead of the "AnchorPageNo" property.
+    Object anchorPageNo = filterProperties.get("AnchorPageNo");
+    if (anchorPageNo != null) {
+      XController controller = docText.getCurrentController();
+      XTextViewCursorSupplier cursorSupplier =
+          UnoRuntime.queryInterface(XTextViewCursorSupplier.class, controller);
+      XTextViewCursor textViewCursor = cursorSupplier.getViewCursor();
+      XPageCursor pageCursor = UnoRuntime.queryInterface(XPageCursor.class, textViewCursor);
+      pageCursor.jumpToPage(Short.parseShort(anchorPageNo.toString()));
+      textCursor.gotoRange(textViewCursor, false);
+    }
+
     // Convert graphic shape to the text content item
     XTextContent textContent = UnoRuntime.queryInterface(XTextContent.class, graphicShape);
 
@@ -268,7 +285,7 @@ public class GraphicInserterFilter implements Filter {
     logger.debug("Inserting image...");
     try {
       // Inserting the content
-      text.insertTextContent(textCursor, textContent, true);
+      text.insertTextContent(textCursor, textContent, false);
     } catch (Exception ex) {
       throw new OfficeException("Could not insert text content", ex);
     }
@@ -291,8 +308,7 @@ public class GraphicInserterFilter implements Filter {
 
             // Get dimensions of first image in the stream, without decoding pixel values
             return new Dimension(
-                pixelsToMillimeters(reader.getWidth(0) * 100),
-                pixelsToMillimeters(reader.getHeight(0) * 100));
+                pixelsToMillimeters(reader.getWidth(0)), pixelsToMillimeters(reader.getHeight(0)));
           } finally {
             reader.dispose();
           }
