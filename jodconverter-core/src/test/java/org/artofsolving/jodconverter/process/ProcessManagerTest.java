@@ -17,7 +17,7 @@
 package org.artofsolving.jodconverter.process;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assume.assumeTrue;
 
 import org.apache.commons.lang.SystemUtils;
@@ -36,11 +36,11 @@ public class ProcessManagerTest {
     assumeTrue(SystemUtils.IS_OS_UNIX);
 
     final ProcessManager processManager = new UnixProcessManager();
-    final Process process = new ProcessBuilder("sleep", "5s").start();
+    final Process process = Runtime.getRuntime().exec("sleep 5s");
     final ProcessQuery query = new ProcessQuery("sleep", "5s");
 
     final long pid = processManager.findPid(query);
-    assertFalse(pid == ProcessManager.PID_NOT_FOUND);
+    assertNotEquals(pid, ProcessManager.PID_NOT_FOUND);
     final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
     assertEquals(pid, javaPid.longValue());
 
@@ -58,11 +58,11 @@ public class ProcessManagerTest {
     assumeTrue(SystemUtils.IS_OS_MAC);
 
     final ProcessManager processManager = new MacProcessManager();
-    final Process process = new ProcessBuilder("sleep", "5s").start();
+    final Process process = Runtime.getRuntime().exec("sleep 5s");
     final ProcessQuery query = new ProcessQuery("sleep", "5s");
 
     final long pid = processManager.findPid(query);
-    assertFalse(pid == ProcessManager.PID_NOT_FOUND);
+    assertNotEquals(pid, ProcessManager.PID_NOT_FOUND);
     final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
 
     assertEquals(pid, javaPid.longValue());
@@ -81,12 +81,12 @@ public class ProcessManagerTest {
     assumeTrue(SystemUtils.IS_OS_WINDOWS);
 
     final ProcessManager processManager = new WindowsProcessManager();
-    final Process process = new ProcessBuilder("ping", "127.0.0.1", "-n", "5").start();
+    final Process process = Runtime.getRuntime().exec("ping 127.0.0.1 -n 5");
     final ProcessQuery query = new ProcessQuery("ping", "127.0.0.1 -n 5");
 
     final long pid = processManager.findPid(query);
-    assertFalse(pid == ProcessManager.PID_NOT_FOUND);
-    // Won't work on Windows, skit this assertion
+    assertNotEquals(pid, ProcessManager.PID_NOT_FOUND);
+    // Won't work on Windows, skip this assertion
     //Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
     //assertEquals(pid, javaPid.longValue());
 

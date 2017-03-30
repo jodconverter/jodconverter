@@ -37,8 +37,7 @@ public class PooledOfficeManagerTest {
       LoggerFactory.getLogger(PooledOfficeManagerTest.class);
 
   private static final UnoUrl CONNECTION_MODE = UnoUrlUtils.socket(2002);
-  //private static final long RESTART_WAIT_TIME = 2 * 1000;
-  private static final long RESTART_WAIT_TIME = 5 * 1000; // 2 seconds is not enough...
+  private static final long RESTART_WAIT_TIME = 2 * 1000; // 2 Seconds.
 
   /**
    * Tests the execution of a task.
@@ -142,14 +141,13 @@ public class PooledOfficeManagerTest {
     settings.setTaskExecutionTimeout(1500L);
     final PooledOfficeManager officeManager = new PooledOfficeManager(settings);
     final ManagedOfficeProcess managedOfficeProcess = officeManager.getManagedOfficeProcess();
-    final OfficeProcess process = managedOfficeProcess.getOfficeProcess();
-    final OfficeConnection connection = managedOfficeProcess.getConnection();
-    assertNotNull(connection);
+
+    assertNotNull(managedOfficeProcess.getConnection());
 
     try {
       officeManager.start();
-      assertTrue(process.isRunning());
-      assertTrue(connection.isConnected());
+      assertTrue(managedOfficeProcess.getOfficeProcess().isRunning());
+      assertTrue(managedOfficeProcess.getConnection().isConnected());
 
       final MockOfficeTask task = new MockOfficeTask(2000);
       try {
@@ -159,10 +157,11 @@ public class PooledOfficeManagerTest {
         assertTrue(officeEx.getCause() instanceof TimeoutException);
       }
 
+      logger.debug("Waiting restart for " + RESTART_WAIT_TIME + " millisecs");
       Thread.sleep(RESTART_WAIT_TIME); // NOSONAR
 
-      assertTrue(process.isRunning());
-      assertTrue(connection.isConnected());
+      assertTrue(managedOfficeProcess.getOfficeProcess().isRunning());
+      assertTrue(managedOfficeProcess.getConnection().isConnected());
 
       final MockOfficeTask goodTask = new MockOfficeTask();
       officeManager.execute(goodTask);
@@ -171,9 +170,9 @@ public class PooledOfficeManagerTest {
     } finally {
 
       officeManager.stop();
-      assertFalse(connection.isConnected());
-      assertFalse(process.isRunning());
-      assertEquals(process.getExitCode(0, 0), 0);
+      assertFalse(managedOfficeProcess.getConnection().isConnected());
+      assertFalse(managedOfficeProcess.getOfficeProcess().isRunning());
+      assertEquals(managedOfficeProcess.getOfficeProcess().getExitCode(0, 0), 0);
     }
   }
 

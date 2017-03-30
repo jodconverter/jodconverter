@@ -32,7 +32,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
   @Override
   public void kill(final Process process, final long pid) throws IOException {
 
-    execute("taskkill", "/t", "/f", "/pid", String.valueOf(pid));
+    execute("taskkill /t /f /pid " + pid);
   }
 
   /**
@@ -43,8 +43,8 @@ public class WindowsProcessManager extends AbstractProcessManager {
   public boolean isUsable() {
 
     try {
-      execute("wmic", "quit");
-      execute("taskkill", "/?");
+      execute("wmic quit");
+      execute("taskkill /?");
       return true;
     } catch (IOException ioEx) { // NOSONAR
       return false;
@@ -52,9 +52,9 @@ public class WindowsProcessManager extends AbstractProcessManager {
   }
 
   @Override
-  protected String[] getCurrentProcessesCommand() {
+  protected String getCurrentProcessesCommand(final String process) {
 
-    return new String[] {"wmic", "process", "get", "CommandLine,ProcessId"};
+    return "wmic process where(name like \"" + process + "%\") get commandline,processid";
   }
 
   @Override

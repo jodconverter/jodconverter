@@ -29,14 +29,15 @@ public abstract class AbstractProcessManager implements ProcessManager {
   /**
    * Execute the specified command and return the output.
    *
-   * @param command a string array containing the program and its arguments.
+   * @param command a specified system command.
    * @return the execution output.
    * @throws IOException if an I/O error occurs.
    */
-  protected List<String> execute(final String... command) throws IOException {
+  protected List<String> execute(final String command) throws IOException {
 
-    final Process process = new ProcessBuilder(command).start();
+    final Process process = Runtime.getRuntime().exec(command);
     process.getOutputStream().close(); // don't wait for stdin
+
     final List<String> lines = IOUtils.readLines(process.getInputStream(), "UTF-8");
     try {
       process.waitFor();
@@ -53,7 +54,9 @@ public abstract class AbstractProcessManager implements ProcessManager {
         Pattern.quote(query.getCommand()) + ".*" + Pattern.quote(query.getArgument());
     final Pattern commandPattern = Pattern.compile(processRegex);
     final Pattern processLinePattern = getProcessLinePattern();
-    for (final String line : execute(getCurrentProcessesCommand())) {
+    String currentProcessCommand = getCurrentProcessesCommand(query.getCommand());
+    List<String> lines = execute(currentProcessCommand);
+    for (final String line : lines) {
       final Matcher lineMatcher = processLinePattern.matcher(line);
       if (lineMatcher.matches()) {
         final String commandLine = lineMatcher.group(1);
@@ -68,11 +71,13 @@ public abstract class AbstractProcessManager implements ProcessManager {
   }
 
   /**
-   * Gets the command to be executed to get a snapshot of all the running processes.
+   * Gets the command to be executed to get a snapshot of all the running processes starting with
+   * the specified argument (process).
    *
-   * @return a string array containing the program and its arguments.
+   * @param process name of the process to query for.
+   * @return a string containing the program and its arguments.
    */
-  protected abstract String[] getCurrentProcessesCommand();
+  protected abstract String getCurrentProcessesCommand(String process);
 
   /**
    * Gets the pattern to be used to match an output line containing the information about a running
