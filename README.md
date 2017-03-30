@@ -13,11 +13,11 @@ In order to be able to apply changes to the JODConverter project, I had to under
 - **Tests**: This fork has been tested only on Windows.
 
 - **What's next**: I'm still on learning mode, but my goals are to:
-	- Add some filters in order to be able to add text, images, and whatever we are able to change while converting a document.
-	- Improve project comments.
+	- ~~Add some filters in order to be able to add text, images, and whatever we are able to change while converting a document.~~ *Mostly Done (text replacement, graphic and text insertion all done. Now ideas are welcome)*
+	- ~~Improve project comments.~~ *Done*
 	- ~~Switch to Gradle instead of Maven.~~ *Done*
 	- ~~Switch to JUnit instead of TestNG.~~ *Done*
-	- Use the great SonarQube platform for code quality.
+	- ~~Use the great SonarQube platform for code quality.~~ *Done. Checkstyle, PMD, Spotless and Jacoco gradle plugins instead*
 	- Add tests.
 	- Fix reported bugs (will always be the priority).
 	- Take a look at [Oshi](https://github.com/oshi/oshi) for processes management (SIGAR replacement). Seems promising... (Advice and comments always welcome).
