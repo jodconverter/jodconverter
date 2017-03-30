@@ -16,30 +16,16 @@
 
 package org.artofsolving.jodconverter.filter;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.document.DocumentFormat;
-import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
-import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeException;
-import org.artofsolving.jodconverter.office.OfficeManager;
 
-public class GraphicInserterFilterTest {
+public class GraphicInserterFilterTest extends FilterTest {
 
   private static final String SOURCE_FILE = "src/test/resources/documents/test.doc";
   private static final String SOURCE_MULTI_PAGE_FILE =
@@ -48,47 +34,18 @@ public class GraphicInserterFilterTest {
   private static final String OUTPUT_DIR =
       "test-output/" + GraphicInserterFilterTest.class.getSimpleName();
 
-  private static final Logger logger = LoggerFactory.getLogger(GraphicInserterFilterTest.class);
-
-  private static OfficeManager officeManager;
-  private static OfficeDocumentConverter converter;
-  private static DocumentFormatRegistry formatRegistry;
-
-  /**
-   * Starts a default office manager and clears the output directory before the execution if the
-   * first test in this class.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Clears the output directory before the execution of the first test in this class. */
   @BeforeClass
-  public static void setUpBeforeClass() throws OfficeException {
+  public static void deleteOutputDirectory() {
 
     final File testOutputDir = new File(OUTPUT_DIR);
     FileUtils.deleteQuietly(testOutputDir);
-
-    // Start an office manager
-    officeManager = new DefaultOfficeManagerBuilder().build();
-    converter = new OfficeDocumentConverter(officeManager);
-    formatRegistry = converter.getFormatRegistry();
-
-    officeManager.start();
-  }
-
-  /**
-   * Stops the office manager started in the setUpBeforeClass method.
-   *
-   * @throws Exception if an error occurs.
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws OfficeException {
-
-    officeManager.stop();
   }
 
   /**
    * Test the conversion of a document inserting a graphic along the way.
    *
-   * @throws Exception if an error occurs.
+   * @throws OfficeException if an error occurs.
    */
   @Test
   public void doFilter_WithCustomizedProperties() throws OfficeException {
@@ -98,8 +55,8 @@ public class GraphicInserterFilterTest {
     final File testOutputDir = new File(OUTPUT_DIR);
 
     // Create the properties of the filter
-    Map<String, Object> props =
-        GraphicInserterFilter.createDefaultProperties(
+    final Map<String, Object> props =
+        GraphicInserterFilter.createDefaultShapeProperties(
             50, // Horizontal Position, 5 CM
             100 // Vertical Position, 10 CM
             );
@@ -108,37 +65,10 @@ public class GraphicInserterFilterTest {
     props.put("AnchorPageNo", (short) 2);
 
     // Create the GraphicInserterFilter to test.
-    GraphicInserterFilter giFilter = new GraphicInserterFilter(sourceImage.getPath(), props);
+    final GraphicInserterFilter filter = new GraphicInserterFilter(sourceImage.getPath(), props);
 
-    // Create the filter chain to use
-    final DefaultFilterChain chain = new DefaultFilterChain(giFilter, RefreshFilter.INSTANCE);
-
-    final String inputExtension = FilenameUtils.getExtension(sourceFile.getName());
-    final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
-    assertNotNull("unknown input format: " + inputExtension, inputFormat);
-    final Set<DocumentFormat> outputFormats =
-        formatRegistry.getOutputFormats(inputFormat.getInputFamily());
-    for (final DocumentFormat outputFormat : outputFormats) {
-      // Skip unsupported conversion
-      if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxw", "sxi")) {
-        logger.info("-- skipping {} to {} test... ", inputExtension, outputFormat.getExtension());
-        continue;
-      }
-
-      // Create an output file
-      final File outputFile =
-          new File(testOutputDir, "test.secondpage." + outputFormat.getExtension());
-
-      // Apply the conversion
-      logger.info(
-          "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      converter.convert(chain, sourceFile, outputFile, outputFormat);
-      logger.info("done.\n");
-      assertTrue(outputFile.isFile() && outputFile.length() > 0);
-
-      // Reset the chain in order to reuse it.
-      chain.reset();
-    }
+    // Test the filter
+    testFilters(sourceFile, testOutputDir, "test.onsecondpage", filter, RefreshFilter.INSTANCE);
   }
 
   /**
@@ -154,41 +84,14 @@ public class GraphicInserterFilterTest {
     final File testOutputDir = new File(OUTPUT_DIR);
 
     // Create the GraphicInserterFilter to test.
-    GraphicInserterFilter giFilter =
+    final GraphicInserterFilter filter =
         new GraphicInserterFilter(
             sourceImage.getPath(),
             50, // Horizontal Position // 5 CM
             100); // Vertical Position // 10 CM
 
-    // Create the filter chain to use
-    final DefaultFilterChain chain = new DefaultFilterChain(giFilter, RefreshFilter.INSTANCE);
-
-    final String inputExtension = FilenameUtils.getExtension(sourceFile.getName());
-    final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
-    assertNotNull("unknown input format: " + inputExtension, inputFormat);
-    final Set<DocumentFormat> outputFormats =
-        formatRegistry.getOutputFormats(inputFormat.getInputFamily());
-    for (final DocumentFormat outputFormat : outputFormats) {
-      // Skip unsupported conversion
-      if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxw", "sxi")) {
-        logger.info("-- skipping {} to {} test... ", inputExtension, outputFormat.getExtension());
-        continue;
-      }
-
-      // Create an output file
-      final File outputFile =
-          new File(testOutputDir, "test.original." + outputFormat.getExtension());
-
-      // Apply the conversion
-      logger.info(
-          "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      converter.convert(chain, sourceFile, outputFile, outputFormat);
-      logger.info("done.\n");
-      assertTrue(outputFile.isFile() && outputFile.length() > 0);
-
-      // Reset the chain in order to reuse it.
-      chain.reset();
-    }
+    // Test the filter
+    testFilters(sourceFile, testOutputDir, "test.originalsize", filter, RefreshFilter.INSTANCE);
   }
 
   /**
@@ -205,7 +108,7 @@ public class GraphicInserterFilterTest {
     final File testOutputDir = new File(OUTPUT_DIR);
 
     // Create the GraphicInserterFilter to test.
-    GraphicInserterFilter giFilter =
+    final GraphicInserterFilter filter =
         new GraphicInserterFilter(
             sourceImage.getPath(),
             74, // Image Width // 7.4 CM (half the original size)
@@ -213,34 +116,7 @@ public class GraphicInserterFilterTest {
             30, // Horizontal Position // 3 CM
             50); // Vertical Position // 5 CM
 
-    // Create the filter chain to use
-    final DefaultFilterChain chain = new DefaultFilterChain(giFilter, RefreshFilter.INSTANCE);
-
-    final String inputExtension = FilenameUtils.getExtension(sourceFile.getName());
-    final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
-    assertNotNull("unknown input format: " + inputExtension, inputFormat);
-    final Set<DocumentFormat> outputFormats =
-        formatRegistry.getOutputFormats(inputFormat.getInputFamily());
-    for (final DocumentFormat outputFormat : outputFormats) {
-      // Skip unsupported conversion
-      if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxw", "sxi")) {
-        logger.info("-- skipping {} to {} test... ", inputExtension, outputFormat.getExtension());
-        continue;
-      }
-
-      // Create an output file
-      final File outputFile =
-          new File(testOutputDir, "test.smaller." + outputFormat.getExtension());
-
-      // Apply the conversion
-      logger.info(
-          "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      converter.convert(chain, sourceFile, outputFile, outputFormat);
-      logger.info("done.\n");
-      assertTrue(outputFile.isFile() && outputFile.length() > 0);
-
-      // Reset the chain in order to reuse it.
-      chain.reset();
-    }
+    // Test the filter
+    testFilters(sourceFile, testOutputDir, "test.smallersize", filter, RefreshFilter.INSTANCE);
   }
 }
