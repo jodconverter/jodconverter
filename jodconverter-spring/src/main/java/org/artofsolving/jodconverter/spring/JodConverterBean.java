@@ -32,6 +32,7 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.document.DocumentFormat;
+import org.artofsolving.jodconverter.filter.FilterChain;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
@@ -139,12 +140,12 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Converts an input file into a file of another format. The file extensions are taken to know the
-   * conversion formats.
+   * Converts an input file to an output file. The files extensions are used to determine the input
+   * and output {@link DocumentFormat}.
    *
-   * @param inputFile The file whose content is to be converted.
-   * @param outputFile The output file (target) of the conversion.
-   * @throws OfficeException Thrown if an error occurs while converting the file.
+   * @param inputFile the input file to convert.
+   * @param outputFile the target output file.
+   * @throws OfficeException if the conversion fails.
    */
   public void convert(final File inputFile, final File outputFile) throws OfficeException {
 
@@ -152,16 +153,100 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Converts an input file into a file of another format. The file extensions are taken to know the
-   * conversion formats.
+   * Converts an input file to an output file. The input file extension is used to determine the
+   * input {@link DocumentFormat}.
    *
-   * @param inputFile The file whose content is to be converted.
-   * @param outputFile The output file (target) of the conversion.
-   * @throws OfficeException Thrown if an error occurs while converting the file.
+   * @param inputFile the input file to convert.
+   * @param outputFile the target output file.
+   * @param outputFormat the target output format.
+   * @throws OfficeException if the conversion fails.
    */
-  public void convert(final String inputFile, final String outputFile) throws OfficeException {
+  public void convert(
+      final File inputFile, final File outputFile, final DocumentFormat outputFormat)
+      throws OfficeException {
 
-    convert(new File(inputFile), new File(outputFile));
+    documentConverter.convert(inputFile, outputFile, outputFormat);
+  }
+
+  /**
+   * Converts an input file to an output file.
+   *
+   * @param inputFile the input file to convert.
+   * @param outputFile the target output file.
+   * @param inputFormat the source input format.
+   * @param outputFormat the target output format.
+   * @throws OfficeException if the conversion fails.
+   */
+  public void convert(
+      final File inputFile,
+      final File outputFile,
+      final DocumentFormat inputFormat,
+      final DocumentFormat outputFormat)
+      throws OfficeException {
+
+    documentConverter.convert(inputFile, outputFile, inputFormat, outputFormat);
+  }
+
+  /**
+   * Converts an input file to an output file. The files extensions are used to determine the input
+   * and output {@link DocumentFormat}.
+   *
+   * @param filterChain the FilterChain to be applied after the document is loaded and before it is
+   *     stored (converted) in the new document format. A FilterChain is used to modify the document
+   *     before the conversion. Filters are applied in the same order they appear in the chain.
+   * @param inputFile the input file to convert.
+   * @param outputFile the target output file.
+   * @throws OfficeException if the conversion fails.
+   */
+  public void convert(final FilterChain filterChain, final File inputFile, final File outputFile)
+      throws OfficeException {
+
+    documentConverter.convert(filterChain, inputFile, outputFile);
+  }
+
+  /**
+   * Converts an input file to an output file. The input file extension is used to determine the
+   * input {@link DocumentFormat}.
+   *
+   * @param filterChain the FilterChain to be applied after the document is loaded and before it is
+   *     stored (converted) in the new document format. A FilterChain is used to modify the document
+   *     before the conversion. Filters are applied in the same order they appear in the chain.
+   * @param inputFile the input file to convert.
+   * @param outputFile the target output file.
+   * @param outputFormat the target output format.
+   * @throws OfficeException if the conversion fails.
+   */
+  public void convert(
+      final FilterChain filterChain,
+      final File inputFile,
+      final File outputFile,
+      final DocumentFormat outputFormat)
+      throws OfficeException {
+
+    documentConverter.convert(filterChain, inputFile, outputFile, outputFormat);
+  }
+
+  /**
+   * Converts an input file to an output file.
+   *
+   * @param filterChain the FilterChain to be applied after the document is loaded and before it is
+   *     stored (converted) in the new document format. A FilterChain is used to modify the document
+   *     before the conversion. Filters are applied in the same order they appear in the chain.
+   * @param inputFile the input file to convert.
+   * @param outputFile the target output file.
+   * @param inputFormat the source input format.
+   * @param outputFormat the target output format.
+   * @throws OfficeException if the conversion fails.
+   */
+  public void convert(
+      final FilterChain filterChain,
+      final File inputFile,
+      final File outputFile,
+      final DocumentFormat inputFormat,
+      final DocumentFormat outputFormat)
+      throws OfficeException {
+
+    documentConverter.convert(filterChain, inputFile, outputFile, inputFormat, outputFormat);
   }
 
   @Override
