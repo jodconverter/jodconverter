@@ -17,10 +17,14 @@
 package org.artofsolving.jodconverter;
 
 import java.io.File;
+import java.io.OutputStreamWriter;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
@@ -29,7 +33,8 @@ import org.artofsolving.jodconverter.office.OfficeManager;
 
 public class StressTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(StressTest.class);
+  //private static final Logger logger = LoggerFactory.getLogger(StressTest.class);
+  private static final Logger logger = Logger.getLogger(StressTest.class);
 
   private static final int MAX_CONVERSIONS = 1024;
   private static final int MAX_RUNNING_THREADS = 128;
@@ -47,6 +52,27 @@ public class StressTest {
    */
   @Test
   public void runParallelConversions() throws Exception {
+
+    String PATTERN = "%d{ISO8601} %-5p [%c{3}] [%t] %m%n";
+    Logger.getRootLogger().removeAllAppenders();
+
+    // Create console appender
+    ConsoleAppender console = new ConsoleAppender();
+    console.setWriter(new OutputStreamWriter(System.out));
+    console.setLayout(new PatternLayout(PATTERN));
+    console.setThreshold(Level.DEBUG);
+    console.activateOptions();
+    Logger.getRootLogger().addAppender(console);
+
+    // Keep a log file to be able to see if an error occured
+    FileAppender fileAppender = new FileAppender();
+    fileAppender.setName("FileLogger");
+    fileAppender.setFile("test-output/" + StressTest.class.getSimpleName() + "/test.log");
+    fileAppender.setLayout(new PatternLayout(PATTERN));
+    fileAppender.setThreshold(Level.DEBUG);
+    fileAppender.setAppend(true);
+    fileAppender.activateOptions();
+    Logger.getRootLogger().addAppender(fileAppender);
 
     // Configure the office manager in a way that maximizes possible race conditions.
     final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
@@ -78,7 +104,7 @@ public class StressTest {
           first = false;
         }
 
-        logger.info("Creating thread {}...", t);
+        logger.info("Creating thread " + t);
         final Runner r = new Runner(inputFile, outputFile, inputFormat, outputFormat, converter);
         threads[t] = new Thread(r);
         threads[t++].start();
@@ -128,7 +154,11 @@ public class StressTest {
     public void run() {
       try {
         logger.info(
-            "-- converting %s to %s... ", inputFormat.getExtension(), outputFormat.getExtension());
+            "-- converting "
+                + inputFormat.getExtension()
+                + " to "
+                + outputFormat.getExtension()
+                + "... ");
         converter.convert(inputFile, outputFile, outputFormat);
         logger.info("done.\n");
       } catch (Exception ex) {
