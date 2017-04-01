@@ -174,7 +174,7 @@ class OfficeProcess {
     try {
       return process.exitValue();
     } catch (IllegalThreadStateException illegalThreadStateEx) {
-      logger.debug("IllegalThreadStateException catch in getExitCode", illegalThreadStateEx);
+      logger.trace("IllegalThreadStateException catch in getExitCode", illegalThreadStateEx);
       return null;
     }
   }
