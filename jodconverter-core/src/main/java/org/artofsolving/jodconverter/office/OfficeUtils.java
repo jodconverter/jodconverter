@@ -19,6 +19,8 @@ package org.artofsolving.jodconverter.office;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import com.sun.star.beans.PropertyValue;
 
 import org.artofsolving.jodconverter.process.MacProcessManager;
@@ -26,7 +28,6 @@ import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 import org.artofsolving.jodconverter.process.UnixProcessManager;
 import org.artofsolving.jodconverter.process.WindowsProcessManager;
-import org.artofsolving.jodconverter.util.PlatformUtils;
 
 public final class OfficeUtils {
 
@@ -43,11 +44,11 @@ public final class OfficeUtils {
    */
   public static ProcessManager findBestProcessManager() {
 
-    if (PlatformUtils.isLinux()) {
+    if (SystemUtils.IS_OS_UNIX) {
       return new UnixProcessManager();
-    } else if (PlatformUtils.isMac()) {
+    } else if (SystemUtils.IS_OS_MAC) {
       return new MacProcessManager();
-    } else if (PlatformUtils.isWindows()) {
+    } else if (SystemUtils.IS_OS_WINDOWS) {
       WindowsProcessManager windowsProcessManager = new WindowsProcessManager();
       return windowsProcessManager.isUsable()
           ? windowsProcessManager
@@ -81,7 +82,7 @@ public final class OfficeUtils {
       return new File(System.getProperty("office.home"));
     }
 
-    if (PlatformUtils.isWindows()) {
+    if (SystemUtils.IS_OS_WINDOWS) {
 
       // Try to find the most recent version of LibreOffice or OpenOffice,
       // starting with the 64-bit version. %ProgramFiles(x86)% on 64-bit
@@ -103,7 +104,7 @@ public final class OfficeUtils {
           });
       //@formatter:on
 
-    } else if (PlatformUtils.isMac()) {
+    } else if (SystemUtils.IS_OS_MAC) {
 
       //@formatter:off
       File homeDir =
@@ -159,12 +160,12 @@ public final class OfficeUtils {
   public static File getOfficeExecutable(final File officeHome) {
 
     // Mac
-    if (PlatformUtils.isMac()) {
+    if (SystemUtils.IS_OS_MAC) {
       return getOfficeExecutableMac(officeHome);
     }
 
     // Windows
-    if (PlatformUtils.isWindows()) {
+    if (SystemUtils.IS_OS_WINDOWS) {
       return getOfficeExecutableWindows(officeHome);
     }
 
