@@ -2,8 +2,6 @@
 apply plugin: 'java'
 // Add integration tests support (Add new SourceSet, task, etc.)
 apply plugin: 'nebula.integtest'
-// Spotless is a general-purpose formatting plugin
-apply plugin: "com.diffplug.gradle.spotless"
 
 repositories {
     mavenCentral()
@@ -36,7 +34,8 @@ targetCompatibility = rootProject.baselineJavaVersion
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // JaCoCo setup
 
-apply plugin: 'jacoco' // Provides code coverage metrics for Java code
+// Provides code coverage metrics for Java code
+apply plugin: 'jacoco'
 
 jacoco {
     toolVersion = jacocoVersion
@@ -74,7 +73,8 @@ eclipse {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Checkstyle setup
 
-apply plugin: 'checkstyle' // Performs quality checks on Java source files and generates reports
+// Performs quality checks on Java source files and generates reports
+apply plugin: 'checkstyle'
 
 // Configures the checkstyle task
 checkstyle {
@@ -112,6 +112,9 @@ pmd {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Spotless setup
+
+// Spotless is a general-purpose formatting plugin
+apply plugin: "com.diffplug.gradle.spotless"
 
 spotless {
 
