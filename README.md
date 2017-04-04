@@ -10,9 +10,9 @@ In order to be able to apply changes to the JODConverter project, I had to under
 
 - **Dependencies**: The core project of this fork depends on slf4j, commons-lang3, commons-io, and the required LibreOffice libraries (for now, everything seems to work nice with OpenOffice too).
 
-- **Tests**: This fork has been tested only on Windows.
+- **Tests**: This fork has been tested (by me) only on Windows. But the library is supposed to work just fine on Mac and Unix. Any confirmation would be welcome.
 
-- **What's next**: I'm still on learning mode, but my goals are to:
+- **What's next**: my goals are to:
 	- ~~Add some filters in order to be able to add text, images, and whatever we are able to change while converting a document.~~ *Mostly Done (text replacement, graphic and text insertion all done. Now ideas are welcome)*
 	- ~~Improve project comments.~~ *Done*
 	- ~~Switch to Gradle instead of Maven.~~ *Done*
@@ -20,7 +20,7 @@ In order to be able to apply changes to the JODConverter project, I had to under
 	- ~~Use the great SonarQube platform for code quality.~~ *Done. Checkstyle, PMD, Spotless and Jacoco gradle plugins instead*
 	- Add tests.
 	- Fix reported bugs (will always be the priority).
-	- Take a look at [Oshi](https://github.com/oshi/oshi) for processes management (SIGAR replacement). Seems promising... (Advice and comments always welcome).
+	- ~~Take a look at [Oshi](https://github.com/oshi/oshi) for processes management (SIGAR replacement). Seems promising... (Advice and comments always welcome).~~ *Finally, seems overkill for the needs of the library. Any suggestions out there ?*
 	- Improve the sample-webapp project.
 	- Have fun!
 
