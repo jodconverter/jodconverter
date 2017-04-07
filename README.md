@@ -36,8 +36,14 @@ The dude who created a pull request in these two forks with a stress test that m
 
 ## Building the Project
 
+### Using LibreOffice libraries:
 ```Shell
-gradlew clean build -x test
+gradlew clean build -x test -x integTest
+```
+
+### Using OpenOffice libraries:
+```Shell
+gradlew clean build -x test -x integTest -PuseOpenOffice
 ```
 
 ## Original JODConverter
