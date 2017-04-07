@@ -19,8 +19,6 @@ package org.artofsolving.jodconverter.sample.web;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.sun.star.uno.RuntimeException;
-
 import org.artofsolving.jodconverter.office.OfficeException;
 
 public class WebappContextListener implements ServletContextListener {

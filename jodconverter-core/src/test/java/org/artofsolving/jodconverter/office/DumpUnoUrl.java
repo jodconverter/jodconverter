@@ -33,19 +33,26 @@ public class DumpUnoUrl {
    */
   public static void main(final String[] args) {
 
-    final com.sun.star.lib.uno.helper.UnoUrl url =
-        UnoUrl.parseUnoUrl(
-            "socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager");
+    // Here we must use a try catch since OpenOffice and LibreOffice doesn't
+    // have the same UnoUrl.parseUnoUrl signature
+    try {
+      final com.sun.star.lib.uno.helper.UnoUrl url =
+          UnoUrl.parseUnoUrl(
+              "socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager");
 
-    logger.info("url.getConnection():" + url.getConnection());
-    logger.info(
-        "url.getConnectionAndParametersAsString():" + url.getConnectionAndParametersAsString());
-    logger.info("url.getConnectionParametersAsString():" + url.getConnectionParametersAsString());
-    logger.info("url.getConnectionParameters():" + url.getConnectionParameters());
-    logger.info("url.getProtocol():" + url.getProtocol());
-    logger.info("url.getProtocolAndParametersAsString():" + url.getProtocolAndParametersAsString());
-    logger.info("url.getProtocolParametersAsString():" + url.getProtocolParametersAsString());
-    logger.info("url.getProtocolParameters():" + url.getProtocolParameters());
-    logger.info("url.getRootOid():" + url.getRootOid());
+      logger.info("url.getConnection():" + url.getConnection());
+      logger.info(
+          "url.getConnectionAndParametersAsString():" + url.getConnectionAndParametersAsString());
+      logger.info("url.getConnectionParametersAsString():" + url.getConnectionParametersAsString());
+      logger.info("url.getConnectionParameters():" + url.getConnectionParameters());
+      logger.info("url.getProtocol():" + url.getProtocol());
+      logger.info(
+          "url.getProtocolAndParametersAsString():" + url.getProtocolAndParametersAsString());
+      logger.info("url.getProtocolParametersAsString():" + url.getProtocolParametersAsString());
+      logger.info("url.getProtocolParameters():" + url.getProtocolParameters());
+      logger.info("url.getRootOid():" + url.getRootOid());
+    } catch (Exception ex) { // NOSONAR
+      throw new IllegalArgumentException(ex);
+    }
   }
 }

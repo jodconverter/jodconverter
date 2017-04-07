@@ -42,7 +42,14 @@ final class UnoUrlUtils {
    * @return the created UnoUrl.
    */
   public static UnoUrl pipe(final String pipeName) {
-    return UnoUrl.parseUnoUrl("pipe,name=" + pipeName + ";urp;StarOffice.ServiceManager");
+
+    // Here we must use a try catch since OpenOffice and LibreOffice doesn't
+    // have the same UnoUrl.parseUnoUrl signature
+    try {
+      return UnoUrl.parseUnoUrl("pipe,name=" + pipeName + ";urp;StarOffice.ServiceManager");
+    } catch (Exception ex) { // NOSONAR
+      throw new IllegalArgumentException(ex);
+    }
   }
 
   /**
@@ -52,10 +59,17 @@ final class UnoUrlUtils {
    * @return the created UnoUrl.
    */
   public static UnoUrl socket(final int port) {
-    return UnoUrl.parseUnoUrl(
-        "socket,host=127.0.0.1,port=" // NOSONAR
-            + port
-            + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+
+    // Here we must use a try catch since OpenOffice and LibreOffice doesn't
+    // have the same UnoUrl.parseUnoUrl signature
+    try {
+      return UnoUrl.parseUnoUrl(
+          "socket,host=127.0.0.1,port=" // NOSONAR
+              + port
+              + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+    } catch (Exception ex) { // NOSONAR
+      throw new IllegalArgumentException(ex);
+    }
   }
 
   // Private ctor.

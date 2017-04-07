@@ -3,6 +3,7 @@
 // to <dependencyManagement> in Maven
 
 ext {
+    useOpenOffice = project.hasProperty('useOpenOffice')
     libraries = [
 
             // Apache Commons Libraries
@@ -11,11 +12,11 @@ ext {
             commons_io                         : "commons-io:commons-io:$commonsIoVersion",
             commons_lang3                      : "org.apache.commons:commons-lang3:$commonsLang3Version",
 
-            // Libre Office Libraries
-            office_juh                         : "org.libreoffice:juh:$officeVersion",
-            office_jurt                        : "org.libreoffice:jurt:$officeVersion",
-            office_ridl                        : "org.libreoffice:ridl:$officeVersion",
-            office_unoil                       : "org.libreoffice:unoil:$officeVersion",
+            // Office Libraries (OpenOffice and LibreOffice)
+            office_juh                         : (useOpenOffice ? "org.openoffice:juh:$openOfficeVersion"   : "org.libreoffice:juh:$libreOfficeVersion"),
+            office_jurt                        : (useOpenOffice ? "org.openoffice:jurt:$openOfficeVersion"  : "org.libreoffice:jurt:$libreOfficeVersion"),
+            office_ridl                        : (useOpenOffice ? "org.openoffice:ridl:$openOfficeVersion"  : "org.libreoffice:ridl:$libreOfficeVersion"),
+            office_unoil                       : (useOpenOffice ? "org.openoffice:unoil:$openOfficeVersion" : "org.libreoffice:unoil:$libreOfficeVersion"),
 
             // Spring Libraries
             spring_core                        : "org.springframework:spring-core:$springVersion",
