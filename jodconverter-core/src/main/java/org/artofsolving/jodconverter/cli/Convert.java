@@ -41,28 +41,60 @@ public final class Convert {
   public static final int STATUS_MISSING_INPUT_FILE = 1;
   public static final int STATUS_INVALID_ARGUMENTS = 255;
 
+  private static final Option OPTION_OFFICE_HOME =
+      Option.builder("h")
+          .longOpt("office-home")
+          .argName("dir")
+          .hasArg()
+          .desc("office home directory (optional; defaults to auto-detect)")
+          .build();
+  private static final Option OPTION_KILL_EXISTING_PROCESS =
+      Option.builder("k")
+          .longOpt("kill-process")
+          .desc("kill existing office process (optional; defaults to true)")
+          .build();
   private static final Option OPTION_OUTPUT_FORMAT =
-      new Option("o", "output-format", true, "output format (e.g. pdf)");
+      Option.builder("o")
+          .longOpt("output-format")
+          .hasArg()
+          .desc("output format (e.g. pdf)")
+          .build();
   private static final Option OPTION_PORT =
-      new Option("p", "port", true, "office socket port (optional; defaults to 2002)");
+      Option.builder("p")
+          .longOpt("port")
+          .hasArg()
+          .desc("office socket port (optional; defaults to 2002)")
+          .build();
   private static final Option OPTION_REGISTRY =
-      new Option("r", "registry", true, "document formats registry configuration file (optional)");
+      Option.builder("r")
+          .longOpt("registry")
+          .argName("file")
+          .hasArg()
+          .desc("document formats registry configuration file (optional)")
+          .build();
   private static final Option OPTION_TIMEOUT =
-      new Option(
-          "t", "timeout", true, "maximum conversion time in seconds (optional; defaults to 120)");
+      Option.builder("t")
+          .longOpt("timeout")
+          .hasArg()
+          .desc("maximum conversion time in seconds (optional; defaults to 120)")
+          .build();
   private static final Option OPTION_USER_PROFILE =
-      new Option(
-          "u",
-          "user-profile",
-          true,
-          "use settings from the given user installation dir (optional)");
+      Option.builder("u")
+          .longOpt("user-profile")
+          .argName("dir")
+          .hasArg()
+          .desc("use settings from the given user installation dir (optional)")
+          .build();
 
   private static final Options OPTIONS = initOptions();
   private static final int DEFAULT_OFFICE_PORT = 2002;
+  private static final boolean DEFAULT_KILL_EXISTING_PROCESS = true;
 
   private static Options initOptions() {
 
     final Options options = new Options();
+    options.addOption(OPTION_OFFICE_HOME);
+    options.addOption(OPTION_KILL_EXISTING_PROCESS);
     options.addOption(OPTION_OUTPUT_FORMAT);
     options.addOption(OPTION_PORT);
     options.addOption(OPTION_REGISTRY);
@@ -92,6 +124,12 @@ public final class Convert {
       port = Integer.parseInt(commandLine.getOptionValue(OPTION_PORT.getOpt()));
     }
 
+    boolean killExistingProcess = DEFAULT_KILL_EXISTING_PROCESS;
+    if (commandLine.hasOption(OPTION_KILL_EXISTING_PROCESS.getOpt())) {
+      killExistingProcess =
+          Boolean.parseBoolean(commandLine.getOptionValue(OPTION_KILL_EXISTING_PROCESS.getOpt()));
+    }
+
     final String[] fileNames = commandLine.getArgs();
     if ((outputFormat == null && fileNames.length != 2) || fileNames.length < 1) {
       new HelpFormatter()
@@ -114,6 +152,10 @@ public final class Convert {
 
     final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
     configuration.setPortNumber(port);
+    configuration.setKillExistingProcess(killExistingProcess);
+    if (commandLine.hasOption(OPTION_OFFICE_HOME.getOpt())) {
+      configuration.setOfficeHome(commandLine.getOptionValue(OPTION_OFFICE_HOME.getOpt()));
+    }
     if (commandLine.hasOption(OPTION_TIMEOUT.getOpt())) {
       configuration.setTaskExecutionTimeout(
           Long.parseLong(commandLine.getOptionValue(OPTION_TIMEOUT.getOpt())) * 1000L);
