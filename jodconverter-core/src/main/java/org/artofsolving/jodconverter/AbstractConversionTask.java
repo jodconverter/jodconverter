@@ -101,7 +101,7 @@ public abstract class AbstractConversionTask implements OfficeTask {
   private XComponent loadDocument(final OfficeContext context) throws OfficeException {
 
     // Check if the file exists
-    ValidateUtils.fileExists(inputFile, "Input document not found: %1");
+    ValidateUtils.fileExists(inputFile, "Input document not found: %s");
 
     XComponent document = null;
     try {
