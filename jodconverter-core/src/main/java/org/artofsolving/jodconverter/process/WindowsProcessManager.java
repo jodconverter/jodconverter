@@ -27,12 +27,13 @@ import java.util.regex.Pattern;
  */
 public class WindowsProcessManager extends AbstractProcessManager {
 
-  private static final Pattern PROCESS_GET_LINE = Pattern.compile("^(.*?)\\s+(\\d+)\\s*$");
+  private static final Pattern PROCESS_GET_LINE =
+      Pattern.compile("^\\s*(?<CommanLine>.*?)\\s+(?<Pid>\\d+)\\s*$");
 
   @Override
   public void kill(final Process process, final long pid) throws IOException {
 
-    execute("taskkill /t /f /pid " + pid);
+    execute(new String[] {"taskkill", "/t", "/f", "/pid", String.valueOf(pid)});
   }
 
   /**
@@ -43,8 +44,8 @@ public class WindowsProcessManager extends AbstractProcessManager {
   public boolean isUsable() {
 
     try {
-      execute("wmic quit");
-      execute("taskkill /?");
+      execute(new String[] {"wmic", "quit"});
+      execute(new String[] {"taskkill", "/?"});
       return true;
     } catch (IOException ioEx) { // NOSONAR
       return false;
@@ -52,9 +53,11 @@ public class WindowsProcessManager extends AbstractProcessManager {
   }
 
   @Override
-  protected String getCurrentProcessesCommand(final String process) {
+  protected String[] getCurrentProcessesCommand(final String process) {
 
-    return "wmic process where(name like \"" + process + "%\") get commandline,processid";
+    return new String[] {
+      "cmd", "/c", "wmic process where(name like '" + process + "%') get commandline,processid"
+    };
   }
 
   @Override

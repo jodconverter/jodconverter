@@ -19,8 +19,10 @@ package org.artofsolving.jodconverter.process;
 public class MacProcessManager extends UnixProcessManager {
 
   @Override
-  protected String getCurrentProcessesCommand(final String process) {
+  protected String[] getCurrentProcessesCommand(final String process) {
 
-    return "/bin/ps -e -o pid,command | grep " + process;
+    return new String[] {
+      "/bin/bash", "-c", "/bin/ps -e -o pid,command | /bin/grep " + process + " | /bin/grep -v grep"
+    };
   }
 }

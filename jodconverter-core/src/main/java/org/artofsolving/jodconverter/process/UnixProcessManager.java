@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-
 /**
  * {@link ProcessManager} implementation for *nix systems. Uses the <tt>ps</tt> and <tt>kill</tt>
  * commands.
@@ -31,27 +29,31 @@ import org.apache.commons.io.IOUtils;
  */
 public class UnixProcessManager extends AbstractProcessManager {
 
-  private static final Pattern PS_OUTPUT_LINE = Pattern.compile("^\\s*(\\d+)\\s+(.*)$");
+  private static final Pattern PS_OUTPUT_LINE =
+      Pattern.compile("^\\s*(?<Pid>\\d+)\\s+(?<CommanLine>.*)$");
 
-  private String runAsArgs;
+  private String[] runAsArgs;
 
   @Override
-  protected List<String> execute(final String command) throws IOException {
+  protected List<String> execute(final String[] cmdarray) throws IOException {
 
-    String cmd;
     if (runAsArgs == null) {
-      cmd = command;
-    } else {
-      cmd = runAsArgs + " " + command;
+      return super.execute(cmdarray);
     }
-    final Process process = Runtime.getRuntime().exec(cmd);
-    return IOUtils.readLines(process.getInputStream(), "UTF-8");
+
+    final String[] newarray = new String[runAsArgs.length + cmdarray.length];
+    System.arraycopy(runAsArgs, 0, newarray, 0, runAsArgs.length);
+    System.arraycopy(cmdarray, 0, newarray, runAsArgs.length, cmdarray.length);
+
+    return super.execute(newarray);
   }
 
   @Override
-  protected String getCurrentProcessesCommand(final String process) {
+  protected String[] getCurrentProcessesCommand(final String process) {
 
-    return "/bin/ps -e -o pid,args | grep " + process;
+    return new String[] {
+      "/bin/bash", "-c", "/bin/ps -e -o pid,args | /bin/grep " + process + " | /bin/grep -v grep"
+    };
   }
 
   @Override
@@ -63,7 +65,7 @@ public class UnixProcessManager extends AbstractProcessManager {
   @Override
   public void kill(final Process process, final long pid) throws IOException {
 
-    execute("/bin/kill -KILL " + pid);
+    execute(new String[] {"/bin/kill", "-KILL", String.valueOf(pid)});
   }
 
   /**
@@ -71,7 +73,7 @@ public class UnixProcessManager extends AbstractProcessManager {
    *
    * @param runAsArgs the sudo command arguments.
    */
-  public void setRunAsArgs(final String runAsArgs) {
+  public void setRunAsArgs(final String[] runAsArgs) {
     this.runAsArgs = runAsArgs;
   }
 }
