@@ -41,9 +41,9 @@ class ExternalOfficeManager implements OfficeManager {
   private final boolean connectOnStart;
 
   /**
-   * Construcst a new instance of the class.
+   * Constructs a new instance of the class.
    *
-   * @param unoUrl the uno URL.
+   * @param unoUrl the UNO URL.
    * @param connectOnStart should a connection be attempted on {@link #start()}? Default is
    *     <em>true</em>. If <em>false</em>, a connection will only be attempted the first time an
    *     {@link OfficeTask} is executed.
