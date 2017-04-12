@@ -41,6 +41,13 @@ public final class Convert {
   public static final int STATUS_MISSING_INPUT_FILE = 1;
   public static final int STATUS_INVALID_ARGUMENTS = 255;
 
+  private static final Option OPTION_PROCESS_MANAGER =
+      Option.builder("pm")
+          .longOpt("process-manager")
+          .argName("class")
+          .hasArg()
+          .desc("class name of the process manager to use (optional; defaults to auto-detect)")
+          .build();
   private static final Option OPTION_OFFICE_HOME =
       Option.builder("h")
           .longOpt("office-home")
@@ -93,6 +100,7 @@ public final class Convert {
   private static Options initOptions() {
 
     final Options options = new Options();
+    options.addOption(OPTION_PROCESS_MANAGER);
     options.addOption(OPTION_OFFICE_HOME);
     options.addOption(OPTION_KILL_EXISTING_PROCESS);
     options.addOption(OPTION_OUTPUT_FORMAT);
@@ -153,6 +161,9 @@ public final class Convert {
     final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
     configuration.setPortNumber(port);
     configuration.setKillExistingProcess(killExistingProcess);
+    if (commandLine.hasOption(OPTION_PROCESS_MANAGER.getOpt())) {
+      configuration.setProcessManager(commandLine.getOptionValue(OPTION_PROCESS_MANAGER.getOpt()));
+    }
     if (commandLine.hasOption(OPTION_OFFICE_HOME.getOpt())) {
       configuration.setOfficeHome(commandLine.getOptionValue(OPTION_OFFICE_HOME.getOpt()));
     }

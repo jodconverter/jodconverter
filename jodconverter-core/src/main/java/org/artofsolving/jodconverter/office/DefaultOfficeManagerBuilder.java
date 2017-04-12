@@ -20,13 +20,18 @@ import java.io.File;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
 
+import org.artofsolving.jodconverter.process.AbstractProcessManager;
 import org.artofsolving.jodconverter.process.ProcessManager;
 
 /** Helper class used to creates ProcessPoolOfficeManager instances. */
 public class DefaultOfficeManagerBuilder {
+
+  private static final Logger logger = LoggerFactory.getLogger(DefaultOfficeManagerBuilder.class);
 
   private File officeHome;
   private OfficeConnectionProtocol connectionProtocol;
@@ -174,7 +179,7 @@ public class DefaultOfficeManagerBuilder {
    */
   public DefaultOfficeManagerBuilder setOfficeHome(final String officeHome) {
 
-    Validate.notNull(officeHome);
+    Validate.notBlank(officeHome);
     return setOfficeHome(new File(officeHome));
   }
 
@@ -186,7 +191,7 @@ public class DefaultOfficeManagerBuilder {
    */
   public DefaultOfficeManagerBuilder setPipeName(final String pipeName) {
 
-    Validate.notNull(pipeName);
+    Validate.notBlank(pipeName);
     return setPipeNames(new String[] {pipeName});
   }
 
@@ -241,6 +246,29 @@ public class DefaultOfficeManagerBuilder {
 
     Validate.notNull(processManager);
     this.processManager = processManager;
+    return this;
+  }
+
+  /**
+   * Provides a custom {@code ProcessManager} implementation, which may not be included in the
+   * standard JODConverter distribution.
+   *
+   * @param processManagerClass type of the provided process manager. The class must implement the
+   *     {@code ProcessManager} interface, must be on the classpath (or more specifically accessible
+   *     from the current classloader) and must have a default public constructor (no argument).
+   * @return the updated configuration.
+   * @see ProcessManager
+   * @see AbstractProcessManager
+   */
+  public DefaultOfficeManagerBuilder setProcessManager(final String processManagerClass) {
+
+    Validate.notBlank(processManagerClass);
+    try {
+      this.processManager = (ProcessManager) Class.forName(processManagerClass).newInstance();
+    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
+      logger.warn(
+          "Ignoring custom process manager '" + processManagerClass + "': " + ex.getMessage(), ex);
+    }
     return this;
   }
 

@@ -18,11 +18,20 @@ package org.artofsolving.jodconverter.process;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import java.io.File;
+import java.io.FileFilter;
+
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
+
+import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.artofsolving.jodconverter.office.OfficeManager;
 
 public class ProcessManagerTest {
 
@@ -92,5 +101,60 @@ public class ProcessManagerTest {
 
     processManager.kill(process, pid);
     assertEquals(processManager.findPid(query), ProcessManager.PID_NOT_FOUND);
+  }
+
+  /**
+   * Tests that using an custom process manager that appears in the classpath will be used.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void customProcessManager() throws Exception {
+
+    final File dir = new File("src/test/resources/documents");
+    final File inputFile = dir.listFiles((FileFilter) FileFileFilter.FILE)[0];
+    final File outputFile = File.createTempFile("test", ".pdf");
+
+    final OfficeManager officeManager =
+        new DefaultOfficeManagerBuilder()
+            .setProcessManager("org.artofsolving.jodconverter.process.CustomProcessManager")
+            .build();
+    final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
+
+    officeManager.start();
+    try {
+      converter.convert(inputFile, outputFile);
+      assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    } finally {
+      officeManager.stop();
+    }
+  }
+
+  /**
+   * Tests that using an custom process manager that does not appear in the classpath will fall back
+   * to an auto-detect process manager.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void customProcessManagerFallback() throws Exception {
+
+    final File dir = new File("src/test/resources/documents");
+    final File inputFile = dir.listFiles((FileFilter) FileFileFilter.FILE)[0];
+    final File outputFile = File.createTempFile("test", ".pdf");
+
+    final OfficeManager officeManager =
+        new DefaultOfficeManagerBuilder()
+            .setProcessManager("org.foo.fallback.ProcessManager")
+            .build();
+    final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
+
+    officeManager.start();
+    try {
+      converter.convert(inputFile, outputFile);
+      assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    } finally {
+      officeManager.stop();
+    }
   }
 }
