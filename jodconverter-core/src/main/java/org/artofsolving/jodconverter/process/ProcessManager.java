@@ -25,14 +25,6 @@ public interface ProcessManager { // NOSONAR
   long PID_UNKNOWN = -1;
 
   /**
-   * Kills the specified process.
-   *
-   * @param process the process to kill.
-   * @param pid the id of the process to kiil.
-   */
-  void kill(Process process, long pid) throws IOException;
-
-  /**
    * Finds a PID of a running process that has the specified command line.
    *
    * @param query a query used to find the process with the pid we are looking for.
@@ -41,4 +33,12 @@ public interface ProcessManager { // NOSONAR
    * @throws IOException if an IO error occurs.
    */
   long findPid(ProcessQuery query) throws IOException;
+
+  /**
+   * Kills the specified process.
+   *
+   * @param process the process to kill.
+   * @param pid the id of the process to kiil.
+   */
+  void kill(Process process, long pid) throws IOException;
 }

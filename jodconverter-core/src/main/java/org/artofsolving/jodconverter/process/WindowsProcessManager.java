@@ -31,9 +31,17 @@ public class WindowsProcessManager extends AbstractProcessManager {
       Pattern.compile("^\\s*(?<CommanLine>.*?)\\s+(?<Pid>\\d+)\\s*$");
 
   @Override
-  public void kill(final Process process, final long pid) throws IOException {
+  protected String[] getRunningProcessesCommand(final String process) {
 
-    execute(new String[] {"taskkill", "/t", "/f", "/pid", String.valueOf(pid)});
+    return new String[] {
+      "cmd", "/c", "wmic process where(name like '" + process + "%') get commandline,processid"
+    };
+  }
+
+  @Override
+  protected Pattern getRunningProcessLinePattern() {
+
+    return PROCESS_GET_LINE;
   }
 
   /**
@@ -53,16 +61,8 @@ public class WindowsProcessManager extends AbstractProcessManager {
   }
 
   @Override
-  protected String[] getCurrentProcessesCommand(final String process) {
+  public void kill(final Process process, final long pid) throws IOException {
 
-    return new String[] {
-      "cmd", "/c", "wmic process where(name like '" + process + "%') get commandline,processid"
-    };
-  }
-
-  @Override
-  protected Pattern getProcessLinePattern() {
-
-    return PROCESS_GET_LINE;
+    execute(new String[] {"taskkill", "/t", "/f", "/pid", String.valueOf(pid)});
   }
 }

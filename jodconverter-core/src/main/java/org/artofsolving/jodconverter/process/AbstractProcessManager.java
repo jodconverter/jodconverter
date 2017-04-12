@@ -29,7 +29,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Base class for all process manager implementations. */
+/**
+ * Base class for all process manager implementations included in the standard JODConverter
+ * distribution.
+ */
 public abstract class AbstractProcessManager implements ProcessManager {
 
   private static class StreamPumper extends Thread {
@@ -84,10 +87,10 @@ public abstract class AbstractProcessManager implements ProcessManager {
   }
 
   /**
-   * Execute the specified command and return the output.
+   * Executes the specified command and return the output.
    *
    * @param cmdarray array containing the command to call and its arguments.
-   * @return the execution output.
+   * @return the command execution output.
    * @throws IOException if an I/O error occurs.
    */
   protected List<String> execute(final String[] cmdarray) throws IOException {
@@ -104,8 +107,12 @@ public abstract class AbstractProcessManager implements ProcessManager {
       outPumper.join();
       errPumper.join();
     } catch (InterruptedException ex) {
-      logger.error(
-          "The current thread was interrupted while waiting for command lines output.", ex);
+
+      // Log the interruption
+      logger.warn(
+          "The current thread was interrupted while waiting for command execution output.", ex);
+      // Restore the interrupted status
+      Thread.currentThread().interrupt();
     }
 
     final List<String> outLines = outPumper.getOutputLines();
@@ -130,8 +137,8 @@ public abstract class AbstractProcessManager implements ProcessManager {
     final Pattern commandPattern =
         Pattern.compile(
             Pattern.quote(query.getCommand()) + ".*" + Pattern.quote(query.getArgument()));
-    final Pattern processLinePattern = getProcessLinePattern();
-    final String[] currentProcessesCommand = getCurrentProcessesCommand(query.getCommand());
+    final Pattern processLinePattern = getRunningProcessLinePattern();
+    final String[] currentProcessesCommand = getRunningProcessesCommand(query.getCommand());
 
     logger.debug(
         "Finding PID using\n"
@@ -171,19 +178,21 @@ public abstract class AbstractProcessManager implements ProcessManager {
   }
 
   /**
-   * Gets the command to be executed to get a snapshot of all the running processes starting with
+   * Gets the command to be executed to get a snapshot of all the running processes identified by
    * the specified argument (process).
    *
    * @param process name of the process to query for.
    * @return an array containing the command to call and its arguments.
    */
-  protected abstract String[] getCurrentProcessesCommand(String process);
+  protected abstract String[] getRunningProcessesCommand(String process);
 
   /**
    * Gets the pattern to be used to match an output line containing the information about a running
-   * process.
+   * process. The output lines being tested against this pattern are the result of the execution of
+   * the command returned by the getRunningProcessesCommand function.
    *
    * @return the pattern.
+   * @see #getRunningProcessesCommand(String)
    */
-  protected abstract Pattern getProcessLinePattern();
+  protected abstract Pattern getRunningProcessLinePattern();
 }

@@ -49,7 +49,7 @@ public class UnixProcessManager extends AbstractProcessManager {
   }
 
   @Override
-  protected String[] getCurrentProcessesCommand(final String process) {
+  protected String[] getRunningProcessesCommand(final String process) {
 
     return new String[] {
       "/bin/bash", "-c", "/bin/ps -e -o pid,args | /bin/grep " + process + " | /bin/grep -v grep"
@@ -57,7 +57,7 @@ public class UnixProcessManager extends AbstractProcessManager {
   }
 
   @Override
-  protected Pattern getProcessLinePattern() {
+  protected Pattern getRunningProcessLinePattern() {
 
     return PS_OUTPUT_LINE;
   }

@@ -34,20 +34,20 @@ public class ProcessQuery {
   }
 
   /**
-   * Gets the command of the process to query.
-   *
-   * @return the process command.
-   */
-  public String getCommand() {
-    return command;
-  }
-
-  /**
    * Gets the arguments of the process to query.
    *
    * @return the process argument.
    */
   public String getArgument() {
     return argument;
+  }
+
+  /**
+   * Gets the command of the process to query.
+   *
+   * @return the process command.
+   */
+  public String getCommand() {
+    return command;
   }
 }
