@@ -7,10 +7,13 @@ ext {
     libraries = [
 
             // Apache Commons Libraries
+            commons_beanutils                  : "commons-beanutils:commons-beanutils:$commonsBeanUtilsVersion",
+            commons_configuration              : "org.apache.commons:commons-configuration2:$commonsConfiguration",
             commons_cli                        : "commons-cli:commons-cli:$commonsCliVersion",
             commons_fileupload                 : "commons-fileupload:commons-fileupload:$commonsFileUploadVersion",
             commons_io                         : "commons-io:commons-io:$commonsIoVersion",
             commons_lang3                      : "org.apache.commons:commons-lang3:$commonsLang3Version",
+            commons_logging                    : "commons-logging:commons-logging:$commonsLogging",
 
             // Office Libraries (OpenOffice and LibreOffice)
             office_juh                         : (useOpenOffice ? "org.openoffice:juh:$openOfficeVersion"   : "org.libreoffice:juh:$libreOfficeVersion"),

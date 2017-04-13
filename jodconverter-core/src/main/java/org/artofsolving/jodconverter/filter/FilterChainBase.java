@@ -75,7 +75,7 @@ public abstract class FilterChainBase implements FilterChain {
    *
    * @param filter the filter to add at the end of the chain.
    */
-  protected void addFilter(final Filter filter) {
+  public void addFilter(final Filter filter) {
 
     if (readOnly) {
       throw new UnsupportedOperationException();

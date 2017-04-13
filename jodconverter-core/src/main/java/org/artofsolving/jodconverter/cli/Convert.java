@@ -24,6 +24,12 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.configuration2.XMLConfiguration;
+import org.apache.commons.configuration2.beanutils.BeanDeclaration;
+import org.apache.commons.configuration2.beanutils.BeanHelper;
+import org.apache.commons.configuration2.beanutils.XMLBeanDeclaration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -31,6 +37,10 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.JsonDocumentFormatRegistry;
+import org.artofsolving.jodconverter.filter.DefaultFilterChain;
+import org.artofsolving.jodconverter.filter.FilterChain;
+import org.artofsolving.jodconverter.filter.FilterChainBeanFactory;
+import org.artofsolving.jodconverter.filter.RefreshFilter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
@@ -92,6 +102,13 @@ public final class Convert {
           .hasArg()
           .desc("use settings from the given user installation dir (optional)")
           .build();
+  private static final Option OPTION_FILTER_CHAIN =
+      Option.builder("f")
+          .longOpt("filter-chain")
+          .argName("file")
+          .hasArg()
+          .desc("filter chain configuration (optional)")
+          .build();
 
   private static final Options OPTIONS = initOptions();
   private static final int DEFAULT_OFFICE_PORT = 2002;
@@ -108,6 +125,7 @@ public final class Convert {
     options.addOption(OPTION_REGISTRY);
     options.addOption(OPTION_TIMEOUT);
     options.addOption(OPTION_USER_PROFILE);
+    options.addOption(OPTION_FILTER_CHAIN);
     return options;
   }
 
@@ -158,6 +176,27 @@ public final class Convert {
       registry = DefaultDocumentFormatRegistry.create();
     }
 
+    FilterChain filterChain;
+    if (commandLine.hasOption(OPTION_FILTER_CHAIN.getOpt())) {
+
+      final Parameters params = new Parameters();
+      final FileBasedConfigurationBuilder<XMLConfiguration> builder =
+          new FileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
+              .configure(
+                  params
+                      .xml()
+                      .setFileName(commandLine.getOptionValue(OPTION_FILTER_CHAIN.getOpt())));
+      final XMLConfiguration config = builder.getConfiguration();
+
+      // Create the filter chain from the XML configuration
+      final BeanDeclaration decl = new XMLBeanDeclaration(config, "filterChain");
+      final BeanHelper helper = new BeanHelper(new FilterChainBeanFactory());
+      filterChain = (FilterChain) helper.createBean(decl);
+
+    } else {
+      filterChain = new DefaultFilterChain(RefreshFilter.INSTANCE);
+    }
+
     final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
     configuration.setPortNumber(port);
     configuration.setKillExistingProcess(killExistingProcess);
@@ -182,7 +221,7 @@ public final class Convert {
       final OfficeDocumentConverter converter =
           new OfficeDocumentConverter(officeManager, registry);
       if (outputFormat == null) {
-        converter.convert(new File(fileNames[0]), new File(fileNames[1]));
+        converter.convert(filterChain, new File(fileNames[0]), new File(fileNames[1]));
       } else {
         for (int i = 0; i < fileNames.length; i++) {
           converter.convert(

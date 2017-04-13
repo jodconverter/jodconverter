@@ -29,6 +29,13 @@ import org.artofsolving.jodconverter.office.OfficeException;
 public interface FilterChain {
 
   /**
+   * Adds a filter to the chain.
+   *
+   * @param filter the filter to add at the end of the chain.
+   */
+  void addFilter(Filter filter);
+
+  /**
    * Causes the next filter in the chain to be invoked, or if the calling filter is the last filter
    * in the chain, do nothing.
    *

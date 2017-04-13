@@ -2,6 +2,7 @@ description = 'JODConverter - Core Library'
 
 dependencies {
     compile libraries.commons_cli
+    compile libraries.commons_configuration
     compile libraries.commons_io
     compile libraries.commons_lang3
     compile libraries.json_java
@@ -10,6 +11,9 @@ dependencies {
     compile libraries.office_ridl
     compile libraries.office_unoil
     compile libraries.slf4j_api
+    
+    runtime libraries.commons_beanutils
+    runtime libraries.commons_logging
 
     testCompile libraries.slf4j_log4j
 }

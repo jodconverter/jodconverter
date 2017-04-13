@@ -20,6 +20,14 @@ package org.artofsolving.jodconverter.filter;
 public class DefaultFilterChain extends FilterChainBase {
 
   /**
+   * Creates a FilterChain without any filters. Filters can later on be added using {@link
+   * #addFilter(Filter)}.
+   */
+  public DefaultFilterChain() {
+    super();
+  }
+
+  /**
    * Creates a FilterChain that will contains the specified filters.
    *
    * @param filters the filters to add to the chain.
