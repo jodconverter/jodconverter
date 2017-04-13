@@ -123,10 +123,10 @@ spotless {
         googleJavaFormat()
         
         // Import order
-        importOrderFile "$rootDir/SPOTLESS_IMPORT_ORDER"
+        importOrderFile "$rootDir/spotless.importorder"
 
         // Java Source Header File
-        licenseHeaderFile("$rootDir/SPOTLESS_LICENSE_HEADER")
+        licenseHeaderFile("$rootDir/spotless.license.java")
     }
 }
 
