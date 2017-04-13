@@ -53,11 +53,11 @@ public class StressTest {
   @Test
   public void runParallelConversions() throws Exception {
 
-    String pattern = "%d{ISO8601} %-5p [%c{3}] [%t] %m%n";
+    final String pattern = "%d{ISO8601} %-5p [%c{3}] [%t] %m%n";
     Logger.getRootLogger().removeAllAppenders();
 
     // Create console appender
-    ConsoleAppender console = new ConsoleAppender();
+    final ConsoleAppender console = new ConsoleAppender();
     console.setWriter(new OutputStreamWriter(System.out));
     console.setLayout(new PatternLayout(pattern));
     console.setThreshold(Level.DEBUG);
@@ -65,7 +65,7 @@ public class StressTest {
     Logger.getRootLogger().addAppender(console);
 
     // Keep a log file to be able to see if an error occured
-    FileAppender fileAppender = new FileAppender();
+    final FileAppender fileAppender = new FileAppender();
     fileAppender.setName("FileLogger");
     fileAppender.setFile("test-output/" + StressTest.class.getSimpleName() + "/test.log");
     fileAppender.setLayout(new PatternLayout(pattern));

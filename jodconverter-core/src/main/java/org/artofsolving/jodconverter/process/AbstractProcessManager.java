@@ -149,7 +149,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
         processLinePattern.pattern(),
         commandPattern.pattern());
 
-    List<String> lines = execute(currentProcessesCommand);
+    final List<String> lines = execute(currentProcessesCommand);
     for (final String line : lines) {
       if (StringUtils.isBlank(line)) {
         // Skip this one
