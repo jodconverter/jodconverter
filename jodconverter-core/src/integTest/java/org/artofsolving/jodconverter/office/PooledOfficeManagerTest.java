@@ -37,7 +37,7 @@ public class PooledOfficeManagerTest {
       LoggerFactory.getLogger(PooledOfficeManagerTest.class);
 
   private static final UnoUrl CONNECTION_MODE = UnoUrlUtils.socket(2002);
-  private static final long RESTART_WAIT_TIME = 2 * 1000; // 2 Seconds.
+  private static final long RESTART_WAIT_TIME = 5 * 1000; // 5 Seconds.
 
   /**
    * Tests the execution of a task.

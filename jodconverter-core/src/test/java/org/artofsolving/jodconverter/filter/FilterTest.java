@@ -38,11 +38,14 @@ import org.artofsolving.jodconverter.office.OfficeManager;
 
 public abstract class FilterTest {
 
+  private static final Logger logger = LoggerFactory.getLogger(FilterTest.class);
+
   protected static OfficeManager officeManager;
   protected static OfficeDocumentConverter converter;
   protected static DocumentFormatRegistry formatRegistry;
-
-  private final Logger logger = LoggerFactory.getLogger(getClass().getName());
+  protected static final String RESOURCES_DIR = "src/test/resources/";
+  protected static final String DOCUMENTS_DIR = RESOURCES_DIR + "documents/";
+  protected static final String TEST_OUTPUT_DIR = "test-output/";
 
   /**
    * Starts a default office manager before the execution of the first test in this class.

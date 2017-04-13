@@ -27,11 +27,10 @@ import org.artofsolving.jodconverter.office.OfficeException;
 
 public class TextInserterFilterTest extends FilterTest {
 
-  private static final String SOURCE_FILE = "src/test/resources/documents/test.doc";
-  private static final String SOURCE_MULTI_PAGE_FILE =
-      "src/test/resources/documents/test_multi_page.doc";
+  private static final String SOURCE_FILE = DOCUMENTS_DIR + "test.doc";
+  private static final String SOURCE_MULTI_PAGE_FILE = DOCUMENTS_DIR + "test_multi_page.doc";
   private static final String OUTPUT_DIR =
-      "test-output/" + TextInserterFilterTest.class.getSimpleName();
+      TEST_OUTPUT_DIR + TextInserterFilterTest.class.getSimpleName();
 
   /** Clears the output directory before the execution of the first test in this class. */
   @BeforeClass
@@ -87,8 +86,8 @@ public class TextInserterFilterTest extends FilterTest {
             "This is a test of text insertion",
             100, // Width, 10 CM
             20, // Height, 2 CM
-            50, // Horizontal Position // 5 CM
-            100); // Vertical Position // 10 CM
+            50, // Horizontal Position, 5 CM
+            100); // Vertical Position , 10 CM
 
     // Test the filter
     testFilters(sourceFile, testOutputDir, "test.default", filter, RefreshFilter.INSTANCE);

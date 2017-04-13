@@ -1,7 +1,7 @@
 // Import the content of the libraries.gradle file
 apply from: "./libraries.gradle"
 
-description = 'JODConverter - Core Library'
+description = 'JODConverter'
 
 // External dependencies for the build script
 buildscript {

@@ -26,10 +26,10 @@ import org.artofsolving.jodconverter.office.OfficeException;
 
 public class MultipleFiltersTest extends FilterTest {
 
-  private static final String SOURCE_FILE = "src/test/resources/documents/test_replace.doc";
-  private static final String IMAGE_FILE = "src/test/resources/images/sample-1.jpg";
+  private static final String SOURCE_FILE = DOCUMENTS_DIR + "test_replace.doc";
+  private static final String IMAGE_FILE = RESOURCES_DIR + "images/sample-1.jpg";
   private static final String OUTPUT_DIR =
-      "test-output/" + MultipleFiltersTest.class.getSimpleName();
+      TEST_OUTPUT_DIR + MultipleFiltersTest.class.getSimpleName();
 
   /** Clears the output directory before the execution of the first test in this class. */
   @BeforeClass
