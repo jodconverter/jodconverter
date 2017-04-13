@@ -22,14 +22,13 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
 
 public class OfficeUtilsTest {
 
-  // TODO create separate tests for Windows
-
-  /** Tests the OfficeUtils.toUrl function. */
+  /** Tests the OfficeUtils.toUrl function on unix OS. */
   @Test
   public void unixToUrl() {
 
@@ -39,5 +38,22 @@ public class OfficeUtilsTest {
     assertEquals(
         toUrl(new File("/tmp/document with spaces.odt")),
         "file:///tmp/document%20with%20spaces.odt");
+  }
+
+  /** Tests the OfficeUtils.toUrl function on Windows OS. */
+  @Test
+  public void windowsToUrl() {
+
+    assumeTrue(SystemUtils.IS_OS_WINDOWS);
+
+    String tempDir = System.getProperty("java.io.tmpdir");
+    final File tempDirFile = new File(tempDir);
+    tempDir = FilenameUtils.normalizeNoEndSeparator(tempDir, true);
+
+    assertEquals(
+        toUrl(new File(tempDirFile, "document.odt")), "file:///" + tempDir + "/document.odt");
+    assertEquals(
+        toUrl(new File(tempDirFile, "document with spaces.odt")),
+        "file:///" + tempDir + "/document%20with%20spaces.odt");
   }
 }
