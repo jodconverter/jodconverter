@@ -22,6 +22,7 @@ In order to be able to apply changes to the JODConverter project, I had to under
 	- Fix reported bugs (will always be the priority).
 	- ~~Take a look at [Oshi](https://github.com/oshi/oshi) for processes management (SIGAR replacement). Seems promising... (Advice and comments always welcome).~~ *Finally, seems overkill for the needs of the library. Any suggestions out there ?*
 	- Improve the sample-webapp project.
+	- Add more documentation.
 	- Have fun!
 
 ## Thanks To...
