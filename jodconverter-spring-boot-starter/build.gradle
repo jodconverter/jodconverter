@@ -1,6 +1,6 @@
 apply plugin: 'io.spring.dependency-management' // Provides spring dependency management functionality
 
-description = 'JODConverter - Spring Boot Starter'
+description = 'JODConverterEX - Spring Boot Starter'
 
 // See https://github.com/spring-gradle-plugins/dependency-management-plugin
 dependencyManagement {
