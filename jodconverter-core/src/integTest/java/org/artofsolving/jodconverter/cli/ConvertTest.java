@@ -40,11 +40,24 @@ public class ConvertTest {
   }
 
   @Test
-  public void convertWithFilterChain() throws Exception {
+  public void convertWithMultipleFilters() throws Exception {
 
-    final File filterChainFile = new File(CONFIG_DIR + "filterchain.xml");
+    final File filterChainFile = new File(CONFIG_DIR + "filterchain_multiple.xml");
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "convertWithFilterChain.pdf");
+    final File outputFile = new File(OUTPUT_DIR, "convertconvertWithSingleFilters.pdf");
+
+    Convert.main(
+        new String[] {"-f", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()});
+
+    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+  }
+
+  @Test
+  public void convertWithSingleFilter() throws Exception {
+
+    final File filterChainFile = new File(CONFIG_DIR + "filterchain_single.xml");
+    final File inputFile = new File(SOURCE_FILE);
+    final File outputFile = new File(OUTPUT_DIR, "convertWithSingleFilter.pdf");
 
     Convert.main(
         new String[] {"-f", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()});

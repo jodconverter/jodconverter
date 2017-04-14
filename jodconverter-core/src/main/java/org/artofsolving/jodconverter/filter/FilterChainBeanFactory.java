@@ -65,7 +65,7 @@ public class FilterChainBeanFactory extends DefaultBeanFactory {
       for (Object elemDef : (Collection<?>) prop) {
         if (!(elemDef instanceof XMLBeanDeclaration)) {
           throw new ConfigurationRuntimeException(
-              "Expected filter element to be a bean declaration bu was not.");
+              "Expected filter element to be a bean declaration but was not.");
         }
 
         Object beanFilter = BeanHelper.INSTANCE.createBean((XMLBeanDeclaration) elemDef);
@@ -76,7 +76,17 @@ public class FilterChainBeanFactory extends DefaultBeanFactory {
         filterChain.addFilter((Filter) beanFilter);
       }
     } else {
-      System.out.println("");
+      if (!(prop instanceof XMLBeanDeclaration)) {
+        throw new ConfigurationRuntimeException(
+            "Expected filter element to be a bean declaration but was not.");
+      }
+      
+      Object beanFilter = BeanHelper.INSTANCE.createBean((XMLBeanDeclaration) prop);
+      if (!(beanFilter instanceof Filter)) {
+        throw new ConfigurationRuntimeException("A filter must implement the Filter interface.");
+      }
+
+      filterChain.addFilter((Filter) beanFilter);
     }
   }
 }
