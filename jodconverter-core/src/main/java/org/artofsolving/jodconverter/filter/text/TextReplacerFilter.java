@@ -14,7 +14,7 @@
  *    http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package org.artofsolving.jodconverter.filter;
+package org.artofsolving.jodconverter.filter.text;
 
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -25,6 +25,8 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XReplaceDescriptor;
 import com.sun.star.util.XReplaceable;
 
+import org.artofsolving.jodconverter.filter.Filter;
+import org.artofsolving.jodconverter.filter.FilterChain;
 import org.artofsolving.jodconverter.office.OfficeContext;
 import org.artofsolving.jodconverter.office.OfficeException;
 
@@ -80,7 +82,7 @@ public class TextReplacerFilter implements Filter {
 
       logger.debug("Change all occurrences of ...");
       for (int i = 0; i < searchList.length; i++) {
-        logger.debug(searchList[i] + " -> " + replacementList[i]);
+        logger.debug("{} -> {}", searchList[i], replacementList[i]);
         // Set the properties the replace method need
         replaceDescr.setSearchString(searchList[i]);
         replaceDescr.setReplaceString(replacementList[i]);

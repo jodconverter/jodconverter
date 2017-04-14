@@ -14,7 +14,7 @@
  *    http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package org.artofsolving.jodconverter.filter;
+package org.artofsolving.jodconverter.filter.text;
 
 import java.awt.Dimension;
 import java.util.LinkedHashMap;
@@ -35,6 +35,8 @@ import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.uno.UnoRuntime;
+
+import org.artofsolving.jodconverter.filter.Filter;
 
 /** Base class for all filter used to insert a TextContent into a document. */
 public abstract class TextContentInserterFilter implements Filter {

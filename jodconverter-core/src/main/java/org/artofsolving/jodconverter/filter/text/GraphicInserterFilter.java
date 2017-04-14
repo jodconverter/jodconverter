@@ -14,7 +14,7 @@
  *    http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package org.artofsolving.jodconverter.filter;
+package org.artofsolving.jodconverter.filter.text;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -41,6 +41,7 @@ import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.uno.UnoRuntime;
 
+import org.artofsolving.jodconverter.filter.FilterChain;
 import org.artofsolving.jodconverter.office.OfficeContext;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeUtils;
