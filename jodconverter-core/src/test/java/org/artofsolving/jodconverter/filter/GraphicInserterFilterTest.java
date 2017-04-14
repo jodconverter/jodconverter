@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.artofsolving.jodconverter.filter.text.GraphicInserterFilter;
 import org.artofsolving.jodconverter.office.OfficeException;
 
 public class GraphicInserterFilterTest extends FilterTest {

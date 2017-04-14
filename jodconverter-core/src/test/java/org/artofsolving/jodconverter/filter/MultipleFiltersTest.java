@@ -22,6 +22,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.artofsolving.jodconverter.filter.text.GraphicInserterFilter;
+import org.artofsolving.jodconverter.filter.text.TextReplacerFilter;
 import org.artofsolving.jodconverter.office.OfficeException;
 
 public class MultipleFiltersTest extends FilterTest {
