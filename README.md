@@ -1,4 +1,4 @@
-# JODConverter Ex (Extended, Extra, E'x'cetera)
+# JODConverterEX ('EX'tended, 'EX'tra, 'EX'cetera)
 
 I created this fork because I had to do some changes to the original project and I want to share my work with the community.
 
@@ -6,11 +6,11 @@ In order to be able to apply changes to the JODConverter project, I had to under
 
 ## What you want to know...
 
-- **SIGAR**: This fork does not depend on SIGAR.
+- **SIGAR**: This fork does not depend on SIGAR. JODConverter only needs to retrieve office processes (PIDs) and kill office processes (using PID). It should work just fine without SIGAR with the actual process managers base on an older version of JODConverter. But I added the ability to use any process manager you would like to implement. More details on this feature later. For now, just look at the DefaultOfficeManagerBuilder class documentation. 
 
 - **Dependencies**: The core project of this fork depends on slf4j, commons-lang3, commons-io, and the required LibreOffice libraries (for now, everything seems to work nice with OpenOffice too).
 
-- **Tests**: This fork has been tested (by me) only on Windows. But the library is supposed to work just fine on Mac and Unix. Any confirmation would be welcome.
+- **Tests**: This fork has been tested on Windows and Ubuntu. But JODConverter is supposed to work just fine on Mac and other Unix/Linux OS. Any confirmation would be welcome so we could build a list of official supported OS.
 
 - **What's next**: my goals are to:
 	- ~~Add some filters in order to be able to add text, images, and whatever we are able to change while converting a document.~~ *Mostly Done (text replacement, graphic and text insertion all done. Now ideas are welcome)*
@@ -44,6 +44,12 @@ gradlew clean build -x test -x integTest
 ### Using OpenOffice libraries:
 ```Shell
 gradlew clean build -x test -x integTest -PuseOpenOffice
+```
+
+## Building Cli Executable
+
+```Shell
+gradlew clean build -x test -x integTest distZip
 ```
 
 ## Original JODConverter
