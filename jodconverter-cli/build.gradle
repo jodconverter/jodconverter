@@ -1,0 +1,23 @@
+description = 'JODConverterEX - Cli'
+
+dependencies {
+    compile project(':jodconverter-core')
+    
+    compile libraries.commons_cli
+    compile libraries.commons_configuration
+    
+    runtime libraries.commons_beanutils
+    runtime libraries.commons_logging
+}
+
+// Create an executable for the client module
+// todo: include documentation with the distibution
+// See https://docs.gradle.org/current/userguide/application_plugin.html
+apply plugin: 'application'
+
+mainClassName = "org.artofsolving.jodconverter.cli.Convert"
+
+//Get dependencies from Maven central repository
+repositories {
+    mavenCentral()
+}

@@ -39,7 +39,6 @@ import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.JsonDocumentFormatRegistry;
 import org.artofsolving.jodconverter.filter.DefaultFilterChain;
 import org.artofsolving.jodconverter.filter.FilterChain;
-import org.artofsolving.jodconverter.filter.FilterChainBeanFactory;
 import org.artofsolving.jodconverter.filter.RefreshFilter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeManager;

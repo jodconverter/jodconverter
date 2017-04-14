@@ -14,7 +14,7 @@
  *    http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package org.artofsolving.jodconverter.filter;
+package org.artofsolving.jodconverter.cli;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,6 +25,9 @@ import org.apache.commons.configuration2.beanutils.BeanHelper;
 import org.apache.commons.configuration2.beanutils.DefaultBeanFactory;
 import org.apache.commons.configuration2.beanutils.XMLBeanDeclaration;
 import org.apache.commons.configuration2.ex.ConfigurationRuntimeException;
+
+import org.artofsolving.jodconverter.filter.Filter;
+import org.artofsolving.jodconverter.filter.FilterChain;
 
 public class FilterChainBeanFactory extends DefaultBeanFactory {
 
@@ -80,7 +83,7 @@ public class FilterChainBeanFactory extends DefaultBeanFactory {
         throw new ConfigurationRuntimeException(
             "Expected filter element to be a bean declaration but was not.");
       }
-      
+
       Object beanFilter = BeanHelper.INSTANCE.createBean((XMLBeanDeclaration) prop);
       if (!(beanFilter instanceof Filter)) {
         throw new ConfigurationRuntimeException("A filter must implement the Filter interface.");
