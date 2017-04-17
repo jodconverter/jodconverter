@@ -17,21 +17,26 @@
 package org.artofsolving.jodconverter.cli;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.beanutils.BeanDeclaration;
 import org.apache.commons.configuration2.beanutils.BeanHelper;
 import org.apache.commons.configuration2.beanutils.XMLBeanDeclaration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.lang3.StringUtils;
 
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
@@ -41,6 +46,7 @@ import org.artofsolving.jodconverter.filter.DefaultFilterChain;
 import org.artofsolving.jodconverter.filter.FilterChain;
 import org.artofsolving.jodconverter.filter.RefreshFilter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
 /** Command line interface executable. */
@@ -50,15 +56,30 @@ public final class Convert {
   public static final int STATUS_MISSING_INPUT_FILE = 1;
   public static final int STATUS_INVALID_ARGUMENTS = 255;
 
-  private static final Option OPTION_PROCESS_MANAGER =
-      Option.builder("pm")
-          .longOpt("process-manager")
-          .argName("class")
+  private static final Option OPTION_FILTER_CHAIN =
+      Option.builder("c")
+          .longOpt("filter-chain")
+          .argName("file")
           .hasArg()
-          .desc("class name of the process manager to use (optional; defaults to auto-detect)")
+          .desc("Filter chain configuration file (optional)")
           .build();
+  private static final Option OPTION_OUTPUT_DIRECTORY =
+      Option.builder("d")
+          .longOpt("output-directory")
+          .argName("dir")
+          .hasArg()
+          .desc("output directory (optional; defaults to input directory)")
+          .build();
+  private static final Option OPTION_OUTPUT_FORMAT =
+      Option.builder("f")
+          .longOpt("output-format")
+          .hasArg()
+          .desc("output format (e.g. pdf)")
+          .build();
+  private static final Option OPTION_HELP =
+      Option.builder("h").longOpt("help").desc("print help message").build();
   private static final Option OPTION_OFFICE_HOME =
-      Option.builder("h")
+      Option.builder("i")
           .longOpt("office-home")
           .argName("dir")
           .hasArg()
@@ -67,13 +88,14 @@ public final class Convert {
   private static final Option OPTION_KILL_EXISTING_PROCESS =
       Option.builder("k")
           .longOpt("kill-process")
-          .desc("kill existing office process (optional; defaults to true)")
+          .desc("Kill existing office process (optional)")
           .build();
-  private static final Option OPTION_OUTPUT_FORMAT =
-      Option.builder("o")
-          .longOpt("output-format")
+  private static final Option OPTION_PROCESS_MANAGER =
+      Option.builder("m")
+          .longOpt("process-manager")
+          .argName("classname")
           .hasArg()
-          .desc("output format (e.g. pdf)")
+          .desc("class name of the process manager to use (optional; defaults to auto-detect)")
           .build();
   private static final Option OPTION_PORT =
       Option.builder("p")
@@ -101,81 +123,129 @@ public final class Convert {
           .hasArg()
           .desc("use settings from the given user installation dir (optional)")
           .build();
-  private static final Option OPTION_FILTER_CHAIN =
-      Option.builder("f")
-          .longOpt("filter-chain")
-          .argName("file")
-          .hasArg()
-          .desc("filter chain configuration (optional)")
-          .build();
+  private static final Option OPTION_VERSION =
+      Option.builder("v").longOpt("version").desc("print version").build();
 
   private static final Options OPTIONS = initOptions();
-  private static final int DEFAULT_OFFICE_PORT = 2002;
-  private static final boolean DEFAULT_KILL_EXISTING_PROCESS = true;
 
-  private static Options initOptions() {
+  private static void checkPrintInfoAndExit(final CommandLine commandLine) {
 
-    final Options options = new Options();
-    options.addOption(OPTION_PROCESS_MANAGER);
-    options.addOption(OPTION_OFFICE_HOME);
-    options.addOption(OPTION_KILL_EXISTING_PROCESS);
-    options.addOption(OPTION_OUTPUT_FORMAT);
-    options.addOption(OPTION_PORT);
-    options.addOption(OPTION_REGISTRY);
-    options.addOption(OPTION_TIMEOUT);
-    options.addOption(OPTION_USER_PROFILE);
-    options.addOption(OPTION_FILTER_CHAIN);
-    return options;
+    if (commandLine.hasOption(OPTION_HELP.getOpt())) {
+      printHelp();
+      System.exit(0);
+    }
+
+    if (commandLine.hasOption(OPTION_VERSION.getOpt())) {
+      final Package p = Convert.class.getPackage();
+      System.out.println("jodconverter-cli version " + p.getImplementationVersion()); // NOSONAR
+      System.exit(0);
+    }
   }
 
-  /**
-   * Main entry point of the program.
-   *
-   * @param arguments program arguments.
-   * @throws Exception if an error occurs.
-   */
-  public static void main(final String[] arguments) throws Exception { // NOSONAR
+  private static void convertSources(
+      final OfficeDocumentConverter converter,
+      final String[] sources,
+      final File outputDir,
+      final String outputFormat,
+      final FilterChain filterChain)
+      throws OfficeException {
 
-    final CommandLineParser commandLineParser = new DefaultParser();
-    final CommandLine commandLine = commandLineParser.parse(OPTIONS, arguments);
+    if (outputFormat == null) {
 
-    String outputFormat = null;
-    if (commandLine.hasOption(OPTION_OUTPUT_FORMAT.getOpt())) {
-      outputFormat = commandLine.getOptionValue(OPTION_OUTPUT_FORMAT.getOpt());
-    }
+      // For all the input/output pairs...
+      for (int i = 0; i < sources.length; i += 2) {
 
-    int port = DEFAULT_OFFICE_PORT;
-    if (commandLine.hasOption(OPTION_PORT.getOpt())) {
-      port = Integer.parseInt(commandLine.getOptionValue(OPTION_PORT.getOpt()));
-    }
+        final File sourceFile = new File(sources[i]);
 
-    boolean killExistingProcess = DEFAULT_KILL_EXISTING_PROCESS;
-    if (commandLine.hasOption(OPTION_KILL_EXISTING_PROCESS.getOpt())) {
-      killExistingProcess =
-          Boolean.parseBoolean(commandLine.getOptionValue(OPTION_KILL_EXISTING_PROCESS.getOpt()));
-    }
+        String targetFullPath = FilenameUtils.getFullPath(sources[i + 1]);
+        String targetName = FilenameUtils.getName(sources[i + 1]);
+        String targetDirectory =
+            StringUtils.isBlank(targetFullPath)
+                ? FilenameUtils.getFullPath(sources[i])
+                : targetFullPath;
 
-    final String[] fileNames = commandLine.getArgs();
-    if ((outputFormat == null && fileNames.length != 2) || fileNames.length < 1) {
-      new HelpFormatter()
-          .printHelp(
-              "java -jar jodconverter-core.jar [options] input-file output-file\n"
-                  + "or [options] -o output-format input-file [input-file...]",
-              OPTIONS);
-      System.exit(STATUS_INVALID_ARGUMENTS);
-    }
+        converter.convert(
+            filterChain,
+            sourceFile,
+            new File(outputDir == null ? new File(targetDirectory) : outputDir, targetName));
+      }
 
-    DocumentFormatRegistry registry;
-    if (commandLine.hasOption(OPTION_REGISTRY.getOpt())) {
-      registry =
-          JsonDocumentFormatRegistry.create(
-              FileUtils.readFileToString(
-                  new File(commandLine.getOptionValue(OPTION_REGISTRY.getOpt())), "UTF-8"));
     } else {
-      registry = DefaultDocumentFormatRegistry.create();
+
+      // For all the input arguments...
+      for (final String source : sources) {
+
+        // Create a file instance with the argument and also get the parent directory
+        final File sourceFile = new File(source);
+        final File sourceFileParent = new File(FilenameUtils.getFullPath(source));
+
+        // If the argument is a file, just convert it.
+        if (sourceFile.isFile()) {
+          converter.convert(
+              filterChain,
+              new File(source),
+              new File(
+                  outputDir == null ? sourceFileParent : outputDir,
+                  FilenameUtils.getBaseName(source) + "." + outputFormat));
+        } else {
+
+          // If the argument is not a file, check if it has a wildcard
+          // to match multiple files
+          if (sourceFileParent.isDirectory()) {
+            final String wildcard = FilenameUtils.getBaseName(source);
+            final File[] files =
+                sourceFileParent.listFiles((FileFilter) new WildcardFileFilter(wildcard));
+            for (final File file : files) {
+              converter.convert(
+                  filterChain,
+                  file,
+                  new File(
+                      outputDir == null ? sourceFileParent : outputDir,
+                      FilenameUtils.getBaseName(file.getName()) + "." + outputFormat));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private static DefaultOfficeManagerBuilder createDefaultOfficeManagerBuilder(
+      final CommandLine commandLine) {
+
+    final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
+
+    if (commandLine.hasOption(OPTION_OFFICE_HOME.getOpt())) {
+      configuration.setOfficeHome(commandLine.getOptionValue(OPTION_OFFICE_HOME.getOpt()));
     }
 
-    FilterChain filterChain;
+    configuration.setKillExistingProcess(
+        commandLine.hasOption(OPTION_KILL_EXISTING_PROCESS.getOpt()));
+
+    if (commandLine.hasOption(OPTION_PROCESS_MANAGER.getOpt())) {
+      configuration.setProcessManager(commandLine.getOptionValue(OPTION_PROCESS_MANAGER.getOpt()));
+    }
+
+    if (commandLine.hasOption(OPTION_PORT.getOpt())) {
+      configuration.setPortNumber(
+          Integer.parseInt(commandLine.getOptionValue(OPTION_PORT.getOpt())));
+    }
+
+    if (commandLine.hasOption(OPTION_TIMEOUT.getOpt())) {
+      configuration.setTaskExecutionTimeout(
+          Long.parseLong(commandLine.getOptionValue(OPTION_TIMEOUT.getOpt())) * 1000L);
+    }
+
+    if (commandLine.hasOption(OPTION_USER_PROFILE.getOpt())) {
+      configuration.setTemplateProfileDir(
+          new File(commandLine.getOptionValue(OPTION_USER_PROFILE.getOpt())));
+    }
+
+    return configuration;
+  }
+
+  private static FilterChain getFilterChainOption(final CommandLine commandLine)
+      throws ConfigurationException {
+
     if (commandLine.hasOption(OPTION_FILTER_CHAIN.getOpt())) {
 
       final Parameters params = new Parameters();
@@ -190,51 +260,123 @@ public final class Convert {
       // Create the filter chain from the XML configuration
       final BeanDeclaration decl = new XMLBeanDeclaration(config, "filterChain");
       final BeanHelper helper = new BeanHelper(new FilterChainBeanFactory());
-      filterChain = (FilterChain) helper.createBean(decl);
-
-    } else {
-      filterChain = new DefaultFilterChain(RefreshFilter.INSTANCE);
+      return (FilterChain) helper.createBean(decl);
     }
 
-    final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
-    configuration.setPortNumber(port);
-    configuration.setKillExistingProcess(killExistingProcess);
-    if (commandLine.hasOption(OPTION_PROCESS_MANAGER.getOpt())) {
-      configuration.setProcessManager(commandLine.getOptionValue(OPTION_PROCESS_MANAGER.getOpt()));
-    }
-    if (commandLine.hasOption(OPTION_OFFICE_HOME.getOpt())) {
-      configuration.setOfficeHome(commandLine.getOptionValue(OPTION_OFFICE_HOME.getOpt()));
-    }
-    if (commandLine.hasOption(OPTION_TIMEOUT.getOpt())) {
-      configuration.setTaskExecutionTimeout(
-          Long.parseLong(commandLine.getOptionValue(OPTION_TIMEOUT.getOpt())) * 1000L);
-    }
-    if (commandLine.hasOption(OPTION_USER_PROFILE.getOpt())) {
-      configuration.setTemplateProfileDir(
-          new File(commandLine.getOptionValue(OPTION_USER_PROFILE.getOpt())));
+    // Default
+    return new DefaultFilterChain(RefreshFilter.INSTANCE);
+  }
+
+  private static DocumentFormatRegistry getRegistryOption(final CommandLine commandLine)
+      throws IOException {
+
+    if (commandLine.hasOption(OPTION_REGISTRY.getOpt())) {
+      return JsonDocumentFormatRegistry.create(
+          FileUtils.readFileToString(
+              new File(commandLine.getOptionValue(OPTION_REGISTRY.getOpt())), "UTF-8"));
     }
 
-    final OfficeManager officeManager = configuration.build();
-    officeManager.start();
+    // Default
+    return DefaultDocumentFormatRegistry.create();
+  }
+
+  private static String getStringOption(final CommandLine commandLine, final String option) {
+
+    if (commandLine.hasOption(option)) {
+      return commandLine.getOptionValue(option);
+    }
+
+    // Default
+    return null;
+  }
+
+  private static Options initOptions() {
+
+    final Options options = new Options();
+    options.addOption(OPTION_HELP);
+    options.addOption(OPTION_VERSION);
+    options.addOption(OPTION_FILTER_CHAIN);
+    options.addOption(OPTION_OUTPUT_DIRECTORY);
+    options.addOption(OPTION_OUTPUT_FORMAT);
+    options.addOption(OPTION_OFFICE_HOME);
+    options.addOption(OPTION_KILL_EXISTING_PROCESS);
+    options.addOption(OPTION_PROCESS_MANAGER);
+    options.addOption(OPTION_PORT);
+    options.addOption(OPTION_REGISTRY);
+    options.addOption(OPTION_TIMEOUT);
+    options.addOption(OPTION_USER_PROFILE);
+    return options;
+  }
+
+  /**
+   * Main entry point of the program.
+   *
+   * @param arguments program arguments.
+   * @throws Exception if an error occurs.
+   */
+  public static void main(final String[] arguments) {
+
     try {
-      final OfficeDocumentConverter converter =
-          new OfficeDocumentConverter(officeManager, registry);
-      if (outputFormat == null) {
-        converter.convert(filterChain, new File(fileNames[0]), new File(fileNames[1]));
-      } else {
-        for (int i = 0; i < fileNames.length; i++) {
-          converter.convert(
-              new File(fileNames[i]),
-              new File(
-                  FilenameUtils.getFullPath(fileNames[i])
-                      + FilenameUtils.getBaseName(fileNames[i])
-                      + "."
-                      + outputFormat));
-        }
+      final CommandLine commandLine = new DefaultParser().parse(OPTIONS, arguments);
+
+      // Check if the command line contains arguments that is suppose
+      // to print some info and then exit.
+      checkPrintInfoAndExit(commandLine);
+
+      // Get conversion arguments
+      final String outputFormat = getStringOption(commandLine, OPTION_OUTPUT_FORMAT.getOpt());
+      final String outputDirPath = getStringOption(commandLine, OPTION_OUTPUT_DIRECTORY.getOpt());
+      final DocumentFormatRegistry registry = getRegistryOption(commandLine);
+      final FilterChain filterChain = getFilterChainOption(commandLine);
+      final String[] sources = commandLine.getArgs();
+      if ((outputFormat == null && sources.length % 2 != 0) || sources.length == 0) {
+        printHelp();
+        System.exit(STATUS_INVALID_ARGUMENTS);
       }
-    } finally {
-      officeManager.stop();
+
+      // Create and configure a DefaultOfficeManagerBuilder from the command line
+      final DefaultOfficeManagerBuilder configuration =
+          createDefaultOfficeManagerBuilder(commandLine);
+
+      // Build an OfficeManager and convert sources arguments
+      final OfficeManager officeManager = configuration.build();
+      officeManager.start();
+      try {
+        final OfficeDocumentConverter converter =
+            new OfficeDocumentConverter(officeManager, registry);
+
+        // Ensure output directory exists
+        File outputDir = null;
+        if (outputDirPath != null) {
+          outputDir = new File(outputDirPath);
+          FileUtils.forceMkdir(outputDir);
+        }
+
+        // Convert all the sources arguments
+        convertSources(converter, sources, outputDir, outputFormat, filterChain);
+
+      } finally {
+        officeManager.stop();
+      }
+
+    } catch (ParseException e) {
+      System.err.println("jodconverter-cli: " + e.getMessage()); // NOSONAR
+      printHelp();
+      System.exit(2);
+    } catch (Exception e) { // NOSONAR
+      System.err.println("jodconverter-cli: " + e.getMessage()); // NOSONAR
+      e.printStackTrace(); // NOSONAR
+      System.exit(2);
     }
+  }
+
+  private static void printHelp() {
+
+    new HelpFormatter()
+        .printHelp(
+            "jodconverter-cli [options] infile outfile [infile outfile ...]\n"
+                + "   or: jodconverter-cli [options] -f output-format infile [infile ...]",
+            OPTIONS);
   }
 
   // Private ctor.

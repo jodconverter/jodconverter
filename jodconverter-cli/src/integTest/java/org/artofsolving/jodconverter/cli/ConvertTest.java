@@ -34,7 +34,7 @@ public class ConvertTest {
     final File inputFile = new File(SOURCE_FILE);
     final File outputFile = new File(OUTPUT_DIR, "convert.pdf");
 
-    Convert.main(new String[] {inputFile.getPath(), outputFile.getPath()});
+    Convert.main(new String[] {"-k", inputFile.getPath(), outputFile.getPath()});
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);
   }
@@ -47,7 +47,9 @@ public class ConvertTest {
     final File outputFile = new File(OUTPUT_DIR, "convertconvertWithSingleFilters.pdf");
 
     Convert.main(
-        new String[] {"-f", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()});
+        new String[] {
+          "-k", "-c", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
+        });
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);
   }
@@ -60,7 +62,7 @@ public class ConvertTest {
     final File outputFile = new File(OUTPUT_DIR, "convertWithSingleFilter.pdf");
 
     Convert.main(
-        new String[] {"-f", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()});
+        new String[] {"-c", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()});
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);
   }
