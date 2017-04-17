@@ -80,7 +80,7 @@ public class TextReplacerFilter implements Filter {
       // We need a descriptor to set properties for Replace
       final XReplaceDescriptor replaceDescr = replaceable.createReplaceDescriptor();
 
-      logger.debug("Change all occurrences of ...");
+      logger.debug("Changing all occurrences of ...");
       for (int i = 0; i < searchList.length; i++) {
         logger.debug("{} -> {}", searchList[i], replacementList[i]);
         // Set the properties the replace method need

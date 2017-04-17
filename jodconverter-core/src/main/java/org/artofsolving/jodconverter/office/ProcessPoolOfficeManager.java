@@ -155,7 +155,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
   public synchronized void stop() throws OfficeException {
 
     running.set(false);
-    logger.info("Stopping the office manager");
+    logger.info("Stopping the office manager...");
     pool.clear();
     for (int i = 0; i < pooledManagers.length; i++) {
       pooledManagers[i].stop();
