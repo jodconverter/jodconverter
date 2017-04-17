@@ -20,6 +20,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.lang.XComponent;
 
 import org.artofsolving.jodconverter.document.DocumentFormat;
@@ -29,6 +32,8 @@ import org.artofsolving.jodconverter.office.OfficeException;
 
 /** Represents the default behavior for a conversion task. */
 public class DefaultConversionTask extends AbstractConversionTask {
+
+  private static final Logger logger = LoggerFactory.getLogger(DefaultConversionTask.class);
 
   private final DocumentFormat inputFormat;
   private final DocumentFormat outputFormat;
@@ -54,10 +59,17 @@ public class DefaultConversionTask extends AbstractConversionTask {
     this.outputFormat = outputFormat;
   }
 
+  @Override
+  public void execute(OfficeContext context) throws OfficeException {
+
+    logger.info("Executing default conversion task...");
+    super.execute(context);
+  }
+
   /**
    * Gets the default properties to be applied when the input document is loaded.
    *
-   * @return the default properties to ne applied when loading the document.
+   * @return the default properties to be applied when loading the document.
    */
   public Map<String, ?> getDefaultLoadProperties() {
 
