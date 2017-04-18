@@ -10,7 +10,7 @@ dependencies {
     compile libraries.office_unoil
     compile libraries.slf4j_api
 
-    testRuntime libraries.slf4j_log4j
+    testCompile libraries.slf4j_log4j
 }
 
 test {
