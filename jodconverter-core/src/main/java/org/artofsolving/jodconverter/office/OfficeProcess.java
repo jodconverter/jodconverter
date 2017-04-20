@@ -119,7 +119,7 @@ class OfficeProcess {
   /** Deletes the profile directory of the office process. */
   public void deleteProfileDir() {
 
-    if (templateProfileDir != null) {
+    if (instanceProfileDir != null) {
       try {
         FileUtils.deleteDirectory(instanceProfileDir);
       } catch (IOException ioEx) { // NOSONAR
