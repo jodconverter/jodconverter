@@ -29,6 +29,15 @@ public class ConnectRetryable extends Retryable {
   private final OfficeConnection connection;
 
   /**
+   * Creates a new instance of the class for the specified connection.
+   *
+   * @param connection the office connection to connect.
+   */
+  public ConnectRetryable(final OfficeConnection connection) {
+    this(null, connection);
+  }
+
+  /**
    * Creates a new instance of the class for the specified process and connection.
    *
    * @param process the office process whose exit code is to be retrieved.
@@ -50,6 +59,13 @@ public class ConnectRetryable extends Retryable {
 
     } catch (OfficeConnectionException connectionEx) {
 
+      // If we cannot get the exit code of a process, just
+      // throw a TemporaryException
+      if (process == null) {
+        throw new TemporaryException(connectionEx);
+      }
+
+      // Here, we can get the exit code of the process
       final Integer exitCode = process.getExitCode();
       if (exitCode == null) {
 

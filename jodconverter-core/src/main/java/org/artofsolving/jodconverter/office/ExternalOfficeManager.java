@@ -37,6 +37,9 @@ import com.sun.star.lib.uno.helper.UnoUrl;
  */
 class ExternalOfficeManager implements OfficeManager {
 
+  public static final long DEFAULT_RETRY_TIMEOUT = 30000L; // 30 minutes
+  public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.
+
   private final OfficeConnection connection;
   private final boolean connectOnStart;
 
@@ -57,9 +60,10 @@ class ExternalOfficeManager implements OfficeManager {
   private void connect() throws OfficeException {
 
     try {
-      connection.connect();
-    } catch (OfficeConnectionException connectionEx) {
-      throw new OfficeException("Could not connect to external office process", connectionEx);
+      new ConnectRetryable(connection).execute(DEFAULT_RETRY_INTERVAL, DEFAULT_RETRY_TIMEOUT);
+
+    } catch (Exception ex) {
+      throw new OfficeException("Could not establish connection to external office process", ex);
     }
   }
 
