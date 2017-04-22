@@ -37,7 +37,36 @@ public class PooledOfficeManagerTest {
       LoggerFactory.getLogger(PooledOfficeManagerTest.class);
 
   private static final UnoUrl CONNECTION_MODE = UnoUrlUtils.socket(2002);
-  private static final long RESTART_WAIT_TIME = 5 * 1000; // 5 Seconds.
+  private static final long RESTART_INITIAL_WAIT = 1000; // 1 Second.
+  private static final long RESTART_WAIT_TIMEOUT = 10000; // 10 Seconds.
+
+  private static void assertRestartedAndReconnected(
+      final OfficeProcess process,
+      final OfficeConnection connection,
+      final long initialWait,
+      final long timeout)
+      throws InterruptedException {
+
+    final long start = System.currentTimeMillis();
+
+    if (initialWait > 0) {
+      Thread.sleep(initialWait); // NOSONAR
+    }
+
+    final long limit = start + timeout;
+    while (System.currentTimeMillis() < limit) {
+      if (process.isRunning() && connection.isConnected()) {
+        return;
+      }
+
+      // Wait a sec
+      Thread.sleep(1000); // NOSONAR
+    }
+
+    // Times out...
+    assertTrue(process.isRunning());
+    assertTrue(connection.isConnected());
+  }
 
   /**
    * Tests the execution of a task.
@@ -112,9 +141,8 @@ public class PooledOfficeManagerTest {
       logger.debug("Simulating the crash");
       underlyingProcess.destroy(); // simulate crash
 
-      Thread.sleep(RESTART_WAIT_TIME); // NOSONAR
-      assertTrue(process.isRunning());
-      assertTrue(connection.isConnected());
+      assertRestartedAndReconnected(
+          process, connection, RESTART_INITIAL_WAIT, RESTART_WAIT_TIMEOUT);
 
       final MockOfficeTask goodTask = new MockOfficeTask();
       officeManager.execute(goodTask);
@@ -157,8 +185,11 @@ public class PooledOfficeManagerTest {
         assertTrue(officeEx.getCause() instanceof TimeoutException);
       }
 
-      logger.debug("Waiting restart for " + RESTART_WAIT_TIME + " millisecs");
-      Thread.sleep(RESTART_WAIT_TIME); // NOSONAR
+      assertRestartedAndReconnected(
+          managedOfficeProcess.getOfficeProcess(),
+          managedOfficeProcess.getConnection(),
+          RESTART_INITIAL_WAIT,
+          RESTART_WAIT_TIMEOUT);
 
       assertTrue(managedOfficeProcess.getOfficeProcess().isRunning());
       assertTrue(managedOfficeProcess.getConnection().isConnected());
