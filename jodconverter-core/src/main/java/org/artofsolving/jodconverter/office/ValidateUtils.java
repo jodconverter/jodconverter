@@ -37,7 +37,7 @@ public final class ValidateUtils {
   }
 
   /**
-   * Validates that the specified objectis not null.
+   * Validates that the specified object is not null.
    *
    * @param object to check.
    * @param message the exception message if invalid, not null.

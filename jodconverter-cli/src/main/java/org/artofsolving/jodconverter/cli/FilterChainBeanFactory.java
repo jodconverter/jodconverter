@@ -45,7 +45,7 @@ public class FilterChainBeanFactory extends DefaultBeanFactory {
     BeanHelper.initBeanProperties(bean, data);
 
     final Map<String, Object> nestedBeans = data.getNestedBeanDeclarations();
-    if (nestedBeans == null || nestedBeans.size() == 0) {
+    if (nestedBeans == null || nestedBeans.isEmpty()) {
       throw new ConfigurationRuntimeException(
           "A filter chain must contain at least one nested filter.");
     }
@@ -65,13 +65,13 @@ public class FilterChainBeanFactory extends DefaultBeanFactory {
 
     final Object prop = entry.getValue();
     if (prop instanceof Collection) {
-      for (Object elemDef : (Collection<?>) prop) {
+      for (final Object elemDef : (Collection<?>) prop) {
         if (!(elemDef instanceof XMLBeanDeclaration)) {
           throw new ConfigurationRuntimeException(
               "Expected filter element to be a bean declaration but was not.");
         }
 
-        Object beanFilter = BeanHelper.INSTANCE.createBean((XMLBeanDeclaration) elemDef);
+        final Object beanFilter = BeanHelper.INSTANCE.createBean((XMLBeanDeclaration) elemDef);
         if (!(beanFilter instanceof Filter)) {
           throw new ConfigurationRuntimeException("A filter must implement the Filter interface.");
         }
@@ -84,7 +84,7 @@ public class FilterChainBeanFactory extends DefaultBeanFactory {
             "Expected filter element to be a bean declaration but was not.");
       }
 
-      Object beanFilter = BeanHelper.INSTANCE.createBean((XMLBeanDeclaration) prop);
+      final Object beanFilter = BeanHelper.INSTANCE.createBean((XMLBeanDeclaration) prop);
       if (!(beanFilter instanceof Filter)) {
         throw new ConfigurationRuntimeException("A filter must implement the Filter interface.");
       }

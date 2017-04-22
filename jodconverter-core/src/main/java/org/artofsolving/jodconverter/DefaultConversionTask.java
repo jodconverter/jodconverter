@@ -60,7 +60,7 @@ public class DefaultConversionTask extends AbstractConversionTask {
   }
 
   @Override
-  public void execute(OfficeContext context) throws OfficeException {
+  public void execute(final OfficeContext context) throws OfficeException {
 
     logger.info("Executing default conversion task...");
     super.execute(context);

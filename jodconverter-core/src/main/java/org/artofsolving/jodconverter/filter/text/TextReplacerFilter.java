@@ -16,6 +16,7 @@
 
 package org.artofsolving.jodconverter.filter.text;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +66,8 @@ public class TextReplacerFilter implements Filter {
             + replacementLength);
 
     // Everything is fine
-    this.searchList = searchList;
-    this.replacementList = replacementList;
+    this.searchList = ArrayUtils.clone(searchList);
+    this.replacementList = ArrayUtils.clone(replacementList);
   }
 
   @Override

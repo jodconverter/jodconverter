@@ -26,8 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 /** A SimpleDocumentFormatRegistry contains a collection of document formats supported by office. */
 public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
 
-  private Map<String, DocumentFormat> fmtsByExtension = new HashMap<>();
-  private Map<String, DocumentFormat> fmtsByMediaType = new HashMap<>();
+  private final Map<String, DocumentFormat> fmtsByExtension = new HashMap<>();
+  private final Map<String, DocumentFormat> fmtsByMediaType = new HashMap<>();
 
   /**
    * Add a new format to the registry.

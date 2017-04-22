@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * {@link ProcessManager} implementation for *nix systems. Uses the <tt>ps</tt> and <tt>kill</tt>
  * commands.
@@ -74,6 +76,6 @@ public class UnixProcessManager extends AbstractProcessManager {
    * @param runAsArgs the sudo command arguments.
    */
   public void setRunAsArgs(final String[] runAsArgs) {
-    this.runAsArgs = runAsArgs;
+    this.runAsArgs = ArrayUtils.clone(runAsArgs);
   }
 }

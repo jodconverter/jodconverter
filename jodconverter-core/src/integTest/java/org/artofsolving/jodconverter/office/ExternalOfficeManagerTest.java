@@ -20,7 +20,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
@@ -32,7 +31,7 @@ public class ExternalOfficeManagerTest {
   // TODO test auto-reconnection
 
   /**
-   * Test a conversion task execution though the ExternalOfficeManager class.
+   * Test the auto-reconnection...
    *
    * @throws Exception if an error occurs.
    */
@@ -65,8 +64,6 @@ public class ExternalOfficeManagerTest {
 
     manager.stop();
 
-    // TODO replace when OfficeProcess has a forciblyTerminate()
-    final Process process = (Process) FieldUtils.readDeclaredField(officeProcess, "process", true);
-    process.destroy();
+    officeProcess.forciblyTerminate(1000, 5000);
   }
 }

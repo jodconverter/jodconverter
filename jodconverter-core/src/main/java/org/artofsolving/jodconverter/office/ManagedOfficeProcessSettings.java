@@ -35,7 +35,6 @@ class ManagedOfficeProcessSettings {
   public static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds
   public static final long DEFAULT_RETRY_TIMEOUT = 120000L; // 2 minutes
   public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.
-
   public static final long MAX_RETRY_INTERVAL = 10000L; //10 sec.
 
   private final UnoUrl unoUrl;
@@ -121,7 +120,7 @@ class ManagedOfficeProcessSettings {
    * @return the sudo arguments.
    */
   public String[] getRunAsArgs() {
-    return runAsArgs;
+    return ArrayUtils.clone(runAsArgs);
   }
 
   /**
