@@ -24,55 +24,16 @@ import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.artofsolving.jodconverter.BaseOfficeTest;
 import org.artofsolving.jodconverter.document.DocumentFormat;
-import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
-import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.artofsolving.jodconverter.office.OfficeException;
-import org.artofsolving.jodconverter.office.OfficeManager;
 
-public abstract class FilterTest {
+public abstract class FilterTest extends BaseOfficeTest {
 
   private static final Logger logger = LoggerFactory.getLogger(FilterTest.class);
-
-  protected static OfficeManager officeManager;
-  protected static OfficeDocumentConverter converter;
-  protected static DocumentFormatRegistry formatRegistry;
-  protected static final String RESOURCES_DIR = "src/test/resources/";
-  protected static final String DOCUMENTS_DIR = RESOURCES_DIR + "documents/";
-  protected static final String TEST_OUTPUT_DIR = "test-output/";
-
-  /**
-   * Starts a default office manager before the execution of the first test in this class.
-   *
-   * @throws OfficeException if an error occurs.
-   */
-  @BeforeClass
-  public static void startOfficeManager() throws OfficeException {
-
-    // Start an office manager
-    officeManager = new DefaultOfficeManagerBuilder().build();
-    converter = new OfficeDocumentConverter(officeManager);
-    formatRegistry = converter.getFormatRegistry();
-
-    officeManager.start();
-  }
-
-  /**
-   * Stops the office manager started in the setUpBeforeClass method.
-   *
-   * @throws OfficeException if an error occurs.
-   */
-  @AfterClass
-  public static void stopOfficeManager() throws OfficeException {
-
-    officeManager.stop();
-  }
 
   protected void testFilters(
       final File sourceFile,
