@@ -17,8 +17,9 @@
 package org.artofsolving.jodconverter.cli;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Paths;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -34,20 +35,11 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.commons.lang3.StringUtils;
 
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.JsonDocumentFormatRegistry;
-import org.artofsolving.jodconverter.filter.DefaultFilterChain;
 import org.artofsolving.jodconverter.filter.FilterChain;
-import org.artofsolving.jodconverter.filter.RefreshFilter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerBuilder;
-import org.artofsolving.jodconverter.office.OfficeException;
-import org.artofsolving.jodconverter.office.OfficeManager;
 
 /** Command line interface executable. */
 public final class Convert {
@@ -97,6 +89,11 @@ public final class Convert {
           .hasArg()
           .desc("class name of the process manager to use (optional; defaults to auto-detect)")
           .build();
+  private static final Option OPTION_OVERWRITE =
+      Option.builder("o")
+          .longOpt("overwrite")
+          .desc("overwrite existing output file (optional; defaults to false)")
+          .build();
   private static final Option OPTION_PORT =
       Option.builder("p")
           .longOpt("port")
@@ -137,75 +134,8 @@ public final class Convert {
 
     if (commandLine.hasOption(OPTION_VERSION.getOpt())) {
       final Package p = Convert.class.getPackage();
-      System.out.println("jodconverter-cli version " + p.getImplementationVersion()); // NOSONAR
+      printInfo("jodconverter-cli version " + p.getImplementationVersion());
       System.exit(0);
-    }
-  }
-
-  private static void convertSources(
-      final OfficeDocumentConverter converter,
-      final String[] sources,
-      final File outputDir,
-      final String outputFormat,
-      final FilterChain filterChain)
-      throws OfficeException {
-
-    if (outputFormat == null) {
-
-      // For all the input/output pairs...
-      for (int i = 0; i < sources.length; i += 2) {
-
-        final File sourceFile = new File(sources[i]);
-
-        String targetFullPath = FilenameUtils.getFullPath(sources[i + 1]);
-        String targetName = FilenameUtils.getName(sources[i + 1]);
-        String targetDirectory =
-            StringUtils.isBlank(targetFullPath)
-                ? FilenameUtils.getFullPath(sources[i])
-                : targetFullPath;
-
-        converter.convert(
-            filterChain,
-            sourceFile,
-            new File(outputDir == null ? new File(targetDirectory) : outputDir, targetName));
-      }
-
-    } else {
-
-      // For all the input arguments...
-      for (final String source : sources) {
-
-        // Create a file instance with the argument and also get the parent directory
-        final File sourceFile = new File(source);
-        final File sourceFileParent = new File(FilenameUtils.getFullPath(source));
-
-        // If the argument is a file, just convert it.
-        if (sourceFile.isFile()) {
-          converter.convert(
-              filterChain,
-              new File(source),
-              new File(
-                  outputDir == null ? sourceFileParent : outputDir,
-                  FilenameUtils.getBaseName(source) + "." + outputFormat));
-        } else {
-
-          // If the argument is not a file, check if it has a wildcard
-          // to match multiple files
-          if (sourceFileParent.isDirectory()) {
-            final String wildcard = FilenameUtils.getBaseName(source);
-            final File[] files =
-                sourceFileParent.listFiles((FileFilter) new WildcardFileFilter(wildcard));
-            for (final File file : files) {
-              converter.convert(
-                  filterChain,
-                  file,
-                  new File(
-                      outputDir == null ? sourceFileParent : outputDir,
-                      FilenameUtils.getBaseName(file.getName()) + "." + outputFormat));
-            }
-          }
-        }
-      }
     }
   }
 
@@ -213,6 +143,7 @@ public final class Convert {
       final CommandLine commandLine) {
 
     final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
+    configuration.setWorkingDir(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
 
     if (commandLine.hasOption(OPTION_OFFICE_HOME.getOpt())) {
       configuration.setOfficeHome(commandLine.getOptionValue(OPTION_OFFICE_HOME.getOpt()));
@@ -263,8 +194,7 @@ public final class Convert {
       return (FilterChain) helper.createBean(decl);
     }
 
-    // Default
-    return new DefaultFilterChain(RefreshFilter.INSTANCE);
+    return null;
   }
 
   private static DocumentFormatRegistry getRegistryOption(final CommandLine commandLine)
@@ -276,8 +206,7 @@ public final class Convert {
               new File(commandLine.getOptionValue(OPTION_REGISTRY.getOpt())), "UTF-8"));
     }
 
-    // Default
-    return DefaultDocumentFormatRegistry.create();
+    return null;
   }
 
   private static String getStringOption(final CommandLine commandLine, final String option) {
@@ -301,6 +230,7 @@ public final class Convert {
     options.addOption(OPTION_OFFICE_HOME);
     options.addOption(OPTION_KILL_EXISTING_PROCESS);
     options.addOption(OPTION_PROCESS_MANAGER);
+    options.addOption(OPTION_OVERWRITE);
     options.addOption(OPTION_PORT);
     options.addOption(OPTION_REGISTRY);
     options.addOption(OPTION_TIMEOUT);
@@ -328,8 +258,11 @@ public final class Convert {
       final String outputDirPath = getStringOption(commandLine, OPTION_OUTPUT_DIRECTORY.getOpt());
       final DocumentFormatRegistry registry = getRegistryOption(commandLine);
       final FilterChain filterChain = getFilterChainOption(commandLine);
-      final String[] sources = commandLine.getArgs();
-      if ((outputFormat == null && sources.length % 2 != 0) || sources.length == 0) {
+      final boolean overwrite = commandLine.hasOption(OPTION_OVERWRITE.getOpt());
+      final String[] filenames = commandLine.getArgs();
+
+      // Validate arguments length
+      if ((outputFormat == null && filenames.length % 2 != 0) || filenames.length == 0) {
         printHelp();
         System.exit(STATUS_INVALID_ARGUMENTS);
       }
@@ -338,34 +271,34 @@ public final class Convert {
       final DefaultOfficeManagerBuilder configuration =
           createDefaultOfficeManagerBuilder(commandLine);
 
-      // Build an OfficeManager and convert sources arguments
-      final OfficeManager officeManager = configuration.build();
-      officeManager.start();
-      try {
-        final OfficeDocumentConverter converter =
-            new OfficeDocumentConverter(officeManager, registry);
+      // Build a client converter and start the conversion
+      try (final CliConverter converter = new CliConverter(configuration, registry)) {
 
-        // Ensure output directory exists
-        File outputDir = null;
-        if (outputDirPath != null) {
-          outputDir = new File(outputDirPath);
-          FileUtils.forceMkdir(outputDir);
+        if (outputFormat == null) {
+
+          // Build 2 arrays; one containing the input files and the other
+          // containing the output files.
+          final String[] inputFilenames = new String[filenames.length / 2];
+          final String[] outputFilenames = new String[inputFilenames.length];
+          for (int i = 0, j = 0; i < filenames.length; i += 2, j++) {
+            inputFilenames[j] = filenames[i];
+            outputFilenames[j] = filenames[i + 1];
+          }
+          converter.convert(inputFilenames, outputFilenames, outputDirPath, overwrite, filterChain);
+
+        } else {
+
+          converter.convert(filenames, outputFormat, outputDirPath, overwrite, filterChain);
         }
-
-        // Convert all the sources arguments
-        convertSources(converter, sources, outputDir, outputFormat, filterChain);
-
-      } finally {
-        officeManager.stop();
       }
 
     } catch (ParseException e) {
-      System.err.println("jodconverter-cli: " + e.getMessage()); // NOSONAR
+      printErr("jodconverter-cli: " + e.getMessage());
       printHelp();
       System.exit(2);
     } catch (Exception e) { // NOSONAR
-      System.err.println("jodconverter-cli: " + e.getMessage()); // NOSONAR
-      e.printStackTrace(); // NOSONAR
+      printErr("jodconverter-cli: " + e.getMessage());
+      e.printStackTrace(System.err); // NOSONAR
       System.exit(2);
     }
   }
@@ -377,6 +310,20 @@ public final class Convert {
             "jodconverter-cli [options] infile outfile [infile outfile ...]\n"
                 + "   or: jodconverter-cli [options] -f output-format infile [infile ...]",
             OPTIONS);
+  }
+
+  private static void printInfo(final String info) {
+
+    final PrintWriter pw = new PrintWriter(System.out); // NOSONAR
+    pw.println(info);
+    pw.flush();
+  }
+
+  private static void printErr(final String err) {
+
+    final PrintWriter pw = new PrintWriter(System.err); // NOSONAR
+    pw.println(err);
+    pw.flush();
   }
 
   // Private ctor.
