@@ -198,7 +198,8 @@ public class OfficeDocumentConverter {
     final DefaultConversionTask task =
         new DefaultConversionTask(inputFile, outputFile, inputFormat, outputFormat);
     task.setDefaultLoadProperties(defaultLoadProperties);
-    task.setFilterChain(filterChain);
+    task.setFilterChain(
+        filterChain == null ? new DefaultFilterChain(RefreshFilter.INSTANCE) : filterChain);
     officeManager.execute(task);
   }
 
