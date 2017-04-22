@@ -77,11 +77,18 @@ public abstract class AbstractProcessManager implements ProcessManager {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractProcessManager.class);
 
-  private String buildOutput(final String label, final List<String> lines) {
+  private String buildOutput(final List<String> lines) {
 
-    final StringBuilder strlines = new StringBuilder(label + ":");
+    if (lines == null) {
+      return "";
+    }
+
+    final StringBuilder strlines = new StringBuilder();
     for (final String line : lines) {
-      strlines.append('\n').append(line);
+      // Ignore empty lines
+      if (!StringUtils.isBlank(line)) {
+        strlines.append('\n').append(line);
+      }
     }
     return strlines.toString();
   }
@@ -119,15 +126,18 @@ public abstract class AbstractProcessManager implements ProcessManager {
     final List<String> errLines = errPumper.getOutputLines();
 
     if (logger.isDebugEnabled()) {
+      final String out = buildOutput(outLines);
+      final String err = buildOutput(errLines);
 
-      logger.debug(buildOutput("Command Output", outLines));
-      logger.debug(buildOutput("Command Error", errLines));
+      if (!StringUtils.isBlank(out)) {
+        logger.debug("Command Output: {}", out);
+      }
+
+      if (!StringUtils.isBlank(err)) {
+        logger.debug("Command Error: {}", err);
+      }
     }
 
-    if ((outLines == null || outLines.isEmpty()) && (errLines != null && !errLines.isEmpty())) {
-      logger.error(
-          "Error running command\n{}\n{}", cmdarray, buildOutput("Command Error", errLines));
-    }
     return outLines;
   }
 

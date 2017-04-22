@@ -110,7 +110,14 @@ class ManagedOfficeProcess {
     logger.trace("> doStopProcess");
 
     try {
-      connection.getDesktop().terminate();
+      boolean terminated = connection.getDesktop().terminate();
+
+      // once more: try to terminate
+      logger.debug(
+          "The Office Process {}",
+          terminated
+              ? "has been terminated"
+              : "is still running. Someone else prevents termination, e.g. the quickstarter");
 
     } catch (DisposedException disposedEx) {
       // expected so ignore it

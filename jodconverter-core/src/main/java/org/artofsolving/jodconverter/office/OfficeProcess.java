@@ -120,6 +120,7 @@ class OfficeProcess {
   public void deleteProfileDir() {
 
     if (instanceProfileDir != null) {
+      logger.debug("Deleting instance profile directory '{}'", instanceProfileDir);
       try {
         FileUtils.deleteDirectory(instanceProfileDir);
       } catch (IOException ioEx) { // NOSONAR
