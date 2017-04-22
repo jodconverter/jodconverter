@@ -281,6 +281,7 @@ class OfficeProcess {
     command.add("-accept=" + acceptString);
     command.add("-env:UserInstallation=" + OfficeUtils.toUrl(instanceProfileDir));
     command.add("-headless");
+    command.add("-invisible");
     command.add("-nocrashreport");
     command.add("-nodefault");
     command.add("-nofirststartwizard");
