@@ -19,7 +19,6 @@ package org.artofsolving.jodconverter.cli;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Paths;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -143,7 +142,7 @@ public final class Convert {
       final CommandLine commandLine) {
 
     final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
-    configuration.setWorkingDir(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
+    //configuration.setWorkingDir(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
 
     if (commandLine.hasOption(OPTION_OFFICE_HOME.getOpt())) {
       configuration.setOfficeHome(commandLine.getOptionValue(OPTION_OFFICE_HOME.getOpt()));
