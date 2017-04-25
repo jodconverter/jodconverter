@@ -415,7 +415,7 @@ public final class CliConverter implements AutoCloseable {
                 + inputFile
                 + "' because the output file '"
                 + outputFile
-                + "' already exists the overwrite switch is off");
+                + "' already exists and the overwrite switch is off");
         return false;
       }
 
