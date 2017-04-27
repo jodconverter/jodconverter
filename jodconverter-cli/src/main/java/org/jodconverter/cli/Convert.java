@@ -26,14 +26,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.configuration2.XMLConfiguration;
-import org.apache.commons.configuration2.beanutils.BeanDeclaration;
-import org.apache.commons.configuration2.beanutils.BeanHelper;
-import org.apache.commons.configuration2.beanutils.XMLBeanDeclaration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.document.JsonDocumentFormatRegistry;
@@ -47,12 +44,12 @@ public final class Convert {
   public static final int STATUS_MISSING_INPUT_FILE = 1;
   public static final int STATUS_INVALID_ARGUMENTS = 255;
 
-  private static final Option OPTION_FILTER_CHAIN =
-      Option.builder("c")
-          .longOpt("filter-chain")
+  private static final Option OPTION_APPLICATION_CONTEXT =
+      Option.builder("a")
+          .longOpt("application-context")
           .argName("file")
           .hasArg()
-          .desc("Filter chain configuration file (optional)")
+          .desc("Application context file (optional)")
           .build();
   private static final Option OPTION_OUTPUT_DIRECTORY =
       Option.builder("d")
@@ -173,24 +170,22 @@ public final class Convert {
     return configuration;
   }
 
-  private static FilterChain getFilterChainOption(final CommandLine commandLine)
-      throws ConfigurationException {
+  private static AbstractApplicationContext getApplicationContextOption(
+      final CommandLine commandLine) {
 
-    if (commandLine.hasOption(OPTION_FILTER_CHAIN.getOpt())) {
+    if (commandLine.hasOption(OPTION_APPLICATION_CONTEXT.getOpt())) {
 
-      final Parameters params = new Parameters();
-      final FileBasedConfigurationBuilder<XMLConfiguration> builder =
-          new FileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
-              .configure(
-                  params
-                      .xml()
-                      .setFileName(commandLine.getOptionValue(OPTION_FILTER_CHAIN.getOpt())));
-      final XMLConfiguration config = builder.getConfiguration();
+      return new FileSystemXmlApplicationContext(
+          commandLine.getOptionValue(OPTION_APPLICATION_CONTEXT.getOpt()));
+    }
 
-      // Create the filter chain from the XML configuration
-      final BeanDeclaration decl = new XMLBeanDeclaration(config, "filterChain");
-      final BeanHelper helper = new BeanHelper(new FilterChainBeanFactory());
-      return (FilterChain) helper.createBean(decl);
+    return null;
+  }
+
+  private static FilterChain getFilterChain(final ApplicationContext context) {
+
+    if (context != null) {
+      return (FilterChain) context.getBean("filterChain");
     }
 
     return null;
@@ -223,7 +218,7 @@ public final class Convert {
     final Options options = new Options();
     options.addOption(OPTION_HELP);
     options.addOption(OPTION_VERSION);
-    options.addOption(OPTION_FILTER_CHAIN);
+    options.addOption(OPTION_APPLICATION_CONTEXT);
     options.addOption(OPTION_OUTPUT_DIRECTORY);
     options.addOption(OPTION_OUTPUT_FORMAT);
     options.addOption(OPTION_OFFICE_HOME);
@@ -245,6 +240,7 @@ public final class Convert {
    */
   public static void main(final String[] arguments) {
 
+    AbstractApplicationContext context = null;
     try {
       final CommandLine commandLine = new DefaultParser().parse(OPTIONS, arguments);
 
@@ -252,11 +248,13 @@ public final class Convert {
       // to print some info and then exit.
       checkPrintInfoAndExit(commandLine);
 
+      // Load the application context if provided
+      context = getApplicationContextOption(commandLine);
+
       // Get conversion arguments
       final String outputFormat = getStringOption(commandLine, OPTION_OUTPUT_FORMAT.getOpt());
       final String outputDirPath = getStringOption(commandLine, OPTION_OUTPUT_DIRECTORY.getOpt());
       final DocumentFormatRegistry registry = getRegistryOption(commandLine);
-      final FilterChain filterChain = getFilterChainOption(commandLine);
       final boolean overwrite = commandLine.hasOption(OPTION_OVERWRITE.getOpt());
       final String[] filenames = commandLine.getArgs();
 
@@ -283,11 +281,13 @@ public final class Convert {
             inputFilenames[j] = filenames[i];
             outputFilenames[j] = filenames[i + 1];
           }
-          converter.convert(inputFilenames, outputFilenames, outputDirPath, overwrite, filterChain);
+          converter.convert(
+              inputFilenames, outputFilenames, outputDirPath, overwrite, getFilterChain(context));
 
         } else {
 
-          converter.convert(filenames, outputFormat, outputDirPath, overwrite, filterChain);
+          converter.convert(
+              filenames, outputFormat, outputDirPath, overwrite, getFilterChain(context));
         }
       }
 
@@ -299,7 +299,17 @@ public final class Convert {
       printErr("jodconverter-cli: " + e.getMessage());
       e.printStackTrace(System.err); // NOSONAR
       System.exit(2);
+    } finally {
+      // Close the application context
+      IOUtils.closeQuietly(context);
     }
+  }
+
+  private static void printErr(final String err) {
+
+    final PrintWriter pw = new PrintWriter(System.err); // NOSONAR
+    pw.println(err);
+    pw.flush();
   }
 
   private static void printHelp() {
@@ -315,13 +325,6 @@ public final class Convert {
 
     final PrintWriter pw = new PrintWriter(System.out); // NOSONAR
     pw.println(info);
-    pw.flush();
-  }
-
-  private static void printErr(final String err) {
-
-    final PrintWriter pw = new PrintWriter(System.err); // NOSONAR
-    pw.println(err);
     pw.flush();
   }
 

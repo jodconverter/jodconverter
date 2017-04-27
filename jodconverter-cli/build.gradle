@@ -4,14 +4,10 @@ dependencies {
     compile project(':jodconverter-core')
     
     compile libraries.commons_cli
-    compile libraries.commons_configuration
-    
-    runtime libraries.commons_beanutils
-    runtime libraries.commons_logging
+    compile libraries.spring_core
+    compile libraries.spring_context
 
     runtime libraries.slf4j_log4j // Runtime so it is included in the distribution
-    
-    //testRuntime libraries.slf4j_log4j
 }
 
 // Create an executable for the client module

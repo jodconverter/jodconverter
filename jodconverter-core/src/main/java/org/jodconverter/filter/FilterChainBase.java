@@ -40,15 +40,6 @@ public abstract class FilterChainBase implements FilterChain {
   /**
    * Creates a FilterChain that will contains the specified filters.
    *
-   * @param filters the filters to add to the chain.
-   */
-  public FilterChainBase(final Filter... filters) {
-    this(false, filters);
-  }
-
-  /**
-   * Creates a FilterChain that will contains the specified filters.
-   *
    * @param readOnly {@code true} if the chain must be read-only (which means that no other filter
    *     can be added to the chain), {@code false} otherwise.
    * @param filters the filters to initially add to the chain.
@@ -71,6 +62,15 @@ public abstract class FilterChainBase implements FilterChain {
   }
 
   /**
+   * Creates a FilterChain that will contains the specified filters.
+   *
+   * @param filters the filters to add to the chain.
+   */
+  public FilterChainBase(final Filter... filters) {
+    this(false, filters);
+  }
+
+  /**
    * Adds a filter to the chain.
    *
    * @param filter the filter to add at the end of the chain.
@@ -83,12 +83,6 @@ public abstract class FilterChainBase implements FilterChain {
     filters.add(filter);
   }
 
-  /** Resets the position in the filter chain to 0, making the chain reusable. */
-  public void reset() {
-
-    pos = 0;
-  }
-
   @Override
   public void doFilter(final OfficeContext context, final XComponent document)
       throws OfficeException {
@@ -98,5 +92,11 @@ public abstract class FilterChainBase implements FilterChain {
       final Filter filter = filters.get(pos++);
       filter.doFilter(context, document, this);
     }
+  }
+
+  /** Resets the position in the filter chain to 0, making the chain reusable. */
+  public void reset() {
+
+    pos = 0;
   }
 }
