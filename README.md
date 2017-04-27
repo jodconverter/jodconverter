@@ -1,4 +1,4 @@
-# JODConverterEX ('EX'tended, 'EX'tra, 'EX'cetera)
+# JODConverter EX (EXtended, EXtra, 'EX'cetera)
 
 I created this fork because I had to do some changes to the original project and I want to share my work with the community.
 
