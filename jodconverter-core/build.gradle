@@ -15,5 +15,5 @@ dependencies {
 
 test {
   // Run the stress test manually only
-  exclude 'org/artofsolving/jodconverter/StressTest.class'
+  exclude 'org/jodconverter/StressTest.class'
 }

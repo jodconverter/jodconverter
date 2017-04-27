@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
-  <filterChain config-class="org.artofsolving.jodconverter.filter.DefaultFilterChain">
-    <filter config-class="org.artofsolving.jodconverter.filter.RefreshFilter" />
+  <filterChain config-class="org.jodconverter.filter.DefaultFilterChain">
+    <filter config-class="org.jodconverter.filter.RefreshFilter" />
   </filterChain>
 </config>

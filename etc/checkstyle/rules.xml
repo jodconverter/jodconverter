@@ -172,8 +172,8 @@
             <property name="separateLineBetweenGroups" value="true"/>
             <!-- <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/> -->
             <property name="customImportOrderRules" value="STATIC###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE"/>
-            <property name="specialImportsRegExp" value="^org\.(?!artofsolving)"/>
-            <property name="thirdPartyPackageRegExp" value="^(com|org\.artofsolving)\."/>
+            <property name="specialImportsRegExp" value="^org\.(?!jodconverter)"/>
+            <property name="thirdPartyPackageRegExp" value="^(com|org\.jodconverter)\."/>
         </module>
         <module name="MethodParamPad"/>
         <module name="ParenPad"/>

@@ -19,7 +19,7 @@ dependencies {
 // See https://docs.gradle.org/current/userguide/application_plugin.html
 apply plugin: 'application'
 
-mainClassName = "org.artofsolving.jodconverter.cli.Convert"
+mainClassName = "org.jodconverter.cli.Convert"
 
 // Copy the conf folder into the distribution
 applicationDistribution.from("conf/") {
