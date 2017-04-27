@@ -91,12 +91,21 @@ public abstract class AbstractConversionTask implements OfficeTask {
     }
   }
 
-  /** Gets the office properties to apply when the input file will be loaded. */
+  /**
+   * Gets the office properties to apply when the input file will be loaded.
+   *
+   * @return the properties to apply when loading a document.
+   * @throws OfficeException if an error occurs.
+   */
   protected abstract Map<String, ?> getLoadProperties() throws OfficeException;
 
   /**
    * Gets the office properties to apply when the converted document will be saved as the output
    * file.
+   *
+   * @param document the office document.
+   * @return the properties to apply when storing a document.
+   * @throws OfficeException if an error occurs.
    */
   protected abstract Map<String, ?> getStoreProperties(XComponent document) throws OfficeException;
 

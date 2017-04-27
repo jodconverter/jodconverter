@@ -42,6 +42,7 @@ public final class ValidateUtils {
   /**
    * Validates that the specified object is not null.
    *
+   * @param <T> type of the object to validate.
    * @param object to check.
    * @param message the exception message if invalid, not null.
    * @throws OfficeException if object is null.

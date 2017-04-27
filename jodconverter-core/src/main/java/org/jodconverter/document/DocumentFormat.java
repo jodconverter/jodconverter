@@ -64,7 +64,11 @@ public class DocumentFormat {
     return inputFamily;
   }
 
-  /** Gets the properties required to load(open) a document of this format. */
+  /**
+   * Gets the properties required to load(open) a document of this format.
+   *
+   * @return a map containing the properties to apply when loading a document of this format.
+   */
   public Map<String, ?> getLoadProperties() {
     return loadProperties;
   }
@@ -90,6 +94,9 @@ public class DocumentFormat {
   /**
    * Gets the properties required to store(save) a document of this format to a document of the
    * specified family.
+   *
+   * @param family the DocumentFamily for which the properties are get.
+   * @return a map containing the properties to apply when storing a document of this format.
    */
   public Map<String, ?> getStoreProperties(final DocumentFamily family) {
     if (storePropertiesByFamily == null) {
@@ -101,6 +108,9 @@ public class DocumentFormat {
   /**
    * Gets the properties required to store(save) a document of this format to a document of
    * supported families.
+   *
+   * @return a DocumentFamily/Map pairs containing the properties to apply when storing a document
+   *     of this format, by DocumentFamily.
    */
   public Map<DocumentFamily, Map<String, ?>> getStorePropertiesByFamily() {
     return storePropertiesByFamily;
@@ -115,7 +125,11 @@ public class DocumentFormat {
     this.inputFamily = documentFamily;
   }
 
-  /** Sets the properties required to load(open) a document of this format. */
+  /**
+   * Sets the properties required to load(open) a document of this format.
+   *
+   * @param loadProperties the new properties to set.
+   */
   public void setLoadProperties(final Map<String, ?> loadProperties) {
     this.loadProperties = loadProperties;
   }
@@ -123,6 +137,9 @@ public class DocumentFormat {
   /**
    * Sets the properties required to store(save) a document of this format to a document of another
    * family.
+   *
+   * @param family the DocumentFamily for which the properties are set.
+   * @param storeProperties the new properties to set.
    */
   public void setStoreProperties(
       final DocumentFamily family, final Map<String, ?> storeProperties) {
@@ -136,6 +153,9 @@ public class DocumentFormat {
   /**
    * Sets the properties required to store(save) a document of this format to a document of
    * supported families.
+   *
+   * @param storePropertiesByFamily a DocumentFamily/Map pairs containing the properties to apply
+   *     when storing a document of this format, by DocumentFamily.
    */
   public void setStorePropertiesByFamily(
       final Map<DocumentFamily, Map<String, ?>> storePropertiesByFamily) {

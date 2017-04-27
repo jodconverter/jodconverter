@@ -25,9 +25,17 @@ import com.sun.star.frame.XDesktop;
 /** Represents an office context. */
 public interface OfficeContext {
 
-  /** Gets the office component loader for this context. */
+  /**
+   * Gets the office component loader for this context.
+   *
+   * @return the component loader.
+   */
   XComponentLoader getComponentLoader();
 
-  /** Gets the office desktop for this context. */
+  /**
+   * Gets the office desktop for this context.
+   *
+   * @return the desktop.
+   */
   XDesktop getDesktop();
 }

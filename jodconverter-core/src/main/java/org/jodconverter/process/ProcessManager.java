@@ -41,7 +41,8 @@ public interface ProcessManager { // NOSONAR
    * Kills the specified process.
    *
    * @param process the process to kill.
-   * @param pid the id of the process to kiil.
+   * @param pid the id of the process to kill.
+   * @throws IOException if an IO error occurs.
    */
   void kill(Process process, long pid) throws IOException;
 }

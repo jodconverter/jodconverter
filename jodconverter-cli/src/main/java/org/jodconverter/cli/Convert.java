@@ -239,7 +239,6 @@ public final class Convert {
    * Main entry point of the program.
    *
    * @param arguments program arguments.
-   * @throws Exception if an error occurs.
    */
   public static void main(final String[] arguments) {
 

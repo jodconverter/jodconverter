@@ -30,7 +30,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * commands.
  *
  * <p>Works for Linux. Works for Solaris too, except that the command line string returned by
- * <tt>ps</tt> there is limited to 80 characters and this affects {@link #findPid(String)}.
+ * <tt>ps</tt> there is limited to 80 characters and this affects {@link #findPid(ProcessQuery)}.
  */
 public class UnixProcessManager extends AbstractProcessManager {
 

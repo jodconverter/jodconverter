@@ -217,7 +217,11 @@ public class OfficeDocumentConverter {
     return loadProperties;
   }
 
-  /** Gets the DocumentFormat supported by the converter. */
+  /**
+   * Gets all the DocumentFormat supported by the converter.
+   *
+   * @return a DocumentFormatRegistry containing the supported format.
+   */
   public DocumentFormatRegistry getFormatRegistry() {
 
     return formatRegistry;
@@ -226,6 +230,8 @@ public class OfficeDocumentConverter {
   /**
    * Sets the default properties to use when we load (open) a document before a conversion,
    * regardless the input type of the document.
+   *
+   * @param defaultLoadProperties the default properties to apply when loading a document.
    */
   public void setDefaultLoadProperties(final Map<String, ?> defaultLoadProperties) {
 

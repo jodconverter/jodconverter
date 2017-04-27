@@ -39,6 +39,7 @@ public interface Filter {
    *
    * @param context the OfficeContext in use to pass along the chain.
    * @param document the XComponent being converted to pass along the chain.
+   * @param chain the chain.
    * @throws OfficeException if an error processing the filter.
    */
   void doFilter(final OfficeContext context, final XComponent document, final FilterChain chain)
