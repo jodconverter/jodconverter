@@ -1,0 +1,61 @@
+// Adds the ability to digitally sign built files and artifacts
+apply plugin: 'signing'
+// Adds support for deploying artifacts to Maven repositories.
+apply plugin: 'maven'
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Publishing setup
+
+// Signature of artifacts
+signing {
+    sign configurations.archives
+}
+
+// OSSRH publication
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            // POM signature
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            
+            // Target repository
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+            
+            // Snapshot repository
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+            
+            pom.project {
+                name project.name
+                description project.description
+                packaging 'jar'
+                url 'https://github.com/sbraconnier/jodconverter'
+                scm {
+                    connection 'scm:git:https://github.com/sbraconnier/jodconverter.git'
+                    developerConnection 'scm:git:git@https://github.com/sbraconnier/jodconverter.git'
+                    url 'https://github.com/sbraconnier/jodconverter.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'sbraconnier'
+                        name = 'Simon Braconnier'
+                        email = 'simonbraconnier@mail.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

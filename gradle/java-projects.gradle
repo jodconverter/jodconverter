@@ -32,20 +32,6 @@ targetCompatibility = rootProject.baselineJavaVersion
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Artifact setup
-
-// Customizes the manifest of output jar files.
-jar {
-    manifest {
-        attributes("Implementation-Title": project.name,
-                   "Implementation-Version": project.version,
-                   "Provider": gradle)
-    }
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // JaCoCo setup
 
 // Provides code coverage metrics for Java code
@@ -142,6 +128,40 @@ spotless {
         // Java Source Header File
         licenseHeaderFile("$rootDir/spotless.license.java")
     }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Artifact setup
+
+// Customizes the manifest of output jar files.
+jar {
+    manifest {
+        attributes("Implementation-Title": project.name,
+                   "Implementation-Version": project.version,
+                   "Provider": gradle)
+    }
+}
+
+// Archive task used to create a sources jar
+task sourcesJar(type: Jar, dependsOn: classes) {
+    description = 'Builds a source jar artifact suitable for deployment.'
+    classifier = 'sources'
+
+    from sourceSets.main.allSource
+}
+
+// Archive task used to create a javadoc jar
+task javadocJar(type: Jar, dependsOn: javadoc) {      
+    description = 'Builds a javadoc jar artifact suitable for deployment.'
+    classifier = 'javadoc'
+
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
