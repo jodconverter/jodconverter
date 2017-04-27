@@ -1,6 +1,6 @@
 apply plugin: 'war'
 
-description = 'JODConverterEX - Sample Web App'
+description = 'JODConverter - Sample Web App'
 
 dependencies {
     compile project(':jodconverter-core')

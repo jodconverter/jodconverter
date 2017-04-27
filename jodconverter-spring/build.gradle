@@ -1,4 +1,4 @@
-description = 'JODConverterEX - Spring'
+description = 'JODConverter - Spring'
 
 dependencies {
     compile project(':jodconverter-core')

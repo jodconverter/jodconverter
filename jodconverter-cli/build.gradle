@@ -1,4 +1,4 @@
-description = 'JODConverterEX - Cli'
+description = 'JODConverter - Cli'
 
 dependencies {
     compile project(':jodconverter-core')

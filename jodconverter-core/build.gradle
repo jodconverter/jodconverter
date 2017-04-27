@@ -1,4 +1,4 @@
-description = 'JODConverterEX - Core'
+description = 'JODConverter - Core'
 
 dependencies {
     compile libraries.commons_io
