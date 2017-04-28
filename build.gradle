@@ -6,92 +6,92 @@ description = 'JODConverter'
 // External dependencies for the build script
 buildscript {
 
-    repositories {
-        mavenCentral()
-        //Needed only for SNAPSHOT versions
-        //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+  repositories {
+    mavenCentral()
+    //Needed only for SNAPSHOT versions
+    //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         
-        maven { url "https://plugins.gradle.org/m2" }
-    }
+    maven { url "https://plugins.gradle.org/m2" }
+  }
 
-    dependencies {
-        classpath "com.netflix.nebula:nebula-project-plugin:$nebulaProjectVersion"
-        classpath "com.diffplug.spotless:spotless-plugin-gradle:$spotlessVersion"
-        classpath "io.spring.gradle:dependency-management-plugin:$springDependencyManagementVersion"
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$nexusStagingVersion"
-    }
+  dependencies {
+    classpath "com.netflix.nebula:nebula-project-plugin:$nebulaProjectVersion"
+    classpath "com.diffplug.spotless:spotless-plugin-gradle:$spotlessVersion"
+    classpath "io.spring.gradle:dependency-management-plugin:$springDependencyManagementVersion"
+    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$nexusStagingVersion"
+  }
 }
 
 ext {
-    baselineJavaVersion = JavaVersion.VERSION_1_7
-    sourceEncoding = "UTF-8"
+  baselineJavaVersion = JavaVersion.VERSION_1_7
+  sourceEncoding = "UTF-8"
 
-	ext.releaseBuild = version.endsWith('RELEASE')
-	ext.snapshotBuild = version.endsWith('SNAPSHOT')
-	
-    // Set up different subproject lists for individual configuration
-    ext.javaprojects = subprojects.findAll { new File(it.projectDir, 'src/main/java').directory }
-    ext.publishprojects = [project(':jodconverter-core'), project(':jodconverter-spring'), project(':jodconverter-spring-boot-starter')]
+  ext.releaseBuild = version.endsWith('RELEASE')
+  ext.snapshotBuild = version.endsWith('SNAPSHOT')
+
+  // Set up different subproject lists for individual configuration
+  ext.javaprojects = subprojects.findAll { new File(it.projectDir, 'src/main/java').directory }
+  ext.publishprojects = [project(':jodconverter-core'), project(':jodconverter-spring'), project(':jodconverter-spring-boot-starter')]
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration to apply to all the projects
 
 allprojects {
-    // Add the clean task to all the project
-    apply plugin: 'base'
-    // Generates files for Intellij IDEA
-    apply plugin: 'idea'
-    // Generates files for Eclipse
-    apply plugin: 'eclipse'
-    // Generate reports containing useful information about the build (tasks, dependencies, properties)
-    apply plugin: 'project-report'
+  // Add the clean task to all the project
+  apply plugin: 'base'
+  // Generates files for Intellij IDEA
+  apply plugin: 'idea'
+  // Generates files for Eclipse
+  apply plugin: 'eclipse'
+  // Generate reports containing useful information about the build (tasks, dependencies, properties)
+  apply plugin: 'project-report'
 
-    // Set the group and current version
-    group = groupId
-    version = currentVersion
+  // Set the group and current version
+  group = groupId
+  version = currentVersion
 
-    // Eclipse setup
+  // Eclipse setup
 
-    // Workaround until https://github.com/gradle/gradle/issues/898
-    // is resolved.
+  // Workaround until https://github.com/gradle/gradle/issues/898
+  // is resolved.
 
-    // Several files have UTF-8 encoding and Eclipse running on Windows
-    // will have trouble unless we tell it to use UTF-8 encoding. This
-    // setting needs to go into the org.eclipse.core.resources.prefs file,
-    // which the project script isn't set up to configure.
-    eclipse {
+  // Several files have UTF-8 encoding and Eclipse running on Windows
+  // will have trouble unless we tell it to use UTF-8 encoding. This
+  // setting needs to go into the org.eclipse.core.resources.prefs file,
+  // which the project script isn't set up to configure.
+  eclipse {
 
-        ext.corePrefsPath = '.settings/org.eclipse.core.resources.prefs'
+    ext.corePrefsPath = '.settings/org.eclipse.core.resources.prefs'
 
-        ext.genCorePrefs = {
-            File corePrefs = file(corePrefsPath)
-            corePrefs.parentFile.mkdirs()
-            corePrefs.text = """\
-              eclipse.preferences.version=1
-              encoding/<project>=UTF-8
-            """.stripIndent()
-        }
-
-        project {
-            file {
-                // Will be applied when the project is imported into Eclipse
-                genCorePrefs()
-            }
-        }
-
-        // Will be applied after the eclipseProject task
-        eclipseProject.doLast {
-            genCorePrefs()
-        }
-
-        // Will be applied after the cleanEclipse task
-        cleanEclipse.doLast {
-            delete corePrefsPath
-        }
+    ext.genCorePrefs = {
+      File corePrefs = file(corePrefsPath)
+      corePrefs.parentFile.mkdirs()
+      corePrefs.text = """\
+      eclipse.preferences.version=1
+      encoding/<project>=UTF-8
+      """.stripIndent()
     }
 
-    tasks.eclipse.dependsOn(cleanEclipse)
+    project {
+      file {
+        // Will be applied when the project is imported into Eclipse
+        genCorePrefs()
+      }
+    }
+
+    // Will be applied after the eclipseProject task
+    eclipseProject.doLast {
+      genCorePrefs()
+    }
+
+    // Will be applied after the cleanEclipse task
+    cleanEclipse.doLast {
+      delete corePrefsPath
+    }
+  }
+
+  tasks.eclipse.dependsOn(cleanEclipse)
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -100,8 +100,8 @@ allprojects {
 // Apply the configuration for the java projects only
 configure(javaprojects) {
 
-    // Apply the gradle file specific to all java projects
-    apply from: "$rootDir/gradle/java-projects.gradle"
+  // Apply the gradle file specific to all java projects
+  apply from: "$rootDir/gradle/java-projects.gradle"
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -113,15 +113,15 @@ configure(javaprojects) {
 apply plugin: "io.codearte.nexus-staging"
 
 nexusStaging {  
-    username = ossrhUsername
-    password = ossrhPassword
+  username = ossrhUsername
+  password = ossrhPassword
 }
 
 // Apply the configuration for the published projects only
 configure(publishprojects) {
 
-    // Apply the gradle file specific to all published projects
-    apply from: "$rootDir/gradle/publish-projects.gradle"
+  // Apply the gradle file specific to all published projects
+  apply from: "$rootDir/gradle/publish-projects.gradle"
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -129,9 +129,9 @@ configure(publishprojects) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Install a wrapper in the current projet (gradlew)
 task wrapper(type: Wrapper) {
-    description = 'Generates gradlew[.bat] scripts'
-    group = "wrapper"
+  description = 'Generates gradlew[.bat] scripts'
+  group = "wrapper"
 
-    gradleVersion = '3.4.1'
+  gradleVersion = '3.4.1'
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

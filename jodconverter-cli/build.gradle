@@ -1,13 +1,13 @@
 description = 'JODConverter - Cli'
 
 dependencies {
-    compile project(':jodconverter-core')
+  compile project(':jodconverter-core')
     
-    compile libraries.commons_cli
-    compile libraries.spring_core
-    compile libraries.spring_context
+  compile libraries.commons_cli
+  compile libraries.spring_core
+  compile libraries.spring_context
 
-    runtime libraries.slf4j_log4j // Runtime so it is included in the distribution
+  runtime libraries.slf4j_log4j // Runtime so it is included in the distribution
 }
 
 // Create an executable for the client module
@@ -19,19 +19,19 @@ mainClassName = "org.jodconverter.cli.Convert"
 
 // Copy the conf folder into the distribution
 applicationDistribution.from("conf/") {
-    into "conf"
+  into "conf"
 }
 
 // Copy the README
 applicationDistribution.from("README.txt") {
-    into ""
+  into ""
 }
 
 // use the log4j.properties from the configuration directory
 applicationDefaultJvmArgs = ["-Dlog4j.configuration=file:MY_APP_HOME/conf/log4j.properties"]
 startScripts {
-    doLast {
-        unixScript.text = unixScript.text.replace('MY_APP_HOME', '$APP_HOME')
-        windowsScript.text = windowsScript.text.replace('MY_APP_HOME', '%APP_HOME%')
-    }
+  doLast {
+    unixScript.text = unixScript.text.replace('MY_APP_HOME', '$APP_HOME')
+    windowsScript.text = windowsScript.text.replace('MY_APP_HOME', '%APP_HOME%')
+  }
 }

@@ -1,10 +1,10 @@
 description = 'JODConverter - Spring'
 
 dependencies {
-    compile project(':jodconverter-core')
-    compile libraries.slf4j_log4j
-    compile libraries.spring_core
-    compile libraries.spring_context
+  compile project(':jodconverter-core')
+  compile libraries.slf4j_log4j
+  compile libraries.spring_core
+  compile libraries.spring_context
 
-    compile libraries.spring_test
+  compile libraries.spring_test
 }

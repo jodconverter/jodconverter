@@ -1,16 +1,16 @@
 description = 'JODConverter - Core'
 
 dependencies {
-    compile libraries.commons_io
-    compile libraries.commons_lang3
-    compile libraries.json_java
-    compile libraries.office_juh
-    compile libraries.office_jurt
-    compile libraries.office_ridl
-    compile libraries.office_unoil
-    compile libraries.slf4j_api
+  compile libraries.commons_io
+  compile libraries.commons_lang3
+  compile libraries.json_java
+  compile libraries.office_juh
+  compile libraries.office_jurt
+  compile libraries.office_ridl
+  compile libraries.office_unoil
+  compile libraries.slf4j_api
 
-    testCompile libraries.slf4j_log4j
+  testCompile libraries.slf4j_log4j
 }
 
 test {
