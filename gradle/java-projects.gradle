@@ -4,7 +4,7 @@ apply plugin: 'java'
 apply plugin: 'nebula.integtest'
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -12,9 +12,9 @@ repositories {
 
 // Appropriately inject the common dependencies into each java projects
 dependencies {
-    testCompile libraries.assertj
-    testCompile libraries.junit
-    testCompile libraries.findbugs
+  testCompile libraries.assertj
+  testCompile libraries.junit
+  testCompile libraries.findbugs
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,20 +38,20 @@ targetCompatibility = rootProject.baselineJavaVersion
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = jacocoVersion
+  toolVersion = jacocoVersion
 }
 
 // Configures the jacocoTestReport task
 jacocoTestReport {
-    group = "Reporting"
-    description = "Generate Jacoco coverage reports after running tests."
+  group = "Reporting"
+  description = "Generate Jacoco coverage reports after running tests."
 
-    dependsOn tasks.withType(Test)
-    reports {
-        html.enabled = true
-        xml.enabled = false
-        csv.enabled = false
-    }
+  dependsOn tasks.withType(Test)
+  reports {
+    html.enabled = true
+    xml.enabled = false
+    csv.enabled = false
+  }
 }
 check.dependsOn jacocoTestReport
 
@@ -62,10 +62,10 @@ check.dependsOn jacocoTestReport
 
 // Configure eclipse
 eclipse {
-    jdt {
-        sourceCompatibility = rootProject.baselineJavaVersion
-        targetCompatibility = rootProject.baselineJavaVersion
-    }
+  jdt {
+    sourceCompatibility = rootProject.baselineJavaVersion
+    targetCompatibility = rootProject.baselineJavaVersion
+  }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,8 +78,8 @@ apply plugin: 'checkstyle'
 
 // Configures the checkstyle task
 checkstyle {
-    toolVersion = checkstyleVersion
-    config = rootProject.resources.text.fromFile('etc/checkstyle/rules.xml')
+  toolVersion = checkstyleVersion
+  config = rootProject.resources.text.fromFile('etc/checkstyle/rules.xml')
 }
 
 // Disable checkstyle for test code
@@ -87,10 +87,10 @@ checkstyle {
 
 // Configures the checkstyle tasks
 tasks.withType(Checkstyle) {
-    reports {
-        xml.enabled false
-        html.enabled true
-    }
+  reports {
+    xml.enabled false
+    html.enabled true
+  }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -102,10 +102,10 @@ apply plugin: 'pmd' // Also performs quality checks on Java source files and gen
 
 // Configures the pmd task
 pmd {
-    toolVersion = pmdVersion
-    ruleSetConfig = rootProject.resources.text.fromFile('etc/pmd/ruleset.xml')
-    ignoreFailures = true
-    rulePriority = 2
+  toolVersion = pmdVersion
+  ruleSetConfig = rootProject.resources.text.fromFile('etc/pmd/ruleset.xml')
+  ignoreFailures = true
+  rulePriority = 2
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -118,16 +118,16 @@ apply plugin: "com.diffplug.gradle.spotless"
 
 spotless {
 
-    java {
-        // Format code using google java format
-        googleJavaFormat()
-        
-        // Import order
-        importOrderFile "$rootDir/spotless.importorder"
+  java {
+    // Format code using google java format
+    googleJavaFormat()
+    
+    // Import order
+    importOrderFile "$rootDir/spotless.importorder"
 
-        // Java Source Header File
-        licenseHeaderFile("$rootDir/spotless.license.java")
-    }
+    // Java Source Header File
+    licenseHeaderFile("$rootDir/spotless.license.java")
+  }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -137,31 +137,51 @@ spotless {
 
 // Customizes the manifest of output jar files.
 jar {
-    manifest {
-        attributes("Implementation-Title": project.name,
-                   "Implementation-Version": project.version,
-                   "Provider": gradle)
-    }
+  manifest {
+    attributes("Implementation-Title": project.name,
+               "Implementation-Version": project.version,
+               "Provider": gradle)
+  }
 }
 
 // Archive task used to create a sources jar
 task sourcesJar(type: Jar, dependsOn: classes) {
-    description = 'Builds a source jar artifact suitable for deployment.'
-    classifier = 'sources'
+  description = 'Builds a source jar artifact suitable for deployment.'
+  classifier = 'sources'
 
-    from sourceSets.main.allSource
+  from sourceSets.main.allSource
 }
 
 // Archive task used to create a javadoc jar
 task javadocJar(type: Jar, dependsOn: javadoc) {      
-    description = 'Builds a javadoc jar artifact suitable for deployment.'
-    classifier = 'javadoc'
+  description = 'Builds a javadoc jar artifact suitable for deployment.'
+  classifier = 'javadoc'
 
-    from javadoc.destinationDir
+  from javadoc.destinationDir
 }
 
 artifacts {
-    archives sourcesJar, javadocJar
+  archives sourcesJar, javadocJar
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Distribution configuration
+
+apply plugin: 'distribution'
+
+// TODO: Find another way to exclude jodconverter-cli
+// since it has its own distribution configuration
+if (!['jodconverter-cli','jodconverter-sample-webapp'].contains(project.name)) {
+  distributions {
+    main {
+      baseName = project.name
+      contents {
+        from jar, sourcesJar, javadocJar
+      }
+    }
+  }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

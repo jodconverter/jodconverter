@@ -127,6 +127,22 @@ configure(publishprojects) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Distribution configuration
+
+task distZip(type:Zip) {
+  description "Create full distribution zip"
+  baseName project.name
+  group "Distribution"
+   
+  //from subprojects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
+  from subprojects.collect { it.distZip }
+}
+project.tasks["distZip"].dependsOn subprojects*.distZip
+//project.tasks["distZip"].dependsOn subprojects*.assembleDist
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Install a wrapper in the current projet (gradlew)
 task wrapper(type: Wrapper) {
   description = 'Generates gradlew[.bat] scripts'
