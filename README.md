@@ -12,28 +12,21 @@ In order to be able to apply changes to the JODConverter project, I had to under
 
 - **Tests**: This fork has been tested on Windows and Ubuntu. But JODConverter is supposed to work just fine on Mac and other Unix/Linux OS. Any confirmation would be welcome so we could build a list of official supported OS.
 
-- **What's next**: my goals are to:
-	- ~~Add some filters in order to be able to add text, images, and whatever we are able to change while converting a document.~~ *Mostly Done (text replacement, graphic and text insertion all done. Now ideas are welcome)*
-	- ~~Improve project comments.~~ *Done*
-	- ~~Switch to Gradle instead of Maven.~~ *Done*
-	- ~~Switch to JUnit instead of TestNG.~~ *Done*
-	- ~~Use the great SonarQube platform for code quality.~~ *Done. Checkstyle, PMD, Spotless and Jacoco gradle plugins instead*
-	- Add tests.
-	- Fix reported bugs (will always be the priority).
-	- ~~Take a look at [Oshi](https://github.com/oshi/oshi) for processes management (SIGAR replacement). Seems promising... (Advice and comments always welcome).~~ *Finally, seems overkill for the needs of the library. Any suggestions out there ?*
-	- Improve the sample-webapp project.
-	- Add more documentation.
-	- Have fun!
+## Usage
 
-## Thanks To...
+### Using Gradle:
+```Shell
+compile 'org.jodconverter:jodconverter-core:4.0.0-RELEASE"
+```
 
-I cannot say exactly where you could find some similitude between my source code and the one of these forks I tried to use before I created my own but here are my favorite/inspiration forks:
-
-- [XWiki fork](https://github.com/xwiki/jodconverter): Nice choice if you can afford using the SIGAR tools (which I couldn't sadly).
-- [Nuxeo fork](https://github.com/nuxeo/jodconverter): Nice choice if you don't want to use SIGAR and don't came across an unresponsive office process following a timeout exception that drives you crazy.
-
-### A special thanks to:
-The dude who created a pull request in these two forks with a stress test that made my office process to crash every times! I cannot named him because I don't know him but my first commit was when I was able to build my things with his stress test on!!  
+### Using Maven:
+```Shell
+<dependency>
+  <groupId>org.jodconverter</groupId>
+  <artifactId>jodconverter-core</artifactId>
+  <version>4.0.0-RELEASE</version>
+</dependency>
+```
 
 ## Building the Project
 
@@ -52,6 +45,16 @@ gradlew clean build -x test -x integTest -PuseOpenOffice
 ```Shell
 gradlew clean build -x test -x integTest distZip
 ```
+
+## Thanks To...
+
+I cannot say exactly where you could find some similitude between my source code and the one of these forks I tried to use before I created my own but here are my favorite/inspiration forks:
+
+- [XWiki fork](https://github.com/xwiki/jodconverter): Nice choice if you can afford using the SIGAR tools (which I couldn't sadly).
+- [Nuxeo fork](https://github.com/nuxeo/jodconverter): Nice choice if you don't want to use SIGAR and don't came across an unresponsive office process following a timeout exception that drives you crazy.
+
+### A special thanks to:
+The dude who created a pull request in these two forks with a stress test that made my office process to crash every times! I cannot named him because I don't know him but my first commit was when I was able to build my things with his stress test on!!  
 
 ## Original JODConverter
 
