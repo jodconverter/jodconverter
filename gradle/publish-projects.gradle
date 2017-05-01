@@ -50,7 +50,7 @@ uploadArchives {
           developer {
             id = 'sbraconnier'
             name = 'Simon Braconnier'
-            email = 'simonbraconnier@mail.com'
+            email = 'simonbraconnier@gmail.com'
           }
         }
       }
