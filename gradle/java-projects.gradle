@@ -140,6 +140,12 @@ jar {
   manifest {
     attributes("Implementation-Title": project.name,
                "Implementation-Version": project.version,
+               "Implementation-Vendor": 'JODConverter.org',
+               "Implementation-Vendor-Id": 'org.jodconverter',
+               "Implementation-Url": 'http://jodconverter.org',
+               "Specification-Title": project.name,
+               "Specification-Version": project.version,
+               "Specification-Vendor": 'JODConverter.org',
                "Provider": gradle)
   }
 }
