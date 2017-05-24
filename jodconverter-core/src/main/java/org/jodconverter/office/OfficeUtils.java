@@ -215,6 +215,41 @@ public final class OfficeUtils {
   }
 
   /**
+   * Stops an <code>OfficeManager</code> unconditionally.
+   *
+   * <p>Equivalent to {@link OfficeManager#stop()}, except any exceptions will be ignored. This is
+   * typically used in finally blocks.
+   *
+   * <p>Example code:
+   *
+   * <pre>
+   * OfficeManager manager = null;
+   * try {
+   *     manager = new DefaultOfficeManagerBuilder().build();
+   *     manager.start();
+   *
+   *     // process manager
+   *
+   * } catch (Exception e) {
+   *     // error handling
+   * } finally {
+   *     OfficeUtils.stopQuietly(manager);
+   * }
+   * </pre>
+   *
+   * @param manager the manager to stop, may be null or already stopped.
+   */
+  public static void stopQuietly(final OfficeManager manager) {
+    try {
+      if (manager != null) {
+        manager.stop();
+      }
+    } catch (final OfficeException ex) { // NOSONAR
+      // ignore
+    }
+  }
+
+  /**
    * Converts a regular java map to an array of {@code PropertyValue}, usable as arguments with UNO
    * interface types.
    *
