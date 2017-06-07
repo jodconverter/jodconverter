@@ -36,7 +36,7 @@ public final class OfficeUtils {
 
   private static final String EXECUTABLE_DEFAULT = "program/soffice.bin";
   private static final String EXECUTABLE_MAC = "program/soffice";
-  private static final String EXECUTABLE_MAC_41 = "MacOS/soffice.bin";
+  private static final String EXECUTABLE_MAC_41 = "MacOS/soffice";
   private static final String EXECUTABLE_WINDOWS = "program/soffice.exe";
 
   /**
