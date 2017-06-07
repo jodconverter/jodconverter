@@ -123,6 +123,24 @@ public class OfficeDocumentConverterFunctionalTest extends BaseOfficeTest {
   }
 
   /**
+   * Test the conversion of an HTML file that contains an image.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testConversion() throws Exception {
+
+    final File inputFile = new File(DOCUMENTS_DIR + "test.html");
+    final File outputDir = new File(OUTPUT_DIR);
+
+    // Create the filter chain to use
+    final DefaultFilterChain chain = new DefaultFilterChain(RefreshFilter.INSTANCE);
+
+    // Convert the file to all supported formats
+    convertFileToAllSupportedFormats(inputFile, outputDir, chain);
+  }
+
+  /**
    * Test the conversion of all the supported documents format.
    *
    * @throws Exception if an error occurs.
