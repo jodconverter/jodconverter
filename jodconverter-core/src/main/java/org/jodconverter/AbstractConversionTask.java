@@ -148,7 +148,7 @@ public abstract class AbstractConversionTask implements OfficeTask {
   protected abstract void modifyDocument(final OfficeContext context, final XComponent document)
       throws OfficeException;
 
-  // Stores the converted document as the ouput file.
+  // Stores the converted document as the output file.
   private void storeDocument(final XComponent document) throws OfficeException {
 
     final Map<String, ?> storeProperties = getStoreProperties(document);
