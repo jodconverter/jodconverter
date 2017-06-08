@@ -25,7 +25,7 @@ public class MacProcessManager extends UnixProcessManager {
   protected String[] getRunningProcessesCommand(final String process) {
 
     return new String[] {
-      "/bin/bash", "-c", "/bin/ps -e -o pid,command | /bin/grep " + process + " | /bin/grep -v grep"
+      "/bin/bash", "-c", "/bin/ps -e -o pid,command | /usr/bin/grep " + process + " | /usr/bin/grep -v grep"
     };
   }
 }
