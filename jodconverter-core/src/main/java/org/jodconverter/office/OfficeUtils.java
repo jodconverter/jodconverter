@@ -47,9 +47,9 @@ public final class OfficeUtils {
    */
   public static ProcessManager findBestProcessManager() {
 
-    if (SystemUtils.IS_OS_UNIX) {
+    if (SystemUtils.IS_OS_MAC) {
       return new UnixProcessManager();
-    } else if (SystemUtils.IS_OS_MAC) {
+    } else if (SystemUtils.IS_OS_UNIX) {
       return new MacProcessManager();
     } else if (SystemUtils.IS_OS_WINDOWS) {
       WindowsProcessManager windowsProcessManager = new WindowsProcessManager();
