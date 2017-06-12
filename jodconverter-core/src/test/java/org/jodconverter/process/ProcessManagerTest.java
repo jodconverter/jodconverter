@@ -45,7 +45,7 @@ public class ProcessManagerTest {
    */
   @Test
   public void unixProcessManager() throws Exception {
-    assumeTrue(SystemUtils.IS_OS_UNIX);
+    assumeTrue(SystemUtils.IS_OS_UNIX && !SystemUtils.IS_OS_MAC);
 
     final ProcessManager processManager = new UnixProcessManager();
     final Process process = Runtime.getRuntime().exec("sleep 5s");
