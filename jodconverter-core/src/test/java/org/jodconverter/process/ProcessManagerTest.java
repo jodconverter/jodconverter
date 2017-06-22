@@ -47,7 +47,7 @@ public class ProcessManagerTest {
   public void unixProcessManager() throws Exception {
     assumeTrue(SystemUtils.IS_OS_UNIX && !SystemUtils.IS_OS_MAC);
 
-    final ProcessManager processManager = new UnixProcessManager();
+    final ProcessManager processManager = UnixProcessManager.getDefault();
     final Process process = Runtime.getRuntime().exec("sleep 5s");
     final ProcessQuery query = new ProcessQuery("sleep", "5s");
 
@@ -69,7 +69,7 @@ public class ProcessManagerTest {
   public void macProcessManager() throws Exception {
     assumeTrue(SystemUtils.IS_OS_MAC);
 
-    final ProcessManager processManager = new MacProcessManager();
+    final ProcessManager processManager = MacProcessManager.getDefault();
     final Process process = Runtime.getRuntime().exec("sleep 5s");
     final ProcessQuery query = new ProcessQuery("sleep", "5s");
 
@@ -92,7 +92,7 @@ public class ProcessManagerTest {
   public void windowsProcessManager() throws Exception {
     assumeTrue(SystemUtils.IS_OS_WINDOWS);
 
-    final ProcessManager processManager = new WindowsProcessManager();
+    final ProcessManager processManager = WindowsProcessManager.getDefault();
     final Process process = Runtime.getRuntime().exec("ping 127.0.0.1 -n 5");
     final ProcessQuery query = new ProcessQuery("ping", "127.0.0.1 -n 5");
 

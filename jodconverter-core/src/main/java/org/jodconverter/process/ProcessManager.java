@@ -24,8 +24,8 @@ import java.io.IOException;
 /** Provides services required to manage a running process. */
 public interface ProcessManager { // NOSONAR
 
-  long PID_NOT_FOUND = -2;
-  long PID_UNKNOWN = -1;
+  static final long PID_NOT_FOUND = -2;
+  static final long PID_UNKNOWN = -1;
 
   /**
    * Finds a PID of a running process that has the specified command line.

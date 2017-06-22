@@ -21,11 +21,29 @@ package org.jodconverter.process;
 
 public class MacProcessManager extends UnixProcessManager {
 
+  // This class is required in order to create the default MacProcessManager
+  // only on demand, as explained by the Initialization-on-demand holder idiom:
+  // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+  private static class DefaultHolder { // NOSONAR
+    static final MacProcessManager INSTANCE = new MacProcessManager();
+  }
+
+  /**
+   * Gets the default instance of {@code MacProcessManager}.
+   *
+   * @return the default {@code MacProcessManager} instance.
+   */
+  public static MacProcessManager getDefault() {
+    return DefaultHolder.INSTANCE;
+  }
+
   @Override
   protected String[] getRunningProcessesCommand(final String process) {
 
     return new String[] {
-      "/bin/bash", "-c", "/bin/ps -e -o pid,command | /usr/bin/grep " + process + " | /usr/bin/grep -v grep"
+      "/bin/bash",
+      "-c",
+      "/bin/ps -e -o pid,command | /usr/bin/grep " + process + " | /usr/bin/grep -v grep"
     };
   }
 }

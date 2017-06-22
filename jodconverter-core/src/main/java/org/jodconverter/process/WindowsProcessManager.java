@@ -30,6 +30,22 @@ import java.util.regex.Pattern;
  */
 public class WindowsProcessManager extends AbstractProcessManager {
 
+  // This class is required in order to create the default WindowsProcessManager
+  // only on demand, as explained by the Initialization-on-demand holder idiom:
+  // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+  private static class DefaultHolder { // NOSONAR
+    static final WindowsProcessManager INSTANCE = new WindowsProcessManager();
+  }
+
+  /**
+   * Gets the default instance of {@code WindowsProcessManager}.
+   *
+   * @return the default {@code WindowsProcessManager} instance.
+   */
+  public static WindowsProcessManager getDefault() {
+    return DefaultHolder.INSTANCE;
+  }
+
   private static final Pattern PROCESS_GET_LINE =
       Pattern.compile("^\\s*(?<CommanLine>.*?)\\s+(?<Pid>\\d+)\\s*$");
 
