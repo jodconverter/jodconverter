@@ -35,14 +35,6 @@
 				//ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]"/>
         </properties>
     </rule>
-    <rule ref="rulesets/java/codesize.xml/TooManyMethods">
-        <properties>
-            <!-- The default 10 is too restrictive (test classes have way more methods).
-                 It would be better to use a violationSuppressXPath but it doesn't exist
-                 for this rule. -->
-            <property name="maxmethods" value="100"/>
-        </properties>
-    </rule>
     <rule ref="rulesets/java/codesize.xml/CyclomaticComplexity">
         <properties>
             <!-- The default 10 is too restrictive. -->
@@ -63,10 +55,7 @@
     </rule>
 
 	<!-- Use the entire 'controversial' ruleset -->
-	<rule ref="rulesets/java/controversial.xml">
-	    <exclude name="AtLeastOneConstructor" />
-		<exclude name="OnlyOneReturn" />
-	</rule>
+	<rule ref="rulesets/java/controversial.xml" />
 	<rule ref="rulesets/java/controversial.xml/DataflowAnomalyAnalysis">
 		<properties>
 			<property name="violationSuppressXPath" value="
@@ -75,10 +64,7 @@
 	</rule>
 
 	<!-- Use the entire 'coupling' ruleset -->
-	<rule ref="rulesets/java/coupling.xml">
-		<exclude name="LawOfDemeter" />
-		<exclude name="LoosePackageCoupling" />
-	</rule>
+	<rule ref="rulesets/java/coupling.xml" />
 	<rule ref="rulesets/java/coupling.xml/ExcessiveImports">
 		<properties>
 			<!-- Ignore the rule for test classes -->
@@ -88,13 +74,7 @@
 	</rule>
 	
 	<!-- Use the entire 'design' ruleset -->
-	<rule ref="rulesets/java/design.xml">
-		<exclude name="AbstractClassWithoutAbstractMethod" />
-		<exclude name="FieldDeclarationsShouldBeAtStartOfClass" />
-		<exclude name="UncommentedEmptyConstructor" />
-		<exclude name="UseUtilityClass" />
-		<exclude name="ConstantsInInterface" />
-	</rule>
+	<rule ref="rulesets/java/design.xml" />
 
     <!-- Use the entire 'empty' ruleset -->
     <rule ref="rulesets/java/empty.xml"/>
@@ -103,9 +83,7 @@
     <rule ref="rulesets/java/finalizers.xml"/>
 
     <!-- Use the entire 'javabeans' ruleset -->
-	<rule ref="rulesets/java/javabeans.xml">
-		<exclude name="BeanMembersShouldSerialize" />
-	</rule>
+	<rule ref="rulesets/java/javabeans.xml" />
 
     <!-- Use the entire 'java logging' ruleset -->
     <rule ref="rulesets/java/logging-java.xml"/>
@@ -126,11 +104,7 @@
     <rule ref="rulesets/java/sunsecure.xml"/>
 
     <!-- Use the entire 'strict exceptions' ruleset -->
-	<rule ref="rulesets/java/strictexception.xml">
-		<exclude name="AvoidCatchingGenericException" />
-		<exclude name="AvoidThrowingRawExceptionTypes" />
-		<exclude name="SignatureDeclareThrowsException" />
-	</rule>
+	<rule ref="rulesets/java/strictexception.xml" />
 
     <!-- Use the entire 'type resolution' ruleset -->
     <rule ref="rulesets/java/typeresolution.xml"/>

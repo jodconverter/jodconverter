@@ -38,6 +38,7 @@ ext {
 // Configuration to apply to all the projects
 
 allprojects {
+
   // Add the clean task to all the project
   apply plugin: 'base'
   // Generates files for Intellij IDEA
@@ -100,6 +101,13 @@ allprojects {
 // Apply the configuration for the java projects only
 configure(javaprojects) {
 
+  // Spotless need a buildscript repository for all java project
+  buildscript {
+    repositories {
+      maven { url "https://plugins.gradle.org/m2" }
+    }
+  }
+
   // Apply the gradle file specific to all java projects
   apply from: "$rootDir/gradle/java-projects.gradle"
 }
@@ -148,6 +156,6 @@ task wrapper(type: Wrapper) {
   description = 'Generates gradlew[.bat] scripts'
   group = "wrapper"
 
-  gradleVersion = '3.4.1'
+  gradleVersion = '4.0'
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
