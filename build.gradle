@@ -121,8 +121,8 @@ configure(javaprojects) {
 apply plugin: "io.codearte.nexus-staging"
 
 nexusStaging {  
-  username = ossrhUsername
-  password = ossrhPassword
+  username = findProperty('ossrhUsername')
+  password = findProperty('ossrhPassword')
 }
 
 // Apply the configuration for the published projects only

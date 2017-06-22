@@ -8,6 +8,7 @@ apply plugin: 'maven'
 
 // Signature of artifacts
 signing {
+  required { gradle.taskGraph.hasTask("uploadArchives") }
   sign configurations.archives
 }
 
@@ -20,12 +21,12 @@ uploadArchives {
             
       // Target repository
       repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
+        authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
       }
             
       // Snapshot repository
       snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
+        authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
       }
             
       pom.project {
