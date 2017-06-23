@@ -30,7 +30,6 @@ import com.sun.star.lib.uno.helper.UnoUrl;
 
 import org.jodconverter.process.AbstractProcessManager;
 import org.jodconverter.process.ProcessManager;
-import org.jodconverter.process.ProcessUtils;
 
 /** Helper class used to creates ProcessPoolOfficeManager instances. */
 public class DefaultOfficeManagerBuilder {
@@ -73,7 +72,7 @@ public class DefaultOfficeManagerBuilder {
     }
 
     if (processManager == null) {
-      processManager = ProcessUtils.getDefault();
+      processManager = OfficeUtils.findBestProcessManager();
     }
   }
 
