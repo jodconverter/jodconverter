@@ -21,13 +21,7 @@ package org.jodconverter.office;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
 import org.junit.Test;
-
-import com.sun.star.lib.uno.helper.UnoUrl;
-
-import org.jodconverter.process.PureJavaProcessManager;
 
 public class ExternalOfficeManagerTest {
 
@@ -40,16 +34,8 @@ public class ExternalOfficeManagerTest {
    */
   @Test
   public void executeTask() throws Exception {
-    final UnoUrl unoUrl = UnoUrlUtils.socket(2002);
-    final OfficeProcess officeProcess =
-        new OfficeProcess(
-            OfficeUtils.getDefaultOfficeHome(),
-            unoUrl,
-            null,
-            null,
-            new File(System.getProperty("java.io.tmpdir")),
-            new PureJavaProcessManager(),
-            true);
+    final OfficeProcessConfig config = new OfficeProcessConfig(UnoUrlUtils.socket(2002));
+    final OfficeProcess officeProcess = new OfficeProcess(config);
     officeProcess.start();
     Thread.sleep(2000); // NOSONAR
     final Integer exitCode = officeProcess.getExitCode();
@@ -58,7 +44,7 @@ public class ExternalOfficeManagerTest {
       Thread.sleep(2000); // NOSONAR
     }
 
-    final ExternalOfficeManager manager = new ExternalOfficeManager(unoUrl, true);
+    final ExternalOfficeManager manager = new ExternalOfficeManager(config.getUnoUrl(), true);
     manager.start();
 
     final MockOfficeTask task = new MockOfficeTask();

@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,42 +37,27 @@ import com.sun.star.lib.uno.helper.UnoUrl;
 import org.jodconverter.process.ProcessManager;
 import org.jodconverter.process.ProcessQuery;
 
-/** Represents an office process. */
+/**
+ * An OfficeProcess represents an instance of an office program that is executed by JODConverter.
+ */
 class OfficeProcess {
 
   private static final Logger logger = LoggerFactory.getLogger(OfficeProcess.class);
 
   private Process process;
   private long pid = PID_UNKNOWN;
-  private final File officeHome;
-  private final UnoUrl unoUrl;
-  private final String[] runAsArgs;
-  private final File templateProfileDir;
   private final File instanceProfileDir;
-  private final ProcessManager processManager;
-  private final boolean killExistingProcess;
+  private final OfficeProcessConfig config;
 
   /**
-   * Constructs a new instance of an office process class with the specified settings.
+   * Constructs a new instance of an office process class with the specified configuration.
    *
-   * @param settings the office process settings.
+   * @param config the office process configuration.Àjn
    */
-  public OfficeProcess(
-      final File officeHome,
-      final UnoUrl unoUrl,
-      final String[] runAsArgs,
-      final File templateProfileDir,
-      final File workingDir,
-      final ProcessManager processManager,
-      final boolean killExistingProcess) {
+  public OfficeProcess(final OfficeProcessConfig config) {
 
-    this.officeHome = officeHome;
-    this.unoUrl = unoUrl;
-    this.runAsArgs = ArrayUtils.clone(runAsArgs);
-    this.templateProfileDir = templateProfileDir;
-    this.processManager = processManager;
-    this.killExistingProcess = killExistingProcess;
-    this.instanceProfileDir = getInstanceProfileDir(workingDir, unoUrl);
+    this.config = config;
+    this.instanceProfileDir = getInstanceProfileDir();
   }
 
   /**
@@ -90,10 +74,12 @@ class OfficeProcess {
     try {
       // Search for an existing process that would prevent us to start a new
       // office process with the same connection string.
+      final ProcessManager processManager = config.getProcessManager();
       existingPid = processManager.findPid(processQuery);
 
       // Kill the any running process with the same connection string if the kill switch is on
-      if (!(existingPid == PID_NOT_FOUND || existingPid == PID_UNKNOWN) && killExistingProcess) {
+      if (!(existingPid == PID_NOT_FOUND || existingPid == PID_UNKNOWN)
+          && config.isKillExistingProcess()) {
         logger.warn(
             "A process with acceptString '{}' is already running; pid {}",
             processQuery.getArgument(),
@@ -144,11 +130,10 @@ class OfficeProcess {
   }
 
   /**
-   * Kills the office process.
+   * Kills the office process instance.
    *
-   * @param retryInterval internal between each exit code retrieval attempt.
-   * @param retryTimeout timeout after which we won't try again to retrieve the exit code.
-   * @return the exit code.
+   * @param retryInterval the interval between each exit code retrieval attempt.
+   * @param retryTimeout the timeout after which we won't try again to retrieve the exit code.
    * @throws OfficeException if we are unable to kill the process due to an I/O error occurs.
    * @throws RetryTimeoutException if we are unable to get the exit code of the process.
    */
@@ -157,11 +142,11 @@ class OfficeProcess {
 
     logger.info(
         "Trying to forcibly terminate process: '{}'{}",
-        unoUrl.getConnectionParametersAsString(),
+        config.getUnoUrl().getConnectionParametersAsString(),
         pid == PID_UNKNOWN ? "" : " (pid " + pid + ")");
 
     try {
-      processManager.kill(process, pid);
+      config.getProcessManager().kill(process, pid);
       return getExitCode(retryInterval, retryTimeout);
     } catch (IOException ioEx) {
       throw new OfficeException("Unable to kill the process with pid: " + pid, ioEx);
@@ -187,8 +172,8 @@ class OfficeProcess {
    * Gets the exit code of the office process. We will try to get the exit code until we succeed or
    * that the specified timeout is reached.
    *
-   * @param retryInterval internal between each retrieval attempt.
-   * @param retryTimeout timeout after which we won't try again to retrieve the exit code.
+   * @param retryInterval the interval between each exit code retrieval attempt.
+   * @param retryTimeout the timeout after which we won't try again to retrieve the exit code.
    * @return the exit value of the process. The value 0 indicates normal termination.
    * @throws OfficeException if we are unable to kill the process.
    * @throws RetryTimeoutException if we are unable to get the exit code of the process.
@@ -210,16 +195,18 @@ class OfficeProcess {
   /**
    * Gets the profile directory of the office process.
    *
-   * @param workingDir the working directory.
-   * @param unoUrl the UNO URL for the process.
    * @return the profile directory instance.
    */
-  private File getInstanceProfileDir(final File workingDir, final UnoUrl unoUrl) {
+  private File getInstanceProfileDir() {
 
     return new File(
-        workingDir,
+        config.getWorkingDir(),
         ".jodconverter_"
-            + unoUrl.getConnectionAndParametersAsString().replace(',', '_').replace('=', '-'));
+            + config
+                .getUnoUrl()
+                .getConnectionAndParametersAsString()
+                .replace(',', '_')
+                .replace('=', '-'));
   }
 
   /**
@@ -257,9 +244,9 @@ class OfficeProcess {
       logger.warn("Profile dir '{}' already exists; deleting", instanceProfileDir);
       deleteProfileDir();
     }
-    if (templateProfileDir != null) {
+    if (config.getTemplateProfileDir() != null) {
       try {
-        FileUtils.copyDirectory(templateProfileDir, instanceProfileDir);
+        FileUtils.copyDirectory(config.getTemplateProfileDir(), instanceProfileDir);
       } catch (IOException ioEx) {
         throw new OfficeException("Failed to create the instance profile directory", ioEx);
       }
@@ -276,9 +263,9 @@ class OfficeProcess {
 
     // Create the command used to launch the office process
     final List<String> command = new ArrayList<>();
-    final File executable = OfficeUtils.getOfficeExecutable(officeHome);
-    if (runAsArgs != null) {
-      command.addAll(Arrays.asList(runAsArgs));
+    final File executable = OfficeUtils.getOfficeExecutable(config.getOfficeHome());
+    if (config.getRunAsArgs() != null) {
+      command.addAll(Arrays.asList(config.getRunAsArgs()));
     }
     command.add(executable.getAbsolutePath());
     command.add("-accept=" + acceptString);
@@ -314,12 +301,13 @@ class OfficeProcess {
    */
   public void start(final boolean restart) throws OfficeException {
 
+    final UnoUrl url = config.getUnoUrl();
     final String acceptString =
-        unoUrl.getConnectionAndParametersAsString()
+        url.getConnectionAndParametersAsString()
             + ";"
-            + unoUrl.getProtocolAndParametersAsString()
+            + url.getProtocolAndParametersAsString()
             + ";"
-            + unoUrl.getRootOid();
+            + url.getRootOid();
 
     // Search for an existing process.
     final ProcessQuery processQuery = new ProcessQuery("soffice", acceptString);
@@ -340,7 +328,7 @@ class OfficeProcess {
         instanceProfileDir);
     try {
       process = processBuilder.start();
-      pid = processManager.findPid(processQuery);
+      pid = config.getProcessManager().findPid(processQuery);
       logger.info("Started process{}", pid == PID_UNKNOWN ? "" : "; pid = " + pid);
     } catch (IOException ioEx) {
       throw new OfficeException(

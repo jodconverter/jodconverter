@@ -26,19 +26,15 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.sun.star.lib.uno.helper.UnoUrl;
 
 import org.jodconverter.process.ProcessManager;
-import org.jodconverter.process.PureJavaProcessManager;
 
 /**
- * Settings for a {@code PooledOfficeManager}.
+ * This class holds the configuration of a {@code OfficeProcess}.
  *
- * @see PooledOfficeManager
+ * @see OfficeProcess
  */
-class ManagedOfficeProcessSettings {
+class OfficeProcessConfig {
 
-  public static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds
-  public static final long DEFAULT_RETRY_TIMEOUT = 120000L; // 2 minutes
-  public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.
-  public static final long MAX_RETRY_INTERVAL = 10000L; //10 sec.
+  public static final boolean DEFAULT_KILLING_EXISTING_PROCESS = true;
 
   private final UnoUrl unoUrl;
   private File officeHome;
@@ -46,36 +42,37 @@ class ManagedOfficeProcessSettings {
   private ProcessManager processManager;
   private String[] runAsArgs;
   private File templateProfileDir;
-  private long retryTimeout;
-  private long retryInterval;
-  private boolean killExistingProcess;
+  private boolean killExistingProcess = DEFAULT_KILLING_EXISTING_PROCESS;
 
   /**
-   * Constructs new settings instance for the specified URL and with default values.
+   * Creates configuration for the specified URL and with default values.
    *
-   * @param unoUrl the UNO URL of the settingss.
+   * @param unoUrl the UNO URL for the configuration.
    */
-  public ManagedOfficeProcessSettings(final UnoUrl unoUrl) {
-    this(
-        unoUrl,
-        OfficeUtils.getDefaultOfficeHome(),
-        new File(System.getProperty("java.io.tmpdir")),
-        new PureJavaProcessManager());
+  public OfficeProcessConfig(final UnoUrl unoUrl) {
+    this(unoUrl, null, null, null);
   }
 
-  /** Constructs new settings instance for the specified URL and with the specified values. */
-  public ManagedOfficeProcessSettings(
+  /**
+   * Creates configuration for the specified URL and with the specified values.
+   *
+   * @param unoUrl the UNO URL for the configuration.
+   * @param officeHome home directory of the office installation.
+   * @param workingDir working directory to set to office.
+   * @param processManager process manager to use to deal with created processes.
+   */
+  public OfficeProcessConfig(
       final UnoUrl unoUrl,
       final File officeHome,
       final File workingDir,
       final ProcessManager processManager) {
 
     this.unoUrl = unoUrl;
-    this.officeHome = officeHome;
-    this.workingDir = workingDir;
-    this.processManager = processManager;
-    this.retryTimeout = DEFAULT_RETRY_TIMEOUT;
-    this.retryInterval = DEFAULT_RETRY_INTERVAL;
+    this.officeHome = officeHome == null ? OfficeUtils.getDefaultOfficeHome() : officeHome;
+    this.workingDir =
+        workingDir == null ? new File(System.getProperty("java.io.tmpdir")) : workingDir;
+    this.processManager =
+        processManager == null ? OfficeUtils.findBestProcessManager() : processManager;
     this.killExistingProcess = true;
   }
 
@@ -95,26 +92,6 @@ class ManagedOfficeProcessSettings {
    */
   public ProcessManager getProcessManager() {
     return processManager;
-  }
-
-  /**
-   * Get the retry interval (milliseconds).Used for waiting between office process call tries
-   * (start/terminate). Default is 250.
-   *
-   * @return the retry interval, in milliseconds.
-   */
-  public long getRetryInterval() {
-    return retryInterval;
-  }
-
-  /**
-   * Set the retry timeout (milliseconds).Used for retrying office process calls (start/terminate).
-   * If not set, it defaults to 2 minutes.
-   *
-   * @return the retry timeout, in milliseconds.
-   */
-  public long getRetryTimeout() {
-    return retryTimeout;
   }
 
   /**
@@ -192,25 +169,6 @@ class ManagedOfficeProcessSettings {
    */
   public void setProcessManager(final ProcessManager processManager) {
     this.processManager = processManager;
-  }
-
-  /**
-   * Set the retry interval (milliseconds).Used for waiting between office process call tries
-   * (start/terminate).
-   *
-   * @param retryInterval the retry interval, in milliseconds.
-   */
-  public void setRetryInterval(final long retryInterval) {
-    this.retryInterval = retryInterval;
-  }
-
-  /**
-   * Set the retry timeout (milliseconds). Used for retrying office process calls (start/terminate).
-   *
-   * @param retryTimeout the retry timeout, in milliseconds.
-   */
-  public void setRetryTimeout(final long retryTimeout) {
-    this.retryTimeout = retryTimeout;
   }
 
   /**

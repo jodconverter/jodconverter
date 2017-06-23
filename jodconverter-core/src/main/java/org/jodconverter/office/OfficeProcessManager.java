@@ -31,39 +31,31 @@ import org.slf4j.LoggerFactory;
 import com.sun.star.lang.DisposedException;
 
 /**
- * A ManagedOfficeProcess is responsible to manage an office process and the connection (bridge) to
+ * A OfficeProcessManager is responsible to manage an office process and the connection (bridge) to
  * this office process.
  *
  * @see OfficeProcess
  * @see OfficeConnection
  */
-class ManagedOfficeProcess {
+class OfficeProcessManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(ManagedOfficeProcess.class);
+  private static final Logger logger = LoggerFactory.getLogger(OfficeProcessManager.class);
 
   private final OfficeProcess process;
   private final OfficeConnection connection;
-  private final ManagedOfficeProcessSettings settings;
   private final ExecutorService executor;
+  private final OfficeProcessManagerConfig config;
 
   /**
-   * Creates a new instance of the class with the specified settings.
+   * Creates a new manager with the specified configuration.
    *
-   * @param settings the managed office process settings.
+   * @param config the office process manager configuration.
    */
-  public ManagedOfficeProcess(final ManagedOfficeProcessSettings settings) {
+  public OfficeProcessManager(final OfficeProcessManagerConfig config) {
 
-    this.settings = settings;
-    process =
-        new OfficeProcess(
-            settings.getOfficeHome(),
-            settings.getUnoUrl(),
-            settings.getRunAsArgs(),
-            settings.getTemplateProfileDir(),
-            settings.getWorkingDir(),
-            settings.getProcessManager(),
-            settings.isKillExistingProcess());
-    connection = new OfficeConnection(settings.getUnoUrl());
+    this.config = config;
+    process = new OfficeProcess(config);
+    connection = new OfficeConnection(config.getUnoUrl());
     executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("OfficeProcessThread"));
   }
 
@@ -73,12 +65,10 @@ class ManagedOfficeProcess {
    * @throws OfficeException if an exception occurs.
    */
   private void doEnsureProcessExited() throws OfficeException {
-    logger.trace("> doEnsureProcessExited");
 
     try {
-      final int exitCode =
-          process.getExitCode(settings.getRetryInterval(), settings.getRetryTimeout());
-      logger.info("process exited with code " + exitCode);
+      final int exitCode = process.getExitCode(config.getRetryInterval(), config.getRetryTimeout());
+      logger.info("process exited with code {}", exitCode);
 
     } catch (RetryTimeoutException retryTimeoutEx) {
 
@@ -87,53 +77,47 @@ class ManagedOfficeProcess {
 
     } finally {
       process.deleteProfileDir();
-      logger.trace("< doEnsureProcessExited");
     }
   }
 
   /** Starts the office process managed by this class and connect to the process. */
   private void doStartProcessAndConnect() throws OfficeException {
-    logger.trace("> doStartProcessAndConnect");
 
     try {
       process.start();
       new ConnectRetryable(process, connection)
-          .execute(settings.getRetryInterval(), settings.getRetryTimeout());
+          .execute(config.getRetryInterval(), config.getRetryTimeout());
 
     } catch (Exception ex) {
       throw new OfficeException("Could not establish connection", ex);
-
-    } finally {
-      logger.trace("< doStartProcessAndConnect");
     }
   }
 
-  /** Stops the office process managed by this class. */
+  /** Stops the office process managed by this OfficeProcessManager. */
   private void doStopProcess() throws OfficeException {
-    logger.trace("> doStopProcess");
 
     try {
-      boolean terminated = connection.getDesktop().terminate();
+      final boolean terminated = connection.getDesktop().terminate();
 
-      // once more: try to terminate
+      // Once more: try to terminate
       logger.debug(
           "The Office Process {}",
-          terminated
+          (terminated
               ? "has been terminated"
-              : "is still running. Someone else prevents termination, e.g. the quickstarter");
+              : "is still running. Someone else prevents termination, e.g. the quickstarter"));
 
     } catch (DisposedException disposedEx) {
       // expected so ignore it
-      logger.debug("DisposedException catched and ignored in doStopProcess", disposedEx);
+      logger.debug("Expected DisposedException catched and ignored in doStopProcess", disposedEx);
 
     } catch (Exception ex) {
       logger.debug("Exception catched in doStopProcess", ex);
+
       // in case we can't get hold of the desktop
       doTerminateProcess();
 
     } finally {
       doEnsureProcessExited();
-      logger.trace("< doStopProcess");
     }
   }
 
@@ -143,44 +127,37 @@ class ManagedOfficeProcess {
    * @throws OfficeException if an exception occurs.
    */
   private void doTerminateProcess() throws OfficeException {
-    logger.trace("> doTerminateProcess");
 
     try {
       final int exitCode =
-          process.forciblyTerminate(settings.getRetryInterval(), settings.getRetryTimeout());
-      logger.info("process forcibly terminated with code " + exitCode);
+          process.forciblyTerminate(config.getRetryInterval(), config.getRetryTimeout());
+      logger.info("process forcibly terminated with code {}", exitCode);
 
     } catch (Exception ex) {
       throw new OfficeException("Could not terminate process", ex);
-
-    } finally {
-      logger.trace("< doTerminateProcess");
     }
   }
 
   // Executes the specified task without waiting for the completion of the task
   private void execute(final String taskName, final Runnable task) {
-    logger.trace("> execute - '{}'", taskName);
 
     logger.info("Executing task '{}'...", taskName);
     executor.execute(task);
-
-    logger.trace("< execute - '{}'", taskName);
   }
 
   /**
-   * Gets the connection of this ManagedOfficeProcess.
+   * Gets the connection of this OfficeProcessManager.
    *
-   * @return the {@link OfficeConnection} of this ManagedOfficeProcess.
+   * @return the {@link OfficeConnection} of this OfficeProcessManager.
    */
   public OfficeConnection getConnection() {
     return connection;
   }
 
   /**
-   * Gets the process of this ManagedOfficeProcess.
+   * Gets the process of this OfficeProcessManager.
    *
-   * @return the {@link OfficeProcess} of this ManagedOfficeProcess.
+   * @return the {@link OfficeProcess} of this OfficeProcessManager.
    */
   public OfficeProcess getOfficeProcess() {
     return process;
@@ -192,7 +169,7 @@ class ManagedOfficeProcess {
   }
 
   /**
-   * Restarts an office process and wait until we are connected to the retarted process.
+   * Restarts an office process and wait until we are connected to the restarted process.
    *
    * @throws OfficeException if we are not able to restart the office process.
    */
@@ -312,7 +289,6 @@ class ManagedOfficeProcess {
   // Submits the specified task to the executor and waits for its completion
   private void submitAndWait(final String taskName, final Callable<Void> task)
       throws OfficeException {
-    logger.trace("> submitAndWait - '{}'", taskName);
 
     logger.info("Submitting task '{}' and waiting...", taskName);
     final Future<Void> future = executor.submit(task);
@@ -334,9 +310,6 @@ class ManagedOfficeProcess {
 
     } catch (InterruptedException interruptedEx) {
       Thread.currentThread().interrupt(); // ignore/reset
-
-    } finally {
-      logger.trace("< submitAndWait - '{}'", taskName);
     }
   }
 }

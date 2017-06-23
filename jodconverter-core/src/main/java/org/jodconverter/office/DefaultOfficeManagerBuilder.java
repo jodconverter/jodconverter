@@ -30,41 +30,93 @@ import com.sun.star.lib.uno.helper.UnoUrl;
 
 import org.jodconverter.process.AbstractProcessManager;
 import org.jodconverter.process.ProcessManager;
+import org.jodconverter.process.ProcessUtils;
 
 /** Helper class used to creates ProcessPoolOfficeManager instances. */
 public class DefaultOfficeManagerBuilder {
 
   private static final Logger logger = LoggerFactory.getLogger(DefaultOfficeManagerBuilder.class);
+  private static final OfficeConnectionProtocol DEFAULT_CONNECTION_PROTOCOL =
+      OfficeConnectionProtocol.SOCKET;
 
-  private File officeHome;
-  private OfficeConnectionProtocol connectionProtocol;
-  private int[] portNumbers;
+  // OfficeProcess
+  private OfficeConnectionProtocol connectionProtocol = DEFAULT_CONNECTION_PROTOCOL;
   private String[] pipeNames;
-  private String[] runAsArgs;
+  private int[] portNumbers;
+  private File officeHome;
   private File workingDir;
-  private File templateProfileDir;
-  private long taskQueueTimeout;
-  private long taskExecutionTimeout;
-  private long retryTimeout;
-  private long retryInterval;
-  private int maxTasksPerProcess;
-  private boolean killExistingProcess;
   private ProcessManager processManager;
+  private String[] runAsArgs;
+  private File templateProfileDir;
+  private boolean killExistingProcess = OfficeProcessConfig.DEFAULT_KILLING_EXISTING_PROCESS;
 
-  /** Creates a new instance of the class. */
-  public DefaultOfficeManagerBuilder() {
+  // OfficeManager
+  private long retryTimeout = OfficeProcessManagerConfig.DEFAULT_TIMEOUT;
+  private long retryInterval = OfficeProcessManagerConfig.DEFAULT_INTERVAL;
 
-    officeHome = OfficeUtils.getDefaultOfficeHome();
-    connectionProtocol = OfficeConnectionProtocol.SOCKET;
-    portNumbers = new int[] {2002};
-    pipeNames = new String[] {"office"};
-    workingDir = new File(System.getProperty("java.io.tmpdir"));
-    taskQueueTimeout = ManagedOfficeProcessSettings.DEFAULT_TASK_QUEUE_TIMEOUT;
-    taskExecutionTimeout = PooledOfficeManagerSettings.DEFAULT_TASK_EXECUTION_TIMEOUT;
-    retryTimeout = ManagedOfficeProcessSettings.DEFAULT_RETRY_TIMEOUT;
-    retryInterval = ManagedOfficeProcessSettings.DEFAULT_RETRY_INTERVAL;
-    maxTasksPerProcess = PooledOfficeManagerSettings.DEFAULT_MAX_TASK_PER_PROCESS;
-    killExistingProcess = true;
+  // OfficeManagerPoolEntry
+  private long taskExecutionTimeout = OfficeManagerPoolEntryConfig.DEFAULT_TASK_EXECUTION_TIMEOUT;
+  private int maxTasksPerProcess = OfficeManagerPoolEntryConfig.DEFAULT_MAX_TASK_PER_PROCESS;
+
+  // OfficeManagerPool
+  private long taskQueueTimeout = OfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
+
+  // Assign default values for properties that are not set yet.
+  private void setMissingDefaults() {
+
+    if (officeHome == null) {
+      officeHome = OfficeUtils.getDefaultOfficeHome();
+    }
+
+    if (workingDir == null) {
+      workingDir = new File(System.getProperty("java.io.tmpdir"));
+    }
+
+    if (processManager == null) {
+      processManager = ProcessUtils.getDefault();
+    }
+  }
+
+  // Validate the provided configuration before building the manager.
+  private void validateConfiguration() {
+
+    // Validate the office directories
+    OfficeUtils.validateOfficeHome(officeHome);
+    OfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
+    OfficeUtils.validateOfficeWorkingDirectory(workingDir);
+
+    if (retryInterval > OfficeProcessManagerConfig.MAX_RETRY_INTERVAL) {
+      throw new IllegalStateException(
+          "retryInterval cannot be greater than "
+              + OfficeProcessManagerConfig.MAX_RETRY_INTERVAL
+              + ", was: "
+              + retryInterval);
+    }
+  }
+
+  private UnoUrl[] buildUnoUrls() {
+
+    int numInstances = 0;
+    if (connectionProtocol == OfficeConnectionProtocol.SOCKET) {
+      if (portNumbers == null) {
+        portNumbers = new int[] {2002};
+      }
+      numInstances = portNumbers.length;
+    } else {
+      if (pipeNames == null) {
+        pipeNames = new String[] {"office"};
+      }
+      numInstances = pipeNames.length;
+    }
+
+    final UnoUrl[] unoUrls = new UnoUrl[numInstances];
+    for (int i = 0; i < numInstances; i++) {
+      unoUrls[i] =
+          (connectionProtocol == OfficeConnectionProtocol.PIPE)
+              ? UnoUrlUtils.pipe(pipeNames[i])
+              : UnoUrlUtils.socket(portNumbers[i]);
+    }
+    return unoUrls;
   }
 
   /**
@@ -74,49 +126,28 @@ public class DefaultOfficeManagerBuilder {
    */
   public OfficeManager build() {
 
-    // Validate the office directories
-    OfficeUtils.validateOfficeHome(officeHome);
-    OfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
-    OfficeUtils.validateOfficeWorkingDirectory(workingDir);
+    setMissingDefaults();
+    validateConfiguration();
+    final UnoUrl[] unoUrls = buildUnoUrls();
 
-    if (processManager == null) {
-      processManager = OfficeUtils.findBestProcessManager();
-    }
-
-    if (retryInterval > ManagedOfficeProcessSettings.MAX_RETRY_INTERVAL) {
-      throw new IllegalStateException(
-          "retryInterval cannot be grater than "
-              + ManagedOfficeProcessSettings.MAX_RETRY_INTERVAL
-              + ", was: "
-              + retryInterval);
-    }
-
-    final int numInstances =
-        connectionProtocol == OfficeConnectionProtocol.PIPE ? pipeNames.length : portNumbers.length;
-    final UnoUrl[] unoUrls = new UnoUrl[numInstances];
-    for (int i = 0; i < numInstances; i++) {
-      unoUrls[i] =
-          (connectionProtocol == OfficeConnectionProtocol.PIPE)
-              ? UnoUrlUtils.pipe(pipeNames[i])
-              : UnoUrlUtils.socket(portNumbers[i]);
-    }
     //@formatter:off
-    return new ProcessPoolOfficeManager(
-        // ManageOfficeProcess
+    return new OfficeManagerPool(
+        // OfficeProcess
         unoUrls,
         officeHome,
         workingDir,
         processManager,
         runAsArgs,
         templateProfileDir,
+        killExistingProcess,
+        // OfficeManager
         retryTimeout,
         retryInterval,
-        killExistingProcess,
-        // ProcessPoolOfficeManager
-        taskQueueTimeout,
-        // PooledOfficeManager
+        // OfficeManagerPoolEntry
         taskExecutionTimeout,
-        maxTasksPerProcess);
+        maxTasksPerProcess,
+        // OfficeManagerPool
+        taskQueueTimeout);
     //@formatter:on
   }
 

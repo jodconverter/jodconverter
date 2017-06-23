@@ -34,6 +34,102 @@ import org.jodconverter.process.WindowsProcessManager;
 
 public final class OfficeUtils {
 
+  // This class is required in order to create a default office home
+  // only on demand, as explained by the Initialization-on-demand holder idiom:
+  // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+  private static class DefaultOfficeHomeHolder { // NOSONAR
+
+    static final File INSTANCE;
+
+    static {
+      if (System.getProperty("office.home") != null) {
+        INSTANCE = new File(System.getProperty("office.home"));
+
+      } else if (SystemUtils.IS_OS_WINDOWS) {
+
+        // Try to find the most recent version of LibreOffice or OpenOffice,
+        // starting with the 64-bit version. %ProgramFiles(x86)% on 64-bit
+        // machines; %ProgramFiles% on 32-bit ones
+        final String programFiles64 = System.getenv("ProgramFiles");
+        final String programFiles32 = System.getenv("ProgramFiles(x86)");
+
+        //@formatter:off
+        INSTANCE =
+            findOfficeHome(
+                EXECUTABLE_WINDOWS,
+                new String[] {
+                  programFiles64 + File.separator + "LibreOffice 5",
+                  programFiles64 + File.separator + "LibreOffice 4",
+                  programFiles64 + File.separator + "LibreOffice 3",
+                  programFiles32 + File.separator + "LibreOffice 5",
+                  programFiles32 + File.separator + "LibreOffice 4",
+                  programFiles32 + File.separator + "LibreOffice 3",
+                  programFiles32 + File.separator + "OpenOffice 4",
+                  programFiles32 + File.separator + "OpenOffice.org 3"
+                });
+        //@formatter:on
+
+      } else if (SystemUtils.IS_OS_MAC) {
+
+        //@formatter:off
+        File homeDir =
+            findOfficeHome(
+                EXECUTABLE_MAC_41,
+                new String[] {
+                  "/Applications/LibreOffice.app/Contents",
+                  "/Applications/OpenOffice.org.app/Contents"
+                });
+        //@formatter:on
+
+        if (homeDir == null) {
+          //@formatter:off
+          homeDir =
+              findOfficeHome(
+                  EXECUTABLE_MAC,
+                  new String[] {
+                    "/Applications/LibreOffice.app/Contents",
+                    "/Applications/OpenOffice.org.app/Contents"
+                  });
+          //@formatter:on
+        }
+
+        INSTANCE = homeDir;
+
+      } else { // UNIX
+
+        // Linux or other *nix variants
+        //@formatter:off
+        INSTANCE =
+            findOfficeHome(
+                EXECUTABLE_DEFAULT,
+                new String[] {
+                  "/usr/lib64/libreoffice",
+                  "/usr/lib/libreoffice",
+                  "/opt/libreoffice",
+                  "/usr/lib64/openoffice",
+                  "/usr/lib64/openoffice.org3",
+                  "/usr/lib64/openoffice.org",
+                  "/usr/lib/openoffice",
+                  "/usr/lib/openoffice.org3",
+                  "/usr/lib/openoffice.org",
+                  "/opt/openoffice.org3"
+                });
+        //@formatter:on
+      }
+    }
+
+    private static File findOfficeHome(final String executablePath, final String[] homePaths) {
+
+      for (final String homePath : homePaths) {
+        final File homeDir = new File(homePath);
+        if (new File(homeDir, executablePath).isFile()) {
+          return homeDir;
+        }
+      }
+      return null;
+    }
+  }
+
   private static final String EXECUTABLE_DEFAULT = "program/soffice.bin";
   private static final String EXECUTABLE_MAC = "program/soffice";
   private static final String EXECUTABLE_MAC_41 = "MacOS/soffice";
@@ -48,110 +144,29 @@ public final class OfficeUtils {
   public static ProcessManager findBestProcessManager() {
 
     if (SystemUtils.IS_OS_MAC) {
-      return new MacProcessManager();
+      return MacProcessManager.getDefault();
     } else if (SystemUtils.IS_OS_UNIX) {
-      return new UnixProcessManager();
+      return UnixProcessManager.getDefault();
     } else if (SystemUtils.IS_OS_WINDOWS) {
-      WindowsProcessManager windowsProcessManager = new WindowsProcessManager();
+      final WindowsProcessManager windowsProcessManager = WindowsProcessManager.getDefault();
       return windowsProcessManager.isUsable()
           ? windowsProcessManager
-          : new PureJavaProcessManager();
+          : PureJavaProcessManager.getDefault();
     } else {
       // NOTE: UnixProcessManager can't be trusted to work on Solaris
       // because of the 80-char limit on ps output there
-      return new PureJavaProcessManager();
+      return PureJavaProcessManager.getDefault();
     }
-  }
-
-  private static File findOfficeHome(final String executablePath, final String[] homePaths) {
-
-    for (final String homePath : homePaths) {
-      final File homeDir = new File(homePath);
-      if (new File(homeDir, executablePath).isFile()) {
-        return homeDir;
-      }
-    }
-    return null;
   }
 
   /**
-   * Gets the default office home directory.
+   * Gets the default office home directory, which is auto-detected.
    *
-   * @return A instance file to the directory which is the office home directory.
+   * @return a {@code File} instance that is the directory where lives the first detected office
+   *     installation.
    */
   public static File getDefaultOfficeHome() {
-
-    if (System.getProperty("office.home") != null) {
-      return new File(System.getProperty("office.home"));
-    }
-
-    if (SystemUtils.IS_OS_WINDOWS) {
-
-      // Try to find the most recent version of LibreOffice or OpenOffice,
-      // starting with the 64-bit version. %ProgramFiles(x86)% on 64-bit
-      // machines; %ProgramFiles% on 32-bit ones
-      final String programFiles64 = System.getenv("ProgramFiles");
-      final String programFiles32 = System.getenv("ProgramFiles(x86)");
-      //@formatter:off
-      return findOfficeHome(
-          EXECUTABLE_WINDOWS,
-          new String[] {
-            programFiles64 + File.separator + "LibreOffice 5",
-            programFiles64 + File.separator + "LibreOffice 4",
-            programFiles64 + File.separator + "LibreOffice 3",
-            programFiles32 + File.separator + "LibreOffice 5",
-            programFiles32 + File.separator + "LibreOffice 4",
-            programFiles32 + File.separator + "LibreOffice 3",
-            programFiles32 + File.separator + "OpenOffice.org 3",
-            programFiles32 + File.separator + "OpenOffice 4"
-          });
-      //@formatter:on
-
-    } else if (SystemUtils.IS_OS_MAC) {
-
-      //@formatter:off
-      File homeDir =
-          findOfficeHome(
-              EXECUTABLE_MAC_41,
-              new String[] {
-                "/Applications/LibreOffice.app/Contents",
-                "/Applications/OpenOffice.org.app/Contents"
-              });
-      //@formatter:on
-
-      if (homeDir == null) {
-        //@formatter:off
-        homeDir =
-            findOfficeHome(
-                EXECUTABLE_MAC,
-                new String[] {
-                  "/Applications/LibreOffice.app/Contents",
-                  "/Applications/OpenOffice.org.app/Contents"
-                });
-        //@formatter:on
-      }
-
-      return homeDir;
-    } else {
-
-      // Linux or other *nix variants
-      //@formatter:off
-      return findOfficeHome(
-          EXECUTABLE_DEFAULT,
-          new String[] {
-            "/usr/lib64/libreoffice",
-            "/usr/lib/libreoffice",
-            "/opt/libreoffice",
-            "/usr/lib64/openoffice",
-            "/usr/lib64/openoffice.org3",
-            "/usr/lib64/openoffice.org",
-            "/usr/lib/openoffice",
-            "/usr/lib/openoffice.org3",
-            "/usr/lib/openoffice.org",
-            "/opt/openoffice.org3"
-          });
-      //@formatter:on
-    }
+    return DefaultOfficeHomeHolder.INSTANCE;
   }
 
   /**
@@ -164,39 +179,22 @@ public final class OfficeUtils {
 
     // Mac
     if (SystemUtils.IS_OS_MAC) {
-      return getOfficeExecutableMac(officeHome);
+      // Starting with LibreOffice 4.1 the location of the executable has changed on Mac.
+      // It's now in program/soffice. Handle both cases!
+      File executableFile = new File(officeHome, EXECUTABLE_MAC_41);
+      if (!executableFile.isFile()) {
+        executableFile = new File(officeHome, EXECUTABLE_MAC);
+      }
+      return executableFile;
     }
 
     // Windows
     if (SystemUtils.IS_OS_WINDOWS) {
-      return getOfficeExecutableWindows(officeHome);
+      return new File(officeHome, EXECUTABLE_WINDOWS);
     }
 
     // Everything else
-    return getOfficeExecutableDefault(officeHome);
-  }
-
-  // Get the default office executable within an office installation
-  private static File getOfficeExecutableDefault(final File officeHome) {
     return new File(officeHome, EXECUTABLE_DEFAULT);
-  }
-
-  // Get the office executable for a Mac OS within an office installation
-  private static File getOfficeExecutableMac(final File officeHome) {
-
-    // Starting with LibreOffice 4.1 the location of the executable has changed on Mac.
-    // It's now in program/soffice. Handle both cases!
-    File executableFile = new File(officeHome, EXECUTABLE_MAC_41);
-    if (!executableFile.isFile()) {
-      executableFile = new File(officeHome, EXECUTABLE_MAC);
-    }
-    return executableFile;
-  }
-
-  // Get the office executable for a Windows OS within an office installation
-  private static File getOfficeExecutableWindows(final File officeHome) {
-
-    return new File(officeHome, EXECUTABLE_WINDOWS);
   }
 
   /**

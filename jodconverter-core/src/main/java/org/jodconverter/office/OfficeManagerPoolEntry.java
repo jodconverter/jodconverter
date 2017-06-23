@@ -31,22 +31,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A PooledOfficeManager is responsible to execute tasks submitted through a {@link
- * ProcessPoolOfficeManager}. It will submit tasks to its inner {@link ManagedOfficeProcess} and
- * wait until the task is done or a configured task execution timeout is reached.
+ * A OfficeProcessManagerPoolEntry is responsible to execute tasks submitted through a {@link
+ * OfficeManagerPool}. It will submit tasks to its inner {@link OfficeProcessManager} and wait until
+ * the task is done or a configured task execution timeout is reached.
  *
  * <p>A PooledOfficeManager is also responsible to restart an office process when the maximum number
  * of tasks per process is reached.
  *
- * @see ManagedOfficeProcess
- * @see ProcessPoolOfficeManager
+ * @see OfficeProcessManager
+ * @see OfficeManagerPool
  */
-class PooledOfficeManager implements OfficeManager {
+class OfficeManagerPoolEntry implements OfficeManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(PooledOfficeManager.class);
+  private static final Logger logger = LoggerFactory.getLogger(OfficeManagerPoolEntry.class);
 
-  private final PooledOfficeManagerSettings settings;
-  private final ManagedOfficeProcess managedOfficeProcess;
+  private final OfficeManagerPoolEntryConfig config;
+  private final OfficeProcessManager officeProcessManager;
   private final SuspendableThreadPoolExecutor taskExecutor;
 
   private Future<?> currentTask;
@@ -63,19 +63,15 @@ class PooledOfficeManager implements OfficeManager {
         // A connection is established.
         @Override
         public void connected(final OfficeConnectionEvent event) {
-          logger.trace("> OfficeConnectionEventListener.connected");
 
           // Reset the task count and make the task executor available.
           taskCount.set(0);
           taskExecutor.setAvailable(true);
-
-          logger.trace("< OfficeConnectionEventListener.connected");
         }
 
         // A connection is closed/lost.
         @Override
         public void disconnected(final OfficeConnectionEvent event) {
-          logger.trace("> OfficeConnectionEventListener.disconnected");
 
           // Make the task executor unavailable.
           taskExecutor.setAvailable(false);
@@ -83,8 +79,8 @@ class PooledOfficeManager implements OfficeManager {
           // When it comes from an expected behavior (we have put
           // the field to true before calling a function), just reset
           // the stopping value to false. When we didn't expect the
-          // disconnection, we must restart the office process, canceling
-          // any task that may be running.
+          // disconnection, we must restart the office process, which
+          // will cancel any task that may be running.
           if (!stopping.compareAndSet(true, false)) {
 
             // Here, we didn't expect this disconnection. We must restart
@@ -93,26 +89,24 @@ class PooledOfficeManager implements OfficeManager {
             if (currentTask != null) {
               currentTask.cancel(true);
             }
-            managedOfficeProcess.restartDueToLostConnection();
+            officeProcessManager.restartDueToLostConnection();
           }
-
-          logger.trace("< OfficeConnectionEventListener.disconnected");
         }
       };
 
   /**
-   * Creates a new instance of the class with the specified settings.
+   * Creates a new pool entry with the specified configuration.
    *
-   * @param settings the settings used to initialize the instance.
+   * @param config the entry configuration.
    */
-  public PooledOfficeManager(final PooledOfficeManagerSettings settings) {
+  public OfficeManagerPoolEntry(final OfficeManagerPoolEntryConfig config) {
 
-    this.settings = settings;
-    managedOfficeProcess = new ManagedOfficeProcess(settings);
+    this.config = config;
+    officeProcessManager = new OfficeProcessManager(config);
     taskExecutor = new SuspendableThreadPoolExecutor(new NamedThreadFactory("OfficeTaskThread"));
 
     // Listen to any connection events to the office instance.
-    managedOfficeProcess.getConnection().addConnectionEventListener(connectionEventListener);
+    officeProcessManager.getConnection().addConnectionEventListener(connectionEventListener);
   }
 
   @Override
@@ -126,10 +120,10 @@ class PooledOfficeManager implements OfficeManager {
 
             // First check if the office process must be restarted
             final int count = taskCount.getAndIncrement();
-            if (settings.getMaxTasksPerProcess() > 0 && count == settings.getMaxTasksPerProcess()) {
+            if (config.getMaxTasksPerProcess() > 0 && count == config.getMaxTasksPerProcess()) {
               logger.info(
                   "Reached limit of {} maximum tasks per process; restarting...",
-                  settings.getMaxTasksPerProcess());
+                  config.getMaxTasksPerProcess());
 
               // The executor is no longer available
               taskExecutor.setAvailable(false);
@@ -138,14 +132,14 @@ class PooledOfficeManager implements OfficeManager {
               stopping.set(true);
 
               // Restart the office instance
-              managedOfficeProcess.restartAndWait();
+              officeProcessManager.restartAndWait();
 
               // taskCount will be 0 rather than 1 at this point, so fix this.
               taskCount.getAndIncrement();
             }
 
             // Execute the task
-            task.execute(managedOfficeProcess.getConnection());
+            task.execute(officeProcessManager.getConnection());
 
             return null;
           }
@@ -158,14 +152,14 @@ class PooledOfficeManager implements OfficeManager {
     // configured task execution timeout)
     try {
       logger.debug("Waiting for task to complete...");
-      currentTask.get(settings.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
+      currentTask.get(config.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
       logger.debug("Task executed successfully");
 
     } catch (TimeoutException timeoutEx) {
 
-      // The task did not complete withing the configured timeout...
-      managedOfficeProcess.restartDueToTaskTimeout();
-      throw new OfficeException("task did not complete within timeout", timeoutEx);
+      // The task did not complete within the configured timeout...
+      officeProcessManager.restartDueToTaskTimeout();
+      throw new OfficeException("Task did not complete within timeout", timeoutEx);
 
     } catch (ExecutionException executionEx) { // NOSONAR
 
@@ -195,24 +189,24 @@ class PooledOfficeManager implements OfficeManager {
   }
 
   /**
-   * Gets the ManagedOfficeProcess of this PooledOfficeManager.
+   * Gets the OfficeProcessManager of this OfficeManagerPoolEntry.
    *
-   * @return the {@link ManagedOfficeProcess} of this PooledOfficeManager.
+   * @return the {@link OfficeProcessManager} of this OfficeManagerPoolEntry.
    */
-  public ManagedOfficeProcess getManagedOfficeProcess() {
-    return managedOfficeProcess;
+  public OfficeProcessManager getOfficeProcessManager() {
+    return officeProcessManager;
   }
 
   @Override
   public boolean isRunning() {
 
-    return managedOfficeProcess.isConnected();
+    return officeProcessManager.isConnected();
   }
 
   @Override
   public void start() throws OfficeException {
 
-    managedOfficeProcess.startAndWait();
+    officeProcessManager.startAndWait();
   }
 
   @Override
@@ -223,7 +217,7 @@ class PooledOfficeManager implements OfficeManager {
       stopping.set(true);
       taskExecutor.shutdownNow();
     } finally {
-      managedOfficeProcess.stopAndWait();
+      officeProcessManager.stopAndWait();
     }
   }
 }

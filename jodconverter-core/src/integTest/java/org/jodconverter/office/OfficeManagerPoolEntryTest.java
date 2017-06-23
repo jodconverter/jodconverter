@@ -34,12 +34,12 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
 
-public class PooledOfficeManagerTest {
+public class OfficeManagerPoolEntryTest {
 
   private static final org.slf4j.Logger logger =
-      LoggerFactory.getLogger(PooledOfficeManagerTest.class);
+      LoggerFactory.getLogger(OfficeManagerPoolEntryTest.class);
 
-  private static final UnoUrl CONNECTION_MODE = UnoUrlUtils.socket(2002);
+  private static final UnoUrl CONNECT_URL = UnoUrlUtils.socket(2002);
   private static final long RESTART_INITIAL_WAIT = 1000; // 1 Second.
   private static final long RESTART_WAIT_TIMEOUT = 10000; // 10 Seconds.
 
@@ -79,17 +79,14 @@ public class PooledOfficeManagerTest {
   @Test
   public void executeTask() throws Exception {
 
-    final PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(CONNECTION_MODE);
-    settings.setProcessManager(OfficeUtils.findBestProcessManager());
-    final PooledOfficeManager officeManager = new PooledOfficeManager(settings);
-    final ManagedOfficeProcess managedOfficeProcess = officeManager.getManagedOfficeProcess();
-    final OfficeProcess process = managedOfficeProcess.getOfficeProcess();
-    final OfficeConnection connection = managedOfficeProcess.getConnection();
+    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig(CONNECT_URL);
+    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(config);
+    final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
 
     try {
       officeManager.start();
-      assertTrue(process.isRunning());
-      assertTrue(connection.isConnected());
+      assertTrue(processManager.getOfficeProcess().isRunning());
+      assertTrue(processManager.getConnection().isConnected());
 
       final MockOfficeTask task = new MockOfficeTask();
       officeManager.execute(task);
@@ -98,9 +95,9 @@ public class PooledOfficeManagerTest {
     } finally {
 
       officeManager.stop();
-      assertFalse(connection.isConnected());
-      assertFalse(process.isRunning());
-      assertEquals(process.getExitCode(0, 0), 0);
+      assertFalse(processManager.getConnection().isConnected());
+      assertFalse(processManager.getOfficeProcess().isRunning());
+      assertEquals(processManager.getOfficeProcess().getExitCode(0, 0), 0);
     }
   }
 
@@ -112,18 +109,16 @@ public class PooledOfficeManagerTest {
   @Test
   public void restartAfterCrash() throws Exception {
 
-    final PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(CONNECTION_MODE);
-    settings.setProcessManager(OfficeUtils.findBestProcessManager());
-    final PooledOfficeManager officeManager = new PooledOfficeManager(settings);
-    final ManagedOfficeProcess managedOfficeProcess = officeManager.getManagedOfficeProcess();
-    final OfficeProcess process = managedOfficeProcess.getOfficeProcess();
-    final OfficeConnection connection = managedOfficeProcess.getConnection();
-    assertNotNull(connection);
+    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig(CONNECT_URL);
+    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(config);
+    final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
+
+    assertNotNull(processManager.getConnection());
 
     try {
       officeManager.start();
-      assertTrue(process.isRunning());
-      assertTrue(connection.isConnected());
+      assertTrue(processManager.getOfficeProcess().isRunning());
+      assertTrue(processManager.getConnection().isConnected());
 
       new Thread() {
         public void run() {
@@ -139,13 +134,17 @@ public class PooledOfficeManagerTest {
       }.start();
       Thread.sleep(500); // NOSONAR
       final Process underlyingProcess =
-          (Process) FieldUtils.readDeclaredField(process, "process", true);
+          (Process)
+              FieldUtils.readDeclaredField(processManager.getOfficeProcess(), "process", true);
       assertNotNull(underlyingProcess);
       logger.debug("Simulating the crash");
       underlyingProcess.destroy(); // simulate crash
 
       assertRestartedAndReconnected(
-          process, connection, RESTART_INITIAL_WAIT, RESTART_WAIT_TIMEOUT);
+          processManager.getOfficeProcess(),
+          processManager.getConnection(),
+          RESTART_INITIAL_WAIT,
+          RESTART_WAIT_TIMEOUT);
 
       final MockOfficeTask goodTask = new MockOfficeTask();
       officeManager.execute(goodTask);
@@ -154,9 +153,9 @@ public class PooledOfficeManagerTest {
     } finally {
 
       officeManager.stop();
-      assertFalse(connection.isConnected());
-      assertFalse(process.isRunning());
-      assertEquals(process.getExitCode(0, 0), 0);
+      assertFalse(processManager.getConnection().isConnected());
+      assertFalse(processManager.getOfficeProcess().isRunning());
+      assertEquals(processManager.getOfficeProcess().getExitCode(0, 0), 0);
     }
   }
 
@@ -167,18 +166,17 @@ public class PooledOfficeManagerTest {
    */
   @Test
   public void restartAfterTaskTimeout() throws Exception {
-    final PooledOfficeManagerSettings settings = new PooledOfficeManagerSettings(CONNECTION_MODE);
-    settings.setProcessManager(OfficeUtils.findBestProcessManager());
-    settings.setTaskExecutionTimeout(1500L);
-    final PooledOfficeManager officeManager = new PooledOfficeManager(settings);
-    final ManagedOfficeProcess managedOfficeProcess = officeManager.getManagedOfficeProcess();
+    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig(CONNECT_URL);
+    config.setTaskExecutionTimeout(1500L);
+    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(config);
+    final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
 
-    assertNotNull(managedOfficeProcess.getConnection());
+    assertNotNull(processManager.getConnection());
 
     try {
       officeManager.start();
-      assertTrue(managedOfficeProcess.getOfficeProcess().isRunning());
-      assertTrue(managedOfficeProcess.getConnection().isConnected());
+      assertTrue(processManager.getOfficeProcess().isRunning());
+      assertTrue(processManager.getConnection().isConnected());
 
       final MockOfficeTask task = new MockOfficeTask(2000);
       try {
@@ -189,13 +187,13 @@ public class PooledOfficeManagerTest {
       }
 
       assertRestartedAndReconnected(
-          managedOfficeProcess.getOfficeProcess(),
-          managedOfficeProcess.getConnection(),
+          processManager.getOfficeProcess(),
+          processManager.getConnection(),
           RESTART_INITIAL_WAIT,
           RESTART_WAIT_TIMEOUT);
 
-      assertTrue(managedOfficeProcess.getOfficeProcess().isRunning());
-      assertTrue(managedOfficeProcess.getConnection().isConnected());
+      assertTrue(processManager.getOfficeProcess().isRunning());
+      assertTrue(processManager.getConnection().isConnected());
 
       final MockOfficeTask goodTask = new MockOfficeTask();
       officeManager.execute(goodTask);
@@ -204,9 +202,9 @@ public class PooledOfficeManagerTest {
     } finally {
 
       officeManager.stop();
-      assertFalse(managedOfficeProcess.getConnection().isConnected());
-      assertFalse(managedOfficeProcess.getOfficeProcess().isRunning());
-      assertEquals(managedOfficeProcess.getOfficeProcess().getExitCode(0, 0), 0);
+      assertFalse(processManager.getConnection().isConnected());
+      assertFalse(processManager.getOfficeProcess().isRunning());
+      assertEquals(processManager.getOfficeProcess().getExitCode(0, 0), 0);
     }
   }
 
@@ -217,19 +215,17 @@ public class PooledOfficeManagerTest {
    */
   @Test
   public void restartWhenMaxTasksPerProcessReached() throws Exception {
-    final PooledOfficeManagerSettings configuration =
-        new PooledOfficeManagerSettings(CONNECTION_MODE);
-    configuration.setMaxTasksPerProcess(3);
-    final PooledOfficeManager officeManager = new PooledOfficeManager(configuration);
-    final ManagedOfficeProcess managedOfficeProcess = officeManager.getManagedOfficeProcess();
-    final OfficeProcess process = managedOfficeProcess.getOfficeProcess();
-    final OfficeConnection connection = managedOfficeProcess.getConnection();
-    assertNotNull(connection);
+    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig(CONNECT_URL);
+    config.setMaxTasksPerProcess(3);
+    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(config);
+    final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
+
+    assertNotNull(processManager.getConnection());
 
     try {
       officeManager.start();
-      assertTrue(process.isRunning());
-      assertTrue(connection.isConnected());
+      assertTrue(processManager.getOfficeProcess().isRunning());
+      assertTrue(processManager.getConnection().isConnected());
 
       for (int i = 0; i < 3; i++) {
         final MockOfficeTask task = new MockOfficeTask();
@@ -248,9 +244,9 @@ public class PooledOfficeManagerTest {
     } finally {
 
       officeManager.stop();
-      assertFalse(connection.isConnected());
-      assertFalse(process.isRunning());
-      assertEquals(process.getExitCode(0, 0), 0);
+      assertFalse(processManager.getConnection().isConnected());
+      assertFalse(processManager.getOfficeProcess().isRunning());
+      assertEquals(processManager.getOfficeProcess().getExitCode(0, 0), 0);
     }
   }
 }

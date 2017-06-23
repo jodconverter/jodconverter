@@ -43,6 +43,7 @@ import com.sun.star.lib.uno.helper.UnoUrl;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
+/** An OfficeConnection */
 class OfficeConnection implements OfficeContext, XEventListener {
 
   private static AtomicInteger bridgeIndex = new AtomicInteger();

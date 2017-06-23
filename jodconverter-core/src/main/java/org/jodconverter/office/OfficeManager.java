@@ -19,11 +19,7 @@
 
 package org.jodconverter.office;
 
-/**
- * An OfficeManager knows how to execute {@link OfficeTask}s.
- *
- * <p>An OfficeManager implementation will typically manage one or more {@link OfficeConnection}s.
- */
+/** An OfficeManager knows how to execute {@link OfficeTask}s. */
 public interface OfficeManager {
 
   /**
@@ -44,14 +40,14 @@ public interface OfficeManager {
   /**
    * Starts the manager.
    *
-   * @throws OfficeException is the manager cannot be started.
+   * @throws OfficeException if the manager cannot be started.
    */
   void start() throws OfficeException;
 
   /**
    * Stops the manager.
    *
-   * @throws OfficeException is the manager cannot be stopped.
+   * @throws OfficeException if the manager cannot be stopped.
    */
   void stop() throws OfficeException;
 }

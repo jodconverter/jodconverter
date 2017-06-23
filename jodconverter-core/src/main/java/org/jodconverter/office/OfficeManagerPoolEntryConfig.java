@@ -26,50 +26,41 @@ import com.sun.star.lib.uno.helper.UnoUrl;
 import org.jodconverter.process.ProcessManager;
 
 /**
- * Settings for a {@code PooledOfficeManager}.
+ * Configuration of a {@code OfficeManagerPoolEntry}.
  *
- * @see PooledOfficeManager
+ * @see OfficeManagerPoolEntry
  */
-class PooledOfficeManagerSettings extends ManagedOfficeProcessSettings {
+class OfficeManagerPoolEntryConfig extends OfficeProcessManagerConfig {
 
   public static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120000L; // 2 minutes
   public static final int DEFAULT_MAX_TASK_PER_PROCESS = 200;
 
-  private long taskExecutionTimeout;
-  private int maxTasksPerProcess;
+  private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
+  private int maxTasksPerProcess = DEFAULT_MAX_TASK_PER_PROCESS;
 
   /**
-   * Creates default settings for the specified UNO URL.
+   * Creates configuration for the specified URL and with default values.
    *
-   * @param unoUrl the UNO URL of the settings.
+   * @param unoUrl the UNO URL for the configuration.
    */
-  public PooledOfficeManagerSettings(final UnoUrl unoUrl) {
+  public OfficeManagerPoolEntryConfig(final UnoUrl unoUrl) {
     super(unoUrl);
-
-    this.taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
-    this.maxTasksPerProcess = DEFAULT_MAX_TASK_PER_PROCESS;
   }
 
-  /** Constructs new settings instance for the specified URL and with the specified values. */
-  public PooledOfficeManagerSettings(
+  /**
+   * Creates configuration for the specified URL and with the specified values.
+   *
+   * @param unoUrl the UNO URL for the configuration.
+   * @param officeHome home directory of the office installation.
+   * @param workingDir working directory to set to office.
+   * @param processManager process manager to use to deal with created processes.
+   */
+  public OfficeManagerPoolEntryConfig(
       final UnoUrl unoUrl,
       final File officeHome,
       final File workingDir,
       final ProcessManager processManager) {
     super(unoUrl, officeHome, workingDir, processManager);
-
-    this.taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
-    this.maxTasksPerProcess = DEFAULT_MAX_TASK_PER_PROCESS;
-  }
-
-  /**
-   * Gets the maximum number of tasks an office process can execute before restarting. Default is
-   * 200.
-   *
-   * @return the maximum value.
-   */
-  public int getMaxTasksPerProcess() {
-    return maxTasksPerProcess;
   }
 
   /**
@@ -84,12 +75,13 @@ class PooledOfficeManagerSettings extends ManagedOfficeProcessSettings {
   }
 
   /**
-   * Sets the maximum number of tasks an office process can execute before restarting.
+   * Gets the maximum number of tasks an office process can execute before restarting. Default is
+   * 200.
    *
-   * @param maxTasksPerProcess the new value to set.
+   * @return the maximum value.
    */
-  public void setMaxTasksPerProcess(final int maxTasksPerProcess) {
-    this.maxTasksPerProcess = maxTasksPerProcess;
+  public int getMaxTasksPerProcess() {
+    return maxTasksPerProcess;
   }
 
   /**
@@ -101,5 +93,14 @@ class PooledOfficeManagerSettings extends ManagedOfficeProcessSettings {
    */
   public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
     this.taskExecutionTimeout = taskExecutionTimeout;
+  }
+
+  /**
+   * Sets the maximum number of tasks an office process can execute before restarting.
+   *
+   * @param maxTasksPerProcess the new value to set.
+   */
+  public void setMaxTasksPerProcess(final int maxTasksPerProcess) {
+    this.maxTasksPerProcess = maxTasksPerProcess;
   }
 }

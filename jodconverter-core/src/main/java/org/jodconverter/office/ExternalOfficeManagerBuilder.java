@@ -24,19 +24,10 @@ import com.sun.star.lib.uno.helper.UnoUrl;
 /** Helper class used to creates ExternalOfficeManager instances. */
 public class ExternalOfficeManagerBuilder {
 
-  private OfficeConnectionProtocol connectionProtocol;
-  private int portNumber;
+  private OfficeConnectionProtocol connectionProtocol = OfficeConnectionProtocol.SOCKET;
+  private int portNumber = 2002;
   private String pipeName = "office";
   private boolean connectOnStart = true;
-
-  /** Creates a new instance of the class. */
-  public ExternalOfficeManagerBuilder() {
-
-    connectionProtocol = OfficeConnectionProtocol.SOCKET;
-    portNumber = 2002;
-    pipeName = "office";
-    connectOnStart = true;
-  }
 
   /**
    * Builds a new {@link ExternalOfficeManager}.
