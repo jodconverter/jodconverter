@@ -32,8 +32,6 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
-
 import org.jodconverter.process.ProcessManager;
 import org.jodconverter.process.ProcessQuery;
 
@@ -142,7 +140,7 @@ class OfficeProcess {
 
     logger.info(
         "Trying to forcibly terminate process: '{}'{}",
-        config.getUnoUrl().getConnectionParametersAsString(),
+        config.getOfficeUrl().getConnectionParametersAsString(),
         pid == PID_UNKNOWN ? "" : " (pid " + pid + ")");
 
     try {
@@ -203,7 +201,7 @@ class OfficeProcess {
         config.getWorkingDir(),
         ".jodconverter_"
             + config
-                .getUnoUrl()
+                .getOfficeUrl()
                 .getConnectionAndParametersAsString()
                 .replace(',', '_')
                 .replace('=', '-'));
@@ -301,7 +299,7 @@ class OfficeProcess {
    */
   public void start(final boolean restart) throws OfficeException {
 
-    final UnoUrl url = config.getUnoUrl();
+    final OfficeUrl url = config.getOfficeUrl();
     final String acceptString =
         url.getConnectionAndParametersAsString()
             + ";"

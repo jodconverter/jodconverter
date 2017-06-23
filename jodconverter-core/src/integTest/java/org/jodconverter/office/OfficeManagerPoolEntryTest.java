@@ -32,14 +32,12 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
-
 public class OfficeManagerPoolEntryTest {
 
   private static final org.slf4j.Logger logger =
       LoggerFactory.getLogger(OfficeManagerPoolEntryTest.class);
 
-  private static final UnoUrl CONNECT_URL = UnoUrlUtils.socket(2002);
+  private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long RESTART_INITIAL_WAIT = 1000; // 1 Second.
   private static final long RESTART_WAIT_TIMEOUT = 10000; // 10 Seconds.
 

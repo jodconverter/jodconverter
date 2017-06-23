@@ -26,8 +26,6 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
-
 import org.jodconverter.process.AbstractProcessManager;
 import org.jodconverter.process.ProcessManager;
 
@@ -93,7 +91,7 @@ public class DefaultOfficeManagerBuilder {
     }
   }
 
-  private UnoUrl[] buildUnoUrls() {
+  private OfficeUrl[] buildOfficeUrls() {
 
     int numInstances = 0;
     if (connectionProtocol == OfficeConnectionProtocol.SOCKET) {
@@ -108,14 +106,14 @@ public class DefaultOfficeManagerBuilder {
       numInstances = pipeNames.length;
     }
 
-    final UnoUrl[] unoUrls = new UnoUrl[numInstances];
+    final OfficeUrl[] officeUrls = new OfficeUrl[numInstances];
     for (int i = 0; i < numInstances; i++) {
-      unoUrls[i] =
+      officeUrls[i] =
           (connectionProtocol == OfficeConnectionProtocol.PIPE)
-              ? UnoUrlUtils.pipe(pipeNames[i])
-              : UnoUrlUtils.socket(portNumbers[i]);
+              ? new OfficeUrl(pipeNames[i])
+              : new OfficeUrl(portNumbers[i]);
     }
-    return unoUrls;
+    return officeUrls;
   }
 
   /**
@@ -127,12 +125,12 @@ public class DefaultOfficeManagerBuilder {
 
     setMissingDefaults();
     validateConfiguration();
-    final UnoUrl[] unoUrls = buildUnoUrls();
+    final OfficeUrl[] officeUrls = buildOfficeUrls();
 
     //@formatter:off
     return new OfficeManagerPool(
         // OfficeProcess
-        unoUrls,
+        officeUrls,
         officeHome,
         workingDir,
         processManager,

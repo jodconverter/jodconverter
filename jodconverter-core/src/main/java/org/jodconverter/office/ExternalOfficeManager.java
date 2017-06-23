@@ -19,8 +19,6 @@
 
 package org.jodconverter.office;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
-
 /**
  * {@link OfficeManager} implementation that connects to an external Office process.
  *
@@ -49,14 +47,14 @@ class ExternalOfficeManager implements OfficeManager {
   /**
    * Constructs a new instance of the class.
    *
-   * @param unoUrl the UNO URL.
+   * @param officeUrl the office URL.
    * @param connectOnStart should a connection be attempted on {@link #start()}? Default is
    *     <em>true</em>. If <em>false</em>, a connection will only be attempted the first time an
    *     {@link OfficeTask} is executed.
    */
-  public ExternalOfficeManager(final UnoUrl unoUrl, final boolean connectOnStart) {
+  public ExternalOfficeManager(final OfficeUrl officeUrl, final boolean connectOnStart) {
 
-    connection = new OfficeConnection(unoUrl);
+    connection = new OfficeConnection(officeUrl);
     this.connectOnStart = connectOnStart;
   }
 

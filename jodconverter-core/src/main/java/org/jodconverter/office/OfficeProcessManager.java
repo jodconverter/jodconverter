@@ -55,7 +55,7 @@ class OfficeProcessManager {
 
     this.config = config;
     process = new OfficeProcess(config);
-    connection = new OfficeConnection(config.getUnoUrl());
+    connection = new OfficeConnection(config.getOfficeUrl());
     executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("OfficeProcessThread"));
   }
 

@@ -39,7 +39,6 @@ import com.sun.star.lang.EventObject;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XEventListener;
 import com.sun.star.lang.XMultiComponentFactory;
-import com.sun.star.lib.uno.helper.UnoUrl;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
@@ -49,7 +48,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
   private static AtomicInteger bridgeIndex = new AtomicInteger();
   private static final Logger logger = LoggerFactory.getLogger(OfficeConnection.class);
 
-  private final UnoUrl unoUrl;
+  private final OfficeUrl officeUrl;
   private Object desktopService;
   private XComponent bridgeComponent;
   private XComponentLoader officeComponentLoader;
@@ -59,11 +58,11 @@ class OfficeConnection implements OfficeContext, XEventListener {
   /**
    * Constructs a new connection for the specified UNO URL.
    *
-   * @param unoUrl the URL for which the connection is created.
+   * @param officeUrl the URL for which the connection is created.
    */
-  public OfficeConnection(final UnoUrl unoUrl) {
+  public OfficeConnection(final OfficeUrl officeUrl) {
 
-    this.unoUrl = unoUrl;
+    this.officeUrl = officeUrl;
     this.connectionEventListeners = new ArrayList<>();
   }
 
@@ -82,7 +81,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
   /** Establishes the connection to an office instance. */
   public synchronized void connect() throws OfficeConnectionException {
 
-    final String connectPart = unoUrl.getConnectionAndParametersAsString();
+    final String connectPart = officeUrl.getConnectionAndParametersAsString();
     logger.debug("Connecting with connectString '{}'", connectPart);
     try {
       // Create a default local component context.
@@ -109,14 +108,14 @@ class OfficeConnection implements OfficeContext, XEventListener {
       final String bridgeName = "jodconverter_" + bridgeIndex.getAndIncrement();
       final XBridge bridge =
           bridgeFactory.createBridge(
-              bridgeName, unoUrl.getProtocolAndParametersAsString(), connection, null);
+              bridgeName, officeUrl.getProtocolAndParametersAsString(), connection, null);
 
       // Query for the XComponent interface and add this as event listener.
       bridgeComponent = UnoRuntime.queryInterface(XComponent.class, bridge);
       bridgeComponent.addEventListener(this);
 
       // Get the remote instance
-      final String rootOid = unoUrl.getRootOid();
+      final String rootOid = officeUrl.getRootOid();
       x = bridge.getInstance(rootOid);
       // Did the remote server export this object ?
       if (x == null) {
@@ -175,7 +174,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
   /** Closes the connection. */
   public synchronized void disconnect() {
 
-    logger.debug("Disconnecting from '{}'", unoUrl.getConnectionAndParametersAsString());
+    logger.debug("Disconnecting from '{}'", officeUrl.getConnectionAndParametersAsString());
 
     // Dispose of the bridge
     bridgeComponent.dispose();
@@ -191,7 +190,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
       desktopService = null;
       bridgeComponent = null;
 
-      logger.info("Disconnected: '{}'", unoUrl.getConnectionAndParametersAsString());
+      logger.info("Disconnected: '{}'", officeUrl.getConnectionAndParametersAsString());
 
       // Inform listeners. Must be done at the end since a listener may recreated the bridge
       final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);

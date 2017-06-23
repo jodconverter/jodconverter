@@ -34,7 +34,7 @@ public class ExternalOfficeManagerTest {
    */
   @Test
   public void executeTask() throws Exception {
-    final OfficeProcessConfig config = new OfficeProcessConfig(UnoUrlUtils.socket(2002));
+    final OfficeProcessConfig config = new OfficeProcessConfig(new OfficeUrl(2002));
     final OfficeProcess officeProcess = new OfficeProcess(config);
     officeProcess.start();
     Thread.sleep(2000); // NOSONAR
@@ -44,7 +44,7 @@ public class ExternalOfficeManagerTest {
       Thread.sleep(2000); // NOSONAR
     }
 
-    final ExternalOfficeManager manager = new ExternalOfficeManager(config.getUnoUrl(), true);
+    final ExternalOfficeManager manager = new ExternalOfficeManager(config.getOfficeUrl(), true);
     manager.start();
 
     final MockOfficeTask task = new MockOfficeTask();

@@ -21,8 +21,6 @@ package org.jodconverter.office;
 
 import java.io.File;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
-
 import org.jodconverter.process.ProcessManager;
 
 /**
@@ -41,26 +39,26 @@ class OfficeManagerPoolEntryConfig extends OfficeProcessManagerConfig {
   /**
    * Creates configuration for the specified URL and with default values.
    *
-   * @param unoUrl the UNO URL for the configuration.
+   * @param officeUrl the office URL for the configuration.
    */
-  public OfficeManagerPoolEntryConfig(final UnoUrl unoUrl) {
-    super(unoUrl);
+  public OfficeManagerPoolEntryConfig(final OfficeUrl officeUrl) {
+    super(officeUrl);
   }
 
   /**
    * Creates configuration for the specified URL and with the specified values.
    *
-   * @param unoUrl the UNO URL for the configuration.
+   * @param officeUrl the office URL for the configuration.
    * @param officeHome home directory of the office installation.
    * @param workingDir working directory to set to office.
    * @param processManager process manager to use to deal with created processes.
    */
   public OfficeManagerPoolEntryConfig(
-      final UnoUrl unoUrl,
+      final OfficeUrl officeUrl,
       final File officeHome,
       final File workingDir,
       final ProcessManager processManager) {
-    super(unoUrl, officeHome, workingDir, processManager);
+    super(officeUrl, officeHome, workingDir, processManager);
   }
 
   /**

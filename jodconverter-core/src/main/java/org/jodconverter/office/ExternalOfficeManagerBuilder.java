@@ -19,8 +19,6 @@
 
 package org.jodconverter.office;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
-
 /** Helper class used to creates ExternalOfficeManager instances. */
 public class ExternalOfficeManagerBuilder {
 
@@ -36,11 +34,11 @@ public class ExternalOfficeManagerBuilder {
    */
   public OfficeManager build() {
 
-    final UnoUrl unoUrl =
+    final OfficeUrl officeUrl =
         connectionProtocol == OfficeConnectionProtocol.SOCKET
-            ? UnoUrlUtils.socket(portNumber)
-            : UnoUrlUtils.pipe(pipeName);
-    return new ExternalOfficeManager(unoUrl, connectOnStart);
+            ? new OfficeUrl(portNumber)
+            : new OfficeUrl(pipeName);
+    return new ExternalOfficeManager(officeUrl, connectOnStart);
   }
 
   /**

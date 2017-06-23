@@ -23,8 +23,6 @@ import java.io.File;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
-
 import org.jodconverter.process.ProcessManager;
 
 /**
@@ -36,7 +34,7 @@ class OfficeProcessConfig {
 
   public static final boolean DEFAULT_KILLING_EXISTING_PROCESS = true;
 
-  private final UnoUrl unoUrl;
+  private final OfficeUrl officeUrl;
   private File officeHome;
   private File workingDir;
   private ProcessManager processManager;
@@ -47,27 +45,27 @@ class OfficeProcessConfig {
   /**
    * Creates configuration for the specified URL and with default values.
    *
-   * @param unoUrl the UNO URL for the configuration.
+   * @param officeUrl the office URL for the configuration.
    */
-  public OfficeProcessConfig(final UnoUrl unoUrl) {
-    this(unoUrl, null, null, null);
+  public OfficeProcessConfig(final OfficeUrl officeUrl) {
+    this(officeUrl, null, null, null);
   }
 
   /**
    * Creates configuration for the specified URL and with the specified values.
    *
-   * @param unoUrl the UNO URL for the configuration.
+   * @param officeUrl the office URL for the configuration.
    * @param officeHome home directory of the office installation.
    * @param workingDir working directory to set to office.
    * @param processManager process manager to use to deal with created processes.
    */
   public OfficeProcessConfig(
-      final UnoUrl unoUrl,
+      final OfficeUrl officeUrl,
       final File officeHome,
       final File workingDir,
       final ProcessManager processManager) {
 
-    this.unoUrl = unoUrl;
+    this.officeUrl = officeUrl;
     this.officeHome = officeHome == null ? OfficeUtils.getDefaultOfficeHome() : officeHome;
     this.workingDir =
         workingDir == null ? new File(System.getProperty("java.io.tmpdir")) : workingDir;
@@ -113,12 +111,12 @@ class OfficeProcessConfig {
   }
 
   /**
-   * Gets the UNO URL of this office process.
+   * Gets the office URL of this office process.
    *
-   * @return the UNO URL.
+   * @return the office URL.
    */
-  public UnoUrl getUnoUrl() {
-    return unoUrl;
+  public OfficeUrl getOfficeUrl() {
+    return officeUrl;
   }
 
   /**

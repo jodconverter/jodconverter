@@ -27,8 +27,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
-
 import org.jodconverter.process.ProcessManager;
 
 /**
@@ -54,7 +52,7 @@ class OfficeManagerPool implements OfficeManager {
 
   /** Constructs a new instance of the class with the specified settings. */
   public OfficeManagerPool(
-      final UnoUrl[] unoUrls,
+      final OfficeUrl[] officeUrls,
       final File officeHome,
       final File workingDir,
       final ProcessManager processManager,
@@ -70,12 +68,12 @@ class OfficeManagerPool implements OfficeManager {
     this.taskQueueTimeout = taskQueueTimeout;
 
     // Create the pool and all its entries
-    pool = new ArrayBlockingQueue<>(unoUrls.length);
-    entries = new OfficeManagerPoolEntry[unoUrls.length];
-    for (int i = 0; i < unoUrls.length; i++) {
+    pool = new ArrayBlockingQueue<>(officeUrls.length);
+    entries = new OfficeManagerPoolEntry[officeUrls.length];
+    for (int i = 0; i < officeUrls.length; i++) {
 
       final OfficeManagerPoolEntryConfig config =
-          new OfficeManagerPoolEntryConfig(unoUrls[i], officeHome, workingDir, processManager);
+          new OfficeManagerPoolEntryConfig(officeUrls[i], officeHome, workingDir, processManager);
       config.setRunAsArgs(runAsArgs);
       config.setTemplateProfileDir(templateProfileDir);
       config.setKillExistingProcess(killExistingProcess);
