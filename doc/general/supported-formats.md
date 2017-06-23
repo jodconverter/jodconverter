@@ -1,8 +1,10 @@
 # Supported Formats
 
-**JODConverter** automates conversions that are actually performed by OpenOffice or LibreOffice. This means that if you can convert from format ABC to format XYZ from [Apache OpenOffice](https://www.openoffice.org)/[LibreOffice](https://www.libreoffice.org) (by opening ABC and saving/exporting to XYZ) then you can do the same with **JODConverter**. You just have to discover the magic string used by OpenOffice/LibreOffice as the export filter name. A useful list can be found in the [OpenOffice Wiki](https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0). LibreOffice Wiki does not provide such a list but it should be the same as OpenOffice for most of them.
+> Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite derived from OOo such as [Apache OpenOffice](https://www.openoffice.org) and [LibreOffice](https://www.libreoffice.org).
 
-That said, **JODConverter** maintains a registry of the most common formats, their associated file extensions, mime types, and OpenOffice/LibreOffice filter names to simplify your life. These predefined conversions are shown in the following table:
+**JODConverter** automates conversions that are actually performed by OOo. This means that if you can convert from format ABC to format XYZ from OOo (by opening ABC and saving/exporting to XYZ) then you can do the same with **JODConverter**. You just have to discover the magic string used by OOo as the export filter name. A useful list can be found in the [OpenOffice Wiki](https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0). LibreOffice Wiki does not provide such a list but it should be the same as Apache OpenOffice for most of them.
+
+That said, **JODConverter** maintains a registry of the most common formats, their associated file extensions, mime types, and OOo filter names to simplify your life. These predefined conversions are shown in the following table:
 
 <table aligh="center">
     <tr><th align="left">Format Family</th><th align="left">From (any of)</th><th align="left">To (any of)</th></tr>
@@ -82,5 +84,5 @@ That said, **JODConverter** maintains a registry of the most common formats, the
 </table>
   
 &nbsp;
-> 1. HTML can be used as an input format but you should not expect OpenOffice/LibreOffice to properly render complex web pages as Chrome or IE do. Works reasonably well for simple and "printer friendly" web pages only.
+> 1. HTML can be used as an input format but you should not expect OOo to properly render complex web pages as Chrome or IE do. Works reasonably well for simple and "printer friendly" web pages only.
 > 2. HTML can be used as an output format but while all other formats always generate a single output file, HTML can produce multiple files. In addition to the HTML file in fact, any images contained in the input document will also be saved in the same directory. This requires extra care in your code, especially in a web environment.

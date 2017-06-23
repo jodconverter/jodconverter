@@ -1,5 +1,7 @@
 # Usage as a Java Library
 
+> Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite derived from OOo such as [Apache OpenOffice](https://www.openoffice.org) and [LibreOffice](https://www.libreoffice.org).
+
 Using **JODConverter** in your own Java application is very straightforward. The following example shows the skeleton code required to perform a one off conversion from a Word document to PDF:
 
 ```

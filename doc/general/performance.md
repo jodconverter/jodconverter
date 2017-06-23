@@ -1,6 +1,8 @@
 # Performance
 
-Conversion performance varies widely depending on the input document size and complexity, input and output formats etc. Since conversions are done by [Apache OpenOffice](https://www.openoffice.org) or [LibreOffice](https://www.libreoffice.org), raw conversion time is not something that can be improved by JODConverter.
+> Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite derived from OOo such as [Apache OpenOffice](https://www.openoffice.org) and [LibreOffice](https://www.libreoffice.org).
+
+Conversion performance varies widely depending on the input document size and complexity, input and output formats etc. Since conversions are done by OOo, raw conversion time is not something that can be improved by JODConverter.
 
 Just to give an idea the following table shows some benchmarks for converting different ODT documents to PDF:
 
@@ -14,6 +16,6 @@ Just to give an idea the following table shows some benchmarks for converting di
 
 > Tests made with jodconverter-cli and Apache OpenOffice 4.1.3 on a laptop with a quad-core Intel(R) Core(TM) i7-6500U CPU @ 2.50GHz processor and Windows 10
 
-In general, conversions to/from OpenDocument take less time than equivalent conversions involving other formats since OpenDocument is the native OpenOffice/LibreOffice format. (E.g. ODT to PDF is faster than DOC to PDF.) Other factors affecting performance include the presence of graphics, charts, and other objects in the document, macros etc.
+In general, conversions to/from OpenDocument take less time than equivalent conversions involving other formats since OpenDocument is the native OOo format. (E.g. ODT to PDF is faster than DOC to PDF.) Other factors affecting performance include the presence of graphics, charts, and other objects in the document, macros etc.
 
 The bottom line is that you should make some benchmarks of your own - with documents of the types and complexities required by your application - to understand if the performance is adequate for your purposes, or if you need to throw more hardware at the problem.

@@ -1,4 +1,4 @@
-# JODConverter EX (EXtended, EXtra, 'EX'cetera)
+# JODConverter
 
 I created this fork because I had to do some changes to the original project and I want to share my work with the community.
 
@@ -56,6 +56,7 @@ I cannot say exactly where you could find some similitude between my source code
 - [Nuxeo fork](https://github.com/nuxeo/jodconverter): Nice choice if you don't want to use SIGAR and don't came across an unresponsive office process following a timeout exception that drives you crazy.
 
 ### A special thanks to:
+
 [@michelole](https://github.com/michelole) who created a pull request in these two forks with a stress test that made my office process to crash every times! I don't know him but my first commit was when I was able to build my things with his stress test on!!  
 
 ## Original JODConverter

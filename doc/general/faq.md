@@ -11,9 +11,7 @@
 - [When converting to HTML using the webapp images are missing?](#when-converting-to-html-using-the-webapp-images-are-missing)
 - [When will the next JODConverter version be released?](#when-will-the-next-jodconverter-version-be-released)
 
-
 > Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite derived from OOo such as [Apache OpenOffice](https://www.openoffice.org) and [LibreOffice](https://www.libreoffice.org).
-
 
 ### Do I really need to install OpenOffice.org in order to use JODConverter?
 
