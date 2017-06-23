@@ -37,8 +37,8 @@ abstract class Retryable {
   /**
    * Executes the task without a starting delay.
    *
-   * @param interval the interval between each attempt.
-   * @param timeout the timeout after which no more attempt will be tried.
+   * @param interval the interval between each task execution attempt.
+   * @param timeout the timeout after which we won't try again to execute the task.
    * @throws RetryTimeoutException if we have reached the timeout.
    * @throws Exception for all other error conditions
    */
@@ -52,8 +52,8 @@ abstract class Retryable {
    * Executes the task with a specified starting delay.
    *
    * @param delay a delay to wait for before the fist attempt.
-   * @param interval the interval between each attempt.
-   * @param timeout the timeout after which no more attempt will be tried.
+   * @param interval the interval between each task execution attempt.
+   * @param timeout the timeout after which we won't try again to execute the task.
    * @throws RetryTimeoutException if we have reached the timeout.
    * @throws Exception for all other error conditions
    */
@@ -71,7 +71,7 @@ abstract class Retryable {
       } catch (TemporaryException temporaryEx) { // NOSONAR
         if (System.currentTimeMillis() - start < timeout) {
           sleep(interval);
-          // continue
+          // retryConfig
         } else {
           throw new RetryTimeoutException(temporaryEx.getCause());
         }

@@ -19,7 +19,7 @@
 
 package org.jodconverter.process;
 
-/** Contains the required information used to query for a running process.= */
+/** Contains the required information used to query for a running process. */
 public class ProcessQuery {
 
   private final String command;
