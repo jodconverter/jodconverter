@@ -49,6 +49,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
      * @param inputStream input stream to read from.
      */
     public StreamPumper(final InputStream inputStream) {
+      super();
 
       this.inputStream = inputStream;
       this.outputLines = new ArrayList<>();
