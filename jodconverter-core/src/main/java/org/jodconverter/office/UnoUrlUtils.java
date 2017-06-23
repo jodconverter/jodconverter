@@ -41,7 +41,7 @@ final class UnoUrlUtils {
   /**
    * Creates an UnoUrl for the specified pipe.
    *
-   * @param pipe the pipe.
+   * @param pipeName the pipe name.
    * @return the created UnoUrl.
    */
   public static UnoUrl pipe(final String pipeName) {
