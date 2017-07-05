@@ -50,8 +50,8 @@ class OfficeManagerPoolEntry implements OfficeManager {
   private final SuspendableThreadPoolExecutor taskExecutor;
 
   private Future<?> currentTask;
-  private final AtomicBoolean stopping = new AtomicBoolean(false);
   private final AtomicInteger taskCount = new AtomicInteger(0);
+  private final AtomicBoolean disconnectExpected = new AtomicBoolean(false);
 
   /**
    * This connection event listener will be notified when a connection is established or closed/lost
@@ -78,10 +78,10 @@ class OfficeManagerPoolEntry implements OfficeManager {
 
           // When it comes from an expected behavior (we have put
           // the field to true before calling a function), just reset
-          // the stopping value to false. When we didn't expect the
-          // disconnection, we must restart the office process, which
+          // the disconnectExpected value to false. When we didn't expect
+          // the disconnection, we must restart the office process, which
           // will cancel any task that may be running.
-          if (!stopping.compareAndSet(true, false)) {
+          if (!disconnectExpected.compareAndSet(true, false)) {
 
             // Here, we didn't expect this disconnection. We must restart
             // the office process, canceling any task that may be running.
@@ -129,7 +129,7 @@ class OfficeManagerPoolEntry implements OfficeManager {
               taskExecutor.setAvailable(false);
 
               // Indicates that the disconnection to follow is expected
-              stopping.set(true);
+              disconnectExpected.set(true);
 
               // Restart the office instance
               officeProcessManager.restartAndWait();
@@ -214,7 +214,7 @@ class OfficeManagerPoolEntry implements OfficeManager {
 
     try {
       taskExecutor.setAvailable(false);
-      stopping.set(true);
+      disconnectExpected.set(true);
       taskExecutor.shutdownNow();
     } finally {
       officeProcessManager.stopAndWait();
