@@ -19,9 +19,7 @@
 
 package org.jodconverter.office;
 
-/**
- * Represents protocols that can be used to communicate with a running office instance.
- */
+/** Represents protocols that can be used to communicate with a running office instance. */
 public enum OfficeConnectionProtocol {
 
   /**

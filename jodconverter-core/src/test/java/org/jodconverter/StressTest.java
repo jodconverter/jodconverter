@@ -36,7 +36,6 @@ import org.jodconverter.office.OfficeManager;
 
 public class StressTest {
 
-  //private static final Logger logger = LoggerFactory.getLogger(StressTest.class);
   private static final Logger logger = Logger.getLogger(StressTest.class);
 
   private static final int MAX_CONVERSIONS = 1024;
@@ -67,7 +66,7 @@ public class StressTest {
     console.activateOptions();
     Logger.getRootLogger().addAppender(console);
 
-    // Keep a log file to be able to see if an error occured
+    // Keep a log file to be able to see if an error occurred
     final FileAppender fileAppender = new FileAppender();
     fileAppender.setName("FileLogger");
     fileAppender.setFile("test-output/" + StressTest.class.getSimpleName() + "/test.log");

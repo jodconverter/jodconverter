@@ -42,7 +42,10 @@ import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
-/** An OfficeConnection */
+/**
+ * An OfficeConnection is responsible to manage the connection to an office process using a given
+ * UnoUrl.
+ */
 class OfficeConnection implements OfficeContext, XEventListener {
 
   private static AtomicInteger bridgeIndex = new AtomicInteger();

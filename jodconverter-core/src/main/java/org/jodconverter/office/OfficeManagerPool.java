@@ -152,11 +152,11 @@ class OfficeManagerPool implements OfficeManager {
     if (poolState == POOL_SHUTDOWN) {
       throw new IllegalStateException("This office manager has been shutdown.");
     }
-    
+
     if (poolState == POOL_STARTED) {
       throw new IllegalStateException("This office manager is already running.");
     }
-    
+
     // Start all PooledOfficeManager and make them available to execute tasks.
     for (int i = 0; i < entries.length; i++) {
       entries[i].start();
@@ -173,7 +173,7 @@ class OfficeManagerPool implements OfficeManager {
       // Already shutdown, just exit
       return;
     }
-    
+
     poolState = POOL_SHUTDOWN;
 
     logger.info("Stopping the office manager pool...");
