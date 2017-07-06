@@ -63,13 +63,13 @@ class DumpJsonDefaultDocumentFormatRegistry {
     if (format.getLoadProperties() != null) {
       jsonFormat.put("loadProperties", toJson(format.getLoadProperties()));
     }
-    if (format.getStorePropertiesByFamily() != null) {
-      final JSONObject jsonStorePropertiesByFamily = new SortedJsonObject();
+    if (format.getStoreProperties() != null) {
+      final JSONObject jsonStoreProperties = new SortedJsonObject();
       for (final Map.Entry<DocumentFamily, Map<String, ?>> entry :
-          format.getStorePropertiesByFamily().entrySet()) {
-        jsonStorePropertiesByFamily.put(entry.getKey().name(), toJson(entry.getValue()));
+          format.getStoreProperties().entrySet()) {
+        jsonStoreProperties.put(entry.getKey().name(), toJson(entry.getValue()));
       }
-      jsonFormat.put("storePropertiesByFamily", jsonStorePropertiesByFamily);
+      jsonFormat.put("storeProperties", jsonStoreProperties);
     }
     return jsonFormat;
   }

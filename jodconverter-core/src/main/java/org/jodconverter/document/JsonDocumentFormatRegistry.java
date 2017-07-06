@@ -81,15 +81,21 @@ public final class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegist
       if (jsonFormat.has("loadProperties")) {
         format.setLoadProperties(JsonUtils.toMap(jsonFormat.getJSONObject("loadProperties")));
       }
+      JSONObject jsonStoreProperties = null;
+      if (jsonFormat.has("storeProperties")) {
+        jsonStoreProperties = jsonFormat.getJSONObject("storeProperties");
+      }
+      // Be backward compatible
       if (jsonFormat.has("storePropertiesByFamily")) {
-        final JSONObject jsonStorePropertiesByFamily =
-            jsonFormat.getJSONObject("storePropertiesByFamily");
-        for (final String key : JSONObject.getNames(jsonStorePropertiesByFamily)) {
+        jsonStoreProperties = jsonFormat.getJSONObject("storePropertiesByFamily");
+      }
+      if (jsonStoreProperties != null) {
+        for (final String key : JSONObject.getNames(jsonStoreProperties)) {
           format.setStoreProperties(
-              DocumentFamily.valueOf(key),
-              JsonUtils.toMap(jsonStorePropertiesByFamily.getJSONObject(key)));
+              DocumentFamily.valueOf(key), JsonUtils.toMap(jsonStoreProperties.getJSONObject(key)));
         }
       }
+
       addFormat(format);
     }
   }

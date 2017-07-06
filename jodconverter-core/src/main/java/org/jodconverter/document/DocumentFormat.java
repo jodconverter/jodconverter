@@ -30,7 +30,7 @@ public class DocumentFormat {
   private final String mediaType;
   private DocumentFamily inputFamily;
   private Map<String, ?> loadProperties;
-  private Map<DocumentFamily, Map<String, ?>> storePropertiesByFamily;
+  private Map<DocumentFamily, Map<String, ?>> storeProperties;
 
   /**
    * Creates a new document format with the specified name, extension and mime-type.
@@ -99,10 +99,10 @@ public class DocumentFormat {
    * @return a map containing the properties to apply when storing a document of this format.
    */
   public Map<String, ?> getStoreProperties(final DocumentFamily family) {
-    if (storePropertiesByFamily == null) {
+    if (storeProperties == null) {
       return null;
     }
-    return storePropertiesByFamily.get(family);
+    return storeProperties.get(family);
   }
 
   /**
@@ -112,8 +112,8 @@ public class DocumentFormat {
    * @return a DocumentFamily/Map pairs containing the properties to apply when storing a document
    *     of this format, by DocumentFamily.
    */
-  public Map<DocumentFamily, Map<String, ?>> getStorePropertiesByFamily() {
-    return storePropertiesByFamily;
+  public Map<DocumentFamily, Map<String, ?>> getStoreProperties() {
+    return storeProperties;
   }
 
   /**
@@ -144,22 +144,21 @@ public class DocumentFormat {
   public void setStoreProperties(
       final DocumentFamily family, final Map<String, ?> storeProperties) {
 
-    if (storePropertiesByFamily == null) {
-      storePropertiesByFamily = new EnumMap<>(DocumentFamily.class);
+    if (this.storeProperties == null) {
+      this.storeProperties = new EnumMap<>(DocumentFamily.class);
     }
-    storePropertiesByFamily.put(family, storeProperties);
+    this.storeProperties.put(family, storeProperties);
   }
 
   /**
    * Sets the properties required to store(save) a document of this format to a document of
    * supported families.
    *
-   * @param storePropertiesByFamily a DocumentFamily/Map pairs containing the properties to apply
-   *     when storing a document of this format, by DocumentFamily.
+   * @param storeProperties a DocumentFamily/Map pairs containing the properties to apply when
+   *     storing a document of this format, by DocumentFamily.
    */
-  public void setStorePropertiesByFamily(
-      final Map<DocumentFamily, Map<String, ?>> storePropertiesByFamily) {
+  public void setStoreProperties(final Map<DocumentFamily, Map<String, ?>> storeProperties) {
 
-    this.storePropertiesByFamily = storePropertiesByFamily;
+    this.storeProperties = storeProperties;
   }
 }
