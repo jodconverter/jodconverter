@@ -14,6 +14,7 @@ dependencies {
 }
 
 test {
-  // Run the stress test manually only
+  // Run the stress and performance tests manually only
   exclude 'org/jodconverter/StressTest.class'
+  exclude 'org/jodconverter/PerformanceTest.class'
 }
