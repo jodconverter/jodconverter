@@ -19,8 +19,18 @@
 
 package org.jodconverter.office;
 
-/** Represents protocols that can be used to communicate with a running office instance. */
+/**
+ * Represents protocols that can be used to communicate with a running office instance.
+ */
 public enum OfficeConnectionProtocol {
+
+  /**
+   * Represents the named pipes connection type that uses shared memory. This type of interprocess
+   * connection is marginally faster than socket connections and works only if both processes are
+   * located on the same machine. It does not work on Java by default, because Java does not support
+   * named pipes directly.
+   */
   PIPE,
+  /** Represents the connection type tha uses reliable TCP/IP socket connection. */
   SOCKET
 }

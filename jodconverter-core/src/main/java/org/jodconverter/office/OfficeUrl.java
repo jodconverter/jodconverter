@@ -35,9 +35,10 @@ import com.sun.star.lib.uno.helper.UnoUrl;
  * java -Djava.library.path=/opt/openoffice.org/ure/lib ...
  * </pre>
  *
- * <p>See <a href=
- * "http://wiki.services.openoffice.org/wiki/Documentation/DevGuide/ProUNO/Opening_a_Connection">
- * Opening a Connection</a> in the OpenOffice.org Developer's Guide for more details.
+ * <p>See <a href= <a
+ * href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/ProUNO/Opening_a_Connection">Opening
+ * a Connection</a> and <a href="http://www.openoffice.org/udk/common/man/spec/uno-url.html">UNO Url
+ * - Specification</a> in the OpenOffice.org Developer's Guide for more details.
  */
 public class OfficeUrl {
 
