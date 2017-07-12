@@ -35,7 +35,9 @@ public abstract class AbstractConversionJob implements ConversionJob {
   protected FilterChain filterChain;
 
   protected AbstractConversionJob(
-      SourceDocumentSpecs source, TargetDocumentSpecs target, FilterChain filterChain) {
+      final SourceDocumentSpecs source,
+      final TargetDocumentSpecs target,
+      final FilterChain filterChain) {
     super();
 
     this.source = source;
@@ -44,7 +46,7 @@ public abstract class AbstractConversionJob implements ConversionJob {
   }
 
   @Override
-  public ConversionJob with(FilterChain filterChain) {
+  public ConversionJob with(final FilterChain filterChain) {
 
     Validate.notNull(filterChain);
     this.filterChain = filterChain;

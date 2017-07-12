@@ -237,6 +237,8 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    * the queue if the waiting time is longer than this timeout.
    *
    * <p>&nbsp; <b><i>Default</i></b>: 30000 (30 seconds)
+   * 
+   * @return the task queue timeout.
    */
   public Long getTaskQueueTimeout() {
     return taskQueueTimeout;

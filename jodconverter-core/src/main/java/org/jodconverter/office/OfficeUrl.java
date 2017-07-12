@@ -129,10 +129,10 @@ public class OfficeUrl {
   }
 
   /**
-   * Returns the protocol parameters as a Hashmap with key/value pairs. Encoded characters like
-   * '%41' are decoded.
+   * Returns the protocol parameters as a map with key/value pairs. Encoded characters like '%41'
+   * are decoded.
    *
-   * @return A HashMap with key/value pairs for protocol parameters.
+   * @return A map with key/value pairs for protocol parameters.
    */
   public Map<String, String> getProtocolParameters() {
     return unoUrl.getProtocolParameters();

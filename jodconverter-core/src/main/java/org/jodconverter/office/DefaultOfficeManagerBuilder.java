@@ -350,7 +350,6 @@ public class DefaultOfficeManagerBuilder {
    *
    * @param retryTimeout the process timeout, in milliseconds.
    * @return This builder instance.
-   * @deprecated Use {@link #setProcessTimeout(long)} instead.
    */
   @Deprecated
   public DefaultOfficeManagerBuilder setRetryTimeout(final long retryTimeout) {
@@ -372,7 +371,6 @@ public class DefaultOfficeManagerBuilder {
    *
    * @param retryInterval the retry interval, in milliseconds.
    * @return This builder instance.
-   * @deprecated Use {@link #setProcessRetryInterval(long)} instead.
    */
   @Deprecated
   public DefaultOfficeManagerBuilder setRetryInterval(final long retryInterval) {

@@ -53,7 +53,6 @@ public final class OfficeUtils {
         final String programFiles64 = System.getenv("ProgramFiles");
         final String programFiles32 = System.getenv("ProgramFiles(x86)");
 
-        //@formatter:off
         INSTANCE =
             findOfficeHome(
                 EXECUTABLE_WINDOWS,
@@ -67,11 +66,9 @@ public final class OfficeUtils {
                   programFiles32 + File.separator + "OpenOffice 4",
                   programFiles32 + File.separator + "OpenOffice.org 3"
                 });
-        //@formatter:on
 
       } else if (SystemUtils.IS_OS_MAC) {
 
-        //@formatter:off
         File homeDir =
             findOfficeHome(
                 EXECUTABLE_MAC_41,
@@ -79,10 +76,8 @@ public final class OfficeUtils {
                   "/Applications/LibreOffice.app/Contents",
                   "/Applications/OpenOffice.org.app/Contents"
                 });
-        //@formatter:on
 
         if (homeDir == null) {
-          //@formatter:off
           homeDir =
               findOfficeHome(
                   EXECUTABLE_MAC,
@@ -90,15 +85,15 @@ public final class OfficeUtils {
                     "/Applications/LibreOffice.app/Contents",
                     "/Applications/OpenOffice.org.app/Contents"
                   });
-          //@formatter:on
         }
 
         INSTANCE = homeDir;
 
-      } else { // UNIX
+      } else {
+
+        // UNIX
 
         // Linux or other *nix variants
-        //@formatter:off
         INSTANCE =
             findOfficeHome(
                 EXECUTABLE_DEFAULT,
@@ -114,7 +109,6 @@ public final class OfficeUtils {
                   "/usr/lib/openoffice.org",
                   "/opt/openoffice.org3"
                 });
-        //@formatter:on
       }
     }
 

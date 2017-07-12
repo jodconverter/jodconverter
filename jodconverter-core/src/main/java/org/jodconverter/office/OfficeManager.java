@@ -19,7 +19,11 @@
 
 package org.jodconverter.office;
 
-/** An OfficeManager knows how to execute {@link OfficeTask}s. */
+/**
+ * An office manager knows how to execute an {@link OfficeTask}. An office manager must be started
+ * before performing conversion tasks and must be stopped once it is no longer required. Once
+ * stopped, an office manager cannot be restarted.
+ */
 public interface OfficeManager {
 
   /**

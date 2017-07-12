@@ -114,7 +114,8 @@ public class DefaultConversionTask implements OfficeTask {
     return loadProperties;
   }
 
-  // Gets the office properties to apply when the converted document will be saved as the output file.
+  // Gets the office properties to apply when the converted
+  // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
 
     if (target.getFormat() != null) {
