@@ -5,40 +5,36 @@
 Using **JODConverter** in your own Java application is very straightforward. The following example shows the skeleton code required to perform a one off conversion from a Word document to PDF:
 
 ```java
+File inputFile = new File("document.doc");
+File outputFile = new File("document.pdf");
 
-    File inputFile = new File("document.doc");
-    File outputFile = new File("document.pdf");
-    
-    // Create an office manager using the default configuration.
-    // The default port is 2002.
-    final DefaultOfficeManager officeManager = DefaultOfficeManager.make(); 
-    try {
-    
-        // Start an office process and connect to the started instance (on port 2002).
-        officeManager.start();
-    
-        // Convert
-        DefaultConverter
-                 .make(officeManager)
-                 .convert(inputFile)
-                 .to(outputFile)
-                 .execute();
-    } finally {
-        // Stop the office process
-        OfficeUtils.stopQuietly(officeManager);
-    }
-    
+// Create an office manager using the default configuration.
+// The default port is 2002.
+final DefaultOfficeManager officeManager = DefaultOfficeManager.make(); 
+try {
+
+    // Start an office process and connect to the started instance (on port 2002).
+    officeManager.start();
+
+    // Convert
+    DefaultConverter
+             .make(officeManager)
+             .convert(inputFile)
+             .to(outputFile)
+             .execute();
+} finally {
+    // Stop the office process
+    OfficeUtils.stopQuietly(officeManager);
+}
 ```
 
 To convert from/to other formats, simply change the file names and the formats will be determined based on file extensions; e.g. to convert an Excel file to OpenDocument Spreadsheet:
 
 
 ```java
-
-    File inputFile = new File("spreadsheet.xls");
-    File outputFile = new File("spreadsheet.ods");
-    converter.convert(inputFile, outputFile);
-
+File inputFile = new File("spreadsheet.xls");
+File outputFile = new File("spreadsheet.ods");
+converter.convert(inputFile, outputFile);
 ```
 
 Simple, isn't it? Yet this example actually shows almost everything you need to know for most applications.
