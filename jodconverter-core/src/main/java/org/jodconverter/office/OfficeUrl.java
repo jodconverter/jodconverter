@@ -45,8 +45,8 @@ public class OfficeUrl {
   /**
    * Creates an UnoUrl for the specified pipe.
    *
-   * @param pipeName the pipe name.
-   * @return the created UnoUrl.
+   * @param pipeName The pipe name.
+   * @return The created UnoUrl.
    */
   private static UnoUrl pipe(final String pipeName) {
 
@@ -62,8 +62,8 @@ public class OfficeUrl {
   /**
    * Creates an UnoUrl for the specified port.
    *
-   * @param port the port.
-   * @return the created UnoUrl.
+   * @param port The port.
+   * @return The created UnoUrl.
    */
   private static UnoUrl socket(final int port) {
 
@@ -84,7 +84,7 @@ public class OfficeUrl {
   /**
    * Creates an OfficeUrl for the specified pipe.
    *
-   * @param pipeName the pipe name.
+   * @param pipeName The pipe name.
    */
   public OfficeUrl(final String pipeName) {
 
@@ -94,7 +94,7 @@ public class OfficeUrl {
   /**
    * Creates an OfficeUrl for the specified port.
    *
-   * @param port the port.
+   * @param port The port.
    */
   public OfficeUrl(final int port) {
 
@@ -132,17 +132,17 @@ public class OfficeUrl {
    * Returns the protocol parameters as a Hashmap with key/value pairs. Encoded characters like
    * '%41' are decoded.
    *
-   * @return a HashMap with key/value pairs for protocol parameters.
+   * @return A HashMap with key/value pairs for protocol parameters.
    */
   public Map<String, String> getProtocolParameters() {
     return unoUrl.getProtocolParameters();
   }
 
   /**
-   * Returns the connection parameters as a Hashmap with key/value pairs. Encoded characters like
-   * '%41' are decoded.
+   * Returns the connection parameters as a map with key/value pairs. Encoded characters like '%41'
+   * are decoded.
    *
-   * @return a HashMap with key/value pairs for connection parameters.
+   * @return A map with key/value pairs for connection parameters.
    */
   public Map<String, String> getConnectionParameters() {
     return unoUrl.getConnectionParameters();

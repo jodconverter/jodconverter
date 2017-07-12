@@ -30,8 +30,8 @@ public interface DocumentFormatRegistry {
   /**
    * Gets a document format for the specified extension.
    *
-   * @param extension the extension whose document format will be returned.
-   * @return the found document format, or {@code null} if no document format exists for the
+   * @param extension The extension whose document format will be returned.
+   * @return The found document format, or {@code null} if no document format exists for the
    *     specified extension.
    */
   DocumentFormat getFormatByExtension(String extension);
@@ -39,8 +39,8 @@ public interface DocumentFormatRegistry {
   /**
    * Gets a document format for the specified media type.
    *
-   * @param mediaType the media type whose document format will be returned.
-   * @return the found document format, or {@code null} if no document format exists for the
+   * @param mediaType The media type whose document format will be returned.
+   * @return The found document format, or {@code null} if no document format exists for the
    *     specified media type.
    */
   DocumentFormat getFormatByMediaType(String mediaType);
@@ -48,7 +48,7 @@ public interface DocumentFormatRegistry {
   /**
    * Gets all the {@link DocumentFormat}
    *
-   * @param family the family whose document formats will be returned.
+   * @param family The family whose document formats will be returned.
    * @return A set with all the document formats for the specified family.
    */
   Set<DocumentFormat> getOutputFormats(DocumentFamily family);

@@ -64,7 +64,7 @@ class OfficeManagerPool implements OfficeManager {
    * Acquires a manager, waiting the configured timeout for an entry to become available.
    *
    * @return A manager that was available.
-   * @throws OfficeException if we are unable to acquire a manager.
+   * @throws OfficeException If we are unable to acquire a manager.
    */
   private OfficeManager acquireManager() throws OfficeException {
 
@@ -109,7 +109,7 @@ class OfficeManagerPool implements OfficeManager {
    * Make the given manager available to executes tasks.
    *
    * @param manager A manager to return to the pool.
-   * @throws OfficeException if we are unable to release the manager.
+   * @throws OfficeException If we are unable to release the manager.
    */
   private void releaseManager(final OfficeManager manager) throws OfficeException {
 

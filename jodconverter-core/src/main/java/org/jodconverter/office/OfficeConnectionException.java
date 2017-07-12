@@ -29,9 +29,9 @@ public class OfficeConnectionException extends OfficeException {
    * Constructs a new connect exception with the specified detail message. The cause is not
    * initialized, and may subsequently be initialized by a call to {@link #initCause}.
    *
-   * @param message the detail message. The detail message is saved for later retrieval by the
+   * @param message The detail message. The detail message is saved for later retrieval by the
    *     {@link #getMessage()} method.
-   * @param connectString the connection string of the connection.
+   * @param connectString The connection string of the connection.
    */
   public OfficeConnectionException(final String message, final String connectString) {
     super(message);
@@ -45,10 +45,10 @@ public class OfficeConnectionException extends OfficeException {
    * <p>Note that the detail message associated with {@code cause} is <i>not</i> automatically
    * incorporated in this exception's detail message.
    *
-   * @param message the detail message (which is saved for later retrieval by the {@link
+   * @param message The detail message (which is saved for later retrieval by the {@link
    *     #getMessage()} method).
-   * @param connectString the connection string of the connection.
-   * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
+   * @param connectString The connection string of the connection.
+   * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method).
    *     (A <tt>null</tt> value is permitted, and indicates that the cause is nonexistent or
    *     unknown.)
    */
@@ -62,7 +62,7 @@ public class OfficeConnectionException extends OfficeException {
   /**
    * Gets the connection strong of the connection.
    *
-   * @return the connection string.
+   * @return The connection string.
    */
   public String getConnectString() {
 

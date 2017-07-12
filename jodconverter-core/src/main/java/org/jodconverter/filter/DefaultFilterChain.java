@@ -33,7 +33,7 @@ public class DefaultFilterChain extends FilterChainBase {
   /**
    * Creates a FilterChain that will contains the specified filters.
    *
-   * @param filters the filters to add to the chain.
+   * @param filters The filters to add to the chain.
    */
   public DefaultFilterChain(final Filter... filters) {
     super(filters);

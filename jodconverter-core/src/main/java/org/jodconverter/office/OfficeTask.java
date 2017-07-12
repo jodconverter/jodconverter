@@ -25,8 +25,8 @@ public interface OfficeTask {
   /**
    * Executes the task in the specified context.
    *
-   * @param context the context.
-   * @throws OfficeException if an error occurs.
+   * @param context The context.
+   * @throws OfficeException If an error occurs.
    */
   void execute(OfficeContext context) throws OfficeException;
 }

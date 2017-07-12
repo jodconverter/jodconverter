@@ -28,7 +28,7 @@ public class ExitCodeRetryable extends Retryable {
   /**
    * Creates a new instance of the class for the specified process.
    *
-   * @param process the process whose exit code is to be retrieved.
+   * @param process The process whose exit code is to be retrieved.
    */
   public ExitCodeRetryable(final Process process) {
     super();
@@ -49,7 +49,7 @@ public class ExitCodeRetryable extends Retryable {
   /**
    * The exit code of the process.
    *
-   * @return the exit value of the process. The value 0 indicates normal termination.
+   * @return The exit value of the process. The value 0 indicates normal termination.
    */
   public int getExitCode() {
     return exitCode;

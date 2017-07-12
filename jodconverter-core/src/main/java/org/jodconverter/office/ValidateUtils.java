@@ -27,10 +27,10 @@ public final class ValidateUtils {
   /**
    * Validates that the specified File instance is an existing file.
    *
-   * @param file the file to check.
-   * @param message the {@link String#format(String, Object...)} exception message if invalid, not
+   * @param file The file to check.
+   * @param message The {@link String#format(String, Object...)} exception message if invalid, not
    *     null.
-   * @throws OfficeException if file does not exists.
+   * @throws OfficeException If file does not exists.
    */
   public static void fileExists(final File file, final String message) throws OfficeException {
 
@@ -42,10 +42,10 @@ public final class ValidateUtils {
   /**
    * Validates that the specified object is not null.
    *
-   * @param <T> type of the object to validate.
-   * @param object to check.
-   * @param message the exception message if invalid, not null.
-   * @throws OfficeException if object is null.
+   * @param <T> Type of the object to validate.
+   * @param object Object to check.
+   * @param message The exception message if invalid, not null.
+   * @throws OfficeException If object is null.
    */
   public static <T> void notNull(final T object, final String message) throws OfficeException {
 

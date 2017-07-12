@@ -61,7 +61,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
   /**
    * Constructs a new connection for the specified UNO URL.
    *
-   * @param officeUrl the URL for which the connection is created.
+   * @param officeUrl The URL for which the connection is created.
    */
   public OfficeConnection(final OfficeUrl officeUrl) {
 
@@ -72,7 +72,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
   /**
    * Adds a listener to the connection event listener list of this connection.
    *
-   * @param connectionEventListener the listener to add. It will be notified when a connection is
+   * @param connectionEventListener The listener to add. It will be notified when a connection is
    *     established with an office process and when a connection is lost.
    */
   public void addConnectionEventListener(

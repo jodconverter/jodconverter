@@ -32,6 +32,13 @@ final class OfficeTaskUtils {
     throw new AssertionError("Utility class must not be instantiated");
   }
 
+  /**
+   * Gets the {@link DocumentFamily} if the specified document.
+   *
+   * @param document The document whose family will be returned.
+   * @return The {@link DocumentFamily} for the specified document.
+   * @throws OfficeException If the document family cannot be retrived.
+   */
   public static DocumentFamily getDocumentFamily(final XComponent document) throws OfficeException {
 
     final XServiceInfo serviceInfo = UnoRuntime.queryInterface(XServiceInfo.class, document);

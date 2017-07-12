@@ -28,19 +28,19 @@ abstract class Retryable {
   /**
    * Attempt to execute the task, once.
    *
-   * @throws TemporaryException for an error condition that can be temporary - i.e. retrying later
+   * @throws TemporaryException For an error condition that can be temporary - i.e. retrying later
    *     could be successful
-   * @throws Exception for all other error conditions
+   * @throws Exception For all other error conditions
    */
   protected abstract void attempt() throws Exception; // NOSONAR
 
   /**
    * Executes the task without a starting delay.
    *
-   * @param interval the interval between each task execution attempt.
-   * @param timeout the timeout after which we won't try again to execute the task.
-   * @throws RetryTimeoutException if we have reached the timeout.
-   * @throws Exception for all other error conditions
+   * @param interval The interval between each task execution attempt.
+   * @param timeout The timeout after which we won't try again to execute the task.
+   * @throws RetryTimeoutException If we have reached the timeout.
+   * @throws Exception For all other error conditions
    */
   public void execute(final long interval, final long timeout) // NOSONAR
       throws RetryTimeoutException, Exception { // NOSONAR
@@ -51,11 +51,11 @@ abstract class Retryable {
   /**
    * Executes the task with a specified starting delay.
    *
-   * @param delay a delay to wait for before the fist attempt.
-   * @param interval the interval between each task execution attempt.
-   * @param timeout the timeout after which we won't try again to execute the task.
-   * @throws RetryTimeoutException if we have reached the timeout.
-   * @throws Exception for all other error conditions
+   * @param delay The delay to wait for before the fist attempt.
+   * @param interval The interval between each task execution attempt.
+   * @param timeout The timeout after which we won't try again to execute the task.
+   * @throws RetryTimeoutException If we have reached the timeout.
+   * @throws Exception For all other error conditions
    */
   public void execute(final long delay, final long interval, final long timeout) // NOSONAR
       throws RetryTimeoutException, Exception { // NOSONAR

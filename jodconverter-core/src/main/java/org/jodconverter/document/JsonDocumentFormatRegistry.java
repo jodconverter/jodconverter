@@ -37,9 +37,9 @@ public final class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegist
   /**
    * Creates a JsonDocumentFormatRegistry from the given InputStream.
    *
-   * @param source the InputStream (JSON format) containing the DocumentFormat collection.
-   * @return the created JsonDocumentFormatRegistry.
-   * @throws IOException if an I/O error occurs.
+   * @param source The InputStream (JSON format) containing the DocumentFormat collection.
+   * @return The created JsonDocumentFormatRegistry.
+   * @throws IOException If an I/O error occurs.
    */
   public static JsonDocumentFormatRegistry create(final InputStream source) throws IOException {
 
@@ -49,8 +49,8 @@ public final class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegist
   /**
    * Creates a JsonDocumentFormatRegistry from the given source.
    *
-   * @param source the string (JSON format) containing the DocumentFormat collection.
-   * @return the created JsonDocumentFormatRegistry.
+   * @param source The string (JSON format) containing the DocumentFormat collection.
+   * @return The created JsonDocumentFormatRegistry.
    */
   public static JsonDocumentFormatRegistry create(final String source) {
 

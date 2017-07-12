@@ -34,7 +34,7 @@ public class ConnectRetryable extends Retryable {
   /**
    * Creates a new instance of the class for the specified connection.
    *
-   * @param connection the office connection to connect.
+   * @param connection The office connection to connect.
    */
   public ConnectRetryable(final OfficeConnection connection) {
     this(null, connection);
@@ -43,8 +43,8 @@ public class ConnectRetryable extends Retryable {
   /**
    * Creates a new instance of the class for the specified process and connection.
    *
-   * @param process the office process whose exit code is to be retrieved.
-   * @param connection the office connection to connect.
+   * @param process The office process whose exit code is to be retrieved.
+   * @param connection The office connection to connect.
    */
   public ConnectRetryable(final OfficeProcess process, final OfficeConnection connection) {
     super();

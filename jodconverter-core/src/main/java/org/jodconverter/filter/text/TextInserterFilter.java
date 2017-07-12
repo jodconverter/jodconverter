@@ -55,9 +55,9 @@ public class TextInserterFilter extends TextContentInserterFilter {
    * Creates a new filter that will insert the specified text at the specified location while
    * converting a document.
    *
-   * @param text the text to insert.
-   * @param width the width of the rectangle to insert (millimeters).
-   * @param height the height of the rectangle to insert (millimeters).
+   * @param text The text to insert.
+   * @param width The width of the rectangle to insert (millimeters).
+   * @param height The height of the rectangle to insert (millimeters).
    * @param horizontalPosition The horizontal position where to insert the text on the document
    *     (millimeters).
    * @param verticalPosition The vertical position where to insert the text on the document
@@ -80,12 +80,12 @@ public class TextInserterFilter extends TextContentInserterFilter {
    * Creates a new filter that will insert the specified text at the specified location while
    * converting a document.
    *
-   * @param text the text to insert.
-   * @param width the width of the graphic to insert. The original image will be resize if required
+   * @param text The text to insert.
+   * @param width The width of the graphic to insert. The original image will be resize if required
    *     (millimeters).
-   * @param height the height of the image. The original image will be resize if required
+   * @param height The height of the image. The original image will be resize if required
    *     (millimeters).
-   * @param shapeProperties the properties to apply to the created rectangle shape.
+   * @param shapeProperties The properties to apply to the created rectangle shape.
    * @see <a
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */

@@ -25,7 +25,7 @@ public class UnmodifiableFilterChain extends FilterChainBase {
   /**
    * Creates an unmodifiable FilterChain that will contains the specified filters.
    *
-   * @param filters the filters to add to the chain.
+   * @param filters The filters to add to the chain.
    */
   public UnmodifiableFilterChain(final Filter... filters) {
     super(true, filters);

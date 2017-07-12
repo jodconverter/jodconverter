@@ -99,12 +99,12 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
    * Creates a new filter that will insert the specified image at the specified location while
    * converting a document.
    *
-   * @param imagePath the path to the image (file) on disk.
+   * @param imagePath The path to the image (file) on disk.
    * @param horizontalPosition The horizontal position where to insert the image on the document
    *     (millimeters).
    * @param verticalPosition The vertical position where to insert the image on the document
    *     (millimeters).
-   * @throws OfficeException if the size of the image cannot be detected.
+   * @throws OfficeException If the size of the image cannot be detected.
    */
   public GraphicInserterFilter(
       final String imagePath, final int horizontalPosition, final int verticalPosition)
@@ -118,10 +118,10 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
    * Creates a new filter that will insert the specified image at the specified location while
    * converting a document.
    *
-   * @param imagePath the path to the image (file) on disk.
+   * @param imagePath The path to the image (file) on disk.
    * @param width the width of the image to insert. The original image will be resize if required
    *     (millimeters).
-   * @param height the height of the image to insert. The original image will be resize if required
+   * @param height The height of the image to insert. The original image will be resize if required
    *     (millimeters).
    * @param horizontalPosition The horizontal position where to insert the image on the document
    *     (millimeters).
@@ -143,12 +143,12 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
    * Creates a new filter that will insert the specified image using the specified properties while
    * converting a document.
    *
-   * @param imagePath the path to the image (file) on disk.
+   * @param imagePath The path to the image (file) on disk.
    * @param width the width of the image to insert. The original image will be resize if required
    *     (millimeters).
-   * @param height the height of the image to insert. The original image will be resize if required
+   * @param height The height of the image to insert. The original image will be resize if required
    *     (millimeters).
-   * @param shapeProperties the properties to apply to the created graphic shape.
+   * @param shapeProperties The properties to apply to the created graphic shape.
    * @see <a
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */
@@ -166,9 +166,9 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
    * Creates a new filter that will insert the specified image using the specified properties while
    * converting a document.
    *
-   * @param imagePath the path to the image (file) on disk.
-   * @param shapeProperties the properties to apply to the created graphic shape.
-   * @throws OfficeException if the size of the image cannot be detected.
+   * @param imagePath The path to the image (file) on disk.
+   * @param shapeProperties The properties to apply to the created graphic shape.
+   * @throws OfficeException If the size of the image cannot be detected.
    * @see <a
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */

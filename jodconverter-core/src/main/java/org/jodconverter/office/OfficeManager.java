@@ -25,8 +25,8 @@ public interface OfficeManager {
   /**
    * Executes the specified task.
    *
-   * @param task the task to execute.
-   * @throws OfficeException if an error occurs.
+   * @param task The task to execute.
+   * @throws OfficeException If an error occurs.
    */
   void execute(OfficeTask task) throws OfficeException;
 
@@ -40,14 +40,14 @@ public interface OfficeManager {
   /**
    * Starts the manager.
    *
-   * @throws OfficeException if the manager cannot be started.
+   * @throws OfficeException If the manager cannot be started.
    */
   void start() throws OfficeException;
 
   /**
    * Stops the manager.
    *
-   * @throws OfficeException if the manager cannot be stopped.
+   * @throws OfficeException If the manager cannot be stopped.
    */
   void stop() throws OfficeException;
 }

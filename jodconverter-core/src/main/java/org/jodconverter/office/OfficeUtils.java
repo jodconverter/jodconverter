@@ -139,7 +139,7 @@ public final class OfficeUtils {
    * Find the best process manager that will be used to retrieve a process PID and to kill a process
    * by PID.
    *
-   * @return the best process manager according to the current OS.
+   * @return The best process manager according to the current OS.
    */
   public static ProcessManager findBestProcessManager() {
 
@@ -162,7 +162,7 @@ public final class OfficeUtils {
   /**
    * Gets the default office home directory, which is auto-detected.
    *
-   * @return a {@code File} instance that is the directory where lives the first detected office
+   * @return A {@code File} instance that is the directory where lives the first detected office
    *     installation.
    */
   public static File getDefaultOfficeHome() {
@@ -172,7 +172,7 @@ public final class OfficeUtils {
   /**
    * Gets the office executable within an office installation.
    *
-   * @param officeHome the root (home) directory of the office installation.
+   * @param officeHome The root (home) directory of the office installation.
    * @return A instance of the executable file.
    */
   public static File getOfficeExecutable(final File officeHome) {
@@ -200,9 +200,9 @@ public final class OfficeUtils {
   /**
    * Creates a {@code PropertyValue} with the specified name and value.
    *
-   * @param name the property name.
-   * @param value the property value.
-   * @return the created {@code PropertyValue}.
+   * @param name The property name.
+   * @param value The property value.
+   * @return The created {@code PropertyValue}.
    */
   public static PropertyValue property(final String name, final Object value) {
 
@@ -251,8 +251,8 @@ public final class OfficeUtils {
    * Converts a regular java map to an array of {@code PropertyValue}, usable as arguments with UNO
    * interface types.
    *
-   * @param properties the map to convert.
-   * @return an array of {@code PropertyValue}.
+   * @param properties The map to convert.
+   * @return An array of {@code PropertyValue}.
    */
   public static PropertyValue[] toUnoProperties(final Map<String, Object> properties) {
 
@@ -273,8 +273,8 @@ public final class OfficeUtils {
   /**
    * Constructs an URL from the specified file as expected by office.
    *
-   * @param file the file for which an URL will be constructed.
-   * @return a valid office URL.
+   * @param file The file for which an URL will be constructed.
+   * @return A valid office URL.
    */
   public static String toUrl(final File file) {
 
@@ -286,8 +286,8 @@ public final class OfficeUtils {
   /**
    * Validates that the specified File instance is a valid office home directory.
    *
-   * @param officeHome the home to validate.
-   * @exception IllegalStateException if the specified directory if not a valid office home
+   * @param officeHome The home to validate.
+   * @exception IllegalStateException If the specified directory if not a valid office home
    *     directory.
    */
   public static void validateOfficeHome(final File officeHome) {
@@ -306,8 +306,8 @@ public final class OfficeUtils {
   /**
    * Validates that the specified File instance is a valid office template profile directory.
    *
-   * @param templateProfileDir the directory to validate.
-   * @exception IllegalStateException if the specified directory if not a valid office template
+   * @param templateProfileDir The directory to validate.
+   * @exception IllegalStateException If the specified directory if not a valid office template
    *     profile directory.
    */
   public static void validateOfficeTemplateProfileDirectory(final File templateProfileDir) {
@@ -324,8 +324,8 @@ public final class OfficeUtils {
   /**
    * Validates that the specified File instance is a valid office working directory.
    *
-   * @param workingDir the directory to validate.
-   * @exception IllegalStateException if the specified directory if not a valid office working
+   * @param workingDir The directory to validate.
+   * @exception IllegalStateException If the specified directory if not a valid office working
    *     directory.
    */
   public static void validateOfficeWorkingDirectory(final File workingDir) {

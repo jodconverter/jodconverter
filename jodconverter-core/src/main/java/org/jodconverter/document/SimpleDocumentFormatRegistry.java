@@ -35,7 +35,7 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
   /**
    * Add a new format to the registry.
    *
-   * @param documentFormat the format to add.
+   * @param documentFormat The format to add.
    */
   public void addFormat(final DocumentFormat documentFormat) {
 

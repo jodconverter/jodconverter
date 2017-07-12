@@ -43,7 +43,7 @@ public class OfficeDocumentConverter {
   /**
    * Constructs a new instance of the class with the specified manager.
    *
-   * @param officeManager the manager that will provide the office instance required for a
+   * @param officeManager The manager that will provide the office instance required for a
    *     conversion.
    */
   public OfficeDocumentConverter(final OfficeManager officeManager) {
@@ -54,9 +54,9 @@ public class OfficeDocumentConverter {
   /**
    * Constructs a new instance of the class with the specified manager and registry.
    *
-   * @param officeManager the manager that will provide the office instance required for a
+   * @param officeManager The manager that will provide the office instance required for a
    *     conversion.
-   * @param formatRegistry a collections of {@link DocumentFormat} supported by this converter.
+   * @param formatRegistry A collections of {@link DocumentFormat} supported by this converter.
    */
   public OfficeDocumentConverter(
       final OfficeManager officeManager, final DocumentFormatRegistry formatRegistry) {
@@ -72,9 +72,9 @@ public class OfficeDocumentConverter {
    * Converts an input file to an output file. The files extensions are used to determine the input
    * and output {@link DocumentFormat}.
    *
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @throws OfficeException if the conversion fails.
+   * @param inputFile The input file to convert.
+   * @param outputFile The target output file.
+   * @throws OfficeException If the conversion fails.
    */
   public void convert(final File inputFile, final File outputFile) throws OfficeException {
 
@@ -85,10 +85,10 @@ public class OfficeDocumentConverter {
    * Converts an input file to an output file. The input file extension is used to determine the
    * input {@link DocumentFormat}.
    *
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @param outputFormat the target output format.
-   * @throws OfficeException if the conversion fails.
+   * @param inputFile The input file to convert.
+   * @param outputFile The target output file.
+   * @param outputFormat The target output format.
+   * @throws OfficeException If the conversion fails.
    */
   public void convert(
       final File inputFile, final File outputFile, final DocumentFormat outputFormat)
@@ -100,11 +100,11 @@ public class OfficeDocumentConverter {
   /**
    * Converts an input file to an output file.
    *
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @param inputFormat the source input format.
-   * @param outputFormat the target output format.
-   * @throws OfficeException if the conversion fails.
+   * @param inputFile The input file to convert.
+   * @param outputFile The target output file.
+   * @param inputFormat The source input format.
+   * @param outputFormat The target output format.
+   * @throws OfficeException If the conversion fails.
    */
   public void convert(
       final File inputFile,
@@ -120,12 +120,12 @@ public class OfficeDocumentConverter {
    * Converts an input file to an output file. The files extensions are used to determine the input
    * and output {@link DocumentFormat}.
    *
-   * @param filterChain the FilterChain to be applied after the document is loaded and before it is
+   * @param filterChain The FilterChain to be applied after the document is loaded and before it is
    *     stored (converted) in the new document format. A FilterChain is used to modify the document
    *     before the conversion. Filters are applied in the same order they appear in the chain.
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @throws OfficeException if the conversion fails.
+   * @param inputFile The input file to convert.
+   * @param outputFile The target output file.
+   * @throws OfficeException If the conversion fails.
    */
   public void convert(final FilterChain filterChain, final File inputFile, final File outputFile)
       throws OfficeException {
@@ -137,13 +137,13 @@ public class OfficeDocumentConverter {
    * Converts an input file to an output file. The input file extension is used to determine the
    * input {@link DocumentFormat}.
    *
-   * @param filterChain the FilterChain to be applied after the document is loaded and before it is
+   * @param filterChain The FilterChain to be applied after the document is loaded and before it is
    *     stored (converted) in the new document format. A FilterChain is used to modify the document
    *     before the conversion. Filters are applied in the same order they appear in the chain.
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @param outputFormat the target output format.
-   * @throws OfficeException if the conversion fails.
+   * @param inputFile The input file to convert.
+   * @param outputFile The target output file.
+   * @param outputFormat The target output format.
+   * @throws OfficeException If the conversion fails.
    */
   public void convert(
       final FilterChain filterChain,
@@ -158,14 +158,14 @@ public class OfficeDocumentConverter {
   /**
    * Converts an input file to an output file.
    *
-   * @param filterChain the FilterChain to be applied after the document is loaded and before it is
+   * @param filterChain The FilterChain to be applied after the document is loaded and before it is
    *     stored (converted) in the new document format. A FilterChain is used to modify the document
    *     before the conversion. Filters are applied in the same order they appear in the chain.
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @param inputFormat the source input format.
-   * @param outputFormat the target output format.
-   * @throws OfficeException if the conversion fails.
+   * @param inputFile The input file to convert.
+   * @param outputFile The target output file.
+   * @param inputFormat The source input format.
+   * @param outputFormat The target output format.
+   * @throws OfficeException If the conversion fails.
    */
   public void convert(
       final FilterChain filterChain,
@@ -183,9 +183,9 @@ public class OfficeDocumentConverter {
   }
 
   /**
-   * Gets all the DocumentFormat supported by the converter.
+   * Gets all the {@link DocumentFormat} supported by the converter.
    *
-   * @return a DocumentFormatRegistry containing the supported format.
+   * @return A {@link DocumentFormatRegistry} containing the supported format.
    */
   public DocumentFormatRegistry getFormatRegistry() {
 
@@ -196,7 +196,7 @@ public class OfficeDocumentConverter {
    * Sets the default properties to use when we load (open) a document before a conversion,
    * regardless the input type of the document.
    *
-   * @param defaultLoadProperties the default properties to apply when loading a document.
+   * @param defaultLoadProperties The default properties to apply when loading a document.
    */
   public void setDefaultLoadProperties(final Map<String, Object> defaultLoadProperties) {
 

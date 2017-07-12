@@ -43,9 +43,9 @@ public abstract class FilterChainBase implements FilterChain {
   /**
    * Creates a FilterChain that will contains the specified filters.
    *
-   * @param readOnly {@code true} if the chain must be read-only (which means that no other filter
+   * @param readOnly {@code true} If the chain must be read-only (which means that no other filter
    *     can be added to the chain), {@code false} otherwise.
-   * @param filters the filters to initially add to the chain.
+   * @param filters The filters to initially add to the chain.
    */
   public FilterChainBase(final boolean readOnly, final Filter... filters) {
 
@@ -67,7 +67,7 @@ public abstract class FilterChainBase implements FilterChain {
   /**
    * Creates a FilterChain that will contains the specified filters.
    *
-   * @param filters the filters to add to the chain.
+   * @param filters The filters to add to the chain.
    */
   public FilterChainBase(final Filter... filters) {
     this(false, filters);
@@ -76,7 +76,7 @@ public abstract class FilterChainBase implements FilterChain {
   /**
    * Adds a filter to the chain.
    *
-   * @param filter the filter to add at the end of the chain.
+   * @param filter The filter to add at the end of the chain.
    */
   public void addFilter(final Filter filter) {
 

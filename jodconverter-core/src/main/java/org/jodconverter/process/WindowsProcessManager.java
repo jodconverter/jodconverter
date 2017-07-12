@@ -40,7 +40,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
   /**
    * Gets the default instance of {@code WindowsProcessManager}.
    *
-   * @return the default {@code WindowsProcessManager} instance.
+   * @return The default {@code WindowsProcessManager} instance.
    */
   public static WindowsProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
@@ -66,7 +66,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
   /**
    * Gets whether the commands we need are available for a Windows OS.
    *
-   * @return {@code true} if the required commands are available, {@code false} otherwise.
+   * @return {@code true} If the required commands are available, {@code false} otherwise.
    */
   public boolean isUsable() {
 

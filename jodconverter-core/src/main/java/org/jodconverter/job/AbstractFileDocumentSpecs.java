@@ -53,7 +53,7 @@ abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
     /**
      * Specifies a path to the file of this builder.
      *
-     * @param filePath path to the file.
+     * @param filePath The path to the file.
      * @return This builder instance.
      */
     public T file(String filePath) {
@@ -65,7 +65,7 @@ abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
     /**
      * Specifies a the file of this builder.
      *
-     * @param file the file.
+     * @param file The file.
      * @return This builder instance.
      */
     @SuppressWarnings("unchecked")

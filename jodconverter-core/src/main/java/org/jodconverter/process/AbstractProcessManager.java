@@ -46,7 +46,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
     /**
      * Creates a new pumper for the specified input stream.
      *
-     * @param inputStream input stream to read from.
+     * @param inputStream The input stream to read from.
      */
     public StreamPumper(final InputStream inputStream) {
       super();
@@ -58,7 +58,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
     /**
      * Gets the output lines from this input stream pumper.
      *
-     * @return the command output lines.
+     * @return The command output lines.
      */
     public List<String> getOutputLines() {
       return outputLines;
@@ -100,9 +100,9 @@ public abstract class AbstractProcessManager implements ProcessManager {
   /**
    * Executes the specified command and return the output.
    *
-   * @param cmdarray array containing the command to call and its arguments.
-   * @return the command execution output.
-   * @throws IOException if an I/O error occurs.
+   * @param cmdarray An array containing the command to call and its arguments.
+   * @return The command execution output.
+   * @throws IOException If an I/O error occurs.
    */
   protected List<String> execute(final String[] cmdarray) throws IOException {
 
@@ -195,8 +195,8 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * Gets the command to be executed to get a snapshot of all the running processes identified by
    * the specified argument (process).
    *
-   * @param process name of the process to query for.
-   * @return an array containing the command to call and its arguments.
+   * @param process The name of the process to query for.
+   * @return An array containing the command to call and its arguments.
    */
   protected abstract String[] getRunningProcessesCommand(String process);
 
@@ -205,7 +205,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * process. The output lines being tested against this pattern are the result of the execution of
    * the command returned by the getRunningProcessesCommand function.
    *
-   * @return the pattern.
+   * @return The pattern.
    * @see #getRunningProcessesCommand(String)
    */
   protected abstract Pattern getRunningProcessLinePattern();

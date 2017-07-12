@@ -46,9 +46,9 @@ public class DocumentFormat {
   /**
    * Creates a new document format with the specified name, extension and mime-type.
    *
-   * @param name the name of the format.
-   * @param extension the extension of the format.
-   * @param mediaType the media type (mime type) of the format.
+   * @param name The name of the format.
+   * @param extension The extension of the format.
+   * @param mediaType The media type (mime type) of the format.
    */
   public DocumentFormat(final String name, final String extension, final String mediaType) {
 
@@ -60,7 +60,7 @@ public class DocumentFormat {
   /**
    * Creates a copy of the specified document format.
    *
-   * @param documentFormat the DocumentFormat from which the copy is made.
+   * @param documentFormat The DocumentFormat from which the copy is made.
    */
   private DocumentFormat(final DocumentFormat documentFormat) {
 
@@ -83,7 +83,7 @@ public class DocumentFormat {
   /**
    * Gets the extension associated with the format.
    *
-   * @return a string that represents an extension.
+   * @return A string that represents an extension.
    */
   public String getExtension() {
     return extension;
@@ -92,7 +92,7 @@ public class DocumentFormat {
   /**
    * Gets the DocumentFamily of the document.
    *
-   * @return the DocumentFamily of the document.
+   * @return The DocumentFamily of the document.
    */
   public DocumentFamily getInputFamily() {
     return inputFamily;
@@ -101,7 +101,7 @@ public class DocumentFormat {
   /**
    * Gets the properties required to load(open) a document of this format.
    *
-   * @return a map containing the properties to apply when loading a document of this format.
+   * @return A map containing the properties to apply when loading a document of this format.
    */
   public Map<String, Object> getLoadProperties() {
     return loadProperties;
@@ -110,7 +110,7 @@ public class DocumentFormat {
   /**
    * Gets the media (mime) type of the format.
    *
-   * @return a string that represents the media type.
+   * @return A string that represents the media type.
    */
   public String getMediaType() {
     return mediaType;
@@ -119,7 +119,7 @@ public class DocumentFormat {
   /**
    * Gets the name of the format.
    *
-   * @return a string that represents the name of the format.
+   * @return A string that represents the name of the format.
    */
   public String getName() {
     return name;
@@ -129,8 +129,8 @@ public class DocumentFormat {
    * Gets the properties required to store(save) a document of this format to a document of the
    * specified family.
    *
-   * @param family the DocumentFamily for which the properties are get.
-   * @return a map containing the properties to apply when storing a document of this format.
+   * @param family The DocumentFamily for which the properties are get.
+   * @return A map containing the properties to apply when storing a document of this format.
    */
   public Map<String, Object> getStoreProperties(final DocumentFamily family) {
     if (storeProperties == null) {
@@ -143,7 +143,7 @@ public class DocumentFormat {
    * Gets the properties required to store(save) a document of this format to a document of
    * supported families.
    *
-   * @return a DocumentFamily/Map pairs containing the properties to apply when storing a document
+   * @return A DocumentFamily/Map pairs containing the properties to apply when storing a document
    *     of this format, by DocumentFamily.
    */
   public Map<DocumentFamily, Map<String, Object>> getStoreProperties() {
@@ -153,7 +153,7 @@ public class DocumentFormat {
   /**
    * Sets the DocumentFamily of the document.
    *
-   * @param documentFamily the DocumentFamily of the document
+   * @param documentFamily The DocumentFamily of the document
    */
   public void setInputFamily(final DocumentFamily documentFamily) {
     this.inputFamily = documentFamily;
@@ -162,7 +162,7 @@ public class DocumentFormat {
   /**
    * Sets the properties required to load(open) a document of this format.
    *
-   * @param loadProperties the new properties to set.
+   * @param loadProperties The new properties to set.
    */
   public void setLoadProperties(final Map<String, Object> loadProperties) {
     this.loadProperties = loadProperties;

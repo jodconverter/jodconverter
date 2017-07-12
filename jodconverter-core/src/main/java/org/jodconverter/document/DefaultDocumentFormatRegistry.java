@@ -59,7 +59,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
   /**
    * Creates a DefaultDocumentFormatRegistry.
    *
-   * @return the created DefaultDocumentFormatRegistry.
+   * @return The created DefaultDocumentFormatRegistry.
    */
   public static DefaultDocumentFormatRegistry create() {
 
@@ -75,7 +75,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
   /**
    * Gets the default instance of the class.
    *
-   * @return the ResourceManager used at this class hierarchy level.
+   * @return The ResourceManager used at this class hierarchy level.
    */
   public static DefaultDocumentFormatRegistry getInstance() {
     return InstanceHolder.INSTANCE;

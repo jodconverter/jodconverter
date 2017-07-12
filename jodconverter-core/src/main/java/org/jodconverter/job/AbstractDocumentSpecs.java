@@ -50,7 +50,7 @@ abstract class AbstractDocumentSpecs implements DocumentSpecs {
     /**
      * Specifies a the document format of this builder.
      *
-     * @param format the format.
+     * @param format The format.
      * @return This builder instance.
      */
     @SuppressWarnings("unchecked")

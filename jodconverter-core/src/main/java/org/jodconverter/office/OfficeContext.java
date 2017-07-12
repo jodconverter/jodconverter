@@ -28,14 +28,14 @@ public interface OfficeContext {
   /**
    * Gets the office component loader for this context.
    *
-   * @return the component loader.
+   * @return The component loader.
    */
   XComponentLoader getComponentLoader();
 
   /**
    * Gets the office desktop for this context.
    *
-   * @return the desktop.
+   * @return The desktop.
    */
   XDesktop getDesktop();
 }

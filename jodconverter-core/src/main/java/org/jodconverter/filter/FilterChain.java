@@ -34,7 +34,7 @@ public interface FilterChain {
   /**
    * Adds a filter to the chain.
    *
-   * @param filter the filter to add at the end of the chain.
+   * @param filter The filter to add at the end of the chain.
    */
   void addFilter(Filter filter);
 
@@ -42,9 +42,9 @@ public interface FilterChain {
    * Causes the next filter in the chain to be invoked, or if the calling filter is the last filter
    * in the chain, do nothing.
    *
-   * @param context the OfficeContext in use to pass along the chain.
-   * @param document the XComponent being converted to pass along the chain.
-   * @throws OfficeException if an error processing the filter.
+   * @param context The OfficeContext in use to pass along the chain.
+   * @param document The XComponent being converted to pass along the chain.
+   * @throws OfficeException If an error processing the filter.
    */
   void doFilter(final OfficeContext context, final XComponent document) throws OfficeException;
 }

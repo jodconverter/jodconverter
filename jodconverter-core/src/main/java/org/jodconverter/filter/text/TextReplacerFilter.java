@@ -48,8 +48,8 @@ public class TextReplacerFilter implements Filter {
   /**
    * Creates a new filter with the specified strings to replace.
    *
-   * @param searchList the Strings to search for, no-op if null.
-   * @param replacementList the Strings to replace them with, no-op if null.
+   * @param searchList The Strings to search for, no-op if null.
+   * @param replacementList The Strings to replace them with, no-op if null.
    */
   public TextReplacerFilter(final String[] searchList, final String[] replacementList) {
     super();

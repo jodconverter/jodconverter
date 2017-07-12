@@ -33,7 +33,7 @@ class NamedThreadFactory implements ThreadFactory {
   /**
    * Creates a new instance of the factory.
    *
-   * @param basename basename of a new tread created by this factory.
+   * @param basename Basename of a new tread created by this factory.
    */
   public NamedThreadFactory(final String basename) {
     this(basename, true);
@@ -42,8 +42,8 @@ class NamedThreadFactory implements ThreadFactory {
   /**
    * Creates a new instance of the factory.
    *
-   * @param basename basename of a new tread created by this factory.
-   * @param daemon if true, marks new thread as a daemon thread
+   * @param basename Basename of a new tread created by this factory.
+   * @param daemon If true, marks new thread as a daemon thread
    */
   public NamedThreadFactory(final String basename, final boolean daemon) {
 

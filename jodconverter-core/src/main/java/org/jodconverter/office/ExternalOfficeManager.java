@@ -47,8 +47,8 @@ class ExternalOfficeManager implements OfficeManager {
   /**
    * Constructs a new instance of the class.
    *
-   * @param officeUrl the office URL.
-   * @param connectOnStart should a connection be attempted on {@link #start()}? Default is
+   * @param officeUrl The office URL.
+   * @param connectOnStart Should a connection be attempted on {@link #start()}? Default is
    *     <em>true</em>. If <em>false</em>, a connection will only be attempted the first time an
    *     {@link OfficeTask} is executed.
    */

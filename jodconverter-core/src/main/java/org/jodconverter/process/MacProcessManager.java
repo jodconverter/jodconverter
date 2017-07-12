@@ -31,7 +31,7 @@ public class MacProcessManager extends UnixProcessManager {
   /**
    * Gets the default instance of {@code MacProcessManager}.
    *
-   * @return the default {@code MacProcessManager} instance.
+   * @return The default {@code MacProcessManager} instance.
    */
   public static MacProcessManager getDefault() {
     return DefaultHolder.INSTANCE;

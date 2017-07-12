@@ -54,7 +54,7 @@ public abstract class TextContentInserterFilter implements Filter {
    *     document (millimeters).
    * @param verticalPosition The vertical position where to insert the text content on the document
    *     (millimeters).
-   * @return A map containing the default shape properties.
+   * @return A map containing The default shape properties.
    */
   public static Map<String, Object> createDefaultShapeProperties(
       final int horizontalPosition, final int verticalPosition) {
@@ -87,8 +87,8 @@ public abstract class TextContentInserterFilter implements Filter {
    * Converts the specified size where units are millimeters to an office size where unit are 1/100
    * millimeters.
    *
-   * @param size the size to convert, in millimeters.
-   * @return the converted size instance, in 1/100 millimeters.
+   * @param size The size to convert, in millimeters.
+   * @return The converted size instance, in 1/100 millimeters.
    */
   public static Size toOfficeSize(final Dimension size) {
 
@@ -102,7 +102,7 @@ public abstract class TextContentInserterFilter implements Filter {
    * Creates a new filter that will insert a text content (shape) of the specified size at the
    * specified location while converting a document.
    *
-   * @param size the dimension of the shape that will be inserted (millimeters).
+   * @param size The dimension of the shape that will be inserted (millimeters).
    * @param horizontalPosition The horizontal position where to insert the text content on the
    *     document (millimeters).
    * @param verticalPosition The vertical position where to insert the text content on the document
@@ -120,8 +120,8 @@ public abstract class TextContentInserterFilter implements Filter {
    * Creates a new filter that will insert a text content (shape) of the specified size using the
    * specified shape properties while converting a document.
    *
-   * @param size the dimension of the shape that will be inserted (millimeters).
-   * @param shapeProperties the properties to apply to the created shape.
+   * @param size The dimension of the shape that will be inserted (millimeters).
+   * @param shapeProperties The properties to apply to the created shape.
    * @see <a
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */
@@ -137,8 +137,8 @@ public abstract class TextContentInserterFilter implements Filter {
    * Jumps to the page specified by the "AnchorPageNo" if present in the shape properties if this
    * filter. This seems to be required for some output format.
    *
-   * @param docText the text interface for the document.
-   * @param textCursor the text cursor of the document.
+   * @param docText The text interface for the document.
+   * @param textCursor The text cursor of the document.
    */
   protected void applyAnchorPageNoFix(final XTextDocument docText, final XTextCursor textCursor) {
 

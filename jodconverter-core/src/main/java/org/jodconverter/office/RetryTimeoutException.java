@@ -29,7 +29,7 @@ class RetryTimeoutException extends Exception {
   /**
    * Constructs a new exception with the specified cause
    *
-   * @param cause the cause.
+   * @param cause The cause.
    */
   public RetryTimeoutException(final Throwable cause) {
     super(cause);

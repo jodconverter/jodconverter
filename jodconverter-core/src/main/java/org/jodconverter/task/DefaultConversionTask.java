@@ -64,10 +64,10 @@ public class DefaultConversionTask implements OfficeTask {
    *
    * @param source The source specifications for the conversion.
    * @param target The target specifications for the conversion.
-   * @param defaultLoadProperties the default properties to be applied when loading the document.
+   * @param defaultLoadProperties The default properties to be applied when loading the document.
    *     These properties are added before the load properties of the document format specified in
    *     the {@code source} arguments.
-   * @param filterChain filterChain to use with this task.
+   * @param filterChain The filter chain to use with this task.
    */
   public DefaultConversionTask(
       final SourceDocumentSpecs source,
@@ -126,9 +126,9 @@ public class DefaultConversionTask implements OfficeTask {
   /**
    * Loads the document to convert.
    *
-   * @param context the office context.
-   * @return a XComponent that is the loaded document to convert.
-   * @throws OfficeException if an error occurs.
+   * @param context The office context.
+   * @return A XComponent that is the loaded document to convert.
+   * @throws OfficeException If an error occurs.
    */
   protected XComponent loadDocument(final OfficeContext context) throws OfficeException {
 
@@ -163,9 +163,9 @@ public class DefaultConversionTask implements OfficeTask {
    * Override to modify the document after it has been loaded and before it gets saved in the new
    * format.
    *
-   * @param context the office context.
-   * @param document the office document.
-   * @throws OfficeException if an error occurs.
+   * @param context The office context.
+   * @param document The office document.
+   * @throws OfficeException If an error occurs.
    */
   protected void modifyDocument(final OfficeContext context, final XComponent document)
       throws OfficeException {
@@ -178,8 +178,8 @@ public class DefaultConversionTask implements OfficeTask {
   /**
    * Stores the converted document as the output file.
    *
-   * @param document the office document to store.
-   * @throws OfficeException if an error occurs.
+   * @param document The office document to store.
+   * @throws OfficeException If an error occurs.
    */
   protected void storeDocument(final XComponent document) throws OfficeException {
 
@@ -205,7 +205,7 @@ public class DefaultConversionTask implements OfficeTask {
   /**
    * Closes the converted document.
    *
-   * @param document the office document to close.
+   * @param document The office document to close.
    */
   protected void closeDocument(final XComponent document) {
 

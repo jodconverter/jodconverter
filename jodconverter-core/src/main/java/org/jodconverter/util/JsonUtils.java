@@ -34,8 +34,8 @@ public final class JsonUtils {
   /**
    * Converts a JSONObject to a list.
    *
-   * @param array the JSONArray to convert.
-   * @return the created list from the JSONArray object.
+   * @param array The JSONArray to convert.
+   * @return The created list from the JSONArray object.
    */
   public static List<Object> toList(final JSONArray array) {
 
@@ -55,8 +55,8 @@ public final class JsonUtils {
   /**
    * Converts a JSONObject to a map.
    *
-   * @param object the JSONObject to convert.
-   * @return the created map from the JSONObject object.
+   * @param object The JSONObject to convert.
+   * @return The created map from the JSONObject object.
    */
   public static Map<String, Object> toMap(final JSONObject object) {
 

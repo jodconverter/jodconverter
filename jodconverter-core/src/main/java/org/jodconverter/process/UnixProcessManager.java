@@ -44,7 +44,7 @@ public class UnixProcessManager extends AbstractProcessManager {
   /**
    * Gets the default instance of {@code UnixProcessManager}.
    *
-   * @return the default {@code UnixProcessManager} instance.
+   * @return The default {@code UnixProcessManager} instance.
    */
   public static UnixProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
@@ -90,9 +90,9 @@ public class UnixProcessManager extends AbstractProcessManager {
   }
 
   /**
-   * Sets the sudo command arguments.
+   * Sets The sudo command arguments.
    *
-   * @param runAsArgs the sudo command arguments.
+   * @param runAsArgs The sudo command arguments.
    */
   public void setRunAsArgs(final String[] runAsArgs) {
     this.runAsArgs = ArrayUtils.clone(runAsArgs);

@@ -193,7 +193,7 @@ class OfficeManagerPoolEntry implements OfficeManager {
   /**
    * Gets the number of tasks executed by the current office process so far.
    *
-   * @return the number of tasks executed by the current office process.
+   * @return The number of tasks executed by the current office process.
    */
   public int getCurrentTaskCount() {
     return taskCount.get();
@@ -202,7 +202,7 @@ class OfficeManagerPoolEntry implements OfficeManager {
   /**
    * Gets the OfficeProcessManager of this OfficeManagerPoolEntry.
    *
-   * @return the {@link OfficeProcessManager} of this OfficeManagerPoolEntry.
+   * @return The {@link OfficeProcessManager} of this OfficeManagerPoolEntry.
    */
   public OfficeProcessManager getOfficeProcessManager() {
     return officeProcessManager;

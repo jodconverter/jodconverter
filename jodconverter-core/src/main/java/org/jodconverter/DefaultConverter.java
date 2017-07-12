@@ -63,7 +63,7 @@ public class DefaultConverter extends AbstractConverter {
    * Creates a new {@link DefaultConverter} using the specified {@link OfficeManager} with default
    * configuration.
    *
-   * @param officeManager the {@link OfficeManager} the converter will use to convert document.
+   * @param officeManager The {@link OfficeManager} the converter will use to convert document.
    * @return A {@link DefaultConverter} with default configuration.
    */
   public static DefaultConverter make(OfficeManager officeManager) {
@@ -89,7 +89,7 @@ public class DefaultConverter extends AbstractConverter {
    * regardless the input type of the document. This function should be called only by
    * OfficeDocumentConverter for backward compatibility.
    *
-   * @param defaultLoadProperties the default properties to apply when loading a document.
+   * @param defaultLoadProperties The default properties to apply when loading a document.
    */
   void setDefaultLoadProperties(final Map<String, Object> defaultLoadProperties) {
 

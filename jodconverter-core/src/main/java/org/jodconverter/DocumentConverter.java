@@ -60,7 +60,7 @@ public interface DocumentConverter {
   /**
    * Gets all the DocumentFormat supported by the converter.
    *
-   * @return a DocumentFormatRegistry containing the supported format.
+   * @return A {@link DocumentFormatRegistry} containing the supported format.
    */
   DocumentFormatRegistry getFormatRegistry();
 }

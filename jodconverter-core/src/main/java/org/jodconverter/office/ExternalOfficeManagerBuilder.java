@@ -30,7 +30,7 @@ public class ExternalOfficeManagerBuilder {
   /**
    * Builds a new {@link ExternalOfficeManager}.
    *
-   * @return the created {@link ExternalOfficeManager}.
+   * @return The created {@link ExternalOfficeManager}.
    */
   public OfficeManager build() {
 
@@ -44,8 +44,8 @@ public class ExternalOfficeManagerBuilder {
   /**
    * Sets the connection protocol.
    *
-   * @param connectionProtocol the new protocol to set.
-   * @return the updated configuration.
+   * @param connectionProtocol The new protocol to set.
+   * @return The updated configuration.
    */
   public ExternalOfficeManagerBuilder setConnectionProtocol(
       final OfficeConnectionProtocol connectionProtocol) {
@@ -59,7 +59,7 @@ public class ExternalOfficeManagerBuilder {
    *
    * @param connectOnStart {@code true} if a connection should be attempted on start, {@code false}
    *     otherwise.
-   * @return the updated configuration.
+   * @return The updated configuration.
    */
   public ExternalOfficeManagerBuilder setConnectOnStart(final boolean connectOnStart) {
 
@@ -70,8 +70,8 @@ public class ExternalOfficeManagerBuilder {
   /**
    * Sets the pipe name that will be use to communicate with office.
    *
-   * @param pipeName the pipe name to use.
-   * @return the updated configuration.
+   * @param pipeName The pipe name to use.
+   * @return The updated configuration.
    */
   public ExternalOfficeManagerBuilder setPipeName(final String pipeName) {
 
@@ -82,8 +82,8 @@ public class ExternalOfficeManagerBuilder {
   /**
    * Sets the port number that will be use to communicate with office.
    *
-   * @param portNumber the port number to use.
-   * @return the updated configuration.
+   * @param portNumber The port number to use.
+   * @return The updated configuration.
    */
   public ExternalOfficeManagerBuilder setPortNumber(final int portNumber) {
 

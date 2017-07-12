@@ -28,8 +28,8 @@ public class ProcessQuery {
   /**
    * Constructs a new instance with the given command and argument.
    *
-   * @param command the process command.
-   * @param argument the process argument.
+   * @param command The process command.
+   * @param argument The process argument.
    */
   public ProcessQuery(final String command, final String argument) {
     this.command = command;
@@ -39,7 +39,7 @@ public class ProcessQuery {
   /**
    * Gets the arguments of the process to query.
    *
-   * @return the process argument.
+   * @return The process argument.
    */
   public String getArgument() {
     return argument;
@@ -48,7 +48,7 @@ public class ProcessQuery {
   /**
    * Gets the command of the process to query.
    *
-   * @return the process command.
+   * @return The process command.
    */
   public String getCommand() {
     return command;
