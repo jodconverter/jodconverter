@@ -21,7 +21,11 @@ package org.jodconverter.job;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.Validate;
+
 import org.jodconverter.document.DocumentFormat;
+import org.jodconverter.document.DocumentFormatRegistry;
 
 /**
  * Base class for all job with source specified implementations.
@@ -32,17 +36,23 @@ public abstract class AbstractConversionJobWithSourceSpecified
     implements ConversionJobWithSourceSpecified {
 
   protected final SourceDocumentSpecs source;
+  protected final DocumentFormatRegistry formatRegistry;
 
-  protected AbstractConversionJobWithSourceSpecified(SourceDocumentSpecs source) {
+  protected AbstractConversionJobWithSourceSpecified(
+      final SourceDocumentSpecs source, final DocumentFormatRegistry formatRegistry) {
     super();
 
     this.source = source;
+    this.formatRegistry = formatRegistry;
   }
 
   @Override
   public ConversionJob to(final File target) {
 
-    return to(FileTargetDocumentSpecs.make(target));
+    DocumentFormat format =
+        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(target.getName()));
+    Validate.notNull(target, "Unsupported target document format");
+    return to(FileTargetDocumentSpecs.make(target, format));
   }
 
   @Override

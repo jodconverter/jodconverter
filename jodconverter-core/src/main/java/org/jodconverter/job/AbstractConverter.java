@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 
 import com.sun.star.document.UpdateDocMode;
@@ -77,7 +78,10 @@ public abstract class AbstractConverter implements DocumentConverter {
   @Override
   public ConversionJobWithSourceSpecified convert(final File source) {
 
-    return convert(FileSourceDocumentSpecs.make(source));
+    DocumentFormat sourceFormat =
+        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName()));
+    Validate.notNull(sourceFormat, "Unsupported source document format");
+    return convert(FileSourceDocumentSpecs.make(source, sourceFormat));
   }
 
   @Override
@@ -174,7 +178,7 @@ public abstract class AbstractConverter implements DocumentConverter {
      * @return This builder instance.
      */
     @SuppressWarnings("unchecked")
-    public T addDefaultLoadProperty(String name, Object value) {
+    public T addDefaultLoadProperty(final String name, final Object value) {
 
       Validate.notBlank(name);
       Validate.notNull(value);

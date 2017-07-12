@@ -21,10 +21,8 @@ package org.jodconverter;
 
 import java.util.Map;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 
-import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.FilterChain;
@@ -66,7 +64,7 @@ public class DefaultConverter extends AbstractConverter {
    * @param officeManager The {@link OfficeManager} the converter will use to convert document.
    * @return A {@link DefaultConverter} with default configuration.
    */
-  public static DefaultConverter make(OfficeManager officeManager) {
+  public static DefaultConverter make(final OfficeManager officeManager) {
     return builder().officeManager(officeManager).build();
   }
 
@@ -78,7 +76,7 @@ public class DefaultConverter extends AbstractConverter {
   }
 
   @Override
-  public ConversionJobWithSourceSpecified convert(SourceDocumentSpecs source) {
+  public ConversionJobWithSourceSpecified convert(final SourceDocumentSpecs source) {
 
     Validate.notNull(source.getFormat(), "The source document format is null");
     return new DefaultConversionJobWithSourceSpecified(source);
@@ -103,8 +101,8 @@ public class DefaultConverter extends AbstractConverter {
   private class DefaultConversionJobWithSourceSpecified
       extends AbstractConversionJobWithSourceSpecified {
 
-    private DefaultConversionJobWithSourceSpecified(SourceDocumentSpecs source) {
-      super(source);
+    private DefaultConversionJobWithSourceSpecified(final SourceDocumentSpecs source) {
+      super(source, DefaultConverter.this.formatRegistry);
     }
 
     @Override
@@ -118,30 +116,14 @@ public class DefaultConverter extends AbstractConverter {
   private class DefaultConversionJob extends AbstractConversionJob {
 
     private DefaultConversionJob(
-        SourceDocumentSpecs source, TargetDocumentSpecs target, FilterChain filterChain) {
+        final SourceDocumentSpecs source,
+        final TargetDocumentSpecs target,
+        final FilterChain filterChain) {
       super(source, target, filterChain);
     }
 
     @Override
     public void execute() throws OfficeException {
-
-      // Validate that both source and target document format are provided or can be auto-detected.
-      DocumentFormat sourceFormat =
-          source.getFormat() == null
-              ? formatRegistry.getFormatByExtension(
-                  FilenameUtils.getExtension(source.getFile().getName()))
-              : source.getFormat();
-      if (sourceFormat == null) {
-        throw new IllegalArgumentException("Unsupported source document format.");
-      }
-      DocumentFormat targetFormat =
-          target.getFormat() == null
-              ? formatRegistry.getFormatByExtension(
-                  FilenameUtils.getExtension(target.getFile().getName()))
-              : target.getFormat();
-      if (targetFormat == null) {
-        throw new IllegalArgumentException("Unsupported target document format.");
-      }
 
       // Create a default conversion task and execute it
       final DefaultConversionTask task =

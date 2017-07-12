@@ -32,7 +32,7 @@ abstract class AbstractDocumentSpecs implements DocumentSpecs {
 
   private DocumentFormat documentFormat;
 
-  protected AbstractDocumentSpecs(DocumentFormat documentFormat) {
+  protected AbstractDocumentSpecs(final DocumentFormat documentFormat) {
     super();
 
     this.documentFormat = documentFormat;
@@ -54,7 +54,7 @@ abstract class AbstractDocumentSpecs implements DocumentSpecs {
      * @return This builder instance.
      */
     @SuppressWarnings("unchecked")
-    public T format(DocumentFormat format) {
+    public T format(final DocumentFormat format) {
 
       Validate.notNull(format, "The document format is null");
       this.documentFormat = format;

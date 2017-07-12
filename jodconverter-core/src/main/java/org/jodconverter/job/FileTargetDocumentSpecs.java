@@ -23,10 +23,12 @@ import java.io.File;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormat;
 
-public class FileTargetDocumentSpecs extends AbstractFileDocumentSpecs implements TargetDocumentSpecs {
+public class FileTargetDocumentSpecs extends AbstractFileDocumentSpecs
+    implements TargetDocumentSpecs {
 
   /**
    * Creates a new {@link FileTargetDocumentSpecs} using the specified {@link File}.
@@ -34,7 +36,7 @@ public class FileTargetDocumentSpecs extends AbstractFileDocumentSpecs implement
    * @param file The {@link file} of this specification.
    * @return A created {@link FileTargetDocumentSpecs}.
    */
-  public static FileTargetDocumentSpecs make(File file) {
+  public static FileTargetDocumentSpecs make(final File file) {
     return builder().file(file).build();
   }
 
@@ -46,7 +48,7 @@ public class FileTargetDocumentSpecs extends AbstractFileDocumentSpecs implement
    * @param format The {@link DocumentFormat} of the specified file.
    * @return A created {@link FileTargetDocumentSpecs}.
    */
-  public static FileTargetDocumentSpecs make(File file, DocumentFormat format) {
+  public static FileTargetDocumentSpecs make(final File file, final DocumentFormat format) {
     return builder().file(file).format(format).build();
   }
 
@@ -64,21 +66,21 @@ public class FileTargetDocumentSpecs extends AbstractFileDocumentSpecs implement
   }
 
   @Override
-  public void onComplete(File file) {
+  public void onComplete(final File file) {
 
     // Do nothing
   }
 
   @Override
-  public void onCancel(File file) {
-    
+  public void onCancel(final File file) {
+
     // Delete the file
     FileUtils.deleteQuietly(file);
   }
 
   @Override
-  public void onFailure(File file, Exception ex) {
-    
+  public void onFailure(final File file, final Exception ex) {
+
     // Delete the file
     FileUtils.deleteQuietly(file);
   }
@@ -90,6 +92,13 @@ public class FileTargetDocumentSpecs extends AbstractFileDocumentSpecs implement
 
     // Private ctor so only FileTargetDocumentSpecs can create an instance of this builder.
     private Builder() {}
+
+    @Override
+    public Builder file(File file) {
+
+      Validate.notNull(file, "The file is null");
+      return super.file(file);
+    }
 
     /**
      * Creates the specs that is specified by this builder.

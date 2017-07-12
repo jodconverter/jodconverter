@@ -33,7 +33,7 @@ abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
 
   private File file;
 
-  protected AbstractFileDocumentSpecs(File file, DocumentFormat documentFormat) {
+  protected AbstractFileDocumentSpecs(final File file, final DocumentFormat documentFormat) {
     super(documentFormat);
 
     this.file = file;
@@ -56,7 +56,7 @@ abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
      * @param filePath The path to the file.
      * @return This builder instance.
      */
-    public T file(String filePath) {
+    public T file(final String filePath) {
 
       Validate.notBlank(filePath, "The filePath is blank");
       return file(new File(filePath));
@@ -69,10 +69,8 @@ abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
      * @return This builder instance.
      */
     @SuppressWarnings("unchecked")
-    public T file(File file) {
+    public T file(final File file) {
 
-      Validate.notNull(file, "The file is null");
-      Validate.isTrue(file.exists(), "File not found: %s", file);
       this.file = file;
       return (T) this;
     }

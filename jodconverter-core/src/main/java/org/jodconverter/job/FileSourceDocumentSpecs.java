@@ -21,9 +21,12 @@ package org.jodconverter.job;
 
 import java.io.File;
 
+import org.apache.commons.lang3.Validate;
+
 import org.jodconverter.document.DocumentFormat;
 
-public class FileSourceDocumentSpecs extends AbstractFileDocumentSpecs implements SourceDocumentSpecs {
+public class FileSourceDocumentSpecs extends AbstractFileDocumentSpecs
+    implements SourceDocumentSpecs {
 
   /**
    * Creates a new {@link FileSourceDocumentSpecs} using the specified {@link File}.
@@ -31,7 +34,7 @@ public class FileSourceDocumentSpecs extends AbstractFileDocumentSpecs implement
    * @param file The {@link file} of this specification.
    * @return A created {@link FileSourceDocumentSpecs}.
    */
-  public static FileSourceDocumentSpecs make(File file) {
+  public static FileSourceDocumentSpecs make(final File file) {
     return builder().file(file).build();
   }
 
@@ -43,7 +46,7 @@ public class FileSourceDocumentSpecs extends AbstractFileDocumentSpecs implement
    * @param format The {@link DocumentFormat} of the specified file.
    * @return A created {@link FileSourceDocumentSpecs}.
    */
-  public static FileSourceDocumentSpecs make(File file, DocumentFormat format) {
+  public static FileSourceDocumentSpecs make(final File file, final DocumentFormat format) {
     return builder().file(file).format(format).build();
   }
 
@@ -56,7 +59,7 @@ public class FileSourceDocumentSpecs extends AbstractFileDocumentSpecs implement
     return new Builder();
   }
 
-  private FileSourceDocumentSpecs(File file, DocumentFormat documentFormat) {
+  private FileSourceDocumentSpecs(final File file, final DocumentFormat documentFormat) {
     super(file, documentFormat);
   }
 
@@ -71,6 +74,14 @@ public class FileSourceDocumentSpecs extends AbstractFileDocumentSpecs implement
 
     // Private ctor so only FileTargetDocumentSpecs can create an instance of this builder.
     private Builder() {}
+
+    @Override
+    public Builder file(File file) {
+
+      Validate.notNull(file, "The file is null");
+      Validate.isTrue(file.exists(), "File not found: %s", file);
+      return super.file(file);
+    }
 
     /**
      * Creates the specs that is specified by this builder.
