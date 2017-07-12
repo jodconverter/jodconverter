@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
  * OfficeManagerPool}. It will submit tasks to its inner {@link OfficeProcessManager} and wait until
  * the task is done or a configured task execution timeout is reached.
  *
- * <p>A PooledOfficeManager is also responsible to restart an office process when the maximum number
- * of tasks per process is reached.
+ * <p>A OfficeManagerPoolEntry is also responsible to restart an office process when the maximum
+ * number of tasks per process is reached.
  *
  * @see OfficeProcessManager
  * @see OfficeManagerPool
@@ -95,14 +95,25 @@ class OfficeManagerPoolEntry implements OfficeManager {
       };
 
   /**
-   * Creates a new pool entry with the specified configuration.
+   * Creates a new pool entry for the specified office URL with default configuration.
    *
-   * @param config the entry configuration.
+   * @param officeUrl The URL for which the entry is created.
    */
-  public OfficeManagerPoolEntry(final OfficeManagerPoolEntryConfig config) {
+  public OfficeManagerPoolEntry(final OfficeUrl officeUrl) {
+    this(officeUrl, new OfficeManagerPoolEntryConfig());
+  }
+
+  /**
+   * Creates a new pool entry for the specified office URL with the specified configuration.
+   *
+   * @param officeUrl The URL for which the entry is created.
+   * @param config The entry configuration.
+   */
+  public OfficeManagerPoolEntry(
+      final OfficeUrl officeUrl, final OfficeManagerPoolEntryConfig config) {
 
     this.config = config;
-    officeProcessManager = new OfficeProcessManager(config);
+    officeProcessManager = new OfficeProcessManager(officeUrl, config);
     taskExecutor = new SuspendableThreadPoolExecutor(new NamedThreadFactory("OfficeTaskThread"));
 
     // Listen to any connection events to the office instance.

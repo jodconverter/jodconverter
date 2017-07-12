@@ -26,67 +26,63 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jodconverter.process.ProcessManager;
 
 /**
- * This class holds the configuration of a {@code OfficeProcess}.
+ * This class holds the configuration of an {@link OfficeProcess}.
  *
  * @see OfficeProcess
  */
 class OfficeProcessConfig {
 
-  public static final boolean DEFAULT_KILLING_EXISTING_PROCESS = true;
+  /**
+   * The default behavior when we want to start an office process and a process with the same URL
+   * already exists.
+   */
+  public static final boolean DEFAULT_KILL_EXISTING_PROCESS = true;
 
-  private final OfficeUrl officeUrl;
   private File officeHome;
   private File workingDir;
   private ProcessManager processManager;
   private String[] runAsArgs;
   private File templateProfileDir;
-  private boolean killExistingProcess = DEFAULT_KILLING_EXISTING_PROCESS;
+  private boolean killExistingProcess = DEFAULT_KILL_EXISTING_PROCESS;
 
-  /**
-   * Creates configuration for the specified URL and with default values.
-   *
-   * @param officeUrl the office URL for the configuration.
-   */
-  public OfficeProcessConfig(final OfficeUrl officeUrl) {
-    this(officeUrl, null, null, null);
+  /** Creates configuration with default values. */
+  public OfficeProcessConfig() {
+    this(
+        OfficeUtils.getDefaultOfficeHome(),
+        new File(System.getProperty("java.io.tmpdir")),
+        OfficeUtils.findBestProcessManager());
   }
 
   /**
-   * Creates configuration for the specified URL and with the specified values.
+   * Creates configuration with the specified values.
    *
-   * @param officeUrl the office URL for the configuration.
-   * @param officeHome home directory of the office installation.
-   * @param workingDir working directory to set to office.
-   * @param processManager process manager to use to deal with created processes.
+   * @param officeUrl The office URL for the configuration.
+   * @param officeHome The home directory of the office installation.
+   * @param workingDir The working directory to set to office.
+   * @param processManager The process manager to use to deal with created processes.
    */
   public OfficeProcessConfig(
-      final OfficeUrl officeUrl,
-      final File officeHome,
-      final File workingDir,
-      final ProcessManager processManager) {
+      final File officeHome, final File workingDir, final ProcessManager processManager) {
 
-    this.officeUrl = officeUrl;
-    this.officeHome = officeHome == null ? OfficeUtils.getDefaultOfficeHome() : officeHome;
-    this.workingDir =
-        workingDir == null ? new File(System.getProperty("java.io.tmpdir")) : workingDir;
-    this.processManager =
-        processManager == null ? OfficeUtils.findBestProcessManager() : processManager;
-    this.killExistingProcess = true;
+    this.officeHome = officeHome;
+    this.workingDir = workingDir;
+    this.processManager = processManager;
   }
 
   /**
-   * Gets the office home directory.
+   * Gets the office home directory (office installation).
    *
-   * @return a file instance to the office home directory.
+   * @return A file instance to the office home directory.
    */
   public File getOfficeHome() {
     return officeHome;
   }
 
   /**
-   * Gets the {@code ProcessManager} implementation used with this office process.
+   * Gets the {@link ProcessManager} implementation to be used when dealing with an office process
+   * (retrieve PID, kill process).
    *
-   * @return the provided process manager.
+   * @return The provided process manager.
    */
   public ProcessManager getProcessManager() {
     return processManager;
@@ -95,45 +91,39 @@ class OfficeProcessConfig {
   /**
    * Gets the sudo arguments that will be used with unix commands.
    *
-   * @return the sudo arguments.
+   * @return The sudo arguments.
    */
   public String[] getRunAsArgs() {
     return ArrayUtils.clone(runAsArgs);
   }
 
   /**
-   * Gets the directory to copy to the temporary office profile directories to be created.
+   * Gets the directory where temporary office profile directories will be created. An office
+   * profile directory is created per office process launched.
    *
-   * @return the template profile directory.
-   */
-  public File getTemplateProfileDir() {
-    return templateProfileDir;
-  }
-
-  /**
-   * Gets the office URL of this office process.
+   * <p>&nbsp; <b><i>Default</i></b>: The system temporary directory as specified by the <code>
+   * java.io.tmpdir</code> system property.
    *
-   * @return the office URL.
-   */
-  public OfficeUrl getOfficeUrl() {
-    return officeUrl;
-  }
-
-  /**
-   * Gets the directory where temporary office profiles will be created.
-   *
-   * <p>Defaults to the system temporary directory as specified by the <code>java.io.tmpdir</code>
-   * system property.
-   *
-   * @return the working directory.
+   * @return The working directory.
    */
   public File getWorkingDir() {
     return workingDir;
   }
 
   /**
-   * Gets whether we must kill existing office process when an office process already exists for the
-   * same connection string. If not set, it defaults to true.
+   * Gets the directory to copy to the temporary office profile directories to be created.
+   *
+   * @return The template profile directory.
+   */
+  public File getTemplateProfileDir() {
+    return templateProfileDir;
+  }
+
+  /**
+   * Gets whether an existing office process is killed when starting a new office process for the
+   * same connection string.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: true
    *
    * @return {@code true} to kill existing process, {@code false} otherwise.
    */
@@ -142,19 +132,9 @@ class OfficeProcessConfig {
   }
 
   /**
-   * Sets whether we must kill existing office process when an office process already exists for the
-   * same connection string.
-   *
-   * @param killExistingProcess {@code true} to kill existing process, {@code false} otherwise.
-   */
-  public void setKillExistingProcess(final boolean killExistingProcess) {
-    this.killExistingProcess = killExistingProcess;
-  }
-
-  /**
    * Sets the office home directory.
    *
-   * @param officeHome the new home directory to set.
+   * @param officeHome The new home directory to set.
    */
   public void setOfficeHome(final File officeHome) {
     this.officeHome = officeHome;
@@ -163,16 +143,26 @@ class OfficeProcessConfig {
   /**
    * Sets the {@code ProcessManager} implementation to use with this office process.
    *
-   * @param processManager the process manager to use.
+   * @param processManager The process manager to use.
    */
   public void setProcessManager(final ProcessManager processManager) {
     this.processManager = processManager;
   }
 
   /**
+   * Sets the directory where temporary office profile directories will be created. An office
+   * profile directory is created per office process launched.
+   *
+   * @param workingDir The new working directory.
+   */
+  public void setWorkingDir(final File workingDir) {
+    this.workingDir = workingDir;
+  }
+
+  /**
    * Sets the sudo arguments that will be used with unix commands.
    *
-   * @param runAsArgs the sudo arguments for a unix os.
+   * @param runAsArgs The sudo arguments for a unix os.
    */
   public void setRunAsArgs(final String... runAsArgs) {
     this.runAsArgs = ArrayUtils.clone(runAsArgs);
@@ -181,18 +171,19 @@ class OfficeProcessConfig {
   /**
    * Sets the directory to copy to the temporary office profile directories to be created.
    *
-   * @param templateProfileDir the new template profile directory.
+   * @param templateProfileDir The new template profile directory.
    */
   public void setTemplateProfileDir(final File templateProfileDir) {
     this.templateProfileDir = templateProfileDir;
   }
 
   /**
-   * Sets the directory where temporary office profiles will be created.
+   * Sets whether an existing office process is killed when starting a new office process for the
+   * same connection string.
    *
-   * @param workingDir the new working directory.
+   * @param killExistingProcess {@code true} to kill existing process, {@code false} otherwise.
    */
-  public void setWorkingDir(final File workingDir) {
-    this.workingDir = workingDir;
+  public void setKillExistingProcess(final boolean killExistingProcess) {
+    this.killExistingProcess = killExistingProcess;
   }
 }

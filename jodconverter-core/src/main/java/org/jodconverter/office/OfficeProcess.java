@@ -44,16 +44,29 @@ class OfficeProcess {
 
   private Process process;
   private long pid = PID_UNKNOWN;
-  private final File instanceProfileDir;
+  private final OfficeUrl officeUrl;
   private final OfficeProcessConfig config;
+  private final File instanceProfileDir;
+
+  /**
+   * Constructs a new instance of an office process class for the specified URL with default
+   * configuration.
+   *
+   * @param officeUrl The URL for which the process is created.
+   */
+  public OfficeProcess(final OfficeUrl officeUrl) {
+    this(officeUrl, new OfficeProcessConfig());
+  }
 
   /**
    * Constructs a new instance of an office process class with the specified configuration.
    *
-   * @param config the office process configuration.Àjn
+   * @param officeUrl The URL for which the process is created.
+   * @param config The office process configuration.
    */
-  public OfficeProcess(final OfficeProcessConfig config) {
+  public OfficeProcess(final OfficeUrl officeUrl, final OfficeProcessConfig config) {
 
+    this.officeUrl = officeUrl;
     this.config = config;
     this.instanceProfileDir = getInstanceProfileDir();
   }
@@ -62,8 +75,8 @@ class OfficeProcess {
    * Checks if there already is an office process that runs with the connection string we want to
    * use. The process will be killed if the kill switch is on.
    *
-   * @param processQuery the query that connection string we want to use.
-   * @throws OfficeException if the verification fails.
+   * @param processQuery The query that connection string we want to use.
+   * @throws OfficeException If the verification fails.
    */
   private void checkForExistingProcess(final ProcessQuery processQuery) throws OfficeException {
 
@@ -130,17 +143,17 @@ class OfficeProcess {
   /**
    * Kills the office process instance.
    *
-   * @param retryInterval the interval between each exit code retrieval attempt.
-   * @param retryTimeout the timeout after which we won't try again to retrieve the exit code.
-   * @throws OfficeException if we are unable to kill the process due to an I/O error occurs.
-   * @throws RetryTimeoutException if we are unable to get the exit code of the process.
+   * @param retryInterval The interval between each exit code retrieval attempt.
+   * @param retryTimeout The timeout after which we won't try again to retrieve the exit code.
+   * @throws OfficeException If we are unable to kill the process due to an I/O error occurs.
+   * @throws RetryTimeoutException If we are unable to get the exit code of the process.
    */
   public int forciblyTerminate(final long retryInterval, final long retryTimeout) // NOSONAR
       throws OfficeException, RetryTimeoutException {
 
     logger.info(
         "Trying to forcibly terminate process: '{}'{}",
-        config.getOfficeUrl().getConnectionParametersAsString(),
+        officeUrl.getConnectionParametersAsString(),
         pid == PID_UNKNOWN ? "" : " (pid " + pid + ")");
 
     try {
@@ -154,7 +167,7 @@ class OfficeProcess {
   /**
    * Gets the exit code of the office process.
    *
-   * @return the exit value of the process. The value 0 indicates normal termination.
+   * @return The exit value of the process. The value 0 indicates normal termination.
    */
   public Integer getExitCode() {
 
@@ -170,11 +183,11 @@ class OfficeProcess {
    * Gets the exit code of the office process. We will try to get the exit code until we succeed or
    * that the specified timeout is reached.
    *
-   * @param retryInterval the interval between each exit code retrieval attempt.
-   * @param retryTimeout the timeout after which we won't try again to retrieve the exit code.
-   * @return the exit value of the process. The value 0 indicates normal termination.
-   * @throws OfficeException if we are unable to kill the process.
-   * @throws RetryTimeoutException if we are unable to get the exit code of the process.
+   * @param retryInterval The interval between each exit code retrieval attempt.
+   * @param retryTimeout The timeout after which we won't try again to retrieve the exit code.
+   * @return The exit value of the process. The value 0 indicates normal termination.
+   * @throws OfficeException If we are unable to kill the process.
+   * @throws RetryTimeoutException If we are unable to get the exit code of the process.
    */
   public int getExitCode(final long retryInterval, final long retryTimeout) // NOSONAR
       throws OfficeException, RetryTimeoutException {
@@ -193,24 +206,20 @@ class OfficeProcess {
   /**
    * Gets the profile directory of the office process.
    *
-   * @return the profile directory instance.
+   * @return The profile directory instance.
    */
   private File getInstanceProfileDir() {
 
     return new File(
         config.getWorkingDir(),
         ".jodconverter_"
-            + config
-                .getOfficeUrl()
-                .getConnectionAndParametersAsString()
-                .replace(',', '_')
-                .replace('=', '-'));
+            + officeUrl.getConnectionAndParametersAsString().replace(',', '_').replace('=', '-'));
   }
 
   /**
    * Gets the PID of the office process.
    *
-   * @return the office process PID, or -1 of the PID is unknown.
+   * @return The office process PID, or -1 of the PID is unknown.
    */
   public long getPid() {
 
@@ -233,7 +242,7 @@ class OfficeProcess {
   /**
    * Prepare the profile directory of the office process.
    *
-   * @throws OfficeException if the template profile directory cannot be copied to the new instance
+   * @throws OfficeException If the template profile directory cannot be copied to the new instance
    *     profile directory.
    */
   private void prepareInstanceProfileDir() throws OfficeException {
@@ -254,8 +263,8 @@ class OfficeProcess {
   /**
    * Prepare the ProcessBuilder that will be used to launch the office process.
    *
-   * @param acceptString the connection string (accept argument) of the office process.
-   * @return the created ProcessBuilder.
+   * @param acceptString The connection string (accept argument) of the office process.
+   * @return The created ProcessBuilder.
    */
   private ProcessBuilder prepareProcessBuilder(final String acceptString) {
 
@@ -283,7 +292,7 @@ class OfficeProcess {
   /**
    * Starts the office process.
    *
-   * @throws OfficeException if the office process cannot be started.
+   * @throws OfficeException If the office process cannot be started.
    */
   public void start() throws OfficeException {
 
@@ -294,18 +303,17 @@ class OfficeProcess {
    * Starts the office process.
    *
    * @param restart Indicates whether it is a fresh start of a restart after a failure.
-   * @return the PID of the started office process, or -1 of the PID is unknown.
-   * @throws OfficeException if the office process cannot be started.
+   * @return The PID of the started office process, or -1 of the PID is unknown.
+   * @throws OfficeException If the office process cannot be started.
    */
   public void start(final boolean restart) throws OfficeException {
 
-    final OfficeUrl url = config.getOfficeUrl();
     final String acceptString =
-        url.getConnectionAndParametersAsString()
+        officeUrl.getConnectionAndParametersAsString()
             + ";"
-            + url.getProtocolAndParametersAsString()
+            + officeUrl.getProtocolAndParametersAsString()
             + ";"
-            + url.getRootOid();
+            + officeUrl.getRootOid();
 
     // Search for an existing process.
     final ProcessQuery processQuery = new ProcessQuery("soffice", acceptString);

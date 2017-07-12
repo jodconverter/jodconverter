@@ -24,82 +24,88 @@ import java.io.File;
 import org.jodconverter.process.ProcessManager;
 
 /**
- * This class holds the configuration of a {@code OfficeProcessManager}.
+ * This class holds the configuration of an {@link OfficeProcessManager}.
  *
  * @see OfficeProcessManager
  */
 class OfficeProcessManagerConfig extends OfficeProcessConfig {
 
-  public static final long DEFAULT_INTERVAL = 250L; // 0.25 secs.
-  public static final long DEFAULT_TIMEOUT = 120000L; // 2 minutes
-
-  public static final long MAX_RETRY_INTERVAL = 10000L; // 10 sec.
-
-  private long interval = DEFAULT_INTERVAL;
-  private long timeout = DEFAULT_TIMEOUT;
-
+  /** The default timeout when executing a process call (start/terminate). */
+  public static final long DEFAULT_PROCESS_TIMEOUT = 120000L; // 2 minutes
+  /** The default delay between each try when executing a process call (start/terminate). */
+  public static final long DEFAULT_PROCESS_RETRY_INTERVAL = 250L; // 0.25 secs.
   /**
-   * Creates configuration for the specified URL and with default values.
-   *
-   * @param officeUrl the office URL for the configuration.
+   * The minimum value for the delay between each try when executing a process call
+   * (start/terminate).
    */
-  public OfficeProcessManagerConfig(final OfficeUrl officeUrl) {
-    super(officeUrl);
+  public static final long MIN_PROCESS_RETRY_INTERVAL = 0L; // No delay.
+  /**
+   * The maximum value for the delay between each try when executing a process call
+   * (start/terminate).
+   */
+  public static final long MAX_PROCESS_RETRY_INTERVAL = 10000L; // 10 sec.
+
+  private long processTimeout = DEFAULT_PROCESS_TIMEOUT;
+  private long processRetryInterval = DEFAULT_PROCESS_RETRY_INTERVAL;
+
+  /** Creates configuration with default values. */
+  public OfficeProcessManagerConfig() {
+    super();
   }
 
   /**
-   * Creates configuration for the specified URL and with the specified values.
+   * Creates configuration with the specified values.
    *
-   * @param officeUrl the office URL for the configuration.
-   * @param officeHome home directory of the office installation.
-   * @param workingDir working directory to set to office.
-   * @param processManager process manager to use to deal with created processes.
+   * @param officeHome The home directory of the office installation.
+   * @param workingDir The working directory to set to office.
+   * @param processManager The process manager to use to deal with created processes.
    */
   public OfficeProcessManagerConfig(
-      final OfficeUrl officeUrl,
-      final File officeHome,
-      final File workingDir,
-      final ProcessManager processManager) {
-    super(officeUrl, officeHome, workingDir, processManager);
+      final File officeHome, final File workingDir, final ProcessManager processManager) {
+    super(officeHome, workingDir, processManager);
   }
 
   /**
-   * Get the retry interval (milliseconds). Used for waiting between task execution tries (e.g,
-   * start/terminate office process). Default is 250.
+   * Gets the timeout, in milliseconds, when trying to execute an office process call
+   * (start/terminate).
    *
-   * @return the retry interval, in milliseconds.
+   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
+   *
+   * @return The process timeout, in milliseconds.
    */
-  public long getRetryInterval() {
-    return interval;
+  public long getProcessTimeout() {
+    return processTimeout;
   }
 
   /**
-   * Set the retry timeout (milliseconds). Used for retrying task execution (e.g, start/terminate
-   * office process). If not set, it defaults to 2 minutes.
+   * Gets the delay, in milliseconds, between each try when trying to execute an office process call
+   * (start/terminate).
    *
-   * @return the retry timeout, in milliseconds.
+   * <p>&nbsp; <b><i>Default</i></b>: 250 (0.25 seconds)
+   *
+   * @return The retry interval, in milliseconds.
    */
-  public long getRetryTimeout() {
-    return timeout;
+  public long getProcessRetryInterval() {
+    return processRetryInterval;
   }
 
   /**
-   * Set the retry interval (milliseconds).Used for waiting between task execution tries (e.g,
-   * start/terminate office process).
+   * Sets the timeout, in milliseconds, when trying to execute an office process call
+   * (start/terminate).
    *
-   * @param retryInterval the retry interval, in milliseconds.
+   * @param processTimeout The new process timeout, in milliseconds.
    */
-  public void setRetryInterval(final long retryInterval) {
-    this.interval = retryInterval;
+  public void setProcessTimeout(final long processTimeout) {
+    this.processTimeout = processTimeout;
   }
 
   /**
-   * Set the retry timeout (milliseconds). Used for retrying task execution (e.g, start/terminate
-   * office process).
+   * Sets the delay, in milliseconds, between each try when trying to execute an office process call
+   * (start/terminate).
    *
-   * @param retryTimeout the retry timeout, in milliseconds.
+   * @param processRetryInterval The new process retry interval, in milliseconds.
    */
-  public void setRetryTimeout(final long retryTimeout) {
-    this.timeout = retryTimeout;
+  public void setProcessRetryInterval(final long processRetryInterval) {
+    this.processRetryInterval = processRetryInterval;
   }
 }

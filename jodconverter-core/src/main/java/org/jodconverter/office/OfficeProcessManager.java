@@ -49,25 +49,27 @@ class OfficeProcessManager {
   /**
    * Creates a new manager with the specified configuration.
    *
-   * @param config the office process manager configuration.
+   * @param officeUrl The URL for which the manager is created.
+   * @param config The configuration of the manager.
    */
-  public OfficeProcessManager(final OfficeProcessManagerConfig config) {
+  public OfficeProcessManager(final OfficeUrl officeUrl, final OfficeProcessManagerConfig config) {
 
     this.config = config;
-    process = new OfficeProcess(config);
-    connection = new OfficeConnection(config.getOfficeUrl());
+    process = new OfficeProcess(officeUrl, config);
+    connection = new OfficeConnection(officeUrl);
     executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("OfficeProcessThread"));
   }
 
   /**
    * Ensures that the process exited.
    *
-   * @throws OfficeException if an exception occurs.
+   * @throws OfficeException If an exception occurs.
    */
   private void doEnsureProcessExited() throws OfficeException {
 
     try {
-      final int exitCode = process.getExitCode(config.getRetryInterval(), config.getRetryTimeout());
+      final int exitCode =
+          process.getExitCode(config.getProcessRetryInterval(), config.getProcessTimeout());
       logger.info("process exited with code {}", exitCode);
 
     } catch (RetryTimeoutException retryTimeoutEx) {
@@ -86,7 +88,7 @@ class OfficeProcessManager {
     try {
       process.start();
       new ConnectRetryable(process, connection)
-          .execute(config.getRetryInterval(), config.getRetryTimeout());
+          .execute(config.getProcessRetryInterval(), config.getProcessTimeout());
 
     } catch (Exception ex) {
       throw new OfficeException("Could not establish connection", ex);
@@ -124,13 +126,13 @@ class OfficeProcessManager {
   /**
    * Ensures that the process exited.
    *
-   * @throws OfficeException if an exception occurs.
+   * @throws OfficeException If an exception occurs.
    */
   private void doTerminateProcess() throws OfficeException {
 
     try {
       final int exitCode =
-          process.forciblyTerminate(config.getRetryInterval(), config.getRetryTimeout());
+          process.forciblyTerminate(config.getProcessRetryInterval(), config.getProcessTimeout());
       logger.info("process forcibly terminated with code {}", exitCode);
 
     } catch (Exception ex) {
@@ -148,7 +150,7 @@ class OfficeProcessManager {
   /**
    * Gets the connection of this OfficeProcessManager.
    *
-   * @return the {@link OfficeConnection} of this OfficeProcessManager.
+   * @return The {@link OfficeConnection} of this OfficeProcessManager.
    */
   public OfficeConnection getConnection() {
     return connection;
@@ -157,7 +159,7 @@ class OfficeProcessManager {
   /**
    * Gets the process of this OfficeProcessManager.
    *
-   * @return the {@link OfficeProcess} of this OfficeProcessManager.
+   * @return The {@link OfficeProcess} of this OfficeProcessManager.
    */
   public OfficeProcess getOfficeProcess() {
     return process;
@@ -171,7 +173,7 @@ class OfficeProcessManager {
   /**
    * Restarts an office process and wait until we are connected to the restarted process.
    *
-   * @throws OfficeException if we are not able to restart the office process.
+   * @throws OfficeException If we are not able to restart the office process.
    */
   public void restartAndWait() throws OfficeException {
 
@@ -243,7 +245,7 @@ class OfficeProcessManager {
   /**
    * Starts an office process and wait until we are connected to the running process.
    *
-   * @throws OfficeException if we are not able to start and connect to the office process.
+   * @throws OfficeException If we are not able to start and connect to the office process.
    */
   public void startAndWait() throws OfficeException {
 
@@ -266,7 +268,7 @@ class OfficeProcessManager {
   /**
    * Stop an office process and wait until the process is stopped.
    *
-   * @throws OfficeException if we are not able to stop the office process.
+   * @throws OfficeException If we are not able to stop the office process.
    */
   public void stopAndWait() throws OfficeException {
 

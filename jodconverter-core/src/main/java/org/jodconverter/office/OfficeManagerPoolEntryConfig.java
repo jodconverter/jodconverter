@@ -24,59 +24,55 @@ import java.io.File;
 import org.jodconverter.process.ProcessManager;
 
 /**
- * Configuration of a {@code OfficeManagerPoolEntry}.
+ * This class holds the configuration of an {@link OfficeManagerPoolEntry}.
  *
  * @see OfficeManagerPoolEntry
  */
 class OfficeManagerPoolEntryConfig extends OfficeProcessManagerConfig {
 
+  /** The default timeout when processing a task. */
   public static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120000L; // 2 minutes
-  public static final int DEFAULT_MAX_TASK_PER_PROCESS = 200;
+  /** The default maximum number of tasks an office process can execute before restarting. */
+  public static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
 
   private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
-  private int maxTasksPerProcess = DEFAULT_MAX_TASK_PER_PROCESS;
+  private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
-  /**
-   * Creates configuration for the specified URL and with default values.
-   *
-   * @param officeUrl the office URL for the configuration.
-   */
-  public OfficeManagerPoolEntryConfig(final OfficeUrl officeUrl) {
-    super(officeUrl);
+  /** Creates configuration with default values. */
+  public OfficeManagerPoolEntryConfig() {
+    super();
   }
 
   /**
-   * Creates configuration for the specified URL and with the specified values.
+   * Creates configuration with the specified values.
    *
-   * @param officeUrl the office URL for the configuration.
-   * @param officeHome home directory of the office installation.
-   * @param workingDir working directory to set to office.
-   * @param processManager process manager to use to deal with created processes.
+   * @param officeHome The home directory of the office installation.
+   * @param workingDir The working directory to set to office.
+   * @param processManager The process manager to use to deal with created processes.
    */
   public OfficeManagerPoolEntryConfig(
-      final OfficeUrl officeUrl,
-      final File officeHome,
-      final File workingDir,
-      final ProcessManager processManager) {
-    super(officeUrl, officeHome, workingDir, processManager);
+      final File officeHome, final File workingDir, final ProcessManager processManager) {
+    super(officeHome, workingDir, processManager);
   }
 
   /**
    * Gets the maximum time allowed to process a task. If the processing time of a task is longer
-   * than this timeout, this task will be aborted and the next task is processed. Default is 120000
-   * (2 minutes).
+   * than this timeout, this task will be aborted and the next task is processed.
    *
-   * @return the timeout value.
+   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
+   *
+   * @return The task execution timeout, in milliseconds.
    */
   public long getTaskExecutionTimeout() {
     return taskExecutionTimeout;
   }
 
   /**
-   * Gets the maximum number of tasks an office process can execute before restarting. Default is
-   * 200.
+   * Gets the maximum number of tasks an office process can execute before restarting.
    *
-   * @return the maximum value.
+   * <p>&nbsp; <b><i>Default</i></b>: 200
+   *
+   * @return The number of tasks an office process can execute.
    */
   public int getMaxTasksPerProcess() {
     return maxTasksPerProcess;
@@ -84,10 +80,9 @@ class OfficeManagerPoolEntryConfig extends OfficeProcessManagerConfig {
 
   /**
    * Sets the maximum time allowed to process a task. If the processing time of a task is longer
-   * than this timeout, this task will be aborted and the next task is processed. Default is 120000
-   * (2 minutes).
+   * than this timeout, this task will be aborted and the next task is processed.
    *
-   * @param taskExecutionTimeout the new timeout value.
+   * @param taskExecutionTimeout The new task execution timeout.
    */
   public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
     this.taskExecutionTimeout = taskExecutionTimeout;
@@ -96,7 +91,7 @@ class OfficeManagerPoolEntryConfig extends OfficeProcessManagerConfig {
   /**
    * Sets the maximum number of tasks an office process can execute before restarting.
    *
-   * @param maxTasksPerProcess the new value to set.
+   * @param maxTasksPerProcess The new number of tasks an office process can execute.
    */
   public void setMaxTasksPerProcess(final int maxTasksPerProcess) {
     this.maxTasksPerProcess = maxTasksPerProcess;

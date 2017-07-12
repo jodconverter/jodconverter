@@ -19,15 +19,12 @@
 
 package org.jodconverter.office;
 
-import java.io.File;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.jodconverter.process.ProcessManager;
 
 /**
  * A OfficeManagerPool is responsible to maintain a pool of {@link OfficeManagerPoolEntry} that will
@@ -48,40 +45,18 @@ class OfficeManagerPool implements OfficeManager {
 
   private final BlockingQueue<OfficeManager> pool;
   private final OfficeManager[] entries;
-  private final long taskQueueTimeout;
+  private final OfficeManagerPoolConfig config;
 
   /** Constructs a new instance of the class with the specified settings. */
-  public OfficeManagerPool(
-      final OfficeUrl[] officeUrls,
-      final File officeHome,
-      final File workingDir,
-      final ProcessManager processManager,
-      final String[] runAsArgs,
-      final File templateProfileDir,
-      final boolean killExistingProcess,
-      final long retryTimeout,
-      final long retryInterval,
-      final long taskExecutionTimeout,
-      final int maxTasksPerProcess,
-      final long taskQueueTimeout) {
+  protected OfficeManagerPool(final OfficeUrl[] officeUrls, final OfficeManagerPoolConfig config) {
 
-    this.taskQueueTimeout = taskQueueTimeout;
+    this.config = config;
 
     // Create the pool and all its entries
     pool = new ArrayBlockingQueue<>(officeUrls.length);
     entries = new OfficeManagerPoolEntry[officeUrls.length];
     for (int i = 0; i < officeUrls.length; i++) {
-
-      final OfficeManagerPoolEntryConfig config =
-          new OfficeManagerPoolEntryConfig(officeUrls[i], officeHome, workingDir, processManager);
-      config.setRunAsArgs(runAsArgs);
-      config.setTemplateProfileDir(templateProfileDir);
-      config.setKillExistingProcess(killExistingProcess);
-      config.setRetryInterval(retryInterval);
-      config.setRetryTimeout(retryTimeout);
-      config.setTaskExecutionTimeout(taskExecutionTimeout);
-      config.setMaxTasksPerProcess(maxTasksPerProcess);
-      entries[i] = new OfficeManagerPoolEntry(config);
+      entries[i] = new OfficeManagerPoolEntry(officeUrls[i], config);
     }
   }
 
@@ -94,7 +69,7 @@ class OfficeManagerPool implements OfficeManager {
   private OfficeManager acquireManager() throws OfficeException {
 
     try {
-      return pool.poll(taskQueueTimeout, TimeUnit.MILLISECONDS);
+      return pool.poll(config.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
     } catch (InterruptedException interruptedEx) { // NOSONAR
       throw new OfficeException("interrupted", interruptedEx);
     }
