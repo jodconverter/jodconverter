@@ -20,17 +20,28 @@
 package org.jodconverter.document;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Contains the required information used to deal with a specific document format . */
 public class DocumentFormat {
 
+  /**
+   * returns a copy of the specified {@link DocumentFormat}.
+   *
+   * @param from The document format from which the copy is created.
+   * @return An exact copy of the specified format.
+   */
+  public static DocumentFormat copy(DocumentFormat from) {
+    return new DocumentFormat(from);
+  }
+
   private final String name;
   private final String extension;
   private final String mediaType;
   private DocumentFamily inputFamily;
-  private Map<String, ?> loadProperties;
-  private Map<DocumentFamily, Map<String, ?>> storeProperties;
+  private Map<String, Object> loadProperties;
+  private Map<DocumentFamily, Map<String, Object>> storeProperties;
 
   /**
    * Creates a new document format with the specified name, extension and mime-type.
@@ -44,6 +55,29 @@ public class DocumentFormat {
     this.name = name;
     this.extension = extension;
     this.mediaType = mediaType;
+  }
+
+  /**
+   * Creates a copy of the specified document format.
+   *
+   * @param documentFormat the DocumentFormat from which the copy is made.
+   */
+  private DocumentFormat(final DocumentFormat documentFormat) {
+
+    this.name = documentFormat.name;
+    this.extension = documentFormat.extension;
+    this.mediaType = documentFormat.mediaType;
+    this.inputFamily = documentFormat.inputFamily;
+    if (documentFormat.getLoadProperties() != null) {
+      this.loadProperties = new HashMap<>(documentFormat.getLoadProperties());
+    }
+    if (documentFormat.getStoreProperties() != null) {
+      documentFormat.storeProperties = new EnumMap<>(DocumentFamily.class);
+      for (Map.Entry<DocumentFamily, Map<String, Object>> entry :
+          documentFormat.getStoreProperties().entrySet()) {
+        storeProperties.put(entry.getKey(), new HashMap<>(entry.getValue()));
+      }
+    }
   }
 
   /**
@@ -69,7 +103,7 @@ public class DocumentFormat {
    *
    * @return a map containing the properties to apply when loading a document of this format.
    */
-  public Map<String, ?> getLoadProperties() {
+  public Map<String, Object> getLoadProperties() {
     return loadProperties;
   }
 
@@ -98,7 +132,7 @@ public class DocumentFormat {
    * @param family the DocumentFamily for which the properties are get.
    * @return a map containing the properties to apply when storing a document of this format.
    */
-  public Map<String, ?> getStoreProperties(final DocumentFamily family) {
+  public Map<String, Object> getStoreProperties(final DocumentFamily family) {
     if (storeProperties == null) {
       return null;
     }
@@ -112,7 +146,7 @@ public class DocumentFormat {
    * @return a DocumentFamily/Map pairs containing the properties to apply when storing a document
    *     of this format, by DocumentFamily.
    */
-  public Map<DocumentFamily, Map<String, ?>> getStoreProperties() {
+  public Map<DocumentFamily, Map<String, Object>> getStoreProperties() {
     return storeProperties;
   }
 
@@ -130,7 +164,7 @@ public class DocumentFormat {
    *
    * @param loadProperties the new properties to set.
    */
-  public void setLoadProperties(final Map<String, ?> loadProperties) {
+  public void setLoadProperties(final Map<String, Object> loadProperties) {
     this.loadProperties = loadProperties;
   }
 
@@ -142,7 +176,7 @@ public class DocumentFormat {
    * @param storeProperties the new properties to set.
    */
   public void setStoreProperties(
-      final DocumentFamily family, final Map<String, ?> storeProperties) {
+      final DocumentFamily family, final Map<String, Object> storeProperties) {
 
     if (this.storeProperties == null) {
       this.storeProperties = new EnumMap<>(DocumentFamily.class);
@@ -157,7 +191,7 @@ public class DocumentFormat {
    * @param storeProperties a DocumentFamily/Map pairs containing the properties to apply when
    *     storing a document of this format, by DocumentFamily.
    */
-  public void setStoreProperties(final Map<DocumentFamily, Map<String, ?>> storeProperties) {
+  public void setStoreProperties(final Map<DocumentFamily, Map<String, Object>> storeProperties) {
 
     this.storeProperties = storeProperties;
   }
