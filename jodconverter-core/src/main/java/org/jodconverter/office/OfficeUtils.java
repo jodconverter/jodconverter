@@ -254,11 +254,11 @@ public final class OfficeUtils {
    * @param properties the map to convert.
    * @return an array of {@code PropertyValue}.
    */
-  public static PropertyValue[] toUnoProperties(final Map<String, ?> properties) {
+  public static PropertyValue[] toUnoProperties(final Map<String, Object> properties) {
 
     final PropertyValue[] propertyValues = new PropertyValue[properties.size()];
     int i = 0;
-    for (final Map.Entry<String, ?> entry : properties.entrySet()) {
+    for (final Map.Entry<String, Object> entry : properties.entrySet()) {
       Object value = entry.getValue();
       if (value instanceof Map) {
         @SuppressWarnings("unchecked")
