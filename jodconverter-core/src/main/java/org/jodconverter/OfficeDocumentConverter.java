@@ -20,31 +20,25 @@
 package org.jodconverter;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.io.FilenameUtils;
-
-import com.sun.star.document.UpdateDocMode;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.FilterChain;
-import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
 /**
  * A OfficeDocumentConverter is responsible to execute the conversion of documents using an office
  * manager.
+ *
+ * <p>This class is maintained for backward compatibility, but {@link DefaultConverter} should be
+ * used instead.
  */
 public class OfficeDocumentConverter {
 
-  private final OfficeManager officeManager;
-  private final DocumentFormatRegistry formatRegistry;
-  private Map<String, ?> defaultLoadProperties = createDefaultLoadProperties();
+  private final DefaultConverter delegate;
 
   /**
    * Constructs a new instance of the class with the specified manager.
@@ -67,8 +61,11 @@ public class OfficeDocumentConverter {
   public OfficeDocumentConverter(
       final OfficeManager officeManager, final DocumentFormatRegistry formatRegistry) {
 
-    this.officeManager = officeManager;
-    this.formatRegistry = formatRegistry;
+    this.delegate =
+        DefaultConverter.builder()
+            .officeManager(officeManager)
+            .formatRegistry(formatRegistry)
+            .build();
   }
 
   /**
@@ -81,10 +78,7 @@ public class OfficeDocumentConverter {
    */
   public void convert(final File inputFile, final File outputFile) throws OfficeException {
 
-    convert(
-        inputFile,
-        outputFile,
-        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(outputFile.getName())));
+    convert(inputFile, outputFile, null);
   }
 
   /**
@@ -100,11 +94,7 @@ public class OfficeDocumentConverter {
       final File inputFile, final File outputFile, final DocumentFormat outputFormat)
       throws OfficeException {
 
-    convert(
-        inputFile,
-        outputFile,
-        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(inputFile.getName())),
-        outputFormat);
+    convert(inputFile, outputFile, null, outputFormat);
   }
 
   /**
@@ -123,11 +113,7 @@ public class OfficeDocumentConverter {
       final DocumentFormat outputFormat)
       throws OfficeException {
 
-    final DefaultConversionTask task =
-        new DefaultConversionTask(inputFile, outputFile, inputFormat, outputFormat);
-    task.setDefaultLoadProperties(defaultLoadProperties);
-    task.setFilterChain(new DefaultFilterChain(RefreshFilter.INSTANCE));
-    officeManager.execute(task);
+    convert(null, inputFile, outputFile, inputFormat, outputFormat);
   }
 
   /**
@@ -144,11 +130,7 @@ public class OfficeDocumentConverter {
   public void convert(final FilterChain filterChain, final File inputFile, final File outputFile)
       throws OfficeException {
 
-    convert(
-        filterChain,
-        inputFile,
-        outputFile,
-        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(outputFile.getName())));
+    convert(filterChain, inputFile, outputFile, null);
   }
 
   /**
@@ -170,12 +152,7 @@ public class OfficeDocumentConverter {
       final DocumentFormat outputFormat)
       throws OfficeException {
 
-    convert(
-        filterChain,
-        inputFile,
-        outputFile,
-        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(inputFile.getName())),
-        outputFormat);
+    convert(filterChain, inputFile, outputFile, null, outputFormat);
   }
 
   /**
@@ -198,23 +175,11 @@ public class OfficeDocumentConverter {
       final DocumentFormat outputFormat)
       throws OfficeException {
 
-    final DefaultConversionTask task =
-        new DefaultConversionTask(inputFile, outputFile, inputFormat, outputFormat);
-    task.setDefaultLoadProperties(defaultLoadProperties);
-    task.setFilterChain(
-        filterChain == null ? new DefaultFilterChain(RefreshFilter.INSTANCE) : filterChain);
-    officeManager.execute(task);
-  }
-
-  // Provides default properties to use when we load (open) a document before
-  // a conversion, regardless the input type of the document.
-  private Map<String, Object> createDefaultLoadProperties() {
-
-    final Map<String, Object> loadProperties = new HashMap<>();
-    loadProperties.put("Hidden", true);
-    loadProperties.put("ReadOnly", true);
-    loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
-    return loadProperties;
+    delegate
+        .convert(inputFile, inputFormat)
+        .to(outputFile, outputFormat)
+        .with(filterChain)
+        .execute();
   }
 
   /**
@@ -224,7 +189,7 @@ public class OfficeDocumentConverter {
    */
   public DocumentFormatRegistry getFormatRegistry() {
 
-    return formatRegistry;
+    return delegate.getFormatRegistry();
   }
 
   /**
@@ -233,8 +198,8 @@ public class OfficeDocumentConverter {
    *
    * @param defaultLoadProperties the default properties to apply when loading a document.
    */
-  public void setDefaultLoadProperties(final Map<String, ?> defaultLoadProperties) {
+  public void setDefaultLoadProperties(final Map<String, Object> defaultLoadProperties) {
 
-    this.defaultLoadProperties = defaultLoadProperties;
+    this.delegate.setDefaultLoadProperties(defaultLoadProperties);
   }
 }

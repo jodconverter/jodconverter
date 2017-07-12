@@ -77,8 +77,7 @@ public class OfficeManagerPoolEntryTest {
   @Test
   public void executeTask() throws Exception {
 
-    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig(CONNECT_URL);
-    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(config);
+    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(CONNECT_URL);
     final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
 
     try {
@@ -107,8 +106,7 @@ public class OfficeManagerPoolEntryTest {
   @Test
   public void restartAfterCrash() throws Exception {
 
-    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig(CONNECT_URL);
-    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(config);
+    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(CONNECT_URL);
     final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
 
     assertNotNull(processManager.getConnection());
@@ -164,9 +162,9 @@ public class OfficeManagerPoolEntryTest {
    */
   @Test
   public void restartAfterTaskTimeout() throws Exception {
-    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig(CONNECT_URL);
+    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig();
     config.setTaskExecutionTimeout(1500L);
-    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(config);
+    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(CONNECT_URL, config);
     final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
 
     assertNotNull(processManager.getConnection());
@@ -213,9 +211,9 @@ public class OfficeManagerPoolEntryTest {
    */
   @Test
   public void restartWhenMaxTasksPerProcessReached() throws Exception {
-    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig(CONNECT_URL);
+    final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig();
     config.setMaxTasksPerProcess(3);
-    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(config);
+    final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(CONNECT_URL, config);
     final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
 
     assertNotNull(processManager.getConnection());

@@ -57,28 +57,22 @@ public class JodConverterProperties {
   private String templateProfileDir;
 
   /**
-   * Retry timeout (milliseconds).Used for retrying office process calls (start/terminate). If not
-   * set, it defaults to 120000 (2 minutes).
-   */
-  private long retryTimeout = 120000L;
-
-  /**
-   * Retry interval (milliseconds).Used for waiting between office process call tries
-   * (start/terminate). If not set, it defaults to 250.
-   */
-  private long retryInterval = 250;
-
-  /**
    * Indicates whether we must kill existing office process when an office process already exists
    * for the same connection string. If not set, it defaults to true.
    */
   private boolean killExistingProcess = true;
 
   /**
-   * Maximum living time of a task in the conversion queue. The task will be removed from the queue
-   * if the waiting time is longer than this timeout. If not set, it defaults to 30000 (30 seconds).
+   * Process timeout (milliseconds). Used when trying to execute an office process call
+   * (start/terminate). If not set, it defaults to 120000 (2 minutes).
    */
-  private long taskQueueTimeout = 30000L;
+  private long processTimeout = 120000L;
+
+  /**
+   * Process retry interval (milliseconds). Used for waiting between office process call tries
+   * (start/terminate). If not set, it defaults to 250.
+   */
+  private long processRetryInterval = 250;
 
   /**
    * Maximum time allowed to process a task. If the processing time of a task is longer than this
@@ -93,8 +87,18 @@ public class JodConverterProperties {
    */
   private int maxTasksPerProcess = 200;
 
+  /**
+   * Maximum living time of a task in the conversion queue. The task will be removed from the queue
+   * if the waiting time is longer than this timeout. If not set, it defaults to 30000 (30 seconds).
+   */
+  private long taskQueueTimeout = 30000L;
+
   public boolean isEnabled() {
     return enabled;
+  }
+
+  public void setEnabled(final boolean enabled) {
+    this.enabled = enabled;
   }
 
   public String getOfficeHome() {
@@ -129,26 +133,6 @@ public class JodConverterProperties {
     this.templateProfileDir = templateProfileDir;
   }
 
-  public long getRetryTimeout() {
-    return retryTimeout;
-  }
-
-  public void setEnabled(final boolean enabled) {
-    this.enabled = enabled;
-  }
-
-  public void setRetryTimeout(final long retryTimeout) {
-    this.retryTimeout = retryTimeout;
-  }
-
-  public long getRetryInterval() {
-    return retryInterval;
-  }
-
-  public void setRetryInterval(final long retryInterval) {
-    this.retryInterval = retryInterval;
-  }
-
   public boolean isKillExistingProcess() {
     return killExistingProcess;
   }
@@ -157,12 +141,20 @@ public class JodConverterProperties {
     this.killExistingProcess = killExistingProcess;
   }
 
-  public long getTaskQueueTimeout() {
-    return taskQueueTimeout;
+  public long getProcessTimeout() {
+    return processTimeout;
   }
 
-  public void setTaskQueueTimeout(final long taskQueueTimeout) {
-    this.taskQueueTimeout = taskQueueTimeout;
+  public void setProcessTimeout(final long processTimeout) {
+    this.processTimeout = processTimeout;
+  }
+
+  public long getProcessRetryInterval() {
+    return processRetryInterval;
+  }
+
+  public void setProcessRetryInterval(final long procesRetryInterval) {
+    this.processRetryInterval = procesRetryInterval;
   }
 
   public long getTaskExecutionTimeout() {
@@ -179,5 +171,13 @@ public class JodConverterProperties {
 
   public void setMaxTasksPerProcess(final int maxTasksPerProcess) {
     this.maxTasksPerProcess = maxTasksPerProcess;
+  }
+
+  public long getTaskQueueTimeout() {
+    return taskQueueTimeout;
+  }
+
+  public void setTaskQueueTimeout(final long taskQueueTimeout) {
+    this.taskQueueTimeout = taskQueueTimeout;
   }
 }

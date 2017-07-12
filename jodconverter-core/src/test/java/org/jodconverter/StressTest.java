@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeManager;
 
 public class StressTest {
@@ -77,12 +77,12 @@ public class StressTest {
     Logger.getRootLogger().addAppender(fileAppender);
 
     // Configure the office manager in a way that maximizes possible race conditions.
-    final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
-    configuration.setPortNumbers(new int[] {2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009});
-    configuration.setMaxTasksPerProcess(MAX_TASKS_PER_PROCESS);
-
-    final OfficeManager officeManager = configuration.build();
-    final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
+    final OfficeManager officeManager =
+        DefaultOfficeManager.builder()
+            .portNumbers(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009)
+            .maxTasksPerProcess(MAX_TASKS_PER_PROCESS)
+            .build();
+    final DocumentConverter converter = DefaultConverter.make(officeManager);
     final DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
 
     officeManager.start();
@@ -102,7 +102,7 @@ public class StressTest {
 
         // Converts the first document without threads to ensure everything is OK.
         if (first) {
-          converter.convert(inputFile, outputFile, outputFormat);
+          converter.convert(inputFile, inputFormat).to(outputFile, outputFormat).execute();
           first = false;
         }
 
@@ -136,7 +136,7 @@ public class StressTest {
         final File outputFile,
         final DocumentFormat inputFormat,
         final DocumentFormat outputFormat,
-        final OfficeDocumentConverter converter) {
+        final DocumentConverter converter) {
       super();
 
       this.inputFile = inputFile;
@@ -150,7 +150,7 @@ public class StressTest {
     private final File outputFile;
     private final DocumentFormat inputFormat;
     private final DocumentFormat outputFormat;
-    private final OfficeDocumentConverter converter;
+    private final DocumentConverter converter;
 
     @Override
     public void run() {
@@ -161,7 +161,7 @@ public class StressTest {
                 + " to "
                 + outputFormat.getExtension()
                 + "... ");
-        converter.convert(inputFile, outputFile, outputFormat);
+        converter.convert(inputFile, inputFormat).to(outputFile, outputFormat).execute();
         logger.info("done.\n");
       } catch (Exception ex) {
         logger.error(ex.getMessage(), ex);

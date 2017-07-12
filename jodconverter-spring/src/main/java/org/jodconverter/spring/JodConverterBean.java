@@ -19,7 +19,6 @@
 
 package org.jodconverter.spring;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -31,12 +30,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.jodconverter.OfficeDocumentConverter;
+import org.jodconverter.DefaultConverter;
+import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFamily;
 import org.jodconverter.document.DocumentFormat;
-import org.jodconverter.filter.FilterChain;
-import org.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
@@ -58,65 +57,58 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   private String portNumbers;
   private String workingDir;
   private String templateProfileDir;
-  private Long retryTimeout;
-  private Long retryInterval;
   private Boolean killExistingProcess;
-  private Long taskQueueTimeout;
+  private Long processTimeout;
+  private Long processRetryInterval;
   private Long taskExecutionTimeout;
   private Integer maxTasksPerProcess;
+  private Long taskQueueTimeout;
 
   private OfficeManager officeManager;
-  private OfficeDocumentConverter documentConverter;
+  private DocumentConverter documentConverter;
 
   @Override
   public void afterPropertiesSet() throws OfficeException { // NOSONAR
 
-    final DefaultOfficeManagerBuilder builder = new DefaultOfficeManagerBuilder();
+    final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
 
-    if (!StringUtils.isBlank(officeHome)) {
-      builder.setOfficeHome(officeHome);
-    }
-
-    if (!StringUtils.isBlank(workingDir)) {
-      builder.setWorkingDir(new File(workingDir));
-    }
+    builder.officeHome(officeHome);
+    builder.workingDir(workingDir);
 
     final Set<Integer> ports = buildPortNumbers(this.portNumbers);
     if (!ports.isEmpty()) {
-      builder.setPortNumbers(ArrayUtils.toPrimitive(ports.toArray(new Integer[] {})));
+      builder.portNumbers(ArrayUtils.toPrimitive(ports.toArray(new Integer[] {})));
     }
 
-    if (!StringUtils.isBlank(templateProfileDir)) {
-      builder.setTemplateProfileDir(new File(templateProfileDir));
-    }
-
-    if (retryTimeout != null) {
-      builder.setRetryTimeout(retryTimeout);
-    }
-
-    if (retryInterval != null) {
-      builder.setRetryInterval(retryInterval);
-    }
+    builder.templateProfileDir(templateProfileDir);
 
     if (killExistingProcess != null) {
-      builder.setKillExistingProcess(killExistingProcess);
+      builder.killExistingProcess(killExistingProcess);
     }
 
-    if (taskQueueTimeout != null) {
-      builder.setTaskQueueTimeout(taskQueueTimeout);
+    if (processTimeout != null) {
+      builder.processTimeout(processTimeout);
+    }
+
+    if (processRetryInterval != null) {
+      builder.processRetryInterval(processRetryInterval);
     }
 
     if (taskExecutionTimeout != null) {
-      builder.setTaskExecutionTimeout(taskExecutionTimeout);
+      builder.taskExecutionTimeout(taskExecutionTimeout);
     }
 
     if (maxTasksPerProcess != null) {
-      builder.setMaxTasksPerProcess(maxTasksPerProcess);
+      builder.maxTasksPerProcess(maxTasksPerProcess);
+    }
+
+    if (taskQueueTimeout != null) {
+      builder.taskQueueTimeout(taskQueueTimeout);
     }
 
     // Starts the manager
     officeManager = builder.build();
-    documentConverter = new OfficeDocumentConverter(officeManager);
+    documentConverter = DefaultConverter.make(officeManager);
     officeManager.start();
   }
 
@@ -143,113 +135,13 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Converts an input file to an output file. The files extensions are used to determine the input
-   * and output {@link DocumentFormat}.
+   * Gets the {@link DocumentConverter} created by this bean.
    *
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @throws OfficeException if the conversion fails.
+   * @return The converter created by this bean.
    */
-  public void convert(final File inputFile, final File outputFile) throws OfficeException {
+  public DocumentConverter getConverter() {
 
-    documentConverter.convert(inputFile, outputFile);
-  }
-
-  /**
-   * Converts an input file to an output file. The input file extension is used to determine the
-   * input {@link DocumentFormat}.
-   *
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @param outputFormat the target output format.
-   * @throws OfficeException if the conversion fails.
-   */
-  public void convert(
-      final File inputFile, final File outputFile, final DocumentFormat outputFormat)
-      throws OfficeException {
-
-    documentConverter.convert(inputFile, outputFile, outputFormat);
-  }
-
-  /**
-   * Converts an input file to an output file.
-   *
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @param inputFormat the source input format.
-   * @param outputFormat the target output format.
-   * @throws OfficeException if the conversion fails.
-   */
-  public void convert(
-      final File inputFile,
-      final File outputFile,
-      final DocumentFormat inputFormat,
-      final DocumentFormat outputFormat)
-      throws OfficeException {
-
-    documentConverter.convert(inputFile, outputFile, inputFormat, outputFormat);
-  }
-
-  /**
-   * Converts an input file to an output file. The files extensions are used to determine the input
-   * and output {@link DocumentFormat}.
-   *
-   * @param filterChain the FilterChain to be applied after the document is loaded and before it is
-   *     stored (converted) in the new document format. A FilterChain is used to modify the document
-   *     before the conversion. Filters are applied in the same order they appear in the chain.
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @throws OfficeException if the conversion fails.
-   */
-  public void convert(final FilterChain filterChain, final File inputFile, final File outputFile)
-      throws OfficeException {
-
-    documentConverter.convert(filterChain, inputFile, outputFile);
-  }
-
-  /**
-   * Converts an input file to an output file. The input file extension is used to determine the
-   * input {@link DocumentFormat}.
-   *
-   * @param filterChain the FilterChain to be applied after the document is loaded and before it is
-   *     stored (converted) in the new document format. A FilterChain is used to modify the document
-   *     before the conversion. Filters are applied in the same order they appear in the chain.
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @param outputFormat the target output format.
-   * @throws OfficeException if the conversion fails.
-   */
-  public void convert(
-      final FilterChain filterChain,
-      final File inputFile,
-      final File outputFile,
-      final DocumentFormat outputFormat)
-      throws OfficeException {
-
-    documentConverter.convert(filterChain, inputFile, outputFile, outputFormat);
-  }
-
-  /**
-   * Converts an input file to an output file.
-   *
-   * @param filterChain the FilterChain to be applied after the document is loaded and before it is
-   *     stored (converted) in the new document format. A FilterChain is used to modify the document
-   *     before the conversion. Filters are applied in the same order they appear in the chain.
-   * @param inputFile the input file to convert.
-   * @param outputFile the target output file.
-   * @param inputFormat the source input format.
-   * @param outputFormat the target output format.
-   * @throws OfficeException if the conversion fails.
-   */
-  public void convert(
-      final FilterChain filterChain,
-      final File inputFile,
-      final File outputFile,
-      final DocumentFormat inputFormat,
-      final DocumentFormat outputFormat)
-      throws OfficeException {
-
-    documentConverter.convert(filterChain, inputFile, outputFile, inputFormat, outputFormat);
+    return documentConverter;
   }
 
   @Override
@@ -261,18 +153,22 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Gets whether we must kill existing office process when an office process already exists for the
-   * same connection string. If not set, it defaults to true.
+   * Gets whether an existing office process is killed when starting a new office process for the
+   * same connection string.
    *
-   * @return {@code true} to kill existing process, {@code false} otherwise.
+   * <p>&nbsp; <b><i>Default</i></b>: true
+   *
+   * @return {@code true} to kill existing process when a new process must be created with the same
+   *     connection string, {@code false} otherwise.
    */
   public Boolean getKillExistingProcess() {
     return killExistingProcess;
   }
 
   /**
-   * Gets the maximum number of tasks an office process can execute before restarting. Default is
-   * 200.
+   * Gets the maximum number of tasks an office process can execute before restarting.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 200
    *
    * @return the maximum value.
    */
@@ -281,7 +177,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Gets the office home directory.
+   * Gets the office home directory (office installation).
    *
    * @return the office home directory.
    */
@@ -301,29 +197,34 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Get the retry interval (milliseconds).Used for waiting between office process call tries
-   * (start/terminate). Default is 250.
+   * Gets the delay, in milliseconds, between each try when trying to execute an office process call
+   * (start/terminate).
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 250 (0.25 seconds)
    *
    * @return the retry interval, in milliseconds.
    */
-  public Long getRetryInterval() {
-    return retryInterval;
+  public Long getProcessRetryInterval() {
+    return processRetryInterval;
   }
 
   /**
-   * Set the retry timeout (milliseconds).Used for retrying office process calls (start/terminate).
-   * If not set, it defaults to 2 minutes.
+   * Gets the timeout, in milliseconds, when trying to execute an office process call
+   * (start/terminate).
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
    *
    * @return the retry timeout, in milliseconds.
    */
-  public Long getRetryTimeout() {
-    return retryTimeout;
+  public Long getProcessTimeout() {
+    return processTimeout;
   }
 
   /**
    * Gets the maximum time allowed to process a task. If the processing time of a task is longer
-   * than this timeout, this task will be aborted and the next task is processed. Default is 120000
-   * (2 minutes).
+   * than this timeout, this task will be aborted and the next task is processed.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
    *
    * @return the timeout value.
    */
@@ -333,9 +234,9 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
 
   /**
    * Gets the maximum living time of a task in the conversion queue. The task will be removed from
-   * the queue if the waiting time is longer than this timeout. Default is 30000 (30 seconds).
+   * the queue if the waiting time is longer than this timeout.
    *
-   * @return timeout value.
+   * <p>&nbsp; <b><i>Default</i></b>: 30000 (30 seconds)
    */
   public Long getTaskQueueTimeout() {
     return taskQueueTimeout;
@@ -400,10 +301,13 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Sets whether we must kill existing office process when an office process already exists for the
+   * Sets whether an existing office process is killed when starting a new office process for the
    * same connection string.
    *
-   * @param killExistingProcess {@code true} to kill existing process, {@code false} otherwise.
+   * <p>&nbsp; <b><i>Default</i></b>: true
+   *
+   * @param killExistingProcess {@code true} to kill existing process when a new process must be
+   *     created with the same connection string, {@code false} otherwise.
    */
   public void setKillExistingProcess(final Boolean killExistingProcess) {
     this.killExistingProcess = killExistingProcess;
@@ -419,7 +323,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Sets the office home directory.
+   * Sets the office home directory (office installation).
    *
    * @param officeHome the new home directory to set.
    */
@@ -439,30 +343,36 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Set the retry interval (milliseconds).Used for waiting between office process call tries
-   * (start/terminate).
+   * Specifies the delay, in milliseconds, between each try when trying to execute an office process
+   * call (start/terminate).
    *
-   * @param retryInterval the retry interval, in milliseconds.
+   * <p>&nbsp; <b><i>Default</i></b>: 250 (0.25 seconds)
+   *
+   * @param processRetryInterval the retry interval, in milliseconds.
    */
-  public void setRetryInterval(final Long retryInterval) {
-    this.retryInterval = retryInterval;
+  public void setProcessRetryInterval(final Long processRetryInterval) {
+    this.processRetryInterval = processRetryInterval;
   }
 
   /**
-   * Set the retry timeout (milliseconds). Used for retrying office process calls (start/terminate).
+   * Sets the timeout, in milliseconds, when trying to execute an office process call
+   * (start/terminate).
    *
-   * @param retryTimeout the retry timeout, in milliseconds.
+   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
+   *
+   * @param processTimeout the process timeout, in milliseconds.
    */
-  public void setRetryTimeout(final Long retryTimeout) {
-    this.retryTimeout = retryTimeout;
+  public void setProcessTimeout(final Long processTimeout) {
+    this.processTimeout = processTimeout;
   }
 
   /**
    * Sets the maximum time allowed to process a task. If the processing time of a task is longer
-   * than this timeout, this task will be aborted and the next task is processed. Default is 120000
-   * (2 minutes).
+   * than this timeout, this task will be aborted and the next task is processed.
    *
-   * @param taskExecutionTimeout the new timeout value.
+   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
+   *
+   * @param taskExecutionTimeout The task execution timeout, in milliseconds.
    */
   public void setTaskExecutionTimeout(final Long taskExecutionTimeout) {
     this.taskExecutionTimeout = taskExecutionTimeout;
@@ -472,7 +382,9 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    * Sets the maximum living time of a task in the conversion queue. The task will be removed from
    * the queue if the waiting time is longer than this timeout.
    *
-   * @param taskQueueTimeout the new timeout value.
+   * <p>&nbsp; <b><i>Default</i></b>: 30000 (30 seconds)
+   *
+   * @param taskQueueTimeout The task queue timeout, in milliseconds.
    */
   public void setTaskQueueTimeout(final Long taskQueueTimeout) {
     this.taskQueueTimeout = taskQueueTimeout;
@@ -481,16 +393,20 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   /**
    * Sets the directory to copy to the temporary office profile directories to be created.
    *
-   * @param templateProfileDir the new template profile directory.
+   * @param templateProfileDir The new template profile directory.
    */
   public void setTemplateProfileDir(final String templateProfileDir) {
     this.templateProfileDir = templateProfileDir;
   }
 
   /**
-   * Sets the directory where temporary office profiles will be created.
+   * Sets the directory where temporary office profile directories will be created. An office
+   * profile directory is created per office process launched.
    *
-   * @param workingDir the new working directory.
+   * <p>&nbsp; <b><i>Default</i></b>: The system temporary directory as specified by the <code>
+   * java.io.tmpdir</code> system property.
+   *
+   * @param workingDir The new working directory to set.
    */
   public void setWorkingDir(final String workingDir) {
     this.workingDir = workingDir;

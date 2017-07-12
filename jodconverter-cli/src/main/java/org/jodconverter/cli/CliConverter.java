@@ -29,11 +29,9 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-import org.jodconverter.OfficeDocumentConverter;
-import org.jodconverter.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.DefaultConverter;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
-import org.jodconverter.office.DefaultOfficeManagerBuilder;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
@@ -42,37 +40,37 @@ public final class CliConverter implements AutoCloseable {
 
   private final PrintWriter out;
   private final OfficeManager officeManager;
-  private final OfficeDocumentConverter officeConverter;
+  private final DefaultConverter converter;
 
   /**
    * Creates a new instance of the class that will use the specified manager.
    *
-   * @param configuration the configuration of the office manager to create.
+   * @param officeManager the office manager used by the converter.
    * @throws OfficeException if an error occurs while creating the CliConverter.
    */
-  public CliConverter(final DefaultOfficeManagerBuilder configuration) throws OfficeException {
-    this(configuration, null);
+  public CliConverter(final OfficeManager officeManager) throws OfficeException {
+    this(officeManager, null);
   }
 
   /**
    * Creates a new instance of the class that will use the specified manager.
    *
-   * @param configuration the configuration of the office manager to create.
+   * @param officeManager the office manager used by the converter.
    * @param registry the document registry used by the created instance.
    * @throws OfficeException if an error occurs while creating the CliConverter.
    */
-  public CliConverter(
-      final DefaultOfficeManagerBuilder configuration, final DocumentFormatRegistry registry)
+  public CliConverter(final OfficeManager officeManager, final DocumentFormatRegistry registry)
       throws OfficeException {
 
-    Validate.notNull(configuration, "The validated configuration is null.");
+    Validate.notNull(officeManager, "The validated officeManager is null.");
 
-    this.officeManager = configuration.build();
+    this.officeManager = officeManager;
     this.out = new PrintWriter(System.out); // NOSONAR
-    this.officeConverter =
-        new OfficeDocumentConverter(
-            officeManager,
-            registry == null ? DefaultDocumentFormatRegistry.getInstance() : registry);
+    this.converter =
+        DefaultConverter.builder()
+            .officeManager(this.officeManager)
+            .formatRegistry(registry)
+            .build();
 
     // Start the manager
     printInfo("Starting office");
@@ -91,7 +89,7 @@ public final class CliConverter implements AutoCloseable {
       throws OfficeException {
 
     printInfo("Converting '" + inputFile.getPath() + "' to '" + outputFile.getPath() + "'");
-    officeConverter.convert(filterChain, inputFile, outputFile);
+    converter.convert(inputFile).to(outputFile).with(filterChain).execute();
   }
 
   /**

@@ -23,14 +23,14 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
 public abstract class BaseOfficeTest {
 
   protected static OfficeManager officeManager;
-  protected static OfficeDocumentConverter converter;
+  protected static DefaultConverter converter;
   protected static DocumentFormatRegistry formatRegistry;
   protected static final String RESOURCES_DIR = "src/test/resources/";
   protected static final String DOCUMENTS_DIR = RESOURCES_DIR + "documents/";
@@ -45,8 +45,8 @@ public abstract class BaseOfficeTest {
   public static void startOfficeManager() throws OfficeException {
 
     // Start an office manager
-    officeManager = new DefaultOfficeManagerBuilder().build();
-    converter = new OfficeDocumentConverter(officeManager);
+    officeManager = DefaultOfficeManager.make();
+    converter = DefaultConverter.make(officeManager);
     formatRegistry = converter.getFormatRegistry();
 
     officeManager.start();

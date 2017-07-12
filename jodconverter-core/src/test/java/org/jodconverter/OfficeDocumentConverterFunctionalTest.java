@@ -21,7 +21,6 @@ package org.jodconverter;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -54,7 +53,10 @@ public class OfficeDocumentConverterFunctionalTest extends BaseOfficeTest {
 
     final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
 
-    assumeTrue(inputFormat != null);
+    if (inputFormat == null) {
+      logger.info("-- skipping unsupported input format {}... ", inputExtension);
+      return;
+    }
 
     assertNotNull("unknown input format: " + inputExtension, inputFormat);
 
@@ -93,7 +95,7 @@ public class OfficeDocumentConverterFunctionalTest extends BaseOfficeTest {
       // Convert the file
       logger.info(
           "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      converter.convert(chain, inputFile, outputFile, outputFormat);
+      converter.convert(inputFile, inputFormat).to(outputFile, outputFormat).with(chain).execute();
       logger.info("done.\n");
       assertTrue(outputFile.isFile() && outputFile.length() > 0);
 

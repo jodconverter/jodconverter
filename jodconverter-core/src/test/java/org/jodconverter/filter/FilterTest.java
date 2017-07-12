@@ -39,7 +39,7 @@ public abstract class FilterTest extends BaseOfficeTest {
   private static final Logger logger = LoggerFactory.getLogger(FilterTest.class);
 
   protected void testFilters(
-      final File sourceFile,
+      final File inputFile,
       final File outputDir,
       final String outputFilePrefix,
       final Filter... filters)
@@ -49,7 +49,7 @@ public abstract class FilterTest extends BaseOfficeTest {
     final DefaultFilterChain chain = new DefaultFilterChain(filters);
 
     // Detect input format
-    final String inputExtension = FilenameUtils.getExtension(sourceFile.getName());
+    final String inputExtension = FilenameUtils.getExtension(inputFile.getName());
     final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
     assertNotNull("Unknown input format: " + inputExtension, inputFormat);
 
@@ -74,7 +74,7 @@ public abstract class FilterTest extends BaseOfficeTest {
       // Apply the conversion
       logger.info(
           "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      converter.convert(chain, sourceFile, outputFile, outputFormat);
+      converter.convert(inputFile, inputFormat).to(outputFile, outputFormat).with(chain).execute();
       logger.info("done.\n");
 
       // Check that the created file is not empty. The programmer still have to

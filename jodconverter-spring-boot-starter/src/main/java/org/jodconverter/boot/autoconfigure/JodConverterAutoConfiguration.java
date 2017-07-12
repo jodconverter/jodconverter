@@ -33,12 +33,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.jodconverter.OfficeDocumentConverter;
-import org.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.jodconverter.DefaultConverter;
+import org.jodconverter.DocumentConverter;
+import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeManager;
 
 @Configuration
-@ConditionalOnClass({OfficeDocumentConverter.class})
+@ConditionalOnClass({DocumentConverter.class})
 @ConditionalOnProperty(
   prefix = "jodconverter",
   name = "enabled",
@@ -80,34 +81,33 @@ public class JodConverterAutoConfiguration {
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager() {
 
-    final DefaultOfficeManagerBuilder builder = new DefaultOfficeManagerBuilder();
+    final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
 
     if (!StringUtils.isBlank(properties.getOfficeHome())) {
-      builder.setOfficeHome(properties.getOfficeHome());
+      builder.officeHome(properties.getOfficeHome());
     }
 
     if (!StringUtils.isBlank(properties.getOfficeHome())) {
-      builder.setWorkingDir(new File(properties.getWorkingDir()));
+      builder.workingDir(properties.getWorkingDir());
     }
 
     if (!StringUtils.isBlank(properties.getPortNumbers())) {
       final Set<Integer> ports = buildPortNumbers(properties.getPortNumbers());
       if (!ports.isEmpty()) {
-        builder.setPortNumbers(ArrayUtils.toPrimitive(ports.toArray(new Integer[] {})));
+        builder.portNumbers(ArrayUtils.toPrimitive(ports.toArray(new Integer[] {})));
       }
     }
 
     if (!StringUtils.isBlank(properties.getTemplateProfileDir())) {
-      builder.setTemplateProfileDir(new File(properties.getTemplateProfileDir()));
+      builder.templateProfileDir(new File(properties.getTemplateProfileDir()));
     }
 
-    builder.setRetryTimeout(properties.getRetryTimeout());
-    builder.setRetryInterval(properties.getRetryInterval());
-    builder.setKillExistingProcess(properties.isKillExistingProcess());
-    builder.setTaskQueueTimeout(properties.getTaskQueueTimeout());
-    builder.setTaskExecutionTimeout(properties.getTaskExecutionTimeout());
-    builder.setMaxTasksPerProcess(properties.getMaxTasksPerProcess());
-    builder.setRetryInterval(properties.getRetryInterval());
+    builder.killExistingProcess(properties.isKillExistingProcess());
+    builder.processTimeout(properties.getProcessTimeout());
+    builder.processRetryInterval(properties.getProcessRetryInterval());
+    builder.taskExecutionTimeout(properties.getTaskExecutionTimeout());
+    builder.maxTasksPerProcess(properties.getMaxTasksPerProcess());
+    builder.taskQueueTimeout(properties.getTaskQueueTimeout());
 
     // Starts the manager
     return builder.build();
@@ -124,8 +124,8 @@ public class JodConverterAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean
   @ConditionalOnBean(OfficeManager.class)
-  public OfficeDocumentConverter jodConverter(final OfficeManager officeManager) {
+  public DocumentConverter jodConverter(final OfficeManager officeManager) {
 
-    return new OfficeDocumentConverter(officeManager);
+    return DefaultConverter.make(officeManager);
   }
 }

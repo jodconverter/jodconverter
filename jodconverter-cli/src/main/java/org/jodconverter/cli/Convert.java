@@ -38,7 +38,8 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.document.JsonDocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
-import org.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.jodconverter.office.DefaultOfficeManager;
+import org.jodconverter.office.OfficeManager;
 
 /** Command line interface executable. */
 public final class Convert {
@@ -138,39 +139,36 @@ public final class Convert {
     }
   }
 
-  private static DefaultOfficeManagerBuilder createDefaultOfficeManagerBuilder(
-      final CommandLine commandLine) {
+  private static OfficeManager createOfficeManager(final CommandLine commandLine) {
 
-    final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
+    DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
     //configuration.setWorkingDir(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
 
     if (commandLine.hasOption(OPTION_OFFICE_HOME.getOpt())) {
-      configuration.setOfficeHome(commandLine.getOptionValue(OPTION_OFFICE_HOME.getOpt()));
+      builder.officeHome(commandLine.getOptionValue(OPTION_OFFICE_HOME.getOpt()));
     }
 
-    configuration.setKillExistingProcess(
-        commandLine.hasOption(OPTION_KILL_EXISTING_PROCESS.getOpt()));
+    builder.killExistingProcess(commandLine.hasOption(OPTION_KILL_EXISTING_PROCESS.getOpt()));
 
     if (commandLine.hasOption(OPTION_PROCESS_MANAGER.getOpt())) {
-      configuration.setProcessManager(commandLine.getOptionValue(OPTION_PROCESS_MANAGER.getOpt()));
+      builder.processManager(commandLine.getOptionValue(OPTION_PROCESS_MANAGER.getOpt()));
     }
 
     if (commandLine.hasOption(OPTION_PORT.getOpt())) {
-      configuration.setPortNumber(
-          Integer.parseInt(commandLine.getOptionValue(OPTION_PORT.getOpt())));
+      builder.portNumbers(Integer.parseInt(commandLine.getOptionValue(OPTION_PORT.getOpt())));
     }
 
     if (commandLine.hasOption(OPTION_TIMEOUT.getOpt())) {
-      configuration.setTaskExecutionTimeout(
+      builder.taskExecutionTimeout(
           Long.parseLong(commandLine.getOptionValue(OPTION_TIMEOUT.getOpt())) * 1000L);
     }
 
     if (commandLine.hasOption(OPTION_USER_PROFILE.getOpt())) {
-      configuration.setTemplateProfileDir(
+      builder.templateProfileDir(
           new File(commandLine.getOptionValue(OPTION_USER_PROFILE.getOpt())));
     }
 
-    return configuration;
+    return builder.build();
   }
 
   private static AbstractApplicationContext getApplicationContextOption(
@@ -266,12 +264,11 @@ public final class Convert {
         System.exit(STATUS_INVALID_ARGUMENTS);
       }
 
-      // Create and configure a DefaultOfficeManagerBuilder from the command line
-      final DefaultOfficeManagerBuilder configuration =
-          createDefaultOfficeManagerBuilder(commandLine);
+      // Create a default office manager from the command line
+      final OfficeManager officeManager = createOfficeManager(commandLine);
 
       // Build a client converter and start the conversion
-      try (final CliConverter converter = new CliConverter(configuration, registry)) {
+      try (final CliConverter converter = new CliConverter(officeManager, registry)) {
 
         if (outputFormat == null) {
 

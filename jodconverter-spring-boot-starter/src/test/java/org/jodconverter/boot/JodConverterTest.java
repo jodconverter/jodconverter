@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import org.jodconverter.OfficeDocumentConverter;
+import org.jodconverter.DocumentConverter;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -47,7 +47,7 @@ public class JodConverterTest {
   private File outputFilePdf;
   private File outputFileDocx;
 
-  @Autowired private OfficeDocumentConverter converter;
+  @Autowired private DocumentConverter converter;
 
   /** Method called before each test method annotated with the @Test annotation. */
   @Before
@@ -85,28 +85,28 @@ public class JodConverterTest {
   @Test
   public void testTxtToRtf() throws Exception {
 
-    converter.convert(inputFileTxt, outputFileRtf);
+    converter.convert(inputFileTxt).to(outputFileRtf).execute();
     assertTrue("RTF File not created.", outputFileRtf.exists());
   }
 
   @Test
   public void testTxtToDoc() throws Exception {
 
-    converter.convert(inputFileTxt, outputFileDoc);
+    converter.convert(inputFileTxt).to(outputFileDoc).execute();
     assertTrue("DOC File not created.", outputFileDoc.exists());
   }
 
   @Test
   public void testTxtToDocx() throws Exception {
 
-    converter.convert(inputFileTxt, outputFileDocx);
+    converter.convert(inputFileTxt).to(outputFileDocx).execute();
     assertTrue("DOCX File not created.", outputFileDocx.exists());
   }
 
   @Test
   public void testTxtToPdf() throws Exception {
 
-    converter.convert(inputFileTxt, outputFilePdf);
+    converter.convert(inputFileTxt).to(outputFilePdf).execute();
     assertTrue("PDF File not created.", outputFilePdf.exists());
   }
 }

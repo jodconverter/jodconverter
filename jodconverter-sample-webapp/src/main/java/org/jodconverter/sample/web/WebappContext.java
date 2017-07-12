@@ -19,8 +19,6 @@
 
 package org.jodconverter.sample.web;
 
-import java.io.File;
-
 import javax.servlet.ServletContext;
 
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -28,8 +26,9 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.OfficeDocumentConverter;
-import org.jodconverter.office.DefaultOfficeManagerBuilder;
+import org.jodconverter.DefaultConverter;
+import org.jodconverter.DocumentConverter;
+import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
@@ -45,7 +44,7 @@ public class WebappContext {
 
   private final ServletFileUpload fileUpload;
   private final OfficeManager officeManager;
-  private final OfficeDocumentConverter documentConverter;
+  private final DocumentConverter documentConverter;
 
   /**
    * Creates a new WebappContext using the specified servlet context.
@@ -64,22 +63,18 @@ public class WebappContext {
       logger.info("max file upload size set to {}", fileSizeMax);
     }
 
-    final DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder();
+    final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
     final String officePortParam = servletContext.getInitParameter(PARAMETER_OFFICE_PORT);
     if (officePortParam != null) {
-      configuration.setPortNumber(Integer.parseInt(officePortParam));
+      builder.portNumbers(Integer.parseInt(officePortParam));
     }
     final String officeHomeParam = servletContext.getInitParameter(PARAMETER_OFFICE_HOME);
-    if (officeHomeParam != null) {
-      configuration.setOfficeHome(new File(officeHomeParam));
-    }
+    builder.officeHome(officeHomeParam);
     final String officeProfileParam = servletContext.getInitParameter(PARAMETER_OFFICE_PROFILE);
-    if (officeProfileParam != null) {
-      configuration.setTemplateProfileDir(new File(officeProfileParam));
-    }
+    builder.templateProfileDir(officeProfileParam);
 
-    officeManager = configuration.build();
-    documentConverter = new OfficeDocumentConverter(officeManager);
+    officeManager = builder.build();
+    documentConverter = DefaultConverter.make(officeManager);
   }
 
   protected static void init(final ServletContext servletContext) throws OfficeException {
@@ -126,7 +121,7 @@ public class WebappContext {
    *
    * @return the context's document converter.
    */
-  public OfficeDocumentConverter getDocumentConverter() {
+  public DocumentConverter getDocumentConverter() {
     return documentConverter;
   }
 }

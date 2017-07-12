@@ -77,7 +77,7 @@ public class PerformanceTest extends BaseOfficeTest {
               + " to "
               + outputFormat.getExtension()
               + "... ");
-      converter.convert(inputFile, outputFile, outputFormat);
+      converter.convert(inputFile, inputFormat).to(outputFile, outputFormat).execute();
 
       stopWatch.split();
       final long splitTime = stopWatch.getSplitTime();

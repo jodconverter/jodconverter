@@ -39,7 +39,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.OfficeDocumentConverter;
+import org.jodconverter.DocumentConverter;
 
 public class ConverterServlet extends HttpServlet {
   private static final long serialVersionUID = -591469426224201748L;
@@ -74,9 +74,9 @@ public class ConverterServlet extends HttpServlet {
     final String outputExtension = FilenameUtils.getExtension(request.getRequestURI());
     final File outputFile = File.createTempFile(baseName, "." + outputExtension);
     try {
-      final OfficeDocumentConverter converter = webappContext.getDocumentConverter();
+      final DocumentConverter converter = webappContext.getDocumentConverter();
       final long startTime = System.currentTimeMillis();
-      converter.convert(inputFile, outputFile);
+      converter.convert(inputFile).to(outputFile).execute();
       logger.info(
           String.format(
               "Successful conversion: %s [%db] to %s in %dms",
