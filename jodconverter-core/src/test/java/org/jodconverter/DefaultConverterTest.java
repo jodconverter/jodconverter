@@ -29,6 +29,8 @@ public class DefaultConverterTest {
 
   protected static final String RESOURCES_DIR = "src/test/resources/";
   protected static final String DOCUMENTS_DIR = RESOURCES_DIR + "documents/";
+  protected static final String OUTPUT_DIR =
+      "test-output/" + DefaultConverterTest.class.getSimpleName();;
 
   @Test
   public void testConvertion() throws Exception {
@@ -39,7 +41,7 @@ public class DefaultConverterTest {
       DefaultConverter converter = DefaultConverter.make(officeManager);
       converter
           .convert(new File(DOCUMENTS_DIR + "test.doc"))
-          .to(new File(DOCUMENTS_DIR + "test.pdf"))
+          .to(new File(OUTPUT_DIR + "test.pdf"))
           .execute();
 
     } finally {
