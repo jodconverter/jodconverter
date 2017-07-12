@@ -24,13 +24,18 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Default {@code DocumentFormat} registry. It contains the {@code DocumentFormat} that should be
- * enough to cover most of our needs.
+ * Default {@code DocumentFormat} registry. It contains the list of {@code DocumentFormat} that
+ * should be enough to cover most of our needs.
  *
- * <p>LibreOffice filters:
- * http://opengrok.libreoffice.org/xref/core/filter/source/config/fragments/filters/ OpenOffice
- * filters:
- * https://svn.apache.org/repos/asf/openoffice/trunk/main/filter/source/config/fragments/filters/
+ * <p>See <a
+ * href="https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0">OpenOffice
+ * Filters Documentation</a>
+ *
+ * <p>See <a
+ * href="http://opengrok.libreoffice.org/xref/core/filter/source/config/fragments/filters">LibreOffice
+ * Filters</a> and <a
+ * href="https://svn.apache.org/repos/asf/openoffice/trunk/main/filter/source/config/fragments/filters">OpenOffice
+ * Filters</a>.
  */
 public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
@@ -61,6 +66,10 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
     final DefaultDocumentFormatRegistry registry = new DefaultDocumentFormatRegistry();
     registry.loadDefaults();
     return registry;
+  }
+
+  private static Map<String, Object> filterSingletonMap(String filterName) {
+    return Collections.singletonMap(KEY_FILTER_NAME, (Object) filterName);
   }
 
   /**
@@ -126,8 +135,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
     final DocumentFormat doc =
         new DocumentFormat("Microsoft Word 97-2003", "doc", "application/msword");
     doc.setInputFamily(DocumentFamily.TEXT);
-    doc.setStoreProperties(
-        DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "MS Word 97"));
+    doc.setStoreProperties(DocumentFamily.TEXT, filterSingletonMap("MS Word 97"));
     addFormat(doc);
   }
 
@@ -139,8 +147,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
             "docx",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
     docx.setInputFamily(DocumentFamily.TEXT);
-    docx.setStoreProperties(
-        DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "MS Word 2007 XML"));
+    docx.setStoreProperties(DocumentFamily.TEXT, filterSingletonMap("MS Word 2007 XML"));
     addFormat(docx);
   }
 
@@ -150,13 +157,9 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
     // HTML is treated as Text when supplied as input, but as an output it is also
     // available for exporting Spreadsheet and Presentation formats.
     html.setInputFamily(DocumentFamily.TEXT);
-    html.setStoreProperties(
-        DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "HTML (StarWriter)"));
-    html.setStoreProperties(
-        DocumentFamily.SPREADSHEET, Collections.singletonMap(KEY_FILTER_NAME, "HTML (StarCalc)"));
-    html.setStoreProperties(
-        DocumentFamily.PRESENTATION,
-        Collections.singletonMap(KEY_FILTER_NAME, "impress_html_Export"));
+    html.setStoreProperties(DocumentFamily.TEXT, filterSingletonMap("HTML (StarWriter)"));
+    html.setStoreProperties(DocumentFamily.SPREADSHEET, filterSingletonMap("HTML (StarCalc)"));
+    html.setStoreProperties(DocumentFamily.PRESENTATION, filterSingletonMap("impress_html_Export"));
     addFormat(html);
   }
 
@@ -166,8 +169,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         new DocumentFormat(
             "OpenDocument Drawing", "odg", "application/vnd.oasis.opendocument.graphics");
     odg.setInputFamily(DocumentFamily.DRAWING);
-    odg.setStoreProperties(
-        DocumentFamily.DRAWING, Collections.singletonMap(KEY_FILTER_NAME, "draw8"));
+    odg.setStoreProperties(DocumentFamily.DRAWING, filterSingletonMap("draw8"));
     addFormat(odg);
   }
 
@@ -177,8 +179,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         new DocumentFormat(
             "OpenDocument Presentation", "odp", "application/vnd.oasis.opendocument.presentation");
     odp.setInputFamily(DocumentFamily.PRESENTATION);
-    odp.setStoreProperties(
-        DocumentFamily.PRESENTATION, Collections.singletonMap(KEY_FILTER_NAME, "impress8"));
+    odp.setStoreProperties(DocumentFamily.PRESENTATION, filterSingletonMap("impress8"));
     addFormat(odp);
   }
 
@@ -188,8 +189,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         new DocumentFormat(
             "OpenDocument Spreadsheet", "ods", "application/vnd.oasis.opendocument.spreadsheet");
     ods.setInputFamily(DocumentFamily.SPREADSHEET);
-    ods.setStoreProperties(
-        DocumentFamily.SPREADSHEET, Collections.singletonMap(KEY_FILTER_NAME, "calc8"));
+    ods.setStoreProperties(DocumentFamily.SPREADSHEET, filterSingletonMap("calc8"));
     addFormat(ods);
   }
 
@@ -198,8 +198,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
     final DocumentFormat odt =
         new DocumentFormat("OpenDocument Text", "odt", "application/vnd.oasis.opendocument.text");
     odt.setInputFamily(DocumentFamily.TEXT);
-    odt.setStoreProperties(
-        DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "writer8"));
+    odt.setStoreProperties(DocumentFamily.TEXT, filterSingletonMap("writer8"));
     addFormat(odt);
   }
 
@@ -208,30 +207,20 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
     final DocumentFormat pdf =
         new DocumentFormat("Portable Document Format", "pdf", "application/pdf");
-    pdf.setStoreProperties(
-        DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "writer_pdf_Export"));
-    pdf.setStoreProperties(
-        DocumentFamily.SPREADSHEET, Collections.singletonMap(KEY_FILTER_NAME, "calc_pdf_Export"));
-    pdf.setStoreProperties(
-        DocumentFamily.PRESENTATION,
-        Collections.singletonMap(KEY_FILTER_NAME, "impress_pdf_Export"));
-    pdf.setStoreProperties(
-        DocumentFamily.DRAWING, Collections.singletonMap(KEY_FILTER_NAME, "draw_pdf_Export"));
+    pdf.setStoreProperties(DocumentFamily.TEXT, filterSingletonMap("writer_pdf_Export"));
+    pdf.setStoreProperties(DocumentFamily.SPREADSHEET, filterSingletonMap("calc_pdf_Export"));
+    pdf.setStoreProperties(DocumentFamily.PRESENTATION, filterSingletonMap("impress_pdf_Export"));
+    pdf.setStoreProperties(DocumentFamily.DRAWING, filterSingletonMap("draw_pdf_Export"));
     addFormat(pdf);
   }
 
   private void loadPng() {
 
     final DocumentFormat png = new DocumentFormat("Portable Network Graphics", "png", "image/png");
-    png.setStoreProperties(
-        DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "writer_png_Export"));
-    png.setStoreProperties(
-        DocumentFamily.SPREADSHEET, Collections.singletonMap(KEY_FILTER_NAME, "calc_png_Export"));
-    png.setStoreProperties(
-        DocumentFamily.PRESENTATION,
-        Collections.singletonMap(KEY_FILTER_NAME, "impress_png_Export"));
-    png.setStoreProperties(
-        DocumentFamily.DRAWING, Collections.singletonMap(KEY_FILTER_NAME, "draw_png_Export"));
+    png.setStoreProperties(DocumentFamily.TEXT, filterSingletonMap("writer_png_Export"));
+    png.setStoreProperties(DocumentFamily.SPREADSHEET, filterSingletonMap("calc_png_Export"));
+    png.setStoreProperties(DocumentFamily.PRESENTATION, filterSingletonMap("impress_png_Export"));
+    png.setStoreProperties(DocumentFamily.DRAWING, filterSingletonMap("draw_png_Export"));
     addFormat(png);
   }
 
@@ -240,8 +229,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
     final DocumentFormat ppt =
         new DocumentFormat("Microsoft PowerPoint 97-2003", "ppt", "application/vnd.ms-powerpoint");
     ppt.setInputFamily(DocumentFamily.PRESENTATION);
-    ppt.setStoreProperties(
-        DocumentFamily.PRESENTATION, Collections.singletonMap(KEY_FILTER_NAME, "MS PowerPoint 97"));
+    ppt.setStoreProperties(DocumentFamily.PRESENTATION, filterSingletonMap("MS PowerPoint 97"));
     addFormat(ppt);
   }
 
@@ -254,8 +242,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
             "application/vnd.openxmlformats-officedocument.presentationml.presentation");
     pptx.setInputFamily(DocumentFamily.PRESENTATION);
     pptx.setStoreProperties(
-        DocumentFamily.PRESENTATION,
-        Collections.singletonMap(KEY_FILTER_NAME, "Impress MS PowerPoint 2007 XML"));
+        DocumentFamily.PRESENTATION, filterSingletonMap("Impress MS PowerPoint 2007 XML"));
     addFormat(pptx);
   }
 
@@ -263,8 +250,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
     final DocumentFormat rtf = new DocumentFormat("Rich Text Format", "rtf", "text/rtf");
     rtf.setInputFamily(DocumentFamily.TEXT);
-    rtf.setStoreProperties(
-        DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "Rich Text Format"));
+    rtf.setStoreProperties(DocumentFamily.TEXT, filterSingletonMap("Rich Text Format"));
     addFormat(rtf);
   }
 
@@ -272,8 +258,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
     final DocumentFormat svg =
         new DocumentFormat("Scalable Vector Graphics", "svg", "image/svg+xml");
-    svg.setStoreProperties(
-        DocumentFamily.DRAWING, Collections.singletonMap(KEY_FILTER_NAME, "draw_svg_Export"));
+    svg.setStoreProperties(DocumentFamily.DRAWING, filterSingletonMap("draw_svg_Export"));
     addFormat(svg);
   }
 
@@ -281,11 +266,8 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
 
     final DocumentFormat swf =
         new DocumentFormat("Macromedia Flash", "swf", "application/x-shockwave-flash");
-    swf.setStoreProperties(
-        DocumentFamily.PRESENTATION,
-        Collections.singletonMap(KEY_FILTER_NAME, "impress_flash_Export"));
-    swf.setStoreProperties(
-        DocumentFamily.DRAWING, Collections.singletonMap(KEY_FILTER_NAME, "draw_flash_Export"));
+    swf.setStoreProperties(DocumentFamily.PRESENTATION, filterSingletonMap("impress_flash_Export"));
+    swf.setStoreProperties(DocumentFamily.DRAWING, filterSingletonMap("draw_flash_Export"));
     addFormat(swf);
   }
 
@@ -294,9 +276,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
     final DocumentFormat sxc =
         new DocumentFormat("OpenOffice.org 1.0 Spreadsheet", "sxc", "application/vnd.sun.xml.calc");
     sxc.setInputFamily(DocumentFamily.SPREADSHEET);
-    sxc.setStoreProperties(
-        DocumentFamily.SPREADSHEET,
-        Collections.singletonMap(KEY_FILTER_NAME, "StarOffice XML (Calc)"));
+    sxc.setStoreProperties(DocumentFamily.SPREADSHEET, filterSingletonMap("StarOffice XML (Calc)"));
     addFormat(sxc);
   }
 
@@ -307,8 +287,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
             "OpenOffice.org 1.0 Presentation", "sxi", "application/vnd.sun.xml.impress");
     sxi.setInputFamily(DocumentFamily.PRESENTATION);
     sxi.setStoreProperties(
-        DocumentFamily.PRESENTATION,
-        Collections.singletonMap(KEY_FILTER_NAME, "StarOffice XML (Impress)"));
+        DocumentFamily.PRESENTATION, filterSingletonMap("StarOffice XML (Impress)"));
     addFormat(sxi);
   }
 
@@ -318,8 +297,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         new DocumentFormat(
             "OpenOffice.org 1.0 Text Document", "sxw", "application/vnd.sun.xml.writer");
     sxw.setInputFamily(DocumentFamily.TEXT);
-    sxw.setStoreProperties(
-        DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "StarOffice XML (Writer)"));
+    sxw.setStoreProperties(DocumentFamily.TEXT, filterSingletonMap("StarOffice XML (Writer)"));
     addFormat(sxw);
   }
 
@@ -354,7 +332,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
   //final DocumentFormat wikitext =
   //new DocumentFormat("MediaWiki wikitext", "wiki", "text/x-wiki");
   ///wikitext.setStoreProperties(
-  //DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "MediaWiki"));
+  //DocumentFamily.TEXT, filterSingletonMap( "MediaWiki"));
   //addFormat(wikitext);
   //}
 
@@ -369,11 +347,11 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
   //
   //final DocumentFormat xhtml = new DocumentFormat("XHTML", "xhtml", "application/xhtml+xml");
   //xhtml.setStoreProperties(
-  //DocumentFamily.TEXT, Collections.singletonMap(KEY_FILTER_NAME, "XHTML Writer File"));
+  //DocumentFamily.TEXT, filterSingletonMap( "XHTML Writer File"));
   //xhtml.setStoreProperties(
-  //DocumentFamily.SPREADSHEET, Collections.singletonMap(KEY_FILTER_NAME, "XHTML Calc File"));
+  //DocumentFamily.SPREADSHEET, filterSingletonMap( "XHTML Calc File"));
   //xhtml.setStoreProperties(
-  //DocumentFamily.PRESENTATION, Collections.singletonMap(KEY_FILTER_NAME, "XHTML Impress File"));
+  //DocumentFamily.PRESENTATION, filterSingletonMap( "XHTML Impress File"));
   //addFormat(xhtml);
   //}
 
@@ -382,8 +360,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
     final DocumentFormat xls =
         new DocumentFormat("Microsoft Excel 97-2003", "xls", "application/vnd.ms-excel");
     xls.setInputFamily(DocumentFamily.SPREADSHEET);
-    xls.setStoreProperties(
-        DocumentFamily.SPREADSHEET, Collections.singletonMap(KEY_FILTER_NAME, "MS Excel 97"));
+    xls.setStoreProperties(DocumentFamily.SPREADSHEET, filterSingletonMap("MS Excel 97"));
     addFormat(xls);
   }
 
@@ -396,8 +373,7 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     xlsx.setInputFamily(DocumentFamily.SPREADSHEET);
     xlsx.setStoreProperties(
-        DocumentFamily.SPREADSHEET,
-        Collections.singletonMap(KEY_FILTER_NAME, "Calc MS Excel 2007 XML"));
+        DocumentFamily.SPREADSHEET, filterSingletonMap("Calc MS Excel 2007 XML"));
     addFormat(xlsx);
   }
 }
