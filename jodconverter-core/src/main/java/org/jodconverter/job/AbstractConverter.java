@@ -20,6 +20,7 @@
 package org.jodconverter.job;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +42,16 @@ import org.jodconverter.office.OfficeManager;
  */
 public abstract class AbstractConverter implements DocumentConverter {
 
+  protected static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
+
+  static {
+    final Map<String, Object> loadProperties = new HashMap<>();
+    loadProperties.put("Hidden", true);
+    loadProperties.put("ReadOnly", true);
+    loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
+    DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
+  }
+
   protected final OfficeManager officeManager;
   protected final DocumentFormatRegistry formatRegistry;
   protected final Map<String, Object> defaultLoadProperties;
@@ -49,11 +60,7 @@ public abstract class AbstractConverter implements DocumentConverter {
   // a conversion, regardless the input type of the document.
   private static Map<String, Object> createDefaultLoadProperties() {
 
-    final Map<String, Object> loadProperties = new HashMap<>();
-    loadProperties.put("Hidden", true);
-    loadProperties.put("ReadOnly", true);
-    loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
-    return loadProperties;
+    return new HashMap<>(DEFAULT_LOAD_PROPERTIES);
   }
 
   protected AbstractConverter(
