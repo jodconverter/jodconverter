@@ -42,7 +42,7 @@ class DumpJsonDefaultDocumentFormatRegistry {
 
       super();
       try {
-        final Field field = JSONObject.class.getDeclaredField("myHashMap");
+        final Field field = JSONObject.class.getDeclaredField("map");
         field.setAccessible(true);
         field.set(this, new LinkedHashMap<>());
       } catch (Exception ex) {
@@ -65,7 +65,7 @@ class DumpJsonDefaultDocumentFormatRegistry {
     }
     if (format.getStoreProperties() != null) {
       final JSONObject jsonStoreProperties = new SortedJsonObject();
-      for (final Map.Entry<DocumentFamily, Map<String, ?>> entry :
+      for (final Map.Entry<DocumentFamily, Map<String, Object>> entry :
           format.getStoreProperties().entrySet()) {
         jsonStoreProperties.put(entry.getKey().name(), toJson(entry.getValue()));
       }
