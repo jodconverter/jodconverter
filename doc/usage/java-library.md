@@ -34,7 +34,11 @@ To convert from/to other formats, simply change the file names and the formats w
 ```java
 File inputFile = new File("spreadsheet.xls");
 File outputFile = new File("spreadsheet.ods");
-converter.convert(inputFile, outputFile);
+DefaultConverter
+         .make(officeManager)
+         .convert(inputFile)
+         .to(outputFile)
+         .execute();
 ```
 
 Simple, isn't it? Yet this example actually shows almost everything you need to know for most applications.
