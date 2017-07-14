@@ -27,7 +27,7 @@ package org.jodconverter.office;
 public interface OfficeManager {
 
   /**
-   * Executes the specified task.
+   * Executes the specified task and blocks until the task terminates.
    *
    * @param task The task to execute.
    * @throws OfficeException If an error occurs.

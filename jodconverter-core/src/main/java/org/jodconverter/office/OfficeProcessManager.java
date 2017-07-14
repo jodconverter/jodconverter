@@ -148,24 +148,19 @@ class OfficeProcessManager {
   }
 
   /**
-   * Gets the connection of this OfficeProcessManager.
+   * Gets the connection of this manager.
    *
-   * @return The {@link OfficeConnection} of this OfficeProcessManager.
+   * @return The {@link OfficeConnection} of this manager.
    */
-  public OfficeConnection getConnection() {
+  OfficeConnection getConnection() {
     return connection;
   }
 
   /**
-   * Gets the process of this OfficeProcessManager.
+   * Gets whether the connection to the office instance is opened.
    *
-   * @return The {@link OfficeProcess} of this OfficeProcessManager.
+   * @return {@code true} is the connection is alive, {@code false} otherwise.
    */
-  public OfficeProcess getOfficeProcess() {
-    return process;
-  }
-
-  /** Gets whether the connection to the office instance is opened. */
   public boolean isConnected() {
     return connection.isConnected();
   }
