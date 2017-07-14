@@ -20,10 +20,16 @@
 package org.jodconverter.office;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.DefaultConverter;
 import org.jodconverter.process.AbstractProcessManager;
@@ -33,12 +39,9 @@ import org.jodconverter.process.ProcessManager;
  * Default {@link OfficeManager} implementation that uses a pool of office processes to execute
  * conversion tasks.
  */
-public class DefaultOfficeManager extends OfficeManagerPool {
+public final class DefaultOfficeManager extends OfficeManagerPool implements TemporaryFileMaker {
 
-  protected DefaultOfficeManager(
-      final OfficeUrl[] officeUrls, final OfficeManagerPoolConfig config) {
-    super(officeUrls, config);
-  }
+  private static final Logger logger = LoggerFactory.getLogger(DefaultOfficeManager.class);
 
   /**
    * Creates a new builder instance.
@@ -58,8 +61,69 @@ public class DefaultOfficeManager extends OfficeManagerPool {
     return builder().build();
   }
 
+  /**
+   * Creates a new {@link DefaultOfficeManager} with default configuration. The created manager will
+   * then be the unique instance of the {@link StaticOfficeManagerHolder} class. Note that if the
+   * {@code StaticOfficeManagerHolder} class already holds an {@code OfficeManager} instance, the
+   * owner of this existing manager is responsible to stopped it.
+   *
+   * @return A {@link DefaultOfficeManager} with default configuration.
+   */
+  public static DefaultOfficeManager makeStatic() {
+    return builder().makeStatic().build();
+  }
+
+  @Override
+  public synchronized void stop() throws OfficeException {
+
+    try {
+      super.stop();
+    } finally {
+      deleteTempDir();
+    }
+  }
+
+  private static File makeTempDir(File workingDir) {
+
+    File tempDir = new File(workingDir, "jodconverter_" + UUID.randomUUID().toString());
+    tempDir.mkdir();
+    if (!tempDir.isDirectory()) {
+      throw new IllegalStateException(String.format("Cannot create temp directory: %s", tempDir));
+    }
+    return tempDir;
+  }
+
+  @Override
+  public File makeTemporaryFile(String extension) {
+    return new File(tempDir, "tempfile_" + tempFileCounter.getAndIncrement() + "." + extension);
+  }
+
+  private void deleteTempDir() {
+
+    if (tempDir != null) {
+      logger.debug("Deleting temporary directory '{}'", tempDir);
+      try {
+        FileUtils.deleteDirectory(tempDir);
+      } catch (IOException ioEx) { // NOSONAR
+        logger.error("Could not temporary profileDir: {}", ioEx.getMessage());
+      }
+    }
+  }
+
+  private final File tempDir;
+  private final AtomicLong tempFileCounter;
+
+  private DefaultOfficeManager(final OfficeUrl[] officeUrls, final OfficeManagerPoolConfig config) {
+    super(officeUrls, config);
+
+    tempDir = makeTempDir(config.getWorkingDir());
+    tempFileCounter = new AtomicLong(0);
+  }
+
   /** A builder for constructing a {@link DefaultConverter}. */
   public static final class Builder {
+
+    private boolean makeStatic = false;
 
     // OfficeProcess
     private String[] pipeNames;
@@ -153,7 +217,27 @@ public class DefaultOfficeManager extends OfficeManagerPool {
       config.setMaxTasksPerProcess(maxTasksPerProcess);
       config.setTaskQueueTimeout(taskQueueTimeout);
 
-      return new DefaultOfficeManager(officeUrls, config);
+      DefaultOfficeManager manager = new DefaultOfficeManager(officeUrls, config);
+      if (makeStatic) {
+        StaticOfficeManagerHolder.setInstance(manager);
+      }
+      return manager;
+    }
+
+    /**
+     * Specifies whether the office manager that will be created by this builder will then set the
+     * unique instance of the {@link StaticOfficeManagerHolder} class. Note that if the {@code
+     * StaticOfficeManagerHolder} class already holds an {@code OfficeManager} instance, the owner
+     * of this existing manager is responsible to stopped it.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: false
+     *
+     * @return This builder instance.
+     */
+    public Builder makeStatic() {
+
+      this.makeStatic = true;
+      return this;
     }
 
     //
