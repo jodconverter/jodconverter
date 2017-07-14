@@ -20,6 +20,7 @@
 package org.jodconverter;
 
 import java.io.File;
+import java.io.InputStream;
 
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
@@ -48,6 +49,26 @@ public interface DocumentConverter {
    * @return The current conversion specification.
    */
   ConversionJobWithSourceSpecified convert(File source, DocumentFormat format);
+
+  /**
+   * Converts a source stream input stream.
+   *
+   * @param source The conversion input as an input stream.
+   * @param format The format of the document.
+   * @return The current conversion specification.
+   */
+  ConversionJobWithSourceSpecified convert(InputStream source, DocumentFormat format);
+
+  /**
+   * Converts a source stream input stream.
+   *
+   * @param source The conversion input as an input stream.
+   * @param format The format of the document.
+   * @param close {@code true} to close the input stream once consume, {@code false} otherwise.
+   * @return The current conversion specification.
+   */
+  ConversionJobWithSourceSpecified convert(
+      InputStream source, DocumentFormat format, boolean close);
 
   /**
    * Converts a source document using the given specifications.

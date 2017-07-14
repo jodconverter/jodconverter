@@ -25,23 +25,16 @@ import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormat;
 
-/**
- * Base class for all document specifications implementations providing a file on disk (no temporary
- * file is created).
- */
-abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
+class SourceDocumentSpecsFromFile extends AbstractFileDocumentSpecs implements SourceDocumentSpecs {
 
-  private File file;
+  public SourceDocumentSpecsFromFile(final File file, final DocumentFormat documentFormat) {
+    super(file, documentFormat);
 
-  protected AbstractFileDocumentSpecs(final File file, final DocumentFormat documentFormat) {
-    super(documentFormat);
-
-    Validate.notNull(file, "The file is null");
-    this.file = file;
+    Validate.isTrue(file.exists(), "File not found: %s", file);
   }
 
   @Override
-  public File getFile() {
-    return file;
+  public void onConsumed(File file) {
+    // Do nothing
   }
 }

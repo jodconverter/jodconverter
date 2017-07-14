@@ -46,7 +46,7 @@ public abstract class AbstractConversionJob implements ConversionJob {
   }
 
   @Override
-  public ConversionJob with(final FilterChain filterChain) {
+  public ConversionJob modifyWith(final FilterChain filterChain) {
 
     Validate.notNull(filterChain);
     this.filterChain = filterChain;

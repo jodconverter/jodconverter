@@ -41,5 +41,5 @@ public interface ConversionJob {
    *     stored (converted) in the new document format.
    * @return The current conversion specification.
    */
-  ConversionJob with(FilterChain filterChain);
+  ConversionJob modifyWith(FilterChain filterChain);
 }

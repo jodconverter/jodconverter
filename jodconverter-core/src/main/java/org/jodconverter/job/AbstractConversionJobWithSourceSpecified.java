@@ -52,12 +52,13 @@ public abstract class AbstractConversionJobWithSourceSpecified
     DocumentFormat format =
         formatRegistry.getFormatByExtension(FilenameUtils.getExtension(target.getName()));
     Validate.notNull(target, "Unsupported target document format");
-    return to(FileTargetDocumentSpecs.make(target, format));
+    return to(new TargetDocumentSpecsFromFile(target, format));
   }
 
   @Override
   public ConversionJob to(final File target, final DocumentFormat format) {
 
-    return to(FileTargetDocumentSpecs.make(target, format));
+    Validate.notNull(format, "The document format is null");
+    return to(new TargetDocumentSpecsFromFile(target, format));
   }
 }

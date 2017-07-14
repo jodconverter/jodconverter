@@ -20,32 +20,44 @@
 package org.jodconverter;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 import org.junit.Test;
 
-import org.jodconverter.office.DefaultOfficeManager;
+public class DefaultConverterTest extends BaseOfficeTest {
 
-public class DefaultConverterTest {
-
-  protected static final String RESOURCES_DIR = "src/test/resources/";
-  protected static final String DOCUMENTS_DIR = RESOURCES_DIR + "documents/";
   protected static final String OUTPUT_DIR =
-      "test-output/" + DefaultConverterTest.class.getSimpleName();;
+      "test-output/" + DefaultConverterTest.class.getSimpleName() + "/";
 
   @Test
-  public void testConvertion() throws Exception {
+  public void convert_FromFileToFile() throws Exception {
 
-    DefaultOfficeManager officeManager = DefaultOfficeManager.make();
-    officeManager.start();
-    try {
-      DefaultConverter converter = DefaultConverter.make(officeManager);
-      converter
-          .convert(new File(DOCUMENTS_DIR + "test.doc"))
-          .to(new File(OUTPUT_DIR + "test.pdf"))
-          .execute();
+    converter
+        .convert(new File(DOCUMENTS_DIR + "test.doc"))
+        .to(new File(OUTPUT_DIR + "convert_FromFileToFile.pdf"))
+        .execute();
+  }
 
-    } finally {
-      officeManager.stop();
-    }
+  @Test(expected = NullPointerException.class)
+  public void convert_FromStreamToFileWithMissingFormat_ShouldThrowNullPointerException()
+      throws Exception {
+
+    InputStream inputStream = new FileInputStream(new File(DOCUMENTS_DIR + "test.doc"));
+    converter
+        .convert(inputStream, null)
+        .to(new File(OUTPUT_DIR + "convert_FromStreamToFile.pdf"))
+        .execute();
+  }
+
+  @Test()
+  public void convert_FromStreamToFileWithSupportedFormat_ShouldThrowIllegalArgumentException()
+      throws Exception {
+
+    InputStream inputStream = new FileInputStream(new File(DOCUMENTS_DIR + "test.doc"));
+    converter
+        .convert(inputStream, formatRegistry.getFormatByExtension("doc"))
+        .to(new File(OUTPUT_DIR + "convert_FromStreamToFile.pdf"))
+        .execute();
   }
 }

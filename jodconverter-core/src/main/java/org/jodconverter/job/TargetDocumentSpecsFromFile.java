@@ -21,27 +21,26 @@ package org.jodconverter.job;
 
 import java.io.File;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.io.FileUtils;
 
 import org.jodconverter.document.DocumentFormat;
 
-/**
- * Base class for all document specifications implementations providing a file on disk (no temporary
- * file is created).
- */
-abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
+class TargetDocumentSpecsFromFile extends AbstractFileDocumentSpecs implements TargetDocumentSpecs {
 
-  private File file;
-
-  protected AbstractFileDocumentSpecs(final File file, final DocumentFormat documentFormat) {
-    super(documentFormat);
-
-    Validate.notNull(file, "The file is null");
-    this.file = file;
+  public TargetDocumentSpecsFromFile(final File file, final DocumentFormat documentFormat) {
+    super(file, documentFormat);
   }
 
   @Override
-  public File getFile() {
-    return file;
+  public void onComplete(final File file) {
+
+    // Do nothing
+  }
+
+  @Override
+  public void onFailure(final File file, final Exception ex) {
+
+    // Delete the file
+    FileUtils.deleteQuietly(file);
   }
 }

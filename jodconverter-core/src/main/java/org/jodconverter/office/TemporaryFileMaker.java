@@ -17,31 +17,18 @@
  * limitations under the License.
  */
 
-package org.jodconverter.job;
+package org.jodconverter.office;
 
 import java.io.File;
 
-import org.apache.commons.lang3.Validate;
+/** Provides services to create temporary files. */
+public interface TemporaryFileMaker {
 
-import org.jodconverter.document.DocumentFormat;
-
-/**
- * Base class for all document specifications implementations providing a file on disk (no temporary
- * file is created).
- */
-abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
-
-  private File file;
-
-  protected AbstractFileDocumentSpecs(final File file, final DocumentFormat documentFormat) {
-    super(documentFormat);
-
-    Validate.notNull(file, "The file is null");
-    this.file = file;
-  }
-
-  @Override
-  public File getFile() {
-    return file;
-  }
+  /**
+   * Creates a new temporary file with the the specified extension.
+   *
+   * @param extension the extension of the file to create.
+   * @return the create file.
+   */
+  File makeTemporaryFile(String extension);
 }

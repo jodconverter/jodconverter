@@ -36,6 +36,7 @@ import org.jodconverter.job.SourceDocumentSpecs;
 import org.jodconverter.job.TargetDocumentSpecs;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
+import org.jodconverter.office.StaticOfficeManagerHolder;
 import org.jodconverter.task.DefaultConversionTask;
 
 /**
@@ -55,6 +56,24 @@ public class DefaultConverter extends AbstractConverter {
    */
   public static Builder builder() {
     return new Builder();
+  }
+
+  /**
+   * Creates a new {@link DefaultConverter} using with default configuration. The {@link
+   * OfficeManager} that will be used is the one holden by the {@link StaticOfficeManagerHolder}
+   * class, if any.
+   *
+   * @return A {@link DefaultConverter} with default configuration.
+   */
+  public static DefaultConverter make() {
+
+    OfficeManager officeManager = StaticOfficeManagerHolder.getInstance();
+    if (officeManager == null) {
+      throw new IllegalStateException(
+          "Cannot make a DefaultConverter without an OfficeManager "
+              + "and the StaticOfficeManagerHolder instance has not been set.");
+    }
+    return builder().officeManager(officeManager).build();
   }
 
   /**

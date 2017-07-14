@@ -35,13 +35,6 @@ public interface TargetDocumentSpecs extends DocumentSpecs {
   void onComplete(File file);
 
   /**
-   * Called if the conversion was cancelled.
-   *
-   * @param file The file to which the conversion result was supposed to be written.
-   */
-  void onCancel(File file);
-
-  /**
    * Called if the conversion finished with an exception.
    *
    * @param file The file to which the conversion result was supposed to be written.

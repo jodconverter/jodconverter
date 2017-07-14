@@ -20,6 +20,7 @@
 package org.jodconverter.job;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,7 @@ import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.OfficeManager;
+import org.jodconverter.office.TemporaryFileMaker;
 
 /**
  * Base class for all document converter implementations.
@@ -42,6 +44,7 @@ import org.jodconverter.office.OfficeManager;
  */
 public abstract class AbstractConverter implements DocumentConverter {
 
+  private static final boolean DEFAULT_CLOSE_STREAM = true;
   protected static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
 
   static {
@@ -85,16 +88,41 @@ public abstract class AbstractConverter implements DocumentConverter {
   @Override
   public ConversionJobWithSourceSpecified convert(final File source) {
 
-    DocumentFormat sourceFormat =
+    DocumentFormat format =
         formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName()));
-    Validate.notNull(sourceFormat, "Unsupported source document format");
-    return convert(FileSourceDocumentSpecs.make(source, sourceFormat));
+    Validate.notNull(format, "Unsupported source document format");
+    return convert(new SourceDocumentSpecsFromFile(source, format));
   }
 
   @Override
   public ConversionJobWithSourceSpecified convert(final File source, final DocumentFormat format) {
 
-    return convert(FileSourceDocumentSpecs.make(source, format));
+    Validate.notNull(format, "The document format is null");
+    return convert(new SourceDocumentSpecsFromFile(source, format));
+  }
+
+  @Override
+  public ConversionJobWithSourceSpecified convert(InputStream source, DocumentFormat format) {
+
+    return convert(source, format, DEFAULT_CLOSE_STREAM);
+  }
+
+  @Override
+  public ConversionJobWithSourceSpecified convert(
+      InputStream source, DocumentFormat format, boolean close) {
+
+    Validate.notNull(format, "The document format is null");
+    if (officeManager instanceof TemporaryFileMaker) {
+      return convert(
+          new SourceDocumentSpecsFromInputStream(
+              source,
+              format,
+              ((TemporaryFileMaker) officeManager).makeTemporaryFile(format.getExtension()),
+              close));
+    }
+    throw new IllegalStateException(
+        "An office manager must implements the TemporaryFileMaker "
+            + "interface in order to be able to convert input streams");
   }
 
   @Override

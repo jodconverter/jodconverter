@@ -29,7 +29,7 @@ import org.jodconverter.office.OfficeManager;
 
 public abstract class BaseOfficeTest {
 
-  protected static OfficeManager officeManager;
+  private static OfficeManager officeManager;
   protected static DefaultConverter converter;
   protected static DocumentFormatRegistry formatRegistry;
   protected static final String RESOURCES_DIR = "src/test/resources/";
@@ -45,8 +45,8 @@ public abstract class BaseOfficeTest {
   public static void startOfficeManager() throws OfficeException {
 
     // Start an office manager
-    officeManager = DefaultOfficeManager.make();
-    converter = DefaultConverter.make(officeManager);
+    officeManager = DefaultOfficeManager.makeStatic();
+    converter = DefaultConverter.make();
     formatRegistry = converter.getFormatRegistry();
 
     officeManager.start();

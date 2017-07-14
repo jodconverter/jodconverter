@@ -87,17 +87,39 @@ public class DefaultConversionTask implements OfficeTask {
 
     logger.info("Executing default conversion task...");
 
-    XComponent document = null;
+    File sourceFile = null;
+    File targetFile = null;
     try {
-      document = loadDocument(context);
-      modifyDocument(context, document);
-      storeDocument(document);
-    } catch (OfficeException officeEx) {
-      throw officeEx;
-    } catch (Exception ex) {
-      throw new OfficeException("Conversion failed", ex);
+      // Obtain a source file that can be loaded by office. If the source if
+      // an input stream, then a temporary file will be created from the
+      // stream. The temporary file will be deleted once the task is done.
+      sourceFile = source.getFile();
+
+      XComponent document = null;
+      try {
+        document = loadDocument(context, sourceFile);
+        modifyDocument(context, document);
+
+        targetFile = target.getFile();
+        storeDocument(document, targetFile);
+        target.onComplete(targetFile);
+
+      } catch (OfficeException officeEx) {
+        target.onFailure(targetFile, officeEx);
+        throw officeEx;
+      } catch (Exception ex) {
+        OfficeException officeEx = new OfficeException("Conversion failed", ex);
+        target.onFailure(targetFile, officeEx);
+        throw officeEx;
+      } finally {
+        closeDocument(document);
+      }
+
     } finally {
-      closeDocument(document);
+
+      // Here the source file is no longer required so we can delete
+      // any temporary file that has been created if required.
+      source.onConsumed(sourceFile);
     }
   }
 
@@ -124,19 +146,9 @@ public class DefaultConversionTask implements OfficeTask {
     return null;
   }
 
-  /**
-   * Loads the document to convert.
-   *
-   * @param context The office context.
-   * @return A XComponent that is the loaded document to convert.
-   * @throws OfficeException If an error occurs.
-   */
-  protected XComponent loadDocument(final OfficeContext context) throws OfficeException {
-
-    File sourceFile = source.getFile();
-
-    // Check if the file exists
-    ValidateUtils.fileExists(sourceFile, "Input document not found: %s");
+  // Loads the document to convert.
+  private XComponent loadDocument(final OfficeContext context, final File sourceFile)
+      throws OfficeException {
 
     XComponent document = null;
     try {
@@ -160,15 +172,9 @@ public class DefaultConversionTask implements OfficeTask {
     return document;
   }
 
-  /**
-   * Override to modify the document after it has been loaded and before it gets saved in the new
-   * format.
-   *
-   * @param context The office context.
-   * @param document The office document.
-   * @throws OfficeException If an error occurs.
-   */
-  protected void modifyDocument(final OfficeContext context, final XComponent document)
+  // Modifies the document after it has been loaded and before
+  // it gets saved in the new format.
+  private void modifyDocument(final OfficeContext context, final XComponent document)
       throws OfficeException {
 
     if (filterChain != null) {
@@ -176,15 +182,9 @@ public class DefaultConversionTask implements OfficeTask {
     }
   }
 
-  /**
-   * Stores the converted document as the output file.
-   *
-   * @param document The office document to store.
-   * @throws OfficeException If an error occurs.
-   */
-  protected void storeDocument(final XComponent document) throws OfficeException {
-
-    File targetFile = target.getFile();
+  // Stores the converted document as the output file.
+  private void storeDocument(final XComponent document, final File targetFile)
+      throws OfficeException {
 
     final Map<String, Object> storeProperties = getStoreProperties(document);
 
@@ -203,12 +203,8 @@ public class DefaultConversionTask implements OfficeTask {
     }
   }
 
-  /**
-   * Closes the converted document.
-   *
-   * @param document The office document to close.
-   */
-  protected void closeDocument(final XComponent document) {
+  // Closes the converted document.
+  private void closeDocument(final XComponent document) {
 
     if (document != null) {
 
