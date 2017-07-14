@@ -74,7 +74,11 @@ public abstract class FilterTest extends BaseOfficeTest {
       // Apply the conversion
       logger.info(
           "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      converter.convert(inputFile, inputFormat).to(outputFile, outputFormat).with(chain).execute();
+      converter
+          .convert(inputFile, inputFormat)
+          .to(outputFile, outputFormat)
+          .modifyWith(chain)
+          .execute();
       logger.info("done.\n");
 
       // Check that the created file is not empty. The programmer still have to

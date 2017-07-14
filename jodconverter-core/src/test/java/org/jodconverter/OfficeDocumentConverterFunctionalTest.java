@@ -95,7 +95,11 @@ public class OfficeDocumentConverterFunctionalTest extends BaseOfficeTest {
       // Convert the file
       logger.info(
           "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      converter.convert(inputFile, inputFormat).to(outputFile, outputFormat).with(chain).execute();
+      converter
+          .convert(inputFile, inputFormat)
+          .to(outputFile, outputFormat)
+          .modifyWith(chain)
+          .execute();
       logger.info("done.\n");
       assertTrue(outputFile.isFile() && outputFile.length() > 0);
 

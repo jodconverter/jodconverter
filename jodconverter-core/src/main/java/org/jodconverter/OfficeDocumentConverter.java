@@ -178,7 +178,7 @@ public class OfficeDocumentConverter {
     delegate
         .convert(inputFile, inputFormat)
         .to(outputFile, outputFormat)
-        .with(filterChain)
+        .modifyWith(filterChain)
         .execute();
   }
 

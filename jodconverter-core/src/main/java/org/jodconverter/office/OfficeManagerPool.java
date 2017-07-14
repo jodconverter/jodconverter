@@ -69,9 +69,16 @@ class OfficeManagerPool implements OfficeManager {
   private OfficeManager acquireManager() throws OfficeException {
 
     try {
-      return pool.poll(config.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
+      OfficeManager manager = pool.poll(config.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
+      if (manager == null) {
+        throw new OfficeException(
+            "No office manager available after " + config.getTaskQueueTimeout() + " millisec.");
+      }
+      return manager;
     } catch (InterruptedException interruptedEx) { // NOSONAR
-      throw new OfficeException("interrupted", interruptedEx);
+      throw new OfficeException(
+          "Thread has been interrupted while waiting for a manager to become available.",
+          interruptedEx);
     }
   }
 
@@ -89,9 +96,6 @@ class OfficeManagerPool implements OfficeManager {
     OfficeManager entry = null;
     try {
       entry = acquireManager();
-      if (entry == null) {
-        throw new OfficeException("No office manager available.");
-      }
       entry.execute(task);
     } finally {
       if (entry != null) {

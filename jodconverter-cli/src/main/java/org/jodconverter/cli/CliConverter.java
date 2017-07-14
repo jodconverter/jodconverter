@@ -89,7 +89,7 @@ public final class CliConverter implements AutoCloseable {
       throws OfficeException {
 
     printInfo("Converting '" + inputFile.getPath() + "' to '" + outputFile.getPath() + "'");
-    converter.convert(inputFile).to(outputFile).with(filterChain).execute();
+    converter.convert(inputFile).to(outputFile).modifyWith(filterChain).execute();
   }
 
   /**

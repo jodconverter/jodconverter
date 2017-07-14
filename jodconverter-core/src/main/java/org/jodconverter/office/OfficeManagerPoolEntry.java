@@ -190,24 +190,6 @@ class OfficeManagerPoolEntry implements OfficeManager {
     }
   }
 
-  /**
-   * Gets the number of tasks executed by the current office process so far.
-   *
-   * @return The number of tasks executed by the current office process.
-   */
-  public int getCurrentTaskCount() {
-    return taskCount.get();
-  }
-
-  /**
-   * Gets the OfficeProcessManager of this OfficeManagerPoolEntry.
-   *
-   * @return The {@link OfficeProcessManager} of this OfficeManagerPoolEntry.
-   */
-  public OfficeProcessManager getOfficeProcessManager() {
-    return officeProcessManager;
-  }
-
   @Override
   public boolean isRunning() {
 
@@ -217,17 +199,38 @@ class OfficeManagerPoolEntry implements OfficeManager {
   @Override
   public void start() throws OfficeException {
 
-    officeProcessManager.startAndWait();
+    // If this pool entry has been stopped, it means that the task executor
+    // was shutdown and thus starting a new process manager is pointless since
+    // the executor cannot be reused. This is not supposed to happened since
+    // only an OfficeManagerPool uses a OfficeManagerPoolEntry and the pool
+    // won't start an entry that has been stopped. But better be safe than
+    // sorry...
+    if (!taskExecutor.isShutdown()) {
+      officeProcessManager.startAndWait();
+    }
   }
 
   @Override
   public void stop() throws OfficeException {
 
+    // Nothing to do if the executor has already been shutdown.
+    if (taskExecutor.isShutdown()) {
+      return;
+    }
+
     try {
+      // While stopping, the executor should not be available to any
+      // new task that could be submitted.
       taskExecutor.setAvailable(false);
+
+      // From here on, any disconnection from an office process is expected.
       disconnectExpected.set(true);
+
+      // Shutdown the executor. Is a task is running, it will be interrupted.
       taskExecutor.shutdownNow();
     } finally {
+
+      // Now we can stopped the running office process
       officeProcessManager.stopAndWait();
     }
   }
