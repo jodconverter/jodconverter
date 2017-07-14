@@ -18,7 +18,7 @@ try {
 
     // Convert
     DefaultConverter
-             .make(officeManager)
+             .make()
              .convert(inputFile)
              .to(outputFile)
              .execute();
@@ -35,7 +35,7 @@ To convert from/to other formats, simply change the file names and the formats w
 File inputFile = new File("spreadsheet.xls");
 File outputFile = new File("spreadsheet.ods");
 DefaultConverter
-         .make(officeManager)
+         .make()
          .convert(inputFile)
          .to(outputFile)
          .execute();
