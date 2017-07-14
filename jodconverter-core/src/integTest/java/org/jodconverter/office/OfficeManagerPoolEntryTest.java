@@ -25,8 +25,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
@@ -69,6 +75,29 @@ public class OfficeManagerPoolEntryTest {
     assertTrue(connection.isConnected());
   }
 
+  private OfficeProcessManager getProcessManager(OfficeManagerPoolEntry manager)
+      throws IllegalAccessException {
+
+    return (OfficeProcessManager) FieldUtils.readField(manager, "officeProcessManager", true);
+  }
+
+  private int getCurrentTaskCount(OfficeManagerPoolEntry manager) throws IllegalAccessException {
+
+    return ((AtomicInteger) FieldUtils.readField(manager, "taskCount", true)).get();
+  }
+
+  private OfficeConnection getConnection(OfficeProcessManager manager)
+      throws IllegalAccessException {
+
+    return (OfficeConnection) FieldUtils.readField(manager, "connection", true);
+  }
+
+  private OfficeProcess getOfficeProcess(OfficeProcessManager manager)
+      throws IllegalAccessException {
+
+    return (OfficeProcess) FieldUtils.readField(manager, "process", true);
+  }
+
   /**
    * Tests the execution of a task.
    *
@@ -78,12 +107,12 @@ public class OfficeManagerPoolEntryTest {
   public void executeTask() throws Exception {
 
     final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(CONNECT_URL);
-    final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
+    final OfficeProcessManager processManager = getProcessManager(officeManager);
 
     try {
       officeManager.start();
-      assertTrue(processManager.getOfficeProcess().isRunning());
-      assertTrue(processManager.getConnection().isConnected());
+      assertTrue(getOfficeProcess(processManager).isRunning());
+      assertTrue(getConnection(processManager).isConnected());
 
       final MockOfficeTask task = new MockOfficeTask();
       officeManager.execute(task);
@@ -92,9 +121,28 @@ public class OfficeManagerPoolEntryTest {
     } finally {
 
       officeManager.stop();
-      assertFalse(processManager.getConnection().isConnected());
-      assertFalse(processManager.getOfficeProcess().isRunning());
-      assertEquals(processManager.getOfficeProcess().getExitCode(0, 0), 0);
+      assertFalse(getConnection(processManager).isConnected());
+      assertFalse(getOfficeProcess(processManager).isRunning());
+      assertEquals(getOfficeProcess(processManager).getExitCode(0, 0), 0);
+    }
+  }
+
+  private class RestartAfterCrashTask implements Callable<Boolean> {
+
+    private final OfficeManagerPoolEntry officeManager;
+
+    private RestartAfterCrashTask(final OfficeManagerPoolEntry officeManager) {
+      super();
+
+      this.officeManager = officeManager;
+    }
+
+    @Override
+    public Boolean call() throws Exception {
+      final MockOfficeTask badTask = new MockOfficeTask(10 * 1000);
+
+      officeManager.execute(badTask);
+      return true;
     }
   }
 
@@ -107,38 +155,46 @@ public class OfficeManagerPoolEntryTest {
   public void restartAfterCrash() throws Exception {
 
     final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(CONNECT_URL);
-    final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
+    final OfficeProcessManager processManager = getProcessManager(officeManager);
 
-    assertNotNull(processManager.getConnection());
+    assertNotNull(getConnection(processManager));
 
     try {
       officeManager.start();
-      assertTrue(processManager.getOfficeProcess().isRunning());
-      assertTrue(processManager.getConnection().isConnected());
+      assertTrue(getOfficeProcess(processManager).isRunning());
+      assertTrue(getConnection(processManager).isConnected());
 
-      new Thread() {
-        public void run() {
-          final MockOfficeTask badTask = new MockOfficeTask(10 * 1000);
-          try {
-            officeManager.execute(badTask);
-            fail("task should be cancelled");
-            //FIXME being in a separate thread the test won't actually fail
-          } catch (OfficeException officeEx) {
-            assertTrue(officeEx.getCause() instanceof CancellationException);
-          }
+      // Submit the task to an executor
+      ExecutorService pool = Executors.newFixedThreadPool(1);
+      try {
+        Callable<Boolean> task = new RestartAfterCrashTask(officeManager);
+        Future<Boolean> future = pool.submit(task);
+
+        Thread.sleep(500); // NOSONAR
+
+        // Simulate crash
+        final Process underlyingProcess =
+            (Process) FieldUtils.readField(getOfficeProcess(processManager), "process", true);
+        assertNotNull(underlyingProcess);
+        logger.debug("Simulating the crash");
+        underlyingProcess.destroy();
+
+        // Wait until the task is completed
+        try {
+          future.get();
+          fail("Task should be cancelled");
+        } catch (ExecutionException ex) {
+          assertTrue(ex.getCause() instanceof OfficeException);
+          assertTrue(ex.getCause().getCause() instanceof CancellationException);
         }
-      }.start();
-      Thread.sleep(500); // NOSONAR
-      final Process underlyingProcess =
-          (Process)
-              FieldUtils.readDeclaredField(processManager.getOfficeProcess(), "process", true);
-      assertNotNull(underlyingProcess);
-      logger.debug("Simulating the crash");
-      underlyingProcess.destroy(); // simulate crash
+
+      } finally {
+        pool.shutdownNow();
+      }
 
       assertRestartedAndReconnected(
-          processManager.getOfficeProcess(),
-          processManager.getConnection(),
+          getOfficeProcess(processManager),
+          getConnection(processManager),
           RESTART_INITIAL_WAIT,
           RESTART_WAIT_TIMEOUT);
 
@@ -149,9 +205,9 @@ public class OfficeManagerPoolEntryTest {
     } finally {
 
       officeManager.stop();
-      assertFalse(processManager.getConnection().isConnected());
-      assertFalse(processManager.getOfficeProcess().isRunning());
-      assertEquals(processManager.getOfficeProcess().getExitCode(0, 0), 0);
+      assertFalse(getConnection(processManager).isConnected());
+      assertFalse(getOfficeProcess(processManager).isRunning());
+      assertEquals(getOfficeProcess(processManager).getExitCode(0, 0), 0);
     }
   }
 
@@ -165,14 +221,14 @@ public class OfficeManagerPoolEntryTest {
     final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig();
     config.setTaskExecutionTimeout(1500L);
     final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(CONNECT_URL, config);
-    final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
+    final OfficeProcessManager processManager = getProcessManager(officeManager);
 
-    assertNotNull(processManager.getConnection());
+    assertNotNull(getConnection(processManager));
 
     try {
       officeManager.start();
-      assertTrue(processManager.getOfficeProcess().isRunning());
-      assertTrue(processManager.getConnection().isConnected());
+      assertTrue(getOfficeProcess(processManager).isRunning());
+      assertTrue(getConnection(processManager).isConnected());
 
       final MockOfficeTask task = new MockOfficeTask(2000);
       try {
@@ -183,13 +239,13 @@ public class OfficeManagerPoolEntryTest {
       }
 
       assertRestartedAndReconnected(
-          processManager.getOfficeProcess(),
-          processManager.getConnection(),
+          getOfficeProcess(processManager),
+          getConnection(processManager),
           RESTART_INITIAL_WAIT,
           RESTART_WAIT_TIMEOUT);
 
-      assertTrue(processManager.getOfficeProcess().isRunning());
-      assertTrue(processManager.getConnection().isConnected());
+      assertTrue(getOfficeProcess(processManager).isRunning());
+      assertTrue(getConnection(processManager).isConnected());
 
       final MockOfficeTask goodTask = new MockOfficeTask();
       officeManager.execute(goodTask);
@@ -198,9 +254,9 @@ public class OfficeManagerPoolEntryTest {
     } finally {
 
       officeManager.stop();
-      assertFalse(processManager.getConnection().isConnected());
-      assertFalse(processManager.getOfficeProcess().isRunning());
-      assertEquals(processManager.getOfficeProcess().getExitCode(0, 0), 0);
+      assertFalse(getConnection(processManager).isConnected());
+      assertFalse(getOfficeProcess(processManager).isRunning());
+      assertEquals(getOfficeProcess(processManager).getExitCode(0, 0), 0);
     }
   }
 
@@ -214,35 +270,35 @@ public class OfficeManagerPoolEntryTest {
     final OfficeManagerPoolEntryConfig config = new OfficeManagerPoolEntryConfig();
     config.setMaxTasksPerProcess(3);
     final OfficeManagerPoolEntry officeManager = new OfficeManagerPoolEntry(CONNECT_URL, config);
-    final OfficeProcessManager processManager = officeManager.getOfficeProcessManager();
+    final OfficeProcessManager processManager = getProcessManager(officeManager);
 
-    assertNotNull(processManager.getConnection());
+    assertNotNull(getConnection(processManager));
 
     try {
       officeManager.start();
-      assertTrue(processManager.getOfficeProcess().isRunning());
-      assertTrue(processManager.getConnection().isConnected());
+      assertTrue(getOfficeProcess(processManager).isRunning());
+      assertTrue(getConnection(processManager).isConnected());
 
       for (int i = 0; i < 3; i++) {
         final MockOfficeTask task = new MockOfficeTask();
         officeManager.execute(task);
         assertTrue(task.isCompleted());
-        final int taskCount = officeManager.getCurrentTaskCount();
+        final int taskCount = getCurrentTaskCount(officeManager);
         assertEquals(taskCount, i + 1);
       }
 
       final MockOfficeTask task = new MockOfficeTask();
       officeManager.execute(task);
       assertTrue(task.isCompleted());
-      final int taskCount = officeManager.getCurrentTaskCount();
+      final int taskCount = getCurrentTaskCount(officeManager);
       assertEquals(taskCount, 1);
 
     } finally {
 
       officeManager.stop();
-      assertFalse(processManager.getConnection().isConnected());
-      assertFalse(processManager.getOfficeProcess().isRunning());
-      assertEquals(processManager.getOfficeProcess().getExitCode(0, 0), 0);
+      assertFalse(getConnection(processManager).isConnected());
+      assertFalse(getOfficeProcess(processManager).isRunning());
+      assertEquals(getOfficeProcess(processManager).getExitCode(0, 0), 0);
     }
   }
 }
