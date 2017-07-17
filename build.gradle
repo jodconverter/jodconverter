@@ -9,7 +9,7 @@ buildscript {
   repositories {
     mavenCentral()
     //Needed only for SNAPSHOT versions
-    //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         
     maven { url "https://plugins.gradle.org/m2" }
   }
@@ -19,6 +19,7 @@ buildscript {
     classpath "com.diffplug.spotless:spotless-plugin-gradle:$spotlessVersion"
     classpath "io.spring.gradle:dependency-management-plugin:$springDependencyManagementVersion"
     classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$nexusStagingVersion"
+    classpath "org.standardout:gradle-versioneye-plugin:$versioneyeVersion"
   }
 }
 
@@ -147,6 +148,18 @@ task distZip(type:Zip) {
 }
 project.tasks["distZip"].dependsOn subprojects*.distZip
 //project.tasks["distZip"].dependsOn subprojects*.assembleDist
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Versioneye configuration
+
+// Update project's dependencies status on http://www.versioneye.com
+apply plugin: 'org.standardout.versioneye'
+
+versioneye {
+  includeSubProjects = true
+}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
