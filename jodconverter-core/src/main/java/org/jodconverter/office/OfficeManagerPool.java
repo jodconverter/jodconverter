@@ -22,6 +22,7 @@ package org.jodconverter.office;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ class OfficeManagerPool implements OfficeManager {
   private static final int POOL_STARTED = 1;
   private static final int POOL_SHUTDOWN = 2;
 
-  private volatile int poolState = POOL_STOPPED;
+  private AtomicInteger poolState = new AtomicInteger(POOL_STOPPED);
 
   private final BlockingQueue<OfficeManager> pool;
   private final OfficeManager[] entries;
@@ -106,7 +107,7 @@ class OfficeManagerPool implements OfficeManager {
 
   @Override
   public boolean isRunning() {
-    return poolState == POOL_STARTED;
+    return poolState.get() == POOL_STARTED;
   }
 
   /**
@@ -128,11 +129,11 @@ class OfficeManagerPool implements OfficeManager {
   @Override
   public synchronized void start() throws OfficeException {
 
-    if (poolState == POOL_SHUTDOWN) {
+    if (poolState.get() == POOL_SHUTDOWN) {
       throw new IllegalStateException("This office manager has been shutdown.");
     }
 
-    if (poolState == POOL_STARTED) {
+    if (poolState.get() == POOL_STARTED) {
       throw new IllegalStateException("This office manager is already running.");
     }
 
@@ -142,18 +143,18 @@ class OfficeManagerPool implements OfficeManager {
       releaseManager(entries[i]);
     }
 
-    poolState = POOL_STARTED;
+    poolState.set(POOL_STARTED);
   }
 
   @Override
   public synchronized void stop() throws OfficeException {
 
-    if (poolState == POOL_SHUTDOWN) {
+    if (poolState.get() == POOL_SHUTDOWN) {
       // Already shutdown, just exit
       return;
     }
 
-    poolState = POOL_SHUTDOWN;
+    poolState.set(POOL_SHUTDOWN);
 
     logger.info("Stopping the office manager pool...");
     pool.clear();
