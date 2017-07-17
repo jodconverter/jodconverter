@@ -32,7 +32,7 @@ import org.jodconverter.util.JsonUtils;
  * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office
  * that has been loaded loaded from a JSON source.
  */
-public final class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
+public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
   /**
    * Creates a JsonDocumentFormatRegistry from the given InputStream.
@@ -60,12 +60,12 @@ public final class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegist
   }
 
   // Force static function call
-  private JsonDocumentFormatRegistry() { // NOSONAR
+  protected JsonDocumentFormatRegistry() { // NOSONAR
     super();
   }
 
   // Fill the registry from the given JSON source
-  private void readJsonArray(final String source) {
+  protected void readJsonArray(final String source) {
 
     final JSONArray array = new JSONArray(source);
     for (int i = 0; i < array.length(); i++) {

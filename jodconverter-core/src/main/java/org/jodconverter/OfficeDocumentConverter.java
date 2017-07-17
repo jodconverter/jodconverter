@@ -48,7 +48,7 @@ public class OfficeDocumentConverter {
    */
   public OfficeDocumentConverter(final OfficeManager officeManager) {
 
-    this(officeManager, DefaultDocumentFormatRegistry.create());
+    this(officeManager, DefaultDocumentFormatRegistry.getInstance());
   }
 
   /**

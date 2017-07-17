@@ -37,7 +37,7 @@ public class JsonDocumentFormatRegistryTest {
   @Test
   public void readJsonRegistry() throws IOException {
 
-    final InputStream input = getClass().getResourceAsStream("/document-formats.js");
+    final InputStream input = getClass().getResourceAsStream("/document-formats.json");
     try {
       final DocumentFormatRegistry registry = JsonDocumentFormatRegistry.create(input);
       final DocumentFormat odt = registry.getFormatByExtension("odt");
