@@ -31,7 +31,7 @@ import org.jodconverter.document.DocumentFormat;
  */
 abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
 
-  private File file;
+  private final File file;
 
   protected AbstractFileDocumentSpecs(final File file, final DocumentFormat documentFormat) {
     super(documentFormat);

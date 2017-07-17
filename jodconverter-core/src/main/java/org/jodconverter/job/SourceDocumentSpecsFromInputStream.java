@@ -52,9 +52,9 @@ class SourceDocumentSpecsFromInputStream extends AbstractFileDocumentSpecs
   public File getFile() {
 
     // Write the InputStream to the temp file
-    File tempFile = super.getFile();
+    final File tempFile = super.getFile();
     try {
-      FileOutputStream outputStream = new FileOutputStream(tempFile); // NOSONAR
+      final FileOutputStream outputStream = new FileOutputStream(tempFile); // NOSONAR
       outputStream.getChannel().lock();
       try {
         IOUtils.copy(inputStream, outputStream);
@@ -70,10 +70,10 @@ class SourceDocumentSpecsFromInputStream extends AbstractFileDocumentSpecs
   }
 
   @Override
-  public void onConsumed(File file) {
+  public void onConsumed(final File tempFile) {
 
     // The temporary file must be deleted
-    FileUtils.deleteQuietly(file);
+    FileUtils.deleteQuietly(tempFile);
 
     if (closeStream) {
       try {

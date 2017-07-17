@@ -88,7 +88,7 @@ public abstract class AbstractConverter implements DocumentConverter {
   @Override
   public ConversionJobWithSourceSpecified convert(final File source) {
 
-    DocumentFormat format =
+    final DocumentFormat format =
         formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName()));
     Validate.notNull(format, "Unsupported source document format");
     return convert(new SourceDocumentSpecsFromFile(source, format));
@@ -102,14 +102,15 @@ public abstract class AbstractConverter implements DocumentConverter {
   }
 
   @Override
-  public ConversionJobWithSourceSpecified convert(InputStream source, DocumentFormat format) {
+  public ConversionJobWithSourceSpecified convert(
+      final InputStream source, final DocumentFormat format) {
 
     return convert(source, format, DEFAULT_CLOSE_STREAM);
   }
 
   @Override
   public ConversionJobWithSourceSpecified convert(
-      InputStream source, DocumentFormat format, boolean close) {
+      final InputStream source, final DocumentFormat format, final boolean closeStream) {
 
     Validate.notNull(format, "The document format is null");
     if (officeManager instanceof TemporaryFileMaker) {
@@ -118,7 +119,7 @@ public abstract class AbstractConverter implements DocumentConverter {
               source,
               format,
               ((TemporaryFileMaker) officeManager).makeTemporaryFile(format.getExtension()),
-              close));
+              closeStream));
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "
