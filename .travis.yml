@@ -9,3 +9,6 @@ jdk:
   - openjdk7
   - oraclejdk7
   - oraclejdk8
+  
+script:
+  - gradlew build -x integTest
