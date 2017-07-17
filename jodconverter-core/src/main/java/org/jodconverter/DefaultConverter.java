@@ -121,7 +121,7 @@ public class DefaultConverter extends AbstractConverter {
       extends AbstractConversionJobWithSourceSpecified {
 
     private DefaultConversionJobWithSourceSpecified(final SourceDocumentSpecs source) {
-      super(source, DefaultConverter.this.formatRegistry);
+      super(source, DefaultConverter.this.officeManager, DefaultConverter.this.formatRegistry);
     }
 
     @Override

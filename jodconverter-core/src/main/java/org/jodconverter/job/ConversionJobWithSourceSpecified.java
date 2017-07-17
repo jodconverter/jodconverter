@@ -20,6 +20,7 @@
 package org.jodconverter.job;
 
 import java.io.File;
+import java.io.OutputStream;
 
 import org.jodconverter.document.DocumentFormat;
 
@@ -46,6 +47,27 @@ public interface ConversionJobWithSourceSpecified {
    * @return The current conversion specification.
    */
   ConversionJob to(File target, DocumentFormat format);
+
+  /**
+   * Configures the current conversion to write the result to the specified {@link OutputStream}.
+   * The stream will be closed after the conversion is written.
+   *
+   * @param target The output stream to which the conversion result is written to.
+   * @param format The format of the document.
+   * @return The current conversion specification.
+   */
+  ConversionJob to(OutputStream target, DocumentFormat format);
+
+  /**
+   * Configures the current conversion to write the result to the specified {@link OutputStream}.
+   * The stream will be closed after the conversion is written.
+   *
+   * @param target The output stream to which the conversion result is written to.
+   * @param format The format of the document.
+   * @param closeStream Determines whether the output stream is closed after writing the result.
+   * @return The current conversion specification.
+   */
+  ConversionJob to(OutputStream target, DocumentFormat format, boolean closeStream);
 
   /**
    * Configures the current conversion to write the result using the specified specifications.

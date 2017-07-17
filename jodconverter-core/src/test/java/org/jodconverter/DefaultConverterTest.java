@@ -19,10 +19,16 @@
 
 package org.jodconverter;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 public class DefaultConverterTest extends BaseOfficeTest {
@@ -31,33 +37,75 @@ public class DefaultConverterTest extends BaseOfficeTest {
       "test-output/" + DefaultConverterTest.class.getSimpleName() + "/";
 
   @Test
-  public void convert_FromFileToFile() throws Exception {
+  public void convert_FromFileToFile_ShouldSucceeded() throws Exception {
 
-    converter
-        .convert(new File(DOCUMENTS_DIR + "test.doc"))
-        .to(new File(OUTPUT_DIR + "convert_FromFileToFile.pdf"))
-        .execute();
+    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    File outputFile = new File(OUTPUT_DIR + "convert_FromFileToFile.pdf");
+    FileUtils.deleteQuietly(outputFile);
+
+    converter.convert(inputFile).to(outputFile).execute();
+
+    assertTrue(outputFile.isFile() && outputFile.length() > 0);
   }
 
   @Test(expected = NullPointerException.class)
-  public void convert_FromStreamToFileWithMissingFormat_ShouldThrowNullPointerException()
+  public void convert_FromStreamToFileWithMissingInputFormat_ShouldThrowNullPointerException()
       throws Exception {
 
-    InputStream inputStream = new FileInputStream(new File(DOCUMENTS_DIR + "test.doc"));
-    converter
-        .convert(inputStream, null)
-        .to(new File(OUTPUT_DIR + "convert_FromStreamToFile.pdf"))
-        .execute();
+    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    File outputFile = new File(OUTPUT_DIR + "convert_FromStreamToFileWithMissingInputFormat.pdf");
+    FileUtils.deleteQuietly(outputFile);
+
+    InputStream inputStream = new FileInputStream(inputFile);
+    converter.convert(inputStream, null).to(outputFile).execute();
+
+    assertFalse(outputFile.exists());
   }
 
-  @Test()
-  public void convert_FromStreamToFileWithSupportedFormat_ShouldThrowIllegalArgumentException()
-      throws Exception {
+  @Test
+  public void convert_FromStreamToFileWithSupportedInputFormat_ShouldSucceeded() throws Exception {
 
-    InputStream inputStream = new FileInputStream(new File(DOCUMENTS_DIR + "test.doc"));
+    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    File outputFile = new File(OUTPUT_DIR + "convert_FromStreamToFileWithSupportedInputFormat.pdf");
+    FileUtils.deleteQuietly(outputFile);
+
+    InputStream inputStream = new FileInputStream(inputFile);
     converter
         .convert(inputStream, formatRegistry.getFormatByExtension("doc"))
-        .to(new File(OUTPUT_DIR + "convert_FromStreamToFile.pdf"))
+        .to(outputFile)
         .execute();
+
+    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void convert_FromFileToStreamWithMissingOutputFormat_ShouldThrowNullPointerException()
+      throws Exception {
+
+    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    File outputFile = new File(OUTPUT_DIR + "convert_FromFileToStreamWithMissingOutputFormat.pdf");
+    FileUtils.deleteQuietly(outputFile);
+
+    OutputStream outputStream = new FileOutputStream(outputFile);
+    converter.convert(inputFile).to(outputStream, null).execute();
+
+    assertFalse(outputFile.exists());
+  }
+
+  @Test
+  public void convert_FromFileToStreamWithSupportedOutputFormat_ShouldSucceeded() throws Exception {
+
+    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    File outputFile =
+        new File(OUTPUT_DIR + "convert_FromFileToStreamWithSupportedOutputFormat.pdf");
+    FileUtils.deleteQuietly(outputFile);
+
+    OutputStream outputStream = new FileOutputStream(outputFile);
+    converter
+        .convert(inputFile)
+        .to(outputStream, formatRegistry.getFormatByExtension("pdf"), false)
+        .execute();
+
+    assertTrue(outputFile.isFile() && outputFile.length() > 0);
   }
 }
