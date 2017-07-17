@@ -1,5 +1,9 @@
 # JODConverter
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core)
+[![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-core.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-core)
+
 I created this fork because I had to do some changes to the original project and I want to share my work with the community.
 
 In order to be able to apply changes to the JODConverter project, I had to understand the source code first. So, for those who may have take a look at the original source code, you'll be happy to see a lot more comments in this version. I tried to be as meaningful as possible along the way, but comments (about the comments!) are always welcome. Please note that my first language is not English.
