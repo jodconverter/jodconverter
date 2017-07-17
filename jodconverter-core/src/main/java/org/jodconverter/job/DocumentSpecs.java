@@ -24,10 +24,10 @@ import java.io.File;
 import org.jodconverter.document.DocumentFormat;
 
 /**
- * A interface that provides the required physical file and format of a document required by a
- * conversion process.
+ * An interface that provides, for a document, the physical file and format required by a conversion
+ * process.
  */
-public interface DocumentSpecs {
+interface DocumentSpecs {
 
   /**
    * Gets the file where is located the document.

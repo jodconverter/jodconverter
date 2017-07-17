@@ -40,7 +40,7 @@ class TargetDocumentSpecsFromFile extends AbstractFileDocumentSpecs implements T
   @Override
   public void onFailure(final File file, final Exception ex) {
 
-    // Delete the file
+    // Ensure the created file is deleted
     FileUtils.deleteQuietly(file);
   }
 }

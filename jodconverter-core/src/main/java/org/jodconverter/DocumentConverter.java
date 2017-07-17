@@ -45,7 +45,7 @@ public interface DocumentConverter {
    * Converts a source file that is stored on the local file system.
    *
    * @param source The conversion input as a file.
-   * @param format The format of the document.
+   * @param format The format of the input document.
    * @return The current conversion specification.
    */
   ConversionJobWithSourceSpecified convert(File source, DocumentFormat format);
@@ -54,7 +54,7 @@ public interface DocumentConverter {
    * Converts a source stream input stream.
    *
    * @param source The conversion input as an input stream.
-   * @param format The format of the document.
+   * @param format The format of the input document.
    * @return The current conversion specification.
    */
   ConversionJobWithSourceSpecified convert(InputStream source, DocumentFormat format);
@@ -63,12 +63,12 @@ public interface DocumentConverter {
    * Converts a source stream input stream.
    *
    * @param source The conversion input as an input stream.
-   * @param format The format of the document.
-   * @param close {@code true} to close the input stream once consume, {@code false} otherwise.
+   * @param format The format of the input document.
+   * @param closeStream Whether the {@link InputStream} is closed after the conversion terminates.
    * @return The current conversion specification.
    */
   ConversionJobWithSourceSpecified convert(
-      InputStream source, DocumentFormat format, boolean close);
+      InputStream source, DocumentFormat format, boolean closeStream);
 
   /**
    * Converts a source document using the given specifications.
@@ -79,9 +79,9 @@ public interface DocumentConverter {
   ConversionJobWithSourceSpecified convert(SourceDocumentSpecs source);
 
   /**
-   * Gets all the DocumentFormat supported by the converter.
+   * Gets all the {@link DocumentFormat} supported by the converter.
    *
-   * @return A {@link DocumentFormatRegistry} containing the supported format.
+   * @return A {@link DocumentFormatRegistry} containing the supported formats.
    */
   DocumentFormatRegistry getFormatRegistry();
 }

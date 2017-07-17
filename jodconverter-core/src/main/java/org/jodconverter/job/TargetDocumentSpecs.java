@@ -22,7 +22,7 @@ package org.jodconverter.job;
 import java.io.File;
 
 /**
- * A interface that provides the behavior to apply when a target file is no longer required by a
+ * An interface that provides the behavior to apply when a target file is no longer required by a
  * conversion process.
  */
 public interface TargetDocumentSpecs extends DocumentSpecs {
