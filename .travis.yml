@@ -9,6 +9,9 @@ jdk:
   - openjdk7
   - oraclejdk7
   - oraclejdk8
-  
+
+before_script:
+  - chmod +x gradlew
+
 script:
   - gradlew build -x integTest
