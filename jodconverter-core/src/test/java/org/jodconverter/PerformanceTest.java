@@ -44,7 +44,7 @@ public class PerformanceTest extends BaseOfficeTest {
   private static final String OUTPUT_EXTENSION = "pdf";
 
   private static String getDurationBreakdown(final long millis) {
-    
+
     if (millis < 0) {
       throw new IllegalArgumentException("Duration must be greater than zero!");
     }
