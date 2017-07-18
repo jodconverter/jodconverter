@@ -39,7 +39,7 @@ import org.jodconverter.DocumentConverter;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class JODConverterITest {
+public class JodConverterITest {
 
   private File inputFileTxt;
   private File outputFileRtf;
