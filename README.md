@@ -1,4 +1,4 @@
-# JODConverter<sup><sup>&nbsp;It's Free.</sup></sup>
+# JODConverter&nbsp;<sup>&nbsp;LibreOffice</sup>&nbsp;/&nbsp;<sub>Apache OpenOffice</sub>
 
 [![Build status](https://ci.appveyor.com/api/projects/status/mvn8oqr2m8xorslk?svg=true)](https://ci.appveyor.com/project/sbraconnier/jodconverter)
 [![Build Status](https://travis-ci.org/sbraconnier/jodconverter.svg?branch=master)](https://travis-ci.org/sbraconnier/jodconverter)
@@ -9,23 +9,18 @@
 
 I created this fork because I had to do some changes to the original project and I want to share my work with the community.
 
-In order to be able to apply changes to the JODConverter project, I had to understand the source code first. So, for those who may have take a look at the original source code, you'll be happy to see a lot more comments in this version. I tried to be as meaningful as possible along the way, but comments (about the comments!) are always welcome. Please note that my first language is not English.
-
 ## What you want to know...
 
 - **Documentation**: The JODConverter documentation (work in progress) can be found [here](doc/README.md). 
-
 - **SIGAR**: This fork does not depend on SIGAR. JODConverter only needs to retrieve office processes (PIDs) and kill office processes (using PID). It should work just fine without SIGAR with the actual process managers base on an older version of JODConverter. But I added the ability to use any process manager you would like to implement. More details on this feature later. For now, just look at the DefaultOfficeManagerBuilder class documentation. 
-
-- **Dependencies**: The core project of this fork depends on slf4j, commons-lang3, commons-io, and the required LibreOffice libraries (for now, everything seems to work nice with OpenOffice too).
-
-- **Tests**: This fork has been tested on Windows and Ubuntu. But JODConverter is supposed to work just fine on Mac and other Unix/Linux OS. Any confirmation would be welcome so we could build a list of official supported OS.
+- **Dependencies**: See [this](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core) for core project dependencies.
+- **Tests**: JODConverter is supposed to work just fine on Windows, MacOS and Unix/Linux. Any confirmation would be welcome so we could build a list of official supported OS distributions.
 
 ## Usage
 
 ### Using Gradle:
 ```Shell
-compile 'org.jodconverter:jodconverter-core:4.0.0-RELEASE"
+compile 'org.jodconverter:jodconverter-core:4.0.0-RELEASE'
 ```
 
 ### Using Maven:
