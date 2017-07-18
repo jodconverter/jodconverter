@@ -27,10 +27,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.jodconverter.BaseOfficeITest;
 import org.jodconverter.filter.text.GraphicInserterFilter;
-import org.jodconverter.office.OfficeException;
 
-public class GraphicInserterFilterITest extends FilterITest {
+public class GraphicInserterFilterITest extends BaseOfficeITest {
 
   private static final String SOURCE_FILE = DOCUMENTS_DIR + "test.doc";
   private static final String SOURCE_MULTI_PAGE_FILE = DOCUMENTS_DIR + "test_multi_page.doc";
@@ -40,7 +40,7 @@ public class GraphicInserterFilterITest extends FilterITest {
 
   /** Ensures we start with a fresh output directory. */
   @BeforeClass
-  public static void createOutputDir() throws OfficeException {
+  public static void createOutputDir() {
 
     // Ensure we start with a fresh output directory
     File outputDir = new File(OUTPUT_DIR);
@@ -50,7 +50,7 @@ public class GraphicInserterFilterITest extends FilterITest {
 
   /**  Deletes the output directory. */
   @AfterClass
-  public static void deleteOutputDir() throws OfficeException {
+  public static void deleteOutputDir() {
 
     // Delete the output directory
     FileUtils.deleteQuietly(new File(OUTPUT_DIR));
@@ -59,10 +59,10 @@ public class GraphicInserterFilterITest extends FilterITest {
   /**
    * Test the conversion of a document inserting a graphic along the way.
    *
-   * @throws OfficeException if an error occurs.
+   * @throws Exception if an error occurs.
    */
   @Test
-  public void doFilter_WithCustomizedProperties() throws OfficeException {
+  public void doFilter_WithCustomizedProperties() throws Exception {
 
     final File sourceFile = new File(SOURCE_MULTI_PAGE_FILE);
     final File sourceImage = new File(IMAGE_FILE);
@@ -82,16 +82,17 @@ public class GraphicInserterFilterITest extends FilterITest {
     final GraphicInserterFilter filter = new GraphicInserterFilter(sourceImage.getPath(), props);
 
     // Test the filter
-    testFilters(sourceFile, testOutputDir, "test.onsecondpage", filter, RefreshFilter.INSTANCE);
+    convertFileToAllSupportedFormats(
+        sourceFile, testOutputDir, "test.onsecondpage", filter, RefreshFilter.INSTANCE);
   }
 
   /**
    * Test the conversion of a document inserting a graphic along the way.
    *
-   * @throws OfficeException if an error occurs.
+   * @throws Exception if an error occurs.
    */
   @Test
-  public void doFilter_WithDefaultProperties() throws OfficeException {
+  public void doFilter_WithDefaultProperties() throws Exception {
 
     final File sourceFile = new File(SOURCE_FILE);
     final File sourceImage = new File(IMAGE_FILE);
@@ -105,17 +106,18 @@ public class GraphicInserterFilterITest extends FilterITest {
             100); // Vertical Position // 10 CM
 
     // Test the filter
-    testFilters(sourceFile, testOutputDir, "test.originalsize", filter, RefreshFilter.INSTANCE);
+    convertFileToAllSupportedFormats(
+        sourceFile, testOutputDir, "test.originalsize", filter, RefreshFilter.INSTANCE);
   }
 
   /**
    * Test the conversion of a document inserting a graphic along the way. The image will be resize
    * (smaller).
    *
-   * @throws OfficeException if an error occurs.
+   * @throws Exception if an error occurs.
    */
   @Test
-  public void doFilter_WithDefaultPropertiesAndSmallerSize() throws OfficeException {
+  public void doFilter_WithDefaultPropertiesAndSmallerSize() throws Exception {
 
     final File sourceFile = new File(SOURCE_FILE);
     final File sourceImage = new File(IMAGE_FILE);
@@ -131,6 +133,7 @@ public class GraphicInserterFilterITest extends FilterITest {
             50); // Vertical Position // 5 CM
 
     // Test the filter
-    testFilters(sourceFile, testOutputDir, "test.smallersize", filter, RefreshFilter.INSTANCE);
+    convertFileToAllSupportedFormats(
+        sourceFile, testOutputDir, "test.smallersize", filter, RefreshFilter.INSTANCE);
   }
 }

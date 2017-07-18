@@ -26,11 +26,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.jodconverter.BaseOfficeITest;
 import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.filter.text.TextReplacerFilter;
-import org.jodconverter.office.OfficeException;
 
-public class MultipleFiltersITest extends FilterITest {
+public class MultipleFiltersITest extends BaseOfficeITest {
 
   private static final String SOURCE_FILE = DOCUMENTS_DIR + "test_replace.doc";
   private static final String IMAGE_FILE = RESOURCES_DIR + "images/sample-1.jpg";
@@ -39,7 +39,7 @@ public class MultipleFiltersITest extends FilterITest {
 
   /** Ensures we start with a fresh output directory. */
   @BeforeClass
-  public static void createOutputDir() throws OfficeException {
+  public static void createOutputDir() {
 
     // Ensure we start with a fresh output directory
     File outputDir = new File(OUTPUT_DIR);
@@ -49,7 +49,7 @@ public class MultipleFiltersITest extends FilterITest {
 
   /**  Deletes the output directory. */
   @AfterClass
-  public static void deleteOutputDir() throws OfficeException {
+  public static void deleteOutputDir() {
 
     // Delete the output directory
     FileUtils.deleteQuietly(new File(OUTPUT_DIR));
@@ -58,10 +58,10 @@ public class MultipleFiltersITest extends FilterITest {
   /**
    * Test the conversion of a document replacing text along the way.
    *
-   * @throws OfficeException if an error occurs.
+   * @throws Exception if an error occurs.
    */
   @Test
-  public void doFilter_WithDefaultProperties() throws OfficeException {
+  public void doFilter_WithDefaultProperties() throws Exception {
 
     final File sourceFile = new File(SOURCE_FILE);
     final File sourceImage = new File(IMAGE_FILE);
@@ -88,7 +88,7 @@ public class MultipleFiltersITest extends FilterITest {
             100); // Vertical Position // 10 CM
 
     // Test the filter
-    testFilters(
+    convertFileToAllSupportedFormats(
         sourceFile,
         testOutputDir,
         "test.replaceTextThenAddGraphic",

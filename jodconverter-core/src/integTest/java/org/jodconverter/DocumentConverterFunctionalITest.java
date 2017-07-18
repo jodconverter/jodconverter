@@ -19,31 +19,18 @@
 
 package org.jodconverter;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import org.jodconverter.document.DocumentFormat;
-import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.OfficeException;
 
 public class DocumentConverterFunctionalITest extends BaseOfficeITest {
-
-  private static final Logger logger =
-      LoggerFactory.getLogger(DocumentConverterFunctionalITest.class);
 
   private static final String OUTPUT_DIR =
       TEST_OUTPUT_DIR + DocumentConverterFunctionalITest.class.getSimpleName() + "/";
@@ -66,90 +53,6 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
     FileUtils.deleteQuietly(new File(OUTPUT_DIR));
   }
 
-  private void convertFileToAllSupportedFormats(
-      final File inputFile, final File outputDir, final DefaultFilterChain chain) throws Exception {
-
-    // Detect input format
-    final String inputExtension = FilenameUtils.getExtension(inputFile.getName());
-    final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
-    if (inputFormat == null) {
-      logger.info("-- skipping unsupported input format {}... ", inputExtension);
-      return;
-    }
-
-    assertNotNull("unknown input format: " + inputExtension, inputFormat);
-
-    // Get all supported output formats
-    final Set<DocumentFormat> outputFormats =
-        formatRegistry.getOutputFormats(inputFormat.getInputFamily());
-
-    // For each supported output format, convert the input file
-    for (final DocumentFormat outputFormat : outputFormats) {
-
-      // LibreOffice 4 fails natively on those one
-      if (inputFormat.getExtension().equals("odg") && outputFormat.getExtension().equals("svg")) {
-        logger.info("-- skipping odg to svg test... ");
-        continue;
-      }
-      if (StringUtils.equalsAny(outputFormat.getExtension(), "png", "sxc", "sxw", "sxi")) {
-        logger.info("-- skipping {} to {} test... ", inputExtension, outputFormat.getExtension());
-        continue;
-      }
-
-      // Generate an output filename
-      File outputFile = null;
-      if (outputDir == null) {
-        outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
-        outputFile.deleteOnExit();
-      } else {
-        outputFile =
-            new File(
-                outputDir,
-                FilenameUtils.getBaseName(inputFile.getName()) + "." + outputFormat.getExtension());
-
-        // Delete existing file
-        FileUtils.deleteQuietly(outputFile);
-      }
-
-      // Convert the file
-      logger.info(
-          "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      try {
-        converter
-            .convert(inputFile, inputFormat)
-            .to(outputFile, outputFormat)
-            .modifyWith(chain)
-            .execute();
-
-        logger.info("done.\n");
-        assertTrue(outputFile.isFile() && outputFile.length() > 0);
-
-        //TODO use file detection to make sure outputFile is in the expected format
-
-        // Reset the chain in order to reuse it.
-        chain.reset();
-
-      } catch (OfficeException ex) {
-        // Log the error.
-        String message =
-            "Unable to convert from "
-                + inputFormat.getExtension()
-                + " to "
-                + outputFormat.getExtension()
-                + ".";
-        if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
-          com.sun.star.task.ErrorCodeIOException ioEx =
-              (com.sun.star.task.ErrorCodeIOException) ex.getCause();
-          logger.error(message + " " + ioEx.getMessage(), ioEx);
-        } else {
-          logger.error(message + " " + ex.getMessage(), ex);
-        }
-
-        throw ex;
-      }
-    }
-  }
-
   /**
    * Test the conversion of an HTML file that contains an image.
    *
@@ -161,11 +64,8 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
     final File inputFile = new File(DOCUMENTS_DIR + "index.html");
     final File outputDir = new File(OUTPUT_DIR);
 
-    // Create the filter chain to use
-    final DefaultFilterChain chain = new DefaultFilterChain(RefreshFilter.INSTANCE);
-
     // Convert the file to all supported formats
-    convertFileToAllSupportedFormats(inputFile, outputDir, chain);
+    convertFileToAllSupportedFormats(inputFile, outputDir, RefreshFilter.INSTANCE);
   }
 
   /**
@@ -179,11 +79,8 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
     final File inputFile = new File(DOCUMENTS_DIR + "test.html");
     final File outputDir = new File(OUTPUT_DIR);
 
-    // Create the filter chain to use
-    final DefaultFilterChain chain = new DefaultFilterChain(RefreshFilter.INSTANCE);
-
     // Convert the file to all supported formats
-    convertFileToAllSupportedFormats(inputFile, outputDir, chain);
+    convertFileToAllSupportedFormats(inputFile, outputDir, RefreshFilter.INSTANCE);
   }
 
   /**
@@ -203,13 +100,9 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
               }
             });
 
-    // Here we can reuse a unique FilterChain
-    final DefaultFilterChain chain = new DefaultFilterChain(RefreshFilter.INSTANCE);
-
     for (final File inputFile : files) {
-
       // Convert the file to all supported formats
-      convertFileToAllSupportedFormats(inputFile, null, chain);
+      convertFileToAllSupportedFormats(inputFile, null, RefreshFilter.INSTANCE);
     }
   }
 }
