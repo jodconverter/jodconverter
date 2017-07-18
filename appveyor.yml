@@ -3,10 +3,6 @@ version: "{build}"
 # Avoid build failure caused by the spotless plugin
 init:
   - git config --global core.autocrlf true
-  
-# build settings
-build:
-  verbosity: detailed
 
 # build artifacts
 build_script:
