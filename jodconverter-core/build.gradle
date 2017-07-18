@@ -15,6 +15,6 @@ dependencies {
 
 integrationTest {
   // Run the stress and performance tests manually only
-  exclude 'org/jodconverter/StressTest.class'
-  exclude 'org/jodconverter/PerformanceTest.class'
+  exclude 'org/jodconverter/StressITest.class'
+  exclude 'org/jodconverter/PerformanceITest.class'
 }
