@@ -38,10 +38,10 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-public class OfficeManagerPoolEntryTest {
+public class OfficeManagerPoolEntryITest {
 
   private static final org.slf4j.Logger logger =
-      LoggerFactory.getLogger(OfficeManagerPoolEntryTest.class);
+      LoggerFactory.getLogger(OfficeManagerPoolEntryITest.class);
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long RESTART_INITIAL_WAIT = 1000; // 1 Second.

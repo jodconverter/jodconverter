@@ -34,9 +34,9 @@ import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeManager;
 
-public class StressTest {
+public class StressITest {
 
-  private static final Logger logger = Logger.getLogger(StressTest.class);
+  private static final Logger logger = Logger.getLogger(StressITest.class);
 
   private static final int MAX_CONVERSIONS = 1024;
   private static final int MAX_RUNNING_THREADS = 128;
@@ -69,7 +69,7 @@ public class StressTest {
     // Keep a log file to be able to see if an error occurred
     final FileAppender fileAppender = new FileAppender();
     fileAppender.setName("FileLogger");
-    fileAppender.setFile("test-output/" + StressTest.class.getSimpleName() + "/test.log");
+    fileAppender.setFile("test-output/" + StressITest.class.getSimpleName() + "/test.log");
     fileAppender.setLayout(new PatternLayout(pattern));
     fileAppender.setThreshold(Level.DEBUG);
     fileAppender.setAppend(true);
@@ -87,7 +87,7 @@ public class StressTest {
 
     officeManager.start();
     try {
-      final File inputFile = new File("src/test/resources/documents/test." + INPUT_EXTENSION);
+      final File inputFile = new File("src/integTest/resources/documents/test." + INPUT_EXTENSION);
 
       final Thread[] threads = new Thread[MAX_RUNNING_THREADS];
 

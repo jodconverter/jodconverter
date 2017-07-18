@@ -25,11 +25,11 @@ import java.io.File;
 
 import org.junit.Test;
 
-public class ConvertTest {
+public class ConvertITest {
 
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
-  private static final String SOURCE_FILE = "src/test/resources/documents/test.doc";
-  private static final String OUTPUT_DIR = "test-output/" + ConvertTest.class.getSimpleName();
+  private static final String SOURCE_FILE = "src/integTest/resources/documents/test.doc";
+  private static final String OUTPUT_DIR = "test-output/" + ConvertITest.class.getSimpleName();
 
   @Test
   public void convert() throws Exception {

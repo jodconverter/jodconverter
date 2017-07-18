@@ -15,7 +15,7 @@
 	</bean>
 	<bean id="graphicInserterFilter" class="org.jodconverter.filter.text.GraphicInserterFilter">
 		<!-- Path to the image -->
-		<constructor-arg value="src/test/resources/images/sample-1.jpg" />
+		<constructor-arg value="src/integTest/resources/images/sample-1.jpg" />
 		<!-- Arguments related to the added box size and position -->
 		<constructor-arg value="50" />  <!-- Horizontal Position, 5 CM -->
 		<constructor-arg value="111" /> <!-- Vertical Position, 11.1 CM (just under text box) -->

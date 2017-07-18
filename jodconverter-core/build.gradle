@@ -13,7 +13,7 @@ dependencies {
   testCompile libraries.slf4j_log4j
 }
 
-test {
+integrationTest {
   // Run the stress and performance tests manually only
   exclude 'org/jodconverter/StressTest.class'
   exclude 'org/jodconverter/PerformanceTest.class'

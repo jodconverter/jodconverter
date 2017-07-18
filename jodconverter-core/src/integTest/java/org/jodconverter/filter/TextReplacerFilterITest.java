@@ -25,16 +25,14 @@ import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.filter.text.TextReplacerFilter;
 import org.jodconverter.office.OfficeException;
 
-public class MultipleFiltersTest extends FilterTest {
+public class TextReplacerFilterITest extends FilterITest {
 
   private static final String SOURCE_FILE = DOCUMENTS_DIR + "test_replace.doc";
-  private static final String IMAGE_FILE = RESOURCES_DIR + "images/sample-1.jpg";
   private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + MultipleFiltersTest.class.getSimpleName();
+      TEST_OUTPUT_DIR + TextReplacerFilterITest.class.getSimpleName();
 
   /** Clears the output directory before the execution of the first test in this class. */
   @BeforeClass
@@ -53,11 +51,10 @@ public class MultipleFiltersTest extends FilterTest {
   public void doFilter_WithDefaultProperties() throws OfficeException {
 
     final File sourceFile = new File(SOURCE_FILE);
-    final File sourceImage = new File(IMAGE_FILE);
     final File testOutputDir = new File(OUTPUT_DIR);
 
     // Create the GraphicInserterFilter to test.
-    final TextReplacerFilter testReplacerFilter =
+    final TextReplacerFilter filter =
         new TextReplacerFilter(
             new String[] {"SEARCH_WORD", "that", "have", "new common language will be more simple"},
             new String[] {
@@ -67,22 +64,7 @@ public class MultipleFiltersTest extends FilterTest {
               "most recent common language will be more basic"
             });
 
-    // Create the GraphicInserterFilter to test.
-    final GraphicInserterFilter graphicInserterfilter =
-        new GraphicInserterFilter(
-            sourceImage.getPath(),
-            74, // Image Width // 7.4 CM (half the original size)
-            56, // Image Height // 5.6 CM (half the original size)
-            60, // Horizontal Position // 6 CM
-            100); // Vertical Position // 10 CM
-
     // Test the filter
-    testFilters(
-        sourceFile,
-        testOutputDir,
-        "test.replaceTextThenAddGraphic",
-        testReplacerFilter,
-        graphicInserterfilter,
-        RefreshFilter.INSTANCE);
+    testFilters(sourceFile, testOutputDir, "test", filter, RefreshFilter.INSTANCE);
   }
 }

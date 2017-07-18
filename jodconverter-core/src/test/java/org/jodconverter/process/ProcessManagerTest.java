@@ -21,7 +21,6 @@ package org.jodconverter.process;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import org.apache.commons.lang.SystemUtils;
@@ -98,24 +97,6 @@ public class ProcessManagerTest {
 
     processManager.kill(process, pid);
     assertEquals(processManager.findPid(query), ProcessManager.PID_NOT_FOUND);
-  }
-
-  /**
-   * Tests that using an custom process manager that appears in the classpath will be used.
-   *
-   * @throws Exception if an error occurs.
-   */
-  @Test
-  public void customProcessManager() throws Exception {
-
-    DefaultOfficeManager officeManager =
-        DefaultOfficeManager.builder()
-            .processManager("org.jodconverter.process.CustomProcessManager")
-            .build();
-
-    Object config = FieldUtils.readField(officeManager, "config", true);
-    ProcessManager manager = (ProcessManager) FieldUtils.readField(config, "processManager", true);
-    assertTrue(manager instanceof CustomProcessManager);
   }
 
   /**

@@ -27,12 +27,12 @@ import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
-public abstract class BaseOfficeTest {
+public abstract class BaseOfficeITest {
 
   private static OfficeManager officeManager;
   protected static DefaultConverter converter;
   protected static DocumentFormatRegistry formatRegistry;
-  protected static final String RESOURCES_DIR = "src/test/resources/";
+  protected static final String RESOURCES_DIR = "src/integTest/resources/";
   protected static final String DOCUMENTS_DIR = RESOURCES_DIR + "documents/";
   protected static final String TEST_OUTPUT_DIR = "test-output/";
 

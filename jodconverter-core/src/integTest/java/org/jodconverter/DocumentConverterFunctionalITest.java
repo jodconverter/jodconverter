@@ -37,13 +37,13 @@ import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.RefreshFilter;
 
-public class OfficeDocumentConverterFunctionalTest extends BaseOfficeTest {
+public class DocumentConverterFunctionalITest extends BaseOfficeITest {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(OfficeDocumentConverterFunctionalTest.class);
+      LoggerFactory.getLogger(DocumentConverterFunctionalITest.class);
 
   private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + OfficeDocumentConverterFunctionalTest.class.getSimpleName();
+      TEST_OUTPUT_DIR + DocumentConverterFunctionalITest.class.getSimpleName();
 
   private void convertFileToAllSupportedFormats(
       final File inputFile, final File outputDir, final DefaultFilterChain chain) throws Exception {
@@ -154,7 +154,7 @@ public class OfficeDocumentConverterFunctionalTest extends BaseOfficeTest {
   @Test
   public void runAllPossibleConversions() throws Exception {
 
-    final File dir = new File("src/test/resources/documents");
+    final File dir = new File("src/integTest/resources/documents");
     final File[] files =
         dir.listFiles(
             new FilenameFilter() {

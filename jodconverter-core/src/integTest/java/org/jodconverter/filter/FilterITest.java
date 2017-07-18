@@ -30,13 +30,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.BaseOfficeTest;
+import org.jodconverter.BaseOfficeITest;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.OfficeException;
 
-public abstract class FilterTest extends BaseOfficeTest {
+public abstract class FilterITest extends BaseOfficeITest {
 
-  private static final Logger logger = LoggerFactory.getLogger(FilterTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(FilterITest.class);
 
   protected void testFilters(
       final File inputFile,

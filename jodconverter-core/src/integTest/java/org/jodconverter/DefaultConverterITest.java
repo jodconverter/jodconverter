@@ -31,10 +31,10 @@ import java.io.OutputStream;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-public class DefaultConverterTest extends BaseOfficeTest {
+public class DefaultConverterITest extends BaseOfficeITest {
 
-  protected static final String OUTPUT_DIR =
-      "test-output/" + DefaultConverterTest.class.getSimpleName() + "/";
+  private static final String OUTPUT_DIR =
+      "test-output/" + DefaultConverterITest.class.getSimpleName() + "/";
 
   @Test
   public void convert_FromFileToFile_ShouldSucceeded() throws Exception {

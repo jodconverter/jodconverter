@@ -30,12 +30,12 @@ import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.filter.text.TextInserterFilter;
 import org.jodconverter.office.OfficeException;
 
-public class TextInserterFilterTest extends FilterTest {
+public class TextInserterFilterITest extends FilterITest {
 
   private static final String SOURCE_FILE = DOCUMENTS_DIR + "test.doc";
   private static final String SOURCE_MULTI_PAGE_FILE = DOCUMENTS_DIR + "test_multi_page.doc";
   private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + TextInserterFilterTest.class.getSimpleName();
+      TEST_OUTPUT_DIR + TextInserterFilterITest.class.getSimpleName();
 
   /** Clears the output directory before the execution of the first test in this class. */
   @BeforeClass

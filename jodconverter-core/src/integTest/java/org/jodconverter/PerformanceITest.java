@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.OfficeException;
 
-public class PerformanceTest extends BaseOfficeTest {
+public class PerformanceITest extends BaseOfficeITest {
 
-  private static final Logger logger = LoggerFactory.getLogger(PerformanceTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(PerformanceITest.class);
 
   private static final int MAX_CONVERSIONS = 10;
   private static final String INPUT_EXTENSION = "odt";
@@ -105,7 +105,7 @@ public class PerformanceTest extends BaseOfficeTest {
     final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(INPUT_EXTENSION);
     final DocumentFormat outputFormat = formatRegistry.getFormatByExtension(OUTPUT_EXTENSION);
 
-    final File dir = new File("src/test/resources/performance");
+    final File dir = new File("src/integTest/resources/performance");
     final File[] files =
         dir.listFiles((FileFilter) new WildcardFileFilter("*.odt", IOCase.INSENSITIVE));
 

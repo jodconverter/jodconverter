@@ -29,13 +29,13 @@ import org.junit.Test;
 import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.office.OfficeException;
 
-public class GraphicInserterFilterTest extends FilterTest {
+public class GraphicInserterFilterITest extends FilterITest {
 
   private static final String SOURCE_FILE = DOCUMENTS_DIR + "test.doc";
   private static final String SOURCE_MULTI_PAGE_FILE = DOCUMENTS_DIR + "test_multi_page.doc";
   private static final String IMAGE_FILE = RESOURCES_DIR + "images/sample-1.jpg";
   private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + GraphicInserterFilterTest.class.getSimpleName();
+      TEST_OUTPUT_DIR + GraphicInserterFilterITest.class.getSimpleName();
 
   /** Clears the output directory before the execution of the first test in this class. */
   @BeforeClass

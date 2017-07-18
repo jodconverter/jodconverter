@@ -31,7 +31,9 @@ import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.DefaultConverter;
 import org.jodconverter.document.DocumentFormatRegistry;
+import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.FilterChain;
+import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
@@ -89,7 +91,12 @@ public final class CliConverter implements AutoCloseable {
       throws OfficeException {
 
     printInfo("Converting '" + inputFile.getPath() + "' to '" + outputFile.getPath() + "'");
-    converter.convert(inputFile).to(outputFile).modifyWith(filterChain).execute();
+    converter
+        .convert(inputFile)
+        .to(outputFile)
+        .modifyWith(
+            filterChain == null ? new DefaultFilterChain(RefreshFilter.INSTANCE) : filterChain)
+        .execute();
   }
 
   /**

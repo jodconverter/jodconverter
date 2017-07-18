@@ -17,42 +17,32 @@
  * limitations under the License.
  */
 
-package org.jodconverter.office;
+package org.jodconverter.process;
 
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 
-public class ExternalOfficeManagerTest {
+import org.jodconverter.office.DefaultOfficeManager;
 
-  // TODO test auto-reconnection
+public class ProcessManagerITest {
 
   /**
-   * Test the auto-reconnection...
+   * Tests that using an custom process manager that appears in the classpath will be used.
    *
    * @throws Exception if an error occurs.
    */
   @Test
-  public void executeTask() throws Exception {
-    final OfficeUrl officeUrl = new OfficeUrl(2002);
-    final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
-    officeProcess.start();
-    Thread.sleep(2000); // NOSONAR
-    final Integer exitCode = officeProcess.getExitCode();
-    if (exitCode != null && exitCode.equals(Integer.valueOf(81))) {
-      officeProcess.start(true);
-      Thread.sleep(2000); // NOSONAR
-    }
+  public void customProcessManager() throws Exception {
 
-    final ExternalOfficeManager manager = new ExternalOfficeManager(officeUrl, true);
-    manager.start();
+    DefaultOfficeManager officeManager =
+        DefaultOfficeManager.builder()
+            .processManager("org.jodconverter.process.CustomProcessManager")
+            .build();
 
-    final MockOfficeTask task = new MockOfficeTask();
-    manager.execute(task);
-    assertTrue(task.isCompleted());
-
-    manager.stop();
-
-    officeProcess.forciblyTerminate(1000, 5000);
+    Object config = FieldUtils.readField(officeManager, "config", true);
+    ProcessManager manager = (ProcessManager) FieldUtils.readField(config, "processManager", true);
+    assertTrue(manager instanceof CustomProcessManager);
   }
 }
