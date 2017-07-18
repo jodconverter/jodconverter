@@ -91,7 +91,7 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
         logger.info("-- skipping odg to svg test... ");
         continue;
       }
-      if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxw", "sxi")) {
+      if (StringUtils.equalsAny(outputFormat.getExtension(), "png", "sxc", "sxw", "sxi")) {
         logger.info("-- skipping {} to {} test... ", inputExtension, outputFormat.getExtension());
         continue;
       }
@@ -120,6 +120,15 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
             .to(outputFile, outputFormat)
             .modifyWith(chain)
             .execute();
+
+        logger.info("done.\n");
+        assertTrue(outputFile.isFile() && outputFile.length() > 0);
+
+        //TODO use file detection to make sure outputFile is in the expected format
+
+        // Reset the chain in order to reuse it.
+        chain.reset();
+
       } catch (OfficeException ex) {
         // Log the error.
         String message =
@@ -135,14 +144,9 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
         } else {
           logger.error(message + " " + ex.getMessage(), ex);
         }
+
+        throw ex;
       }
-      logger.info("done.\n");
-      assertTrue(outputFile.isFile() && outputFile.length() > 0);
-
-      //TODO use file detection to make sure outputFile is in the expected format
-
-      // Reset the chain in order to reuse it.
-      chain.reset();
     }
   }
 

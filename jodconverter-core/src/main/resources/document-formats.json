@@ -126,16 +126,6 @@
     }
   },
   {
-    "name": "MediaWiki wikitext",
-    "extension": "wiki",
-    "mediaType": "text/x-wiki",
-    "storeProperties": {
-      "TEXT": {
-        "FilterName": "MediaWiki"
-      }
-    }
-  },
-  {
     "name": "OpenDocument Spreadsheet",
     "extension": "ods",
     "mediaType": "application/vnd.oasis.opendocument.spreadsheet",
