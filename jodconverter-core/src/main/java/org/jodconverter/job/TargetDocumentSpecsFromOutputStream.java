@@ -58,9 +58,8 @@ class TargetDocumentSpecsFromOutputStream extends AbstractFileDocumentSpecs
         IOUtils.closeQuietly(outputStream);
       }
 
-    } catch (IOException e) {
-      // TODO Create wrapper RuntimeException exception
-      throw new RuntimeException("Could not write file '" + tempFile + "' to stream", e);
+    } catch (IOException ex) {
+      throw new DocumentSpecsIOException("Could not write file '" + tempFile + "' to stream", ex);
     }
   }
 

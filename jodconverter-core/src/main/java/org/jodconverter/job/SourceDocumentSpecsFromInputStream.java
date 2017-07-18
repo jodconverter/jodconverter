@@ -63,9 +63,8 @@ class SourceDocumentSpecsFromInputStream extends AbstractFileDocumentSpecs
         // Note: This will implicitly release the file lock.
         IOUtils.closeQuietly(outputStream);
       }
-    } catch (IOException e) {
-      // TODO Create wrapper RuntimeException exception
-      throw new RuntimeException("Could not write stream to file " + tempFile, e);
+    } catch (IOException ex) {
+      throw new DocumentSpecsIOException("Could not write stream to file " + tempFile, ex);
     }
   }
 
@@ -78,9 +77,8 @@ class SourceDocumentSpecsFromInputStream extends AbstractFileDocumentSpecs
     if (closeStream) {
       try {
         inputStream.close();
-      } catch (IOException e) {
-        // TODO Create wrapper RuntimeException exception
-        throw new RuntimeException("Could not close input stream", e);
+      } catch (IOException ex) {
+        throw new DocumentSpecsIOException("Could not close input stream", ex);
       }
     }
   }
