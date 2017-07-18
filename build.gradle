@@ -137,35 +137,46 @@ jacoco {
 // Creates an aggregated JaCoCo executionData for all
 // the tests (unit tests and integration tests) found
 // in sub Java projects 
-task jacocoTestMerge(type: JacocoMerge) {
-    description = 'Aggregates JaCoCo test and integration test coverage reports of all projects.'
-    group = "Reporting"
+task jacocoMerge(type: JacocoMerge) {
+  description = 'Aggregates JaCoCo test and integration test coverage reports of all projects.'
+  group = "Reporting"
     
-    // Gather execution data from all subprojects
-    // (change this if we want to calculate unit test/integration test coverage separately)
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-    destinationFile file("$rootDir/build/jacoco/overallCoverage.exec")
+  // Gather execution data from all subprojects
+  javaprojects.each { subproject ->
+    executionData subproject.tasks.withType(Test)
+  }
+  doFirst {
+    executionData = files(executionData.findAll { it.exists() })
+  }
 }
-project.tasks["jacocoTestMerge"].dependsOn javaprojects*.test, javaprojects*.integrationTest
 
 // Code coverage report for all the sub (java) projects
-task jacocoTestReport(type: JacocoReport, dependsOn: jacocoTestMerge) {
-    description = 'Aggregates JaCoCo coverage reports of all projects.'
-    group = "Reporting"
-    
-    // Gather merged execution data from all subprojects
-    executionData "${buildDir.name}/jacoco/overallCoverage.exec"
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+  description = 'Generates an aggregate report from all subprojects'
+  dependsOn javaprojects.test, javaprojects.integrationTest, jacocoMerge
 
-    // Add all relevant sourcesets from the subprojects 
-    javaprojects.each {
-         sourceSets it.sourceSets.main
-         //sourceSets it.sourceSets.test
-    }
+  additionalSourceDirs = files(javaprojects.sourceSets.main.allSource.srcDirs)
+  sourceDirectories = files(javaprojects.sourceSets.main.allSource.srcDirs)
+  classDirectories = files(javaprojects.sourceSets.main.output)
+  executionData jacocoMerge.destinationFile
 
-    reports {
-        xml.enabled true // coveralls plugin depends on xml format report
-        html.enabled true
-    }
+  reports {
+    html.enabled = true // human readable
+    xml.enabled = true // required by coveralls
+  }
+}
+
+coveralls {
+  sourceDirs = javaprojects.sourceSets.main.allSource.srcDirs.flatten()
+  jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+  group = 'Coverage reports'
+  description = 'Uploads the aggregated coverage report to Coveralls'
+
+  dependsOn jacocoRootReport
+  onlyIf { System.env.'CI' }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
