@@ -71,9 +71,7 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
 
     // Detect input format
     final String inputExtension = FilenameUtils.getExtension(inputFile.getName());
-
     final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
-
     if (inputFormat == null) {
       logger.info("-- skipping unsupported input format {}... ", inputExtension);
       return;
@@ -116,11 +114,28 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
       // Convert the file
       logger.info(
           "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      converter
-          .convert(inputFile, inputFormat)
-          .to(outputFile, outputFormat)
-          .modifyWith(chain)
-          .execute();
+      try {
+        converter
+            .convert(inputFile, inputFormat)
+            .to(outputFile, outputFormat)
+            .modifyWith(chain)
+            .execute();
+      } catch (OfficeException ex) {
+        // Log the error.
+        String message =
+            "Unable to convert from "
+                + inputFormat.getExtension()
+                + " to "
+                + outputFormat.getExtension()
+                + ".";
+        if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
+          com.sun.star.task.ErrorCodeIOException ioEx =
+              (com.sun.star.task.ErrorCodeIOException) ex.getCause();
+          logger.error(message + " " + ioEx.getMessage(), ioEx);
+        } else {
+          logger.error(message + " " + ex.getMessage(), ex);
+        }
+      }
       logger.info("done.\n");
       assertTrue(outputFile.isFile() && outputFile.length() > 0);
 
@@ -155,7 +170,7 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
    * @throws Exception if an error occurs.
    */
   @Test
-  public void testConversion() throws Exception {
+  public void testHtmlConversion() throws Exception {
 
     final File inputFile = new File(DOCUMENTS_DIR + "test.html");
     final File outputDir = new File(OUTPUT_DIR);
