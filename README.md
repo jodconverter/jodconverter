@@ -1,5 +1,6 @@
 # JODConverter
 
+[![Build Status](https://travis-ci.org/sbraconnier/jodconverter.svg?branch=master)](https://travis-ci.org/sbraconnier/jodconverter)
 [![Dependency Status](https://www.versioneye.com/user/projects/596d252e6725bd000e2d8b3b/badge.svg?style=flat)](https://www.versioneye.com/user/projects/596d252e6725bd000e2d8b3b)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core)
