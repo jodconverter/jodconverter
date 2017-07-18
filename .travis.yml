@@ -1,18 +1,14 @@
 language: java
 
-sudo: false
-
 matrix:
   include:
     - os: linux
       jdk: oraclejdk8
-      before_install: chmod +x ./gradlew
     - os: osx
       osx_image: xcode8
-      before_install: chmod +x ./gradlew
-    - os: windows
-      jdk: oraclejdk8
 
-install: true
+before_install:
+ - chmod +x ./gradlew
 
-script: ./gradlew build -x integTest
+script:
+  - ./gradlew build -x integTest
