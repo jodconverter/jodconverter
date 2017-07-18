@@ -29,6 +29,8 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.RefreshFilter;
+import org.jodconverter.office.OfficeException;
 
 public class DocumentConverterFunctionalITest extends BaseOfficeITest {
 
@@ -43,7 +46,25 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
       LoggerFactory.getLogger(DocumentConverterFunctionalITest.class);
 
   private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + DocumentConverterFunctionalITest.class.getSimpleName();
+      TEST_OUTPUT_DIR + DocumentConverterFunctionalITest.class.getSimpleName() + "/";
+
+  /** Ensures we start with a fresh output directory. */
+  @BeforeClass
+  public static void createOutputDir() throws OfficeException {
+
+    // Ensure we start with a fresh output directory
+    File outputDir = new File(OUTPUT_DIR);
+    FileUtils.deleteQuietly(outputDir);
+    outputDir.mkdirs();
+  }
+
+  /**  Deletes the output directory. */
+  @AfterClass
+  public static void deleteOutputDir() throws OfficeException {
+
+    // Delete the output directory
+    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+  }
 
   private void convertFileToAllSupportedFormats(
       final File inputFile, final File outputDir, final DefaultFilterChain chain) throws Exception {

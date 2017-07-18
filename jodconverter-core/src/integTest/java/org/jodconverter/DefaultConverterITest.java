@@ -19,7 +19,6 @@
 
 package org.jodconverter;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -29,12 +28,34 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.jodconverter.office.OfficeException;
 
 public class DefaultConverterITest extends BaseOfficeITest {
 
   private static final String OUTPUT_DIR =
-      "test-output/" + DefaultConverterITest.class.getSimpleName() + "/";
+      TEST_OUTPUT_DIR + DefaultConverterITest.class.getSimpleName() + "/";
+
+  /** Ensures we start with a fresh output directory. */
+  @BeforeClass
+  public static void createOutputDir() throws OfficeException {
+
+    // Ensure we start with a fresh output directory
+    File outputDir = new File(OUTPUT_DIR);
+    FileUtils.deleteQuietly(outputDir);
+    outputDir.mkdirs();
+  }
+
+  /**  Deletes the output directory. */
+  @AfterClass
+  public static void deleteOutputDir() throws OfficeException {
+
+    // Delete the output directory
+    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+  }
 
   @Test
   public void convert_FromFileToFile_ShouldSucceeded() throws Exception {
@@ -56,10 +77,9 @@ public class DefaultConverterITest extends BaseOfficeITest {
     File outputFile = new File(OUTPUT_DIR + "convert_FromStreamToFileWithMissingInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    InputStream inputStream = new FileInputStream(inputFile);
-    converter.convert(inputStream, null).to(outputFile).execute();
-
-    assertFalse(outputFile.exists());
+    try (InputStream inputStream = new FileInputStream(inputFile)) {
+      converter.convert(inputStream, null).to(outputFile).execute();
+    }
   }
 
   @Test
@@ -86,10 +106,9 @@ public class DefaultConverterITest extends BaseOfficeITest {
     File outputFile = new File(OUTPUT_DIR + "convert_FromFileToStreamWithMissingOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    OutputStream outputStream = new FileOutputStream(outputFile);
-    converter.convert(inputFile).to(outputStream, null).execute();
-
-    assertFalse(outputFile.exists());
+    try (OutputStream outputStream = new FileOutputStream(outputFile)) {
+      converter.convert(inputFile).to(outputStream, null).execute();
+    }
   }
 
   @Test
@@ -103,7 +122,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
     OutputStream outputStream = new FileOutputStream(outputFile);
     converter
         .convert(inputFile)
-        .to(outputStream, formatRegistry.getFormatByExtension("pdf"), false)
+        .to(outputStream, formatRegistry.getFormatByExtension("pdf"))
         .execute();
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);

@@ -22,6 +22,7 @@ package org.jodconverter.filter;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -32,14 +33,24 @@ public class TextReplacerFilterITest extends FilterITest {
 
   private static final String SOURCE_FILE = DOCUMENTS_DIR + "test_replace.doc";
   private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + TextReplacerFilterITest.class.getSimpleName();
+      TEST_OUTPUT_DIR + TextReplacerFilterITest.class.getSimpleName() + "/";
 
-  /** Clears the output directory before the execution of the first test in this class. */
+  /** Ensures we start with a fresh output directory. */
   @BeforeClass
-  public static void deleteOutputDirectory() {
+  public static void createOutputDir() throws OfficeException {
 
-    final File testOutputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(testOutputDir);
+    // Ensure we start with a fresh output directory
+    File outputDir = new File(OUTPUT_DIR);
+    FileUtils.deleteQuietly(outputDir);
+    outputDir.mkdirs();
+  }
+
+  /**  Deletes the output directory. */
+  @AfterClass
+  public static void deleteOutputDir() throws OfficeException {
+
+    // Delete the output directory
+    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
   }
 
   /**
