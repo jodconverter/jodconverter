@@ -13,6 +13,7 @@ repositories {
 // Appropriately inject the common dependencies into each java projects
 dependencies {
   testCompile libraries.assertj
+  testCompile libraries.equalsverifier
   testCompile libraries.junit
   testCompile libraries.findbugs
 }
