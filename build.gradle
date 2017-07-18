@@ -53,6 +53,11 @@ allprojects {
   // Set the group and current version
   group = groupId
   version = currentVersion
+  
+  // Set the maven repository that looks for plugin dependencies.
+  repositories {
+    mavenCentral()
+  }
 
   // Eclipse setup
 
