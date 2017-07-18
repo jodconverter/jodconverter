@@ -1,5 +1,7 @@
 language: java
 
+sudo: required
+
 matrix:
   include:
     - os: linux
@@ -9,6 +11,10 @@ matrix:
 
 before_install:
  - chmod +x ./gradlew
+ - sudo apt-get install libreoffice
 
 script:
-  - ./gradlew build -x integTest
+  - ./gradlew build
+  
+after_success:
+  - ./gradlew jacocoTestReport coveralls

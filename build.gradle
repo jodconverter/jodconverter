@@ -8,9 +8,9 @@ buildscript {
 
   repositories {
     mavenCentral()
+
     //Needed only for SNAPSHOT versions
     maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-        
     maven { url "https://plugins.gradle.org/m2" }
   }
 
@@ -19,6 +19,7 @@ buildscript {
     classpath "com.diffplug.spotless:spotless-plugin-gradle:$spotlessVersion"
     classpath "io.spring.gradle:dependency-management-plugin:$springDependencyManagementVersion"
     classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$nexusStagingVersion"
+    classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:$coverallsVersion"
     classpath "org.standardout:gradle-versioneye-plugin:$versioneyeVersion"
   }
 }
@@ -116,12 +117,61 @@ configure(javaprojects) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Code quality control coverage (JaCoCo)
+
+// We need JacocoMerge to aggregate sub projects report
+apply plugin: 'jacoco'
+// Send coverage data to coveralls.io
+apply plugin: 'com.github.kt3k.coveralls'
+
+// Configures the JaCoCo plugin
+jacoco {
+  toolVersion = jacocoVersion
+}
+
+// Creates an aggregated JaCoCo executionData for all
+// the tests (unit tests and integration tests) found
+// in sub Java projects 
+task jacocoTestMerge(type: JacocoMerge) {
+    description = 'Aggregates JaCoCo test and integration test coverage reports of all projects.'
+    group = "Reporting"
+    
+    // Gather execution data from all subprojects
+    // (change this if we want to calculate unit test/integration test coverage separately)
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+    destinationFile file("$rootDir/build/jacoco/overallCoverage.exec")
+}
+project.tasks["jacocoTestMerge"].dependsOn javaprojects*.test, javaprojects*.integrationTest
+
+// Code coverage report for all the sub (java) projects
+task jacocoTestReport(type: JacocoReport, dependsOn: jacocoTestMerge) {
+    description = 'Aggregates JaCoCo coverage reports of all projects.'
+    group = "Reporting"
+    
+    // Gather merged execution data from all subprojects
+    executionData "${buildDir.name}/jacoco/overallCoverage.exec"
+
+    // Add all relevant sourcesets from the subprojects 
+    javaprojects.each {
+         sourceSets it.sourceSets.main
+         //sourceSets it.sourceSets.test
+    }
+
+    reports {
+        xml.enabled true // coveralls plugin depends on xml format report
+        html.enabled true
+    }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Publishing configuration
 
 // Add the ability to release to Maven Central from Gradle without dealing with Nexus UI
 apply plugin: "io.codearte.nexus-staging"
 
-nexusStaging {  
+nexusStaging {
   username = findProperty('ossrhUsername')
   password = findProperty('ossrhPassword')
 }
@@ -138,7 +188,7 @@ configure(publishprojects) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Distribution configuration
 
-task distZip(type:Zip) {
+task distZip(type: Zip) {
   description "Create full distribution zip"
   baseName project.name
   group "Distribution"
@@ -158,7 +208,9 @@ project.tasks["distZip"].dependsOn subprojects*.distZip
 apply plugin: 'org.standardout.versioneye'
 
 versioneye {
+  includePlugins = false
   includeSubProjects = true
+  exclude 'testCompile', 'testCompileClasspath', 'testCompileOnly', 'testImplementation', 'testRuntime', 'testRuntimeClasspath', 'testRuntimeOnly', 'integTestCompile', 'integTestCompileClasspath', 'integTestCompileOnly', 'integTestImplementation', 'integTestRuntime', 'integTestRuntimeClasspath', 'integTestRuntimeOnly', 'checkstyle', 'jacocoAgent', 'jacocoAnt', 'pmd'
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -171,4 +223,5 @@ task wrapper(type: Wrapper) {
 
   gradleVersion = '4.0'
 }
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
