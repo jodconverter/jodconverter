@@ -1,0 +1,33 @@
+version: "{build}"
+
+# build settings
+build:
+  verbosity: detailed
+
+# build artifacts
+build_script:
+  - gradlew.bat assemble --info --no-daemon
+
+# verify artifacts
+test_script:
+  - gradlew.bat check -x integTest --info --no-daemon
+
+# branches to build
+branches:
+  only:
+    - master
+
+# preserve dependencies between builds
+cache:
+  - C:\Users\appveyor\.gradle
+
+# enviroment settings
+environment:
+  matrix:
+  # don't let this fool you, we still build to target java7
+  - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+
+# failing jobs settings
+matrix:
+  # immediately finish build once one of the jobs fails
+  fast_finish: true
