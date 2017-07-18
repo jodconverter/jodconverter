@@ -2,6 +2,8 @@ language: java
 
 sudo: required
 
+dist: trusty
+
 matrix:
   include:
     - os: linux
