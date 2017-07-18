@@ -19,17 +19,17 @@
 
 package org.jodconverter;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.rules.TestRule;
 
 import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeManager;
 
 public abstract class BaseOfficeITest {
 
-  private static OfficeManager officeManager;
+  @ClassRule public static TestRule officeManagerResource = OfficeManagerResource.INSTANCE;
+
   protected static DefaultConverter converter;
   protected static DocumentFormatRegistry formatRegistry;
   protected static final String RESOURCES_DIR = "src/integTest/resources/";
@@ -42,24 +42,10 @@ public abstract class BaseOfficeITest {
    * @throws OfficeException if an error occurs.
    */
   @BeforeClass
-  public static void startOfficeManager() throws OfficeException {
+  public static void createConverter() throws OfficeException {
 
     // Start an office manager
-    officeManager = DefaultOfficeManager.makeStatic();
     converter = DefaultConverter.make();
     formatRegistry = converter.getFormatRegistry();
-
-    officeManager.start();
-  }
-
-  /**
-   * Stops the office manager started in the setUpBeforeClass method.
-   *
-   * @throws OfficeException if an error occurs.
-   */
-  @AfterClass
-  public static void stopOfficeManager() throws OfficeException {
-
-    officeManager.stop();
   }
 }
