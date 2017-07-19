@@ -87,7 +87,7 @@ public class JodConverterAutoConfiguration {
       builder.officeHome(properties.getOfficeHome());
     }
 
-    if (!StringUtils.isBlank(properties.getOfficeHome())) {
+    if (!StringUtils.isBlank(properties.getWorkingDir())) {
       builder.workingDir(properties.getWorkingDir());
     }
 
