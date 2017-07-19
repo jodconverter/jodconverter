@@ -71,10 +71,10 @@ public class DefaultOfficeManagerBuilder {
     // Count the number of office instances that must be launched
     int numInstances = 0;
     if (pipeNames != null) {
-      numInstances = pipeNames.length;
+      numInstances += pipeNames.length;
     }
     if (portNumbers != null) {
-      numInstances = portNumbers.length;
+      numInstances += portNumbers.length;
     }
 
     // Build the office URL list and return it

@@ -182,7 +182,7 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
   @Override
   public void doFilter(
       final OfficeContext context, final XComponent document, final FilterChain chain)
-      throws OfficeException {
+      throws Exception {
 
     // Querying for the interface XTextDocument (text interface) on the XComponent
     final XTextDocument docText = UnoRuntime.queryInterface(XTextDocument.class, document);
@@ -191,61 +191,57 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
     final XMultiServiceFactory docServiceFactory =
         UnoRuntime.queryInterface(XMultiServiceFactory.class, docText);
 
-    try {
-      // Creating graphic shape service
-      final Object graphicShape =
-          docServiceFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
+    // Creating graphic shape service
+    final Object graphicShape =
+        docServiceFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
 
-      // Access the XShape interface of the GraphicObjectShape
-      final XShape shape = UnoRuntime.queryInterface(XShape.class, graphicShape);
+    // Access the XShape interface of the GraphicObjectShape
+    final XShape shape = UnoRuntime.queryInterface(XShape.class, graphicShape);
 
-      // Set the size of the new Text Frame using the XShape's 'setSize'
-      shape.setSize(toOfficeSize(getRectSize()));
+    // Set the size of the new Text Frame using the XShape's 'setSize'
+    shape.setSize(toOfficeSize(getRectSize()));
 
-      // Generate a new unique name
-      final String uuid = UUID.randomUUID().toString();
+    // Generate a new unique name
+    final String uuid = UUID.randomUUID().toString();
 
-      // Creating bitmap container service
-      final XNameContainer bitmapContainer =
-          UnoRuntime.queryInterface(
-              XNameContainer.class,
-              docServiceFactory.createInstance("com.sun.star.drawing.BitmapTable"));
+    // Creating bitmap container service
+    final XNameContainer bitmapContainer =
+        UnoRuntime.queryInterface(
+            XNameContainer.class,
+            docServiceFactory.createInstance("com.sun.star.drawing.BitmapTable"));
 
-      // Inserting test image to the container
-      final File sourceFile = new File(imagePath);
-      final String strUrl = OfficeUtils.toUrl(sourceFile);
-      logger.debug("Embedding image to the bitmap container '{}'", strUrl);
-      bitmapContainer.insertByName(uuid, strUrl);
+    // Inserting test image to the container
+    final File sourceFile = new File(imagePath);
+    final String strUrl = OfficeUtils.toUrl(sourceFile);
+    logger.debug("Embedding image to the bitmap container '{}'", strUrl);
+    bitmapContainer.insertByName(uuid, strUrl);
 
-      // Querying property interface for the graphic shape service
-      final XPropertySet propSet = UnoRuntime.queryInterface(XPropertySet.class, graphicShape);
+    // Querying property interface for the graphic shape service
+    final XPropertySet propSet = UnoRuntime.queryInterface(XPropertySet.class, graphicShape);
 
-      // Assign image internal URL to the graphic shape property
-      propSet.setPropertyValue("GraphicURL", bitmapContainer.getByName(uuid));
+    // Assign image internal URL to the graphic shape property
+    propSet.setPropertyValue("GraphicURL", bitmapContainer.getByName(uuid));
 
-      // Assign all the other properties
-      for (final Map.Entry<String, Object> entry : getShapeProperties().entrySet()) {
-        propSet.setPropertyValue(entry.getKey(), entry.getValue());
-      }
-
-      // Getting text field interface
-      final XText text = docText.getText();
-
-      // Getting text cursor
-      final XTextCursor textCursor = text.createTextCursor();
-
-      // Apply the AnchorPageNo fix
-      applyAnchorPageNoFix(docText, textCursor);
-
-      // Convert graphic shape to the text content item
-      final XTextContent textContent = UnoRuntime.queryInterface(XTextContent.class, graphicShape);
-
-      // Embed image into the document text with replacement
-      logger.debug("Inserting image into the document");
-      text.insertTextContent(textCursor, textContent, false);
-    } catch (Exception ex) {
-      throw new OfficeException("Could not insert grapic into document.", ex);
+    // Assign all the other properties
+    for (final Map.Entry<String, Object> entry : getShapeProperties().entrySet()) {
+      propSet.setPropertyValue(entry.getKey(), entry.getValue());
     }
+
+    // Getting text field interface
+    final XText text = docText.getText();
+
+    // Getting text cursor
+    final XTextCursor textCursor = text.createTextCursor();
+
+    // Apply the AnchorPageNo fix
+    applyAnchorPageNoFix(docText, textCursor);
+
+    // Convert graphic shape to the text content item
+    final XTextContent textContent = UnoRuntime.queryInterface(XTextContent.class, graphicShape);
+
+    // Embed image into the document text with replacement
+    logger.debug("Inserting image into the document");
+    text.insertTextContent(textCursor, textContent, false);
 
     // Invoke the next filter in the chain
     chain.doFilter(context, document);

@@ -22,10 +22,13 @@ package org.jodconverter;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
+
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
+import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
@@ -176,9 +179,19 @@ public class OfficeDocumentConverter {
       throws OfficeException {
 
     delegate
-        .convert(inputFile, inputFormat)
-        .to(outputFile, outputFormat)
-        .modifyWith(filterChain)
+        .convert(
+            inputFile,
+            inputFormat == null && inputFile != null
+                ? getFormatRegistry()
+                    .getFormatByExtension(FilenameUtils.getExtension(inputFile.getName()))
+                : inputFormat)
+        .to(
+            outputFile,
+            outputFormat == null && outputFile != null
+                ? getFormatRegistry()
+                    .getFormatByExtension(FilenameUtils.getExtension(outputFile.getName()))
+                : outputFormat)
+        .modifyWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
         .execute();
   }
 

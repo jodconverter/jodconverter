@@ -34,7 +34,28 @@ public class RefreshFilter implements Filter {
 
   private static final Logger logger = LoggerFactory.getLogger(RefreshFilter.class);
 
-  public static final RefreshFilter INSTANCE = new RefreshFilter();
+  /**
+   * Singleton instance of refresh filter.
+   *
+   * @since 4.1.0
+   */
+  public static final RefreshFilter REFRESH = new RefreshFilter();
+
+  /**
+   * Singleton instance of refresh filter. Please use the identical {@link RefreshFilter#REFRESH}
+   * constant. The new name is more friendly as it doesn't clash with other values when using static
+   * imports.
+   */
+  @Deprecated public static final RefreshFilter INSTANCE = REFRESH;
+
+  /**
+   * Singleton instance of a {@link FilterChain} that will always contain a single {@link
+   * RefreshFilter}. If a document is just convert from a format to another format, this chain
+   * should be used.
+   *
+   * @since 4.1.0
+   */
+  public static final FilterChain CHAIN = new UnmodifiableFilterChain(REFRESH);
 
   @Override
   public void doFilter(

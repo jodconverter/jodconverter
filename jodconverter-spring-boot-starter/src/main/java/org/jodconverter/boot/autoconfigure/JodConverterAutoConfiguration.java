@@ -19,12 +19,12 @@
 
 package org.jodconverter.boot.autoconfigure;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -55,53 +55,22 @@ public class JodConverterAutoConfiguration {
     this.properties = properties;
   }
 
-  // Create a set of port numbers from a string
-  private Set<Integer> buildPortNumbers(final String str) {
-
-    final Set<Integer> iports = new HashSet<>();
-
-    if (StringUtils.isBlank(str)) {
-      return iports;
-    }
-
-    final String[] portNumbers = StringUtils.split(str, ", ");
-    if (portNumbers.length == 0) {
-      return iports;
-    }
-
-    for (final String portNumber : portNumbers) {
-      if (!StringUtils.isBlank(portNumber)) {
-        iports.add(Integer.parseInt(StringUtils.trim(portNumber)));
-      }
-    }
-
-    return iports;
-  }
-
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager() {
 
     final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
 
-    if (!StringUtils.isBlank(properties.getOfficeHome())) {
-      builder.officeHome(properties.getOfficeHome());
-    }
-
-    if (!StringUtils.isBlank(properties.getWorkingDir())) {
-      builder.workingDir(properties.getWorkingDir());
-    }
-
     if (!StringUtils.isBlank(properties.getPortNumbers())) {
-      final Set<Integer> ports = buildPortNumbers(properties.getPortNumbers());
-      if (!ports.isEmpty()) {
-        builder.portNumbers(ArrayUtils.toPrimitive(ports.toArray(new Integer[] {})));
+      final Set<Integer> iports = new HashSet<>();
+      for (final String portNumber : StringUtils.split(properties.getPortNumbers(), ", ")) {
+        iports.add(NumberUtils.toInt(portNumber, 2002));
       }
+      builder.portNumbers(ArrayUtils.toPrimitive(iports.toArray(new Integer[0])));
     }
 
-    if (!StringUtils.isBlank(properties.getTemplateProfileDir())) {
-      builder.templateProfileDir(new File(properties.getTemplateProfileDir()));
-    }
-
+    builder.officeHome(properties.getOfficeHome());
+    builder.workingDir(properties.getWorkingDir());
+    builder.templateProfileDir(properties.getTemplateProfileDir());
     builder.killExistingProcess(properties.isKillExistingProcess());
     builder.processTimeout(properties.getProcessTimeout());
     builder.processRetryInterval(properties.getProcessRetryInterval());

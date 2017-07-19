@@ -23,6 +23,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /** Contains the required information used to deal with a specific document format . */
 public class DocumentFormat {
 
@@ -194,5 +196,10 @@ public class DocumentFormat {
   public void setStoreProperties(final Map<DocumentFamily, Map<String, Object>> storeProperties) {
 
     this.storeProperties = storeProperties;
+  }
+
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
   }
 }

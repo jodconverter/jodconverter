@@ -22,7 +22,6 @@ package org.jodconverter.filter;
 import com.sun.star.lang.XComponent;
 
 import org.jodconverter.office.OfficeContext;
-import org.jodconverter.office.OfficeException;
 
 /** Represents a step where a document is transformed. */
 public interface Filter {
@@ -40,8 +39,8 @@ public interface Filter {
    * @param context The OfficeContext in use to pass along the chain.
    * @param document The XComponent being converted to pass along the chain.
    * @param chain The chain.
-   * @throws OfficeException If an error processing the filter.
+   * @throws Exception If an error occurs processing the filter.
    */
   void doFilter(final OfficeContext context, final XComponent document, final FilterChain chain)
-      throws OfficeException;
+      throws Exception; // NOSONAR
 }

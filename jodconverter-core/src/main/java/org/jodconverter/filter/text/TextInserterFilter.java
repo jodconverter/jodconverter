@@ -38,7 +38,6 @@ import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
-import org.jodconverter.office.OfficeException;
 
 /** This filter is used to insert text into a document. */
 public class TextInserterFilter extends TextContentInserterFilter {
@@ -104,7 +103,7 @@ public class TextInserterFilter extends TextContentInserterFilter {
   @Override
   public void doFilter(
       final OfficeContext context, final XComponent document, final FilterChain chain)
-      throws OfficeException {
+      throws Exception {
 
     // Querying for the interface XTextDocument (text interface) on the XComponent
     final XTextDocument docText = UnoRuntime.queryInterface(XTextDocument.class, document);
@@ -113,51 +112,46 @@ public class TextInserterFilter extends TextContentInserterFilter {
     final XMultiServiceFactory docServiceFactory =
         UnoRuntime.queryInterface(XMultiServiceFactory.class, docText);
 
-    try {
-      // Use the document's factory to create a new text frame and
-      // immediately access its XTextFrame interface
-      final XTextFrame textFrame =
-          UnoRuntime.queryInterface(
-              XTextFrame.class, docServiceFactory.createInstance("com.sun.star.text.TextFrame"));
+    // Use the document's factory to create a new text frame and
+    // immediately access its XTextFrame interface
+    final XTextFrame textFrame =
+        UnoRuntime.queryInterface(
+            XTextFrame.class, docServiceFactory.createInstance("com.sun.star.text.TextFrame"));
 
-      // Access the XShape interface of the TextFrame
-      final XShape shape = UnoRuntime.queryInterface(XShape.class, textFrame);
+    // Access the XShape interface of the TextFrame
+    final XShape shape = UnoRuntime.queryInterface(XShape.class, textFrame);
 
-      // Set the size of the new Text Frame using the XShape's 'setSize'
-      shape.setSize(toOfficeSize(getRectSize()));
+    // Set the size of the new Text Frame using the XShape's 'setSize'
+    shape.setSize(toOfficeSize(getRectSize()));
 
-      // Access the XPropertySet interface of the TextFrame
-      final XPropertySet propSet = UnoRuntime.queryInterface(XPropertySet.class, textFrame);
+    // Access the XPropertySet interface of the TextFrame
+    final XPropertySet propSet = UnoRuntime.queryInterface(XPropertySet.class, textFrame);
 
-      // Assign all the other properties
-      for (final Map.Entry<String, Object> entry : getShapeProperties().entrySet()) {
-        propSet.setPropertyValue(entry.getKey(), entry.getValue());
-      }
-
-      // Access the XText interface of the text contained within the frame
-      XText text = docText.getText();
-      XTextCursor textCursor = text.createTextCursor();
-
-      // Apply the AnchorPageNo fix
-      applyAnchorPageNoFix(docText, textCursor);
-
-      // Insert the new frame into the document
-      logger.debug("Inserting frame into the document");
-      text.insertTextContent(textCursor, textFrame, false);
-
-      // Access the XText interface of the text contained within the frame
-      text = textFrame.getText();
-
-      // Create a TextCursor over the frame's contents
-      textCursor = text.createTextCursor();
-
-      // Insert text into the frame
-      logger.debug("Writing text to the inserted frame");
-      text.insertString(textCursor, insertedText, false);
-
-    } catch (Exception ex) {
-      throw new OfficeException("Could not insert text into document.", ex);
+    // Assign all the other properties
+    for (final Map.Entry<String, Object> entry : getShapeProperties().entrySet()) {
+      propSet.setPropertyValue(entry.getKey(), entry.getValue());
     }
+
+    // Access the XText interface of the text contained within the frame
+    XText text = docText.getText();
+    XTextCursor textCursor = text.createTextCursor();
+
+    // Apply the AnchorPageNo fix
+    applyAnchorPageNoFix(docText, textCursor);
+
+    // Insert the new frame into the document
+    logger.debug("Inserting frame into the document");
+    text.insertTextContent(textCursor, textFrame, false);
+
+    // Access the XText interface of the text contained within the frame
+    text = textFrame.getText();
+
+    // Create a TextCursor over the frame's contents
+    textCursor = text.createTextCursor();
+
+    // Insert text into the frame
+    logger.debug("Writing text to the inserted frame");
+    text.insertString(textCursor, insertedText, false);
 
     // Invoke the next filter in the chain
     chain.doFilter(context, document);

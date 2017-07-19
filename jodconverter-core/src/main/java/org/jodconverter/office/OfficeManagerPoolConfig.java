@@ -28,7 +28,7 @@ import org.jodconverter.process.ProcessManager;
  *
  * @see OfficeManagerPool
  */
-public class OfficeManagerPoolConfig extends OfficeManagerPoolEntryConfig {
+class OfficeManagerPoolConfig extends OfficeManagerPoolEntryConfig {
 
   /** The default maximum living time of a task in the conversion queue. */
   public static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds

@@ -22,7 +22,7 @@ package org.jodconverter.boot.autoconfigure;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /** Configuration class for JODConverter. */
-@ConfigurationProperties(prefix = "jodconverter")
+@ConfigurationProperties("jodconverter")
 public class JodConverterProperties {
 
   /**
@@ -32,8 +32,8 @@ public class JodConverterProperties {
   private boolean enabled;
 
   /**
-   * Represents the office home directory. If not set, it defaults to an auto detected home
-   * directory (most recent version first).
+   * Represents the office home directory. If not set, it defaults to an auto-detected home
+   * directory (most recent version of LibreOffice first).
    */
   private String officeHome;
 
@@ -72,7 +72,7 @@ public class JodConverterProperties {
    * Process retry interval (milliseconds). Used for waiting between office process call tries
    * (start/terminate). If not set, it defaults to 250.
    */
-  private long processRetryInterval = 250;
+  private long processRetryInterval = 250L;
 
   /**
    * Maximum time allowed to process a task. If the processing time of a task is longer than this

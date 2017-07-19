@@ -24,7 +24,6 @@ import java.util.Map;
 import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.job.AbstractConversionJob;
@@ -150,7 +149,7 @@ public class DefaultConverter extends AbstractConverter {
               source,
               target,
               defaultLoadProperties,
-              filterChain == null ? new DefaultFilterChain(RefreshFilter.INSTANCE) : filterChain);
+              filterChain == null ? RefreshFilter.CHAIN : filterChain);
       officeManager.execute(task);
     }
   }

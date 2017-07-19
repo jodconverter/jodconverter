@@ -37,7 +37,7 @@ public abstract class FilterChainBase implements FilterChain {
 
   /** Creates a FilterChain. */
   public FilterChainBase() {
-    this(new Filter[] {});
+    this(false);
   }
 
   /**
@@ -93,7 +93,14 @@ public abstract class FilterChainBase implements FilterChain {
     // Call the next filter if there is one
     if (pos < filters.size()) {
       final Filter filter = filters.get(pos++);
-      filter.doFilter(context, document, this);
+      try {
+        filter.doFilter(context, document, this);
+      } catch (OfficeException ex) {
+        throw ex;
+      } catch (Exception ex) {
+        throw new OfficeException(
+            "Could not apply filter " + filter.getClass().getName() + ".", ex);
+      }
     }
   }
 
