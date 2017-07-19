@@ -25,7 +25,7 @@ buildscript {
 }
 
 ext {
-  baselineJavaVersion = JavaVersion.VERSION_1_7
+  baselineJavaVersion = JavaVersion.VERSION_1_8
   sourceEncoding = "UTF-8"
 
   ext.releaseBuild = version.endsWith('RELEASE')
