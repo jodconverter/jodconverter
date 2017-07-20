@@ -39,6 +39,10 @@ public final class JsonUtils {
    */
   public static List<Object> toList(final JSONArray array) {
 
+    if (array == null) {
+      return null; // NOSONAR
+    }
+
     final List<Object> list = new ArrayList<>();
     for (int i = 0; i < array.length(); i++) {
       Object value = array.get(i);

@@ -27,7 +27,6 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XRefreshable;
 
 import org.jodconverter.office.OfficeContext;
-import org.jodconverter.office.OfficeException;
 
 /** This filter is used to refresh a document. */
 public class RefreshFilter implements Filter {
@@ -60,7 +59,7 @@ public class RefreshFilter implements Filter {
   @Override
   public void doFilter(
       final OfficeContext context, final XComponent document, final FilterChain chain)
-      throws OfficeException {
+      throws Exception {
 
     logger.debug("Applying the RefreshFilter");
 
