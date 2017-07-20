@@ -40,7 +40,7 @@ public class TextReplacerFilterITest extends BaseOfficeITest {
   public static void createOutputDir() {
 
     // Ensure we start with a fresh output directory
-    File outputDir = new File(OUTPUT_DIR);
+    final File outputDir = new File(OUTPUT_DIR);
     FileUtils.deleteQuietly(outputDir);
     outputDir.mkdirs();
   }
@@ -51,6 +51,58 @@ public class TextReplacerFilterITest extends BaseOfficeITest {
 
     // Delete the output directory
     FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+  }
+
+  /**
+   * Test that the creation of a TextReplacerFilter with a search list and replacement list of
+   * different size throws a IllegalArgumentException.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void create_WithArgumentsSizeNotEqual_ThrowsIllegalArgumentException() {
+
+    new TextReplacerFilter(
+        new String[] {"SEARCH_STRING", "ANOTHER_SEARCH_STRING"},
+        new String[] {"REPLACEMENT_STRING"});
+  }
+
+  /**
+   * Test that the creation of a TextReplacerFilter with an empty replacement list throws a
+   * IllegalArgumentException.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void create_WithEmptyReplacementList_ThrowsIllegalArgumentException() {
+
+    new TextReplacerFilter(new String[] {"SEARCH_STRING"}, new String[0]);
+  }
+
+  /**
+   * Test that the creation of a TextReplacerFilter with an empty search list throws a
+   * IllegalArgumentException.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void create_WithEmptySearchList_ThrowsIllegalArgumentException() {
+
+    new TextReplacerFilter(new String[0], new String[] {"REPLACEMENT_STRING"});
+  }
+
+  /**
+   * Test that the creation of a TextReplacerFilter with a null replacement list throws a
+   * NullPointerException.
+   */
+  @Test(expected = NullPointerException.class)
+  public void create_WithNullReplacementList_ThrowsNullPointerException() {
+
+    new TextReplacerFilter(new String[] {"SEARCH_STRING"}, null);
+  }
+
+  /**
+   * Test that the creation of a TextReplacerFilter with a null search list throws a
+   * NullPointerException.
+   */
+  @Test(expected = NullPointerException.class)
+  public void create_WithNullSearchList_ThrowsNullPointerException() {
+
+    new TextReplacerFilter(null, new String[] {"REPLACEMENT_STRING"});
   }
 
   /**
@@ -76,7 +128,6 @@ public class TextReplacerFilterITest extends BaseOfficeITest {
             });
 
     // Test the filter
-    convertFileToAllSupportedFormats(
-        sourceFile, testOutputDir, "test", filter, RefreshFilter.INSTANCE);
+    convertFileToPdf(sourceFile, testOutputDir, "test", filter, RefreshFilter.REFRESH);
   }
 }

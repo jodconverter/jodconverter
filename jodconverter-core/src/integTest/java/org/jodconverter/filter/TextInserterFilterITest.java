@@ -43,7 +43,7 @@ public class TextInserterFilterITest extends BaseOfficeITest {
   public static void createOutputDir() {
 
     // Ensure we start with a fresh output directory
-    File outputDir = new File(OUTPUT_DIR);
+    final File outputDir = new File(OUTPUT_DIR);
     FileUtils.deleteQuietly(outputDir);
     outputDir.mkdirs();
   }
@@ -82,8 +82,7 @@ public class TextInserterFilterITest extends BaseOfficeITest {
         new TextInserterFilter("This is a test of text insertion", 2, 10, props);
 
     // Test the filter
-    convertFileToAllSupportedFormats(
-        sourceFile, testOutputDir, "test.onsecondpage", filter, RefreshFilter.INSTANCE);
+    convertFileToPdf(sourceFile, testOutputDir, "test.onsecondpage", filter, RefreshFilter.REFRESH);
   }
 
   /**
@@ -107,7 +106,6 @@ public class TextInserterFilterITest extends BaseOfficeITest {
             100); // Vertical Position , 10 CM
 
     // Test the filter
-    convertFileToAllSupportedFormats(
-        sourceFile, testOutputDir, "test.default", filter, RefreshFilter.INSTANCE);
+    convertFileToPdf(sourceFile, testOutputDir, "test.default", filter, RefreshFilter.REFRESH);
   }
 }

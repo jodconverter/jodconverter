@@ -44,7 +44,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
   public static void createOutputDir() throws OfficeException {
 
     // Ensure we start with a fresh output directory
-    File outputDir = new File(OUTPUT_DIR);
+    final File outputDir = new File(OUTPUT_DIR);
     FileUtils.deleteQuietly(outputDir);
     outputDir.mkdirs();
   }
@@ -60,8 +60,8 @@ public class DefaultConverterITest extends BaseOfficeITest {
   @Test
   public void convert_FromFileToFile_ShouldSucceeded() throws Exception {
 
-    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
-    File outputFile = new File(OUTPUT_DIR + "convert_FromFileToFile.pdf");
+    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    final File outputFile = new File(OUTPUT_DIR + "convert_FromFileToFile.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     converter.convert(inputFile).to(outputFile).execute();
@@ -73,8 +73,9 @@ public class DefaultConverterITest extends BaseOfficeITest {
   public void convert_FromStreamToFileWithMissingInputFormat_ShouldThrowNullPointerException()
       throws Exception {
 
-    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
-    File outputFile = new File(OUTPUT_DIR + "convert_FromStreamToFileWithMissingInputFormat.pdf");
+    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    final File outputFile =
+        new File(OUTPUT_DIR + "convert_FromStreamToFileWithMissingInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     try (InputStream inputStream = new FileInputStream(inputFile)) {
@@ -85,8 +86,9 @@ public class DefaultConverterITest extends BaseOfficeITest {
   @Test
   public void convert_FromStreamToFileWithSupportedInputFormat_ShouldSucceeded() throws Exception {
 
-    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
-    File outputFile = new File(OUTPUT_DIR + "convert_FromStreamToFileWithSupportedInputFormat.pdf");
+    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    final File outputFile =
+        new File(OUTPUT_DIR + "convert_FromStreamToFileWithSupportedInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     InputStream inputStream = new FileInputStream(inputFile);
@@ -102,8 +104,9 @@ public class DefaultConverterITest extends BaseOfficeITest {
   public void convert_FromFileToStreamWithMissingOutputFormat_ShouldThrowNullPointerException()
       throws Exception {
 
-    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
-    File outputFile = new File(OUTPUT_DIR + "convert_FromFileToStreamWithMissingOutputFormat.pdf");
+    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    final File outputFile =
+        new File(OUTPUT_DIR + "convert_FromFileToStreamWithMissingOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     try (OutputStream outputStream = new FileOutputStream(outputFile)) {
@@ -114,8 +117,8 @@ public class DefaultConverterITest extends BaseOfficeITest {
   @Test
   public void convert_FromFileToStreamWithSupportedOutputFormat_ShouldSucceeded() throws Exception {
 
-    File inputFile = new File(DOCUMENTS_DIR + "test.doc");
-    File outputFile =
+    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
+    final File outputFile =
         new File(OUTPUT_DIR + "convert_FromFileToStreamWithSupportedOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 

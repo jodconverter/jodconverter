@@ -40,7 +40,7 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
   public static void createOutputDir() throws OfficeException {
 
     // Ensure we start with a fresh output directory
-    File outputDir = new File(OUTPUT_DIR);
+    final File outputDir = new File(OUTPUT_DIR);
     FileUtils.deleteQuietly(outputDir);
     outputDir.mkdirs();
   }
@@ -64,8 +64,8 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
     final File inputFile = new File(DOCUMENTS_DIR + "index.html");
     final File outputDir = new File(OUTPUT_DIR);
 
-    // Convert the file to all supported formats
-    convertFileToAllSupportedFormats(inputFile, outputDir, RefreshFilter.INSTANCE);
+    // Convert the file to PDF
+    convertFileToPdf(inputFile, outputDir, RefreshFilter.REFRESH);
   }
 
   /**
@@ -79,8 +79,8 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
     final File inputFile = new File(DOCUMENTS_DIR + "test.html");
     final File outputDir = new File(OUTPUT_DIR);
 
-    // Convert the file to all supported formats
-    convertFileToAllSupportedFormats(inputFile, outputDir, RefreshFilter.INSTANCE);
+    // Convert the file to PDF
+    convertFileToPdf(inputFile, outputDir, RefreshFilter.REFRESH);
   }
 
   /**
@@ -102,7 +102,7 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
 
     for (final File inputFile : files) {
       // Convert the file to all supported formats
-      convertFileToAllSupportedFormats(inputFile, null, RefreshFilter.INSTANCE);
+      convertFileToAllSupportedFormats(inputFile, null, RefreshFilter.REFRESH);
     }
   }
 }

@@ -38,6 +38,7 @@ import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.Filter;
+import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeException;
 
 public abstract class BaseOfficeITest {
@@ -67,20 +68,9 @@ public abstract class BaseOfficeITest {
   protected void convertFileToAllSupportedFormats(
       final File inputFile, final File outputDir, final Filter... filters) throws Exception {
 
-    convertFileToAllSupportedFormats(inputFile, outputDir, null, filters);
-  }
-
-  protected void convertFileToAllSupportedFormats(
-      final File inputFile,
-      final File outputDir,
-      final String outputFilePrefix,
-      final Filter... filters)
-      throws Exception {
-
     // Create the filter chain to use
     final DefaultFilterChain chain = new DefaultFilterChain(filters);
 
-    // Detect input format
     // Detect input format
     final String inputExtension = FilenameUtils.getExtension(inputFile.getName());
     final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
@@ -98,77 +88,140 @@ public abstract class BaseOfficeITest {
     // This will create 1 output file per output format.
     for (final DocumentFormat outputFormat : outputFormats) {
 
-      // Skip conversions that are not supported on all OS.
-      if (inputFormat.getExtension().equals("odg") && outputFormat.getExtension().equals("svg")) {
-        logger.info("-- skipping odg to svg test... ");
-        continue;
-      }
-      if (StringUtils.equalsAny(outputFormat.getExtension(), "png", "sxc", "sxw", "sxi")) {
-        logger.info("-- skipping {} to {} test... ", inputExtension, outputFormat.getExtension());
-        continue;
-      }
+      // Convert the file to the desired format
+      convertFileTo(inputFile, inputFormat, outputDir, null, outputFormat, chain);
 
-      // Create an output file
-      File outputFile = null;
-      if (outputDir == null) {
-        outputFile =
-            File.createTempFile(
-                outputFilePrefix == null ? "test" : outputFilePrefix,
-                "." + outputFormat.getExtension());
-        outputFile.deleteOnExit();
-      } else {
-        outputFile =
-            new File(
-                outputDir,
-                (outputFilePrefix == null
-                        ? FilenameUtils.getBaseName(inputFile.getName())
-                        : outputFilePrefix)
-                    + "."
-                    + outputFormat.getExtension());
+      // Reset the chain in order to reuse it.
+      chain.reset();
+    }
+  }
 
-        // Delete existing file
-        FileUtils.deleteQuietly(outputFile);
-      }
+  protected void convertFileToPdf(
+      final File inputFile, final File outputDir, final Filter... filters) throws Exception {
 
-      // Convert the file
+    convertFileToPdf(inputFile, outputDir, null, filters);
+  }
+
+  protected void convertFileToPdf(
+      final File inputFile,
+      final File outputDir,
+      final String outputFilePrefix,
+      final Filter... filters)
+      throws Exception {
+
+    // Detect input format
+    final String inputExtension = FilenameUtils.getExtension(inputFile.getName());
+    final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
+    if (inputFormat == null) {
+      logger.info("-- skipping unsupported input format {}... ", inputExtension);
+      return;
+    }
+    assertNotNull("unknown input format: " + inputExtension, inputFormat);
+
+    convertFileTo(
+        inputFile,
+        inputFormat,
+        outputDir,
+        outputFilePrefix,
+        formatRegistry.getFormatByExtension("pdf"),
+        new DefaultFilterChain(filters));
+  }
+
+  protected void convertFileTo(
+      final File inputFile,
+      final DocumentFormat inputFormat,
+      final File outputDir,
+      final String outputFilePrefix,
+      final DocumentFormat outputFormat,
+      final Filter... filters)
+      throws Exception {
+
+    convertFileTo(
+        inputFile,
+        inputFormat,
+        outputDir,
+        outputFilePrefix,
+        outputFormat,
+        new DefaultFilterChain(filters));
+  }
+
+  protected void convertFileTo(
+      final File inputFile,
+      final DocumentFormat inputFormat,
+      final File outputDir,
+      final String outputFilePrefix,
+      final DocumentFormat outputFormat,
+      final FilterChain chain)
+      throws Exception {
+
+    // Skip conversions that are not supported on all OS.
+    if (inputFormat.getExtension().equals("odg") && outputFormat.getExtension().equals("svg")) {
+      logger.info("-- skipping odg to svg test... ");
+      return;
+    }
+    if (StringUtils.equalsAny(outputFormat.getExtension(), "png", "sxc", "sxw", "sxi")) {
       logger.info(
-          "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
-      try {
-        converter
-            .convert(inputFile, inputFormat)
-            .to(outputFile, outputFormat)
-            .modifyWith(chain)
-            .execute();
+          "-- skipping {} to {} test... ", inputFormat.getExtension(), outputFormat.getExtension());
+      return;
+    }
 
-        logger.info("done.\n");
+    // Create an output file
+    File outputFile = null;
+    if (outputDir == null) {
+      outputFile =
+          File.createTempFile(
+              outputFilePrefix == null ? "test" : outputFilePrefix,
+              "." + outputFormat.getExtension());
+      outputFile.deleteOnExit();
+    } else {
+      outputFile =
+          new File(
+              outputDir,
+              (outputFilePrefix == null
+                      ? FilenameUtils.getBaseName(inputFile.getName())
+                      : outputFilePrefix)
+                  + "."
+                  + outputFormat.getExtension());
 
-        // Check that the created file is not empty. The programmer still have to
-        // manually if the content of the output file looks good.
-        assertTrue(outputFile.isFile() && outputFile.length() > 0);
+      // Delete existing file
+      FileUtils.deleteQuietly(outputFile);
+    }
 
-        //TODO use file detection to make sure outputFile is in the expected format
+    // Convert the file
+    logger.info(
+        "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
+    try {
+      converter
+          .convert(inputFile, inputFormat)
+          .to(outputFile, outputFormat)
+          .modifyWith(chain)
+          .execute();
 
-        // Reset the chain in order to reuse it.
-        chain.reset();
+      logger.info("done.\n");
 
-      } catch (OfficeException ex) {
-        // Log the error.
-        String message =
-            "Unable to convert from "
-                + inputFormat.getExtension()
-                + " to "
-                + outputFormat.getExtension()
-                + ".";
-        if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
-          com.sun.star.task.ErrorCodeIOException ioEx =
-              (com.sun.star.task.ErrorCodeIOException) ex.getCause();
-          logger.error(message + " " + ioEx.getMessage(), ioEx);
-        } else {
-          logger.error(message + " " + ex.getMessage(), ex);
-        }
+      // Check that the created file is not empty. The programmer still have to
+      // manually if the content of the output file looks good.
+      assertTrue(outputFile.isFile() && outputFile.length() > 0);
 
-        throw ex;
+      //TODO use file detection to make sure outputFile is in the expected format
+
+    } catch (OfficeException ex) {
+      // Log the error.
+      final String message =
+          "Unable to convert from "
+              + inputFormat.getExtension()
+              + " to "
+              + outputFormat.getExtension()
+              + ".";
+      if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
+        com.sun.star.task.ErrorCodeIOException ioEx =
+            (com.sun.star.task.ErrorCodeIOException) ex.getCause();
+        logger.error(message + " " + ioEx.getMessage(), ioEx);
+      } else {
+        logger.error(message + " " + ex.getMessage(), ex);
       }
+
+      throw ex;
     }
   }
 }

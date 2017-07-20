@@ -37,6 +37,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import org.jodconverter.office.OfficeUtils;
+
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SpringControllerITest {
@@ -47,8 +49,20 @@ public class SpringControllerITest {
     // this bean will be injected into the SpringControllerTest class
     @Bean
     public JodConverterBean springJoDConverter() {
-      // We could set properties here.
-      return new JodConverterBean();
+
+      JodConverterBean bean = new JodConverterBean();
+      bean.setPortNumbers("2005");
+      bean.setOfficeHome(OfficeUtils.getDefaultOfficeHome().getPath());
+      bean.setWorkingDir(null);
+      bean.setTemplateProfileDir(null);
+      bean.setKillExistingProcess(true);
+      bean.setProcessRetryInterval(1000L);
+      bean.setProcessTimeout(60000L);
+      bean.setMaxTasksPerProcess(20);
+      bean.setTaskExecutionTimeout(60000L);
+      bean.setTaskQueueTimeout(60000L);
+
+      return bean;
     }
   }
 
@@ -97,27 +111,33 @@ public class SpringControllerITest {
   public void testTxtToRtf() throws Exception {
 
     bean.getConverter().convert(inputFileTxt).to(outputFileRtf).execute();
-    assertTrue("RTF File not created.", outputFileRtf.exists());
+    assertTrue("RTF File not created.", outputFileRtf.exists() && outputFileRtf.length() > 0);
   }
 
   @Test
   public void testTxtToDoc() throws Exception {
 
     bean.getConverter().convert(inputFileTxt).to(outputFileDoc).execute();
-    assertTrue("DOC File not created.", outputFileDoc.exists());
+    assertTrue("DOC File not created.", outputFileDoc.exists() && outputFileDoc.length() > 0);
   }
 
   @Test
   public void testTxtToDocx() throws Exception {
 
     bean.getConverter().convert(inputFileTxt).to(outputFileDocx).execute();
-    assertTrue("DOCX File not created.", outputFileDocx.exists());
+    assertTrue("DOCX File not created.", outputFileDocx.exists() && outputFileDocx.length() > 0);
   }
 
   @Test
   public void testTxtToPdf() throws Exception {
 
     bean.getConverter().convert(inputFileTxt).to(outputFilePdf).execute();
-    assertTrue("PDF File not created.", outputFilePdf.exists());
+    assertTrue("PDF File not created.", outputFilePdf.exists() && outputFilePdf.length() > 0);
+  }
+
+  @Test
+  public void testLogAvailableFormats() throws Exception {
+
+    bean.logAvailableFormats();
   }
 }

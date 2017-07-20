@@ -43,7 +43,7 @@ public class GraphicInserterFilterITest extends BaseOfficeITest {
   public static void createOutputDir() {
 
     // Ensure we start with a fresh output directory
-    File outputDir = new File(OUTPUT_DIR);
+    final File outputDir = new File(OUTPUT_DIR);
     FileUtils.deleteQuietly(outputDir);
     outputDir.mkdirs();
   }
@@ -57,7 +57,7 @@ public class GraphicInserterFilterITest extends BaseOfficeITest {
   }
 
   /**
-   * Test the conversion of a document inserting a graphic along the way.
+   * Test the conversion of a document inserting a graphic along the way on the second page.
    *
    * @throws Exception if an error occurs.
    */
@@ -82,8 +82,7 @@ public class GraphicInserterFilterITest extends BaseOfficeITest {
     final GraphicInserterFilter filter = new GraphicInserterFilter(sourceImage.getPath(), props);
 
     // Test the filter
-    convertFileToAllSupportedFormats(
-        sourceFile, testOutputDir, "test.onsecondpage", filter, RefreshFilter.INSTANCE);
+    convertFileToPdf(sourceFile, testOutputDir, "test.onsecondpage", filter, RefreshFilter.REFRESH);
   }
 
   /**
@@ -106,8 +105,7 @@ public class GraphicInserterFilterITest extends BaseOfficeITest {
             100); // Vertical Position // 10 CM
 
     // Test the filter
-    convertFileToAllSupportedFormats(
-        sourceFile, testOutputDir, "test.originalsize", filter, RefreshFilter.INSTANCE);
+    convertFileToPdf(sourceFile, testOutputDir, "test.originalsize", filter, RefreshFilter.REFRESH);
   }
 
   /**
@@ -133,7 +131,42 @@ public class GraphicInserterFilterITest extends BaseOfficeITest {
             50); // Vertical Position // 5 CM
 
     // Test the filter
-    convertFileToAllSupportedFormats(
-        sourceFile, testOutputDir, "test.smallersize", filter, RefreshFilter.INSTANCE);
+    convertFileToPdf(sourceFile, testOutputDir, "test.smallersize", filter, RefreshFilter.REFRESH);
+  }
+
+  /**
+   * Test the conversion of a document inserting a graphic along the way on the second page. The
+   * image will be resize (smaller).
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void doFilter_WithCustomizedPropertiesAndSmallerSize() throws Exception {
+
+    final File sourceFile = new File(SOURCE_MULTI_PAGE_FILE);
+    final File sourceImage = new File(IMAGE_FILE);
+    final File testOutputDir = new File(OUTPUT_DIR);
+
+    // Create the properties of the filter
+    final Map<String, Object> props =
+        GraphicInserterFilter.createDefaultShapeProperties(
+            50, // Horizontal Position, 5 CM
+            100 // Vertical Position, 10 CM
+            );
+
+    // Add a special property to add the image on the second page
+    props.put("AnchorPageNo", (short) 2);
+
+    // Create the GraphicInserterFilter to test.
+    final GraphicInserterFilter filter =
+        new GraphicInserterFilter(
+            sourceImage.getPath(),
+            74, // Image Width // 7.4 CM (half the original size)
+            56, // Image Height // 5.6 CM (half the original size)
+            props);
+
+    // Test the filter
+    convertFileToPdf(
+        sourceFile, testOutputDir, "test.onsecondpage.smallersize", filter, RefreshFilter.REFRESH);
   }
 }

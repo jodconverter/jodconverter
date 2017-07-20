@@ -42,7 +42,7 @@ public class MultipleFiltersITest extends BaseOfficeITest {
   public static void createOutputDir() {
 
     // Ensure we start with a fresh output directory
-    File outputDir = new File(OUTPUT_DIR);
+    final File outputDir = new File(OUTPUT_DIR);
     FileUtils.deleteQuietly(outputDir);
     outputDir.mkdirs();
   }
@@ -88,12 +88,12 @@ public class MultipleFiltersITest extends BaseOfficeITest {
             100); // Vertical Position // 10 CM
 
     // Test the filter
-    convertFileToAllSupportedFormats(
+    convertFileToPdf(
         sourceFile,
         testOutputDir,
         "test.replaceTextThenAddGraphic",
         testReplacerFilter,
         graphicInserterfilter,
-        RefreshFilter.INSTANCE);
+        RefreshFilter.REFRESH);
   }
 }

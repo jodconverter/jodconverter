@@ -19,32 +19,35 @@
 
 package org.jodconverter.document;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 public class JsonDocumentFormatRegistryTest {
 
   /**
-   * Test the readability of the JSON file that contains the supported document formats.
+   * Test Backward compatibility.
    *
-   * @throws Exception if an error occurs.
+   * @throws IOException If an IO error occurs.
    */
   @Test
-  public void readJsonRegistry() throws IOException {
+  public void create_UsingOldJsonFormat_AllOutputFormatsLoadedSuccessfully() throws IOException {
 
-    final InputStream input = getClass().getResourceAsStream("/document-formats.json");
-    try {
-      final DocumentFormatRegistry registry = JsonDocumentFormatRegistry.create(input);
-      final DocumentFormat odt = registry.getFormatByExtension("odt");
-      assertNotNull(odt);
-      assertNotNull(odt.getStoreProperties(DocumentFamily.TEXT));
-    } finally {
-      IOUtils.closeQuietly(input);
+    try (final InputStream input =
+        JsonDocumentFormatRegistry.class.getResourceAsStream("/former-document-formats.json")) {
+      JsonDocumentFormatRegistry registry = JsonDocumentFormatRegistry.create(input);
+      Set<DocumentFormat> outputFormats = registry.getOutputFormats(DocumentFamily.TEXT);
+      assertThat(outputFormats).hasSize(9);
+      outputFormats = registry.getOutputFormats(DocumentFamily.SPREADSHEET);
+      assertThat(outputFormats).hasSize(9);
+      outputFormats = registry.getOutputFormats(DocumentFamily.PRESENTATION);
+      assertThat(outputFormats).hasSize(8);
+      outputFormats = registry.getOutputFormats(DocumentFamily.DRAWING);
+      assertThat(outputFormats).hasSize(5);
     }
   }
 }
