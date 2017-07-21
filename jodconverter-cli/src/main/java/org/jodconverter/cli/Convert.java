@@ -40,6 +40,7 @@ import org.jodconverter.document.JsonDocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeManager;
+import org.jodconverter.office.OfficeUtils;
 
 /** Command line interface executable. */
 public final class Convert {
@@ -168,7 +169,7 @@ public final class Convert {
           new File(commandLine.getOptionValue(OPTION_USER_PROFILE.getOpt())));
     }
 
-    return builder.build();
+    return builder.install().build();
   }
 
   private static AbstractApplicationContext getApplicationContextOption(
@@ -267,8 +268,13 @@ public final class Convert {
       // Create a default office manager from the command line
       final OfficeManager officeManager = createOfficeManager(commandLine);
 
-      // Build a client converter and start the conversion
-      try (final CliConverter converter = new CliConverter(officeManager, registry)) {
+      try {
+        // Starts the manager
+        printInfo("Starting office");
+        officeManager.start();
+
+        // Build a client converter and start the conversion
+        CliConverter converter = new CliConverter(registry);
 
         if (outputFormat == null) {
 
@@ -288,6 +294,9 @@ public final class Convert {
           converter.convert(
               filenames, outputFormat, outputDirPath, overwrite, getFilterChain(context));
         }
+      } finally {
+        printInfo("Stopping office");
+        OfficeUtils.stopQuietly(officeManager);
       }
 
     } catch (ParseException e) {

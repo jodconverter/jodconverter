@@ -34,56 +34,26 @@ import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeManager;
 
-/** Command line interface executable. */
-public final class CliConverter implements AutoCloseable {
+/**
+ * Converts document(s) according to the command line given to the {@link Convert} class.
+ *
+ * @see Convert
+ */
+public final class CliConverter {
 
   private final PrintWriter out;
-  private final OfficeManager officeManager;
   private final DefaultConverter converter;
 
   /**
    * Creates a new instance of the class that will use the specified manager.
    *
-   * @param officeManager the office manager used by the converter.
-   * @throws OfficeException if an error occurs while creating the CliConverter.
-   */
-  public CliConverter(final OfficeManager officeManager) throws OfficeException {
-    this(officeManager, null);
-  }
-
-  /**
-   * Creates a new instance of the class that will use the specified manager.
-   *
-   * @param officeManager the office manager used by the converter.
    * @param registry the document registry used by the created instance.
-   * @throws OfficeException if an error occurs while creating the CliConverter.
    */
-  public CliConverter(final OfficeManager officeManager, final DocumentFormatRegistry registry)
-      throws OfficeException {
+  public CliConverter(final DocumentFormatRegistry registry) {
 
-    Validate.notNull(officeManager, "The validated officeManager is null.");
-
-    this.officeManager = officeManager;
     this.out = new PrintWriter(System.out); // NOSONAR
-    this.converter =
-        DefaultConverter.builder()
-            .officeManager(this.officeManager)
-            .formatRegistry(registry)
-            .build();
-
-    // Start the manager
-    printInfo("Starting office");
-    this.officeManager.start();
-  }
-
-  @Override
-  public void close() throws OfficeException {
-
-    // Stop the manager
-    printInfo("Stopping office");
-    officeManager.stop();
+    this.converter = DefaultConverter.builder().formatRegistry(registry).build();
   }
 
   private void convert(final FilterChain filterChain, final File inputFile, final File outputFile)
