@@ -54,9 +54,9 @@ public class OfficeManagerResource extends ExternalResource {
       return;
     }
 
-    // Start the static office manager. Don't use the default port
+    // Start the office manager and install it. Don't use the default port
     // number here in order to be able to use it in other tests.
-    officeManager = DefaultOfficeManager.builder().portNumbers(2010).makeStatic().build();
+    officeManager = DefaultOfficeManager.builder().portNumbers(2010).install().build();
     officeManager.start();
 
     // Ensure we stop the manager when the VM shutdown

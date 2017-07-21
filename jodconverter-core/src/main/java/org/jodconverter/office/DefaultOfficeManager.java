@@ -63,14 +63,14 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
 
   /**
    * Creates a new {@link DefaultOfficeManager} with default configuration. The created manager will
-   * then be the unique instance of the {@link StaticOfficeManagerHolder} class. Note that if the
-   * {@code StaticOfficeManagerHolder} class already holds an {@code OfficeManager} instance, the
+   * then be the unique instance of the {@link InstalledOfficeManagerHolder} class. Note that if the
+   * {@code InstalledOfficeManagerHolder} class already holds an {@code OfficeManager} instance, the
    * owner of this existing manager is responsible to stopped it.
    *
    * @return A {@link DefaultOfficeManager} with default configuration.
    */
-  public static DefaultOfficeManager makeStatic() {
-    return builder().makeStatic().build();
+  public static DefaultOfficeManager makeAndInstall() {
+    return builder().install().build();
   }
 
   @Override
@@ -123,7 +123,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
   /** A builder for constructing a {@link DefaultConverter}. */
   public static final class Builder {
 
-    private boolean makeStatic = false;
+    private boolean install = false;
 
     // OfficeProcess
     private String[] pipeNames;
@@ -218,25 +218,25 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
       config.setTaskQueueTimeout(taskQueueTimeout);
 
       DefaultOfficeManager manager = new DefaultOfficeManager(officeUrls, config);
-      if (makeStatic) {
-        StaticOfficeManagerHolder.setInstance(manager);
+      if (install) {
+        InstalledOfficeManagerHolder.setInstance(manager);
       }
       return manager;
     }
 
     /**
      * Specifies whether the office manager that will be created by this builder will then set the
-     * unique instance of the {@link StaticOfficeManagerHolder} class. Note that if the {@code
-     * StaticOfficeManagerHolder} class already holds an {@code OfficeManager} instance, the owner
-     * of this existing manager is responsible to stopped it.
+     * unique instance of the {@link InstalledOfficeManagerHolder} class. Note that if the {@code
+     * InstalledOfficeManagerHolder} class already holds an {@code OfficeManager} instance, the
+     * owner of this existing manager is responsible to stopped it.
      *
      * <p>&nbsp; <b><i>Default</i></b>: false
      *
      * @return This builder instance.
      */
-    public Builder makeStatic() {
+    public Builder install() {
 
-      this.makeStatic = true;
+      this.install = true;
       return this;
     }
 

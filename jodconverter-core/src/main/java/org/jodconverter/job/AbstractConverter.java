@@ -34,6 +34,7 @@ import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
+import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.office.TemporaryFileMaker;
 
@@ -73,12 +74,16 @@ public abstract class AbstractConverter implements DocumentConverter {
     super();
 
     // An office manager is required
-    if (officeManager == null) {
-      throw new IllegalStateException(
-          "An office manager is required in order to build a converter.");
+    OfficeManager manager = officeManager;
+    if (manager == null) {
+      manager = InstalledOfficeManagerHolder.getInstance();
+      if (manager == null) {
+        throw new IllegalStateException(
+            "An office manager is required in order to build a converter.");
+      }
     }
 
-    this.officeManager = officeManager;
+    this.officeManager = manager;
     this.formatRegistry =
         formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry;
     this.defaultLoadProperties =

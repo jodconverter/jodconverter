@@ -25,21 +25,26 @@ import org.jodconverter.DefaultConverter;
  * Holds a unique instance of an {@link OfficeManager} that will be used by created {@link
  * DefaultConverter} when no office manager are given to the converter builder.
  */
-public final class StaticOfficeManagerHolder {
+public final class InstalledOfficeManagerHolder {
 
   private static OfficeManager instance;
 
   /**
    * Gets the static instance of the static holder class.
    *
-   * @return the main default office manager.
+   * @return The main default office manager.
    */
   public static synchronized OfficeManager getInstance() {
 
     return instance;
   }
 
-  static synchronized OfficeManager setInstance(OfficeManager manager) {
+  /**
+   * Sets the static instance of the static holder class.
+   *
+   * @param manager The main default office manager.
+   */
+  public static synchronized OfficeManager setInstance(OfficeManager manager) {
 
     OfficeManager oldManager = instance;
     instance = manager;
@@ -47,7 +52,7 @@ public final class StaticOfficeManagerHolder {
   }
 
   // Private ctor.
-  private StaticOfficeManagerHolder() { // NOSONAR
+  private InstalledOfficeManagerHolder() { // NOSONAR
     throw new AssertionError("Must not be instantiated");
   }
 }
