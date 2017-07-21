@@ -16,6 +16,7 @@ dependencies {
   testCompile libraries.equalsverifier
   testCompile libraries.junit
   testCompile libraries.findbugs
+  testCompile libraries.mockito
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,14 +75,13 @@ eclipse {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Test setup
 
-// We want to see the logging
-test {
-  testLogging.showStandardStreams = true
-}
-
-integrationTest {
-  testLogging.showStandardStreams = true
-}
+// Uncomment when we want to see the logs while testing
+//test {
+//  testLogging.showStandardStreams = true
+//}
+//integrationTest {
+//  testLogging.showStandardStreams = true
+//}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -183,26 +183,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 artifacts {
   archives sourcesJar, javadocJar
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Distribution configuration
-
-apply plugin: 'distribution'
-
-// TODO: Find another way to exclude jodconverter-cli
-// since it has its own distribution configuration
-if (!['jodconverter-cli','jodconverter-sample-webapp'].contains(project.name)) {
-  distributions {
-    main {
-      baseName = project.name
-      contents {
-        from jar, sourcesJar, javadocJar
-      }
-    }
-  }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

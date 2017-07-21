@@ -25,7 +25,7 @@ buildscript {
 }
 
 ext {
-  baselineJavaVersion = JavaVersion.VERSION_1_8
+  baselineJavaVersion = JavaVersion.VERSION_1_7
   sourceEncoding = "UTF-8"
 
   ext.releaseBuild = version.endsWith('RELEASE')
@@ -33,7 +33,8 @@ ext {
 
   // Set up different subproject lists for individual configuration
   ext.javaprojects = subprojects.findAll { new File(it.projectDir, 'src/main/java').directory }
-  ext.publishprojects = [project(':jodconverter-core'), project(':jodconverter-spring'), project(':jodconverter-spring-boot-starter')]
+  ext.releasedprojects = javaprojects.findAll { !it.name.contains('sample') }
+  ext.publishedprojects = releasedprojects.findAll { !it.name.contains('jodconverter-cli') }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -142,7 +143,7 @@ task jacocoMerge(type: JacocoMerge) {
   group = "Reporting"
     
   // Gather execution data from all subprojects
-  javaprojects.each { subproject ->
+  releasedprojects.each { subproject ->
     executionData subproject.tasks.withType(Test)
   }
   doFirst {
@@ -153,11 +154,11 @@ task jacocoMerge(type: JacocoMerge) {
 // Code coverage report for all the sub (java) projects
 task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
   description = 'Generates an aggregate report from all subprojects'
-  dependsOn javaprojects.test, javaprojects.integrationTest, jacocoMerge
+  dependsOn releasedprojects.test, releasedprojects.integrationTest, jacocoMerge
 
-  additionalSourceDirs = files(javaprojects.sourceSets.main.allSource.srcDirs)
-  sourceDirectories = files(javaprojects.sourceSets.main.allSource.srcDirs)
-  classDirectories = files(javaprojects.sourceSets.main.output)
+  additionalSourceDirs = files(releasedprojects.sourceSets.main.allSource.srcDirs)
+  sourceDirectories = files(releasedprojects.sourceSets.main.allSource.srcDirs)
+  classDirectories = files(releasedprojects.sourceSets.main.output)
   executionData jacocoMerge.destinationFile
 
   reports {
@@ -167,7 +168,7 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
 }
 
 coveralls {
-  sourceDirs = javaprojects.sourceSets.main.allSource.srcDirs.flatten()
+  sourceDirs = releasedprojects.sourceSets.main.allSource.srcDirs.flatten()
   jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 }
 
@@ -178,6 +179,40 @@ tasks.coveralls {
   dependsOn jacocoRootReport
   onlyIf { System.env.'CI' }
 }
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Distribution configuration
+
+configure(releasedprojects) {
+
+  apply plugin: 'distribution'
+  
+  // exclude jodconverter-cli since it has its own distribution configuration
+  if (!project.name.contains('jodconverter-cli')) {
+    distributions {
+      main {
+        baseName = project.name
+        contents {
+          from jar, sourcesJar, javadocJar
+        }
+      }
+    }
+  }
+}
+
+// Copy all the distributions of the subprojects to the root project
+task distZip(type: Zip) {
+  description "Create full distribution zip"
+  baseName project.name
+  group "Distribution"
+   
+  //from releasedprojects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
+  from releasedprojects.collect { it.distZip }
+}
+project.tasks["distZip"].dependsOn releasedprojects*.distZip
+//project.tasks["distZip"].dependsOn releasedprojects*.assembleDist
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -193,27 +228,11 @@ nexusStaging {
 }
 
 // Apply the configuration for the published projects only
-configure(publishprojects) {
+configure(publishedprojects) {
 
   // Apply the gradle file specific to all published projects
-  apply from: "$rootDir/gradle/publish-projects.gradle"
+  apply from: "$rootDir/gradle/published-projects.gradle"
 }
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Distribution configuration
-
-task distZip(type: Zip) {
-  description "Create full distribution zip"
-  baseName project.name
-  group "Distribution"
-   
-  //from subprojects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
-  from subprojects.collect { it.distZip }
-}
-project.tasks["distZip"].dependsOn subprojects*.distZip
-//project.tasks["distZip"].dependsOn subprojects*.assembleDist
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

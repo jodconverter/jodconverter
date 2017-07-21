@@ -43,6 +43,7 @@ ext {
     equalsverifier                     : "nl.jqno.equalsverifier:equalsverifier:${equalsverifierVersion}",
     junit                              : "junit:junit:$junitVersion",
     jsr305                             : "com.google.code.findbugs:jsr305:$findbugsVersion",
-    findbugs                           : "com.google.code.findbugs:findbugs:$findbugsVersion"
+    findbugs                           : "com.google.code.findbugs:findbugs:$findbugsVersion",
+    mockito                            : "org.mockito:mockito-all:$mockitoVersion",
   ]
 }
