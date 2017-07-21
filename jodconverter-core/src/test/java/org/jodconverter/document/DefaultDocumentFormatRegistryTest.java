@@ -30,7 +30,7 @@ public class DefaultDocumentFormatRegistryTest {
   private void assertExpectedExtensions(Set<DocumentFormat> formats, String... extensions) {
 
     assertThat(formats).hasSize(extensions.length);
-    for (DocumentFormat format : formats) {
+    for (final DocumentFormat format : formats) {
       assertThat(format.getExtension()).isIn((Object[]) extensions);
     }
     //formats

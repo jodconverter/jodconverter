@@ -36,13 +36,14 @@ public class ProcessManagerITest {
   @Test
   public void customProcessManager() throws Exception {
 
-    DefaultOfficeManager officeManager =
+    final DefaultOfficeManager officeManager =
         DefaultOfficeManager.builder()
             .processManager("org.jodconverter.process.CustomProcessManager")
             .build();
 
-    Object config = FieldUtils.readField(officeManager, "config", true);
-    ProcessManager manager = (ProcessManager) FieldUtils.readField(config, "processManager", true);
+    final Object config = FieldUtils.readField(officeManager, "config", true);
+    final ProcessManager manager =
+        (ProcessManager) FieldUtils.readField(config, "processManager", true);
     assertTrue(manager instanceof CustomProcessManager);
   }
 }

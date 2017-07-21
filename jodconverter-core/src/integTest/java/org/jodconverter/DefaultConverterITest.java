@@ -91,7 +91,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
         new File(OUTPUT_DIR + "convert_FromStreamToFileWithSupportedInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    InputStream inputStream = new FileInputStream(inputFile);
+    final InputStream inputStream = new FileInputStream(inputFile);
     converter
         .convert(inputStream, formatRegistry.getFormatByExtension("doc"))
         .to(outputFile)
@@ -122,7 +122,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
         new File(OUTPUT_DIR + "convert_FromFileToStreamWithSupportedOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    OutputStream outputStream = new FileOutputStream(outputFile);
+    final OutputStream outputStream = new FileOutputStream(outputFile);
     converter
         .convert(inputFile)
         .to(outputStream, formatRegistry.getFormatByExtension("pdf"))

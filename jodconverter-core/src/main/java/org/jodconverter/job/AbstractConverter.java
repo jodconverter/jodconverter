@@ -93,16 +93,14 @@ public abstract class AbstractConverter implements DocumentConverter {
   @Override
   public ConversionJobWithSourceSpecified convert(final File source) {
 
-    final DocumentFormat format =
-        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName()));
-    Validate.notNull(format, "Unsupported source document format");
-    return convert(new SourceDocumentSpecsFromFile(source, format));
+    return convert(
+        source, formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName())));
   }
 
   @Override
   public ConversionJobWithSourceSpecified convert(final File source, final DocumentFormat format) {
 
-    Validate.notNull(format, "The document format is null");
+    Validate.notNull(format, "The document format is null or unsupported");
     return convert(new SourceDocumentSpecsFromFile(source, format));
   }
 

@@ -70,7 +70,7 @@ public class OfficeDocumentConverterITest extends BaseOfficeITest {
     final File outputFile = new File(OUTPUT_DIR + "convert_FromFileToFile.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    OfficeDocumentConverter officeDocumentConverter =
+    final OfficeDocumentConverter officeDocumentConverter =
         new OfficeDocumentConverter(InstalledOfficeManagerHolder.getInstance());
     officeDocumentConverter.convert(inputFile, outputFile);
 

@@ -142,7 +142,7 @@ public final class Convert {
 
   private static OfficeManager createOfficeManager(final CommandLine commandLine) {
 
-    DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
+    final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
     //configuration.setWorkingDir(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
 
     if (commandLine.hasOption(OPTION_OFFICE_HOME.getOpt())) {
@@ -260,7 +260,7 @@ public final class Convert {
       final String[] filenames = commandLine.getArgs();
 
       // Validate arguments length
-      if ((outputFormat == null && filenames.length % 2 != 0) || filenames.length == 0) {
+      if (outputFormat == null && filenames.length % 2 != 0 || filenames.length == 0) {
         printHelp();
         System.exit(STATUS_INVALID_ARGUMENTS);
       }
@@ -274,7 +274,7 @@ public final class Convert {
         officeManager.start();
 
         // Build a client converter and start the conversion
-        CliConverter converter = new CliConverter(registry);
+        final CliConverter converter = new CliConverter(registry);
 
         if (outputFormat == null) {
 

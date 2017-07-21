@@ -25,12 +25,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Helper class while testing that will save the status of the first System.exit called through the
  * program execution.
  */
-public class ExitException extends SecurityException {
+public final class ExitException extends SecurityException {
   private static final long serialVersionUID = 3259467431505006348L;
 
   public static final ExitException INSTANCE = new ExitException();
 
-  private AtomicInteger status = new AtomicInteger(-1);
+  private final AtomicInteger status = new AtomicInteger(-1);
 
   private ExitException() {
     super("Exit not allowed");
@@ -41,7 +41,7 @@ public class ExitException extends SecurityException {
    *
    * @param status the exit status.
    */
-  public void setStatus(int status) {
+  public void setStatus(final int status) {
 
     this.status.compareAndSet(-1, status);
   }

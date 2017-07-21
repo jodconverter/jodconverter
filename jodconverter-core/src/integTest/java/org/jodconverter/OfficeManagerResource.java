@@ -35,7 +35,7 @@ import org.jodconverter.office.OfficeManager;
  * Class rule used providing a single OfficeManager instance that will be used for most of the
  * integration tests.
  */
-public class OfficeManagerResource extends ExternalResource {
+public final class OfficeManagerResource extends ExternalResource {
 
   public static final TestRule INSTANCE = new OfficeManagerResource();
   private static final Logger logger = LoggerFactory.getLogger(OfficeManagerResource.class);

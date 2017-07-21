@@ -214,7 +214,7 @@ public abstract class BaseOfficeITest {
               + outputFormat.getExtension()
               + ".";
       if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
-        com.sun.star.task.ErrorCodeIOException ioEx =
+        final com.sun.star.task.ErrorCodeIOException ioEx =
             (com.sun.star.task.ErrorCodeIOException) ex.getCause();
         logger.error(message + " " + ioEx.getMessage(), ioEx);
       } else {
