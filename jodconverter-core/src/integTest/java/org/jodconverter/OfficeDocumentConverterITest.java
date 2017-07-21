@@ -32,8 +32,8 @@ import org.junit.Test;
 
 import com.sun.star.document.UpdateDocMode;
 
+import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.StaticOfficeManagerHolder;
 
 /**
  * Tests that the {@link OfficeDocumentConverter} class.
@@ -71,7 +71,7 @@ public class OfficeDocumentConverterITest extends BaseOfficeITest {
     FileUtils.deleteQuietly(outputFile);
 
     OfficeDocumentConverter officeDocumentConverter =
-        new OfficeDocumentConverter(StaticOfficeManagerHolder.getInstance());
+        new OfficeDocumentConverter(InstalledOfficeManagerHolder.getInstance());
     officeDocumentConverter.convert(inputFile, outputFile);
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);

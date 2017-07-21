@@ -28,17 +28,15 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.office.OfficeException;
-
 public class ConvertITest {
 
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
-  private static final String SOURCE_FILE = "src/integTest/resources/documents/test.doc";
+  private static final String SOURCE_FILE = "src/integTest/resources/documents/test1.doc";
   private static final String OUTPUT_DIR = "test-output/" + ConvertITest.class.getSimpleName();
 
   /** Ensures we start with a fresh output directory. */
   @BeforeClass
-  public static void createOutputDir() throws OfficeException {
+  public static void createOutputDir() {
 
     // Ensure we start with a fresh output directory
     File outputDir = new File(OUTPUT_DIR);
@@ -48,7 +46,7 @@ public class ConvertITest {
 
   /**  Deletes the output directory. */
   @AfterClass
-  public static void deleteOutputDir() throws OfficeException {
+  public static void deleteOutputDir() {
 
     // Delete the output directory
     FileUtils.deleteQuietly(new File(OUTPUT_DIR));
