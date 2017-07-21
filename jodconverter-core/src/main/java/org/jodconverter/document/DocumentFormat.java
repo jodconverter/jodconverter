@@ -74,7 +74,7 @@ public class DocumentFormat {
       this.loadProperties = new HashMap<>(documentFormat.getLoadProperties());
     }
     if (documentFormat.getStoreProperties() != null) {
-      documentFormat.storeProperties = new EnumMap<>(DocumentFamily.class);
+      storeProperties = new EnumMap<>(DocumentFamily.class);
       for (Map.Entry<DocumentFamily, Map<String, Object>> entry :
           documentFormat.getStoreProperties().entrySet()) {
         storeProperties.put(entry.getKey(), new HashMap<>(entry.getValue()));
