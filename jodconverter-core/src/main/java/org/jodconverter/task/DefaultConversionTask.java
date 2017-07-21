@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,6 @@ import org.jodconverter.job.TargetDocumentSpecs;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeTask;
-import org.jodconverter.office.ValidateUtils;
 
 /** Represents the default behavior for a conversion task. */
 public class DefaultConversionTask implements OfficeTask {
@@ -168,7 +168,7 @@ public class DefaultConversionTask implements OfficeTask {
     }
 
     // The document cannot be null
-    ValidateUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
+    Validate.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
     return document;
   }
 
@@ -189,7 +189,7 @@ public class DefaultConversionTask implements OfficeTask {
     final Map<String, Object> storeProperties = getStoreProperties(document);
 
     // The properties cannot be null
-    ValidateUtils.notNull(storeProperties, "Unsupported conversion");
+    Validate.notNull(storeProperties, "Unsupported conversion");
 
     try {
       UnoRuntime.queryInterface(XStorable.class, document)

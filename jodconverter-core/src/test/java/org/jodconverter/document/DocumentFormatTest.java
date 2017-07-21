@@ -21,19 +21,46 @@ package org.jodconverter.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Set;
+
 import org.junit.Test;
 
 public class DocumentFormatTest {
 
+  private void toString(Set<DocumentFormat> formats) {
+
+    for (DocumentFormat format : formats) {
+      format.toString();
+    }
+  }
+
+  /** Since toString is overridden, ensure that none of the default formats throws an exception. */
   @Test
-  public void copy() {
+  public void toString_ShouldNotThrowException() {
+
+    // If an exception is thrown, the test will automatically fail.
+
+    final DefaultDocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+    // TEXT output format
+    toString(registry.getOutputFormats(DocumentFamily.TEXT));
+    // SPREADSHEET output format
+    toString(registry.getOutputFormats(DocumentFamily.SPREADSHEET));
+    // PRESENTATION output format
+    toString(registry.getOutputFormats(DocumentFamily.PRESENTATION));
+    // DRAWING output format
+    toString(registry.getOutputFormats(DocumentFamily.DRAWING));
+  }
+
+  /** Tests that the copy method creates a new instance with the same content. */
+  @Test
+  public void copy_PdfFormat_ReturnCopyOfPdfFormat() {
 
     final DefaultDocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
 
     DocumentFormat format = registry.getFormatByExtension("pdf");
     DocumentFormat copy = DocumentFormat.copy(format);
 
-    assertThat(format).isNotEqualTo(copy);
+    assertThat(format).isNotEqualTo(copy); // Must not be the same instance
     assertThat(format.getName()).isEqualTo(copy.getName());
     assertThat(format.getInputFamily()).isEqualTo(copy.getInputFamily());
     assertThat(format.getMediaType()).isEqualTo(copy.getMediaType());

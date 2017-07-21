@@ -186,18 +186,6 @@ public class DocumentFormat {
     this.storeProperties.put(family, storeProperties);
   }
 
-  /**
-   * Sets the properties required to store(save) a document of this format to a document of
-   * supported families.
-   *
-   * @param storeProperties a DocumentFamily/Map pairs containing the properties to apply when
-   *     storing a document of this format, by DocumentFamily.
-   */
-  public void setStoreProperties(final Map<DocumentFamily, Map<String, Object>> storeProperties) {
-
-    this.storeProperties = storeProperties;
-  }
-
   @Override
   public String toString() {
     return ToStringBuilder.reflectionToString(this);
