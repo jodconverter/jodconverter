@@ -10,7 +10,7 @@ File outputFile = new File("document.pdf");
 
 // Create an office manager using the default configuration.
 // The default port is 2002.
-final DefaultOfficeManager officeManager = DefaultOfficeManager.make(); 
+final DefaultOfficeManager officeManager = DefaultOfficeManager.install(); 
 try {
 
     // Start an office process and connect to the started instance (on port 2002).

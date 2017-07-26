@@ -69,7 +69,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
    *
    * @return A {@link DefaultOfficeManager} with default configuration.
    */
-  public static DefaultOfficeManager makeAndInstall() {
+  public static DefaultOfficeManager install() {
     return builder().install().build();
   }
 
