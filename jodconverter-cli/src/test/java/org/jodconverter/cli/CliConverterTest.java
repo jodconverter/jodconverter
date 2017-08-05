@@ -62,10 +62,6 @@ public class CliConverterTest {
   private static final String OUTPUT_DIR_TARGET_FILE_1 = OUTPUT_DIR + TARGET_FILENAME_1;
   private static final String OUTPUT_DIR_TARGET_FILE_2 = OUTPUT_DIR + TARGET_FILENAME_2;
 
-  private OfficeManager officeManager;
-  private CliConverter converter;
-  private DocumentFormatRegistry registry;
-
   @BeforeClass
   public static void setUpClass() {
 
@@ -91,46 +87,23 @@ public class CliConverterTest {
     System.setSecurityManager(null);
   }
 
-  @Before
-  public void setUp() {
+  private OfficeManager officeManager;
+  private CliConverter converter;
+  private DocumentFormatRegistry registry;
 
-    officeManager = mock(OfficeManager.class);
-    InstalledOfficeManagerHolder.setInstance(officeManager);
-    registry = DefaultDocumentFormatRegistry.getInstance();
+  @Test
+  public void convert_DirnamesToTarget_NoTaskExecuted() throws Exception {
 
-    converter = new CliConverter(registry);
-
-    ExitException.INSTANCE.reset();
-  }
-
-  /** Setup the office manager before each test. */
-  @Before
-  public void tearDown() {
-
-    officeManager = mock(OfficeManager.class);
-    InstalledOfficeManagerHolder.setInstance(officeManager);
-    registry = DefaultDocumentFormatRegistry.getInstance();
-
-    converter = new CliConverter(registry);
+    converter.convert(new String[] {SOURCE_DIR}, new String[] {TARGET_FILENAME_1});
+    verify(officeManager, times(0)).execute(isA(DefaultConversionTask.class));
   }
 
   @Test
-  public void convert_FilenamesToFormat_TasksExecuted() throws Exception {
+  public void convert_FilenamesToDirnames_NoTaskExecuted() throws Exception {
 
-    converter.convert(new String[] {SOURCE_FILE_1, SOURCE_FILE_2}, TARGET_FORMAT);
-
-    final ArgumentCaptor<DefaultConversionTask> taskArgument =
-        ArgumentCaptor.forClass(DefaultConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
-    assertThat(tasks)
-        .element(0)
-        .extracting("source.file", "target.file")
-        .containsExactly(new File(SOURCE_FILE_1), new File(SOURCE_DIR_TARGET_FILE_1));
-    assertThat(tasks)
-        .element(1)
-        .extracting("source.file", "target.file")
-        .containsExactly(new File(SOURCE_FILE_2), new File(SOURCE_DIR_TARGET_FILE_2));
+    converter.convert(
+        new String[] {SOURCE_FILE_1, SOURCE_FILE_2}, new String[] {OUTPUT_DIR, OUTPUT_DIR});
+    verify(officeManager, times(0)).execute(isA(DefaultConversionTask.class));
   }
 
   @Test
@@ -139,66 +112,6 @@ public class CliConverterTest {
     converter.convert(
         new String[] {SOURCE_FILE_1, SOURCE_FILE_2},
         new String[] {OUTPUT_DIR_TARGET_FILE_1, OUTPUT_DIR_TARGET_FILE_2});
-
-    final ArgumentCaptor<DefaultConversionTask> taskArgument =
-        ArgumentCaptor.forClass(DefaultConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
-    assertThat(tasks)
-        .element(0)
-        .extracting("source.file", "target.file")
-        .containsExactly(new File(SOURCE_FILE_1), new File(OUTPUT_DIR_TARGET_FILE_1));
-    assertThat(tasks)
-        .element(1)
-        .extracting("source.file", "target.file")
-        .containsExactly(new File(SOURCE_FILE_2), new File(OUTPUT_DIR_TARGET_FILE_2));
-  }
-
-  @Test
-  public void convert_FilenamesToFormatWithOutputDir_TasksExecuted() throws Exception {
-
-    converter.convert(new String[] {SOURCE_FILE_1, SOURCE_FILE_2}, TARGET_FORMAT, OUTPUT_DIR);
-
-    final ArgumentCaptor<DefaultConversionTask> taskArgument =
-        ArgumentCaptor.forClass(DefaultConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
-    assertThat(tasks)
-        .element(0)
-        .extracting("source.file", "target.file")
-        .containsExactly(new File(SOURCE_FILE_1), new File(OUTPUT_DIR_TARGET_FILE_1));
-    assertThat(tasks)
-        .element(1)
-        .extracting("source.file", "target.file")
-        .containsExactly(new File(SOURCE_FILE_2), new File(OUTPUT_DIR_TARGET_FILE_2));
-  }
-
-  @Test
-  public void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted() throws Exception {
-
-    converter.convert(
-        new String[] {SOURCE_FILE_1, SOURCE_FILE_2},
-        new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
-        OUTPUT_DIR);
-
-    final ArgumentCaptor<DefaultConversionTask> taskArgument =
-        ArgumentCaptor.forClass(DefaultConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
-    assertThat(tasks)
-        .element(0)
-        .extracting("source.file", "target.file")
-        .containsExactly(new File(SOURCE_FILE_1), new File(OUTPUT_DIR_TARGET_FILE_1));
-    assertThat(tasks)
-        .element(1)
-        .extracting("source.file", "target.file")
-        .containsExactly(new File(SOURCE_FILE_2), new File(OUTPUT_DIR_TARGET_FILE_2));
-  }
-
-  @Test
-  public void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted() throws Exception {
-
-    converter.convert(new String[] {SOURCE_FILE_1, SOURCE_FILE_2}, TARGET_FORMAT, OUTPUT_DIR, true);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);
@@ -238,22 +151,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecution() throws Exception {
-
-    FileUtils.touch(new File(OUTPUT_DIR_TARGET_FILE_1));
-    FileUtils.touch(new File(OUTPUT_DIR_TARGET_FILE_2));
-
-    converter.convert(
-        new String[] {SOURCE_FILE_1, SOURCE_FILE_2}, TARGET_FORMAT, OUTPUT_DIR, false);
-
-    verify(officeManager, times(0)).execute(isA(DefaultConversionTask.class));
-
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR_TARGET_FILE_1));
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR_TARGET_FILE_2));
-  }
-
-  @Test
-  public void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecution() throws Exception {
+  public void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted() throws Exception {
 
     FileUtils.touch(new File(OUTPUT_DIR_TARGET_FILE_1));
     FileUtils.touch(new File(OUTPUT_DIR_TARGET_FILE_2));
@@ -268,5 +166,125 @@ public class CliConverterTest {
 
     FileUtils.deleteQuietly(new File(OUTPUT_DIR_TARGET_FILE_1));
     FileUtils.deleteQuietly(new File(OUTPUT_DIR_TARGET_FILE_2));
+  }
+
+  @Test
+  public void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted() throws Exception {
+
+    converter.convert(
+        new String[] {SOURCE_FILE_1, SOURCE_FILE_2},
+        new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
+        OUTPUT_DIR);
+
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(2)).execute(taskArgument.capture());
+    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
+    assertThat(tasks)
+        .element(0)
+        .extracting("source.file", "target.file")
+        .containsExactly(new File(SOURCE_FILE_1), new File(OUTPUT_DIR_TARGET_FILE_1));
+    assertThat(tasks)
+        .element(1)
+        .extracting("source.file", "target.file")
+        .containsExactly(new File(SOURCE_FILE_2), new File(OUTPUT_DIR_TARGET_FILE_2));
+  }
+
+  @Test
+  public void convert_FilenamesToFormat_TasksExecuted() throws Exception {
+
+    converter.convert(new String[] {SOURCE_FILE_1, SOURCE_FILE_2}, TARGET_FORMAT);
+
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(2)).execute(taskArgument.capture());
+    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
+    assertThat(tasks)
+        .element(0)
+        .extracting("source.file", "target.file")
+        .containsExactly(new File(SOURCE_FILE_1), new File(SOURCE_DIR_TARGET_FILE_1));
+    assertThat(tasks)
+        .element(1)
+        .extracting("source.file", "target.file")
+        .containsExactly(new File(SOURCE_FILE_2), new File(SOURCE_DIR_TARGET_FILE_2));
+  }
+
+  @Test
+  public void convert_FilenamesToFormatWithOutputDir_TasksExecuted() throws Exception {
+
+    converter.convert(new String[] {SOURCE_FILE_1, SOURCE_FILE_2}, TARGET_FORMAT, OUTPUT_DIR);
+
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(2)).execute(taskArgument.capture());
+    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
+    assertThat(tasks)
+        .element(0)
+        .extracting("source.file", "target.file")
+        .containsExactly(new File(SOURCE_FILE_1), new File(OUTPUT_DIR_TARGET_FILE_1));
+    assertThat(tasks)
+        .element(1)
+        .extracting("source.file", "target.file")
+        .containsExactly(new File(SOURCE_FILE_2), new File(OUTPUT_DIR_TARGET_FILE_2));
+  }
+
+  @Test
+  public void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted() throws Exception {
+
+    FileUtils.touch(new File(OUTPUT_DIR_TARGET_FILE_1));
+    FileUtils.touch(new File(OUTPUT_DIR_TARGET_FILE_2));
+
+    converter.convert(new String[] {SOURCE_FILE_1, SOURCE_FILE_2}, TARGET_FORMAT, OUTPUT_DIR, true);
+
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(2)).execute(taskArgument.capture());
+    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
+    assertThat(tasks)
+        .element(0)
+        .extracting("source.file", "target.file")
+        .containsExactly(new File(SOURCE_FILE_1), new File(OUTPUT_DIR_TARGET_FILE_1));
+    assertThat(tasks)
+        .element(1)
+        .extracting("source.file", "target.file")
+        .containsExactly(new File(SOURCE_FILE_2), new File(OUTPUT_DIR_TARGET_FILE_2));
+  }
+
+  @Test
+  public void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted() throws Exception {
+
+    FileUtils.touch(new File(OUTPUT_DIR_TARGET_FILE_1));
+    FileUtils.touch(new File(OUTPUT_DIR_TARGET_FILE_2));
+
+    converter.convert(
+        new String[] {SOURCE_FILE_1, SOURCE_FILE_2}, TARGET_FORMAT, OUTPUT_DIR, false);
+
+    verify(officeManager, times(0)).execute(isA(DefaultConversionTask.class));
+
+    FileUtils.deleteQuietly(new File(OUTPUT_DIR_TARGET_FILE_1));
+    FileUtils.deleteQuietly(new File(OUTPUT_DIR_TARGET_FILE_2));
+  }
+
+  @Before
+  public void setUp() {
+
+    officeManager = mock(OfficeManager.class);
+    InstalledOfficeManagerHolder.setInstance(officeManager);
+    registry = DefaultDocumentFormatRegistry.getInstance();
+
+    converter = new CliConverter(registry);
+
+    ExitException.INSTANCE.reset();
+  }
+
+  /** Setup the office manager before each test. */
+  @Before
+  public void tearDown() {
+
+    officeManager = mock(OfficeManager.class);
+    InstalledOfficeManagerHolder.setInstance(officeManager);
+    registry = DefaultDocumentFormatRegistry.getInstance();
+
+    converter = new CliConverter(registry);
   }
 }

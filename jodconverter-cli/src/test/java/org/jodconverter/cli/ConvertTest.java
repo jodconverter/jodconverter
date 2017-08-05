@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitSecurityManager;
 import org.jodconverter.cli.util.SystemLogHandler;
+import org.jodconverter.office.OfficeUtils;
 
 public class ConvertTest {
 
@@ -73,6 +74,22 @@ public class ConvertTest {
   }
 
   @Test
+  public void main_WithOptionHelp_PrintVersionAndExitWithCode0() throws Exception {
+
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(new String[] {"-v"});
+
+    } catch (Exception ex) {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("jodconverter-cli version");
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 0);
+    }
+  }
+
+  @Test
   public void main_WithUnknownArgument_PrintErrorHelpAndExitWithCode2() throws Exception {
 
     try {
@@ -88,6 +105,64 @@ public class ConvertTest {
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 2);
+    }
+  }
+
+  @Test
+  public void main_WithMissingsFilenames_PrintErrorHelpAndExitWithCode255() throws Exception {
+
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(new String[] {""});
+
+    } catch (Exception ex) {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 255);
+    }
+  }
+
+  @Test
+  public void main_WithWrongFilenamesLength_PrintErrorHelpAndExitWithCode255() throws Exception {
+
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(new String[] {"input1.txt", "output1.pdf", "input2.txt"});
+
+    } catch (Exception ex) {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 255);
+    }
+  }
+
+  @Test
+  public void main_WithAllCustomizableOption_ExecuteAndExitWithCod0() throws Exception {
+
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(
+          new String[] {
+            "-i", OfficeUtils.getDefaultOfficeHome().getPath(),
+            "-m", OfficeUtils.findBestProcessManager().getClass().getName(),
+            "-t", "30000",
+            "-p", "2002",
+            "input1.txt", "output1.pdf"
+          });
+
+    } catch (Exception ex) {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 255);
     }
   }
 }

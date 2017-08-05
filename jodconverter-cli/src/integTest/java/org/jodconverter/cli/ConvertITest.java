@@ -19,15 +19,19 @@
 
 package org.jodconverter.cli;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * This class tests the {@link Convert} class, which contains the main function of the cli module.
+ */
 public class ConvertITest {
 
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
@@ -53,43 +57,66 @@ public class ConvertITest {
   }
 
   @Test
-  public void convert() throws Exception {
+  public void convert_WithFilenames_ShouldSucceed() throws Exception {
 
     final File inputFile = new File(SOURCE_FILE);
     final File outputFile = new File(OUTPUT_DIR, "convert.pdf");
 
-    Convert.main(new String[] {"-k", inputFile.getPath(), outputFile.getPath()});
+    assertThat(outputFile).doesNotExist();
 
-    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    Convert.main(new String[] {inputFile.getPath(), outputFile.getPath()});
+
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
   }
 
   @Test
-  public void convertWithMultipleFilters() throws Exception {
+  public void convert_WithOutputFormat_ShouldSucceed() throws Exception {
+
+    final File inputFile = new File(SOURCE_FILE);
+    final File outputFile =
+        new File(
+            inputFile.getParentFile(), FilenameUtils.getBaseName(inputFile.getName()) + ".pdf");
+    
+    assertThat(outputFile).doesNotExist();
+
+    Convert.main(new String[] {"-f", "pdf", inputFile.getPath()});
+
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
+    
+    FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
+  }
+
+  @Test
+  public void convert_WithMultipleFilters_ShouldSucceed() throws Exception {
 
     final File filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "convertWithMultipleFilters.pdf");
+    final File outputFile = new File(OUTPUT_DIR, "convert_WithMultipleFilters.pdf");
+
+    assertThat(outputFile).doesNotExist();
 
     Convert.main(
-        new String[] {
-          "-k", "-o", "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
-        });
+        new String[] {"-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()});
 
-    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
   }
 
   @Test
-  public void convertWithSingleFilter() throws Exception {
+  public void convert_WithSingleFilter_ShouldSucceed() throws Exception {
 
     final File filterChainFile = new File(CONFIG_DIR + "applicationContext_singleFilter.xml");
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "convertWithSingleFilter.pdf");
+    final File outputFile = new File(OUTPUT_DIR, "convert_WithSingleFilter.pdf");
+
+    assertThat(outputFile).doesNotExist();
 
     Convert.main(
-        new String[] {
-          "-k", "-o", "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
-        });
+        new String[] {"-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()});
 
-    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
   }
 }
