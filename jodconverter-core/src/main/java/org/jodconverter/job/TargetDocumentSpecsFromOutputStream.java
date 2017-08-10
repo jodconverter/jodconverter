@@ -29,7 +29,7 @@ import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormat;
 
-class TargetDocumentSpecsFromOutputStream extends AbstractFileDocumentSpecs
+class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
     implements TargetDocumentSpecs {
 
   private final OutputStream outputStream;

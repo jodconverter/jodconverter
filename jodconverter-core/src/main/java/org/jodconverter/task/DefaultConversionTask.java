@@ -133,6 +133,9 @@ public class DefaultConversionTask implements OfficeTask {
     if (source.getFormat() != null && source.getFormat().getLoadProperties() != null) {
       loadProperties.putAll(source.getFormat().getLoadProperties());
     }
+    if (source.getCustomLoadProperties() != null) {
+      loadProperties.putAll(source.getCustomLoadProperties());
+    }
     return loadProperties;
   }
 
@@ -140,10 +143,15 @@ public class DefaultConversionTask implements OfficeTask {
   // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
 
+    final Map<String, Object> storeProperties = new HashMap<>();
     if (target.getFormat() != null) {
-      return target.getFormat().getStoreProperties(OfficeTaskUtils.getDocumentFamily(document));
+      storeProperties.putAll(
+          target.getFormat().getStoreProperties(OfficeTaskUtils.getDocumentFamily(document)));
     }
-    return null;
+    if (target.getCustomStoreProperties() != null) {
+      storeProperties.putAll(target.getCustomStoreProperties());
+    }
+    return storeProperties;
   }
 
   // Loads the document to convert.

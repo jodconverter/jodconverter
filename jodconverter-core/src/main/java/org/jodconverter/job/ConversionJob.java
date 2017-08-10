@@ -19,7 +19,6 @@
 
 package org.jodconverter.job;
 
-import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeException;
 
 /** A fully specified conversion that is not yet applied to the converter. */
@@ -31,15 +30,4 @@ public interface ConversionJob {
    * @throws OfficeException If the conversion failed.
    */
   void execute() throws OfficeException;
-
-  /**
-   * Specifies the whole filter chain to apply when converting a document. A FilterChain is used to
-   * modify the document before the conversion. Filters are applied in the same order they appear in
-   * the chain.
-   *
-   * @param filterChain The FilterChain to be applied after the document is loaded and before it is
-   *     stored (converted) in the new document format.
-   * @return The current conversion specification.
-   */
-  ConversionJob modifyWith(FilterChain filterChain);
 }

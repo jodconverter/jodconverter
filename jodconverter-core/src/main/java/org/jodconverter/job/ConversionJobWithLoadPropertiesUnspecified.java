@@ -19,35 +19,25 @@
 
 package org.jodconverter.job;
 
-import java.io.File;
 import java.util.Map;
 
 import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DocumentFormat;
 
-/**
- * An interface that provides the behavior to apply when a source file is no longer required by a
- * conversion process.
- */
-public interface SourceDocumentSpecs extends DocumentSpecs {
+/** A conversion job with load properties that is not yet applied to the converter. */
+public interface ConversionJobWithLoadPropertiesUnspecified
+    extends ConversionJobWithFilterChainUnspecified {
 
   /**
-   * Gets the custom properties that will be applied when a document is loaded during the conversion
-   * task.
+   * Specifies the custom properties that will be applied when a document is loaded during the
+   * conversion task.
    *
    * <p>Custom load properties are applied after the default load properties of the {@link
    * DocumentConverter} (only if the converter is a subclass of {@link AbstractConverter}) and after
    * the load properties of the {@link DocumentFormat} of this SourceDocumentSpecs.
    *
-   * @return A map containing the custom properties to apply when loading a document.
+   * @param properties A map containing the custom properties to apply when loading a document.
+   * @return This builder instance.
    */
-  Map<String, Object> getCustomLoadProperties();
-
-  /**
-   * Called when the file was consumed and is not longer required by the converter. The file must
-   * not be removed from the file system before this method is called.
-   *
-   * @param file The file that was consumed.
-   */
-  void onConsumed(File file);
+  public ConversionJobWithFilterChainUnspecified loadWithProperties(Map<String, Object> properties);
 }

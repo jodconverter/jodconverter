@@ -185,13 +185,13 @@ public class OfficeDocumentConverter {
                 ? getFormatRegistry()
                     .getFormatByExtension(FilenameUtils.getExtension(inputFile.getName()))
                 : inputFormat)
+        .modifyWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
         .to(
             outputFile,
             outputFormat == null && outputFile != null
                 ? getFormatRegistry()
                     .getFormatByExtension(FilenameUtils.getExtension(outputFile.getName()))
                 : outputFormat)
-        .modifyWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
         .execute();
   }
 

@@ -30,7 +30,7 @@ import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormat;
 
-class SourceDocumentSpecsFromInputStream extends AbstractFileDocumentSpecs
+class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
     implements SourceDocumentSpecs {
 
   private final InputStream inputStream;

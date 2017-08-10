@@ -19,29 +19,22 @@
 
 package org.jodconverter.job;
 
-import java.io.File;
-
-import org.apache.commons.lang3.Validate;
-
-import org.jodconverter.document.DocumentFormat;
+import org.jodconverter.filter.FilterChain;
 
 /**
- * Base class for all document specifications implementations providing a file on disk (no temporary
- * file is created).
+ * A sufficiently specified conversion job with filter chain that is not yet applied to the
+ * converter.
  */
-abstract class AbstractFileDocumentSpecs extends AbstractDocumentSpecs {
+public interface ConversionJobWithFilterChainUnspecified extends ConversionJobWithSourceSpecified {
 
-  private final File file;
-
-  protected AbstractFileDocumentSpecs(final File file, final DocumentFormat documentFormat) {
-    super(documentFormat);
-
-    Validate.notNull(file, "The file is null");
-    this.file = file;
-  }
-
-  @Override
-  public File getFile() {
-    return file;
-  }
+  /**
+   * Specifies the whole filter chain to apply when converting a document. A FilterChain is used to
+   * modify the document before the conversion (after it has been loaded). Filters are applied in
+   * the same order they appear in the chain.
+   *
+   * @param filterChain The FilterChain to be applied after the document is loaded and before it is
+   *     stored (converted) in the new document format.
+   * @return The current conversion specification.
+   */
+  ConversionJobWithSourceSpecified modifyWith(FilterChain filterChain);
 }

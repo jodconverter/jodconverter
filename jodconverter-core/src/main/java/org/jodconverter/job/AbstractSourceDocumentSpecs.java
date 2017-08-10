@@ -26,28 +26,36 @@ import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DocumentFormat;
 
 /**
- * An interface that provides the behavior to apply when a source file is no longer required by a
- * conversion process.
+ * Base class for all source document specifications implementations.
+ *
+ * @see SourceDocumentSpecs
  */
-public interface SourceDocumentSpecs extends DocumentSpecs {
+public abstract class AbstractSourceDocumentSpecs extends AbstractDocumentSpecs
+    implements SourceDocumentSpecs {
+
+  private Map<String, Object> customLoadProperties;
+
+  protected AbstractSourceDocumentSpecs(final File file, final DocumentFormat documentFormat) {
+    super(file, documentFormat);
+  }
+
+  @Override
+  public Map<String, Object> getCustomLoadProperties() {
+    return customLoadProperties;
+  }
 
   /**
-   * Gets the custom properties that will be applied when a document is loaded during the conversion
+   * Sets the custom properties that will be applied when a document is loaded during the conversion
    * task.
    *
    * <p>Custom load properties are applied after the default load properties of the {@link
    * DocumentConverter} (only if the converter is a subclass of {@link AbstractConverter}) and after
    * the load properties of the {@link DocumentFormat} of this SourceDocumentSpecs.
    *
-   * @return A map containing the custom properties to apply when loading a document.
+   * @param customLoadProperties A map containing the custom properties to apply when loading a
+   *     document.
    */
-  Map<String, Object> getCustomLoadProperties();
-
-  /**
-   * Called when the file was consumed and is not longer required by the converter. The file must
-   * not be removed from the file system before this method is called.
-   *
-   * @param file The file that was consumed.
-   */
-  void onConsumed(File file);
+  void setCustomLoadProperties(final Map<String, Object> customLoadProperties) {
+    this.customLoadProperties = customLoadProperties;
+  }
 }

@@ -19,29 +19,25 @@
 
 package org.jodconverter.job;
 
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
+import java.util.Map;
 
 import org.jodconverter.document.DocumentFormat;
 
-class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs
-    implements TargetDocumentSpecs {
+/**
+ * A sufficiently specified conversion job with store properties that is not yet applied to the
+ * converter.
+ */
+public interface ConversionJobWithStorePropertiesUnspecified extends ConversionJob {
 
-  TargetDocumentSpecsFromFile(final File file, final DocumentFormat documentFormat) {
-    super(file, documentFormat);
-  }
-
-  @Override
-  public void onComplete(final File file) {
-
-    // Do nothing
-  }
-
-  @Override
-  public void onFailure(final File file, final Exception ex) {
-
-    // Ensure the created file is deleted
-    FileUtils.deleteQuietly(file);
-  }
+  /**
+   * Specifies the custom properties that will be applied when a document is stored during the
+   * conversion task.
+   *
+   * <p>Custom properties are applied after the store properties of the target {@link
+   * DocumentFormat}.
+   *
+   * @param properties A map containing the custom properties to apply when storing a document.
+   * @return This builder instance.
+   */
+  public ConversionJob storeWithProperties(Map<String, Object> properties);
 }

@@ -25,9 +25,10 @@ import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormat;
 
-class SourceDocumentSpecsFromFile extends AbstractFileDocumentSpecs implements SourceDocumentSpecs {
+class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs
+    implements SourceDocumentSpecs {
 
-  public SourceDocumentSpecsFromFile(final File file, final DocumentFormat documentFormat) {
+  SourceDocumentSpecsFromFile(final File file, final DocumentFormat documentFormat) {
     super(file, documentFormat);
 
     Validate.isTrue(file.exists(), "File not found: %s", file);

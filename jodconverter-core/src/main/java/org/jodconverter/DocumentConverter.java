@@ -24,8 +24,7 @@ import java.io.InputStream;
 
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.job.ConversionJobWithSourceSpecified;
-import org.jodconverter.job.SourceDocumentSpecs;
+import org.jodconverter.job.ConversionJobWithLoadPropertiesUnspecified;
 
 /**
  * A DocumentConverter is responsible to execute the conversion of documents using an office
@@ -39,7 +38,7 @@ public interface DocumentConverter {
    * @param source The conversion input as a file.
    * @return The current conversion specification.
    */
-  ConversionJobWithSourceSpecified convert(File source);
+  ConversionJobWithLoadPropertiesUnspecified convert(File source);
 
   /**
    * Converts a source file that is stored on the local file system.
@@ -48,7 +47,7 @@ public interface DocumentConverter {
    * @param format The format of the input document.
    * @return The current conversion specification.
    */
-  ConversionJobWithSourceSpecified convert(File source, DocumentFormat format);
+  ConversionJobWithLoadPropertiesUnspecified convert(File source, DocumentFormat format);
 
   /**
    * Converts a source stream input stream.
@@ -57,7 +56,7 @@ public interface DocumentConverter {
    * @param format The format of the input document.
    * @return The current conversion specification.
    */
-  ConversionJobWithSourceSpecified convert(InputStream source, DocumentFormat format);
+  ConversionJobWithLoadPropertiesUnspecified convert(InputStream source, DocumentFormat format);
 
   /**
    * Converts a source stream input stream.
@@ -67,16 +66,8 @@ public interface DocumentConverter {
    * @param closeStream Whether the {@link InputStream} is closed after the conversion terminates.
    * @return The current conversion specification.
    */
-  ConversionJobWithSourceSpecified convert(
+  ConversionJobWithLoadPropertiesUnspecified convert(
       InputStream source, DocumentFormat format, boolean closeStream);
-
-  /**
-   * Converts a source document using the given specifications.
-   *
-   * @param source The conversion input as a document specifications.
-   * @return The current conversion specification.
-   */
-  ConversionJobWithSourceSpecified convert(SourceDocumentSpecs source);
 
   /**
    * Gets all the {@link DocumentFormat} supported by the converter.

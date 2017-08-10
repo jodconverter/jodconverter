@@ -91,28 +91,29 @@ public abstract class AbstractConverter implements DocumentConverter {
   }
 
   @Override
-  public ConversionJobWithSourceSpecified convert(final File source) {
+  public ConversionJobWithLoadPropertiesUnspecified convert(final File source) {
 
     return convert(
         source, formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName())));
   }
 
   @Override
-  public ConversionJobWithSourceSpecified convert(final File source, final DocumentFormat format) {
+  public ConversionJobWithLoadPropertiesUnspecified convert(
+      final File source, final DocumentFormat format) {
 
     Validate.notNull(format, "The document format is null or unsupported");
     return convert(new SourceDocumentSpecsFromFile(source, format));
   }
 
   @Override
-  public ConversionJobWithSourceSpecified convert(
+  public ConversionJobWithLoadPropertiesUnspecified convert(
       final InputStream source, final DocumentFormat format) {
 
     return convert(source, format, DEFAULT_CLOSE_STREAM);
   }
 
   @Override
-  public ConversionJobWithSourceSpecified convert(
+  public ConversionJobWithLoadPropertiesUnspecified convert(
       final InputStream source, final DocumentFormat format, final boolean closeStream) {
 
     Validate.notNull(format, "The document format is null");
@@ -128,6 +129,15 @@ public abstract class AbstractConverter implements DocumentConverter {
         "An office manager must implements the TemporaryFileMaker "
             + "interface in order to be able to convert input streams");
   }
+
+  /**
+   * Converts a source document using the given specifications.
+   *
+   * @param source The conversion input as a document specifications.
+   * @return The current conversion specification.
+   */
+  protected abstract ConversionJobWithLoadPropertiesUnspecified convert(
+      AbstractSourceDocumentSpecs source);
 
   @Override
   public DocumentFormatRegistry getFormatRegistry() {
@@ -209,8 +219,8 @@ public abstract class AbstractConverter implements DocumentConverter {
     }
 
     /**
-     * Adds a the default property that will be applied when a document is loaded during a
-     * conversion task, regardless of the input format of the document.
+     * Adds a default property that will be applied when a document is loaded during a conversion
+     * task, regardless of the input format of the document.
      *
      * @param name The property name of the property to apply when loading a document.
      * @param value The property value of the property to apply when loading a document.

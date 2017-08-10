@@ -19,6 +19,8 @@
 
 package org.jodconverter.job;
 
+import java.io.File;
+
 import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormat;
@@ -28,44 +30,28 @@ import org.jodconverter.document.DocumentFormat;
  *
  * @see DocumentSpecs
  */
-abstract class AbstractDocumentSpecs implements DocumentSpecs {
+public abstract class AbstractDocumentSpecs implements DocumentSpecs {
 
+  private final File file;
   private final DocumentFormat documentFormat;
 
-  protected AbstractDocumentSpecs(final DocumentFormat documentFormat) {
+  protected AbstractDocumentSpecs(final File file, final DocumentFormat documentFormat) {
     super();
 
+    Validate.notNull(file, "The file is null");
+    Validate.notNull(documentFormat, "The document format is null");
+
+    this.file = file;
     this.documentFormat = documentFormat;
+  }
+
+  @Override
+  public File getFile() {
+    return file;
   }
 
   @Override
   public DocumentFormat getFormat() {
     return documentFormat;
-  }
-
-  abstract static class AbstractDocumentSpecsBuilder<T extends AbstractDocumentSpecsBuilder<T>> {
-
-    protected DocumentFormat documentFormat;
-
-    /**
-     * Specifies a the document format of this builder.
-     *
-     * @param format The format.
-     * @return This builder instance.
-     */
-    @SuppressWarnings("unchecked")
-    public T format(final DocumentFormat format) {
-
-      Validate.notNull(format, "The document format is null");
-      this.documentFormat = format;
-      return (T) this;
-    }
-
-    /**
-     * Creates the document specifications that is specified by this builder.
-     *
-     * @return The document specifications that is specified by this builder.
-     */
-    public abstract DocumentSpecs build();
   }
 }

@@ -19,27 +19,42 @@
 
 package org.jodconverter.job;
 
+import java.util.Map;
+
+import org.apache.commons.lang3.Validate;
+
 import org.jodconverter.filter.FilterChain;
 
 /**
- * Base class for all conversion job implementations.
+ * Base class for all conversion job implementations where store properties has not yet been applied
+ * to the converter.
  *
- * @see ConversionJob
+ * @see ConversionJobWithStorePropertiesUnspecified
  */
-public abstract class AbstractConversionJob implements ConversionJob {
+public abstract class AbstractConversionJobWithStorePropertiesUnspecified
+    implements ConversionJobWithStorePropertiesUnspecified {
 
-  protected SourceDocumentSpecs source;
-  protected TargetDocumentSpecs target;
-  protected FilterChain filterChain;
+  protected final AbstractSourceDocumentSpecs source;
+  protected final AbstractTargetDocumentSpecs target;
+  protected final FilterChain filterChain;
 
-  protected AbstractConversionJob(
-      final SourceDocumentSpecs source,
-      final TargetDocumentSpecs target,
+  protected AbstractConversionJobWithStorePropertiesUnspecified(
+      final AbstractSourceDocumentSpecs source,
+      final AbstractTargetDocumentSpecs target,
       final FilterChain filterChain) {
     super();
 
     this.source = source;
     this.target = target;
     this.filterChain = filterChain;
+  }
+
+  @Override
+  public ConversionJob storeWithProperties(final Map<String, Object> properties) {
+
+    Validate.notNull(properties);
+    target.setCustomStoreProperties(properties);
+
+    return this;
   }
 }

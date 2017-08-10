@@ -25,34 +25,36 @@ import java.util.Map;
 import org.jodconverter.document.DocumentFormat;
 
 /**
- * An interface that provides the behavior to apply when a target file is no longer required by a
- * conversion process.
+ * Base class for all target document specifications implementations.
+ *
+ * @see TargetDocumentSpecs
  */
-public interface TargetDocumentSpecs extends DocumentSpecs {
+public abstract class AbstractTargetDocumentSpecs extends AbstractDocumentSpecs
+    implements TargetDocumentSpecs {
+
+  private Map<String, Object> customStoreProperties;
+
+  protected AbstractTargetDocumentSpecs(final File file, final DocumentFormat documentFormat) {
+    super(file, documentFormat);
+  }
+
+  @Override
+  public Map<String, Object> getCustomStoreProperties() {
+    return customStoreProperties;
+  }
 
   /**
-   * Gets the custom properties that will be applied when a document is stored during a conversion
+   * Sets the custom properties that will be applied when a document is stored during a conversion
    * task.
    *
    * <p>Custom properties are applied after the stored properties of the {@link DocumentFormat} of
    * this TargetDocumentSpecs.
    *
-   * @return A map containing the custom properties to apply when storing a document.
+   * @param customStoreProperties A map containing the custom properties to apply when storing a
+   *     document.
    */
-  Map<String, Object> getCustomStoreProperties();
+  void setCustomStoreProperties(final Map<String, Object> customStoreProperties) {
 
-  /**
-   * Called if the conversion was completed successfully.
-   *
-   * @param file The file to which the conversion result was written.
-   */
-  void onComplete(File file);
-
-  /**
-   * Called if the conversion finished with an exception.
-   *
-   * @param file The file to which the conversion result was supposed to be written.
-   * @param ex An exception representing the reason for the failed conversion.
-   */
-  void onFailure(File file, Exception ex);
+    this.customStoreProperties = customStoreProperties;
+  }
 }
