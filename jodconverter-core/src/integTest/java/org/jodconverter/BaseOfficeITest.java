@@ -192,9 +192,11 @@ public abstract class BaseOfficeITest {
         "-- converting {} to {}... ", inputFormat.getExtension(), outputFormat.getExtension());
     try {
       converter
-          .convert(inputFile, inputFormat)
+          .convert(inputFile)
+          .as(inputFormat)
           .modifyWith(chain)
-          .to(outputFile, outputFormat)
+          .to(outputFile)
+          .as(outputFormat)
           .execute();
 
       logger.info("done.\n");

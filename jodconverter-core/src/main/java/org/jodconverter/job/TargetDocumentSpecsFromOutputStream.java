@@ -27,8 +27,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 
-import org.jodconverter.document.DocumentFormat;
-
 class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
     implements TargetDocumentSpecs {
 
@@ -36,11 +34,8 @@ class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
   private final boolean closeStream;
 
   public TargetDocumentSpecsFromOutputStream(
-      final OutputStream outputStream,
-      final DocumentFormat documentFormat,
-      final File tempFile,
-      final boolean closeStream) {
-    super(tempFile, documentFormat);
+      final OutputStream outputStream, final File tempFile, final boolean closeStream) {
+    super(tempFile);
 
     Validate.notNull(outputStream, "The outputStream is null");
     this.outputStream = outputStream;

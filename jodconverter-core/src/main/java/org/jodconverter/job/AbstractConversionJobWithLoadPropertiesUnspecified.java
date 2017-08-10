@@ -26,16 +26,16 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 
-import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.office.TemporaryFileMaker;
 
 /**
- * Base class for all job with source specified implementations.
+ * Base class for all job implementations with load properties that is not yet applied to the
+ * converter.
  *
- * @see ConversionJobWithSourceSpecified
+ * @see ConversionJobWithLoadPropertiesUnspecified
  */
 public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
     implements ConversionJobWithLoadPropertiesUnspecified {
@@ -63,7 +63,6 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
 
     Validate.notNull(filterChain);
     this.filterChain = filterChain;
-
     return this;
   }
 
@@ -73,44 +72,33 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
 
     Validate.notNull(properties);
     source.setCustomLoadProperties(properties);
-
     return this;
   }
 
   @Override
-  public ConversionJobWithStorePropertiesUnspecified to(final File target) {
+  public ConversionJobWithOptionalTargetFormatUnspecified to(final File target) {
 
-    return to(
-        target, formatRegistry.getFormatByExtension(FilenameUtils.getExtension(target.getName())));
+    final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(target);
+    specs.setDocumentFormat(
+        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(target.getName())));
+
+    return to(specs);
   }
 
   @Override
-  public ConversionJobWithStorePropertiesUnspecified to(
-      final File target, final DocumentFormat format) {
+  public ConversionJobWithRequiredTargetFormatUnspecified to(final OutputStream target) {
 
-    Validate.notNull(format, "The document format is null or unsupported");
-    return to(new TargetDocumentSpecsFromFile(target, format));
+    return to(target, DEFAULT_CLOSE_STREAM);
   }
 
   @Override
-  public ConversionJobWithStorePropertiesUnspecified to(
-      final OutputStream target, final DocumentFormat format) {
+  public ConversionJobWithRequiredTargetFormatUnspecified to(
+      final OutputStream target, final boolean closeStream) {
 
-    return to(target, format, DEFAULT_CLOSE_STREAM);
-  }
-
-  @Override
-  public ConversionJobWithStorePropertiesUnspecified to(
-      final OutputStream target, final DocumentFormat format, final boolean closeStream) {
-
-    Validate.notNull(format, "The document format is null");
     if (officeManager instanceof TemporaryFileMaker) {
       return to(
           new TargetDocumentSpecsFromOutputStream(
-              target,
-              format,
-              ((TemporaryFileMaker) officeManager).makeTemporaryFile(format.getExtension()),
-              closeStream));
+              target, ((TemporaryFileMaker) officeManager).makeTemporaryFile("tmp"), closeStream));
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "
@@ -123,6 +111,6 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
    * @param target The target specifications to use for the conversion.
    * @return The current conversion specification.
    */
-  protected abstract ConversionJobWithStorePropertiesUnspecified to(
+  protected abstract AbstractConversionJobWithTargetFormatUnspecified to(
       AbstractTargetDocumentSpecs target);
 }

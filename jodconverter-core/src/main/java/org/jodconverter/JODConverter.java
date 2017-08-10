@@ -22,8 +22,8 @@ package org.jodconverter;
 import java.io.File;
 import java.io.InputStream;
 
-import org.jodconverter.document.DocumentFormat;
-import org.jodconverter.job.ConversionJobWithLoadPropertiesUnspecified;
+import org.jodconverter.job.ConversionJobWithOptionalSourceFormatUnspecified;
+import org.jodconverter.job.ConversionJobWithRequiredSourceFormatUnspecified;
 import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.OfficeManager;
 
@@ -43,49 +43,33 @@ public final class JODConverter {
    * @param source The conversion input as a file.
    * @return The current conversion specification.
    */
-  public static ConversionJobWithLoadPropertiesUnspecified convert(final File source) {
+  public static ConversionJobWithOptionalSourceFormatUnspecified convert(final File source) {
 
     return DefaultConverter.make().convert(source);
   }
 
   /**
-   * Converts a source file that is stored on the local file system.
+   * Converts a source stream input stream.
    *
-   * @param source The conversion input as a file.
-   * @param format The format of the input document.
+   * @param source The conversion input as an input stream.
    * @return The current conversion specification.
    */
-  public static ConversionJobWithLoadPropertiesUnspecified convert(
-      final File source, final DocumentFormat format) {
+  public static ConversionJobWithRequiredSourceFormatUnspecified convert(final InputStream source) {
 
-    return DefaultConverter.make().convert(source, format);
+    return DefaultConverter.make().convert(source);
   }
 
   /**
    * Converts a source stream input stream.
    *
    * @param source The conversion input as an input stream.
-   * @param format The format of the input document.
-   * @return The current conversion specification.
-   */
-  public static ConversionJobWithLoadPropertiesUnspecified convert(
-      final InputStream source, final DocumentFormat format) {
-
-    return DefaultConverter.make().convert(source, format);
-  }
-
-  /**
-   * Converts a source stream input stream.
-   *
-   * @param source The conversion input as an input stream.
-   * @param format The format of the input document.
    * @param closeStream Whether the {@link InputStream} is closed after the conversion terminates.
    * @return The current conversion specification.
    */
-  public static ConversionJobWithLoadPropertiesUnspecified convert(
-      final InputStream source, final DocumentFormat format, final boolean closeStream) {
+  public static ConversionJobWithRequiredSourceFormatUnspecified convert(
+      final InputStream source, final boolean closeStream) {
 
-    return DefaultConverter.make().convert(source, format, closeStream);
+    return DefaultConverter.make().convert(source, closeStream);
   }
 
   private JODConverter() {}

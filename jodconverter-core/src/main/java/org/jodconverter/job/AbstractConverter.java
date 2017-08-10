@@ -32,7 +32,6 @@ import com.sun.star.document.UpdateDocMode;
 
 import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.OfficeManager;
@@ -91,39 +90,28 @@ public abstract class AbstractConverter implements DocumentConverter {
   }
 
   @Override
-  public ConversionJobWithLoadPropertiesUnspecified convert(final File source) {
+  public ConversionJobWithOptionalSourceFormatUnspecified convert(final File source) {
 
-    return convert(
-        source, formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName())));
+    final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(source);
+    specs.setDocumentFormat(
+        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName())));
+    return convert(specs);
   }
 
   @Override
-  public ConversionJobWithLoadPropertiesUnspecified convert(
-      final File source, final DocumentFormat format) {
+  public ConversionJobWithRequiredSourceFormatUnspecified convert(final InputStream source) {
 
-    Validate.notNull(format, "The document format is null or unsupported");
-    return convert(new SourceDocumentSpecsFromFile(source, format));
+    return convert(source, DEFAULT_CLOSE_STREAM);
   }
 
   @Override
-  public ConversionJobWithLoadPropertiesUnspecified convert(
-      final InputStream source, final DocumentFormat format) {
+  public ConversionJobWithRequiredSourceFormatUnspecified convert(
+      final InputStream source, final boolean closeStream) {
 
-    return convert(source, format, DEFAULT_CLOSE_STREAM);
-  }
-
-  @Override
-  public ConversionJobWithLoadPropertiesUnspecified convert(
-      final InputStream source, final DocumentFormat format, final boolean closeStream) {
-
-    Validate.notNull(format, "The document format is null");
     if (officeManager instanceof TemporaryFileMaker) {
       return convert(
           new SourceDocumentSpecsFromInputStream(
-              source,
-              format,
-              ((TemporaryFileMaker) officeManager).makeTemporaryFile(format.getExtension()),
-              closeStream));
+              source, ((TemporaryFileMaker) officeManager).makeTemporaryFile("tmp"), closeStream));
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "
@@ -136,7 +124,7 @@ public abstract class AbstractConverter implements DocumentConverter {
    * @param source The conversion input as a document specifications.
    * @return The current conversion specification.
    */
-  protected abstract ConversionJobWithLoadPropertiesUnspecified convert(
+  protected abstract AbstractConversionJobWithSourceFormatUnspecified convert(
       AbstractSourceDocumentSpecs source);
 
   @Override

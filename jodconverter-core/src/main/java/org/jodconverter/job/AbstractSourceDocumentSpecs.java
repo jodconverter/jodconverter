@@ -35,8 +35,8 @@ public abstract class AbstractSourceDocumentSpecs extends AbstractDocumentSpecs
 
   private Map<String, Object> customLoadProperties;
 
-  protected AbstractSourceDocumentSpecs(final File file, final DocumentFormat documentFormat) {
-    super(file, documentFormat);
+  protected AbstractSourceDocumentSpecs(final File file) {
+    super(file);
   }
 
   @Override

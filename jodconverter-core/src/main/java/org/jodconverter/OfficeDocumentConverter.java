@@ -179,15 +179,15 @@ public class OfficeDocumentConverter {
       throws OfficeException {
 
     delegate
-        .convert(
-            inputFile,
+        .convert(inputFile)
+        .as(
             inputFormat == null && inputFile != null
                 ? getFormatRegistry()
                     .getFormatByExtension(FilenameUtils.getExtension(inputFile.getName()))
                 : inputFormat)
         .modifyWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
-        .to(
-            outputFile,
+        .to(outputFile)
+        .as(
             outputFormat == null && outputFile != null
                 ? getFormatRegistry()
                     .getFormatByExtension(FilenameUtils.getExtension(outputFile.getName()))

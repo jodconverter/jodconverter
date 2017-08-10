@@ -39,5 +39,5 @@ public interface ConversionJobWithLoadPropertiesUnspecified
    * @param properties A map containing the custom properties to apply when loading a document.
    * @return This builder instance.
    */
-  public ConversionJobWithFilterChainUnspecified loadWithProperties(Map<String, Object> properties);
+  ConversionJobWithFilterChainUnspecified loadWithProperties(Map<String, Object> properties);
 }

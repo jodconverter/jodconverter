@@ -33,16 +33,14 @@ import org.jodconverter.document.DocumentFormat;
 public abstract class AbstractDocumentSpecs implements DocumentSpecs {
 
   private final File file;
-  private final DocumentFormat documentFormat;
+  private DocumentFormat documentFormat;
 
-  protected AbstractDocumentSpecs(final File file, final DocumentFormat documentFormat) {
+  protected AbstractDocumentSpecs(final File file) {
     super();
 
     Validate.notNull(file, "The file is null");
-    Validate.notNull(documentFormat, "The document format is null");
 
     this.file = file;
-    this.documentFormat = documentFormat;
   }
 
   @Override
@@ -53,5 +51,16 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
   @Override
   public DocumentFormat getFormat() {
     return documentFormat;
+  }
+
+  /**
+   * Sets the {@link DocumentFormat} specification for the document.
+   *
+   * @param documentFormat The document format to set.
+   */
+  void setDocumentFormat(final DocumentFormat documentFormat) {
+
+    Validate.notNull(documentFormat, "The document format is null or unsupported");
+    this.documentFormat = documentFormat;
   }
 }

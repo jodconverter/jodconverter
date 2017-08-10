@@ -28,8 +28,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 
-import org.jodconverter.document.DocumentFormat;
-
 class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
     implements SourceDocumentSpecs {
 
@@ -37,11 +35,8 @@ class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
   private final boolean closeStream;
 
   public SourceDocumentSpecsFromInputStream(
-      final InputStream inputStream,
-      final DocumentFormat documentFormat,
-      final File tempFile,
-      final boolean closeStream) {
-    super(tempFile, documentFormat);
+      final InputStream inputStream, final File tempFile, final boolean closeStream) {
+    super(tempFile);
 
     Validate.notNull(inputStream, "The inputStream is null");
     this.inputStream = inputStream;

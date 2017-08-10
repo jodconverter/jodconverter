@@ -28,9 +28,9 @@ import org.jodconverter.filter.FilterChain;
  */
 public abstract class AbstractConversionJob implements ConversionJob {
 
-  protected SourceDocumentSpecs source;
-  protected TargetDocumentSpecs target;
-  protected FilterChain filterChain;
+  protected final SourceDocumentSpecs source;
+  protected final TargetDocumentSpecs target;
+  protected final FilterChain filterChain;
 
   protected AbstractConversionJob(
       final SourceDocumentSpecs source,

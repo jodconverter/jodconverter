@@ -39,5 +39,5 @@ public interface ConversionJobWithStorePropertiesUnspecified extends ConversionJ
    * @param properties A map containing the custom properties to apply when storing a document.
    * @return This builder instance.
    */
-  public ConversionJob storeWithProperties(Map<String, Object> properties);
+  ConversionJob storeWithProperties(Map<String, Object> properties);
 }

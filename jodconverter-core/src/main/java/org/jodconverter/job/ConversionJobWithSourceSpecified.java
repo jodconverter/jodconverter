@@ -22,8 +22,6 @@ package org.jodconverter.job;
 import java.io.File;
 import java.io.OutputStream;
 
-import org.jodconverter.document.DocumentFormat;
-
 /** A conversion job with a specified source for the conversion. */
 public interface ConversionJobWithSourceSpecified {
 
@@ -35,38 +33,24 @@ public interface ConversionJobWithSourceSpecified {
    *     writable, an exception will be thrown.
    * @return The current conversion specification.
    */
-  ConversionJobWithStorePropertiesUnspecified to(File target);
-
-  /**
-   * Configures the current conversion to write the result to the specified target.
-   *
-   * @param target The file to which the result of the conversion will be written. Existing files
-   *     will be overwritten. If the file is locked by the JVM or any other application or is not
-   *     writable, an exception will be thrown.
-   * @param format The format of the document.
-   * @return The current conversion specification.
-   */
-  ConversionJobWithStorePropertiesUnspecified to(File target, DocumentFormat format);
+  ConversionJobWithOptionalTargetFormatUnspecified to(File target);
 
   /**
    * Configures the current conversion to write the result to the specified {@link OutputStream}.
    * The stream will be closed after the conversion is written.
    *
    * @param target The output stream to which the conversion result is written to.
-   * @param format The format of the document.
    * @return The current conversion specification.
    */
-  ConversionJobWithStorePropertiesUnspecified to(OutputStream target, DocumentFormat format);
+  ConversionJobWithRequiredTargetFormatUnspecified to(OutputStream target);
 
   /**
    * Configures the current conversion to write the result to the specified {@link OutputStream}.
    * The stream will be closed after the conversion is written.
    *
    * @param target The output stream to which the conversion result is written to.
-   * @param format The format of the document.
    * @param closeStream Determines whether the output stream is closed after writing the result.
    * @return The current conversion specification.
    */
-  ConversionJobWithStorePropertiesUnspecified to(
-      OutputStream target, DocumentFormat format, boolean closeStream);
+  ConversionJobWithRequiredTargetFormatUnspecified to(OutputStream target, boolean closeStream);
 }

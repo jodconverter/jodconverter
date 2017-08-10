@@ -21,18 +21,14 @@ package org.jodconverter;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.Validate;
-
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.filter.RefreshFilter;
-import org.jodconverter.job.AbstractConversionJobWithLoadPropertiesUnspecified;
-import org.jodconverter.job.AbstractConversionJobWithStorePropertiesUnspecified;
+import org.jodconverter.job.AbstractConversionJobWithSourceFormatUnspecified;
+import org.jodconverter.job.AbstractConversionJobWithTargetFormatUnspecified;
 import org.jodconverter.job.AbstractConverter;
 import org.jodconverter.job.AbstractSourceDocumentSpecs;
 import org.jodconverter.job.AbstractTargetDocumentSpecs;
-import org.jodconverter.job.ConversionJobWithLoadPropertiesUnspecified;
-import org.jodconverter.job.ConversionJobWithStorePropertiesUnspecified;
 import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
@@ -88,11 +84,10 @@ public class DefaultConverter extends AbstractConverter {
   }
 
   @Override
-  protected ConversionJobWithLoadPropertiesUnspecified convert(
+  protected AbstractConversionJobWithSourceFormatUnspecified convert(
       final AbstractSourceDocumentSpecs source) {
 
-    Validate.notNull(source.getFormat(), "The source document format is null");
-    return new DefaultConversionJobWithLoadPropertiesUnspecified(source);
+    return new DefaultConversionJobWithSourceFormatUnspecified(source);
   }
 
   /**
@@ -111,28 +106,27 @@ public class DefaultConverter extends AbstractConverter {
     }
   }
 
-  private class DefaultConversionJobWithLoadPropertiesUnspecified
-      extends AbstractConversionJobWithLoadPropertiesUnspecified {
+  private class DefaultConversionJobWithSourceFormatUnspecified
+      extends AbstractConversionJobWithSourceFormatUnspecified {
 
-    private DefaultConversionJobWithLoadPropertiesUnspecified(
+    private DefaultConversionJobWithSourceFormatUnspecified(
         final AbstractSourceDocumentSpecs source) {
       super(source, DefaultConverter.this.officeManager, DefaultConverter.this.formatRegistry);
     }
 
     @Override
-    protected ConversionJobWithStorePropertiesUnspecified to(
+    protected AbstractConversionJobWithTargetFormatUnspecified to(
         final AbstractTargetDocumentSpecs target) {
 
-      Validate.notNull(target.getFormat(), "The target document format is null");
-      return new DefaultConversionJobWithStorePropertiesUnspecified(
+      return new DefaultConversionJobWithTargetFormatUnspecified(
           source, target, filterChain == null ? RefreshFilter.CHAIN : filterChain);
     }
   }
 
-  private class DefaultConversionJobWithStorePropertiesUnspecified
-      extends AbstractConversionJobWithStorePropertiesUnspecified {
+  private class DefaultConversionJobWithTargetFormatUnspecified
+      extends AbstractConversionJobWithTargetFormatUnspecified {
 
-    private DefaultConversionJobWithStorePropertiesUnspecified(
+    private DefaultConversionJobWithTargetFormatUnspecified(
         final AbstractSourceDocumentSpecs source,
         final AbstractTargetDocumentSpecs target,
         final FilterChain filterChain) {

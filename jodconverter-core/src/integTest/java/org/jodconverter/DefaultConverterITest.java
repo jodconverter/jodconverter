@@ -79,7 +79,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
     FileUtils.deleteQuietly(outputFile);
 
     try (InputStream inputStream = new FileInputStream(inputFile)) {
-      converter.convert(inputStream, null).to(outputFile).execute();
+      converter.convert(inputStream).as(null).to(outputFile).execute();
     }
   }
 
@@ -93,7 +93,8 @@ public class DefaultConverterITest extends BaseOfficeITest {
 
     final InputStream inputStream = new FileInputStream(inputFile);
     converter
-        .convert(inputStream, formatRegistry.getFormatByExtension("doc"))
+        .convert(inputStream)
+        .as(formatRegistry.getFormatByExtension("doc"))
         .to(outputFile)
         .execute();
 
@@ -110,7 +111,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
     FileUtils.deleteQuietly(outputFile);
 
     try (OutputStream outputStream = new FileOutputStream(outputFile)) {
-      converter.convert(inputFile).to(outputStream, null).execute();
+      converter.convert(inputFile).to(outputStream).as(null).execute();
     }
   }
 
@@ -125,7 +126,8 @@ public class DefaultConverterITest extends BaseOfficeITest {
     final OutputStream outputStream = new FileOutputStream(outputFile);
     converter
         .convert(inputFile)
-        .to(outputStream, formatRegistry.getFormatByExtension("pdf"))
+        .to(outputStream)
+        .as(formatRegistry.getFormatByExtension("pdf"))
         .execute();
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);

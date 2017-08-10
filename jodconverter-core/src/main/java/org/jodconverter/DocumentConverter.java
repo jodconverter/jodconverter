@@ -24,7 +24,8 @@ import java.io.InputStream;
 
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.job.ConversionJobWithLoadPropertiesUnspecified;
+import org.jodconverter.job.ConversionJobWithOptionalSourceFormatUnspecified;
+import org.jodconverter.job.ConversionJobWithRequiredSourceFormatUnspecified;
 
 /**
  * A DocumentConverter is responsible to execute the conversion of documents using an office
@@ -38,36 +39,24 @@ public interface DocumentConverter {
    * @param source The conversion input as a file.
    * @return The current conversion specification.
    */
-  ConversionJobWithLoadPropertiesUnspecified convert(File source);
-
-  /**
-   * Converts a source file that is stored on the local file system.
-   *
-   * @param source The conversion input as a file.
-   * @param format The format of the input document.
-   * @return The current conversion specification.
-   */
-  ConversionJobWithLoadPropertiesUnspecified convert(File source, DocumentFormat format);
+  ConversionJobWithOptionalSourceFormatUnspecified convert(File source);
 
   /**
    * Converts a source stream input stream.
    *
    * @param source The conversion input as an input stream.
-   * @param format The format of the input document.
    * @return The current conversion specification.
    */
-  ConversionJobWithLoadPropertiesUnspecified convert(InputStream source, DocumentFormat format);
+  ConversionJobWithRequiredSourceFormatUnspecified convert(InputStream source);
 
   /**
    * Converts a source stream input stream.
    *
    * @param source The conversion input as an input stream.
-   * @param format The format of the input document.
    * @param closeStream Whether the {@link InputStream} is closed after the conversion terminates.
    * @return The current conversion specification.
    */
-  ConversionJobWithLoadPropertiesUnspecified convert(
-      InputStream source, DocumentFormat format, boolean closeStream);
+  ConversionJobWithRequiredSourceFormatUnspecified convert(InputStream source, boolean closeStream);
 
   /**
    * Gets all the {@link DocumentFormat} supported by the converter.

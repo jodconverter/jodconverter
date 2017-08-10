@@ -34,8 +34,8 @@ public abstract class AbstractTargetDocumentSpecs extends AbstractDocumentSpecs
 
   private Map<String, Object> customStoreProperties;
 
-  protected AbstractTargetDocumentSpecs(final File file, final DocumentFormat documentFormat) {
-    super(file, documentFormat);
+  protected AbstractTargetDocumentSpecs(final File file) {
+    super(file);
   }
 
   @Override

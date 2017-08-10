@@ -23,13 +23,11 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 
-import org.jodconverter.document.DocumentFormat;
-
 class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs
     implements TargetDocumentSpecs {
 
-  TargetDocumentSpecsFromFile(final File file, final DocumentFormat documentFormat) {
-    super(file, documentFormat);
+  TargetDocumentSpecsFromFile(final File file) {
+    super(file);
   }
 
   @Override

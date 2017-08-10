@@ -19,21 +19,17 @@
 
 package org.jodconverter.job;
 
-import java.io.File;
+import org.jodconverter.document.DocumentFormat;
 
-import org.apache.commons.lang3.Validate;
+/** A conversion job with optional source format that is not yet applied to the converter. */
+public interface ConversionJobWithOptionalSourceFormatUnspecified
+    extends ConversionJobWithLoadPropertiesUnspecified {
 
-class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs
-    implements SourceDocumentSpecs {
-
-  SourceDocumentSpecsFromFile(final File file) {
-    super(file);
-
-    Validate.isTrue(file.exists(), "File not found: %s", file);
-  }
-
-  @Override
-  public void onConsumed(File file) {
-    // Do nothing
-  }
+  /**
+   * Defines the source document format for the given input document.
+   *
+   * @param format The document format of the source document.
+   * @return The current conversion specification.
+   */
+  ConversionJobWithLoadPropertiesUnspecified as(DocumentFormat format);
 }
