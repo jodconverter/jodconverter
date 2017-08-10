@@ -17,8 +17,7 @@ try {
     officeManager.start();
 
     // Convert
-    DefaultConverter
-             .make()
+    JODConverter
              .convert(inputFile)
              .to(outputFile)
              .execute();
@@ -28,16 +27,28 @@ try {
 }
 ```
 
-To convert from/to other formats, simply change the file names and the formats will be determined based on file extensions; e.g. to convert an Excel file to OpenDocument Spreadsheet:
+To convert from/to other formats, simply change the file names and the formats will be determined based on file extensions; e.g. to convert an Excel file to OpenDocument Spreadsheet file:
 
 
 ```java
 File inputFile = new File("spreadsheet.xls");
 File outputFile = new File("spreadsheet.ods");
-DefaultConverter
-         .make()
+JODConverter
          .convert(inputFile)
          .to(outputFile)
+         .execute();
+```
+
+If you are working with streams instead of file, no problems! You just have to inform JODConverter what are the input and output document formats; e.g: to convert an Excel stream to OpenDocument Spreadsheet stream:
+
+```java
+InputStream inputStream = ...
+OutputStream outputStream = ...
+JODConverter
+         .convert(inputStream)
+         .as(DefaultDocumentFormatRegistry.XLS)
+         .to(outputStream)
+         .as(DefaultDocumentFormatRegistry.ODS)
          .execute();
 ```
 
