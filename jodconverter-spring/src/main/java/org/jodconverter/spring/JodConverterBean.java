@@ -36,6 +36,7 @@ import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFamily;
 import org.jodconverter.document.DocumentFormat;
+import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
@@ -118,7 +119,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   /** Prints the available formats provided by the JODConverter module. */
   public void logAvailableFormats() {
 
-    final DefaultDocumentFormatRegistry ref = DefaultDocumentFormatRegistry.getInstance();
+    final DocumentFormatRegistry ref = DefaultDocumentFormatRegistry.getInstance();
 
     logSupportedGroupFormats(
         "Supported Text Document Formats are:", ref.getOutputFormats(DocumentFamily.TEXT));

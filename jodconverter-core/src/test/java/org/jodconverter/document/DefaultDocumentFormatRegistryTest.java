@@ -45,7 +45,7 @@ public class DefaultDocumentFormatRegistryTest {
   @Test
   public void getInstance_AllOutputFormatsLoadedSuccessfully() {
 
-    final DefaultDocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
 
     // TEXT output format
     Set<DocumentFormat> outputFormats = registry.getOutputFormats(DocumentFamily.TEXT);

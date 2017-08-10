@@ -38,7 +38,7 @@ public class DocumentFormatTest {
 
     // If an exception is thrown, the test will automatically fail.
 
-    final DefaultDocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
     // TEXT output format
     toString(registry.getOutputFormats(DocumentFamily.TEXT));
     // SPREADSHEET output format

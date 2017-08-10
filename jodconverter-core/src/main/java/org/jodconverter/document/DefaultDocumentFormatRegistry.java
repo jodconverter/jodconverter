@@ -22,11 +22,9 @@ package org.jodconverter.document;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
-
 /**
- * Default {@code DocumentFormat} registry. It contains the list of {@code DocumentFormat} that
- * should be enough to cover most of our needs.
+ * Holds the default {@code DocumentFormat} registry. It contains the list of {@code DocumentFormat}
+ * that should be enough to cover most of our needs.
  *
  * <p>See <a
  * href="https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0">OpenOffice
@@ -38,7 +36,7 @@ import org.apache.commons.io.IOUtils;
  * href="https://svn.apache.org/repos/asf/openoffice/trunk/main/filter/source/config/fragments/filters">OpenOffice
  * Filters</a>.
  */
-public final class DefaultDocumentFormatRegistry extends JsonDocumentFormatRegistry {
+public final class DefaultDocumentFormatRegistry {
 
   /**
    * The InstanceHolder inner class is used to initialize the static INSTANCE on demand (the
@@ -46,7 +44,18 @@ public final class DefaultDocumentFormatRegistry extends JsonDocumentFormatRegis
    * (and thus load default document format) the static INSTANCE only if needed.
    */
   private static class InstanceHolder { // NOSONAR
-    public static DefaultDocumentFormatRegistry INSTANCE = create(); // NOSONAR
+    public static DocumentFormatRegistry INSTANCE = create(); // NOSONAR
+
+    private static DocumentFormatRegistry create() {
+
+      try (final InputStream input =
+          DefaultDocumentFormatRegistry.class.getResourceAsStream("/document-formats.json")) {
+        return JsonDocumentFormatRegistry.create(input);
+      } catch (IOException ex) {
+        throw new DocumentFormatRegistryException(
+            "Unable to load the default document-formats.json configuration file", ex);
+      }
+    }
   }
 
   /**
@@ -280,41 +289,40 @@ public final class DefaultDocumentFormatRegistry extends JsonDocumentFormatRegis
   public static final DocumentFormat PNG = getInstance().getFormatByExtension("png");
 
   /**
-   * Creates a DefaultDocumentFormatRegistry with default formats.
-   *
-   * @return The created DefaultDocumentFormatRegistry with default formats.
-   */
-  public static DefaultDocumentFormatRegistry create() {
-
-    final DefaultDocumentFormatRegistry registry = new DefaultDocumentFormatRegistry();
-    registry.loadDefaults();
-    return registry;
-  }
-
-  /**
    * Gets the default instance of the class.
    *
    * @return The ResourceManager used at this class hierarchy level.
    */
-  public static DefaultDocumentFormatRegistry getInstance() {
+  public static DocumentFormatRegistry getInstance() {
     return InstanceHolder.INSTANCE;
+  }
+
+  /**
+   * Gets a document format for the specified extension.
+   *
+   * @param extension The extension whose document format will be returned.
+   * @return The found document format, or {@code null} if no document format exists for the
+   *     specified extension.
+   */
+  public static final DocumentFormat getFormatByExtension(final String extension) {
+
+    return getInstance().getFormatByExtension(extension);
+  }
+
+  /**
+   * Gets a document format for the specified media type.
+   *
+   * @param mediaType The media type whose document format will be returned.
+   * @return The found document format, or {@code null} if no document format exists for the
+   *     specified media type.
+   */
+  public static final DocumentFormat getFormatByMediaType(final String mediaType) {
+
+    return getInstance().getFormatByMediaType(mediaType);
   }
 
   // Force static function call
   private DefaultDocumentFormatRegistry() { // NOSONAR
     super();
-  }
-
-  // Load all the default supported DocumentFormat.
-  private void loadDefaults() {
-
-    try (final InputStream input =
-        DefaultDocumentFormatRegistry.class.getResourceAsStream("/document-formats.json")) {
-      String json = IOUtils.toString(input, "UTF-8");
-      readJsonArray(json);
-    } catch (IOException ex) {
-      throw new DocumentFormatRegistryException(
-          "Unable to load the default document-formats.json configuration file", ex);
-    }
   }
 }

@@ -90,7 +90,7 @@ class DumpJsonDefaultDocumentFormatRegistry {
 
   public static void main(final String[] args) throws Exception {
 
-    final DefaultDocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
     @SuppressWarnings("unchecked")
     final Map<String, DocumentFormat> formats =
         (Map<String, DocumentFormat>) FieldUtils.readField(registry, "fmtsByExtension", true);
