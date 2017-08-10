@@ -43,6 +43,8 @@ public final class InstalledOfficeManagerHolder {
    * Sets the static instance of the static holder class.
    *
    * @param manager The main default office manager.
+   * @return the previous installed office manager, or {@code null} if there was no installed office
+   *     manager.
    */
   public static synchronized OfficeManager setInstance(OfficeManager manager) {
 

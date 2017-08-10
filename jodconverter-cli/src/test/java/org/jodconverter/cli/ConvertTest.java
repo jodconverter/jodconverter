@@ -33,6 +33,10 @@ import org.jodconverter.office.OfficeUtils;
 
 public class ConvertTest {
 
+  /**
+   * Redirects the console output and also changes the security manager so we can trap the exit code
+   * of the application.
+   */
   @BeforeClass
   public static void setUpClass() {
 
@@ -43,6 +47,7 @@ public class ConvertTest {
     System.setSecurityManager(new NoExitSecurityManager());
   }
 
+  /** Resets the security manager. */
   @AfterClass
   public static void tearDownClass() {
 

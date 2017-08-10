@@ -77,14 +77,14 @@ public class ConvertITest {
     final File outputFile =
         new File(
             inputFile.getParentFile(), FilenameUtils.getBaseName(inputFile.getName()) + ".pdf");
-    
+
     assertThat(outputFile).doesNotExist();
 
     Convert.main(new String[] {"-f", "pdf", inputFile.getPath()});
 
     assertThat(outputFile).isFile();
     assertThat(outputFile.length()).isGreaterThan(0L);
-    
+
     FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
   }
 

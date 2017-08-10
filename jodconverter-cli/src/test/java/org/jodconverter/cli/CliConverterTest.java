@@ -62,6 +62,10 @@ public class CliConverterTest {
   private static final String OUTPUT_DIR_TARGET_FILE_1 = OUTPUT_DIR + TARGET_FILENAME_1;
   private static final String OUTPUT_DIR_TARGET_FILE_2 = OUTPUT_DIR + TARGET_FILENAME_2;
 
+  /**
+   * Redirects the console output and also changes the security manager so we can trap the exit code
+   * of the application.
+   */
   @BeforeClass
   public static void setUpClass() {
 
@@ -77,6 +81,7 @@ public class CliConverterTest {
     System.setSecurityManager(new NoExitSecurityManager());
   }
 
+  /** Resets the security manager. */
   @AfterClass
   public static void tearDownClass() {
 
@@ -265,6 +270,7 @@ public class CliConverterTest {
     FileUtils.deleteQuietly(new File(OUTPUT_DIR_TARGET_FILE_2));
   }
 
+  /** Setup the office manager before each test. */
   @Before
   public void setUp() {
 
@@ -275,16 +281,5 @@ public class CliConverterTest {
     converter = new CliConverter(registry);
 
     ExitException.INSTANCE.reset();
-  }
-
-  /** Setup the office manager before each test. */
-  @Before
-  public void tearDown() {
-
-    officeManager = mock(OfficeManager.class);
-    InstalledOfficeManagerHolder.setInstance(officeManager);
-    registry = DefaultDocumentFormatRegistry.getInstance();
-
-    converter = new CliConverter(registry);
   }
 }
