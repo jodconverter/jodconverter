@@ -20,7 +20,6 @@
 package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -30,7 +29,6 @@ import org.junit.Test;
 import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitSecurityManager;
 import org.jodconverter.cli.util.SystemLogHandler;
-import org.jodconverter.office.OfficeUtils;
 
 public class ConvertTest {
 
@@ -145,31 +143,6 @@ public class ConvertTest {
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 255);
-    }
-  }
-
-  @Test
-  public void main_WithAllCustomizableOption_ExecuteAndExitWithCod0() throws Exception {
-
-    try {
-      SystemLogHandler.startCapture();
-      Convert.main(
-          new String[] {
-            "-i", OfficeUtils.getDefaultOfficeHome().getPath(),
-            "-m", OfficeUtils.findBestProcessManager().getClass().getName(),
-            "-t", "30000",
-            "-p", "2002",
-            "input1.txt", "output1.pdf"
-          });
-
-      // Be sure an exception is thrown.
-      fail();
-
-    } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
-      assertThat(ex)
-          .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 0);
     }
   }
 }

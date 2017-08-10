@@ -20,6 +20,7 @@
 package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 
@@ -28,6 +29,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.jodconverter.cli.util.ExitException;
+import org.jodconverter.cli.util.NoExitSecurityManager;
+import org.jodconverter.cli.util.SystemLogHandler;
+import org.jodconverter.office.OfficeUtils;
 
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
@@ -38,7 +44,10 @@ public class ConvertITest {
   private static final String SOURCE_FILE = "src/integTest/resources/documents/test1.doc";
   private static final String OUTPUT_DIR = "test-output/" + ConvertITest.class.getSimpleName();
 
-  /** Ensures we start with a fresh output directory. */
+  /**
+   * Ensures we start with a fresh output directory. Also changes the security manager so we can
+   * trap the exit code of the application.
+   */
   @BeforeClass
   public static void createOutputDir() {
 
@@ -46,14 +55,19 @@ public class ConvertITest {
     final File outputDir = new File(OUTPUT_DIR);
     FileUtils.deleteQuietly(outputDir);
     outputDir.mkdirs();
+
+    System.setSecurityManager(new NoExitSecurityManager());
   }
 
-  /**  Deletes the output directory. */
+  /**  Deletes the output directory and resets the security manager. */
   @AfterClass
   public static void deleteOutputDir() {
 
     // Delete the output directory
     FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+
+    // Restore security manager
+    System.setSecurityManager(null);
   }
 
   @Test
@@ -118,5 +132,30 @@ public class ConvertITest {
 
     assertThat(outputFile).isFile();
     assertThat(outputFile.length()).isGreaterThan(0L);
+  }
+
+  @Test
+  public void main_WithAllCustomizableOption_ExecuteAndExitWithCod0() throws Exception {
+
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(
+          new String[] {
+            "-i", OfficeUtils.getDefaultOfficeHome().getPath(),
+            "-m", OfficeUtils.findBestProcessManager().getClass().getName(),
+            "-t", "30000",
+            "-p", "2002",
+            "input1.txt", "output1.pdf"
+          });
+
+      // Be sure an exception is thrown.
+      fail();
+
+    } catch (Exception ex) {
+      SystemLogHandler.stopCapture();
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 0);
+    }
   }
 }
