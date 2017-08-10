@@ -19,6 +19,7 @@
 
 package org.jodconverter.document;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,22 +29,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 /** Contains the required information used to deal with a specific document format . */
 public class DocumentFormat {
 
-  /**
-   * returns a copy of the specified {@link DocumentFormat}.
-   *
-   * @param from The document format from which the copy is created.
-   * @return An exact copy of the specified format.
-   */
-  public static DocumentFormat copy(DocumentFormat from) {
-    return new DocumentFormat(from);
-  }
-
   private final String name;
   private final String extension;
   private final String mediaType;
-  private DocumentFamily inputFamily;
-  private Map<String, Object> loadProperties;
-  private Map<DocumentFamily, Map<String, Object>> storeProperties;
+  private final DocumentFamily inputFamily;
+  private final Map<String, Object> loadProperties;
+  private final Map<DocumentFamily, Map<String, Object>> storeProperties;
 
   /**
    * Creates a new document format with the specified name, extension and mime-type.
@@ -51,35 +42,38 @@ public class DocumentFormat {
    * @param name The name of the format.
    * @param extension The extension of the format.
    * @param mediaType The media type (mime type) of the format.
+   * @param inputFamily The DocumentFamily of the document.
+   * @param loadProperties The properties required to load(open) a document of this format.
+   * @param storeProperties The properties required to store(save) a document of this format to a
+   *     document of another family.
    */
-  public DocumentFormat(final String name, final String extension, final String mediaType) {
+  public DocumentFormat(
+      final String name,
+      final String extension,
+      final String mediaType,
+      final DocumentFamily inputFamily,
+      final Map<String, Object> loadProperties,
+      final Map<DocumentFamily, Map<String, Object>> storeProperties) {
 
     this.name = name;
     this.extension = extension;
     this.mediaType = mediaType;
-  }
+    this.inputFamily = inputFamily;
 
-  /**
-   * Creates a copy of the specified document format.
-   *
-   * @param documentFormat The DocumentFormat from which the copy is made.
-   */
-  private DocumentFormat(final DocumentFormat documentFormat) {
-
-    this.name = documentFormat.name;
-    this.extension = documentFormat.extension;
-    this.mediaType = documentFormat.mediaType;
-    this.inputFamily = documentFormat.inputFamily;
-    if (documentFormat.getLoadProperties() != null) {
-      this.loadProperties = new HashMap<>(documentFormat.getLoadProperties());
+    Map<String, Object> loadProps = new HashMap<>();
+    if (loadProperties != null) {
+      loadProps = new HashMap<>(loadProperties);
     }
-    if (documentFormat.getStoreProperties() != null) {
-      storeProperties = new EnumMap<>(DocumentFamily.class);
-      for (Map.Entry<DocumentFamily, Map<String, Object>> entry :
-          documentFormat.getStoreProperties().entrySet()) {
-        storeProperties.put(entry.getKey(), new HashMap<>(entry.getValue()));
+    this.loadProperties = Collections.unmodifiableMap(loadProps);
+
+    Map<DocumentFamily, Map<String, Object>> storeProps = new EnumMap<>(DocumentFamily.class);
+    if (storeProperties != null) {
+      for (Map.Entry<DocumentFamily, Map<String, Object>> entry : storeProperties.entrySet()) {
+        storeProps.put(
+            entry.getKey(), Collections.unmodifiableMap(new HashMap<>(entry.getValue())));
       }
     }
+    this.storeProperties = Collections.unmodifiableMap(storeProps);
   }
 
   /**
@@ -128,20 +122,6 @@ public class DocumentFormat {
   }
 
   /**
-   * Gets the properties required to store(save) a document of this format to a document of the
-   * specified family.
-   *
-   * @param family The DocumentFamily for which the properties are get.
-   * @return A map containing the properties to apply when storing a document of this format.
-   */
-  public Map<String, Object> getStoreProperties(final DocumentFamily family) {
-    if (storeProperties == null) {
-      return null;
-    }
-    return storeProperties.get(family);
-  }
-
-  /**
    * Gets the properties required to store(save) a document of this format to a document of
    * supported families.
    *
@@ -153,37 +133,17 @@ public class DocumentFormat {
   }
 
   /**
-   * Sets the DocumentFamily of the document.
+   * Gets the properties required to store(save) a document of this format to a document of the
+   * specified family.
    *
-   * @param documentFamily The DocumentFamily of the document
+   * @param family The DocumentFamily for which the properties are get.
+   * @return A map containing the properties to apply when storing a document of this format.
    */
-  public void setInputFamily(final DocumentFamily documentFamily) {
-    this.inputFamily = documentFamily;
-  }
-
-  /**
-   * Sets the properties required to load(open) a document of this format.
-   *
-   * @param loadProperties The new properties to set.
-   */
-  public void setLoadProperties(final Map<String, Object> loadProperties) {
-    this.loadProperties = loadProperties;
-  }
-
-  /**
-   * Sets the properties required to store(save) a document of this format to a document of another
-   * family.
-   *
-   * @param family the DocumentFamily for which the properties are set.
-   * @param storeProperties the new properties to set.
-   */
-  public void setStoreProperties(
-      final DocumentFamily family, final Map<String, Object> storeProperties) {
-
-    if (this.storeProperties == null) {
-      this.storeProperties = new EnumMap<>(DocumentFamily.class);
+  public Map<String, Object> getStoreProperties(final DocumentFamily family) {
+    if (storeProperties == null) {
+      return null;
     }
-    this.storeProperties.put(family, storeProperties);
+    return storeProperties.get(family);
   }
 
   @Override

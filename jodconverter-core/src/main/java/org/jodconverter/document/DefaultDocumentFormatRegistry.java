@@ -50,6 +50,236 @@ public final class DefaultDocumentFormatRegistry extends JsonDocumentFormatRegis
   }
 
   /**
+   * Portable Document Format.
+   *
+   * <ul>
+   *   <li>Extension: pdf
+   *   <li>Media Type: application/pdf
+   * </ul>
+   */
+  public static final DocumentFormat PDF = getInstance().getFormatByExtension("pdf");
+
+  /**
+   * Macromedia Flash.
+   *
+   * <ul>
+   *   <li>Extension: swf
+   *   <li>Media Type: application/x-shockwave-flash
+   * </ul>
+   */
+  public static final DocumentFormat SWF = getInstance().getFormatByExtension("swf");
+
+  /**
+   * HTML.
+   *
+   * <ul>
+   *   <li>Extension: html
+   *   <li>Media Type: text/html
+   * </ul>
+   */
+  public static final DocumentFormat HTML = getInstance().getFormatByExtension("html");
+
+  /**
+   * OpenDocument Text.
+   *
+   * <ul>
+   *   <li>Extension: odt
+   *   <li>Media Type: application/vnd.oasis.opendocument.text
+   * </ul>
+   */
+  public static final DocumentFormat ODT = getInstance().getFormatByExtension("odt");
+
+  /**
+   * OpenOffice.org 1.0 Text Document.
+   *
+   * <ul>
+   *   <li>Extension: swx
+   *   <li>Media Type: application/vnd.sun.xml.writer
+   * </ul>
+   */
+  public static final DocumentFormat SWX = getInstance().getFormatByExtension("swx");
+
+  /**
+   * Microsoft Word 97-2003.
+   *
+   * <ul>
+   *   <li>Extension: doc
+   *   <li>Media Type: application/msword
+   * </ul>
+   */
+  public static final DocumentFormat DOC = getInstance().getFormatByExtension("doc");
+
+  /**
+   * Microsoft Word 2007-2013 XML.
+   *
+   * <ul>
+   *   <li>Extension: docx
+   *   <li>Media Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+   * </ul>
+   */
+  public static final DocumentFormat DOCX = getInstance().getFormatByExtension("docx");
+
+  /**
+   * Rich Text Format.
+   *
+   * <ul>
+   *   <li>Extension: rtf
+   *   <li>Media Type: text/rtf"
+   * </ul>
+   */
+  public static final DocumentFormat RTF = getInstance().getFormatByExtension("rtf");
+
+  /**
+   * WordPerfect.
+   *
+   * <ul>
+   *   <li>Extension: wpd
+   *   <li>Media Type: application/wordperfect
+   * </ul>
+   */
+  public static final DocumentFormat WPD = getInstance().getFormatByExtension("wpd");
+
+  /**
+   * Plain Text.
+   *
+   * <ul>
+   *   <li>Extension: txt
+   *   <li>Media Type: text/plain
+   * </ul>
+   */
+  public static final DocumentFormat TXT = getInstance().getFormatByExtension("txt");
+
+  /**
+   * OpenDocument Spreadsheet.
+   *
+   * <ul>
+   *   <li>Extension: ods
+   *   <li>Media Type: application/vnd.oasis.opendocument.spreadsheet
+   * </ul>
+   */
+  public static final DocumentFormat ODS = getInstance().getFormatByExtension("ods");
+
+  /**
+   * OpenOffice.org 1.0 Spreadsheet.
+   *
+   * <ul>
+   *   <li>Extension: sxc
+   *   <li>Media Type: application/vnd.sun.xml.calc
+   * </ul>
+   */
+  public static final DocumentFormat SXC = getInstance().getFormatByExtension("sxc");
+
+  /**
+   * Microsoft Excel 97-2003.
+   *
+   * <ul>
+   *   <li>Extension: xls
+   *   <li>Media Type: application/vnd.ms-excel
+   * </ul>
+   */
+  public static final DocumentFormat XLS = getInstance().getFormatByExtension("xls");
+
+  /**
+   * Microsoft Excel 2007-2013 XML.
+   *
+   * <ul>
+   *   <li>Extension: xlsx
+   *   <li>Media Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+   * </ul>
+   */
+  public static final DocumentFormat XLSX = getInstance().getFormatByExtension("xlsx");
+
+  /**
+   * Comma Separated Values.
+   *
+   * <ul>
+   *   <li>Extension: csv
+   *   <li>Media Type: text/csv
+   * </ul>
+   */
+  public static final DocumentFormat CSV = getInstance().getFormatByExtension("csv");
+
+  /**
+   * Tab Separated Values.
+   *
+   * <ul>
+   *   <li>Extension: tsv
+   *   <li>Media Type: text/tab-separated-values
+   * </ul>
+   */
+  public static final DocumentFormat TSV = getInstance().getFormatByExtension("tsv");
+
+  /**
+   * OpenDocument Presentation.
+   *
+   * <ul>
+   *   <li>Extension: odp
+   *   <li>Media Type: application/vnd.oasis.opendocument.presentation
+   * </ul>
+   */
+  public static final DocumentFormat ODP = getInstance().getFormatByExtension("odp");
+
+  /**
+   * OpenOffice.org 1.0 Presentation.
+   *
+   * <ul>
+   *   <li>Extension: sxi
+   *   <li>Media Type: application/vnd.sun.xml.impress
+   * </ul>
+   */
+  public static final DocumentFormat SXI = getInstance().getFormatByExtension("sxi");
+
+  /**
+   * Microsoft PowerPoint 97-2003.
+   *
+   * <ul>
+   *   <li>Extension: ppt
+   *   <li>Media Type: application/vnd.ms-powerpoint
+   * </ul>
+   */
+  public static final DocumentFormat PPT = getInstance().getFormatByExtension("ppt");
+
+  /**
+   * Microsoft PowerPoint 2007-2013 XML.
+   *
+   * <ul>
+   *   <li>Extension: pptx
+   *   <li>Media Type: application/vnd.openxmlformats-officedocument.presentationml.presentation
+   * </ul>
+   */
+  public static final DocumentFormat PPTX = getInstance().getFormatByExtension("pptx");
+
+  /**
+   * OpenDocument Drawing.
+   *
+   * <ul>
+   *   <li>Extension: odg
+   *   <li>Media Type: application/vnd.oasis.opendocument.graphics
+   * </ul>
+   */
+  public static final DocumentFormat ODG = getInstance().getFormatByExtension("odg");
+
+  /**
+   * Scalable Vector Graphics.
+   *
+   * <ul>
+   *   <li>Extension: svg
+   *   <li>Media Type: image/svg+xml
+   * </ul>
+   */
+  public static final DocumentFormat SVG = getInstance().getFormatByExtension("svg");
+
+  /**
+   * Portable Network Graphics.
+   *
+   * <ul>
+   *   <li>Extension: png
+   *   <li>Media Type: image/png
+   * </ul>
+   */
+  public static final DocumentFormat PNG = getInstance().getFormatByExtension("png");
+
+  /**
    * Creates a DefaultDocumentFormatRegistry with default formats.
    *
    * @return The created DefaultDocumentFormatRegistry with default formats.

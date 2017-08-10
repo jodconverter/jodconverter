@@ -21,6 +21,8 @@ package org.jodconverter.document;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EnumMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -69,18 +71,23 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
     final JSONArray array = new JSONArray(source);
     for (int i = 0; i < array.length(); i++) {
+
       final JSONObject jsonFormat = array.getJSONObject(i);
-      final DocumentFormat format =
-          new DocumentFormat(
-              jsonFormat.getString("name"),
-              jsonFormat.getString("extension"),
-              jsonFormat.getString("mediaType"));
+
+      final String name = jsonFormat.getString("name");
+      final String extension = jsonFormat.getString("extension");
+      final String mediaType = jsonFormat.getString("mediaType");
+
+      DocumentFamily inputFamily = null;
       if (jsonFormat.has("inputFamily")) {
-        format.setInputFamily(DocumentFamily.valueOf(jsonFormat.getString("inputFamily")));
+        inputFamily = DocumentFamily.valueOf(jsonFormat.getString("inputFamily"));
       }
+
+      Map<String, Object> loadProperties = null;
       if (jsonFormat.has("loadProperties")) {
-        format.setLoadProperties(JsonUtils.toMap(jsonFormat.getJSONObject("loadProperties")));
+        loadProperties = JsonUtils.toMap(jsonFormat.getJSONObject("loadProperties"));
       }
+
       JSONObject jsonStoreProperties = null;
       if (jsonFormat.has("storeProperties")) {
         jsonStoreProperties = jsonFormat.getJSONObject("storeProperties");
@@ -89,14 +96,18 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
       if (jsonFormat.has("storePropertiesByFamily")) {
         jsonStoreProperties = jsonFormat.getJSONObject("storePropertiesByFamily");
       }
+      Map<DocumentFamily, Map<String, Object>> storeProperties = null;
       if (jsonStoreProperties != null) {
+        storeProperties = new EnumMap<>(DocumentFamily.class);
         for (final String key : JSONObject.getNames(jsonStoreProperties)) {
-          format.setStoreProperties(
+          storeProperties.put(
               DocumentFamily.valueOf(key), JsonUtils.toMap(jsonStoreProperties.getJSONObject(key)));
         }
       }
 
-      addFormat(format);
+      addFormat(
+          new DocumentFormat(
+              name, extension, mediaType, inputFamily, loadProperties, storeProperties));
     }
   }
 }
