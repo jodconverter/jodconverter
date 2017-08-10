@@ -20,6 +20,7 @@
 package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -161,13 +162,14 @@ public class ConvertTest {
             "input1.txt", "output1.pdf"
           });
 
+      // Be sure an exception is thrown.
+      fail();
+
     } catch (Exception ex) {
-      final String capturedlog = SystemLogHandler.stopCapture();
-      assertThat(capturedlog)
-          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 255);
+          .hasFieldOrPropertyWithValue("status", 0);
     }
   }
 }

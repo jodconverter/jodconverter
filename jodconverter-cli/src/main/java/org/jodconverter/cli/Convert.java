@@ -299,6 +299,8 @@ public final class Convert {
         OfficeUtils.stopQuietly(officeManager);
       }
 
+      System.exit(0);
+
     } catch (ParseException e) {
       printErr("jodconverter-cli: " + e.getMessage());
       printHelp();
