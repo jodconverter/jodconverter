@@ -78,10 +78,22 @@ public class ConvertITest {
 
     assertThat(outputFile).doesNotExist();
 
-    Convert.main(new String[] {inputFile.getPath(), outputFile.getPath()});
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(new String[] {inputFile.getPath(), outputFile.getPath()});
 
-    assertThat(outputFile).isFile();
-    assertThat(outputFile.length()).isGreaterThan(0L);
+      // Be sure the ExitException exception is thrown.
+      fail();
+
+    } catch (Exception ex) {
+      SystemLogHandler.stopCapture();
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 0);
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
   }
 
   @Test
@@ -94,12 +106,24 @@ public class ConvertITest {
 
     assertThat(outputFile).doesNotExist();
 
-    Convert.main(new String[] {"-f", "pdf", inputFile.getPath()});
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(new String[] {"-f", "pdf", inputFile.getPath()});
 
-    assertThat(outputFile).isFile();
-    assertThat(outputFile.length()).isGreaterThan(0L);
+      // Be sure the ExitException exception is thrown.
+      fail();
 
-    FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
+    } catch (Exception ex) {
+      SystemLogHandler.stopCapture();
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 0);
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+
+      FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
+    }
   }
 
   @Test
@@ -111,11 +135,25 @@ public class ConvertITest {
 
     assertThat(outputFile).doesNotExist();
 
-    Convert.main(
-        new String[] {"-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()});
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(
+          new String[] {
+            "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
+          });
 
-    assertThat(outputFile).isFile();
-    assertThat(outputFile.length()).isGreaterThan(0L);
+      // Be sure the ExitException exception is thrown.
+      fail();
+
+    } catch (Exception ex) {
+      SystemLogHandler.stopCapture();
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 0);
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
   }
 
   @Test
@@ -127,18 +165,31 @@ public class ConvertITest {
 
     assertThat(outputFile).doesNotExist();
 
-    Convert.main(
-        new String[] {"-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()});
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(
+          new String[] {
+            "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
+          });
 
-    assertThat(outputFile).isFile();
-    assertThat(outputFile.length()).isGreaterThan(0L);
+      // Be sure the ExitException exception is thrown.
+      fail();
+
+    } catch (Exception ex) {
+      SystemLogHandler.stopCapture();
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 0);
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
   }
 
   @Test
   public void main_WithAllCustomizableOption_ExecuteAndExitWithCod0() throws Exception {
 
     try {
-      SystemLogHandler.startCapture();
       Convert.main(
           new String[] {
             "-i", OfficeUtils.getDefaultOfficeHome().getPath(),
