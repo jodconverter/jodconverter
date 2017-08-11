@@ -67,7 +67,7 @@ public class MultipleFiltersITest extends BaseOfficeITest {
     final File sourceImage = new File(IMAGE_FILE);
     final File testOutputDir = new File(OUTPUT_DIR);
 
-    // Create the GraphicInserterFilter to test.
+    // Create the TextReplacerFilter to test.
     final TextReplacerFilter testReplacerFilter =
         new TextReplacerFilter(
             new String[] {"SEARCH_WORD", "that", "have", "new common language will be more simple"},
