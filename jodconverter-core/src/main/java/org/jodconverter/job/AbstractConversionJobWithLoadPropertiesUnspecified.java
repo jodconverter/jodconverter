@@ -27,6 +27,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormatRegistry;
+import org.jodconverter.filter.DefaultFilterChain;
+import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.office.TemporaryFileMaker;
@@ -59,7 +61,15 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
   }
 
   @Override
-  public ConversionJobWithSourceSpecified modifyWith(final FilterChain filterChain) {
+  public ConversionJobWithSourceSpecified filterWith(final Filter... filters) {
+
+    Validate.notEmpty(filters);
+    this.filterChain = new DefaultFilterChain(filters);
+    return this;
+  }
+
+  @Override
+  public ConversionJobWithSourceSpecified filterWith(final FilterChain filterChain) {
 
     Validate.notNull(filterChain);
     this.filterChain = filterChain;

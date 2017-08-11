@@ -43,7 +43,7 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   }
 
   @Override
-  public ConversionJobWithLoadPropertiesUnspecified as(DocumentFormat format) {
+  public ConversionJobWithLoadPropertiesUnspecified as(final DocumentFormat format) {
 
     source.setDocumentFormat(format);
     return this;

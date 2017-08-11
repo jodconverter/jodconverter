@@ -19,6 +19,7 @@
 
 package org.jodconverter.job;
 
+import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;
 
 /**
@@ -26,6 +27,17 @@ import org.jodconverter.filter.FilterChain;
  * converter.
  */
 public interface ConversionJobWithFilterChainUnspecified extends ConversionJobWithSourceSpecified {
+
+  /**
+   * Specifies the filters to apply when converting a document. Filter may be used to modify the
+   * document before the conversion (after it has been loaded). Filters are applied in the same
+   * order they appear as arguments.
+   *
+   * @param filters The filters to be applied after the document is loaded and before it is stored
+   *     (converted) in the new document format.
+   * @return The current conversion specification.
+   */
+  ConversionJobWithSourceSpecified filterWith(final Filter... filters);
 
   /**
    * Specifies the whole filter chain to apply when converting a document. A FilterChain is used to
@@ -36,5 +48,5 @@ public interface ConversionJobWithFilterChainUnspecified extends ConversionJobWi
    *     stored (converted) in the new document format.
    * @return The current conversion specification.
    */
-  ConversionJobWithSourceSpecified modifyWith(FilterChain filterChain);
+  ConversionJobWithSourceSpecified filterWith(FilterChain filterChain);
 }

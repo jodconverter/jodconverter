@@ -62,7 +62,7 @@ public final class CliConverter {
     printInfo("Converting '" + inputFile.getPath() + "' to '" + outputFile.getPath() + "'");
     converter
         .convert(inputFile)
-        .modifyWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
+        .filterWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
         .to(outputFile)
         .execute();
   }

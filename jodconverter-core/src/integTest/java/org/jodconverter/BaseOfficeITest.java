@@ -194,7 +194,7 @@ public abstract class BaseOfficeITest {
       converter
           .convert(inputFile)
           .as(inputFormat)
-          .modifyWith(chain)
+          .filterWith(chain)
           .to(outputFile)
           .as(outputFormat)
           .execute();
