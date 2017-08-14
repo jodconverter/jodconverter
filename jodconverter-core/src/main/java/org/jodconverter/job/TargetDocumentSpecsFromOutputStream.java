@@ -55,6 +55,10 @@ class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
 
     } catch (IOException ex) {
       throw new DocumentSpecsIOException("Could not write file '" + tempFile + "' to stream", ex);
+    } finally {
+
+      // Ensure the created tempFile is deleted
+      FileUtils.deleteQuietly(tempFile);
     }
   }
 
