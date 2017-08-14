@@ -85,7 +85,7 @@ public class PageCounterFilterITest extends BaseOfficeITest {
         .contains("Test document Page 2")
         .doesNotContain("Test document Page 1")
         .doesNotContain("Test document Page 3");
-    assertThat(pageCounterFilter1.getPageCount()).isEqualTo((short) 3);
-    assertThat(pageCounterFilter2.getPageCount()).isEqualTo((short) 1);
+    assertThat(pageCounterFilter1.getPageCount()).isEqualTo(3);
+    assertThat(pageCounterFilter2.getPageCount()).isEqualTo(1);
   }
 }
