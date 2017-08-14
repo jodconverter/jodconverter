@@ -28,16 +28,12 @@ import org.junit.Test;
 
 import com.sun.star.lang.XComponent;
 
-import org.jodconverter.filter.DefaultFilterChain;
-import org.jodconverter.filter.Filter;
-import org.jodconverter.filter.FilterChain;
-import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 /**
- * Contains tests for the {@link DefaultFilterChain} class.
+ * Contains tests for the {@link org.jodconverter.filter.DefaultFilterChain} class.
  *
- * @see DefaultFilterChain
+ * @see org.jodconverter.filter.DefaultFilterChain
  */
 public class DefaultFilterChainTest {
 

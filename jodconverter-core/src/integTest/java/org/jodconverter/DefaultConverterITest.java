@@ -85,7 +85,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
     converter.convert(inputFile).to(outputFile).storeWithProperties(customProperties).execute();
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);
-    
+
     // TODO Check that only page 2 is printed (custom store properties are applied)
   }
 

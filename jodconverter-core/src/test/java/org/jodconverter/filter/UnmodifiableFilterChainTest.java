@@ -23,17 +23,13 @@ import org.junit.Test;
 
 import com.sun.star.lang.XComponent;
 
-import org.jodconverter.filter.Filter;
-import org.jodconverter.filter.FilterChain;
-import org.jodconverter.filter.RefreshFilter;
-import org.jodconverter.filter.UnmodifiableFilterChain;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
 /**
- * Contains tests for the {@link UnmodifiableFilterChain} class.
+ * Contains tests for the {@link org.jodconverter.filter.UnmodifiableFilterChain} class.
  *
- * @see UnmodifiableFilterChain
+ * @see org.jodconverter.filter.UnmodifiableFilterChain
  */
 public class UnmodifiableFilterChainTest {
 
