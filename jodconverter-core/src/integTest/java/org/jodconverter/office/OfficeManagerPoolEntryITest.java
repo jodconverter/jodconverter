@@ -21,6 +21,7 @@ package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -288,5 +289,36 @@ public class OfficeManagerPoolEntryITest {
           .containsExactly(false, false);
       assertThat(getOfficeProcess(officeManager).getExitCode(0, 0)).isEqualTo(0);
     }
+  }
+
+  /**
+   * Test the auto-reconnection...
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void killExistingProcess() throws Exception {
+
+    // Starts an office process on port 2002
+    final OfficeUrl officeUrl = new OfficeUrl(2002);
+    final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
+    officeProcess.start();
+    Thread.sleep(2000); // NOSONAR
+    final Integer exitCode = officeProcess.getExitCode();
+    if (exitCode != null && exitCode.equals(Integer.valueOf(81))) {
+      officeProcess.start(true);
+      Thread.sleep(2000); // NOSONAR
+    }
+
+    final ExternalOfficeManager manager = new ExternalOfficeManager(officeUrl, true);
+    manager.start();
+
+    final MockOfficeTask task = new MockOfficeTask();
+    manager.execute(task);
+    assertTrue(task.isCompleted());
+
+    manager.stop();
+
+    officeProcess.forciblyTerminate(1000, 5000);
   }
 }

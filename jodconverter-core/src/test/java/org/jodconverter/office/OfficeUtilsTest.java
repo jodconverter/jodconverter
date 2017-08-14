@@ -21,10 +21,14 @@ package org.jodconverter.office;
 
 import static org.jodconverter.office.OfficeUtils.toUrl;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
@@ -58,5 +62,73 @@ public class OfficeUtilsTest {
     assertEquals(
         toUrl(new File(tempDirFile, "document with spaces.odt")),
         "file:///" + tempDir + "/document%20with%20spaces.odt");
+  }
+
+  /** Tests the validateOfficeHome with null as argument. */
+  @Test(expected = IllegalStateException.class)
+  public void validateOfficeHome_WithNullOfficeHome_ThrowsIllegalStateException() {
+
+    OfficeUtils.validateOfficeHome(null);
+  }
+
+  /** Tests the validateOfficeHome with non directory file as argument. */
+  @Test(expected = IllegalStateException.class)
+  public void validateOfficeHome_WithNonDirectoryOfficeHome_ThrowsIllegalStateException()
+      throws IOException {
+
+    final File tempFile = File.createTempFile("OfficeUtilsTest", "tmp");
+    tempFile.deleteOnExit();
+
+    OfficeUtils.validateOfficeHome(tempFile);
+  }
+
+  /** Tests the validateOfficeHome when office bin is not found. */
+  @Test(expected = IllegalStateException.class)
+  public void validateOfficeHome_WithOfficeBinNotFound_ThrowsIllegalStateException() {
+
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File officeHome = new File(tempDir, UUID.randomUUID().toString());
+    try {
+      officeHome.mkdirs();
+      OfficeUtils.validateOfficeHome(officeHome);
+    } finally {
+      FileUtils.deleteQuietly(officeHome);
+    }
+  }
+
+  /** Tests the validateOfficeTemplateProfileDirectory with null as argument. */
+  public void validateOfficeTemplateProfileDir_WithNullDir_ValidateSuccessfully() {
+
+    OfficeUtils.validateOfficeTemplateProfileDirectory(null);
+    assertTrue(true);
+  }
+
+  /** Tests the validateOfficeTemplateProfileDirectory when user sub directory is found. */
+  public void validateOfficeTemplateProfileDir_WithUserDirFound_ValidateSuccessfully() {
+
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File templateProfileDir = new File(tempDir, UUID.randomUUID().toString());
+    final File userDir = new File(templateProfileDir, "user");
+    try {
+      userDir.mkdirs();
+      OfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
+      assertTrue(true);
+    } finally {
+      FileUtils.deleteQuietly(templateProfileDir);
+    }
+  }
+
+  /** Tests the validateOfficeTemplateProfileDirectory when user sub directory is not found. */
+  @Test(expected = IllegalStateException.class)
+  public void validateOfficeTemplateProfileDir_WithUserDirNotFound_ThrowsIllegalStateException() {
+
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File templateProfileDir = new File(tempDir, UUID.randomUUID().toString());
+    try {
+      templateProfileDir.mkdirs();
+      OfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
+    } finally {
+      FileUtils.deleteQuietly(templateProfileDir);
+    }
   }
 }

@@ -38,6 +38,7 @@ import org.jodconverter.office.OfficeException;
 
 public class DefaultConverterITest extends BaseOfficeITest {
 
+  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR + "test.doc");
   private static final String OUTPUT_DIR =
       TEST_OUTPUT_DIR + DefaultConverterITest.class.getSimpleName() + "/";
 
@@ -62,11 +63,10 @@ public class DefaultConverterITest extends BaseOfficeITest {
   @Test
   public void convert_FromFileToFile_ShouldSucceeded() throws Exception {
 
-    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
     final File outputFile = new File(OUTPUT_DIR + "convert_FromFileToFile.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    converter.convert(inputFile).to(outputFile).execute();
+    converter.convert(SOURCE_FILE).to(outputFile).execute();
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);
   }
@@ -93,12 +93,11 @@ public class DefaultConverterITest extends BaseOfficeITest {
   public void convert_FromStreamToFileWithMissingInputFormat_ShouldThrowNullPointerException()
       throws Exception {
 
-    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
     final File outputFile =
         new File(OUTPUT_DIR + "convert_FromStreamToFileWithMissingInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    try (InputStream inputStream = new FileInputStream(inputFile)) {
+    try (InputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       converter.convert(inputStream).as(null).to(outputFile).execute();
     }
   }
@@ -106,12 +105,11 @@ public class DefaultConverterITest extends BaseOfficeITest {
   @Test
   public void convert_FromStreamToFileWithSupportedInputFormat_ShouldSucceeded() throws Exception {
 
-    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
     final File outputFile =
         new File(OUTPUT_DIR + "convert_FromStreamToFileWithSupportedInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    final InputStream inputStream = new FileInputStream(inputFile);
+    final InputStream inputStream = new FileInputStream(SOURCE_FILE);
     converter
         .convert(inputStream)
         .as(formatRegistry.getFormatByExtension("doc"))
@@ -125,27 +123,25 @@ public class DefaultConverterITest extends BaseOfficeITest {
   public void convert_FromFileToStreamWithMissingOutputFormat_ShouldThrowNullPointerException()
       throws Exception {
 
-    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
     final File outputFile =
         new File(OUTPUT_DIR + "convert_FromFileToStreamWithMissingOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     try (OutputStream outputStream = new FileOutputStream(outputFile)) {
-      converter.convert(inputFile).to(outputStream).as(null).execute();
+      converter.convert(SOURCE_FILE).to(outputStream).as(null).execute();
     }
   }
 
   @Test
   public void convert_FromFileToStreamWithSupportedOutputFormat_ShouldSucceeded() throws Exception {
 
-    final File inputFile = new File(DOCUMENTS_DIR + "test.doc");
     final File outputFile =
         new File(OUTPUT_DIR + "convert_FromFileToStreamWithSupportedOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     final OutputStream outputStream = new FileOutputStream(outputFile);
     converter
-        .convert(inputFile)
+        .convert(SOURCE_FILE)
         .to(outputStream)
         .as(formatRegistry.getFormatByExtension("pdf"))
         .execute();

@@ -19,8 +19,8 @@
 
 package org.jodconverter.process;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assume.assumeTrue;
 
 import org.apache.commons.lang.SystemUtils;
@@ -28,6 +28,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 
 import org.jodconverter.office.DefaultOfficeManager;
+import org.jodconverter.office.OfficeUtils;
 
 public class ProcessManagerTest {
 
@@ -45,7 +46,7 @@ public class ProcessManagerTest {
     final ProcessQuery query = new ProcessQuery("sleep", "5s");
 
     final long pid = processManager.findPid(query);
-    assertNotEquals(pid, ProcessManager.PID_NOT_FOUND);
+    assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
     assertEquals(pid, javaPid.longValue());
 
@@ -67,7 +68,7 @@ public class ProcessManagerTest {
     final ProcessQuery query = new ProcessQuery("sleep", "5s");
 
     final long pid = processManager.findPid(query);
-    assertNotEquals(pid, ProcessManager.PID_NOT_FOUND);
+    assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
 
     assertEquals(pid, javaPid.longValue());
@@ -90,13 +91,33 @@ public class ProcessManagerTest {
     final ProcessQuery query = new ProcessQuery("ping", "127.0.0.1 -n 5");
 
     final long pid = processManager.findPid(query);
-    assertNotEquals(pid, ProcessManager.PID_NOT_FOUND);
+    assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     // Won't work on Windows, skip this assertion
     //Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
     //assertEquals(pid, javaPid.longValue());
 
     processManager.kill(process, pid);
     assertEquals(processManager.findPid(query), ProcessManager.PID_NOT_FOUND);
+  }
+
+  /**
+   * Tests the PureJavaProcessManager class.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void pureJavaProcessManager() throws Exception {
+
+    final ProcessManager defaultManager = OfficeUtils.findBestProcessManager();
+    final ProcessManager processManager = PureJavaProcessManager.getDefault();
+    final Process process = Runtime.getRuntime().exec("ping 127.0.0.1 -n 5");
+    final ProcessQuery query = new ProcessQuery("ping", "127.0.0.1 -n 5");
+
+    final long pid = processManager.findPid(query);
+    assertThat(pid).isEqualTo(ProcessManager.PID_UNKNOWN);
+
+    processManager.kill(process, pid);
+    assertEquals(defaultManager.findPid(query), ProcessManager.PID_NOT_FOUND);
   }
 
   /**
