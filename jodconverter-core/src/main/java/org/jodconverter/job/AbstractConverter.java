@@ -174,8 +174,7 @@ public abstract class AbstractConverter implements DocumentConverter {
      * Specifies the default properties that will be applied when a document is loaded during a
      * conversion task, regardless of the input format of the document.
      *
-     * <p>Using this function will replace the default load properties map of the builder, so be
-     * sure to call it first if you add other properties afterward.
+     * <p>Using this function will replace the default load properties map.
      *
      * @param properties A map containing the default properties to apply when loading a document.
      * @return This builder instance.
@@ -184,45 +183,6 @@ public abstract class AbstractConverter implements DocumentConverter {
     public T defaultLoadProperties(final Map<String, Object> properties) {
 
       this.defaultLoadProperties = properties;
-      return (T) this;
-    }
-
-    /**
-     * Adds default properties that will be applied when a document is loaded during a conversion
-     * task, regardless of the input format of the document.
-     *
-     * @param properties A map containing default properties to apply when loading a document.
-     * @return This builder instance.
-     */
-    @SuppressWarnings("unchecked")
-    public T addDefaultLoadProperties(final Map<String, Object> properties) {
-
-      if (properties != null && properties.size() != 0) {
-        if (defaultLoadProperties == null) {
-          defaultLoadProperties = createDefaultLoadProperties();
-        }
-        defaultLoadProperties.putAll(properties);
-      }
-      return (T) this;
-    }
-
-    /**
-     * Adds a default property that will be applied when a document is loaded during a conversion
-     * task, regardless of the input format of the document.
-     *
-     * @param name The property name of the property to apply when loading a document.
-     * @param value The property value of the property to apply when loading a document.
-     * @return This builder instance.
-     */
-    @SuppressWarnings("unchecked")
-    public T addDefaultLoadProperty(final String name, final Object value) {
-
-      Validate.notBlank(name);
-      Validate.notNull(value);
-      if (defaultLoadProperties == null) {
-        defaultLoadProperties = createDefaultLoadProperties();
-      }
-      defaultLoadProperties.put(name, value);
       return (T) this;
     }
 
