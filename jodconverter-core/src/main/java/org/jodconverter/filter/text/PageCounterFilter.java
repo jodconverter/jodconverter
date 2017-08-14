@@ -38,6 +38,7 @@ public class PageCounterFilter implements Filter {
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws Exception {
 
+    // Save the PageCount property of the document.
     XPropertySet propertySet =
         UnoRuntime.queryInterface(
             XPropertySet.class,

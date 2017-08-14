@@ -217,16 +217,6 @@ class OfficeProcess {
   }
 
   /**
-   * Gets the PID of the office process.
-   *
-   * @return The office process PID, or -1 of the PID is unknown.
-   */
-  public long getPid() {
-
-    return pid;
-  }
-
-  /**
    * Gets whether the office process is running.
    *
    * @return {@code true} is the office process is running; {@code false otherwise}.

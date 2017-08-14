@@ -28,13 +28,13 @@ import org.jodconverter.filter.FilterChain;
  */
 public abstract class AbstractConversionJob implements ConversionJob {
 
-  protected final SourceDocumentSpecs source;
-  protected final TargetDocumentSpecs target;
+  protected final AbstractSourceDocumentSpecs source;
+  protected final AbstractTargetDocumentSpecs target;
   protected final FilterChain filterChain;
 
   protected AbstractConversionJob(
-      final SourceDocumentSpecs source,
-      final TargetDocumentSpecs target,
+      final AbstractSourceDocumentSpecs source,
+      final AbstractTargetDocumentSpecs target,
       final FilterChain filterChain) {
     super();
 

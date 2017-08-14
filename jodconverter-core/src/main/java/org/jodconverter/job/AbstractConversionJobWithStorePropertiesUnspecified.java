@@ -32,21 +32,13 @@ import org.jodconverter.filter.FilterChain;
  * @see ConversionJobWithStorePropertiesUnspecified
  */
 public abstract class AbstractConversionJobWithStorePropertiesUnspecified
-    implements ConversionJobWithStorePropertiesUnspecified {
-
-  protected final AbstractSourceDocumentSpecs source;
-  protected final AbstractTargetDocumentSpecs target;
-  protected final FilterChain filterChain;
+    extends AbstractConversionJob implements ConversionJobWithStorePropertiesUnspecified {
 
   protected AbstractConversionJobWithStorePropertiesUnspecified(
       final AbstractSourceDocumentSpecs source,
       final AbstractTargetDocumentSpecs target,
       final FilterChain filterChain) {
-    super();
-
-    this.source = source;
-    this.target = target;
-    this.filterChain = filterChain;
+    super(source, target, filterChain);
   }
 
   @Override
