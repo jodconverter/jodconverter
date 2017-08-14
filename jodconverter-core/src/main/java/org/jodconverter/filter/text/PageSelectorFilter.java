@@ -69,45 +69,48 @@ public class PageSelectorFilter implements Filter {
 
     // We need both the text cursor and the view cursor in order
     // to select the whole content of the desired page.
-    final XController xController = docText.getCurrentController();
-    final XTextCursor xTextCursor = docText.getText().createTextCursor();
-    final XTextViewCursor xTextViewCursor =
-        UnoRuntime.queryInterface(XTextViewCursorSupplier.class, xController).getViewCursor();
+    final XController controller = docText.getCurrentController();
+    final XTextCursor textCursor = docText.getText().createTextCursor();
+    final XTextViewCursor viewCursor =
+        UnoRuntime.queryInterface(XTextViewCursorSupplier.class, controller).getViewCursor();
 
     // Reset both cursors to the beginning of the document
-    xTextCursor.gotoStart(false);
-    xTextViewCursor.gotoStart(false);
+    textCursor.gotoStart(false);
+    viewCursor.gotoStart(false);
 
     // Querying for the interface XPageCursor on the view cursor.
-    final XPageCursor xPageCursor = UnoRuntime.queryInterface(XPageCursor.class, xTextViewCursor);
+    final XPageCursor pageCursor = UnoRuntime.queryInterface(XPageCursor.class, viewCursor);
 
     // Jump to the page to select (first page is 1) and move the
     // text cursor to the beginning of this page.
-    xPageCursor.jumpToPage(page);
-    xTextCursor.gotoRange(xTextViewCursor.getStart(), false);
+    pageCursor.jumpToPage(page);
+    textCursor.gotoRange(viewCursor.getStart(), false);
 
     // Jump to the end of the page and expand the text cursor
     // to the end of this page.
-    xPageCursor.jumpToEndOfPage();
-    xTextCursor.gotoRange(xTextViewCursor.getStart(), true);
+    pageCursor.jumpToEndOfPage();
+    textCursor.gotoRange(viewCursor.getStart(), true);
 
     // Select the whole page.
     final XSelectionSupplier selectionSupplier =
-        UnoRuntime.queryInterface(XSelectionSupplier.class, xController);
-    selectionSupplier.select(xTextCursor);
+        UnoRuntime.queryInterface(XSelectionSupplier.class, controller);
+    selectionSupplier.select(textCursor);
 
     // Copy the selection (whole page).
-    final XTransferableSupplier xTransferableSupplier =
-        UnoRuntime.queryInterface(XTransferableSupplier.class, xController);
-    final XTransferable xTransferable = xTransferableSupplier.getTransferable();
+    final XTransferableSupplier transferableSupplier =
+        UnoRuntime.queryInterface(XTransferableSupplier.class, controller);
+    final XTransferable xTransferable = transferableSupplier.getTransferable();
 
     // Now select the whole document.
-    xTextCursor.gotoStart(false); // Go to the start
-    xTextCursor.gotoEnd(true); // Go to the end, expanding the cursor's text range
-    selectionSupplier.select(xTextCursor);
+    textCursor.gotoStart(false); // Go to the start
+    textCursor.gotoEnd(true); // Go to the end, expanding the cursor's text range
+    selectionSupplier.select(textCursor);
 
     // Paste the previously copied page. This will replace the
     // current selection (the whole document).
-    xTransferableSupplier.insertTransferable(xTransferable);
+    transferableSupplier.insertTransferable(xTransferable);
+
+    // Invoke the next filter in the chain
+    chain.doFilter(context, document);
   }
 }
