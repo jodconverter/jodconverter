@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jodconverter.office.filter;
+package org.jodconverter.filter;
 
 import org.junit.Test;
 

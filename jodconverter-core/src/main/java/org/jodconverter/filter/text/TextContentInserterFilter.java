@@ -148,12 +148,11 @@ public abstract class TextContentInserterFilter implements Filter {
     if (anchorPageNo != null) {
       logger.debug("Applying AnchorPageNo fix");
       final XController controller = docText.getCurrentController();
-      final XTextViewCursorSupplier cursorSupplier =
-          UnoRuntime.queryInterface(XTextViewCursorSupplier.class, controller);
-      final XTextViewCursor textViewCursor = cursorSupplier.getViewCursor();
-      final XPageCursor pageCursor = UnoRuntime.queryInterface(XPageCursor.class, textViewCursor);
+      final XTextViewCursor viewCursor =
+          UnoRuntime.queryInterface(XTextViewCursorSupplier.class, controller).getViewCursor();
+      final XPageCursor pageCursor = UnoRuntime.queryInterface(XPageCursor.class, viewCursor);
       pageCursor.jumpToPage(Short.parseShort(anchorPageNo.toString()));
-      textCursor.gotoRange(textViewCursor, false);
+      textCursor.gotoRange(viewCursor, false);
     }
   }
 

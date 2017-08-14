@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -67,6 +69,24 @@ public class DefaultConverterITest extends BaseOfficeITest {
     converter.convert(inputFile).to(outputFile).execute();
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);
+  }
+
+  @Test
+  public void convert_UsingCustomStoreProperties_ShouldSucceeded() throws Exception {
+
+    final File inputFile = new File(DOCUMENTS_DIR + "test_multi_page.doc");
+    final File outputFile = new File(OUTPUT_DIR + "convert_FromMultipleFileToPDFOnlyPage2.pdf");
+    FileUtils.deleteQuietly(outputFile);
+
+    Map<String, Object> filterData = new HashMap<>();
+    filterData.put("PageRange", "2");
+    Map<String, Object> customProperties = new HashMap<>();
+    customProperties.put("FilterData", filterData);
+    converter.convert(inputFile).to(outputFile).storeWithProperties(customProperties).execute();
+
+    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    
+    // TODO Check that only page 2 is printed (custom store properties are applied)
   }
 
   @Test(expected = NullPointerException.class)

@@ -67,7 +67,7 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
         final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
         if (readers.hasNext()) {
           final ImageReader reader = readers.next();
-          try { // NOSONAR
+          try {
             reader.setInput(in);
 
             // Get dimensions of first image in the stream, without decoding pixel values

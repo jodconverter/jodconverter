@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jodconverter.task;
+package org.jodconverter.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
