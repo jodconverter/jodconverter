@@ -32,31 +32,24 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.star.frame.XStorable;
 import com.sun.star.io.IOException;
-import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.uno.UnoRuntime;
-import com.sun.star.util.CloseVetoException;
-import com.sun.star.util.XCloseable;
 
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.job.SourceDocumentSpecs;
 import org.jodconverter.job.TargetDocumentSpecs;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeTask;
 
 /** Represents the default behavior for a conversion task. */
-public class DefaultConversionTask implements OfficeTask {
+public class DefaultConversionTask extends AbstractOfficeTask {
 
-  private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
   private static final String ERROR_MESSAGE_STORE = "Could not store document: ";
 
   private static final Logger logger = LoggerFactory.getLogger(DefaultConversionTask.class);
 
-  private final SourceDocumentSpecs source;
   private final TargetDocumentSpecs target;
-  private Map<String, Object> defaultLoadProperties;
   private FilterChain filterChain;
 
   /**
@@ -74,11 +67,9 @@ public class DefaultConversionTask implements OfficeTask {
       final TargetDocumentSpecs target,
       final Map<String, Object> defaultLoadProperties,
       final FilterChain filterChain) {
-    super();
+    super(source, defaultLoadProperties);
 
-    this.source = source;
     this.target = target;
-    this.defaultLoadProperties = defaultLoadProperties;
     this.filterChain = filterChain;
   }
 
@@ -123,22 +114,6 @@ public class DefaultConversionTask implements OfficeTask {
     }
   }
 
-  // Gets the office properties to apply when the input file will be loaded.
-  private Map<String, Object> getLoadProperties() {
-
-    final Map<String, Object> loadProperties = new HashMap<>();
-    if (defaultLoadProperties != null) {
-      loadProperties.putAll(defaultLoadProperties);
-    }
-    if (source.getFormat() != null && source.getFormat().getLoadProperties() != null) {
-      loadProperties.putAll(source.getFormat().getLoadProperties());
-    }
-    if (source.getCustomLoadProperties() != null) {
-      loadProperties.putAll(source.getCustomLoadProperties());
-    }
-    return loadProperties;
-  }
-
   // Gets the office properties to apply when the converted
   // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
@@ -152,32 +127,6 @@ public class DefaultConversionTask implements OfficeTask {
       storeProperties.putAll(target.getCustomStoreProperties());
     }
     return storeProperties;
-  }
-
-  // Loads the document to convert.
-  private XComponent loadDocument(final OfficeContext context, final File sourceFile)
-      throws OfficeException {
-
-    XComponent document = null;
-    try {
-      document =
-          context
-              .getComponentLoader()
-              .loadComponentFromURL(
-                  toUrl(sourceFile), "_blank", 0, toUnoProperties(getLoadProperties()));
-    } catch (IllegalArgumentException illegalArgumentEx) {
-      throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), illegalArgumentEx);
-    } catch (ErrorCodeIOException errorCodeIoEx) {
-      throw new OfficeException(
-          ERROR_MESSAGE_LOAD + sourceFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
-          errorCodeIoEx);
-    } catch (IOException ioEx) {
-      throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), ioEx);
-    }
-
-    // The document cannot be null
-    Validate.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
-    return document;
   }
 
   // Modifies the document after it has been loaded and before
@@ -208,26 +157,6 @@ public class DefaultConversionTask implements OfficeTask {
           errorCodeIoEx);
     } catch (IOException ioEx) {
       throw new OfficeException(ERROR_MESSAGE_STORE + targetFile.getName(), ioEx);
-    }
-  }
-
-  // Closes the converted document.
-  private void closeDocument(final XComponent document) {
-
-    if (document != null) {
-
-      // Closing the converted document. Use XCloseable.close if the
-      // interface is supported, otherwise use XComponent.dispose
-      final XCloseable closeable = UnoRuntime.queryInterface(XCloseable.class, document);
-      if (closeable == null) {
-        UnoRuntime.queryInterface(XComponent.class, document).dispose();
-      } else {
-        try {
-          closeable.close(true);
-        } catch (CloseVetoException closeVetoEx) { // NOSONAR
-          // whoever raised the veto should close the document
-        }
-      }
     }
   }
 }

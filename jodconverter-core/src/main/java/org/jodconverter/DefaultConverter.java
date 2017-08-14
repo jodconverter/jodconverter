@@ -19,6 +19,7 @@
 
 package org.jodconverter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.jodconverter.document.DocumentFormatRegistry;
@@ -99,6 +100,9 @@ public class DefaultConverter extends AbstractConverter {
    */
   void setDefaultLoadProperties(final Map<String, Object> defaultLoadProperties) {
 
+    if (this.defaultLoadProperties == null) {
+      this.defaultLoadProperties = new HashMap<>();
+    }
     this.defaultLoadProperties.clear();
 
     if (defaultLoadProperties != null) {
