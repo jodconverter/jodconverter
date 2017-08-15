@@ -20,7 +20,6 @@
 package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -54,7 +53,7 @@ public class OfficeProcessITest {
       config.setKillExistingProcess(true);
       officeProcess = startOfficeProcess(2002, config);
 
-      assertTrue(true);
+      assertThat(officeProcess.isRunning()).isTrue();
 
     } finally {
       officeProcess.forciblyTerminate(1000, 5000);

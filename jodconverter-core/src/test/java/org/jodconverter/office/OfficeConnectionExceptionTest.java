@@ -17,33 +17,18 @@
  * limitations under the License.
  */
 
-package org.jodconverter.process;
+package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 
-import org.jodconverter.office.DefaultOfficeManager;
+public class OfficeConnectionExceptionTest {
 
-public class ProcessManagerITest {
-
-  /**
-   * Tests that using an custom process manager that appears in the classpath will be used.
-   *
-   * @throws Exception if an error occurs.
-   */
   @Test
-  public void customProcessManager() throws Exception {
+  public void ctor_WithConnectString_ExceptionCreatedWithConnectString() {
 
-    final DefaultOfficeManager officeManager =
-        DefaultOfficeManager.builder()
-            .processManager("org.jodconverter.process.CustomProcessManager")
-            .build();
-
-    final Object config = FieldUtils.readField(officeManager, "config", true);
-    final ProcessManager manager =
-        (ProcessManager) FieldUtils.readField(config, "processManager", true);
-    assertThat(manager.getClass()).isExactlyInstanceOf(CustomProcessManager.class);
+    final OfficeConnectionException ex = new OfficeConnectionException("message", "host=127.0.0.1");
+    assertThat(ex.getConnectString()).isEqualTo("host=127.0.0.1");
   }
 }

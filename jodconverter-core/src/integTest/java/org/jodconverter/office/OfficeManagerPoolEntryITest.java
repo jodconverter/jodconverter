@@ -21,7 +21,6 @@ package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -315,7 +314,7 @@ public class OfficeManagerPoolEntryITest {
 
     final MockOfficeTask task = new MockOfficeTask();
     manager.execute(task);
-    assertTrue(task.isCompleted());
+    assertThat(task.isCompleted()).isTrue();
 
     manager.stop();
 

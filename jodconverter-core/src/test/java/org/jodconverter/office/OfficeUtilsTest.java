@@ -19,8 +19,8 @@
 
 package org.jodconverter.office;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.office.OfficeUtils.toUrl;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -41,10 +41,9 @@ public class OfficeUtilsTest {
 
     assumeTrue(SystemUtils.IS_OS_UNIX);
 
-    assertEquals(toUrl(new File("/tmp/document.odt")), "file:///tmp/document.odt");
-    assertEquals(
-        toUrl(new File("/tmp/document with spaces.odt")),
-        "file:///tmp/document%20with%20spaces.odt");
+    assertThat(toUrl(new File("/tmp/document.odt"))).isEqualTo("file:///tmp/document.odt");
+    assertThat(toUrl(new File("/tmp/document with spaces.odt")))
+        .isEqualTo("file:///tmp/document%20with%20spaces.odt");
   }
 
   /** Tests the OfficeUtils.toUrl function on Windows OS. */
@@ -57,11 +56,10 @@ public class OfficeUtilsTest {
     final File tempDirFile = new File(tempDir);
     tempDir = FilenameUtils.normalizeNoEndSeparator(tempDir, true);
 
-    assertEquals(
-        toUrl(new File(tempDirFile, "document.odt")), "file:///" + tempDir + "/document.odt");
-    assertEquals(
-        toUrl(new File(tempDirFile, "document with spaces.odt")),
-        "file:///" + tempDir + "/document%20with%20spaces.odt");
+    assertThat(toUrl(new File(tempDirFile, "document.odt")))
+        .isEqualTo("file:///" + tempDir + "/document.odt");
+    assertThat(toUrl(new File(tempDirFile, "document with spaces.odt")))
+        .isEqualTo("file:///" + tempDir + "/document%20with%20spaces.odt");
   }
 
   /** Tests the validateOfficeHome with null as argument. */

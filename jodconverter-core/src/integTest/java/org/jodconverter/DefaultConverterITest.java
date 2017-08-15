@@ -19,7 +19,7 @@
 
 package org.jodconverter;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -68,7 +68,8 @@ public class DefaultConverterITest extends BaseOfficeITest {
 
     converter.convert(SOURCE_FILE).to(outputFile).execute();
 
-    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
   }
 
   @Test
@@ -84,7 +85,8 @@ public class DefaultConverterITest extends BaseOfficeITest {
     customProperties.put("FilterData", filterData);
     converter.convert(inputFile).to(outputFile).storeWithProperties(customProperties).execute();
 
-    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
 
     // TODO Check that only page 2 is printed (custom store properties are applied)
   }
@@ -116,7 +118,8 @@ public class DefaultConverterITest extends BaseOfficeITest {
         .to(outputFile)
         .execute();
 
-    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
   }
 
   @Test(expected = NullPointerException.class)
@@ -146,6 +149,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
         .as(formatRegistry.getFormatByExtension("pdf"))
         .execute();
 
-    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
   }
 }

@@ -19,16 +19,17 @@
 
 package org.jodconverter.spring;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class SpringControllerITest {
 
     // this bean will be injected into the SpringControllerTest class
     @Bean
-    public JodConverterBean springJoDConverter() {
+    public JodConverterBean springJODConverter() {
 
       JodConverterBean bean = new JodConverterBean();
       bean.setPortNumbers("2005");
@@ -66,73 +67,83 @@ public class SpringControllerITest {
     }
   }
 
-  private File inputFileTxt;
-  private File outputFileRtf;
-  private File outputFileDoc;
-  private File outputFilePdf;
-  private File outputFileDocx;
+  private static File inputFileTxt;
+  private static File outputDir;
 
-  @Autowired private JodConverterBean bean;
+  /**
+   * Creates an input file to convert and and output dir just once.
+   *
+   * @throws IOException if an IO error occurs.
+   */
+  @BeforeClass
+  public static void setUp() throws IOException {
 
-  /** Method called before each test method annotated with the @Test annotation. */
-  @Before
-  public void setUp() throws Exception {
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    outputDir = new File(tempDir, "SpringControllerITest" + UUID.randomUUID().toString());
+    outputDir.mkdirs();
 
-    inputFileTxt = File.createTempFile("JodConverterTest", ".txt");
-    PrintWriter pw = null;
-    try {
-      pw = new PrintWriter(inputFileTxt);
+    inputFileTxt = new File(outputDir, "inputFile.txt");
+    try (final PrintWriter pw = new PrintWriter(new FileWriter(inputFileTxt))) {
       pw.println("This is the first line of the input file.");
       pw.println("This is the second line of the input file.");
-    } catch (Exception e) {
-      IOUtils.closeQuietly(pw);
     }
-
-    final File parent = inputFileTxt.getParentFile();
-    final String basename = FilenameUtils.getBaseName(inputFileTxt.getName());
-    outputFileRtf = new File(parent, basename + ".rtf");
-    outputFileDoc = new File(parent, basename + ".doc");
-    outputFilePdf = new File(parent, basename + ".pdf");
-    outputFileDocx = new File(parent, basename + ".docx");
   }
 
-  /** Method called after each test method annotated with the @Test annotation. */
-  @After
-  public void tearDown() throws Exception {
+  /** Deletes the output directory once the tests are all done. */
+  @AfterClass
+  public static void tearDown() {
 
-    FileUtils.deleteQuietly(inputFileTxt);
-    FileUtils.deleteQuietly(outputFileRtf);
-    FileUtils.deleteQuietly(outputFileDoc);
-    FileUtils.deleteQuietly(outputFilePdf);
-    FileUtils.deleteQuietly(outputFileDocx);
+    FileUtils.deleteQuietly(outputDir);
   }
+
+  @Autowired private JodConverterBean bean;
 
   @Test
   public void testTxtToRtf() throws Exception {
 
-    bean.getConverter().convert(inputFileTxt).to(outputFileRtf).execute();
-    assertTrue("RTF File not created.", outputFileRtf.exists() && outputFileRtf.length() > 0);
+    final File outputFile = new File(outputDir, "outputFile.rtf");
+    bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
+
+    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
+    assertThat(outputFile.length())
+        .as("Check %s file length", outputFile.getName())
+        .isGreaterThan(0L);
   }
 
   @Test
   public void testTxtToDoc() throws Exception {
 
-    bean.getConverter().convert(inputFileTxt).to(outputFileDoc).execute();
-    assertTrue("DOC File not created.", outputFileDoc.exists() && outputFileDoc.length() > 0);
+    final File outputFile = new File(outputDir, "outputFile.doc");
+    bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
+
+    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
+    assertThat(outputFile.length())
+        .as("Check %s file length", outputFile.getName())
+        .isGreaterThan(0L);
   }
 
   @Test
   public void testTxtToDocx() throws Exception {
 
-    bean.getConverter().convert(inputFileTxt).to(outputFileDocx).execute();
-    assertTrue("DOCX File not created.", outputFileDocx.exists() && outputFileDocx.length() > 0);
+    final File outputFile = new File(outputDir, "outputFile.docx");
+    bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
+
+    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
+    assertThat(outputFile.length())
+        .as("Check %s file length", outputFile.getName())
+        .isGreaterThan(0L);
   }
 
   @Test
   public void testTxtToPdf() throws Exception {
 
-    bean.getConverter().convert(inputFileTxt).to(outputFilePdf).execute();
-    assertTrue("PDF File not created.", outputFilePdf.exists() && outputFilePdf.length() > 0);
+    final File outputFile = new File(outputDir, "outputFile.pdf");
+    bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
+
+    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
+    assertThat(outputFile.length())
+        .as("Check %s file length", outputFile.getName())
+        .isGreaterThan(0L);
   }
 
   @Test

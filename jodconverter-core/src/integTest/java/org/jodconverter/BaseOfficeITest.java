@@ -19,8 +19,8 @@
 
 package org.jodconverter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Set;
@@ -203,7 +203,8 @@ public abstract class BaseOfficeITest {
 
       // Check that the created file is not empty. The programmer still have to
       // manually if the content of the output file looks good.
-      assertTrue(outputFile.isFile() && outputFile.length() > 0);
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
 
       //TODO use file detection to make sure outputFile is in the expected format
 

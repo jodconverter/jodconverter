@@ -20,7 +20,6 @@
 package org.jodconverter.process;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 
 import org.apache.commons.lang.SystemUtils;
@@ -48,10 +47,10 @@ public class ProcessManagerTest {
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
-    assertEquals(pid, javaPid.longValue());
+    assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
-    assertEquals(processManager.findPid(query), ProcessManager.PID_NOT_FOUND);
+    assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   /**
@@ -71,10 +70,10 @@ public class ProcessManagerTest {
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
 
-    assertEquals(pid, javaPid.longValue());
+    assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
-    assertEquals(processManager.findPid(query), ProcessManager.PID_NOT_FOUND);
+    assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   /**
@@ -94,10 +93,10 @@ public class ProcessManagerTest {
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     // Won't work on Windows, skip this assertion
     //Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
-    //assertEquals(pid, javaPid.longValue());
+    //assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
-    assertEquals(processManager.findPid(query), ProcessManager.PID_NOT_FOUND);
+    assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   /**
@@ -117,7 +116,7 @@ public class ProcessManagerTest {
     assertThat(pid).isEqualTo(ProcessManager.PID_UNKNOWN);
 
     processManager.kill(process, pid);
-    assertEquals(defaultManager.findPid(query), ProcessManager.PID_NOT_FOUND);
+    assertThat(defaultManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   /**

@@ -19,7 +19,7 @@
 
 package org.jodconverter.office;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -49,7 +49,7 @@ public class ExternalOfficeManagerITest {
 
     final MockOfficeTask task = new MockOfficeTask();
     manager.execute(task);
-    assertTrue(task.isCompleted());
+    assertThat(task.isCompleted()).isTrue();
 
     manager.stop();
 

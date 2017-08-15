@@ -19,7 +19,7 @@
 
 package org.jodconverter;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.HashMap;
@@ -74,7 +74,8 @@ public class OfficeDocumentConverterITest extends BaseOfficeITest {
         new OfficeDocumentConverter(InstalledOfficeManagerHolder.getInstance());
     officeDocumentConverter.convert(inputFile, outputFile);
 
-    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
 
     final Map<String, Object> loadProperties = new HashMap<>();
     loadProperties.put("Hidden", true);
@@ -88,6 +89,8 @@ public class OfficeDocumentConverterITest extends BaseOfficeITest {
         inputFile,
         outputFile,
         officeDocumentConverter.getFormatRegistry().getFormatByExtension("pdf"));
-    assertTrue(outputFile.isFile() && outputFile.length() > 0);
+
+    assertThat(outputFile).isFile();
+    assertThat(outputFile.length()).isGreaterThan(0L);
   }
 }
