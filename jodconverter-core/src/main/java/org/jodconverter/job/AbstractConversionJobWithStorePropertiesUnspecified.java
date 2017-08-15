@@ -42,7 +42,7 @@ public abstract class AbstractConversionJobWithStorePropertiesUnspecified
   }
 
   @Override
-  public ConversionJob storeWithProperties(final Map<String, Object> properties) {
+  public ConversionJob storeWith(final Map<String, Object> properties) {
 
     Validate.notNull(properties);
     target.setCustomStoreProperties(properties);

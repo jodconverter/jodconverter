@@ -77,8 +77,7 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
   }
 
   @Override
-  public ConversionJobWithFilterChainUnspecified loadWithProperties(
-      final Map<String, Object> properties) {
+  public ConversionJobWithFilterChainUnspecified loadWith(final Map<String, Object> properties) {
 
     Validate.notNull(properties);
     source.setCustomLoadProperties(properties);

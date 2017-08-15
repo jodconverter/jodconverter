@@ -83,7 +83,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
     filterData.put("PageRange", "2");
     Map<String, Object> customProperties = new HashMap<>();
     customProperties.put("FilterData", filterData);
-    converter.convert(inputFile).to(outputFile).storeWithProperties(customProperties).execute();
+    converter.convert(inputFile).to(outputFile).storeWith(customProperties).execute();
 
     assertThat(outputFile).isFile();
     assertThat(outputFile.length()).isGreaterThan(0L);
