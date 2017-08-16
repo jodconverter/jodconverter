@@ -35,7 +35,7 @@ import org.jodconverter.office.OfficeManager;
  * @see OfficeManager
  * @see InstalledOfficeManagerHolder
  */
-public final class JODConverter {
+public final class JodConverter {
 
   /**
    * Converts a source file that is stored on the local file system.
@@ -72,5 +72,8 @@ public final class JODConverter {
     return DefaultConverter.make().convert(source, closeStream);
   }
 
-  private JODConverter() {}
+  // Suppresses default constructor, ensuring non-instantiability.
+  private JodConverter() {
+    throw new AssertionError("Utility class must not be instantiated");
+  }
 }
