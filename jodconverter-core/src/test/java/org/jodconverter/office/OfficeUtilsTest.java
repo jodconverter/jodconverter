@@ -33,7 +33,15 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
 
+import org.jodconverter.test.util.AssertUtil;
+
 public class OfficeUtilsTest {
+
+  @Test
+  public void ctor_ClassWellDefined() throws Exception {
+
+    AssertUtil.assertUtilityClassWellDefined(OfficeUtils.class);
+  }
 
   /** Tests the OfficeUtils.toUrl function on unix OS. */
   @Test

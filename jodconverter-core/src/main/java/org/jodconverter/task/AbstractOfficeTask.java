@@ -104,9 +104,7 @@ public abstract class AbstractOfficeTask implements OfficeTask {
     if (defaultLoadProperties != null) {
       loadProperties.putAll(defaultLoadProperties);
     }
-    if (source.getFormat() != null && source.getFormat().getLoadProperties() != null) {
-      loadProperties.putAll(source.getFormat().getLoadProperties());
-    }
+    loadProperties.putAll(source.getFormat().getLoadProperties());
     if (source.getCustomLoadProperties() != null) {
       loadProperties.putAll(source.getCustomLoadProperties());
     }

@@ -29,7 +29,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import org.jodconverter.test.util.AssertUtil;
+
 public class JsonUtilsTest {
+
+  @Test
+  public void ctor_ClassWellDefined() throws Exception {
+
+    AssertUtil.assertUtilityClassWellDefined(JsonUtils.class);
+  }
 
   @Test
   public void toList_NullArray_ReturnNull() {

@@ -40,6 +40,7 @@ import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
+import org.jodconverter.office.OfficeUtils;
 
 /**
  * The purpose of this class is to provide to the Spring Container a Bean that encapsulates the
@@ -109,11 +110,9 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   @Override
-  public void destroy() throws OfficeException {
+  public void destroy() {
 
-    if (officeManager != null) {
-      officeManager.stop();
-    }
+    OfficeUtils.stopQuietly(officeManager);
   }
 
   /** Prints the available formats provided by the JODConverter module. */

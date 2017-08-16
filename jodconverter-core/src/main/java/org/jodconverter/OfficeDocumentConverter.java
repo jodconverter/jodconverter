@@ -181,14 +181,14 @@ public class OfficeDocumentConverter {
     delegate
         .convert(inputFile)
         .as(
-            inputFormat == null && inputFile != null
+            inputFormat == null
                 ? getFormatRegistry()
                     .getFormatByExtension(FilenameUtils.getExtension(inputFile.getName()))
                 : inputFormat)
         .filterWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
         .to(outputFile)
         .as(
-            outputFormat == null && outputFile != null
+            outputFormat == null
                 ? getFormatRegistry()
                     .getFormatByExtension(FilenameUtils.getExtension(outputFile.getName()))
                 : outputFormat)

@@ -94,7 +94,7 @@ public abstract class AbstractConverter implements DocumentConverter {
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "
-            + "interface in order to be able to convert input streams");
+            + "interface in order to be able to convert InputStream");
   }
 
   /**

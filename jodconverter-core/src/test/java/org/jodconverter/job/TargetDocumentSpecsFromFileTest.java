@@ -23,21 +23,50 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
 public class TargetDocumentSpecsFromFileTest {
 
-  private static final String SOURCE_FILE = "src/integTest/resources/documents/test.doc";
-  private static final String OUTPUT_DIR =
-      "test-output/" + SourceDocumentSpecsFromInputStreamTest.class.getSimpleName() + "/";
-  private static final String TARGET_FILE = OUTPUT_DIR + "test.doc";
+  private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
+  private static final String TARGET_FILENAME = "test.pdf";
+
+  private static File outputDir;
+
+  /** Creates an input file to convert and an output test directory just once. */
+  @BeforeClass
+  public static void setUpClass() {
+
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    outputDir =
+        new File(
+            tempDir,
+            "jodconverter_"
+                + TargetDocumentSpecsFromFileTest.class.getSimpleName()
+                + "_"
+                + UUID.randomUUID().toString());
+    outputDir.mkdirs();
+  }
+
+  /** Deletes the output test directory once the tests are all done. */
+  @AfterClass
+  public static void tearDownClass() {
+
+    FileUtils.deleteQuietly(outputDir);
+  }
 
   @Test
   public void onFailure_ShouldDeleteTargetFile() throws IOException {
 
-    final File targetFile = new File(TARGET_FILE);
+    final File targetFile = new File(outputDir, TARGET_FILENAME);
     FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
     assertThat(targetFile).exists();
 
@@ -47,5 +76,24 @@ public class TargetDocumentSpecsFromFileTest {
 
     // Check that the temp file is deleted
     assertThat(targetFile).doesNotExist();
+  }
+
+  @Test
+  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
+
+    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
+    assertThat(targetFile).exists();
+
+    final Map<String, Object> storeProperties = new HashMap<>();
+    storeProperties.put("Overwrite", true);
+
+    final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(targetFile);
+    specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);
+    specs.setCustomStoreProperties(storeProperties);
+
+    assertThat(specs)
+        .extracting("file", "documentFormat", "customStoreProperties")
+        .containsExactly(targetFile, DefaultDocumentFormatRegistry.CSV, storeProperties);
   }
 }

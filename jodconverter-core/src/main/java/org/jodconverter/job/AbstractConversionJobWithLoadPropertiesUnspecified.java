@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 
+import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.Filter;
@@ -88,8 +89,11 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
   public ConversionJobWithOptionalTargetFormatUnspecified to(final File target) {
 
     final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(target);
-    specs.setDocumentFormat(
-        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(target.getName())));
+    final DocumentFormat format =
+        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(target.getName()));
+    if (format != null) {
+      specs.setDocumentFormat(format);
+    }
 
     return to(specs);
   }
@@ -111,7 +115,7 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "
-            + "interface in order to be able to convert to output streams");
+            + "interface in order to be able to convert to OutputStream.");
   }
 
   /**

@@ -17,6 +17,8 @@ dependencies {
   testCompile libraries.junit
   testCompile libraries.findbugs
   testCompile libraries.mockito
+  testCompile libraries.powermock_junit
+  testCompile libraries.powermock_mockito
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

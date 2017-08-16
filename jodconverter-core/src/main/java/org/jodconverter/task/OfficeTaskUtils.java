@@ -28,10 +28,6 @@ import org.jodconverter.office.OfficeException;
 
 final class OfficeTaskUtils {
 
-  private OfficeTaskUtils() {
-    throw new AssertionError("Utility class must not be instantiated");
-  }
-
   /**
    * Gets the {@link DocumentFamily} if the specified document.
    *
@@ -56,5 +52,10 @@ final class OfficeTaskUtils {
       throw new OfficeException(
           "Document of unknown family: " + serviceInfo.getImplementationName());
     }
+  }
+
+  // Suppresses default constructor, ensuring non-instantiability.
+  private OfficeTaskUtils() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }

@@ -20,20 +20,53 @@
 package org.jodconverter.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
 public class TargetDocumentSpecsFromOutputStreamTest {
 
-  private static final String SOURCE_FILE = "src/integTest/resources/documents/test.doc";
-  private static final String OUTPUT_DIR =
-      "test-output/" + SourceDocumentSpecsFromInputStreamTest.class.getSimpleName() + "/";
-  private static final String TARGET_FILE = OUTPUT_DIR + "test.doc";
+  private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
+  private static final String TARGET_FILENAME = "test.pdf";
+
+  private static File outputDir;
+
+  /** Creates an input file to convert and an output test directory just once. */
+  @BeforeClass
+  public static void setUpClass() {
+
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    outputDir =
+        new File(
+            tempDir,
+            "jodconverter_"
+                + TargetDocumentSpecsFromOutputStreamTest.class.getSimpleName()
+                + "_"
+                + UUID.randomUUID().toString());
+    outputDir.mkdirs();
+  }
+
+  /** Deletes the output test directory once the tests are all done. */
+  @AfterClass
+  public static void tearDownClass() {
+
+    FileUtils.deleteQuietly(outputDir);
+  }
 
   @Test(expected = NullPointerException.class)
   public void ctor_WithNullOutputStream_ThrowsNullPointerException() throws IOException {
@@ -46,17 +79,22 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   @Test
   public void onComplete_IOExceptionCatch_ThrowsDocumentSpecsIOException() throws IOException {
 
-    final FileOutputStream outputStream = new FileOutputStream(TARGET_FILE);
-    outputStream.close();
-
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
+    final File tempFile = File.createTempFile(getClass().getName(), "txt");
     tempFile.deleteOnExit();
+    FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
+    assertThat(tempFile).exists();
+
+    final FileOutputStream outputStream = mock(FileOutputStream.class);
+    doThrow(IOException.class)
+        .when(outputStream)
+        .write(isA(byte[].class), isA(int.class), isA(int.class));
 
     final TargetDocumentSpecsFromOutputStream specs =
         new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
 
     try {
       specs.onComplete(tempFile);
+      fail("onComplete should throw DocumentSpecsIOException");
     } catch (Exception e) {
       assertThat(e).isInstanceOf(DocumentSpecsIOException.class);
       assertThat(e).hasCauseInstanceOf(IOException.class);
@@ -67,12 +105,13 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   public void onComplete_CloseStreamTrue_ShouldDeleteTempFileAndCloseOutputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
+    final File tempFile = File.createTempFile(getClass().getName(), "txt");
     tempFile.deleteOnExit();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    try (final FileOutputStream outputStream = new FileOutputStream(TARGET_FILE)) {
+    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
 
@@ -90,12 +129,13 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   public void onConsumed_CloseStreamFalse_ShouldDeleteTempFileAndNotCloseOutputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
+    final File tempFile = File.createTempFile(getClass().getName(), "txt");
     tempFile.deleteOnExit();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    try (final FileOutputStream outputStream = new FileOutputStream(TARGET_FILE)) {
+    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
 
@@ -113,12 +153,13 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   public void onFailure_CloseStreamTrue_ShouldDeleteTempFileAndNotCloseOutputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
+    final File tempFile = File.createTempFile(getClass().getName(), "txt");
     tempFile.deleteOnExit();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    try (final FileOutputStream outputStream = new FileOutputStream(TARGET_FILE)) {
+    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
 
@@ -136,12 +177,13 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   public void onFailure_CloseStreamFalse_ShouldDeleteTempFileAndNotCloseOutputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
+    final File tempFile = File.createTempFile(getClass().getName(), "txt");
     tempFile.deleteOnExit();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    try (final FileOutputStream outputStream = new FileOutputStream(TARGET_FILE)) {
+    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
 
@@ -152,6 +194,30 @@ public class TargetDocumentSpecsFromOutputStreamTest {
 
       // Check that the OutputStream is not closed.
       assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", false);
+    }
+  }
+
+  @Test
+  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
+
+    final File tempFile = File.createTempFile(getClass().getName(), "txt");
+    tempFile.deleteOnExit();
+    FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
+    assertThat(tempFile).exists();
+
+    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+
+      final Map<String, Object> storeProperties = new HashMap<>();
+      storeProperties.put("Overwrite", true);
+      final TargetDocumentSpecsFromOutputStream specs =
+          new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
+      specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);
+      specs.setCustomStoreProperties(storeProperties);
+
+      assertThat(specs)
+          .extracting("outputStream", "documentFormat", "customStoreProperties")
+          .containsExactly(outputStream, DefaultDocumentFormatRegistry.CSV, storeProperties);
     }
   }
 }

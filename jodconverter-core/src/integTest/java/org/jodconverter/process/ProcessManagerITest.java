@@ -44,6 +44,6 @@ public class ProcessManagerITest {
     final Object config = FieldUtils.readField(officeManager, "config", true);
     final ProcessManager manager =
         (ProcessManager) FieldUtils.readField(config, "processManager", true);
-    assertThat(manager.getClass()).isExactlyInstanceOf(CustomProcessManager.class);
+    assertThat(manager).isExactlyInstanceOf(CustomProcessManager.class);
   }
 }

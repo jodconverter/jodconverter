@@ -50,7 +50,7 @@ public class DefaultConversionTask extends AbstractOfficeTask {
   private static final Logger logger = LoggerFactory.getLogger(DefaultConversionTask.class);
 
   private final TargetDocumentSpecs target;
-  private FilterChain filterChain;
+  private final FilterChain filterChain;
 
   /**
    * Creates a new conversion task from a specified source to a specified target.
@@ -118,11 +118,9 @@ public class DefaultConversionTask extends AbstractOfficeTask {
   // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
 
-    final Map<String, Object> storeProperties = new HashMap<>();
-    if (target.getFormat() != null) {
-      storeProperties.putAll(
-          target.getFormat().getStoreProperties(OfficeTaskUtils.getDocumentFamily(document)));
-    }
+    final Map<String, Object> storeProperties =
+        new HashMap<>(
+            target.getFormat().getStoreProperties(OfficeTaskUtils.getDocumentFamily(document)));
     if (target.getCustomStoreProperties() != null) {
       storeProperties.putAll(target.getCustomStoreProperties());
     }

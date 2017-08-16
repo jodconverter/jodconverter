@@ -330,8 +330,8 @@ public final class OfficeUtils {
     }
   }
 
-  // Private ctor.
-  private OfficeUtils() { // NOSONAR
-    throw new AssertionError("utility class must not be instantiated");
+  // Suppresses default constructor, ensuring non-instantiability.
+  private OfficeUtils() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }

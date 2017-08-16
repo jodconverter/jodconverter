@@ -86,8 +86,8 @@ public final class JsonUtils {
     return map;
   }
 
-  // Private ctor
-  private JsonUtils() { // NOSONAR
+  // Suppresses default constructor, ensuring non-instantiability.
+  private JsonUtils() {
     throw new AssertionError("Utility class must not be instantiated");
   }
 }

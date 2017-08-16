@@ -46,15 +46,21 @@ public class JodConverterITest {
   private static File outputDir;
 
   /**
-   * Creates an input file to convert and and output dir just once.
+   * Creates an input file to convert and an output test directory just once.
    *
    * @throws IOException if an IO error occurs.
    */
   @BeforeClass
-  public static void setUp() throws IOException {
+  public static void setUpClass() throws IOException {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    outputDir = new File(tempDir, "SpringControllerITest" + UUID.randomUUID().toString());
+    outputDir =
+        new File(
+            tempDir,
+            "jodconverter_"
+                + JodConverterITest.class.getSimpleName()
+                + "_"
+                + UUID.randomUUID().toString());
     outputDir.mkdirs();
 
     inputFileTxt = new File(outputDir, "inputFile.txt");
@@ -64,9 +70,9 @@ public class JodConverterITest {
     }
   }
 
-  /** Deletes the output directory once the tests are all done. */
+  /** Deletes the output test directory once the tests are all done. */
   @AfterClass
-  public static void tearDown() {
+  public static void tearDownClass() {
 
     FileUtils.deleteQuietly(outputDir);
   }

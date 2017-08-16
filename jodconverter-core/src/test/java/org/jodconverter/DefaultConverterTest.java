@@ -19,44 +19,196 @@
 
 package org.jodconverter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-import org.jodconverter.office.OfficeException;
+import com.sun.star.document.UpdateDocMode;
+
+import org.jodconverter.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.office.OfficeManager;
+import org.jodconverter.task.DefaultConversionTask;
 
 public class DefaultConverterTest {
 
-  private static final File SOURCE_FILE = new File("src/integTest/resources/documents/test.doc");
-  private static final String OUTPUT_DIR =
-      "test_output/" + DefaultConverterTest.class.getSimpleName() + "/";
+  private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
-  /** Ensures we start with a fresh output directory. */
+  private static File outputDir;
+
+  /** Creates an input file to convert and an output test directory just once. */
   @BeforeClass
-  public static void createOutputDir() throws OfficeException {
+  public static void setUpClass() {
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    outputDir =
+        new File(
+            tempDir,
+            "jodconverter_"
+                + DefaultConverterTest.class.getSimpleName()
+                + "_"
+                + UUID.randomUUID().toString());
     outputDir.mkdirs();
   }
 
-  /**  Deletes the output directory. */
+  /** Deletes the output test directory once the tests are all done. */
   @AfterClass
-  public static void deleteOutputDir() throws OfficeException {
+  public static void tearDownClass() {
 
-    // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+    FileUtils.deleteQuietly(outputDir);
+  }
+
+  private OfficeManager officeManager;
+
+  /** Setup the office manager before each test. */
+  @Before
+  public void setUp() {
+
+    officeManager = mock(OfficeManager.class);
   }
 
   @Test(expected = IllegalStateException.class)
   public void convert_WithoutOfficeManagerInstalled_ThrowsIllegalStateException() throws Exception {
 
-    final File targetFile = new File(OUTPUT_DIR + "convert_WithoutOfficeManagerInstalled.pdf");
+    final File targetFile = new File(outputDir, "test.pdf");
 
     DefaultConverter.make().convert(SOURCE_FILE).to(targetFile).execute();
+  }
+
+  @Test
+  public void
+      convert_WithCustomLoadPropertiesFromConverter_CreateConverterWithExpectedLoadProperties()
+          throws Exception {
+
+    final Map<String, Object> loadProperties = new HashMap<>();
+    loadProperties.put("Hidden", false);
+    loadProperties.put("ReadOnly", true);
+    loadProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
+
+    final File targetFile = new File(outputDir, "test.pdf");
+
+    DefaultConverter.builder()
+        .officeManager(officeManager)
+        .defaultLoadProperties(loadProperties)
+        .build()
+        .convert(SOURCE_FILE)
+        .to(targetFile)
+        .execute();
+
+    // Verify that the office manager has executed a task
+    // with the expected properties.
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(1)).execute(taskArgument.capture());
+    final DefaultConversionTask task = taskArgument.getValue();
+    assertThat(task).extracting("defaultLoadProperties").containsExactly(loadProperties);
+  }
+
+  @Test
+  public void convert_WithCustomLoadPropertiesFromJob_CreateConverterWithExpectedLoadProperties()
+      throws Exception {
+
+    final Map<String, Object> loadProperties = new HashMap<>();
+    loadProperties.put("Hidden", false);
+    loadProperties.put("ReadOnly", true);
+    loadProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
+
+    final File targetFile = new File(outputDir, "test.pdf");
+
+    DefaultConverter.builder()
+        .officeManager(officeManager)
+        .build()
+        .convert(SOURCE_FILE)
+        .loadWith(loadProperties)
+        .to(targetFile)
+        .execute();
+
+    // Verify that the office manager has executed a task
+    // with the expected properties.
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(1)).execute(taskArgument.capture());
+    final DefaultConversionTask task = taskArgument.getValue();
+    assertThat(task).extracting("source.customLoadProperties").containsExactly(loadProperties);
+  }
+
+  @Test
+  public void convert_WithCustomStorePropertiesFromJob_CreateConverterWithExpectedStoreProperties()
+      throws Exception {
+
+    final Map<String, Object> filterData = new HashMap<>();
+    filterData.put("PageRange", "1");
+    final Map<String, Object> customProperties = new HashMap<>();
+    customProperties.put("FilterData", filterData);
+
+    final File targetFile = new File(outputDir, "test.pdf");
+
+    DefaultConverter.builder()
+        .officeManager(officeManager)
+        .build()
+        .convert(SOURCE_FILE)
+        .to(targetFile)
+        .storeWith(customProperties)
+        .execute();
+
+    // Verify that the office manager has executed a task
+    // with the expected properties.
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(1)).execute(taskArgument.capture());
+    final DefaultConversionTask task = taskArgument.getValue();
+    assertThat(task).extracting("target.customStoreProperties").containsExactly(customProperties);
+  }
+
+  @Test
+  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream()
+      throws Exception {
+
+    final File targetFile = new File(outputDir, "test.pdf");
+
+    try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+      DefaultConverter.make(officeManager)
+          .convert(inputStream)
+          .as(DefaultDocumentFormatRegistry.TXT)
+          .to(targetFile)
+          .execute();
+    } catch (Exception ex) {
+      assertThat(ex)
+          .isExactlyInstanceOf(IllegalStateException.class)
+          .hasMessageMatching(".*TemporaryFileMaker.*InputStream.*");
+    }
+  }
+
+  @Test
+  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream()
+      throws Exception {
+
+    final File targetFile = new File(outputDir, "test.pdf");
+
+    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+      DefaultConverter.make(officeManager)
+          .convert(SOURCE_FILE)
+          .to(outputStream)
+          .as(DefaultDocumentFormatRegistry.PDF)
+          .execute();
+    } catch (Exception ex) {
+      assertThat(ex)
+          .isExactlyInstanceOf(IllegalStateException.class)
+          .hasMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
+    }
   }
 }

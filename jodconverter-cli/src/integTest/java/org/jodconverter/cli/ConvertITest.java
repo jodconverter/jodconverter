@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -42,29 +43,36 @@ public class ConvertITest {
 
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
   private static final String SOURCE_FILE = "src/integTest/resources/documents/test1.doc";
-  private static final String OUTPUT_DIR = "test-output/" + ConvertITest.class.getSimpleName();
+
+  private static File outputDir;
 
   /**
-   * Ensures we start with a fresh output directory. Also changes the security manager so we can
-   * trap the exit code of the application.
+   * Redirects the console output and also changes the security manager so we can trap the exit code
+   * of the application.
    */
   @BeforeClass
-  public static void createOutputDir() {
+  public static void setUpClass() {
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    outputDir =
+        new File(
+            tempDir,
+            "jodconverter_"
+                + CliConverterTest.class.getSimpleName()
+                + "_"
+                + UUID.randomUUID().toString());
     outputDir.mkdirs();
 
+    // Don't allow the program to exit the VM
     System.setSecurityManager(new NoExitSecurityManager());
   }
 
-  /**  Deletes the output directory and resets the security manager. */
+  /** Resets the security manager and deletes the output directory once the tests are all done. */
   @AfterClass
-  public static void deleteOutputDir() {
+  public static void tearDownClass() {
 
     // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+    FileUtils.deleteQuietly(outputDir);
 
     // Restore security manager
     System.setSecurityManager(null);
@@ -74,7 +82,7 @@ public class ConvertITest {
   public void convert_WithFilenames_ShouldSucceed() throws Exception {
 
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "convert.pdf");
+    final File outputFile = new File(outputDir, "convert.pdf");
 
     assertThat(outputFile).doesNotExist();
 
@@ -129,9 +137,9 @@ public class ConvertITest {
   @Test
   public void convert_WithMultipleFilters_ShouldSucceed() throws Exception {
 
-    final File filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
+    final File filterChainFile = new File(CONFIG_DIR, "applicationContext_multipleFilters.xml");
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "convert_WithMultipleFilters.pdf");
+    final File outputFile = new File(outputDir, "convert_WithMultipleFilters.pdf");
 
     assertThat(outputFile).doesNotExist();
 
@@ -159,9 +167,9 @@ public class ConvertITest {
   @Test
   public void convert_WithSingleFilter_ShouldSucceed() throws Exception {
 
-    final File filterChainFile = new File(CONFIG_DIR + "applicationContext_singleFilter.xml");
+    final File filterChainFile = new File(CONFIG_DIR, "applicationContext_singleFilter.xml");
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "convert_WithSingleFilter.pdf");
+    final File outputFile = new File(outputDir, "convert_WithSingleFilter.pdf");
 
     assertThat(outputFile).doesNotExist();
 

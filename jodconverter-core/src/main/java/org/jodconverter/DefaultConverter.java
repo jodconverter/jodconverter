@@ -103,11 +103,9 @@ public class DefaultConverter extends AbstractConverter {
     if (this.defaultLoadProperties == null) {
       this.defaultLoadProperties = new HashMap<>();
     }
-    this.defaultLoadProperties.clear();
 
-    if (defaultLoadProperties != null) {
-      this.defaultLoadProperties.putAll(defaultLoadProperties);
-    }
+    this.defaultLoadProperties.clear();
+    this.defaultLoadProperties.putAll(defaultLoadProperties);
   }
 
   private class DefaultConversionJobWithSourceFormatUnspecified

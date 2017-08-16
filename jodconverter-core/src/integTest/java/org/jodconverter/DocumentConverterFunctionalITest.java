@@ -61,7 +61,7 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
   @Test
   public void htmlWithImageConversion() throws Exception {
 
-    final File inputFile = new File(DOCUMENTS_DIR + "index.html");
+    final File inputFile = new File(DOCUMENTS_DIR, "index.html");
     final File outputDir = new File(OUTPUT_DIR);
 
     // Convert the file to PDF
@@ -76,7 +76,7 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
   @Test
   public void testHtmlConversion() throws Exception {
 
-    final File inputFile = new File(DOCUMENTS_DIR + "test.html");
+    final File inputFile = new File(DOCUMENTS_DIR, "test.html");
     final File outputDir = new File(OUTPUT_DIR);
 
     // Convert the file to PDF

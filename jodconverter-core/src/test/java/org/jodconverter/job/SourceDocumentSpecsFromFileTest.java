@@ -19,23 +19,50 @@
 
 package org.jodconverter.job;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
+import com.sun.star.document.UpdateDocMode;
+
+import org.jodconverter.document.DefaultDocumentFormatRegistry;
+
 public class SourceDocumentSpecsFromFileTest {
 
+  private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
+  private static final String UNEXISTING_SOURCE_FILE =
+      "src/test/resources/documents/unexisting_file.txt";
+
   @Test(expected = NullPointerException.class)
-  public void ctor_WithNullFile_ThrowsNullPointerException() throws IOException {
+  public void ctor_WithNullFile_ThrowsNullPointerException() {
 
     new SourceDocumentSpecsFromFile(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void ctor_WithUnexistingFile_ThrowsIllegalArgumentsException() throws IOException {
+  public void ctor_WithUnexistingFile_ThrowsIllegalArgumentsException() {
 
-    new SourceDocumentSpecsFromFile(
-        new File("src/integTest/resources/documents/unexisting_file.doc"));
+    new SourceDocumentSpecsFromFile(new File(UNEXISTING_SOURCE_FILE));
+  }
+
+  @Test
+  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
+
+    final File sourceFile = new File(SOURCE_FILE);
+    final Map<String, Object> loadProperties = new HashMap<>();
+    loadProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
+
+    final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(sourceFile);
+    specs.setDocumentFormat(DefaultDocumentFormatRegistry.ODS);
+    specs.setCustomLoadProperties(loadProperties);
+
+    assertThat(specs)
+        .extracting("file", "documentFormat", "customLoadProperties")
+        .containsExactly(sourceFile, DefaultDocumentFormatRegistry.ODS, loadProperties);
   }
 }
