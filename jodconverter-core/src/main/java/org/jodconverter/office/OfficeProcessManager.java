@@ -157,15 +157,6 @@ class OfficeProcessManager {
   }
 
   /**
-   * Gets whether the connection to the office instance is opened.
-   *
-   * @return {@code true} is the connection is alive, {@code false} otherwise.
-   */
-  public boolean isConnected() {
-    return connection.isConnected();
-  }
-
-  /**
    * Restarts an office process and wait until we are connected to the restarted process.
    *
    * @throws OfficeException If we are not able to restart the office process.
