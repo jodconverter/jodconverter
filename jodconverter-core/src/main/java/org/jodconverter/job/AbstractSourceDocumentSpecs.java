@@ -20,6 +20,7 @@
 package org.jodconverter.job;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.jodconverter.DocumentConverter;
@@ -56,6 +57,7 @@ public abstract class AbstractSourceDocumentSpecs extends AbstractDocumentSpecs
    *     document.
    */
   void setCustomLoadProperties(final Map<String, Object> customLoadProperties) {
-    this.customLoadProperties = customLoadProperties;
+
+    this.customLoadProperties = new HashMap<>(customLoadProperties);
   }
 }

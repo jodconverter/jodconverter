@@ -337,9 +337,4 @@ public final class Convert {
     pw.println(info);
     pw.flush();
   }
-
-  // Private ctor.
-  private Convert() { // NOSONAR
-    throw new AssertionError("utility class must not be instantiated");
-  }
 }

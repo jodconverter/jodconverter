@@ -20,6 +20,7 @@
 package org.jodconverter.job;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.jodconverter.document.DocumentFormat;
@@ -55,6 +56,6 @@ public abstract class AbstractTargetDocumentSpecs extends AbstractDocumentSpecs
    */
   void setCustomStoreProperties(final Map<String, Object> customStoreProperties) {
 
-    this.customStoreProperties = customStoreProperties;
+    this.customStoreProperties = new HashMap<>(customStoreProperties);
   }
 }
