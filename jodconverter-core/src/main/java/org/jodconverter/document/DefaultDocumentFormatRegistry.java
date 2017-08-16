@@ -106,7 +106,7 @@ public final class DefaultDocumentFormatRegistry {
    *   <li>Media Type: application/vnd.sun.xml.writer
    * </ul>
    */
-  public static final DocumentFormat SWX = getInstance().getFormatByExtension("swx");
+  public static final DocumentFormat SXW = getInstance().getFormatByExtension("sxw");
 
   /**
    * Microsoft Word 97-2003.
@@ -321,8 +321,8 @@ public final class DefaultDocumentFormatRegistry {
     return getInstance().getFormatByMediaType(mediaType);
   }
 
-  // Force static function call
-  private DefaultDocumentFormatRegistry() { // NOSONAR
-    super();
+  // Suppresses default constructor, ensuring non-instantiability.
+  private DefaultDocumentFormatRegistry() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }
