@@ -35,6 +35,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.InstalledOfficeManagerHolder;
@@ -134,5 +135,18 @@ public class CliConverterITest {
         .element(1)
         .extracting("source.file", "target.file")
         .containsExactly(SOURCE_FILE_2, targetFile2);
+  }
+
+  @Test
+  public void convert_UnexistingDirWithWildcard_TasksNotExecutedWithExpectedLog() throws Exception {
+
+    try {
+      SystemLogHandler.startCapture();
+      converter.convert(new String[] {SOURCE_DIR + "unexisting_dir/*"}, "pdf");
+    } catch (Exception ex) {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .containsPattern("Skipping filename '.*' since it doesn't match an existing file.*");
+    }
   }
 }

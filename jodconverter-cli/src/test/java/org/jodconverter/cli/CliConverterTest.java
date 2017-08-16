@@ -179,19 +179,6 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_UnexistingDirWithWildcard_TasksNotExecutedWithExpectedLog() throws Exception {
-
-    try {
-      SystemLogHandler.startCapture();
-      converter.convert(new String[] {SOURCE_DIR + "unexisting_dir/*"}, "pdf");
-    } catch (Exception ex) {
-      final String capturedlog = SystemLogHandler.stopCapture();
-      assertThat(capturedlog)
-          .containsPattern("Skipping filename '.*' since it doesn't match an existing file.*");
-    }
-  }
-
-  @Test
   public void convert_FilenamesToFilenames_TasksExecuted() throws Exception {
 
     final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
