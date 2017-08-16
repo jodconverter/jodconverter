@@ -188,7 +188,7 @@ public final class CliConverter {
                     FilenameUtils.getBaseName(file.getName()) + "." + outputFormat);
             if (validateOutputFile(inputFile, outputFile, overwrite)) {
 
-              convert(filterChain, inputFile, outputFile);
+              convert(filterChain, file, outputFile);
             }
           }
         } else {
@@ -322,10 +322,6 @@ public final class CliConverter {
   }
 
   private void prepareOutputDir(final File outputDir) throws IOException {
-
-    if (outputDir == null) {
-      return;
-    }
 
     if (outputDir.exists()) {
       if (outputDir.isFile()) {
