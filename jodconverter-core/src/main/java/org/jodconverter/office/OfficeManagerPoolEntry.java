@@ -193,7 +193,7 @@ class OfficeManagerPoolEntry implements OfficeManager {
   @Override
   public boolean isRunning() {
 
-    return officeProcessManager.isConnected();
+    return officeProcessManager.getConnection().isConnected();
   }
 
   @Override
