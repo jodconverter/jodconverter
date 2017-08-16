@@ -12,7 +12,7 @@ I created this fork because I had to do some changes to the original project and
 
 ## What you want to know...
 
-- **Documentation**: The JODConverter documentation (work in progress) can be found [here](doc/README.md). 
+- **Documentation**: The JODConverter documentation (work in progress) can be found [here](https://github.com/sbraconnier/jodconverter/wiki). 
 - **SIGAR**: This fork does not depend on SIGAR. JODConverter only needs to retrieve office processes (PIDs) and kill office processes (using PID). It should work just fine without SIGAR with the actual process managers base on an older version of JODConverter. But I added the ability to use any process manager you would like to implement. More details on this feature later. For now, just look at the DefaultOfficeManagerBuilder class documentation. 
 - **Dependencies**: See [this](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core) for core project dependencies.
 - **Tests**: JODConverter is supposed to work just fine on Windows, MacOS and Unix/Linux. Any confirmation would be welcome so we could build a list of official supported OS distributions.
