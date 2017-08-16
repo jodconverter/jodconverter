@@ -53,8 +53,8 @@ public final class InstalledOfficeManagerHolder {
     return oldManager;
   }
 
-  // Private ctor.
-  private InstalledOfficeManagerHolder() { // NOSONAR
-    throw new AssertionError("Must not be instantiated");
+  // Suppresses default constructor, ensuring non-instantiability.
+  private InstalledOfficeManagerHolder() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }

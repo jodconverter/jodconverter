@@ -49,8 +49,7 @@ import org.jodconverter.task.DefaultConversionTask;
 
 public class CliConverterTest {
 
-  //private static final String CONFIG_DIR = "src/integTest/resources/config";
-  private static final String SOURCE_DIR = "src/integTest/resources/documents/";
+  private static final String SOURCE_DIR = "src/test/resources/documents/";
   private static final String SOURCE_FILENAME_1 = "test1.doc";
   private static final String SOURCE_FILENAME_2 = "test2.doc";
   private static final File SOURCE_FILE_1 = new File(SOURCE_DIR, SOURCE_FILENAME_1);
@@ -75,7 +74,7 @@ public class CliConverterTest {
         new File(
             tempDir,
             "jodconverter_"
-                + CliConverterTest.class.getSimpleName()
+                + CliConverterITest.class.getSimpleName()
                 + "_"
                 + UUID.randomUUID().toString());
 
@@ -177,47 +176,6 @@ public class CliConverterTest {
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {outputDir.getPath(), outputDir.getPath()});
     verify(officeManager, times(0)).execute(isA(DefaultConversionTask.class));
-  }
-
-  @Test
-  public void convert_DirWithWildcard_TasksExecuted() throws Exception {
-
-    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf");
-
-    final ArgumentCaptor<DefaultConversionTask> taskArgument =
-        ArgumentCaptor.forClass(DefaultConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
-    assertThat(tasks)
-        .element(0)
-        .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_1, SOURCE_DIR_TARGET_FILE_1);
-    assertThat(tasks)
-        .element(1)
-        .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_2, SOURCE_DIR_TARGET_FILE_2);
-  }
-
-  @Test
-  public void convert_DirWithWildcardAndOutputDir_TasksExecuted() throws Exception {
-
-    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", outputDir.getPath());
-
-    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
-
-    final ArgumentCaptor<DefaultConversionTask> taskArgument =
-        ArgumentCaptor.forClass(DefaultConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
-    assertThat(tasks)
-        .element(0)
-        .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_1, targetFile1);
-    assertThat(tasks)
-        .element(1)
-        .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_2, targetFile2);
   }
 
   @Test

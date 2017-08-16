@@ -35,11 +35,6 @@ class OfficeManagerPoolConfig extends OfficeManagerPoolEntryConfig {
 
   private long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
 
-  /** Creates configuration with default values. */
-  public OfficeManagerPoolConfig() {
-    super();
-  }
-
   /**
    * Creates configuration with the specified values.
    *

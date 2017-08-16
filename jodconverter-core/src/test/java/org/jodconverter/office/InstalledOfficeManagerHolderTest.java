@@ -19,19 +19,15 @@
 
 package org.jodconverter.office;
 
-/**
- * Represents an error condition that can be temporary, i.e. that could go away by simply retrying
- * the same operation after an interval.
- */
-class TemporaryException extends Exception {
-  private static final long serialVersionUID = 7237380113208327295L;
+import org.junit.Test;
 
-  /**
-   * Constructs a new exception with the specified cause.
-   *
-   * @param cause The cause
-   */
-  public TemporaryException(final Throwable cause) {
-    super(cause);
+import org.jodconverter.test.util.AssertUtil;
+
+public class InstalledOfficeManagerHolderTest {
+
+  @Test
+  public void ctor_ClassWellDefined() throws Exception {
+
+    AssertUtil.assertUtilityClassWellDefined(InstalledOfficeManagerHolder.class);
   }
 }
