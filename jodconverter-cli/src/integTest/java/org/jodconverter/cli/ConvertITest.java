@@ -58,7 +58,7 @@ public class ConvertITest {
         new File(
             tempDir,
             "jodconverter_"
-                + CliConverterITest.class.getSimpleName()
+                + ConvertITest.class.getSimpleName()
                 + "_"
                 + UUID.randomUUID().toString());
     outputDir.mkdirs();

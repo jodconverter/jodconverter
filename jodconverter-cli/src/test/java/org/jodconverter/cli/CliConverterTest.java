@@ -368,4 +368,58 @@ public class CliConverterTest {
     FileUtils.deleteQuietly(targetFile1);
     FileUtils.deleteQuietly(targetFile2);
   }
+
+  @Test
+  public void convert_DirWithWildcard_TasksExecuted() throws Exception {
+
+    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf");
+
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(2)).execute(taskArgument.capture());
+    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
+    assertThat(tasks)
+        .element(0)
+        .extracting("source.file.path", "target.file.path")
+        .containsExactly(SOURCE_FILE_1.getPath(), SOURCE_DIR_TARGET_FILE_1.getPath());
+    assertThat(tasks)
+        .element(1)
+        .extracting("source.file.path", "target.file.path")
+        .containsExactly(SOURCE_FILE_2.getPath(), SOURCE_DIR_TARGET_FILE_2.getPath());
+  }
+
+  @Test
+  public void convert_DirWithWildcardAndOutputDir_TasksExecuted() throws Exception {
+
+    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", outputDir.getPath());
+
+    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
+    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(2)).execute(taskArgument.capture());
+    final List<DefaultConversionTask> tasks = taskArgument.getAllValues();
+    assertThat(tasks)
+        .element(0)
+        .extracting("source.file.path", "target.file.path")
+        .containsExactly(SOURCE_FILE_1.getPath(), targetFile1.getPath());
+    assertThat(tasks)
+        .element(1)
+        .extracting("source.file.path", "target.file.path")
+        .containsExactly(SOURCE_FILE_2.getPath(), targetFile2.getPath());
+  }
+
+  @Test
+  public void convert_UnexistingDirWithWildcard_TasksNotExecutedWithExpectedLog() throws Exception {
+
+    try {
+      SystemLogHandler.startCapture();
+      converter.convert(new String[] {SOURCE_DIR + "unexisting_dir/*"}, "pdf");
+    } catch (Exception ex) {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .containsPattern("Skipping filename '.*' since it doesn't match an existing file.*");
+    }
+  }
 }
