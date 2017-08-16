@@ -67,7 +67,7 @@ public class CliConverterITest {
         new File(
             tempDir,
             "jodconverter_"
-                + CliConverterTest.class.getSimpleName()
+                + CliConverterITest.class.getSimpleName()
                 + "_"
                 + UUID.randomUUID().toString());
   }
