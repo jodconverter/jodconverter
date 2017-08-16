@@ -18,3 +18,16 @@ integrationTest {
   exclude 'org/jodconverter/StressITest.class'
   exclude 'org/jodconverter/PerformanceITest.class'
 }
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Versioneye configuration
+
+// Update project's dependencies status on http://www.versioneye.com
+apply plugin: 'org.standardout.versioneye'
+
+versioneye {
+  includePlugins = false
+  exclude 'testCompile', 'testCompileClasspath', 'testCompileOnly', 'testImplementation', 'testRuntime', 'testRuntimeClasspath', 'testRuntimeOnly', 'integTestCompile', 'integTestCompileClasspath', 'integTestCompileOnly', 'integTestImplementation', 'integTestRuntime', 'integTestRuntimeClasspath', 'integTestRuntimeOnly', 'checkstyle', 'jacocoAgent', 'jacocoAnt', 'pmd'
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
