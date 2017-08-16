@@ -381,11 +381,11 @@ public class CliConverterTest {
     assertThat(tasks)
         .element(0)
         .extracting("source.file.path", "target.file.path")
-        .containsExactly(SOURCE_FILE_1.getPath(), SOURCE_DIR_TARGET_FILE_1.getPath());
+        .contains(SOURCE_FILE_1.getName(), SOURCE_DIR_TARGET_FILE_1.getName());
     assertThat(tasks)
         .element(1)
         .extracting("source.file.path", "target.file.path")
-        .containsExactly(SOURCE_FILE_2.getPath(), SOURCE_DIR_TARGET_FILE_2.getPath());
+        .contains(SOURCE_FILE_2.getName(), SOURCE_DIR_TARGET_FILE_2.getName());
   }
 
   @Test
@@ -403,11 +403,11 @@ public class CliConverterTest {
     assertThat(tasks)
         .element(0)
         .extracting("source.file.path", "target.file.path")
-        .containsExactly(SOURCE_FILE_1.getPath(), targetFile1.getPath());
+        .contains(SOURCE_FILE_1.getName(), targetFile1.getName());
     assertThat(tasks)
         .element(1)
         .extracting("source.file.path", "target.file.path")
-        .containsExactly(SOURCE_FILE_2.getPath(), targetFile2.getPath());
+        .contains(SOURCE_FILE_2.getName(), targetFile2.getName());
   }
 
   @Test
