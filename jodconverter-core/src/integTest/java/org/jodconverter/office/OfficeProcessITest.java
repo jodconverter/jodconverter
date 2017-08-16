@@ -22,6 +22,9 @@ package org.jodconverter.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
 public class OfficeProcessITest {
@@ -82,6 +85,26 @@ public class OfficeProcessITest {
 
     } finally {
       officeProcess.forciblyTerminate(1000, 5000);
+    }
+  }
+
+  @Test
+  public void prepareInstanceProfileDir_WithCustomProfileDir_ShouldCopyProfileDirToWorkingDir()
+      throws Exception {
+
+    final OfficeProcessConfig config = new OfficeProcessConfig();
+    config.setTemplateProfileDir(new File("src/integTest/resources/templateProfileDir"));
+
+    OfficeProcess officeProcess = null;
+    try {
+      officeProcess = startOfficeProcess(2002, config);
+      final File instanceProfileDir =
+          (File) FieldUtils.readField(officeProcess, "instanceProfileDir", true);
+      assertThat(new File(instanceProfileDir, "user/customFile")).isFile();
+    } finally {
+      if (officeProcess != null) {
+        officeProcess.forciblyTerminate(1000, 5000);
+      }
     }
   }
 }

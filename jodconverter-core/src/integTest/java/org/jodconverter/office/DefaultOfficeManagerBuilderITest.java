@@ -26,7 +26,7 @@ import java.io.File;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
-public class DefaultOfficeManagerBuilderTest {
+public class DefaultOfficeManagerBuilderITest {
 
   @Test
   public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues()
@@ -75,7 +75,8 @@ public class DefaultOfficeManagerBuilderTest {
             .setPipeNames("test")
             .setPortNumbers(2003)
             .setOfficeHome(OfficeUtils.getDefaultOfficeHome())
-            .setWorkingDir(new File(System.getProperty("java.io.tmpdir")))
+            .setWorkingDir(System.getProperty("java.io.tmpdir"))
+            .setTemplateProfileDir("src/integTest/resources/templateProfileDir")
             .setProcessManager(OfficeUtils.findBestProcessManager())
             .setRunAsArgs("sudo")
             .setKillExistingProcess(false)
@@ -93,9 +94,10 @@ public class DefaultOfficeManagerBuilderTest {
         .isEqualTo(OfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
         .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
+    assertThat(config.getTemplateProfileDir().getPath())
+        .isEqualTo(new File("src/integTest/resources/templateProfileDir").getPath());
     assertThat(config.getProcessManager()).isEqualTo(OfficeUtils.findBestProcessManager());
     assertThat(config.getRunAsArgs()).isEqualTo(new String[] {"sudo"});
-    assertThat(config.getTemplateProfileDir()).isNull();
     assertThat(config.isKillExistingProcess()).isEqualTo(false);
     assertThat(config.getProcessTimeout()).isEqualTo(5000L);
     assertThat(config.getProcessRetryInterval()).isEqualTo(1000L);
