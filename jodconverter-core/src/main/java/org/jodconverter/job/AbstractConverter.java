@@ -116,7 +116,11 @@ public abstract class AbstractConverter implements DocumentConverter {
     return formatRegistry;
   }
 
-  /** A builder for constructing an {@link AbstractConverter}. */
+  /**
+   * A builder for constructing an {@link AbstractConverter}.
+   *
+   * @see AbstractConverter
+   */
   public abstract static class AbstractConverterBuilder<T extends AbstractConverterBuilder<T>> {
 
     protected OfficeManager officeManager;

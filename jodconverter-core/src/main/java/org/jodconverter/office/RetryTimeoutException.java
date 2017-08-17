@@ -27,7 +27,7 @@ class RetryTimeoutException extends Exception {
   private static final long serialVersionUID = -3704437769955257514L;
 
   /**
-   * Constructs a new exception with the specified cause
+   * Constructs a new exception with the specified cause.
    *
    * @param cause The cause.
    */

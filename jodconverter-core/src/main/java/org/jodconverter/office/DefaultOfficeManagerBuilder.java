@@ -28,7 +28,11 @@ import org.apache.commons.lang3.Validate;
 import org.jodconverter.process.AbstractProcessManager;
 import org.jodconverter.process.ProcessManager;
 
-/** @deprecated Use {@link DefaultOfficeManager#builder()} instead. */
+/**
+ * Builder class for default OfficeManager.
+ *
+ * @deprecated Use {@link DefaultOfficeManager#builder()} instead.
+ */
 @Deprecated
 public class DefaultOfficeManagerBuilder {
 

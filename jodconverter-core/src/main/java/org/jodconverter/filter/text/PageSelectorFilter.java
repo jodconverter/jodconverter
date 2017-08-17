@@ -45,7 +45,7 @@ public class PageSelectorFilter implements Filter {
   // https://wiki.openoffice.org/wiki/API/Tutorials/PDF_export
   // https://blog.oio.de/2010/10/27/copy-and-paste-without-clipboard-using-openoffice-org-api
 
-  private final short page;
+  private final int page;
 
   /**
    * Creates a new filter that will select the specified page while converting a document (only the
@@ -53,7 +53,7 @@ public class PageSelectorFilter implements Filter {
    *
    * @param page The page number to convert.
    */
-  public PageSelectorFilter(final short page) {
+  public PageSelectorFilter(final int page) {
     super();
 
     this.page = page;
@@ -83,7 +83,7 @@ public class PageSelectorFilter implements Filter {
 
     // Jump to the page to select (first page is 1) and move the
     // text cursor to the beginning of this page.
-    pageCursor.jumpToPage(page);
+    pageCursor.jumpToPage((short) page);
     textCursor.gotoRange(viewCursor.getStart(), false);
 
     // Jump to the end of the page and expand the text cursor

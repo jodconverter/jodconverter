@@ -29,8 +29,8 @@ abstract class Retryable {
    * Attempt to execute the task, once.
    *
    * @throws TemporaryException For an error condition that can be temporary - i.e. retrying later
-   *     could be successful
-   * @throws Exception For all other error conditions
+   *     could be successful.
+   * @throws Exception If an error occurs.
    */
   protected abstract void attempt() throws Exception; // NOSONAR
 
@@ -40,50 +40,25 @@ abstract class Retryable {
    * @param interval The interval between each task execution attempt.
    * @param timeout The timeout after which we won't try again to execute the task.
    * @throws RetryTimeoutException If we have reached the timeout.
-   * @throws Exception For all other error conditions
+   * @throws InterruptedException If any thread has interrupted the current thread. The interrupted
+   *     status of the current thread is cleared when this exception is thrown.
+   * @throws Exception For all other error conditions.
    */
-  public void execute(final long interval, final long timeout) // NOSONAR
-      throws RetryTimeoutException, Exception { // NOSONAR
-
-    execute(0L, interval, timeout);
-  }
-
-  /**
-   * Executes the task with a specified starting delay.
-   *
-   * @param delay The delay to wait for before the fist attempt.
-   * @param interval The interval between each task execution attempt.
-   * @param timeout The timeout after which we won't try again to execute the task.
-   * @throws RetryTimeoutException If we have reached the timeout.
-   * @throws Exception For all other error conditions
-   */
-  public void execute(final long delay, final long interval, final long timeout) // NOSONAR
-      throws RetryTimeoutException, Exception { // NOSONAR
+  public void execute(final long interval, final long timeout) throws Exception {
 
     final long start = System.currentTimeMillis();
-    if (delay > 0L) {
-      sleep(delay);
-    }
     while (true) {
       try {
         attempt();
         return;
       } catch (TemporaryException temporaryEx) { // NOSONAR
         if (System.currentTimeMillis() - start < timeout) {
-          sleep(interval);
+          Thread.sleep(interval);
           // retryConfig
         } else {
           throw new RetryTimeoutException(temporaryEx.getCause());
         }
       }
-    }
-  }
-
-  private void sleep(final long millis) {
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException interruptedEx) { // NOSONAR
-      // continue
     }
   }
 }

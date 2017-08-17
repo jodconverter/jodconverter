@@ -145,7 +145,11 @@ public class DefaultConverter extends AbstractConverter {
     }
   }
 
-  /** A builder for constructing a {@link DefaultConverter}. */
+  /**
+   * A builder for constructing a {@link DefaultConverter}.
+   *
+   * @see DefaultConverter
+   */
   public static final class Builder extends AbstractConverter.AbstractConverterBuilder<Builder> {
 
     // Private ctor so only DefaultConverter can create an instance of this builder.

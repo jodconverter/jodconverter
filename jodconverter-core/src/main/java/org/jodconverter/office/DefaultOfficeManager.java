@@ -120,7 +120,11 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
     tempFileCounter = new AtomicLong(0);
   }
 
-  /** A builder for constructing a {@link DefaultConverter}. */
+  /**
+   * A builder for constructing a {@link DefaultConverter}.
+   *
+   * @see DefaultConverter
+   */
   public static final class Builder {
 
     private boolean install = false;

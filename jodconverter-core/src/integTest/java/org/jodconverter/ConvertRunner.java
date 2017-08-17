@@ -29,10 +29,22 @@ import org.apache.log4j.Logger;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.filter.FilterChain;
 
+/**
+ * Runnable used to convert a document. This kind of runner is useful when a conversion must be done
+ * in his own thread.
+ */
 public class ConvertRunner implements Runnable {
 
   private static final Logger logger = Logger.getLogger(ConvertRunner.class);
 
+  /**
+   * Constructs a new runner with the specified arguments.
+   *
+   * @param source The source file.
+   * @param target The target file.
+   * @param filterChain The chain that will modified the document.
+   * @param converter The converter that will do the conversion.
+   */
   public ConvertRunner(
       final File source,
       final File target,

@@ -54,7 +54,7 @@ public class ConnectRetryable extends Retryable {
   }
 
   @Override
-  protected void attempt() throws Exception {
+  protected void attempt() throws TemporaryException, OfficeException {
 
     try {
       // Try to connect
