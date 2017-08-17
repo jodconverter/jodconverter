@@ -28,6 +28,7 @@ import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.OfficeManager;
@@ -72,8 +73,12 @@ public abstract class AbstractConverter implements DocumentConverter {
   public ConversionJobWithOptionalSourceFormatUnspecified convert(final File source) {
 
     final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(source);
-    specs.setDocumentFormat(
-        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName())));
+    final DocumentFormat format =
+        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName()));
+    if (format != null) {
+      specs.setDocumentFormat(format);
+    }
+
     return convert(specs);
   }
 
