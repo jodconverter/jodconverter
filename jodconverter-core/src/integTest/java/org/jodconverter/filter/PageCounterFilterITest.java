@@ -66,7 +66,7 @@ public class PageCounterFilterITest extends BaseOfficeITest {
     final File targetFile = new File(outputDir, SOURCE_FILENAME + ".page2.txt");
 
     final PageCounterFilter pageCounterFilter1 = new PageCounterFilter();
-    final PageSelectorFilter pageSelectorFilter = new PageSelectorFilter((short) 2);
+    final PageSelectorFilter pageSelectorFilter = new PageSelectorFilter(2);
     final PageCounterFilter pageCounterFilter2 = new PageCounterFilter();
 
     // Test the filter

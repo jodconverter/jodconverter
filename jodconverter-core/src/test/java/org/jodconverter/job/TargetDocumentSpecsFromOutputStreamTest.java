@@ -71,7 +71,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   }
 
   @Test
-  public void onComplete_IOExceptionCatch_ThrowsDocumentSpecsIOException() throws IOException {
+  public void onComplete_IoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
 
     final File tempFile = File.createTempFile(getClass().getName(), "txt");
     tempFile.deleteOnExit();

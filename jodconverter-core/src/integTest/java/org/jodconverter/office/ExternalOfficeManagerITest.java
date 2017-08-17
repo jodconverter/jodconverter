@@ -34,6 +34,7 @@ public class ExternalOfficeManagerITest {
    */
   @Test
   public void executeTask() throws Exception {
+
     final OfficeUrl officeUrl = new OfficeUrl(2002);
     final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
     officeProcess.start();
@@ -44,15 +45,22 @@ public class ExternalOfficeManagerITest {
       Thread.sleep(2000); // NOSONAR
     }
 
-    final ExternalOfficeManager manager = new ExternalOfficeManager(officeUrl, true);
+    final OfficeManager manager =
+        new ExternalOfficeManagerBuilder()
+            .setConnectionProtocol(OfficeConnectionProtocol.SOCKET)
+            .setPortNumber(2002)
+            .setConnectOnStart(true)
+            .build();
     manager.start();
+    try {
 
-    final MockOfficeTask task = new MockOfficeTask();
-    manager.execute(task);
-    assertThat(task.isCompleted()).isTrue();
+      final MockOfficeTask task = new MockOfficeTask();
+      manager.execute(task);
+      assertThat(task.isCompleted()).isTrue();
 
-    manager.stop();
-
-    officeProcess.forciblyTerminate(1000, 5000);
+    } finally {
+      OfficeUtils.stopQuietly(manager);
+      officeProcess.forciblyTerminate(1000, 5000);
+    }
   }
 }

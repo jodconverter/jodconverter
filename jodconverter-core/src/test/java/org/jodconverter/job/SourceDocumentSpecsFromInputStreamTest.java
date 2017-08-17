@@ -71,7 +71,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
   }
 
   @Test
-  public void getFile_IOExceptionCatch_ThrowsDocumentSpecsIOException() throws IOException {
+  public void getFile_IoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
 
     try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       final SourceDocumentSpecsFromInputStream specs =
@@ -88,7 +88,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
   }
 
   @Test
-  public void onConsumed_IOExceptionCatch_ThrowsDocumentSpecsIOException() throws IOException {
+  public void onConsumed_IoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
 
     final File tempFile = File.createTempFile(getClass().getName(), "doc");
     tempFile.deleteOnExit();

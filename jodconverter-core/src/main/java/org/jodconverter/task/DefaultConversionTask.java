@@ -129,7 +129,7 @@ public class DefaultConversionTask extends AbstractOfficeTask {
 
   // Modifies the document after it has been loaded and before
   // it gets saved in the new format.
-  private void modifyDocument(final OfficeContext context, final XComponent document)
+  void modifyDocument(final OfficeContext context, final XComponent document)
       throws OfficeException {
 
     if (filterChain != null) {
@@ -138,8 +138,7 @@ public class DefaultConversionTask extends AbstractOfficeTask {
   }
 
   // Stores the converted document as the output file.
-  private void storeDocument(final XComponent document, final File targetFile)
-      throws OfficeException {
+  void storeDocument(final XComponent document, final File targetFile) throws OfficeException {
 
     final Map<String, Object> storeProperties = getStoreProperties(document);
 

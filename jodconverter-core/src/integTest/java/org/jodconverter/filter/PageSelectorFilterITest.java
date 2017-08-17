@@ -65,7 +65,7 @@ public class PageSelectorFilterITest extends BaseOfficeITest {
     final File targetFile = new File(outputDir, SOURCE_FILENAME + ".page2.txt");
 
     // Create the PageSelectorFilter to test.
-    final PageSelectorFilter pageSelectorFilter = new PageSelectorFilter((short) 2);
+    final PageSelectorFilter pageSelectorFilter = new PageSelectorFilter(2);
 
     // Test the filter
     converter

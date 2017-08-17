@@ -223,4 +223,44 @@ public class DefaultOfficeManagerITest {
 
     DefaultOfficeManager.builder().runAsArgs(new String[0]).build();
   }
+
+  @Test(expected = IllegalStateException.class)
+  public void start_StartTwice_ThrowIllegalStateException() throws Exception {
+
+    DefaultOfficeManager manager = DefaultOfficeManager.make();
+    try {
+      manager.start();
+      manager.start();
+    } finally {
+      manager.stop();
+    }
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void execute_WithoutBeeingStared_ThrowIllegalStateException() throws Exception {
+
+    DefaultOfficeManager.make()
+        .execute(
+            new OfficeTask() {
+              @Override
+              public void execute(OfficeContext context) throws OfficeException {}
+            });
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void execute_WhenTerminated_ThrowIllegalStateException() throws Exception {
+
+    DefaultOfficeManager manager = DefaultOfficeManager.make();
+    try {
+      manager.start();
+    } finally {
+      manager.stop();
+    }
+
+    manager.execute(
+        new OfficeTask() {
+          @Override
+          public void execute(OfficeContext context) throws OfficeException {}
+        });
+  }
 }

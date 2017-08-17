@@ -31,7 +31,7 @@ import org.jodconverter.filter.RefreshFilter;
 
 public class DocumentConverterFunctionalITest extends BaseOfficeITest {
 
-  //private static final int MAX_RUNNING_THREADS = 10;
+  private static final int MAX_RUNNING_THREADS = 10;
 
   private static File outputDir;
 
@@ -97,37 +97,37 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
               }
             });
 
-    //    final Thread[] threads = new Thread[MAX_RUNNING_THREADS];
-    //    int t = 0;
+    final Thread[] threads = new Thread[MAX_RUNNING_THREADS];
+    int t = 0;
 
     for (final File sourceFile : sourceFiles) {
 
-      //      // Convert the file to all supported formats in a separated thread
-      //      final Runnable r =
-      //          new Runnable() {
-      //            @Override
-      //            public void run() {
-      //              convertFileToAllSupportedFormats(sourceFile, outputDir, RefreshFilter.REFRESH);
-      //            }
-      //          };
-      //
-      //      //final Runner r = new Runner (source, target, RefreshFilter.CHAIN, converter);
-      //      threads[t] = new Thread(r);
-      //      threads[t++].start();
-      //
-      //      if (t == MAX_RUNNING_THREADS) {
-      //        for (int j = 0; j < t; j++) {
-      //          threads[j].join();
-      //        }
-      //        t = 0;
-      //      }
+      // Convert the file to all supported formats in a separated thread
+      final Runnable r =
+          new Runnable() {
+            @Override
+            public void run() {
+              convertFileToAllSupportedFormats(sourceFile, outputDir, RefreshFilter.REFRESH);
+            }
+          };
 
-      convertFileToAllSupportedFormats(sourceFile, outputDir, RefreshFilter.REFRESH);
+      //final Runner r = new Runner (source, target, RefreshFilter.CHAIN, converter);
+      threads[t] = new Thread(r);
+      threads[t++].start();
+
+      if (t == MAX_RUNNING_THREADS) {
+        for (int j = 0; j < t; j++) {
+          threads[j].join();
+        }
+        t = 0;
+      }
+
+      //convertFileToAllSupportedFormats(sourceFile, outputDir, RefreshFilter.REFRESH);
     }
 
-    //    // Wait for remaining threads.
-    //    for (int j = 0; j < t; j++) {
-    //      threads[j].join();
-    //    }
+    // Wait for remaining threads.
+    for (int j = 0; j < t; j++) {
+      threads[j].join();
+    }
   }
 }

@@ -30,6 +30,7 @@ import com.sun.star.lang.XComponent;
 
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
+
 /**
  * Contains tests for the {@link org.jodconverter.filter.DefaultFilterChain} class.
  *

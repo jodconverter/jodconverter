@@ -59,7 +59,7 @@ public class OfficeProcessITest {
       assertThat(officeProcess.isRunning()).isTrue();
 
     } finally {
-      officeProcess.forciblyTerminate(1000, 5000);
+      officeProcess.forciblyTerminate(1000L, 5000L);
     }
   }
 
@@ -84,7 +84,7 @@ public class OfficeProcessITest {
           .hasMessageContaining("is already running");
 
     } finally {
-      officeProcess.forciblyTerminate(1000, 5000);
+      officeProcess.forciblyTerminate(1000L, 5000L);
     }
   }
 
@@ -103,7 +103,7 @@ public class OfficeProcessITest {
       assertThat(new File(instanceProfileDir, "user/customFile")).isFile();
     } finally {
       if (officeProcess != null) {
-        officeProcess.forciblyTerminate(1000, 5000);
+        officeProcess.forciblyTerminate(1000L, 5000L);
       }
     }
   }
