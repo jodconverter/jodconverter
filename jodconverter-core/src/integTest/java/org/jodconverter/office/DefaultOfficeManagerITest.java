@@ -29,11 +29,16 @@ import org.junit.Test;
 public class DefaultOfficeManagerITest {
 
   @Test
-  public void install_ShouldSetInstalledOfficeManagerHolder() throws Exception {
+  public void install_ShouldSetInstalledOfficeManagerHolder() {
 
-    final OfficeManager manager = DefaultOfficeManager.install();
-
-    assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
+    // Ensure we do not replace the current installed manager
+    final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
+    try {
+      final OfficeManager manager = DefaultOfficeManager.install();
+      assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
+    } finally {
+      InstalledOfficeManagerHolder.setInstance(installedManager);
+    }
   }
 
   @Test
