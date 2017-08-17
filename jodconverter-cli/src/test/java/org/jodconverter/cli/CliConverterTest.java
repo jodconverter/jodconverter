@@ -381,11 +381,19 @@ public class CliConverterTest {
     assertThat(tasks)
         .element(0)
         .extracting("source.file.name", "target.file.name")
-        .contains(SOURCE_FILE_1.getName(), SOURCE_DIR_TARGET_FILE_1.getName());
+        .isSubsetOf(
+            SOURCE_FILE_1.getName(),
+            SOURCE_DIR_TARGET_FILE_1.getName(),
+            SOURCE_FILE_2.getName(),
+            SOURCE_DIR_TARGET_FILE_2.getName());
     assertThat(tasks)
         .element(1)
         .extracting("source.file.name", "target.file.name")
-        .contains(SOURCE_FILE_2.getName(), SOURCE_DIR_TARGET_FILE_2.getName());
+        .isSubsetOf(
+            SOURCE_FILE_1.getName(),
+            SOURCE_DIR_TARGET_FILE_1.getName(),
+            SOURCE_FILE_2.getName(),
+            SOURCE_DIR_TARGET_FILE_2.getName());
   }
 
   @Test
@@ -403,11 +411,19 @@ public class CliConverterTest {
     assertThat(tasks)
         .element(0)
         .extracting("source.file.name", "target.file.name")
-        .containsExactly(SOURCE_FILE_1.getName(), targetFile1.getName());
+        .isSubsetOf(
+            SOURCE_FILE_1.getName(),
+            targetFile1.getName(),
+            SOURCE_FILE_2.getName(),
+            targetFile2.getName());
     assertThat(tasks)
         .element(1)
         .extracting("source.file.name", "target.file.name")
-        .containsExactly(SOURCE_FILE_2.getName(), targetFile2.getName());
+        .isSubsetOf(
+            SOURCE_FILE_1.getName(),
+            targetFile1.getName(),
+            SOURCE_FILE_2.getName(),
+            targetFile2.getName());
   }
 
   @Test
