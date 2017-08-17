@@ -19,7 +19,11 @@
 
 package org.jodconverter.filter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -31,26 +35,24 @@ import org.jodconverter.filter.text.TextReplacerFilter;
 
 public class TextReplacerFilterITest extends BaseOfficeITest {
 
-  private static final String SOURCE_FILE = DOCUMENTS_DIR + "test_replace.doc";
-  private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + TextReplacerFilterITest.class.getSimpleName() + "/";
+  private static final String SOURCE_FILENAME = "test_replace.doc";
+  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
 
-  /** Ensures we start with a fresh output directory. */
+  private static File outputDir;
+
+  /** Creates an output test directory just once. */
   @BeforeClass
-  public static void createOutputDir() {
+  public static void setUpClass() {
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
+    outputDir = new File(TEST_OUTPUT_DIR, TextReplacerFilterITest.class.getSimpleName());
     outputDir.mkdirs();
   }
 
-  /**  Deletes the output directory. */
+  /** Deletes the output test directory once the tests are all done. */
   @AfterClass
-  public static void deleteOutputDir() {
+  public static void tearDownClass() {
 
-    // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+    FileUtils.deleteQuietly(outputDir);
   }
 
   /**
@@ -108,13 +110,13 @@ public class TextReplacerFilterITest extends BaseOfficeITest {
   /**
    * Test the conversion of a document replacing text along the way.
    *
-   * @throws Exception if an error occurs.
+   * @throws IOException If an IO error occurs.
+   * @throws Exception If an error occurs.
    */
   @Test
   public void doFilter_WithDefaultProperties() throws Exception {
 
-    final File sourceFile = new File(SOURCE_FILE);
-    final File testOutputDir = new File(OUTPUT_DIR);
+    final File targetFile = new File(outputDir, SOURCE_FILENAME + ".txt");
 
     // Create the GraphicInserterFilter to test.
     final TextReplacerFilter filter =
@@ -127,7 +129,22 @@ public class TextReplacerFilterITest extends BaseOfficeITest {
               "most recent common language will be more basic"
             });
 
-    // Test the filter
-    convertFileToPdf(sourceFile, testOutputDir, "test", filter, RefreshFilter.REFRESH);
+    // Convert to PDF
+    converter
+        .convert(SOURCE_FILE)
+        .filterWith(filter, RefreshFilter.REFRESH)
+        .to(targetFile)
+        .execute();
+
+    final String content = FileUtils.readFileToString(targetFile, Charset.forName("UTF-8"));
+    assertThat(content)
+        .contains("REPLACEMENT_STRING")
+        .doesNotContain("SEARCH_WORD")
+        .contains("REPLACEMENT_THAT")
+        .doesNotContain("that")
+        .contains("REPLACEMENT_HAVE")
+        .doesNotContain("have")
+        .contains("most recent common language will be more basic")
+        .doesNotContain("new common language will be more simple");
   }
 }

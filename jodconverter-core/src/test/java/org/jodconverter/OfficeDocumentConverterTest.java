@@ -27,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -49,22 +48,16 @@ import org.jodconverter.task.DefaultConversionTask;
 
 public class OfficeDocumentConverterTest {
 
+  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/integTest/resources/documents/test.doc");
 
   private static File outputDir;
 
-  /** Creates an input file to convert and an output test directory just once. */
+  /** Creates an output test directory just once. */
   @BeforeClass
   public static void setUpClass() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    outputDir =
-        new File(
-            tempDir,
-            "jodconverter_"
-                + OfficeDocumentConverterTest.class.getSimpleName()
-                + "_"
-                + UUID.randomUUID().toString());
+    outputDir = new File(TEST_OUTPUT_DIR, OfficeDocumentConverterTest.class.getSimpleName());
     outputDir.mkdirs();
   }
 

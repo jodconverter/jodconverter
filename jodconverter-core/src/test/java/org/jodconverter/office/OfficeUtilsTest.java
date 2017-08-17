@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.office.OfficeUtils.toUrl;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
@@ -118,7 +120,6 @@ public class OfficeUtilsTest {
     try {
       userDir.mkdirs();
       OfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
-      assertTrue(true);
     } finally {
       FileUtils.deleteQuietly(templateProfileDir);
     }
@@ -136,5 +137,37 @@ public class OfficeUtilsTest {
     } finally {
       FileUtils.deleteQuietly(templateProfileDir);
     }
+  }
+
+  /** Tests the validateOfficeWorkingDirectory with a file as argument. */
+  @Test(expected = IllegalStateException.class)
+  public void validateOfficeWorkingDirectory_WithFile_ThrowsIllegalStateException()
+      throws IOException {
+
+    final File tempFile = File.createTempFile("OfficeUtilsTest", "tmp");
+    tempFile.deleteOnExit();
+
+    OfficeUtils.validateOfficeWorkingDirectory(tempFile);
+  }
+
+  /** Tests the validateOfficeWorkingDirectory with an unexisting directory as argument. */
+  @Test(expected = IllegalStateException.class)
+  public void validateOfficeWorkingDirectory_WithUnexistingDirectory_ThrowsIllegalStateException()
+      throws IOException {
+
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File templateWorkingDir = new File(tempDir, UUID.randomUUID().toString());
+
+    OfficeUtils.validateOfficeWorkingDirectory(templateWorkingDir);
+  }
+
+  /** Tests that an OfficeException is swallowed by the stopQuietly function. */
+  @Test
+  public void stopQuietly_OfficeExceptionThrown_ExceptionSwallowed() throws OfficeException {
+
+    final OfficeManager officeManager = mock(OfficeManager.class);
+    doThrow(OfficeException.class).when(officeManager).stop();
+
+    OfficeUtils.stopQuietly(officeManager);
   }
 }

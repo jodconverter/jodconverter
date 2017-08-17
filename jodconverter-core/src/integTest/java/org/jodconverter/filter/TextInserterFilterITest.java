@@ -22,7 +22,6 @@ package org.jodconverter.filter;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,27 +32,27 @@ import org.jodconverter.filter.text.TextInserterFilter;
 
 public class TextInserterFilterITest extends BaseOfficeITest {
 
-  private static final String SOURCE_FILE = DOCUMENTS_DIR + "test.doc";
-  private static final String SOURCE_MULTI_PAGE_FILE = DOCUMENTS_DIR + "test_multi_page.doc";
-  private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + TextInserterFilterITest.class.getSimpleName() + "/";
+  private static final String SOURCE_FILENAME = "test.doc";
+  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
+  private static final String SOURCE_MULTI_PAGE_FILENAME = "test_multi_page.doc";
+  private static final File SOURCE_MULTI_PAGE_FILE =
+      new File(DOCUMENTS_DIR, SOURCE_MULTI_PAGE_FILENAME);
 
-  /** Ensures we start with a fresh output directory. */
+  private static File outputDir;
+
+  /** Creates an output test directory just once. */
   @BeforeClass
-  public static void createOutputDir() {
+  public static void setUpClass() {
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
+    outputDir = new File(TEST_OUTPUT_DIR, TextInserterFilterITest.class.getSimpleName());
     outputDir.mkdirs();
   }
 
-  /**  Deletes the output directory. */
+  /** Deletes the output test directory once the tests are all done. */
   @AfterClass
-  public static void deleteOutputDir() {
+  public static void tearDownClass() {
 
-    // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+    //FileUtils.deleteQuietly(outputDir);
   }
 
   /**
@@ -64,8 +63,7 @@ public class TextInserterFilterITest extends BaseOfficeITest {
   @Test
   public void doFilter_WithCustomizedProperties() throws Exception {
 
-    final File sourceFile = new File(SOURCE_MULTI_PAGE_FILE);
-    final File testOutputDir = new File(OUTPUT_DIR);
+    final File targetFile = new File(outputDir, SOURCE_MULTI_PAGE_FILENAME + ".pdf");
 
     // Create the properties of the filter
     final Map<String, Object> props =
@@ -81,8 +79,12 @@ public class TextInserterFilterITest extends BaseOfficeITest {
     final TextInserterFilter filter =
         new TextInserterFilter("This is a test of text insertion", 2, 10, props);
 
-    // Test the filter
-    convertFileToPdf(sourceFile, testOutputDir, "test.onsecondpage", filter, RefreshFilter.REFRESH);
+    // Convert to PDF
+    converter
+        .convert(SOURCE_MULTI_PAGE_FILE)
+        .filterWith(filter, RefreshFilter.REFRESH)
+        .to(targetFile)
+        .execute();
   }
 
   /**
@@ -93,8 +95,7 @@ public class TextInserterFilterITest extends BaseOfficeITest {
   @Test
   public void doFilter_WithDefaultProperties() throws Exception {
 
-    final File sourceFile = new File(SOURCE_FILE);
-    final File testOutputDir = new File(OUTPUT_DIR);
+    final File targetFile = new File(outputDir, SOURCE_FILENAME + ".pdf");
 
     // Create the TextInserterFilter to test.
     final TextInserterFilter filter =
@@ -105,7 +106,11 @@ public class TextInserterFilterITest extends BaseOfficeITest {
             50, // Horizontal Position, 5 CM
             100); // Vertical Position , 10 CM
 
-    // Test the filter
-    convertFileToPdf(sourceFile, testOutputDir, "test.default", filter, RefreshFilter.REFRESH);
+    // Convert to PDF
+    converter
+        .convert(SOURCE_FILE)
+        .filterWith(filter, RefreshFilter.REFRESH)
+        .to(targetFile)
+        .execute();
   }
 }

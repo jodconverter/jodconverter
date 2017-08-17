@@ -29,43 +29,38 @@ import org.junit.Test;
 import org.jodconverter.BaseOfficeITest;
 import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.filter.text.TextReplacerFilter;
+import org.jodconverter.office.OfficeException;
 
 public class MultipleFiltersITest extends BaseOfficeITest {
 
-  private static final String SOURCE_FILE = DOCUMENTS_DIR + "test_replace.doc";
-  private static final String IMAGE_FILE = RESOURCES_DIR + "images/sample-1.jpg";
-  private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + MultipleFiltersITest.class.getSimpleName() + "/";
+  private static final String SOURCE_FILENAME = "test_replace.doc";
+  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
+  private static final File IMAGE_FILE = new File(RESOURCES_DIR, "images/sample-1.jpg");
 
-  /** Ensures we start with a fresh output directory. */
+  private static File outputDir;
+
+  /** Creates an output test directory just once. */
   @BeforeClass
-  public static void createOutputDir() {
+  public static void setUpClass() {
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
+    outputDir = new File(TEST_OUTPUT_DIR, MultipleFiltersITest.class.getSimpleName());
     outputDir.mkdirs();
   }
 
-  /**  Deletes the output directory. */
+  /** Deletes the output test directory once the tests are all done. */
   @AfterClass
-  public static void deleteOutputDir() {
+  public static void tearDownClass() {
 
-    // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+    FileUtils.deleteQuietly(outputDir);
   }
 
   /**
    * Test the conversion of a document replacing text along the way.
    *
-   * @throws Exception if an error occurs.
+   * @throws OfficeException If an office error occurs.
    */
   @Test
-  public void doFilter_WithDefaultProperties() throws Exception {
-
-    final File sourceFile = new File(SOURCE_FILE);
-    final File sourceImage = new File(IMAGE_FILE);
-    final File testOutputDir = new File(OUTPUT_DIR);
+  public void doFilter_WithDefaultProperties() throws OfficeException {
 
     // Create the TextReplacerFilter to test.
     final TextReplacerFilter testReplacerFilter =
@@ -81,19 +76,17 @@ public class MultipleFiltersITest extends BaseOfficeITest {
     // Create the GraphicInserterFilter to test.
     final GraphicInserterFilter graphicInserterfilter =
         new GraphicInserterFilter(
-            sourceImage.getPath(),
+            IMAGE_FILE.getPath(),
             74, // Image Width // 7.4 CM (half the original size)
             56, // Image Height // 5.6 CM (half the original size)
             60, // Horizontal Position // 6 CM
             100); // Vertical Position // 10 CM
 
-    // Test the filter
-    convertFileToPdf(
-        sourceFile,
-        testOutputDir,
-        "test.replaceTextThenAddGraphic",
-        testReplacerFilter,
-        graphicInserterfilter,
-        RefreshFilter.REFRESH);
+    // Convert to PDF
+    converter
+        .convert(SOURCE_FILE)
+        .filterWith(testReplacerFilter, graphicInserterfilter, RefreshFilter.REFRESH)
+        .to(new File(outputDir, SOURCE_FILENAME + ".pdf"))
+        .execute();
   }
 }

@@ -29,7 +29,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -46,22 +45,16 @@ import org.jodconverter.task.DefaultConversionTask;
 
 public class DefaultConverterTest {
 
+  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
   private static File outputDir;
 
-  /** Creates an input file to convert and an output test directory just once. */
+  /** Creates an output test directory just once. */
   @BeforeClass
   public static void setUpClass() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    outputDir =
-        new File(
-            tempDir,
-            "jodconverter_"
-                + DefaultConverterTest.class.getSimpleName()
-                + "_"
-                + UUID.randomUUID().toString());
+    outputDir = new File(TEST_OUTPUT_DIR, DefaultConverterTest.class.getSimpleName());
     outputDir.mkdirs();
   }
 

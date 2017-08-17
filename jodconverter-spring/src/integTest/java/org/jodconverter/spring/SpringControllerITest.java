@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -67,6 +66,8 @@ public class SpringControllerITest {
     }
   }
 
+  private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
+
   private static File inputFileTxt;
   private static File outputDir;
 
@@ -78,14 +79,7 @@ public class SpringControllerITest {
   @BeforeClass
   public static void setUpClass() throws IOException {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    outputDir =
-        new File(
-            tempDir,
-            "jodconverter_"
-                + SpringControllerITest.class.getSimpleName()
-                + "_"
-                + UUID.randomUUID().toString());
+    outputDir = new File(TEST_OUTPUT_DIR, SpringControllerITest.class.getSimpleName());
     outputDir.mkdirs();
 
     inputFileTxt = new File(outputDir, "inputFile.txt");

@@ -28,7 +28,6 @@ import static org.mockito.Mockito.verify;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -49,6 +48,7 @@ import org.jodconverter.task.DefaultConversionTask;
 
 public class CliConverterTest {
 
+  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final String SOURCE_DIR = "src/test/resources/documents/";
   private static final String SOURCE_FILENAME_1 = "test1.doc";
   private static final String SOURCE_FILENAME_2 = "test2.doc";
@@ -69,14 +69,7 @@ public class CliConverterTest {
   @BeforeClass
   public static void setUpClass() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    outputDir =
-        new File(
-            tempDir,
-            "jodconverter_"
-                + CliConverterTest.class.getSimpleName()
-                + "_"
-                + UUID.randomUUID().toString());
+    outputDir = new File(TEST_OUTPUT_DIR, CliConverterTest.class.getSimpleName());
 
     // Don't allow the program to exit the VM and redirect
     // console streams.

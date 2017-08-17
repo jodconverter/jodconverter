@@ -23,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -41,6 +40,7 @@ import org.jodconverter.office.OfficeUtils;
  */
 public class ConvertITest {
 
+  private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
   private static final String SOURCE_FILE = "src/integTest/resources/documents/test1.doc";
 
@@ -53,14 +53,7 @@ public class ConvertITest {
   @BeforeClass
   public static void setUpClass() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    outputDir =
-        new File(
-            tempDir,
-            "jodconverter_"
-                + ConvertITest.class.getSimpleName()
-                + "_"
-                + UUID.randomUUID().toString());
+    outputDir = new File(TEST_OUTPUT_DIR, ConvertITest.class.getSimpleName());
     outputDir.mkdirs();
 
     // Don't allow the program to exit the VM

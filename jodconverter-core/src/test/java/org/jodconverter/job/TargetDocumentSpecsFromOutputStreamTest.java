@@ -30,7 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -41,23 +40,18 @@ import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
 public class TargetDocumentSpecsFromOutputStreamTest {
 
+  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
   private static final String TARGET_FILENAME = "test.pdf";
 
   private static File outputDir;
 
-  /** Creates an input file to convert and an output test directory just once. */
+  /** Creates an output test directory just once. */
   @BeforeClass
   public static void setUpClass() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
     outputDir =
-        new File(
-            tempDir,
-            "jodconverter_"
-                + TargetDocumentSpecsFromOutputStreamTest.class.getSimpleName()
-                + "_"
-                + UUID.randomUUID().toString());
+        new File(TEST_OUTPUT_DIR, TargetDocumentSpecsFromOutputStreamTest.class.getSimpleName());
     outputDir.mkdirs();
   }
 

@@ -34,36 +34,31 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.office.OfficeException;
-
 public class DefaultConverterITest extends BaseOfficeITest {
 
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR + "test.doc");
-  private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + DefaultConverterITest.class.getSimpleName() + "/";
 
-  /** Ensures we start with a fresh output directory. */
+  private static File outputDir;
+
+  /** Creates an output test directory just once. */
   @BeforeClass
-  public static void createOutputDir() throws OfficeException {
+  public static void setUpClass() {
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
+    outputDir = new File(TEST_OUTPUT_DIR, DefaultConverterITest.class.getSimpleName());
     outputDir.mkdirs();
   }
 
-  /**  Deletes the output directory. */
+  /** Deletes the output test directory once the tests are all done. */
   @AfterClass
-  public static void deleteOutputDir() throws OfficeException {
+  public static void tearDownClass() {
 
-    // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+    FileUtils.deleteQuietly(outputDir);
   }
 
   @Test
   public void convert_FromFileToFile_ShouldSucceeded() throws Exception {
 
-    final File outputFile = new File(OUTPUT_DIR, "convert_FromFileToFile.pdf");
+    final File outputFile = new File(outputDir, "convert_FromFileToFile.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     converter.convert(SOURCE_FILE).to(outputFile).execute();
@@ -76,7 +71,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
   public void convert_UsingCustomStoreProperties_ShouldSucceeded() throws Exception {
 
     final File inputFile = new File(DOCUMENTS_DIR, "test_multi_page.doc");
-    final File outputFile = new File(OUTPUT_DIR, "convert_FromMultipleFileToPDFOnlyPage2.pdf");
+    final File outputFile = new File(outputDir, "convert_FromMultipleFileToPDFOnlyPage2.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     final Map<String, Object> filterData = new HashMap<>();
@@ -96,7 +91,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
       throws Exception {
 
     final File outputFile =
-        new File(OUTPUT_DIR, "convert_FromStreamToFileWithMissingInputFormat.pdf");
+        new File(outputDir, "convert_FromStreamToFileWithMissingInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     try (InputStream inputStream = new FileInputStream(SOURCE_FILE)) {
@@ -108,7 +103,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
   public void convert_FromStreamToFileWithSupportedInputFormat_ShouldSucceeded() throws Exception {
 
     final File outputFile =
-        new File(OUTPUT_DIR, "convert_FromStreamToFileWithSupportedInputFormat.pdf");
+        new File(outputDir, "convert_FromStreamToFileWithSupportedInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     final InputStream inputStream = new FileInputStream(SOURCE_FILE);
@@ -127,7 +122,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
       throws Exception {
 
     final File outputFile =
-        new File(OUTPUT_DIR, "convert_FromFileToStreamWithMissingOutputFormat.pdf");
+        new File(outputDir, "convert_FromFileToStreamWithMissingOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     try (OutputStream outputStream = new FileOutputStream(outputFile)) {
@@ -139,7 +134,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
   public void convert_FromFileToStreamWithSupportedOutputFormat_ShouldSucceeded() throws Exception {
 
     final File outputFile =
-        new File(OUTPUT_DIR, "convert_FromFileToStreamWithSupportedOutputFormat.pdf");
+        new File(outputDir, "convert_FromFileToStreamWithSupportedOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     final OutputStream outputStream = new FileOutputStream(outputFile);

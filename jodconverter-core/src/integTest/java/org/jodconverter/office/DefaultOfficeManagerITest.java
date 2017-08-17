@@ -26,15 +26,23 @@ import java.io.File;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
-public class DefaultOfficeManagerBuilderITest {
+public class DefaultOfficeManagerITest {
+
+  @Test
+  public void install_ShouldSetInstalledOfficeManagerHolder() throws Exception {
+
+    final OfficeManager manager = DefaultOfficeManager.install();
+
+    assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
+  }
 
   @Test
   public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues()
       throws Exception {
 
-    final OfficeManager manager = new DefaultOfficeManagerBuilder().build();
+    final OfficeManager manager = DefaultOfficeManager.make();
 
-    assertThat(manager).isInstanceOf(OfficeManagerPool.class);
+    assertThat(manager).isInstanceOf(DefaultOfficeManager.class);
     final OfficeManagerPoolConfig config =
         (OfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getOfficeHome().getPath())
@@ -70,21 +78,20 @@ public class DefaultOfficeManagerBuilderITest {
       throws Exception {
 
     final OfficeManager manager =
-        new DefaultOfficeManagerBuilder()
-            .setConnectionProtocol(OfficeConnectionProtocol.PIPE)
-            .setPipeNames("test")
-            .setPortNumbers(2003)
-            .setOfficeHome(OfficeUtils.getDefaultOfficeHome())
-            .setWorkingDir(System.getProperty("java.io.tmpdir"))
-            .setTemplateProfileDir("src/integTest/resources/templateProfileDir")
-            .setProcessManager(OfficeUtils.findBestProcessManager())
-            .setRunAsArgs("sudo")
-            .setKillExistingProcess(false)
-            .setRetryTimeout(5000)
-            .setRetryInterval(1000)
-            .setTaskExecutionTimeout(20000)
-            .setMaxTasksPerProcess(10)
-            .setTaskQueueTimeout(1000)
+        DefaultOfficeManager.builder()
+            .pipeNames("test")
+            .portNumbers(2003)
+            .officeHome(OfficeUtils.getDefaultOfficeHome())
+            .workingDir(System.getProperty("java.io.tmpdir"))
+            .templateProfileDir("src/integTest/resources/templateProfileDir")
+            .processManager(OfficeUtils.findBestProcessManager())
+            .runAsArgs("sudo")
+            .killExistingProcess(false)
+            .processTimeout(5000)
+            .processRetryInterval(1000)
+            .taskExecutionTimeout(20000)
+            .maxTasksPerProcess(10)
+            .taskQueueTimeout(1000)
             .build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
@@ -130,10 +137,10 @@ public class DefaultOfficeManagerBuilderITest {
       throws Exception {
 
     final OfficeManager manager =
-        new DefaultOfficeManagerBuilder()
-            .setOfficeHome(OfficeUtils.getDefaultOfficeHome().getPath())
-            .setWorkingDir(new File(System.getProperty("java.io.tmpdir")).getPath())
-            .setProcessManager(OfficeUtils.findBestProcessManager().getClass().getName())
+        DefaultOfficeManager.builder()
+            .officeHome(OfficeUtils.getDefaultOfficeHome().getPath())
+            .workingDir(new File(System.getProperty("java.io.tmpdir")).getPath())
+            .processManager(OfficeUtils.findBestProcessManager().getClass().getName())
             .build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
@@ -152,11 +159,11 @@ public class DefaultOfficeManagerBuilderITest {
       throws Exception {
 
     final OfficeManager manager =
-        new DefaultOfficeManagerBuilder()
-            .setOfficeHome("   ")
-            .setWorkingDir("   ")
-            .setProcessManager("   ")
-            .setTemplateProfileDir("   ")
+        DefaultOfficeManager.builder()
+            .officeHome("   ")
+            .workingDir("   ")
+            .processManager("   ")
+            .templateProfileDir("   ")
             .build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
@@ -169,70 +176,46 @@ public class DefaultOfficeManagerBuilderITest {
     assertThat(config.getProcessManager()).isEqualTo(OfficeUtils.findBestProcessManager());
   }
 
-  @Test
-  public void build_WithPipeDefaultConfiguration_ShouldInitializedOfficeManagerWithDefaultPipe()
-      throws Exception {
-
-    final OfficeManager manager =
-        new DefaultOfficeManagerBuilder()
-            .setConnectionProtocol(OfficeConnectionProtocol.PIPE)
-            .build();
-
-    final OfficeManager[] poolEntries =
-        (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
-    assertThat(poolEntries).hasSize(1);
-    assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
-
-    final OfficeProcessManager officeProcessManager =
-        (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
-    final OfficeProcess officeProcess =
-        (OfficeProcess) FieldUtils.readField(officeProcessManager, "process", true);
-    final OfficeUrl officeUrl = (OfficeUrl) FieldUtils.readField(officeProcess, "officeUrl", true);
-    assertThat(officeUrl.getConnectionAndParametersAsString()).isEqualTo("pipe,name=office");
-  }
-
   @Test(expected = IllegalArgumentException.class)
   public void build_WithProcessManagerClassNotFound_ThrowIllegalArgumentException()
       throws Exception {
 
-    new DefaultOfficeManagerBuilder()
-        .setProcessManager("org.jodconverter.notfound.ClassName")
-        .build();
+    DefaultOfficeManager.builder().processManager("org.jodconverter.notfound.ClassName").build();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void build_WithNullPipeNames_ThrowIllegalArgumentException() throws Exception {
 
-    new DefaultOfficeManagerBuilder().setPipeNames((String[]) null).build();
+    DefaultOfficeManager.builder().pipeNames((String[]) null).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void build_WithEmptyPipeNames_ThrowIllegalArgumentException() throws Exception {
 
-    new DefaultOfficeManagerBuilder().setPipeNames(new String[0]).build();
+    DefaultOfficeManager.builder().pipeNames(new String[0]).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void build_WithNullPortNumbers_ThrowIllegalArgumentException() throws Exception {
 
-    new DefaultOfficeManagerBuilder().setPortNumbers((int[]) null).build();
+    DefaultOfficeManager.builder().portNumbers((int[]) null).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void build_WithEmptyPortNumbers_ThrowIllegalArgumentException() throws Exception {
 
-    new DefaultOfficeManagerBuilder().setPortNumbers(new int[0]).build();
+    DefaultOfficeManager.builder().portNumbers(new int[0]).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void build_WithNullRunAsArgs_ThrowIllegalArgumentException() throws Exception {
 
-    new DefaultOfficeManagerBuilder().setRunAsArgs((String[]) null).build();
+    DefaultOfficeManager.builder().runAsArgs((String[]) null).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void build_WithEmptyRunAsArgs_ThrowIllegalArgumentException() throws Exception {
 
-    new DefaultOfficeManagerBuilder().setRunAsArgs(new String[0]).build();
+    DefaultOfficeManager.builder().runAsArgs(new String[0]).build();
   }
 }

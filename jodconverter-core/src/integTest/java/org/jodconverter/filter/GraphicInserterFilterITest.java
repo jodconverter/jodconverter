@@ -29,44 +29,41 @@ import org.junit.Test;
 
 import org.jodconverter.BaseOfficeITest;
 import org.jodconverter.filter.text.GraphicInserterFilter;
+import org.jodconverter.office.OfficeException;
 
 public class GraphicInserterFilterITest extends BaseOfficeITest {
 
-  private static final String SOURCE_FILE = DOCUMENTS_DIR + "test.doc";
-  private static final String SOURCE_MULTI_PAGE_FILE = DOCUMENTS_DIR + "test_multi_page.doc";
-  private static final String IMAGE_FILE = RESOURCES_DIR + "images/sample-1.jpg";
-  private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + GraphicInserterFilterITest.class.getSimpleName() + "/";
+  private static final String SOURCE_FILENAME = "test.doc";
+  private static final String SOURCE_MULTI_PAGE_FILENAME = "test_multi_page.doc";
+  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
+  private static final File SOURCE_MULTI_PAGE_FILE =
+      new File(DOCUMENTS_DIR, SOURCE_MULTI_PAGE_FILENAME);
+  private static final File IMAGE_FILE = new File(RESOURCES_DIR, "images/sample-1.jpg");
 
-  /** Ensures we start with a fresh output directory. */
+  private static File outputDir;
+
+  /** Creates an output test directory just once. */
   @BeforeClass
-  public static void createOutputDir() {
+  public static void setUpClass() {
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
+    outputDir = new File(TEST_OUTPUT_DIR, GraphicInserterFilterITest.class.getSimpleName());
     outputDir.mkdirs();
   }
 
-  /**  Deletes the output directory. */
+  /** Deletes the output test directory once the tests are all done. */
   @AfterClass
-  public static void deleteOutputDir() {
+  public static void tearDownClass() {
 
-    // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+    FileUtils.deleteQuietly(outputDir);
   }
 
   /**
    * Test the conversion of a document inserting a graphic along the way on the second page.
    *
-   * @throws Exception if an error occurs.
+   * @throws OfficeException If an error occurs.
    */
   @Test
-  public void doFilter_WithCustomizedProperties() throws Exception {
-
-    final File sourceFile = new File(SOURCE_MULTI_PAGE_FILE);
-    final File sourceImage = new File(IMAGE_FILE);
-    final File testOutputDir = new File(OUTPUT_DIR);
+  public void doFilter_WithCustomizedProperties() throws OfficeException {
 
     // Create the properties of the filter
     final Map<String, Object> props =
@@ -79,73 +76,73 @@ public class GraphicInserterFilterITest extends BaseOfficeITest {
     props.put("AnchorPageNo", (short) 2);
 
     // Create the GraphicInserterFilter to test.
-    final GraphicInserterFilter filter = new GraphicInserterFilter(sourceImage.getPath(), props);
+    final GraphicInserterFilter filter = new GraphicInserterFilter(IMAGE_FILE.getPath(), props);
 
-    // Test the filter
-    convertFileToPdf(sourceFile, testOutputDir, "test.onsecondpage", filter, RefreshFilter.REFRESH);
+    // Convert to PDF
+    converter
+        .convert(SOURCE_MULTI_PAGE_FILE)
+        .filterWith(filter, RefreshFilter.REFRESH)
+        .to(new File(outputDir, SOURCE_MULTI_PAGE_FILENAME + ".pdf"))
+        .execute();
   }
 
   /**
    * Test the conversion of a document inserting a graphic along the way.
    *
-   * @throws Exception if an error occurs.
+   * @throws OfficeException If an error occurs.
    */
   @Test
-  public void doFilter_WithDefaultProperties() throws Exception {
-
-    final File sourceFile = new File(SOURCE_FILE);
-    final File sourceImage = new File(IMAGE_FILE);
-    final File testOutputDir = new File(OUTPUT_DIR);
+  public void doFilter_WithDefaultProperties() throws OfficeException {
 
     // Create the GraphicInserterFilter to test.
     final GraphicInserterFilter filter =
         new GraphicInserterFilter(
-            sourceImage.getPath(),
+            IMAGE_FILE.getPath(),
             50, // Horizontal Position // 5 CM
             100); // Vertical Position // 10 CM
 
-    // Test the filter
-    convertFileToPdf(sourceFile, testOutputDir, "test.originalsize", filter, RefreshFilter.REFRESH);
+    // Convert to PDF
+    converter
+        .convert(SOURCE_FILE)
+        .filterWith(filter, RefreshFilter.REFRESH)
+        .to(new File(outputDir, SOURCE_FILENAME + ".originalsize.pdf"))
+        .execute();
   }
 
   /**
    * Test the conversion of a document inserting a graphic along the way. The image will be resize
    * (smaller).
    *
-   * @throws Exception if an error occurs.
+   * @throws OfficeException If an error occurs.
    */
   @Test
-  public void doFilter_WithDefaultPropertiesAndSmallerSize() throws Exception {
-
-    final File sourceFile = new File(SOURCE_FILE);
-    final File sourceImage = new File(IMAGE_FILE);
-    final File testOutputDir = new File(OUTPUT_DIR);
+  public void doFilter_WithDefaultPropertiesAndSmallerSize() throws OfficeException {
 
     // Create the GraphicInserterFilter to test.
     final GraphicInserterFilter filter =
         new GraphicInserterFilter(
-            sourceImage.getPath(),
+            IMAGE_FILE.getPath(),
             74, // Image Width // 7.4 CM (half the original size)
             56, // Image Height // 5.6 CM (half the original size)
             30, // Horizontal Position // 3 CM
             50); // Vertical Position // 5 CM
 
-    // Test the filter
-    convertFileToPdf(sourceFile, testOutputDir, "test.smallersize", filter, RefreshFilter.REFRESH);
+    // Convert to PDF
+    converter
+        .convert(SOURCE_FILE)
+        .filterWith(filter, RefreshFilter.REFRESH)
+        .to(new File(outputDir, SOURCE_FILENAME + ".smallersize.pdf"))
+        .execute();
   }
 
   /**
    * Test the conversion of a document inserting a graphic along the way on the second page. The
    * image will be resize (smaller).
    *
-   * @throws Exception if an error occurs.
+   * @throws OfficeException If an error occurs.
    */
   @Test
-  public void doFilter_WithCustomizedPropertiesAndSmallerSize() throws Exception {
-
-    final File sourceFile = new File(SOURCE_MULTI_PAGE_FILE);
-    final File sourceImage = new File(IMAGE_FILE);
-    final File testOutputDir = new File(OUTPUT_DIR);
+  public void doFilter_WithCustomizedPropertiesAndSmallerSize() throws OfficeException {
 
     // Create the properties of the filter
     final Map<String, Object> props =
@@ -160,13 +157,16 @@ public class GraphicInserterFilterITest extends BaseOfficeITest {
     // Create the GraphicInserterFilter to test.
     final GraphicInserterFilter filter =
         new GraphicInserterFilter(
-            sourceImage.getPath(),
+            IMAGE_FILE.getPath(),
             74, // Image Width // 7.4 CM (half the original size)
             56, // Image Height // 5.6 CM (half the original size)
             props);
 
-    // Test the filter
-    convertFileToPdf(
-        sourceFile, testOutputDir, "test.onsecondpage.smallersize", filter, RefreshFilter.REFRESH);
+    // Convert to PDF
+    converter
+        .convert(SOURCE_MULTI_PAGE_FILE)
+        .filterWith(filter, RefreshFilter.REFRESH)
+        .to(new File(outputDir, SOURCE_MULTI_PAGE_FILENAME + ".smallersize.pdf"))
+        .execute();
   }
 }

@@ -238,7 +238,7 @@ public class DefaultOfficeManagerBuilder {
 
     if (StringUtils.isNotBlank(processManagerClass)) {
       try {
-        this.processManager = (ProcessManager) Class.forName(processManagerClass).newInstance();
+        return setProcessManager((ProcessManager) Class.forName(processManagerClass).newInstance());
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
         throw new IllegalArgumentException(
             "Unable to create a Process manager from the specified class name: "

@@ -34,26 +34,24 @@ import org.jodconverter.filter.text.PageSelectorFilter;
 
 public class PageSelectorFilterITest extends BaseOfficeITest {
 
-  private static final String SOURCE_FILE = DOCUMENTS_DIR + "test_multi_page.doc";
-  private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + PageSelectorFilterITest.class.getSimpleName() + "/";
+  private static final String SOURCE_FILENAME = "test_multi_page.doc";
+  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
 
-  /** Ensures we start with a fresh output directory. */
+  private static File outputDir;
+
+  /** Creates an output test directory just once. */
   @BeforeClass
-  public static void createOutputDir() {
+  public static void setUpClass() {
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
+    outputDir = new File(TEST_OUTPUT_DIR, PageSelectorFilterITest.class.getSimpleName());
     outputDir.mkdirs();
   }
 
-  /**  Deletes the output directory. */
+  /** Deletes the output test directory once the tests are all done. */
   @AfterClass
-  public static void deleteOutputDir() {
+  public static void tearDownClass() {
 
-    // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+    FileUtils.deleteQuietly(outputDir);
   }
 
   /**
@@ -64,20 +62,19 @@ public class PageSelectorFilterITest extends BaseOfficeITest {
   @Test
   public void doFilter_SelectPage2_ShouldConvertOnlyPage2() throws Exception {
 
-    final File sourceFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "page2.txt");
+    final File targetFile = new File(outputDir, SOURCE_FILENAME + ".page2.txt");
 
     // Create the PageSelectorFilter to test.
     final PageSelectorFilter pageSelectorFilter = new PageSelectorFilter((short) 2);
 
     // Test the filter
     converter
-        .convert(sourceFile)
+        .convert(SOURCE_FILE)
         .filterWith(pageSelectorFilter, RefreshFilter.REFRESH)
-        .to(outputFile)
+        .to(targetFile)
         .execute();
 
-    String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+    final String content = FileUtils.readFileToString(targetFile, Charset.forName("UTF-8"));
     assertThat(content)
         .contains("Test document Page 2")
         .doesNotContain("Test document Page 1")

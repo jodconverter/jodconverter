@@ -28,29 +28,26 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.jodconverter.filter.RefreshFilter;
-import org.jodconverter.office.OfficeException;
 
 public class DocumentConverterFunctionalITest extends BaseOfficeITest {
 
-  private static final String OUTPUT_DIR =
-      TEST_OUTPUT_DIR + DocumentConverterFunctionalITest.class.getSimpleName() + "/";
+  private static final int MAX_RUNNING_THREADS = 10;
 
-  /** Ensures we start with a fresh output directory. */
+  private static File outputDir;
+
+  /** Creates an output test directory just once. */
   @BeforeClass
-  public static void createOutputDir() throws OfficeException {
+  public static void setUpClass() {
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
+    outputDir = new File(TEST_OUTPUT_DIR, DocumentConverterFunctionalITest.class.getSimpleName());
     outputDir.mkdirs();
   }
 
-  /**  Deletes the output directory. */
+  /** Deletes the output test directory once the tests are all done. */
   @AfterClass
-  public static void deleteOutputDir() throws OfficeException {
+  public static void tearDownClass() {
 
-    // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
+    FileUtils.deleteQuietly(outputDir);
   }
 
   /**
@@ -61,11 +58,11 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
   @Test
   public void htmlWithImageConversion() throws Exception {
 
-    final File inputFile = new File(DOCUMENTS_DIR, "index.html");
-    final File outputDir = new File(OUTPUT_DIR);
+    final File source = new File(DOCUMENTS_DIR, "index.html");
+    final File target = new File(outputDir, "index.pdf");
 
     // Convert the file to PDF
-    convertFileToPdf(inputFile, outputDir, RefreshFilter.REFRESH);
+    converter.convert(source).to(target);
   }
 
   /**
@@ -76,11 +73,11 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
   @Test
   public void testHtmlConversion() throws Exception {
 
-    final File inputFile = new File(DOCUMENTS_DIR, "test.html");
-    final File outputDir = new File(OUTPUT_DIR);
+    final File source = new File(DOCUMENTS_DIR, "test.html");
+    final File target = new File(outputDir, "test.pdf");
 
     // Convert the file to PDF
-    convertFileToPdf(inputFile, outputDir, RefreshFilter.REFRESH);
+    converter.convert(source).to(target);
   }
 
   /**
@@ -92,7 +89,7 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
   public void runAllPossibleConversions() throws Exception {
 
     final File dir = new File("src/integTest/resources/documents");
-    final File[] files =
+    final File[] sourceFiles =
         dir.listFiles(
             new FilenameFilter() {
               public boolean accept(final File dir, final String name) {
@@ -100,9 +97,37 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
               }
             });
 
-    for (final File inputFile : files) {
-      // Convert the file to all supported formats
-      convertFileToAllSupportedFormats(inputFile, null, RefreshFilter.REFRESH);
+    final Thread[] threads = new Thread[MAX_RUNNING_THREADS];
+    int t = 0;
+
+    for (final File sourceFile : sourceFiles) {
+
+      // Convert the file to all supported formats in a separated thread
+      final Runnable r =
+          new Runnable() {
+            @Override
+            public void run() {
+              convertFileToAllSupportedFormats(sourceFile, outputDir, RefreshFilter.REFRESH);
+            }
+          };
+
+      //final Runner r = new Runner (source, target, RefreshFilter.CHAIN, converter);
+      threads[t] = new Thread(r);
+      threads[t++].start();
+
+      if (t == MAX_RUNNING_THREADS) {
+        for (int j = 0; j < t; j++) {
+          threads[j].join();
+        }
+        t = 0;
+      }
+
+      //convertFileToAllSupportedFormats(sourceFile, outputDir, RefreshFilter.REFRESH);
+    }
+
+    // Wait for remaining threads.
+    for (int j = 0; j < t; j++) {
+      threads[j].join();
     }
   }
 }

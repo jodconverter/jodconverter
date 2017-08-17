@@ -29,8 +29,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.junit.Test;
 
-import org.jodconverter.document.DocumentFormat;
-import org.jodconverter.document.DocumentFormatRegistry;
+import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeManager;
 
@@ -83,31 +82,28 @@ public class StressITest {
             .maxTasksPerProcess(MAX_TASKS_PER_PROCESS)
             .build();
     final DocumentConverter converter = DefaultConverter.make(officeManager);
-    final DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
 
     officeManager.start();
     try {
-      final File inputFile = new File("src/integTest/resources/documents/test." + INPUT_EXTENSION);
+      final File source = new File("src/integTest/resources/documents/test." + INPUT_EXTENSION);
 
       final Thread[] threads = new Thread[MAX_RUNNING_THREADS];
 
       boolean first = true;
       int t = 0;
 
-      final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(INPUT_EXTENSION);
-      final DocumentFormat outputFormat = formatRegistry.getFormatByExtension(OUTPUT_EXTENSION);
       for (int i = 0; i < MAX_CONVERSIONS; i++) {
-        final File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
-        outputFile.deleteOnExit();
+        final File target = File.createTempFile("test", "." + OUTPUT_EXTENSION);
+        target.deleteOnExit();
 
         // Converts the first document without threads to ensure everything is OK.
         if (first) {
-          converter.convert(inputFile).as(inputFormat).to(outputFile).as(outputFormat).execute();
+          converter.convert(source).to(target).execute();
           first = false;
         }
 
         logger.info("Creating thread " + t);
-        final Runner r = new Runner(inputFile, outputFile, inputFormat, outputFormat, converter);
+        final ConvertRunner r = new ConvertRunner(source, target, RefreshFilter.CHAIN, converter);
         threads[t] = new Thread(r);
         threads[t++].start();
 
@@ -126,46 +122,6 @@ public class StressITest {
 
     } finally {
       officeManager.stop();
-    }
-  }
-
-  private class Runner implements Runnable {
-
-    public Runner(
-        final File inputFile,
-        final File outputFile,
-        final DocumentFormat inputFormat,
-        final DocumentFormat outputFormat,
-        final DocumentConverter converter) {
-      super();
-
-      this.inputFile = inputFile;
-      this.outputFile = outputFile;
-      this.inputFormat = inputFormat;
-      this.outputFormat = outputFormat;
-      this.converter = converter;
-    }
-
-    private final File inputFile;
-    private final File outputFile;
-    private final DocumentFormat inputFormat;
-    private final DocumentFormat outputFormat;
-    private final DocumentConverter converter;
-
-    @Override
-    public void run() {
-      try {
-        logger.info(
-            "-- converting "
-                + inputFormat.getExtension()
-                + " to "
-                + outputFormat.getExtension()
-                + "... ");
-        converter.convert(inputFile).as(inputFormat).to(outputFile).as(outputFormat).execute();
-        logger.info("done.\n");
-      } catch (Exception ex) {
-        logger.error(ex.getMessage(), ex);
-      }
     }
   }
 }
