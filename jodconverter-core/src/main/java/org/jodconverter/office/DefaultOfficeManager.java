@@ -156,10 +156,10 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
       // Count the number of office instances that must be launched
       int numInstances = 0;
       if (pipeNames != null) {
-        numInstances = pipeNames.length;
+        numInstances += pipeNames.length;
       }
       if (portNumbers != null) {
-        numInstances = portNumbers.length;
+        numInstances += portNumbers.length;
       }
 
       // Build the office URL list and return it
@@ -330,7 +330,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
 
       if (StringUtils.isNotBlank(processManagerClass)) {
         try {
-          this.processManager = (ProcessManager) Class.forName(processManagerClass).newInstance();
+          return processManager((ProcessManager) Class.forName(processManagerClass).newInstance());
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
           throw new IllegalArgumentException(
               "Unable to create a Process manager from the specified class name: "
