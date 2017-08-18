@@ -46,9 +46,9 @@ public final class InstalledOfficeManagerHolder {
    * @return the previous installed office manager, or {@code null} if there was no installed office
    *     manager.
    */
-  public static synchronized OfficeManager setInstance(OfficeManager manager) {
+  public static synchronized OfficeManager setInstance(final OfficeManager manager) {
 
-    OfficeManager oldManager = instance;
+    final OfficeManager oldManager = instance;
     instance = manager;
     return oldManager;
   }

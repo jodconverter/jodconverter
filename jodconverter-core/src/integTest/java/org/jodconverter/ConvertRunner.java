@@ -33,9 +33,19 @@ import org.jodconverter.filter.FilterChain;
  * Runnable used to convert a document. This kind of runner is useful when a conversion must be done
  * in his own thread.
  */
+@SuppressWarnings({
+  "PMD.AvoidCatchingGenericException",
+  "PMD.AvoidThrowingRawExceptionTypes",
+  "PMD.LawOfDemeter"
+})
 public class ConvertRunner implements Runnable {
 
   private static final Logger logger = Logger.getLogger(ConvertRunner.class);
+
+  private final File source;
+  private final File target;
+  private final FilterChain filterChain;
+  private final DocumentConverter converter;
 
   /**
    * Constructs a new runner with the specified arguments.
@@ -57,11 +67,6 @@ public class ConvertRunner implements Runnable {
     this.filterChain = filterChain;
     this.converter = converter;
   }
-
-  private final File source;
-  private final File target;
-  private final FilterChain filterChain;
-  private final DocumentConverter converter;
 
   @Override
   public void run() {

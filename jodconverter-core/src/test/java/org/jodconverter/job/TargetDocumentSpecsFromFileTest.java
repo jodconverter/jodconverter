@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
+@SuppressWarnings({"PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
 public class TargetDocumentSpecsFromFileTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";

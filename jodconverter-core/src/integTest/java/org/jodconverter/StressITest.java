@@ -33,6 +33,11 @@ import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeManager;
 
+@SuppressWarnings({
+  "PMD.AtLeastOneConstructor",
+  "PMD.AvoidInstantiatingObjectsInLoops",
+  "PMD.LawOfDemeter"
+})
 public class StressITest {
 
   private static final Logger logger = Logger.getLogger(StressITest.class);
@@ -44,6 +49,8 @@ public class StressITest {
   private static final String INPUT_EXTENSION = "rtf";
   private static final String OUTPUT_EXTENSION = "pdf";
 
+  private static final String PATTERN = "%d{ISO8601} %-5p [%c{3}] [%t] %m%n";
+
   /**
    * This test will run multiple parallel conversions, using 8 office processes. Just change the
    * MAX_* constants to control the numbers of conversion, threads and maximum conversion per office
@@ -54,13 +61,12 @@ public class StressITest {
   @Test
   public void runParallelConversions() throws Exception {
 
-    final String pattern = "%d{ISO8601} %-5p [%c{3}] [%t] %m%n";
     Logger.getRootLogger().removeAllAppenders();
 
     // Create console appender
     final ConsoleAppender console = new ConsoleAppender();
     console.setWriter(new OutputStreamWriter(System.out));
-    console.setLayout(new PatternLayout(pattern));
+    console.setLayout(new PatternLayout(PATTERN));
     console.setThreshold(Level.DEBUG);
     console.activateOptions();
     Logger.getRootLogger().addAppender(console);
@@ -69,7 +75,7 @@ public class StressITest {
     final FileAppender fileAppender = new FileAppender();
     fileAppender.setName("FileLogger");
     fileAppender.setFile("test-output/" + StressITest.class.getSimpleName() + "/test.log");
-    fileAppender.setLayout(new PatternLayout(pattern));
+    fileAppender.setLayout(new PatternLayout(PATTERN));
     fileAppender.setThreshold(Level.DEBUG);
     fileAppender.setAppend(true);
     fileAppender.activateOptions();

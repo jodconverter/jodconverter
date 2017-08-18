@@ -41,7 +41,15 @@ import org.jodconverter.office.OfficeUtils;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
+@SuppressWarnings("PMD.LawOfDemeter")
 public class SpringControllerITest {
+
+  private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
+
+  private static File inputFileTxt;
+  private static File outputDir;
+
+  @Autowired private JodConverterBean bean;
 
   @Configuration("SpringControllerTestConfiguration")
   static class ContextConfiguration {
@@ -50,7 +58,7 @@ public class SpringControllerITest {
     @Bean
     public JodConverterBean springJodConverter() {
 
-      JodConverterBean bean = new JodConverterBean();
+      final JodConverterBean bean = new JodConverterBean();
       bean.setPortNumbers("2005");
       bean.setOfficeHome(OfficeUtils.getDefaultOfficeHome().getPath());
       bean.setWorkingDir(null);
@@ -65,11 +73,6 @@ public class SpringControllerITest {
       return bean;
     }
   }
-
-  private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
-
-  private static File inputFileTxt;
-  private static File outputDir;
 
   /**
    * Creates an input file to convert and an output test directory just once.
@@ -95,8 +98,6 @@ public class SpringControllerITest {
 
     FileUtils.deleteQuietly(outputDir);
   }
-
-  @Autowired private JodConverterBean bean;
 
   @Test
   public void testTxtToRtf() throws Exception {

@@ -30,22 +30,31 @@ import com.sun.star.lang.EventObject;
 
 import org.jodconverter.process.PureJavaProcessManager;
 
+@SuppressWarnings({
+  "PMD.AtLeastOneConstructor",
+  "PMD.AvoidCatchingGenericException",
+  "PMD.LawOfDemeter"
+})
 public class OfficeProcessManagerITest {
 
   private static class VetoTerminateListener implements XTerminateListener {
 
     @Override
-    public void disposing(EventObject event) {}
+    public void disposing(final EventObject event) {
+      // Nothing to do here
+    }
 
     @Override
-    public void queryTermination(EventObject event) throws TerminationVetoException {
+    public void queryTermination(final EventObject event) throws TerminationVetoException {
 
       // This will prevent a clean termination
       throw new TerminationVetoException();
     }
 
     @Override
-    public void notifyTermination(EventObject event) {}
+    public void notifyTermination(final EventObject event) {
+      // Nothing to do here
+    }
   }
 
   @Test
@@ -59,7 +68,7 @@ public class OfficeProcessManagerITest {
           private boolean firstAttempt = true;
 
           @Override
-          public void kill(Process process, long pid) {
+          public void kill(final Process process, final long pid) {
             if (firstAttempt) {
               firstAttempt = false;
               try {

@@ -25,6 +25,7 @@ import java.security.Permission;
  * Helper class while testing that will prevent a call to System.exit to actually shutdown the VM.
  * Instead, a ExitException is thrown.
  */
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class NoExitSecurityManager extends SecurityManager {
 
   @Override

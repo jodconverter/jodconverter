@@ -21,7 +21,6 @@ package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.office.OfficeUtils.toUrl;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -37,6 +36,7 @@ import org.junit.Test;
 
 import org.jodconverter.test.util.AssertUtil;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class OfficeUtilsTest {
 
   @Test
@@ -108,7 +108,6 @@ public class OfficeUtilsTest {
   public void validateOfficeTemplateProfileDir_WithNullDir_ValidateSuccessfully() {
 
     OfficeUtils.validateOfficeTemplateProfileDirectory(null);
-    assertTrue(true);
   }
 
   /** Tests the validateOfficeTemplateProfileDirectory when user sub directory is found. */

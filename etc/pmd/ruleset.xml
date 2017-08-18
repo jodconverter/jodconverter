@@ -83,7 +83,9 @@
     <rule ref="rulesets/java/finalizers.xml"/>
 
     <!-- Use the entire 'javabeans' ruleset -->
-	<rule ref="rulesets/java/javabeans.xml" />
+	<rule ref="rulesets/java/javabeans.xml">
+        <exclude name="BeanMembersShouldSerialize" />
+    </rule>
 
     <!-- Use the entire 'java logging' ruleset -->
     <rule ref="rulesets/java/logging-java.xml"/>

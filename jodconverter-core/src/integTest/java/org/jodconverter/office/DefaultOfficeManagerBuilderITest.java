@@ -26,6 +26,7 @@ import java.io.File;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class DefaultOfficeManagerBuilderITest {
 
   @Test

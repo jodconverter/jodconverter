@@ -40,6 +40,7 @@ import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
 
 /** This filter is used to insert text into a document. */
+@SuppressWarnings("PMD.LawOfDemeter")
 public class TextInserterFilter extends TextContentInserterFilter {
 
   // This class has been inspired by these examples:

@@ -29,6 +29,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.google.gson.annotations.SerializedName;
 
 /** Contains the required information used to deal with a specific document format . */
+@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.UseConcurrentHashMap"})
 public class DocumentFormat {
 
   private final String name;
@@ -73,9 +74,10 @@ public class DocumentFormat {
     }
     this.loadProperties = Collections.unmodifiableMap(loadProps);
 
-    Map<DocumentFamily, Map<String, Object>> storeProps = new EnumMap<>(DocumentFamily.class);
+    final Map<DocumentFamily, Map<String, Object>> storeProps = new EnumMap<>(DocumentFamily.class);
     if (storeProperties != null) {
-      for (Map.Entry<DocumentFamily, Map<String, Object>> entry : storeProperties.entrySet()) {
+      for (final Map.Entry<DocumentFamily, Map<String, Object>> entry :
+          storeProperties.entrySet()) {
         storeProps.put(
             entry.getKey(), Collections.unmodifiableMap(new HashMap<>(entry.getValue())));
       }
@@ -147,10 +149,8 @@ public class DocumentFormat {
    * @return A map containing the properties to apply when storing a document of this format.
    */
   public Map<String, Object> getStoreProperties(final DocumentFamily family) {
-    if (storeProperties == null) {
-      return null;
-    }
-    return storeProperties.get(family);
+
+    return storeProperties == null ? null : storeProperties.get(family);
   }
 
   @Override

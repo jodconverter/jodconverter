@@ -29,6 +29,7 @@ import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
 
 /** This filter is used to count the number of pages of a document. */
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class PageCounterFilter implements Filter {
 
   private int pageCount;
@@ -39,7 +40,7 @@ public class PageCounterFilter implements Filter {
       throws Exception {
 
     // Save the PageCount property of the document.
-    XPropertySet propertySet =
+    final XPropertySet propertySet =
         UnoRuntime.queryInterface(
             XPropertySet.class,
             UnoRuntime.queryInterface(XModel.class, document).getCurrentController());

@@ -37,6 +37,7 @@ import com.sun.star.lang.DisposedException;
  * @see OfficeProcess
  * @see OfficeConnection
  */
+@SuppressWarnings("PMD.LawOfDemeter")
 class OfficeProcessManager {
 
   private static final Logger logger = LoggerFactory.getLogger(OfficeProcessManager.class);

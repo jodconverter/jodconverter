@@ -36,6 +36,11 @@ import org.jodconverter.office.OfficeException;
  *
  * @see org.jodconverter.filter.DefaultFilterChain
  */
+@SuppressWarnings({
+  "PMD.AtLeastOneConstructor",
+  "PMD.AvoidCatchingGenericException",
+  "PMD.LawOfDemeter"
+})
 public class DefaultFilterChainTest {
 
   /** Tests that a DefaultFilterChain.addFilter works as expected. */
@@ -57,7 +62,8 @@ public class DefaultFilterChainTest {
     Filter filter =
         new Filter() {
           @Override
-          public void doFilter(OfficeContext context, XComponent document, FilterChain chain)
+          public void doFilter(
+              final OfficeContext context, final XComponent document, final FilterChain chain)
               throws Exception {
             throw new OfficeException("Unsupported Filter");
           }
@@ -75,7 +81,8 @@ public class DefaultFilterChainTest {
     filter =
         new Filter() {
           @Override
-          public void doFilter(OfficeContext context, XComponent document, FilterChain chain)
+          public void doFilter(
+              final OfficeContext context, final XComponent document, final FilterChain chain)
               throws Exception {
             throw new IndexOutOfBoundsException();
           }

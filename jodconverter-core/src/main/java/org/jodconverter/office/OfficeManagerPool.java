@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * be used to execute {@link OfficeTask}. The pool will use the first {@link OfficeManagerPoolEntry}
  * to execute a given task when the {@link #execute(OfficeTask)} function is called.
  */
+@SuppressWarnings("PMD.LawOfDemeter")
 class OfficeManagerPool implements OfficeManager {
 
   private static final Logger logger = LoggerFactory.getLogger(OfficeManagerPool.class);
@@ -42,7 +43,7 @@ class OfficeManagerPool implements OfficeManager {
   private static final int POOL_STARTED = 1;
   private static final int POOL_SHUTDOWN = 2;
 
-  private AtomicInteger poolState = new AtomicInteger(POOL_STOPPED);
+  private final AtomicInteger poolState = new AtomicInteger(POOL_STOPPED);
 
   private final BlockingQueue<OfficeManager> pool;
   private final OfficeManager[] entries;
@@ -70,7 +71,7 @@ class OfficeManagerPool implements OfficeManager {
   private OfficeManager acquireManager() throws OfficeException {
 
     try {
-      OfficeManager manager = pool.poll(config.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
+      final OfficeManager manager = pool.poll(config.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
       if (manager == null) {
         throw new OfficeException(
             "No office manager available after " + config.getTaskQueueTimeout() + " millisec.");

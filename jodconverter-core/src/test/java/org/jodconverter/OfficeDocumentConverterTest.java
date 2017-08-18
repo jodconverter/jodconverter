@@ -46,12 +46,15 @@ import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.task.DefaultConversionTask;
 
+@SuppressWarnings({"PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
 public class OfficeDocumentConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/integTest/resources/documents/test.doc");
 
   private static File outputDir;
+
+  private OfficeManager officeManager;
 
   /** Creates an output test directory just once. */
   @BeforeClass
@@ -67,8 +70,6 @@ public class OfficeDocumentConverterTest {
 
     FileUtils.deleteQuietly(outputDir);
   }
-
-  private OfficeManager officeManager;
 
   /** Setup the office manager before each test. */
   @Before

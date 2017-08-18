@@ -33,6 +33,7 @@ import com.google.gson.reflect.TypeToken;
  * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office
  * that has been loaded loaded from a JSON source.
  */
+@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
 public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
   /**
@@ -68,11 +69,11 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
   // Fill the registry from the given JSON source
   protected void readJsonArray(final String source) {
 
-    Gson gson = new Gson();
+    final Gson gson = new Gson();
 
     // Deserialization
-    Type collectionType = new TypeToken<Collection<DocumentFormat>>() {}.getType();
-    Collection<DocumentFormat> formats = gson.fromJson(source, collectionType);
+    final Type collectionType = new TypeToken<Collection<DocumentFormat>>() {}.getType();
+    final Collection<DocumentFormat> formats = gson.fromJson(source, collectionType);
 
     // Fill the registry with loaded formats. Note that we have to use
     // the constructor in order top create read only formats.

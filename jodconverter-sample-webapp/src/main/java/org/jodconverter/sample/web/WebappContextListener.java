@@ -24,7 +24,13 @@ import javax.servlet.ServletContextListener;
 
 import org.jodconverter.office.OfficeException;
 
+@SuppressWarnings("PMD")
 public class WebappContextListener implements ServletContextListener {
+
+  /** Creates a new listener. */
+  public WebappContextListener() {
+    super();
+  }
 
   @Override
   public void contextInitialized(final ServletContextEvent event) {

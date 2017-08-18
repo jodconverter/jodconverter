@@ -43,7 +43,12 @@ class DumpJsonDefaultDocumentFormatRegistry {
         new TreeMap<>(
             (Map<String, DocumentFormat>) FieldUtils.readField(registry, "fmtsByExtension", true));
 
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     logger.info(gson.toJson(formats.values()));
+  }
+
+  // Private ctor.
+  private DumpJsonDefaultDocumentFormatRegistry() {
+    super();
   }
 }

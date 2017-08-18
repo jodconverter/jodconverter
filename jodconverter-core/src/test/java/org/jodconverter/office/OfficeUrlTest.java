@@ -25,13 +25,14 @@ import org.junit.Test;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class OfficeUrlTest {
 
   @Test
   public void ctro_WithPipeName_SameAsOriginalUnoUrl() {
 
-    OfficeUrl pipeUrl = new OfficeUrl("testPipeName");
-    UnoUrl unoPipeUrl = OfficeUrl.pipe("testPipeName");
+    final OfficeUrl pipeUrl = new OfficeUrl("testPipeName");
+    final UnoUrl unoPipeUrl = OfficeUrl.pipe("testPipeName");
 
     assertThat(pipeUrl.getConnection()).isEqualTo(unoPipeUrl.getConnection());
     assertThat(pipeUrl.getConnectionAndParametersAsString())
@@ -51,8 +52,8 @@ public class OfficeUrlTest {
   @Test
   public void ctro_WithPortNumber_SameAsOriginalUnoUrl() {
 
-    OfficeUrl pipeUrl = new OfficeUrl(2005);
-    UnoUrl unoPipeUrl = OfficeUrl.socket(2005);
+    final OfficeUrl pipeUrl = new OfficeUrl(2005);
+    final UnoUrl unoPipeUrl = OfficeUrl.socket(2005);
 
     assertThat(pipeUrl.getConnection()).isEqualTo(unoPipeUrl.getConnection());
     assertThat(pipeUrl.getConnectionAndParametersAsString())

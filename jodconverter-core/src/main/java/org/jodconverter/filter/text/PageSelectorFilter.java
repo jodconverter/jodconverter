@@ -39,6 +39,7 @@ import org.jodconverter.office.OfficeContext;
  * This filter is used to select a specific page from a document in order to convert only the
  * selected page.
  */
+@SuppressWarnings("PMD.LawOfDemeter")
 public class PageSelectorFilter implements Filter {
 
   // This class has been inspired by these examples:

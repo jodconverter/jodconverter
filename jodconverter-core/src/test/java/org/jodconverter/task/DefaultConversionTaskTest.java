@@ -61,7 +61,14 @@ import org.jodconverter.office.OfficeException;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(UnoRuntime.class)
+@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
 public class DefaultConversionTaskTest {
+
+  private static final String TEST_OUTPUT_DIR = "build/test-results/";
+  private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
+  private static final String TARGET_FILENAME = "test.pdf";
+
+  private static File outputDir;
 
   private static class FooSourceSpecs extends AbstractSourceDocumentSpecs {
 
@@ -80,7 +87,9 @@ public class DefaultConversionTaskTest {
     }
 
     @Override
-    public void onConsumed(File file) {}
+    public void onConsumed(final File file) {
+      // Do nothing here
+    }
   }
 
   private static class FooTargetSpecs extends AbstractTargetDocumentSpecs {
@@ -100,17 +109,15 @@ public class DefaultConversionTaskTest {
     }
 
     @Override
-    public void onComplete(File file) {}
+    public void onComplete(final File file) {
+      // Do nothing here
+    }
 
     @Override
-    public void onFailure(File file, Exception ex) {}
+    public void onFailure(final File file, final Exception ex) {
+      // Do nothing here
+    }
   }
-
-  private static final String TEST_OUTPUT_DIR = "build/test-results/";
-  private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
-  private static final String TARGET_FILENAME = "test.pdf";
-
-  private static File outputDir;
 
   /** Creates an output test directory just once. */
   @BeforeClass

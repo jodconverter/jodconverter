@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.OfficeException;
 
+@SuppressWarnings("PMD.LawOfDemeter")
 public class PerformanceITest extends BaseOfficeITest {
 
   private static final Logger logger = LoggerFactory.getLogger(PerformanceITest.class);
@@ -58,7 +59,7 @@ public class PerformanceITest extends BaseOfficeITest {
     return String.format("%d min, %d sec, %d millisec", minutes, seconds, ms);
   }
 
-  private final void convertFileXTimes(
+  private void convertFileXTimes(
       final File inputFile, final DocumentFormat inputFormat, final DocumentFormat outputFormat)
       throws IOException, OfficeException {
 

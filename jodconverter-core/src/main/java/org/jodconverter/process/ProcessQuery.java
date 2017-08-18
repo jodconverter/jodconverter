@@ -32,6 +32,8 @@ public class ProcessQuery {
    * @param argument The process argument.
    */
   public ProcessQuery(final String command, final String argument) {
+    super();
+
     this.command = command;
     this.argument = argument;
   }

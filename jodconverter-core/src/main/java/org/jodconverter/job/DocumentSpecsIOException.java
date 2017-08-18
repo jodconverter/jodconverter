@@ -32,7 +32,7 @@ public class DocumentSpecsIOException extends RuntimeException {
    * @param message the detail message.
    * @param cause the cause.
    */
-  public DocumentSpecsIOException(String message, Throwable cause) {
+  public DocumentSpecsIOException(final String message, final Throwable cause) {
     super(message, cause);
   }
 }

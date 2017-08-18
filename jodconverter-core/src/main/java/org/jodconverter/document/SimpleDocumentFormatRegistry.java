@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 /** A SimpleDocumentFormatRegistry contains a collection of document formats supported by office. */
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.UseConcurrentHashMap"})
 public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
 
   private final Map<String, DocumentFormat> fmtsByExtension = new HashMap<>();
@@ -46,19 +47,13 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
   @Override
   public DocumentFormat getFormatByExtension(final String extension) {
 
-    if (extension == null) {
-      return null;
-    }
-    return fmtsByExtension.get(StringUtils.lowerCase(extension));
+    return extension == null ? null : fmtsByExtension.get(StringUtils.lowerCase(extension));
   }
 
   @Override
   public DocumentFormat getFormatByMediaType(final String mediaType) {
 
-    if (mediaType == null) {
-      return null;
-    }
-    return fmtsByMediaType.get(StringUtils.lowerCase(mediaType));
+    return mediaType == null ? null : fmtsByMediaType.get(StringUtils.lowerCase(mediaType));
   }
 
   @Override

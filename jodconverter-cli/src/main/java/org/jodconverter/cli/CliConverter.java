@@ -40,6 +40,12 @@ import org.jodconverter.office.OfficeException;
  *
  * @see Convert
  */
+@SuppressWarnings({
+  "PMD.AvoidInstantiatingObjectsInLoops",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.LawOfDemeter",
+  "PMD.OnlyOneReturn"
+})
 public final class CliConverter {
 
   private final PrintWriter out;
@@ -65,55 +71,6 @@ public final class CliConverter {
         .filterWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
         .to(outputFile)
         .execute();
-  }
-
-  /**
-   * Converts the specified files into the specified format. The converted files will be created
-   * into the same directory as the input files.
-   *
-   * @param filenames an array containing the filenames of the file to convert.
-   * @param outputFormat the output format to convert to files to.
-   * @throws OfficeException if an error occurs while converting the files.
-   */
-  public void convert(final String[] filenames, final String outputFormat) throws OfficeException {
-
-    convert(filenames, outputFormat, null);
-  }
-
-  /**
-   * Converts the specified files into the specified format.
-   *
-   * @param filenames an array containing the filenames of the file to convert.
-   * @param outputFormat the output format to convert to files to.
-   * @param outputDirPath the directory where to create the output file. If null, the converted
-   *     files will be created into the same directory as the input files.
-   * @throws OfficeException if an error occurs while converting the files.
-   */
-  public void convert(
-      final String[] filenames, final String outputFormat, final String outputDirPath)
-      throws OfficeException {
-
-    convert(filenames, outputFormat, outputDirPath, false);
-  }
-
-  /**
-   * Converts the specified files into the specified format.
-   *
-   * @param filenames an array containing the filenames of the file to convert.
-   * @param outputFormat the output format to convert to files to.
-   * @param outputDirPath the directory where to create a converted file. If null, a converted file
-   *     will be created into the same directory as the input file.
-   * @param overwrite indicates whether an output file that already exists must be overwritten.
-   * @throws OfficeException if an error occurs while converting the files.
-   */
-  public void convert(
-      final String[] filenames,
-      final String outputFormat,
-      final String outputDirPath,
-      final boolean overwrite)
-      throws OfficeException {
-
-    convert(filenames, outputFormat, outputDirPath, overwrite, null);
   }
 
   /**
@@ -197,57 +154,6 @@ public final class CliConverter {
         }
       }
     }
-  }
-
-  /**
-   * Converts the specified files. The output format are generate from the output filenames.
-   *
-   * @param inputFilenames an array containing the filenames of the files to convert.
-   * @param outputFilenames an array containing the output filenames to convert into.
-   * @throws OfficeException if an error occurs while converting the files.
-   */
-  public void convert(final String[] inputFilenames, final String[] outputFilenames)
-      throws OfficeException {
-
-    convert(inputFilenames, outputFilenames, null);
-  }
-
-  /**
-   * Converts the specified files. The output format are generate from the output filenames.
-   *
-   * @param inputFilenames an array containing the filenames of the files to convert.
-   * @param outputFilenames an array containing the output filenames to convert into.
-   * @param outputDirPath the directory where to create a converted file if not specified in the
-   *     output filename. If null and the directory is not specified in the output filename, a
-   *     converted file will be created into the same directory as the input files.
-   * @throws OfficeException if an error occurs while converting the files.
-   */
-  public void convert(
-      final String[] inputFilenames, final String[] outputFilenames, final String outputDirPath)
-      throws OfficeException {
-
-    convert(inputFilenames, outputFilenames, outputDirPath, false);
-  }
-
-  /**
-   * Converts the specified files. The output format are generate from the output filenames.
-   *
-   * @param inputFilenames an array containing the filenames of the files to convert.
-   * @param outputFilenames an array containing the output filenames to convert into.
-   * @param outputDirPath the directory where to create a converted file if not specified in the
-   *     output filename. If null and the directory is not specified in the output filename, a
-   *     converted file will be created into the same directory as the input files.
-   * @param overwrite indicates whether an output file that already exists must be overwritten.
-   * @throws OfficeException if an error occurs while converting the files.
-   */
-  public void convert(
-      final String[] inputFilenames,
-      final String[] outputFilenames,
-      final String outputDirPath,
-      final boolean overwrite)
-      throws OfficeException {
-
-    convert(inputFilenames, outputFilenames, outputDirPath, overwrite, null);
   }
 
   /**

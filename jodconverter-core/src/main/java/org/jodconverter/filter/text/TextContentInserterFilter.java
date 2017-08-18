@@ -42,9 +42,13 @@ import com.sun.star.uno.UnoRuntime;
 import org.jodconverter.filter.Filter;
 
 /** Base class for all filter used to insert a TextContent into a document. */
+@SuppressWarnings({"PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
 public abstract class TextContentInserterFilter implements Filter {
 
   private static final Logger logger = LoggerFactory.getLogger(TextContentInserterFilter.class);
+
+  private final Dimension rectSize;
+  private final Map<String, Object> shapeProperties;
 
   /**
    * Creates the default shape properties that would insert text content at the specified position
@@ -94,9 +98,6 @@ public abstract class TextContentInserterFilter implements Filter {
 
     return new Size(size.width * 100, size.height * 100);
   }
-
-  private final Dimension rectSize;
-  private final Map<String, Object> shapeProperties;
 
   /**
    * Creates a new filter that will insert a text content (shape) of the specified size at the

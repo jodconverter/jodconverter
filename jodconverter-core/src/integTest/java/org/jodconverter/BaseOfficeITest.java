@@ -19,7 +19,7 @@
 
 package org.jodconverter;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.Set;
@@ -39,6 +39,7 @@ import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.Filter;
 import org.jodconverter.office.OfficeException;
 
+@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
 public abstract class BaseOfficeITest {
 
   @ClassRule public static TestRule officeManagerResource = OfficeManagerResource.INSTANCE;
@@ -63,7 +64,7 @@ public abstract class BaseOfficeITest {
     formatRegistry = converter.getFormatRegistry();
   }
 
-  protected void convertFileToAllSupportedFormats(
+  void convertFileToAllSupportedFormats(
       final File sourceFile, final File outputDir, final Filter... filters) {
 
     // Detect input format
@@ -73,7 +74,7 @@ public abstract class BaseOfficeITest {
       logger.info("-- skipping unsupported input format {}... ", inputExtension);
       return;
     }
-    assertNotNull("unknown input format: " + inputExtension, inputFormat);
+    assertThat(inputFormat).as("check %s's input format", inputExtension).isNotNull();
 
     // Get all supported output formats
     final Set<DocumentFormat> outputFormats =
@@ -100,14 +101,14 @@ public abstract class BaseOfficeITest {
       final DefaultFilterChain chain = new DefaultFilterChain(filters);
 
       // Create an output file
-      File targetFile =
+      final File targetFile =
           new File(outputDir, sourceFile.getName() + "." + outputFormat.getExtension());
 
       // Delete existing file
       FileUtils.deleteQuietly(targetFile);
 
       // Convert the file to the desired format
-      ConvertRunner runner = new ConvertRunner(sourceFile, targetFile, chain, converter);
+      final ConvertRunner runner = new ConvertRunner(sourceFile, targetFile, chain, converter);
       runner.run();
     }
   }

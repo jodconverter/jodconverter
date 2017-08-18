@@ -30,6 +30,7 @@ import org.jodconverter.office.OfficeUtils;
  * {@link org.jodconverter.process.ProcessManager} implementation for testing custom ProcessManager.
  * It will auto-detect the best process manager and use it as delegate.
  */
+@SuppressWarnings("PMD.LawOfDemeter")
 public class CustomProcessManager implements ProcessManager {
 
   private static final Logger logger = LoggerFactory.getLogger(CustomProcessManager.class);

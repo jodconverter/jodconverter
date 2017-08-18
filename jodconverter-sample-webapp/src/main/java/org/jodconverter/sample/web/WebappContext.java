@@ -32,6 +32,7 @@ import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
+@SuppressWarnings("PMD")
 public class WebappContext {
 
   public static final String PARAMETER_OFFICE_PORT = "office.port";

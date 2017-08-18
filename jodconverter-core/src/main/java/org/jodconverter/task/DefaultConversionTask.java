@@ -43,6 +43,11 @@ import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
 /** Represents the default behavior for a conversion task. */
+@SuppressWarnings({
+  "PMD.AvoidCatchingGenericException",
+  "PMD.LawOfDemeter",
+  "PMD.UseConcurrentHashMap"
+})
 public class DefaultConversionTask extends AbstractOfficeTask {
 
   private static final String ERROR_MESSAGE_STORE = "Could not store document: ";
@@ -99,7 +104,7 @@ public class DefaultConversionTask extends AbstractOfficeTask {
         target.onFailure(targetFile, officeEx);
         throw officeEx;
       } catch (Exception ex) {
-        OfficeException officeEx = new OfficeException("Conversion failed", ex);
+        final OfficeException officeEx = new OfficeException("Conversion failed", ex);
         target.onFailure(targetFile, officeEx);
         throw officeEx;
       } finally {

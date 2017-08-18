@@ -39,26 +39,6 @@ import java.io.InputStream;
 public final class DefaultDocumentFormatRegistry {
 
   /**
-   * The InstanceHolder inner class is used to initialize the static INSTANCE on demand (the
-   * instance will be initialized the first time it is used). Working this way allow us to create
-   * (and thus load default document format) the static INSTANCE only if needed.
-   */
-  private static class InstanceHolder { // NOSONAR
-    public static DocumentFormatRegistry INSTANCE = create(); // NOSONAR
-
-    private static DocumentFormatRegistry create() {
-
-      try (final InputStream input =
-          DefaultDocumentFormatRegistry.class.getResourceAsStream("/document-formats.json")) {
-        return JsonDocumentFormatRegistry.create(input);
-      } catch (IOException ex) {
-        throw new DocumentFormatRegistryException(
-            "Unable to load the default document-formats.json configuration file", ex);
-      }
-    }
-  }
-
-  /**
    * Portable Document Format.
    *
    * <ul>
@@ -289,6 +269,26 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat PNG = getInstance().getFormatByExtension("png");
 
   /**
+   * The InstanceHolder inner class is used to initialize the static INSTANCE on demand (the
+   * instance will be initialized the first time it is used). Working this way allow us to create
+   * (and thus load default document format) the static INSTANCE only if needed.
+   */
+  private static class InstanceHolder { // NOSONAR
+    public static DocumentFormatRegistry INSTANCE = create(); // NOSONAR
+
+    private static DocumentFormatRegistry create() {
+
+      try (final InputStream input =
+          DefaultDocumentFormatRegistry.class.getResourceAsStream("/document-formats.json")) {
+        return JsonDocumentFormatRegistry.create(input);
+      } catch (IOException ex) {
+        throw new DocumentFormatRegistryException(
+            "Unable to load the default document-formats.json configuration file", ex);
+      }
+    }
+  }
+
+  /**
    * Gets the default instance of the class.
    *
    * @return The ResourceManager used at this class hierarchy level.
@@ -304,7 +304,7 @@ public final class DefaultDocumentFormatRegistry {
    * @return The found document format, or {@code null} if no document format exists for the
    *     specified extension.
    */
-  public static final DocumentFormat getFormatByExtension(final String extension) {
+  public static DocumentFormat getFormatByExtension(final String extension) {
 
     return getInstance().getFormatByExtension(extension);
   }
@@ -316,7 +316,7 @@ public final class DefaultDocumentFormatRegistry {
    * @return The found document format, or {@code null} if no document format exists for the
    *     specified media type.
    */
-  public static final DocumentFormat getFormatByMediaType(final String mediaType) {
+  public static DocumentFormat getFormatByMediaType(final String mediaType) {
 
     return getInstance().getFormatByMediaType(mediaType);
   }

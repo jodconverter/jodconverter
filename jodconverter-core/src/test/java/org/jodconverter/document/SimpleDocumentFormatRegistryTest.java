@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class SimpleDocumentFormatRegistryTest {
 
   /** Tests that calling getFormatByExtension with a null extension will return null. */
@@ -32,7 +33,7 @@ public class SimpleDocumentFormatRegistryTest {
   public void getFormatByExtension_WithNullExtension_ReturnNull() {
 
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
-    DocumentFormat format = registry.getFormatByExtension(null);
+    final DocumentFormat format = registry.getFormatByExtension(null);
     assertThat(format).isNull();
   }
 
@@ -44,7 +45,7 @@ public class SimpleDocumentFormatRegistryTest {
   public void getFormatByExtension_WithPdfExtension_ReturnPdfDocumentFormat() {
 
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
-    DocumentFormat format = registry.getFormatByExtension("pdf");
+    final DocumentFormat format = registry.getFormatByExtension("pdf");
     assertThat(format).isNotNull().hasFieldOrPropertyWithValue("extension", "pdf");
   }
 
@@ -53,7 +54,7 @@ public class SimpleDocumentFormatRegistryTest {
   public void getFormatByMediaType_WithNullMediaType_ReturnNull() {
 
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
-    DocumentFormat format = registry.getFormatByMediaType(null);
+    final DocumentFormat format = registry.getFormatByMediaType(null);
     assertThat(format).isNull();
   }
 
@@ -65,7 +66,7 @@ public class SimpleDocumentFormatRegistryTest {
   public void getFormatByMediaType_WithPdfMediaType_ReturnPdfDocumentFormat() {
 
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
-    DocumentFormat format = registry.getFormatByMediaType("application/pdf");
+    final DocumentFormat format = registry.getFormatByMediaType("application/pdf");
     assertThat(format).isNotNull().hasFieldOrPropertyWithValue("extension", "pdf");
   }
 
@@ -74,7 +75,7 @@ public class SimpleDocumentFormatRegistryTest {
   public void getOutputFormats_WithNullFamily_ReturnEmptySet() {
 
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
-    Set<DocumentFormat> formats = registry.getOutputFormats(null);
+    final Set<DocumentFormat> formats = registry.getOutputFormats(null);
     assertThat(formats).isEmpty();
   }
 }

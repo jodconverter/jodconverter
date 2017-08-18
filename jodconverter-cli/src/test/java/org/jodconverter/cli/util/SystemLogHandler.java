@@ -36,19 +36,8 @@ import java.util.Stack;
  * @author Remy Maucherat
  * @author Glenn L. Nielsen
  */
+@SuppressWarnings("PMD")
 public class SystemLogHandler extends PrintStream {
-
-  // ----------------------------------------------------------- Constructors
-
-  /**
-   * Construct the handler to capture the output of the given steam.
-   *
-   * @param wrapped The stream to capture
-   */
-  public SystemLogHandler(PrintStream wrapped) {
-    super(wrapped);
-    out = wrapped;
-  }
 
   // ----------------------------------------------------- Instance Variables
 
@@ -60,6 +49,18 @@ public class SystemLogHandler extends PrintStream {
 
   /** Spare CaptureLog ready for reuse. */
   private static final Stack<CaptureLog> reuse = new Stack<>();
+
+  // ----------------------------------------------------------- Constructors
+
+  /**
+   * Construct the handler to capture the output of the given steam.
+   *
+   * @param wrapped The stream to capture
+   */
+  public SystemLogHandler(final PrintStream wrapped) {
+    super(wrapped);
+    out = wrapped;
+  }
 
   // --------------------------------------------------------- Public Methods
 
@@ -89,15 +90,15 @@ public class SystemLogHandler extends PrintStream {
    * @return The captured data
    */
   public static String stopCapture() {
-    Stack<CaptureLog> stack = logs.get();
+    final Stack<CaptureLog> stack = logs.get();
     if (stack == null || stack.isEmpty()) {
       return null;
     }
-    CaptureLog log = stack.pop();
+    final CaptureLog log = stack.pop();
     if (log == null) {
       return null;
     }
-    String capture = log.getCapture();
+    final String capture = log.getCapture();
     log.reset();
     reuse.push(log);
     return capture;
@@ -111,11 +112,11 @@ public class SystemLogHandler extends PrintStream {
    * @return the print stream
    */
   protected PrintStream findStream() {
-    Stack<CaptureLog> stack = logs.get();
+    final Stack<CaptureLog> stack = logs.get();
     if (stack != null && !stack.isEmpty()) {
-      CaptureLog log = stack.peek();
+      final CaptureLog log = stack.peek();
       if (log != null) {
-        PrintStream ps = log.getStream();
+        final PrintStream ps = log.getStream();
         if (ps != null) {
           return ps;
         }
@@ -147,62 +148,62 @@ public class SystemLogHandler extends PrintStream {
   }
 
   @Override
-  public void write(int b) {
+  public void write(final int b) {
     findStream().write(b);
   }
 
   @Override
-  public void write(byte[] b) throws IOException {
+  public void write(final byte[] b) throws IOException {
     findStream().write(b);
   }
 
   @Override
-  public void write(byte[] buf, int off, int len) {
+  public void write(final byte[] buf, final int off, final int len) {
     findStream().write(buf, off, len);
   }
 
   @Override
-  public void print(boolean b) {
+  public void print(final boolean b) {
     findStream().print(b);
   }
 
   @Override
-  public void print(char c) {
+  public void print(final char c) {
     findStream().print(c);
   }
 
   @Override
-  public void print(int i) {
+  public void print(final int i) {
     findStream().print(i);
   }
 
   @Override
-  public void print(long l) {
+  public void print(final long l) {
     findStream().print(l);
   }
 
   @Override
-  public void print(float f) {
+  public void print(final float f) {
     findStream().print(f);
   }
 
   @Override
-  public void print(double d) {
+  public void print(final double d) {
     findStream().print(d);
   }
 
   @Override
-  public void print(char[] s) {
+  public void print(final char[] s) {
     findStream().print(s);
   }
 
   @Override
-  public void print(String s) {
+  public void print(final String s) {
     findStream().print(s);
   }
 
   @Override
-  public void print(Object obj) {
+  public void print(final Object obj) {
     findStream().print(obj);
   }
 
@@ -212,47 +213,47 @@ public class SystemLogHandler extends PrintStream {
   }
 
   @Override
-  public void println(boolean x) {
+  public void println(final boolean x) {
     findStream().println(x);
   }
 
   @Override
-  public void println(char x) {
+  public void println(final char x) {
     findStream().println(x);
   }
 
   @Override
-  public void println(int x) {
+  public void println(final int x) {
     findStream().println(x);
   }
 
   @Override
-  public void println(long x) {
+  public void println(final long x) {
     findStream().println(x);
   }
 
   @Override
-  public void println(float x) {
+  public void println(final float x) {
     findStream().println(x);
   }
 
   @Override
-  public void println(double x) {
+  public void println(final double x) {
     findStream().println(x);
   }
 
   @Override
-  public void println(char[] x) {
+  public void println(final char[] x) {
     findStream().println(x);
   }
 
   @Override
-  public void println(String x) {
+  public void println(final String x) {
     findStream().println(x);
   }
 
   @Override
-  public void println(Object x) {
+  public void println(final Object x) {
     findStream().println(x);
   }
 }

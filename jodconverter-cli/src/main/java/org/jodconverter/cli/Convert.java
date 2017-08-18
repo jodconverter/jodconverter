@@ -43,6 +43,12 @@ import org.jodconverter.office.OfficeManager;
 import org.jodconverter.office.OfficeUtils;
 
 /** Command line interface executable. */
+@SuppressWarnings({
+  "PMD.AvoidCatchingGenericException",
+  "PMD.DataflowAnomalyAnalysis",
+  "PMD.LawOfDemeter",
+  "PMD.OnlyOneReturn"
+})
 public final class Convert {
 
   public static final int STATUS_OK = 0;

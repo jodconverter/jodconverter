@@ -33,7 +33,7 @@ class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs
   }
 
   @Override
-  public void onConsumed(File file) {
-    // Do nothing
+  public void onConsumed(final File file) {
+    // Nothing to do here
   }
 }

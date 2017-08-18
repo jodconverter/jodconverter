@@ -46,6 +46,12 @@ import com.sun.star.uno.XComponentContext;
  * An OfficeConnection is responsible to manage the connection to an office process using a given
  * UnoUrl.
  */
+@SuppressWarnings({
+  "PMD.AtLeastOneConstructor",
+  "PMD.AvoidCatchingGenericException",
+  "PMD.LawOfDemeter",
+  "PMD.NullAssignment"
+})
 class OfficeConnection implements OfficeContext, XEventListener {
 
   private static AtomicInteger bridgeIndex = new AtomicInteger();

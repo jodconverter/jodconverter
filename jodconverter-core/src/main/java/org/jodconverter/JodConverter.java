@@ -35,6 +35,7 @@ import org.jodconverter.office.OfficeManager;
  * @see OfficeManager
  * @see InstalledOfficeManagerHolder
  */
+@SuppressWarnings("PMD.LawOfDemeter")
 public final class JodConverter {
 
   /**

@@ -43,12 +43,19 @@ import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.task.DefaultConversionTask;
 
+@SuppressWarnings({
+  "PMD.AvoidCatchingGenericException",
+  "PMD.LawOfDemeter",
+  "PMD.UseConcurrentHashMap"
+})
 public class DefaultConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
   private static File outputDir;
+
+  private OfficeManager officeManager;
 
   /** Creates an output test directory just once. */
   @BeforeClass
@@ -64,8 +71,6 @@ public class DefaultConverterTest {
 
     FileUtils.deleteQuietly(outputDir);
   }
-
-  private OfficeManager officeManager;
 
   /** Setup the office manager before each test. */
   @Before

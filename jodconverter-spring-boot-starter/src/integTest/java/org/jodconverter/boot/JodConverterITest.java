@@ -39,12 +39,15 @@ import org.jodconverter.DocumentConverter;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@SuppressWarnings("PMD.LawOfDemeter")
 public class JodConverterITest {
 
   private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
 
   private static File inputFileTxt;
   private static File outputDir;
+
+  @Autowired private DocumentConverter converter;
 
   /**
    * Creates an input file to convert and an output test directory just once.
@@ -70,8 +73,6 @@ public class JodConverterITest {
 
     FileUtils.deleteQuietly(outputDir);
   }
-
-  @Autowired private DocumentConverter converter;
 
   @Test
   public void testTxtToRtf() throws Exception {

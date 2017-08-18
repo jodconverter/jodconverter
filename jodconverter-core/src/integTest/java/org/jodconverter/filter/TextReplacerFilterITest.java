@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.jodconverter.BaseOfficeITest;
 import org.jodconverter.filter.text.TextReplacerFilter;
 
+@SuppressWarnings("PMD.LawOfDemeter")
 public class TextReplacerFilterITest extends BaseOfficeITest {
 
   private static final String SOURCE_FILENAME = "test_replace.doc";

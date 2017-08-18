@@ -65,7 +65,7 @@ public class JodConverterAutoConfiguration {
       for (final String portNumber : StringUtils.split(properties.getPortNumbers(), ", ")) {
         iports.add(NumberUtils.toInt(portNumber, 2002));
       }
-      builder.portNumbers(ArrayUtils.toPrimitive(iports.toArray(new Integer[0])));
+      builder.portNumbers(ArrayUtils.toPrimitive(iports.toArray(new Integer[iports.size()])));
     }
 
     builder.officeHome(properties.getOfficeHome());

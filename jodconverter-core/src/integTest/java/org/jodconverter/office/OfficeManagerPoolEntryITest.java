@@ -34,6 +34,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
 public class OfficeManagerPoolEntryITest {
 
   private static final org.slf4j.Logger logger =
@@ -156,10 +157,10 @@ public class OfficeManagerPoolEntryITest {
           .containsExactly(true, true);
 
       // Submit the task to an executor
-      ExecutorService pool = Executors.newFixedThreadPool(1);
+      final ExecutorService pool = Executors.newFixedThreadPool(1);
       try {
-        Callable<Boolean> task = new RestartAfterCrashTask(officeManager);
-        Future<Boolean> future = pool.submit(task);
+        final Callable<Boolean> task = new RestartAfterCrashTask(officeManager);
+        final Future<Boolean> future = pool.submit(task);
 
         Thread.sleep(500); // NOSONAR
 

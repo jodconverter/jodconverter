@@ -31,6 +31,7 @@ import org.jodconverter.office.OfficeException;
  *
  * @see org.jodconverter.filter.UnmodifiableFilterChain
  */
+@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class UnmodifiableFilterChainTest {
 
   /** Tests that a UnmodifiableFilterChain.addFilter throws an exception after creation. */

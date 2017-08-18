@@ -50,6 +50,7 @@ import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeUtils;
 
 /** This filter is used to insert a graphics into a document. */
+@SuppressWarnings("PMD.LawOfDemeter")
 public class GraphicInserterFilter extends TextContentInserterFilter {
 
   // This class has been inspired by these examples:
@@ -57,6 +58,8 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
   // https://forum.openoffice.org/en/forum/viewtopic.php?t=50114#p252402
 
   private static final Logger logger = LoggerFactory.getLogger(GraphicInserterFilter.class);
+
+  private final String imagePath;
 
   // Detect the size of an image without loading it into memory
   // See http://stackoverflow.com/a/1560052
@@ -92,8 +95,6 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
     // 1 pixel (X) = 0.26458333333333 mm
     return Math.round(pixels * 0.26458333333333f);
   }
-
-  private final String imagePath;
 
   /**
    * Creates a new filter that will insert the specified image at the specified location while

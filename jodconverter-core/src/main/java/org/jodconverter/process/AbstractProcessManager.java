@@ -36,7 +36,10 @@ import org.slf4j.LoggerFactory;
  * Base class for all process manager implementations included in the standard JODConverter
  * distribution.
  */
+@SuppressWarnings("PMD.LawOfDemeter")
 public abstract class AbstractProcessManager implements ProcessManager {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractProcessManager.class);
 
   private static class StreamPumper extends Thread {
 
@@ -79,7 +82,10 @@ public abstract class AbstractProcessManager implements ProcessManager {
     }
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractProcessManager.class);
+  /** Initializes a new instance of the class. */
+  protected AbstractProcessManager() {
+    super();
+  }
 
   private String buildOutput(final List<String> lines) {
 

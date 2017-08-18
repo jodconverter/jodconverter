@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeUtils;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class ProcessManagerTest {
 
   /**

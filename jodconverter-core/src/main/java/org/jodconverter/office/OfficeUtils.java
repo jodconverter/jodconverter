@@ -32,7 +32,13 @@ import org.jodconverter.process.PureJavaProcessManager;
 import org.jodconverter.process.UnixProcessManager;
 import org.jodconverter.process.WindowsProcessManager;
 
+@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
 public final class OfficeUtils {
+
+  private static final String EXECUTABLE_DEFAULT = "program/soffice.bin";
+  private static final String EXECUTABLE_MAC = "program/soffice";
+  private static final String EXECUTABLE_MAC_41 = "MacOS/soffice";
+  private static final String EXECUTABLE_WINDOWS = "program/soffice.exe";
 
   // This class is required in order to create a default office home
   // only on demand, as explained by the Initialization-on-demand holder idiom:
@@ -123,11 +129,6 @@ public final class OfficeUtils {
       return null;
     }
   }
-
-  private static final String EXECUTABLE_DEFAULT = "program/soffice.bin";
-  private static final String EXECUTABLE_MAC = "program/soffice";
-  private static final String EXECUTABLE_MAC_41 = "MacOS/soffice";
-  private static final String EXECUTABLE_WINDOWS = "program/soffice.exe";
 
   /**
    * Find the best process manager that will be used to retrieve a process PID and to kill a process
@@ -232,6 +233,7 @@ public final class OfficeUtils {
    * @param manager the manager to stop, may be null or already stopped.
    */
   public static void stopQuietly(final OfficeManager manager) {
+
     try {
       if (manager != null) {
         manager.stop();

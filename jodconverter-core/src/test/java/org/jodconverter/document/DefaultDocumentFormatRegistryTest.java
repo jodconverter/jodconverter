@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import org.jodconverter.test.util.AssertUtil;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class DefaultDocumentFormatRegistryTest {
 
   @Test
@@ -35,7 +36,8 @@ public class DefaultDocumentFormatRegistryTest {
     AssertUtil.assertUtilityClassWellDefined(DefaultDocumentFormatRegistry.class);
   }
 
-  private void assertExpectedExtensions(Set<DocumentFormat> formats, String... extensions) {
+  private void assertExpectedExtensions(
+      final Set<DocumentFormat> formats, final String... extensions) {
 
     assertThat(formats).hasSize(extensions.length);
     for (final DocumentFormat format : formats) {
@@ -188,8 +190,8 @@ public class DefaultDocumentFormatRegistryTest {
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/png"))
         .isEqualTo(DefaultDocumentFormatRegistry.PNG);
   }
-  
-  @Test
+
+  @Test(expected = UnsupportedOperationException.class)
   public void getFormatX_ReturnReadOnlyFormat() {
 
     final DocumentFormat format = DefaultDocumentFormatRegistry.PDF;

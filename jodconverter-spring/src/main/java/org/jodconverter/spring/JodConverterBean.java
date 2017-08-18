@@ -20,7 +20,6 @@
 package org.jodconverter.spring;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -52,6 +51,7 @@ import org.jodconverter.office.OfficeUtils;
  *
  * @author Jose Luis López López
  */
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class JodConverterBean implements InitializingBean, DisposableBean {
 
   private static final Logger logger = LoggerFactory.getLogger(JodConverterBean.class);
@@ -80,7 +80,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
       for (final String portNumber : StringUtils.split(portNumbers, ", ")) {
         iports.add(NumberUtils.toInt(portNumber, 2002));
       }
-      builder.portNumbers(ArrayUtils.toPrimitive(iports.toArray(new Integer[0])));
+      builder.portNumbers(ArrayUtils.toPrimitive(iports.toArray(new Integer[iports.size()])));
     }
 
     builder.officeHome(officeHome);
@@ -120,25 +120,22 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
 
     final DocumentFormatRegistry ref = DefaultDocumentFormatRegistry.getInstance();
 
-    logSupportedGroupFormats(
-        "Supported Text Document Formats are:", ref.getOutputFormats(DocumentFamily.TEXT));
-    logSupportedGroupFormats(
-        "Supported SpreadSheet Document Formats are:",
-        ref.getOutputFormats(DocumentFamily.SPREADSHEET));
-    logSupportedGroupFormats(
-        "Supported Presentation Document Formats are:",
-        ref.getOutputFormats(DocumentFamily.PRESENTATION));
-    logSupportedGroupFormats(
-        "Supported Drawing Document Formats are:", ref.getOutputFormats(DocumentFamily.DRAWING));
+    Set<DocumentFormat> formats = ref.getOutputFormats(DocumentFamily.TEXT);
+    logSupportedGroupFormats("Supported Text Document Formats are:", formats);
+    formats = ref.getOutputFormats(DocumentFamily.SPREADSHEET);
+    logSupportedGroupFormats("Supported SpreadSheet Document Formats are:", formats);
+    formats = ref.getOutputFormats(DocumentFamily.PRESENTATION);
+    logSupportedGroupFormats("Supported Presentation Document Formats are:", formats);
+    formats = ref.getOutputFormats(DocumentFamily.DRAWING);
+    logSupportedGroupFormats("Supported Drawing Document Formats are:", formats);
   }
 
   /** Prints the available formats provided by the JODConverter module. */
   private void logSupportedGroupFormats(final String text, final Set<DocumentFormat> formats) {
 
     logger.info(text);
-    final Iterator<DocumentFormat> iter = formats.iterator();
-    while (iter.hasNext()) {
-      logger.info(iter.next().getName());
+    for (final DocumentFormat format : formats) {
+      logger.info(format.getName());
     }
   }
 

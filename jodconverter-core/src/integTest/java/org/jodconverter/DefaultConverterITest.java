@@ -34,6 +34,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+@SuppressWarnings({"PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
 public class DefaultConverterITest extends BaseOfficeITest {
 
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR + "test.doc");

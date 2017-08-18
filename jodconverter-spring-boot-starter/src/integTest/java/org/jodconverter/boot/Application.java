@@ -27,15 +27,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * central Java configuration class.
  */
 @SpringBootApplication
+@SuppressWarnings("PMD.UseUtilityClass")
 public class Application {
 
   /**
    * Entry point for the application.
    *
    * @param args Command line arguments.
-   * @throws Exception Thrown when an unexpected Exception is thrown from the application.
    */
-  public static void main(final String[] args) throws Exception {
+  public static void main(final String[] args) {
     SpringApplication.run(Application.class, args);
   }
 }

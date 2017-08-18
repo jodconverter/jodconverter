@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter")
+@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class JodConverterProperties {
 
   /**

@@ -30,6 +30,7 @@ import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitSecurityManager;
 import org.jodconverter.cli.util.SystemLogHandler;
 
+@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
 public class ConvertTest {
 
   /**

@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.jodconverter.BaseOfficeITest;
 import org.jodconverter.filter.text.PageSelectorFilter;
 
+@SuppressWarnings("PMD.LawOfDemeter")
 public class PageSelectorFilterITest extends BaseOfficeITest {
 
   private static final String SOURCE_FILENAME = "test_multi_page.doc";

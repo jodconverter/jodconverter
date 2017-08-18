@@ -40,6 +40,7 @@ import org.jodconverter.office.TemporaryFileMaker;
  *
  * @see ConversionJobWithLoadPropertiesUnspecified
  */
+@SuppressWarnings("PMD.LawOfDemeter")
 public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
     implements ConversionJobWithLoadPropertiesUnspecified {
 

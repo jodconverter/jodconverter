@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class JsonDocumentFormatRegistryTest {
 
   /**
@@ -39,7 +40,7 @@ public class JsonDocumentFormatRegistryTest {
 
     try (final InputStream input =
         JsonDocumentFormatRegistry.class.getResourceAsStream("/former-document-formats.json")) {
-      JsonDocumentFormatRegistry registry = JsonDocumentFormatRegistry.create(input);
+      final JsonDocumentFormatRegistry registry = JsonDocumentFormatRegistry.create(input);
       Set<DocumentFormat> outputFormats = registry.getOutputFormats(DocumentFamily.TEXT);
       assertThat(outputFormats).hasSize(9);
       outputFormats = registry.getOutputFormats(DocumentFamily.SPREADSHEET);

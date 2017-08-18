@@ -22,7 +22,8 @@ package org.jodconverter.office;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DumpOfficeUrl {
+@SuppressWarnings("PMD.AvoidCatchingGenericException")
+public final class DumpOfficeUrl {
 
   private static final Logger logger = LoggerFactory.getLogger(DumpOfficeUrl.class);
 
@@ -72,5 +73,9 @@ public class DumpOfficeUrl {
     } catch (Exception ex) { // NOSONAR
       throw new IllegalArgumentException(ex);
     }
+  }
+
+  private DumpOfficeUrl() {
+    super();
   }
 }

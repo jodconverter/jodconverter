@@ -25,6 +25,11 @@ package org.jodconverter.office;
  */
 abstract class Retryable {
 
+  /** Initializes a new instance of the class. */
+  protected Retryable() {
+    super();
+  }
+
   /**
    * Attempt to execute the task, once.
    *

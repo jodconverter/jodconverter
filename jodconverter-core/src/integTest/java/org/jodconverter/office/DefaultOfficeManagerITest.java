@@ -26,12 +26,13 @@ import java.io.File;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class DefaultOfficeManagerITest {
 
   private static class SleepyOfficeTaskRunner implements Runnable {
 
-    final OfficeManager manager;
-    final long sleep;
+    private final OfficeManager manager;
+    private final long sleep;
     public OfficeException exception;
 
     SleepyOfficeTaskRunner(final OfficeManager manager, final long sleep) {
@@ -45,7 +46,7 @@ public class DefaultOfficeManagerITest {
         manager.execute(
             new OfficeTask() {
               @Override
-              public void execute(OfficeContext context) throws OfficeException {
+              public void execute(final OfficeContext context) throws OfficeException {
                 try {
                   Thread.sleep(sleep); // NOSONAR
                 } catch (InterruptedException e) {
@@ -274,7 +275,9 @@ public class DefaultOfficeManagerITest {
         .execute(
             new OfficeTask() {
               @Override
-              public void execute(OfficeContext context) throws OfficeException {}
+              public void execute(final OfficeContext context) throws OfficeException {
+                // This task won't do anything
+              }
             });
   }
 
@@ -291,7 +294,9 @@ public class DefaultOfficeManagerITest {
     manager.execute(
         new OfficeTask() {
           @Override
-          public void execute(OfficeContext context) throws OfficeException {}
+          public void execute(final OfficeContext context) throws OfficeException {
+            // The task won't do anything
+          }
         });
   }
 

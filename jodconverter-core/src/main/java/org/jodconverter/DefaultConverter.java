@@ -43,6 +43,7 @@ import org.jodconverter.task.DefaultConversionTask;
  * @see DocumentConverter
  * @see OfficeManager
  */
+@SuppressWarnings({"PMD.AccessorClassGeneration", "PMD.LawOfDemeter"})
 public class DefaultConverter extends AbstractConverter {
 
   /**
@@ -153,7 +154,9 @@ public class DefaultConverter extends AbstractConverter {
   public static final class Builder extends AbstractConverter.AbstractConverterBuilder<Builder> {
 
     // Private ctor so only DefaultConverter can create an instance of this builder.
-    private Builder() {}
+    private Builder() {
+      super();
+    }
 
     /**
      * Creates the converter that is specified by this builder.

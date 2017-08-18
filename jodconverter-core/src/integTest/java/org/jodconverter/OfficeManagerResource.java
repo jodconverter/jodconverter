@@ -38,13 +38,16 @@ import org.jodconverter.office.OfficeManager;
 public final class OfficeManagerResource extends ExternalResource {
 
   public static final TestRule INSTANCE = new OfficeManagerResource();
-  private static final Logger logger = LoggerFactory.getLogger(OfficeManagerResource.class);
+  static final Logger logger = LoggerFactory.getLogger(OfficeManagerResource.class);
 
-  private OfficeManager officeManager;
+  OfficeManager officeManager;
   private final AtomicBoolean started = new AtomicBoolean();
   private final AtomicInteger counter = new AtomicInteger(0);
 
-  private OfficeManagerResource() {}
+  // Private ctor.
+  private OfficeManagerResource() {
+    super();
+  }
 
   @Override
   protected void before() throws Throwable {

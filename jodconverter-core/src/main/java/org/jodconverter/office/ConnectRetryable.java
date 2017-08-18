@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Performs a connection to an office process. */
+@SuppressWarnings("PMD.LawOfDemeter")
 public class ConnectRetryable extends Retryable {
 
   private static final Integer EXIT_CODE_NEW_INSTALLATION = Integer.valueOf(81);
@@ -84,7 +85,7 @@ public class ConnectRetryable extends Retryable {
         throw new TemporaryException(connectionEx);
 
       } else {
-        throw new OfficeException("Office process died with exit code " + exitCode);
+        throw new OfficeException("Office process died with exit code " + exitCode, connectionEx);
       }
     }
   }

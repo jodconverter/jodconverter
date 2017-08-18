@@ -48,7 +48,14 @@ import org.jodconverter.office.OfficeException;
  *
  * @see AbstractOfficeTask
  */
+@SuppressWarnings({
+  "PMD.AtLeastOneConstructor",
+  "PMD.AvoidCatchingGenericException",
+  "PMD.LawOfDemeter"
+})
 public class AbstractOfficeTaskTest {
+
+  private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
   private static class FooOfficeTask extends AbstractOfficeTask {
 
@@ -57,7 +64,9 @@ public class AbstractOfficeTaskTest {
     }
 
     @Override
-    public void execute(final OfficeContext context) throws OfficeException {}
+    public void execute(final OfficeContext context) throws OfficeException {
+      // Do nothing here
+    }
   }
 
   private static class FooSourceSpecs extends AbstractSourceDocumentSpecs {
@@ -77,10 +86,10 @@ public class AbstractOfficeTaskTest {
     }
 
     @Override
-    public void onConsumed(File file) {}
+    public void onConsumed(final File file) {
+      // Do nothing here
+    }
   }
-
-  private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
   @Test
   public void loadDocument_CatchIllegalArgumentException_ThrowOfficeException() throws Exception {

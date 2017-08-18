@@ -29,6 +29,7 @@ import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
 /** Base class of a FilterChain. */
+@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
 public abstract class FilterChainBase implements FilterChain {
 
   private boolean readOnly;

@@ -48,10 +48,14 @@ import org.jodconverter.office.OfficeTask;
  *
  * @see OfficeTask
  */
+@SuppressWarnings({"PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
 public abstract class AbstractOfficeTask implements OfficeTask {
 
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
   protected static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
+
+  protected final SourceDocumentSpecs source;
+  protected Map<String, Object> defaultLoadProperties;
 
   static {
     final Map<String, Object> loadProperties = new HashMap<>();
@@ -67,9 +71,6 @@ public abstract class AbstractOfficeTask implements OfficeTask {
 
     return new HashMap<>(DEFAULT_LOAD_PROPERTIES);
   }
-
-  protected final SourceDocumentSpecs source;
-  protected Map<String, Object> defaultLoadProperties;
 
   /**
    * Creates a new task with the specified source document.

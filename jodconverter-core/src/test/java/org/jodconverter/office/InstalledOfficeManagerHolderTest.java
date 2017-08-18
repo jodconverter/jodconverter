@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import org.jodconverter.test.util.AssertUtil;
 
+@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class InstalledOfficeManagerHolderTest {
 
   @Test

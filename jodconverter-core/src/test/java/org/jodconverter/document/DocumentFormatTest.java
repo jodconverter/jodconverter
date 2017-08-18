@@ -23,11 +23,12 @@ import java.util.Set;
 
 import org.junit.Test;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class DocumentFormatTest {
 
-  private void toString(Set<DocumentFormat> formats) {
+  private void toString(final Set<DocumentFormat> formats) {
 
-    for (DocumentFormat format : formats) {
+    for (final DocumentFormat format : formats) {
       format.toString();
     }
   }

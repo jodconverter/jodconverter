@@ -32,6 +32,7 @@ import com.sun.star.document.UpdateDocMode;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
 public class SourceDocumentSpecsFromFileTest {
 
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";

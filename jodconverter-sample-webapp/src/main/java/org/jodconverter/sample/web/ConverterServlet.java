@@ -41,10 +41,16 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.DocumentConverter;
 
+@SuppressWarnings("PMD")
 public class ConverterServlet extends HttpServlet {
   private static final long serialVersionUID = -591469426224201748L;
 
   private static final Logger logger = LoggerFactory.getLogger(ConverterServlet.class);
+
+  /** Creates a new servlet. */
+  public ConverterServlet() {
+    super();
+  }
 
   @Override
   protected void doPost(final HttpServletRequest request, final HttpServletResponse response)

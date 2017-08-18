@@ -29,6 +29,7 @@ import com.sun.star.util.XRefreshable;
 import org.jodconverter.office.OfficeContext;
 
 /** This filter is used to refresh a document. */
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class RefreshFilter implements Filter {
 
   private static final Logger logger = LoggerFactory.getLogger(RefreshFilter.class);
@@ -55,6 +56,11 @@ public class RefreshFilter implements Filter {
    * @since 4.1.0
    */
   public static final FilterChain CHAIN = new UnmodifiableFilterChain(REFRESH);
+
+  /** Creates a new filter that will refresh a document. */
+  public RefreshFilter() {
+    super();
+  }
 
   @Override
   public void doFilter(

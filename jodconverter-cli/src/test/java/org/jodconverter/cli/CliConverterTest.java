@@ -46,6 +46,7 @@ import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.task.DefaultConversionTask;
 
+@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
 public class CliConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
@@ -61,6 +62,9 @@ public class CliConverterTest {
   private static final File SOURCE_DIR_TARGET_FILE_2 = new File(SOURCE_DIR, TARGET_FILENAME_2);
 
   private static File outputDir;
+
+  private OfficeManager officeManager;
+  private CliConverter converter;
 
   /**
    * Redirects the console output and also changes the security manager so we can trap the exit code
@@ -89,17 +93,13 @@ public class CliConverterTest {
     System.setSecurityManager(null);
   }
 
-  private OfficeManager officeManager;
-  private CliConverter converter;
-  private DocumentFormatRegistry registry;
-
   /** Setup the office manager before each test. */
   @Before
   public void setUp() {
 
     officeManager = mock(OfficeManager.class);
     InstalledOfficeManagerHolder.setInstance(officeManager);
-    registry = DefaultDocumentFormatRegistry.getInstance();
+    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
 
     converter = new CliConverter(registry);
 
@@ -114,7 +114,10 @@ public class CliConverterTest {
       final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
       converter.convert(
           new String[] {SOURCE_FILE_1.getPath()},
-          new String[] {targetFile1.getPath(), targetFile2.getPath()});
+          new String[] {targetFile1.getPath(), targetFile2.getPath()},
+          null,
+          false,
+          null);
 
     } catch (Exception ex) {
       assertThat(ex)
@@ -127,7 +130,8 @@ public class CliConverterTest {
   public void main_WithWithOutputDirAlreadyExistAsFile_ThrowsIllegalArgumentException() {
 
     try {
-      converter.convert(new String[] {SOURCE_FILE_1.getPath()}, "pdf", SOURCE_FILE_2.getPath());
+      converter.convert(
+          new String[] {SOURCE_FILE_1.getPath()}, "pdf", SOURCE_FILE_2.getPath(), false, null);
 
     } catch (Exception ex) {
       assertThat(ex)
@@ -139,7 +143,8 @@ public class CliConverterTest {
   @Test
   public void main_WithNullOutputDir_TaskExecutedIgnoringOutputDir() throws Exception {
 
-    converter.convert(new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()}, "pdf", null);
+    converter.convert(
+        new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()}, "pdf", null, false, null);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);
@@ -158,7 +163,8 @@ public class CliConverterTest {
   @Test
   public void convert_DirnamesToTarget_NoTaskExecuted() throws Exception {
 
-    converter.convert(new String[] {SOURCE_DIR}, new String[] {TARGET_FILENAME_1});
+    converter.convert(
+        new String[] {SOURCE_DIR}, new String[] {TARGET_FILENAME_1}, null, false, null);
     verify(officeManager, times(0)).execute(isA(DefaultConversionTask.class));
   }
 
@@ -167,7 +173,10 @@ public class CliConverterTest {
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
-        new String[] {outputDir.getPath(), outputDir.getPath()});
+        new String[] {outputDir.getPath(), outputDir.getPath()},
+        null,
+        false,
+        null);
     verify(officeManager, times(0)).execute(isA(DefaultConversionTask.class));
   }
 
@@ -179,7 +188,10 @@ public class CliConverterTest {
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
-        new String[] {targetFile1.getPath(), targetFile2.getPath()});
+        new String[] {targetFile1.getPath(), targetFile2.getPath()},
+        null,
+        false,
+        null);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);
@@ -205,7 +217,8 @@ public class CliConverterTest {
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
         outputDir.getPath(),
-        true);
+        true,
+        null);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);
@@ -234,7 +247,8 @@ public class CliConverterTest {
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
         outputDir.getPath(),
-        false);
+        false,
+        null);
 
     verify(officeManager, times(0)).execute(isA(DefaultConversionTask.class));
 
@@ -251,7 +265,9 @@ public class CliConverterTest {
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
-        outputDir.getPath());
+        outputDir.getPath(),
+        false,
+        null);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);
@@ -271,7 +287,11 @@ public class CliConverterTest {
   public void convert_FilenamesToFormat_TasksExecuted() throws Exception {
 
     converter.convert(
-        new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()}, TARGET_FORMAT);
+        new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
+        TARGET_FORMAT,
+        null,
+        false,
+        null);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);
@@ -296,7 +316,9 @@ public class CliConverterTest {
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         TARGET_FORMAT,
-        outputDir.getPath());
+        outputDir.getPath(),
+        false,
+        null);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);
@@ -325,7 +347,8 @@ public class CliConverterTest {
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         TARGET_FORMAT,
         outputDir.getPath(),
-        true);
+        true,
+        null);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);
@@ -354,7 +377,8 @@ public class CliConverterTest {
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         TARGET_FORMAT,
         outputDir.getPath(),
-        false);
+        false,
+        null);
 
     verify(officeManager, times(0)).execute(isA(DefaultConversionTask.class));
 
@@ -365,7 +389,7 @@ public class CliConverterTest {
   @Test
   public void convert_DirWithWildcard_TasksExecuted() throws Exception {
 
-    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf");
+    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", null, false, null);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);
@@ -392,7 +416,7 @@ public class CliConverterTest {
   @Test
   public void convert_DirWithWildcardAndOutputDir_TasksExecuted() throws Exception {
 
-    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", outputDir.getPath());
+    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", outputDir.getPath(), false, null);
 
     final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
     final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
@@ -424,7 +448,7 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      converter.convert(new String[] {SOURCE_DIR + "unexisting_dir/*"}, "pdf");
+      converter.convert(new String[] {SOURCE_DIR + "unexisting_dir/*"}, "pdf", null, false, null);
     } catch (Exception ex) {
       final String capturedlog = SystemLogHandler.stopCapture();
       assertThat(capturedlog)

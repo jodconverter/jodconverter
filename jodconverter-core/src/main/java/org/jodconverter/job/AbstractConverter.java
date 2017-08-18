@@ -39,6 +39,7 @@ import org.jodconverter.office.TemporaryFileMaker;
  *
  * @see DocumentSpecs
  */
+@SuppressWarnings("PMD.LawOfDemeter")
 public abstract class AbstractConverter implements DocumentConverter {
 
   private static final boolean DEFAULT_CLOSE_STREAM = true;
@@ -128,7 +129,9 @@ public abstract class AbstractConverter implements DocumentConverter {
     protected Map<String, Object> defaultLoadProperties;
 
     // Protected ctor so only subclasses can initialize an instance of this builder.
-    protected AbstractConverterBuilder() {}
+    protected AbstractConverterBuilder() {
+      super();
+    }
 
     /**
      * Specifies the {@link OfficeManager} the converter will use to execute office tasks.

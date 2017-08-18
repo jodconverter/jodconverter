@@ -45,13 +45,18 @@ class OfficeManagerPoolEntry implements OfficeManager {
 
   private static final Logger logger = LoggerFactory.getLogger(OfficeManagerPoolEntry.class);
 
-  private final OfficeManagerPoolEntryConfig config;
-  private final OfficeProcessManager officeProcessManager;
-  private final SuspendableThreadPoolExecutor taskExecutor;
+  // The following fields are declared package/private so the compiler won't
+  // have to generate accessor methods with package-private visibility
+  // See:
+  // https://pmd.github.io/pmd-5.8.1/pmd-java/rules/java/design.html#AccessorMethodGeneration
 
-  private Future<?> currentTask;
-  private final AtomicInteger taskCount = new AtomicInteger(0);
-  private final AtomicBoolean disconnectExpected = new AtomicBoolean(false);
+  final OfficeManagerPoolEntryConfig config;
+  final OfficeProcessManager officeProcessManager;
+  final SuspendableThreadPoolExecutor taskExecutor;
+
+  Future<?> currentTask;
+  final AtomicInteger taskCount = new AtomicInteger(0);
+  final AtomicBoolean disconnectExpected = new AtomicBoolean(false);
 
   /**
    * This connection event listener will be notified when a connection is established or closed/lost

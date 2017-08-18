@@ -34,6 +34,11 @@ import org.jodconverter.process.ProcessManager;
  * @deprecated Use {@link DefaultOfficeManager#builder()} instead.
  */
 @Deprecated
+@SuppressWarnings({
+  "PMD.AtLeastOneConstructor",
+  "PMD.AvoidInstantiatingObjectsInLoops",
+  "PMD.LawOfDemeter"
+})
 public class DefaultOfficeManagerBuilder {
 
   private static final OfficeConnectionProtocol DEFAULT_CONNECTION_PROTOCOL =
@@ -85,12 +90,12 @@ public class DefaultOfficeManagerBuilder {
     final OfficeUrl[] officeUrls = new OfficeUrl[numInstances];
     int i = 0;
     if (pipeNames != null) {
-      for (String pipeName : pipeNames) {
+      for (final String pipeName : pipeNames) {
         officeUrls[i++] = new OfficeUrl(pipeName);
       }
     }
     if (portNumbers != null) {
-      for (int portNumber : portNumbers) {
+      for (final int portNumber : portNumbers) {
         officeUrls[i++] = new OfficeUrl(portNumber);
       }
     }
@@ -125,7 +130,7 @@ public class DefaultOfficeManagerBuilder {
     // Build the office URLs
     final OfficeUrl[] officeUrls = buildOfficeUrls();
 
-    OfficeManagerPoolConfig config =
+    final OfficeManagerPoolConfig config =
         new OfficeManagerPoolConfig(officeHome, workingDir, processManager);
     config.setRunAsArgs(runAsArgs);
     config.setTemplateProfileDir(templateProfileDir);
@@ -207,10 +212,7 @@ public class DefaultOfficeManagerBuilder {
    */
   public DefaultOfficeManagerBuilder setOfficeHome(final String officeHome) {
 
-    if (StringUtils.isNotBlank(officeHome)) {
-      return setOfficeHome(new File(officeHome));
-    }
-    return this;
+    return StringUtils.isBlank(officeHome) ? this : setOfficeHome(new File(officeHome));
   }
 
   /**
@@ -240,17 +242,16 @@ public class DefaultOfficeManagerBuilder {
    */
   public DefaultOfficeManagerBuilder setProcessManager(final String processManagerClass) {
 
-    if (StringUtils.isNotBlank(processManagerClass)) {
-      try {
-        return setProcessManager((ProcessManager) Class.forName(processManagerClass).newInstance());
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-        throw new IllegalArgumentException(
-            "Unable to create a Process manager from the specified class name: "
-                + processManagerClass,
-            ex);
-      }
+    try {
+      return StringUtils.isBlank(processManagerClass)
+          ? this
+          : setProcessManager((ProcessManager) Class.forName(processManagerClass).newInstance());
+    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
+      throw new IllegalArgumentException(
+          "Unable to create a Process manager from the specified class name: "
+              + processManagerClass,
+          ex);
     }
-    return this;
   }
 
   /**
@@ -295,10 +296,7 @@ public class DefaultOfficeManagerBuilder {
    */
   public DefaultOfficeManagerBuilder setWorkingDir(final String workingDir) {
 
-    if (StringUtils.isNotBlank(workingDir)) {
-      return setWorkingDir(new File(workingDir));
-    }
-    return this;
+    return StringUtils.isBlank(workingDir) ? this : setWorkingDir(new File(workingDir));
   }
 
   /**
@@ -321,10 +319,9 @@ public class DefaultOfficeManagerBuilder {
    */
   public DefaultOfficeManagerBuilder setTemplateProfileDir(final String templateProfileDir) {
 
-    if (StringUtils.isNotBlank(templateProfileDir)) {
-      return setTemplateProfileDir(new File(templateProfileDir));
-    }
-    return this;
+    return StringUtils.isBlank(templateProfileDir)
+        ? this
+        : setTemplateProfileDir(new File(templateProfileDir));
   }
 
   /**

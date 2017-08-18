@@ -39,9 +39,13 @@ import org.jodconverter.process.ProcessManager;
  * Default {@link OfficeManager} implementation that uses a pool of office processes to execute
  * conversion tasks.
  */
+@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
 public final class DefaultOfficeManager extends OfficeManagerPool implements TemporaryFileMaker {
 
   private static final Logger logger = LoggerFactory.getLogger(DefaultOfficeManager.class);
+
+  private final File tempDir;
+  private final AtomicLong tempFileCounter;
 
   /**
    * Creates a new builder instance.
@@ -83,9 +87,9 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
     }
   }
 
-  private static File makeTempDir(File workingDir) {
+  private static File makeTempDir(final File workingDir) {
 
-    File tempDir = new File(workingDir, "jodconverter_" + UUID.randomUUID().toString());
+    final File tempDir = new File(workingDir, "jodconverter_" + UUID.randomUUID().toString());
     tempDir.mkdir();
     if (!tempDir.isDirectory()) {
       throw new IllegalStateException(String.format("Cannot create temp directory: %s", tempDir));
@@ -94,7 +98,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
   }
 
   @Override
-  public File makeTemporaryFile(String extension) {
+  public File makeTemporaryFile(final String extension) {
     return new File(tempDir, "tempfile_" + tempFileCounter.getAndIncrement() + "." + extension);
   }
 
@@ -110,9 +114,6 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
     }
   }
 
-  private final File tempDir;
-  private final AtomicLong tempFileCounter;
-
   private DefaultOfficeManager(final OfficeUrl[] officeUrls, final OfficeManagerPoolConfig config) {
     super(officeUrls, config);
 
@@ -127,7 +128,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
    */
   public static final class Builder {
 
-    private boolean install = false;
+    private boolean install;
 
     // OfficeProcess
     private String[] pipeNames;
@@ -150,6 +151,11 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
     // OfficeManagerPool
     private long taskQueueTimeout = OfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
 
+    // Private ctor so only DefaultOfficeManager can initialize an instance of this builder.
+    private Builder() {
+      super();
+    }
+
     private OfficeUrl[] buildOfficeUrls() {
 
       // Assign default value if no pipe names or port numbers have been specified.
@@ -170,12 +176,12 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
       final OfficeUrl[] officeUrls = new OfficeUrl[numInstances];
       int i = 0;
       if (pipeNames != null) {
-        for (String pipeName : pipeNames) {
+        for (final String pipeName : pipeNames) {
           officeUrls[i++] = new OfficeUrl(pipeName);
         }
       }
       if (portNumbers != null) {
-        for (int portNumber : portNumbers) {
+        for (final int portNumber : portNumbers) {
           officeUrls[i++] = new OfficeUrl(portNumber);
         }
       }
@@ -210,7 +216,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
       // Build the office URLs
       final OfficeUrl[] officeUrls = buildOfficeUrls();
 
-      OfficeManagerPoolConfig config =
+      final OfficeManagerPoolConfig config =
           new OfficeManagerPoolConfig(officeHome, workingDir, processManager);
       config.setRunAsArgs(runAsArgs);
       config.setTemplateProfileDir(templateProfileDir);
@@ -221,7 +227,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
       config.setMaxTasksPerProcess(maxTasksPerProcess);
       config.setTaskQueueTimeout(taskQueueTimeout);
 
-      DefaultOfficeManager manager = new DefaultOfficeManager(officeUrls, config);
+      final DefaultOfficeManager manager = new DefaultOfficeManager(officeUrls, config);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
@@ -298,10 +304,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
      */
     public Builder officeHome(final String officeHome) {
 
-      if (StringUtils.isNotBlank(officeHome)) {
-        return officeHome(new File(officeHome));
-      }
-      return this;
+      return StringUtils.isBlank(officeHome) ? this : officeHome(new File(officeHome));
     }
 
     /**
@@ -332,17 +335,16 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
      */
     public Builder processManager(final String processManagerClass) {
 
-      if (StringUtils.isNotBlank(processManagerClass)) {
-        try {
-          return processManager((ProcessManager) Class.forName(processManagerClass).newInstance());
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-          throw new IllegalArgumentException(
-              "Unable to create a Process manager from the specified class name: "
-                  + processManagerClass,
-              ex);
-        }
+      try {
+        return StringUtils.isBlank(processManagerClass)
+            ? this
+            : processManager((ProcessManager) Class.forName(processManagerClass).newInstance());
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
+        throw new IllegalArgumentException(
+            "Unable to create a Process manager from the specified class name: "
+                + processManagerClass,
+            ex);
       }
-      return this;
     }
 
     /**
@@ -387,10 +389,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
      */
     public Builder workingDir(final String workingDir) {
 
-      if (StringUtils.isNotBlank(workingDir)) {
-        return workingDir(new File(workingDir));
-      }
-      return this;
+      return StringUtils.isBlank(workingDir) ? this : workingDir(new File(workingDir));
     }
 
     /**
@@ -413,10 +412,9 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
      */
     public Builder templateProfileDir(final String templateProfileDir) {
 
-      if (StringUtils.isNotBlank(templateProfileDir)) {
-        return templateProfileDir(new File(templateProfileDir));
-      }
-      return this;
+      return StringUtils.isBlank(templateProfileDir)
+          ? this
+          : templateProfileDir(new File(templateProfileDir));
     }
 
     /**

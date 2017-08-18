@@ -44,12 +44,15 @@ import org.jodconverter.test.util.AssertUtil;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(DefaultConverter.class)
+@SuppressWarnings("PMD.LawOfDemeter")
 public class JodConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
   private static File outputDir;
+
+  private DefaultConverter defaultConverter;
 
   /** Creates an output test directory just once. */
   @BeforeClass
@@ -65,8 +68,6 @@ public class JodConverterTest {
 
     FileUtils.deleteQuietly(outputDir);
   }
-
-  private DefaultConverter defaultConverter;
 
   /** Setup the office manager before each test. */
   @Before

@@ -35,6 +35,7 @@ import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
 /** This filter is used to replace text in a document. */
+@SuppressWarnings("PMD.LawOfDemeter")
 public class TextReplacerFilter implements Filter {
 
   // This class has been inspired by this example:

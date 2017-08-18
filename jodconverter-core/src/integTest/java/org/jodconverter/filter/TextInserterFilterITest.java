@@ -30,6 +30,7 @@ import org.jodconverter.BaseOfficeITest;
 import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.filter.text.TextInserterFilter;
 
+@SuppressWarnings("PMD.LawOfDemeter")
 public class TextInserterFilterITest extends BaseOfficeITest {
 
   private static final String SOURCE_FILENAME = "test.doc";

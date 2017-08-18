@@ -38,6 +38,7 @@ import org.jodconverter.process.ProcessQuery;
 /**
  * An OfficeProcess represents an instance of an office program that is executed by JODConverter.
  */
+@SuppressWarnings("PMD.LawOfDemeter")
 class OfficeProcess {
 
   private static final Logger logger = LoggerFactory.getLogger(OfficeProcess.class);
@@ -223,10 +224,7 @@ class OfficeProcess {
    */
   public boolean isRunning() {
 
-    if (process == null) {
-      return false;
-    }
-    return getExitCode() == null;
+    return process == null ? false : getExitCode() == null;
   }
 
   /**

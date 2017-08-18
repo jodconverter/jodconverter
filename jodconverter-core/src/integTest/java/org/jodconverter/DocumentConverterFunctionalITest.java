@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import org.jodconverter.filter.RefreshFilter;
 
+@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
 public class DocumentConverterFunctionalITest extends BaseOfficeITest {
 
   private static final int MAX_RUNNING_THREADS = 10;

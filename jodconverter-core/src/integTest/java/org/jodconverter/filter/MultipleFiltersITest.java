@@ -31,6 +31,7 @@ import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.filter.text.TextReplacerFilter;
 import org.jodconverter.office.OfficeException;
 
+@SuppressWarnings("PMD.LawOfDemeter")
 public class MultipleFiltersITest extends BaseOfficeITest {
 
   private static final String SOURCE_FILENAME = "test_replace.doc";

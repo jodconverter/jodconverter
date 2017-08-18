@@ -24,6 +24,7 @@ import com.sun.star.lang.XComponent;
 import org.jodconverter.office.OfficeContext;
 
 /** Represents a step where a document is transformed. */
+@SuppressWarnings("PMD.SignatureDeclareThrowsException")
 public interface Filter {
 
   /**

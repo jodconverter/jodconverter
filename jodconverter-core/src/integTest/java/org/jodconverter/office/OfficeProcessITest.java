@@ -27,6 +27,7 @@ import java.io.File;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
+@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
 public class OfficeProcessITest {
 
   private static OfficeProcess startOfficeProcess(final int port, final OfficeProcessConfig config)

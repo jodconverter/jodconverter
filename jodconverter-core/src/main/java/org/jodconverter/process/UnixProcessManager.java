@@ -34,6 +34,11 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class UnixProcessManager extends AbstractProcessManager {
 
+  private static final Pattern PS_OUTPUT_LINE =
+      Pattern.compile("^\\s*(?<Pid>\\d+)\\s+(?<CommanLine>.*)$");
+
+  private String[] runAsArgs;
+
   // This class is required in order to create the default UnixProcessManager
   // only on demand, as explained by the Initialization-on-demand holder idiom:
   // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
@@ -49,11 +54,6 @@ public class UnixProcessManager extends AbstractProcessManager {
   public static UnixProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
-
-  private static final Pattern PS_OUTPUT_LINE =
-      Pattern.compile("^\\s*(?<Pid>\\d+)\\s+(?<CommanLine>.*)$");
-
-  private String[] runAsArgs;
 
   @Override
   protected List<String> execute(final String[] cmdarray) throws IOException {
