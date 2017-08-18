@@ -21,14 +21,13 @@ package org.jodconverter.document;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.EnumMap;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import org.jodconverter.util.JsonUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office
@@ -69,45 +68,23 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
   // Fill the registry from the given JSON source
   protected void readJsonArray(final String source) {
 
-    final JSONArray array = new JSONArray(source);
-    for (int i = 0; i < array.length(); i++) {
+    Gson gson = new Gson();
 
-      final JSONObject jsonFormat = array.getJSONObject(i);
+    // Deserialization
+    Type collectionType = new TypeToken<Collection<DocumentFormat>>() {}.getType();
+    Collection<DocumentFormat> formats = gson.fromJson(source, collectionType);
 
-      final String name = jsonFormat.getString("name");
-      final String extension = jsonFormat.getString("extension");
-      final String mediaType = jsonFormat.getString("mediaType");
-
-      DocumentFamily inputFamily = null;
-      if (jsonFormat.has("inputFamily")) {
-        inputFamily = DocumentFamily.valueOf(jsonFormat.getString("inputFamily"));
-      }
-
-      Map<String, Object> loadProperties = null;
-      if (jsonFormat.has("loadProperties")) {
-        loadProperties = JsonUtils.toMap(jsonFormat.getJSONObject("loadProperties"));
-      }
-
-      JSONObject jsonStoreProperties = null;
-      if (jsonFormat.has("storeProperties")) {
-        jsonStoreProperties = jsonFormat.getJSONObject("storeProperties");
-      }
-      // Be backward compatible
-      if (jsonFormat.has("storePropertiesByFamily")) {
-        jsonStoreProperties = jsonFormat.getJSONObject("storePropertiesByFamily");
-      }
-      Map<DocumentFamily, Map<String, Object>> storeProperties = null;
-      if (jsonStoreProperties != null) {
-        storeProperties = new EnumMap<>(DocumentFamily.class);
-        for (final String key : JSONObject.getNames(jsonStoreProperties)) {
-          storeProperties.put(
-              DocumentFamily.valueOf(key), JsonUtils.toMap(jsonStoreProperties.getJSONObject(key)));
-        }
-      }
-
+    // Fill the registry with loaded formats. Note that we have to use
+    // the constructor in order top create read only formats.
+    for (final DocumentFormat format : formats) {
       addFormat(
           new DocumentFormat(
-              name, extension, mediaType, inputFamily, loadProperties, storeProperties));
+              format.getName(),
+              format.getExtension(),
+              format.getMediaType(),
+              format.getInputFamily(),
+              format.getLoadProperties(),
+              format.getStoreProperties()));
     }
   }
 }

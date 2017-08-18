@@ -35,7 +35,7 @@ ext {
     slf4j_log4j                        : "org.slf4j:slf4j-log4j12:$slf4jVersion",
 
     // Other Libraries
-    json_java                          : "org.json:json:$jsonJavaVersion",
+    gson                               : "com.google.code.gson:gson:$gsonVersion",
     servlet_api                        : "javax.servlet:servlet-api:$servletApiVersion",
 
     // Tests

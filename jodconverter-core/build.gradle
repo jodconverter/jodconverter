@@ -3,7 +3,7 @@ description = 'JODConverter - Core'
 dependencies {
   compile libraries.commons_io
   compile libraries.commons_lang3
-  compile libraries.json_java
+  compile libraries.gson
   compile libraries.office_juh
   compile libraries.office_jurt
   compile libraries.office_ridl

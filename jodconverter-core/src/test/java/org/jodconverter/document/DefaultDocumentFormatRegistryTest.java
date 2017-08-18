@@ -188,4 +188,11 @@ public class DefaultDocumentFormatRegistryTest {
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/png"))
         .isEqualTo(DefaultDocumentFormatRegistry.PNG);
   }
+  
+  @Test
+  public void getFormatX_ReturnReadOnlyFormat() {
+
+    final DocumentFormat format = DefaultDocumentFormatRegistry.PDF;
+    format.getLoadProperties().put("newKey", "newValue");
+  }
 }

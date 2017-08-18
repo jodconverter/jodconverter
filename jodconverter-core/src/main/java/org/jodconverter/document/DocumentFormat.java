@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.google.gson.annotations.SerializedName;
+
 /** Contains the required information used to deal with a specific document format . */
 public class DocumentFormat {
 
@@ -34,6 +36,11 @@ public class DocumentFormat {
   private final String mediaType;
   private final DocumentFamily inputFamily;
   private final Map<String, Object> loadProperties;
+
+  @SerializedName(
+    value = "storeProperties",
+    alternate = {"storePropertiesByFamily"} // Be backward compatible
+  )
   private final Map<DocumentFamily, Map<String, Object>> storeProperties;
 
   /**
