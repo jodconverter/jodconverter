@@ -28,6 +28,37 @@ import org.junit.Test;
 
 public class DefaultOfficeManagerITest {
 
+  private static class SleepyOfficeTaskRunner implements Runnable {
+
+    final OfficeManager manager;
+    final long sleep;
+    public OfficeException exception;
+
+    SleepyOfficeTaskRunner(final OfficeManager manager, final long sleep) {
+      this.manager = manager;
+      this.sleep = sleep;
+    }
+
+    @Override
+    public void run() {
+      try {
+        manager.execute(
+            new OfficeTask() {
+              @Override
+              public void execute(OfficeContext context) throws OfficeException {
+                try {
+                  Thread.sleep(sleep); // NOSONAR
+                } catch (InterruptedException e) {
+                  Thread.currentThread().interrupt();
+                }
+              }
+            });
+      } catch (OfficeException e) {
+        exception = e;
+      }
+    }
+  }
+
   @Test
   public void install_ShouldSetInstalledOfficeManagerHolder() {
 
@@ -227,7 +258,7 @@ public class DefaultOfficeManagerITest {
   @Test(expected = IllegalStateException.class)
   public void start_StartTwice_ThrowIllegalStateException() throws Exception {
 
-    DefaultOfficeManager manager = DefaultOfficeManager.make();
+    final DefaultOfficeManager manager = DefaultOfficeManager.make();
     try {
       manager.start();
       manager.start();
@@ -250,7 +281,7 @@ public class DefaultOfficeManagerITest {
   @Test(expected = IllegalStateException.class)
   public void execute_WhenTerminated_ThrowIllegalStateException() throws Exception {
 
-    DefaultOfficeManager manager = DefaultOfficeManager.make();
+    final DefaultOfficeManager manager = DefaultOfficeManager.make();
     try {
       manager.start();
     } finally {
@@ -262,5 +293,39 @@ public class DefaultOfficeManagerITest {
           @Override
           public void execute(OfficeContext context) throws OfficeException {}
         });
+  }
+
+  @Test
+  public void execute_TaskQueueTimeout_ThrowOfficeException() throws Exception {
+
+    final DefaultOfficeManager manager =
+        DefaultOfficeManager.builder().taskQueueTimeout(1000L).build();
+    try {
+      manager.start();
+
+      // Create threads that will both execute a task taking 2 sec to execute.
+      final SleepyOfficeTaskRunner r1 = new SleepyOfficeTaskRunner(manager, 2000L);
+      final SleepyOfficeTaskRunner r2 = new SleepyOfficeTaskRunner(manager, 2000L);
+      final Thread t1 = new Thread(r1);
+      final Thread t2 = new Thread(r2);
+
+      // Start the threads.
+      t1.start();
+      Thread.sleep(250L); // NOSONAR
+      t2.start();
+
+      // Wait for thread to complete
+      t1.join();
+      t2.join();
+
+      // Here, the second runnable should contain the task queue timeout exception
+      assertThat(r1.exception).isNull();
+      assertThat(r2.exception)
+          .isExactlyInstanceOf(OfficeException.class)
+          .hasMessageContaining("No office manager available after 1000 millisec");
+
+    } finally {
+      manager.stop();
+    }
   }
 }
