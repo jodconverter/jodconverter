@@ -21,23 +21,25 @@ package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 @SuppressWarnings("PMD.LawOfDemeter")
 public class ExternalOfficeManagerITest {
 
-  // TODO test auto-reconnection
+  private static OfficeProcess officeProcess;
 
   /**
-   * Test the auto-reconnection...
+   * Starts am office process just once.
    *
-   * @throws Exception if an error occurs.
+   * @throws Exception If an error occurs.
    */
-  @Test
-  public void executeTask() throws Exception {
+  @BeforeClass
+  public static void setUpClass() throws Exception {
 
     final OfficeUrl officeUrl = new OfficeUrl(2002);
-    final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
+    officeProcess = new OfficeProcess(officeUrl);
     officeProcess.start();
     Thread.sleep(2000); // NOSONAR
     final Integer exitCode = officeProcess.getExitCode();
@@ -45,6 +47,28 @@ public class ExternalOfficeManagerITest {
       officeProcess.start(true);
       Thread.sleep(2000); // NOSONAR
     }
+  }
+
+  /**
+   * Stops the office process once the tests are all done.
+   *
+   * @throws Exception If an error occurs.
+   */
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+
+    officeProcess.forciblyTerminate(1000, 5000);
+  }
+
+  // TODO test auto-reconnection
+
+  /**
+   * Test connection with connect on start on.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void execute_WithConnectOnStart_TaskExecutedSuccessfully() throws Exception {
 
     final OfficeManager manager =
         new ExternalOfficeManagerBuilder()
@@ -61,7 +85,50 @@ public class ExternalOfficeManagerITest {
 
     } finally {
       OfficeUtils.stopQuietly(manager);
-      officeProcess.forciblyTerminate(1000, 5000);
     }
+  }
+
+  /**
+   * Test connection with connect on start off.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void execute_WithoutConnectOnStart_TaskExecutedSuccessfully() throws Exception {
+
+    final OfficeManager manager =
+        new ExternalOfficeManagerBuilder()
+            .setConnectionProtocol(OfficeConnectionProtocol.SOCKET)
+            .setPortNumber(2002)
+            .setConnectOnStart(false)
+            .build();
+    manager.start();
+    try {
+
+      final MockOfficeTask task = new MockOfficeTask();
+      manager.execute(task);
+      assertThat(task.isCompleted()).isTrue();
+
+    } finally {
+      OfficeUtils.stopQuietly(manager);
+    }
+  }
+
+  /**
+   * Test connection without an office process.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test(expected = OfficeException.class)
+  public void connect_WithoutOfficeProcess_ThrowOfficeException() throws Exception {
+
+    final OfficeManager manager =
+        new ExternalOfficeManagerBuilder()
+            .setConnectionProtocol(OfficeConnectionProtocol.SOCKET)
+            .setPortNumber(2003)
+            .setConnectOnStart(true)
+            .setConnectTimeout(2000L)
+            .build();
+    manager.start();
   }
 }

@@ -27,6 +27,7 @@ public class ExternalOfficeManagerBuilder {
   private int portNumber = 2002;
   private String pipeName = "office";
   private boolean connectOnStart = true;
+  private long connectTimeout = 30000L;
 
   /**
    * Builds a new {@link ExternalOfficeManager}.
@@ -39,7 +40,7 @@ public class ExternalOfficeManagerBuilder {
         connectionProtocol == OfficeConnectionProtocol.SOCKET
             ? new OfficeUrl(portNumber)
             : new OfficeUrl(pipeName);
-    return new ExternalOfficeManager(officeUrl, connectOnStart);
+    return new ExternalOfficeManager(officeUrl, connectOnStart, connectTimeout);
   }
 
   /**
@@ -65,6 +66,18 @@ public class ExternalOfficeManagerBuilder {
   public ExternalOfficeManagerBuilder setConnectOnStart(final boolean connectOnStart) {
 
     this.connectOnStart = connectOnStart;
+    return this;
+  }
+
+  /**
+   * Sets the timeout after which a connection attempt will fail.
+   *
+   * @param connectTimeout The timeout to use.
+   * @return The updated configuration.
+   */
+  public ExternalOfficeManagerBuilder setConnectTimeout(final long connectTimeout) {
+
+    this.connectTimeout = connectTimeout;
     return this;
   }
 

@@ -39,30 +39,34 @@ package org.jodconverter.office;
 @SuppressWarnings("PMD.AvoidCatchingGenericException")
 class ExternalOfficeManager implements OfficeManager {
 
-  public static final long DEFAULT_RETRY_TIMEOUT = 30000L; // 30 minutes
   public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.
 
   private final OfficeConnection connection;
   private final boolean connectOnStart;
+  private final long connectTimeout;
 
   /**
-   * Constructs a new instance of the class.
+   * Constructs a new instance of the class with the specified arguments.
    *
    * @param officeUrl The office URL.
    * @param connectOnStart Should a connection be attempted on {@link #start()}? Default is
    *     <em>true</em>. If <em>false</em>, a connection will only be attempted the first time an
    *     {@link OfficeTask} is executed.
+   * @param connectTimeout Timeout after which a connection attempt will fail.
    */
-  public ExternalOfficeManager(final OfficeUrl officeUrl, final boolean connectOnStart) {
+  public ExternalOfficeManager(
+      final OfficeUrl officeUrl, final boolean connectOnStart, final long connectTimeout) {
+    super();
 
     connection = new OfficeConnection(officeUrl);
     this.connectOnStart = connectOnStart;
+    this.connectTimeout = connectTimeout;
   }
 
   private void connect() throws OfficeException {
 
     try {
-      new ConnectRetryable(connection).execute(DEFAULT_RETRY_INTERVAL, DEFAULT_RETRY_TIMEOUT);
+      new ConnectRetryable(connection).execute(DEFAULT_RETRY_INTERVAL, connectTimeout);
 
     } catch (Exception ex) {
       throw new OfficeException("Could not establish connection to external office process", ex);
@@ -73,7 +77,7 @@ class ExternalOfficeManager implements OfficeManager {
   public void execute(final OfficeTask task) throws OfficeException {
 
     synchronized (connection) {
-      if (!connection.isConnected()) {
+      if (!isRunning()) {
         connect();
       }
       task.execute(connection);
@@ -99,7 +103,7 @@ class ExternalOfficeManager implements OfficeManager {
   public void stop() {
 
     synchronized (connection) {
-      if (connection.isConnected()) {
+      if (isRunning()) {
         connection.disconnect();
       }
     }
