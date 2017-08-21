@@ -19,10 +19,25 @@
 
 package org.jodconverter.task;
 
-import org.junit.Test;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
+import com.sun.star.uno.UnoRuntime;
+
+import org.jodconverter.office.OfficeException;
 import org.jodconverter.test.util.AssertUtil;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(UnoRuntime.class)
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class OfficeTaskUtilsTest {
 
@@ -30,5 +45,25 @@ public class OfficeTaskUtilsTest {
   public void ctor_ClassWellDefined() throws Exception {
 
     AssertUtil.assertUtilityClassWellDefined(OfficeTaskUtils.class);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void getDocumentFamily_WithNullDocument_ThrowNullPointerException()
+      throws OfficeException {
+
+    OfficeTaskUtils.getDocumentFamily(null);
+  }
+
+  @Test(expected = OfficeException.class)
+  public void getDocumentFamily_WithoutValidDocument_ThrowOfficeException() throws OfficeException {
+
+    final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+    given(serviceInfo.supportsService(isA(String.class))).willReturn(false);
+
+    final XComponent document = mock(XComponent.class);
+    mockStatic(UnoRuntime.class);
+    given(UnoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+
+    OfficeTaskUtils.getDocumentFamily(document);
   }
 }

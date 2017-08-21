@@ -269,6 +269,24 @@ public class DefaultOfficeManagerITest {
   }
 
   @Test(expected = IllegalStateException.class)
+  public void start_WhenTerminated_ThrowIllegalStateException() throws Exception {
+
+    final DefaultOfficeManager manager = DefaultOfficeManager.make();
+    manager.start();
+    manager.stop();
+    manager.start();
+  }
+
+  @Test
+  public void stop_WhenTerminated_SecondStopIgnored() throws Exception {
+
+    final DefaultOfficeManager manager = DefaultOfficeManager.make();
+    manager.start();
+    manager.stop();
+    manager.stop();
+  }
+
+  @Test(expected = IllegalStateException.class)
   public void execute_WithoutBeeingStared_ThrowIllegalStateException() throws Exception {
 
     DefaultOfficeManager.make()

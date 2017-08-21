@@ -21,13 +21,13 @@ package org.jodconverter.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import org.junit.Test;
 
 import org.jodconverter.test.util.AssertUtil;
 
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class DefaultDocumentFormatRegistryTest {
 
   @Test
@@ -191,10 +191,27 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.PNG);
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void getFormatX_ReturnReadOnlyFormat() {
 
-    final DocumentFormat format = DefaultDocumentFormatRegistry.PDF;
-    format.getLoadProperties().put("newKey", "newValue");
+    DocumentFormat format = DefaultDocumentFormatRegistry.CSV;
+
+    try {
+      format.getLoadProperties().put("newKey", "newValue");
+    } catch (Exception ex) {
+      assertThat(ex).isExactlyInstanceOf(UnsupportedOperationException.class);
+    }
+
+    try {
+      format.getStoreProperties().put(DocumentFamily.DRAWING, new HashMap<String, Object>());
+    } catch (Exception ex) {
+      assertThat(ex).isExactlyInstanceOf(UnsupportedOperationException.class);
+    }
+
+    try {
+      format.getStoreProperties(DocumentFamily.SPREADSHEET).put("newKey", "newValue");
+    } catch (Exception ex) {
+      assertThat(ex).isExactlyInstanceOf(UnsupportedOperationException.class);
+    }
   }
 }

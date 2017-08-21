@@ -52,6 +52,8 @@ public class DefaultConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
+  private static final File SOURCE_FILE_UNSUPPORTED_EXTENSION =
+      new File("src/test/resources/documents/test.unsupportedext");
 
   private static File outputDir;
 
@@ -85,6 +87,17 @@ public class DefaultConverterTest {
     final File targetFile = new File(outputDir, "test.pdf");
 
     DefaultConverter.make().convert(SOURCE_FILE).to(targetFile).execute();
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void convert_WithoutSourceFileFormat_ThrowsNullPointerException() throws Exception {
+
+    final File targetFile = new File(outputDir, "test.pdf");
+
+    DefaultConverter.make(officeManager)
+        .convert(SOURCE_FILE_UNSUPPORTED_EXTENSION)
+        .to(targetFile)
+        .execute();
   }
 
   @Test

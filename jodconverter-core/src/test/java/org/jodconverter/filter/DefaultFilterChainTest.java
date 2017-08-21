@@ -43,6 +43,17 @@ import org.jodconverter.office.OfficeException;
 })
 public class DefaultFilterChainTest {
 
+  /** Tests that a DefaultFilterChain is created empty by default. */
+  @Test
+  @SuppressWarnings("unchecked")
+  public void create_WithoutFilters_ShouldBeEmpty() throws IllegalAccessException {
+
+    final DefaultFilterChain chain = new DefaultFilterChain();
+
+    final List<Filter> filters = (List<Filter>) FieldUtils.readField(chain, "filters", true);
+    assertThat(filters).hasSize(0);
+  }
+
   /** Tests that a DefaultFilterChain.addFilter works as expected. */
   @Test
   @SuppressWarnings("unchecked")

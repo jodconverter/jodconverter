@@ -310,15 +310,16 @@ public class OfficeManagerPoolEntryITest {
       Thread.sleep(2000); // NOSONAR
     }
 
-    final ExternalOfficeManager manager = new ExternalOfficeManager(officeUrl, true);
-    manager.start();
+    final OfficeManager manager = new ExternalOfficeManagerBuilder().setPortNumber(2002).build();
+    try {
+      manager.start();
 
-    final MockOfficeTask task = new MockOfficeTask();
-    manager.execute(task);
-    assertThat(task.isCompleted()).isTrue();
-
-    manager.stop();
-
-    officeProcess.forciblyTerminate(1000, 5000);
+      final MockOfficeTask task = new MockOfficeTask();
+      manager.execute(task);
+      assertThat(task.isCompleted()).isTrue();
+    } finally {
+      manager.stop();
+      officeProcess.forciblyTerminate(1000, 5000);
+    }
   }
 }
