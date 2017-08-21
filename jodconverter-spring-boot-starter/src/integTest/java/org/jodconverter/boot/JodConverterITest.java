@@ -39,7 +39,6 @@ import org.jodconverter.DocumentConverter;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@SuppressWarnings("PMD.LawOfDemeter")
 public class JodConverterITest {
 
   private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
@@ -61,9 +60,9 @@ public class JodConverterITest {
     outputDir.mkdirs();
 
     inputFileTxt = new File(outputDir, "inputFile.txt");
-    try (final PrintWriter pw = new PrintWriter(new FileWriter(inputFileTxt))) {
-      pw.println("This is the first line of the input file.");
-      pw.println("This is the second line of the input file.");
+    try (final PrintWriter writer = new PrintWriter(new FileWriter(inputFileTxt))) {
+      writer.println("This is the first line of the input file.");
+      writer.println("This is the second line of the input file.");
     }
   }
 

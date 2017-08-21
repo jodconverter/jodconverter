@@ -48,11 +48,6 @@ import org.jodconverter.office.OfficeException;
  *
  * @see AbstractOfficeTask
  */
-@SuppressWarnings({
-  "PMD.AtLeastOneConstructor",
-  "PMD.AvoidCatchingGenericException",
-  "PMD.LawOfDemeter"
-})
 public class AbstractOfficeTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");

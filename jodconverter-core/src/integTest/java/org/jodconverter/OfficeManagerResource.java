@@ -38,7 +38,7 @@ import org.jodconverter.office.OfficeManager;
 public final class OfficeManagerResource extends ExternalResource {
 
   public static final TestRule INSTANCE = new OfficeManagerResource();
-  static final Logger logger = LoggerFactory.getLogger(OfficeManagerResource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OfficeManagerResource.class);
 
   OfficeManager officeManager;
   private final AtomicBoolean started = new AtomicBoolean();
@@ -71,7 +71,7 @@ public final class OfficeManagerResource extends ExternalResource {
                 try {
                   officeManager.stop();
                 } catch (OfficeException ex) {
-                  logger.error("Unable to stop the office manager.", ex);
+                  LOGGER.error("Unable to stop the office manager.", ex);
                 }
               }
             });

@@ -23,11 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Performs a connection to an office process. */
-@SuppressWarnings("PMD.LawOfDemeter")
 public class ConnectRetryable extends Retryable {
 
   private static final Integer EXIT_CODE_NEW_INSTALLATION = Integer.valueOf(81);
-  private static final Logger logger = LoggerFactory.getLogger(ConnectRetryable.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConnectRetryable.class);
 
   private final OfficeProcess process;
   private final OfficeConnection connection;
@@ -80,7 +79,7 @@ public class ConnectRetryable extends Retryable {
 
         // Restart and retry later
         // see http://code.google.com/p/jodconverter/issues/detail?id=84
-        logger.warn("Office process died with exit code 81; restarting it");
+        LOGGER.warn("Office process died with exit code 81; restarting it");
         process.start(true);
         throw new TemporaryException(connectionEx);
 

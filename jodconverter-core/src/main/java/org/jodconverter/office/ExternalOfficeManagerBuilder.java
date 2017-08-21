@@ -20,7 +20,6 @@
 package org.jodconverter.office;
 
 /** Helper class used to creates ExternalOfficeManager instances. */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class ExternalOfficeManagerBuilder {
 
   private OfficeConnectionProtocol connectionProtocol = OfficeConnectionProtocol.SOCKET;

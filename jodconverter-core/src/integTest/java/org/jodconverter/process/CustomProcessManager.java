@@ -30,10 +30,9 @@ import org.jodconverter.office.OfficeUtils;
  * {@link org.jodconverter.process.ProcessManager} implementation for testing custom ProcessManager.
  * It will auto-detect the best process manager and use it as delegate.
  */
-@SuppressWarnings("PMD.LawOfDemeter")
 public class CustomProcessManager implements ProcessManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(CustomProcessManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CustomProcessManager.class);
 
   private final ProcessManager delegate;
 
@@ -46,13 +45,13 @@ public class CustomProcessManager implements ProcessManager {
 
   @Override
   public long findPid(final ProcessQuery query) throws IOException {
-    logger.info("Finding PID from {}", getClass().getName());
+    LOGGER.info("Finding PID from {}", getClass().getName());
     return delegate.findPid(query);
   }
 
   @Override
   public void kill(final Process process, final long pid) throws IOException {
-    logger.info("Kill PID {} from {}", pid, getClass().getName());
+    LOGGER.info("Kill PID {} from {}", pid, getClass().getName());
     delegate.kill(process, pid);
   }
 }

@@ -26,7 +26,6 @@ import java.io.File;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class DefaultOfficeManagerITest {
 
   private static class SleepyOfficeTaskRunner implements Runnable {
@@ -101,10 +100,10 @@ public class DefaultOfficeManagerITest {
     assertThat(poolEntries).hasSize(1);
     assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
 
-    final OfficeProcessManager officeProcessManager =
+    final OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
     final OfficeProcess officeProcess =
-        (OfficeProcess) FieldUtils.readField(officeProcessManager, "process", true);
+        (OfficeProcess) FieldUtils.readField(processManager, "process", true);
     final OfficeUrl officeUrl = (OfficeUrl) FieldUtils.readField(officeProcess, "officeUrl", true);
     assertThat(officeUrl.getConnectionAndParametersAsString())
         .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
@@ -154,16 +153,16 @@ public class DefaultOfficeManagerITest {
     assertThat(poolEntries).hasSize(2);
     assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
 
-    OfficeProcessManager officeProcessManager =
+    OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
     OfficeProcess officeProcess =
-        (OfficeProcess) FieldUtils.readField(officeProcessManager, "process", true);
+        (OfficeProcess) FieldUtils.readField(processManager, "process", true);
     OfficeUrl officeUrl = (OfficeUrl) FieldUtils.readField(officeProcess, "officeUrl", true);
     assertThat(officeUrl.getConnectionAndParametersAsString()).isEqualTo("pipe,name=test");
 
-    officeProcessManager =
+    processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[1], "officeProcessManager", true);
-    officeProcess = (OfficeProcess) FieldUtils.readField(officeProcessManager, "process", true);
+    officeProcess = (OfficeProcess) FieldUtils.readField(processManager, "process", true);
     officeUrl = (OfficeUrl) FieldUtils.readField(officeProcess, "officeUrl", true);
     assertThat(officeUrl.getConnectionAndParametersAsString())
         .isEqualTo("socket,host=127.0.0.1,port=2003,tcpNoDelay=1");
@@ -327,23 +326,23 @@ public class DefaultOfficeManagerITest {
       manager.start();
 
       // Create threads that will both execute a task taking 2 sec to execute.
-      final SleepyOfficeTaskRunner r1 = new SleepyOfficeTaskRunner(manager, 2000L);
-      final SleepyOfficeTaskRunner r2 = new SleepyOfficeTaskRunner(manager, 2000L);
-      final Thread t1 = new Thread(r1);
-      final Thread t2 = new Thread(r2);
+      final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 2000L);
+      final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 2000L);
+      final Thread thread1 = new Thread(runnable1);
+      final Thread thread2 = new Thread(runnable2);
 
       // Start the threads.
-      t1.start();
+      thread1.start();
       Thread.sleep(250L); // NOSONAR
-      t2.start();
+      thread2.start();
 
       // Wait for thread to complete
-      t1.join();
-      t2.join();
+      thread1.join();
+      thread2.join();
 
       // Here, the second runnable should contain the task queue timeout exception
-      assertThat(r1.exception).isNull();
-      assertThat(r2.exception)
+      assertThat(runnable1.exception).isNull();
+      assertThat(runnable2.exception)
           .isExactlyInstanceOf(OfficeException.class)
           .hasMessageContaining("No office manager available after 1000 millisec");
 

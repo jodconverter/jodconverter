@@ -194,7 +194,7 @@ public class DefaultDocumentFormatRegistryTest {
   @Test
   public void getFormatX_ReturnReadOnlyFormat() {
 
-    DocumentFormat format = DefaultDocumentFormatRegistry.CSV;
+    final DocumentFormat format = DefaultDocumentFormatRegistry.CSV;
 
     try {
       format.getLoadProperties().put("newKey", "newValue");

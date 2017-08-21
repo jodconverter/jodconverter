@@ -36,10 +36,9 @@ import org.slf4j.LoggerFactory;
  * Base class for all process manager implementations included in the standard JODConverter
  * distribution.
  */
-@SuppressWarnings("PMD.LawOfDemeter")
 public abstract class AbstractProcessManager implements ProcessManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractProcessManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessManager.class);
 
   private static class StreamPumper extends Thread {
 
@@ -77,7 +76,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
           outputLines.add(line);
         }
       } catch (IOException ex) {
-        logger.error("Unable to read from command input stream.", ex);
+        LOGGER.error("Unable to read from command input stream.", ex);
       }
     }
   }
@@ -126,7 +125,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
     } catch (InterruptedException ex) {
 
       // Log the interruption
-      logger.warn(
+      LOGGER.warn(
           "The current thread was interrupted while waiting for command execution output.", ex);
       // Restore the interrupted status
       Thread.currentThread().interrupt();
@@ -135,16 +134,16 @@ public abstract class AbstractProcessManager implements ProcessManager {
     final List<String> outLines = outPumper.getOutputLines();
     final List<String> errLines = errPumper.getOutputLines();
 
-    if (logger.isDebugEnabled()) {
+    if (LOGGER.isDebugEnabled()) {
       final String out = buildOutput(outLines);
       final String err = buildOutput(errLines);
 
       if (!StringUtils.isBlank(out)) {
-        logger.debug("Command Output: {}", out);
+        LOGGER.debug("Command Output: {}", out);
       }
 
       if (!StringUtils.isBlank(err)) {
-        logger.debug("Command Error: {}", err);
+        LOGGER.debug("Command Error: {}", err);
       }
     }
 
@@ -160,7 +159,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
     final Pattern processLinePattern = getRunningProcessLinePattern();
     final String[] currentProcessesCommand = getRunningProcessesCommand(query.getCommand());
 
-    logger.debug(
+    LOGGER.debug(
         "Finding PID using\n"
             + "Command to get current running processes: {}\n"
             + "Regex used to match current running process lines: {}\n"
@@ -175,13 +174,13 @@ public abstract class AbstractProcessManager implements ProcessManager {
         // Skip this one
         continue;
       }
-      logger.debug(
+      LOGGER.debug(
           "Checking if process line matches the process line regex\nProcess line: {}", line);
       final Matcher lineMatcher = processLinePattern.matcher(line);
       if (lineMatcher.matches()) {
         final String pid = lineMatcher.group("Pid");
         final String commandLine = lineMatcher.group("CommanLine");
-        logger.debug(
+        LOGGER.debug(
             "Line matches!\n"
                 + "pid: {}; Command line: {}\n"
                 + "Checking if this command line matches the office command line regex",
@@ -189,7 +188,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
             commandLine);
         final Matcher commandMatcher = commandPattern.matcher(commandLine);
         if (commandMatcher.find()) {
-          logger.debug("Command line matches! Returning pid: {}", pid);
+          LOGGER.debug("Command line matches! Returning pid: {}", pid);
           return Long.parseLong(pid);
         }
       }

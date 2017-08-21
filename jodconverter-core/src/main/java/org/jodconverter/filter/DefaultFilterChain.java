@@ -20,7 +20,7 @@
 package org.jodconverter.filter;
 
 /** Default implementation of FilterChain. */
-public class DefaultFilterChain extends FilterChainBase {
+public class DefaultFilterChain extends AbstractFilterChain {
 
   /**
    * Creates a FilterChain without any filters. Filters can later on be added using {@link

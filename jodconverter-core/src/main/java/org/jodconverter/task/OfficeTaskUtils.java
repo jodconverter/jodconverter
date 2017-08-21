@@ -28,7 +28,6 @@ import com.sun.star.uno.UnoRuntime;
 import org.jodconverter.document.DocumentFamily;
 import org.jodconverter.office.OfficeException;
 
-@SuppressWarnings("PMD.LawOfDemeter")
 final class OfficeTaskUtils {
 
   /**

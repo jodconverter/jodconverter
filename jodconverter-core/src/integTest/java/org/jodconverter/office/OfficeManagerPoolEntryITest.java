@@ -34,10 +34,9 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
 public class OfficeManagerPoolEntryITest {
 
-  private static final org.slf4j.Logger logger =
+  private static final org.slf4j.Logger LOGGER =
       LoggerFactory.getLogger(OfficeManagerPoolEntryITest.class);
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
@@ -168,7 +167,7 @@ public class OfficeManagerPoolEntryITest {
         final Process underlyingProcess =
             (Process) FieldUtils.readField(getOfficeProcess(officeManager), "process", true);
         assertThat(underlyingProcess).isNotNull();
-        logger.debug("Simulating the crash");
+        LOGGER.debug("Simulating the crash");
         underlyingProcess.destroy();
 
         // Wait until the task is completed

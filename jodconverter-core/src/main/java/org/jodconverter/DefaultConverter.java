@@ -43,7 +43,6 @@ import org.jodconverter.task.DefaultConversionTask;
  * @see DocumentConverter
  * @see OfficeManager
  */
-@SuppressWarnings({"PMD.AccessorClassGeneration", "PMD.LawOfDemeter"})
 public class DefaultConverter extends AbstractConverter {
 
   /**

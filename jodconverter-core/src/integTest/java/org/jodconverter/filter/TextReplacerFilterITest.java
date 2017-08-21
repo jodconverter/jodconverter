@@ -30,11 +30,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.BaseOfficeITest;
+import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.TextReplacerFilter;
 
-@SuppressWarnings("PMD.LawOfDemeter")
-public class TextReplacerFilterITest extends BaseOfficeITest {
+public class TextReplacerFilterITest extends AbstractOfficeITest {
 
   private static final String SOURCE_FILENAME = "test_replace.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);

@@ -29,12 +29,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.BaseOfficeITest;
+import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.PageCounterFilter;
 import org.jodconverter.filter.text.PageSelectorFilter;
 
-@SuppressWarnings("PMD.LawOfDemeter")
-public class PageCounterFilterITest extends BaseOfficeITest {
+public class PageCounterFilterITest extends AbstractOfficeITest {
 
   private static final String SOURCE_FILENAME = "test_multi_page.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
@@ -66,15 +65,14 @@ public class PageCounterFilterITest extends BaseOfficeITest {
 
     final File targetFile = new File(outputDir, SOURCE_FILENAME + ".page2.txt");
 
-    final PageCounterFilter pageCounterFilter1 = new PageCounterFilter();
-    final PageSelectorFilter pageSelectorFilter = new PageSelectorFilter(2);
-    final PageCounterFilter pageCounterFilter2 = new PageCounterFilter();
+    final PageCounterFilter countFilter1 = new PageCounterFilter();
+    final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
+    final PageCounterFilter countFilter2 = new PageCounterFilter();
 
     // Test the filter
     converter
         .convert(SOURCE_FILE)
-        .filterWith(
-            pageCounterFilter1, pageSelectorFilter, pageCounterFilter2, RefreshFilter.REFRESH)
+        .filterWith(countFilter1, selectorFilter, countFilter2, RefreshFilter.REFRESH)
         .to(targetFile)
         .execute();
 
@@ -83,7 +81,7 @@ public class PageCounterFilterITest extends BaseOfficeITest {
         .contains("Test document Page 2")
         .doesNotContain("Test document Page 1")
         .doesNotContain("Test document Page 3");
-    assertThat(pageCounterFilter1.getPageCount()).isEqualTo(3);
-    assertThat(pageCounterFilter2.getPageCount()).isEqualTo(1);
+    assertThat(countFilter1.getPageCount()).isEqualTo(3);
+    assertThat(countFilter2.getPageCount()).isEqualTo(1);
   }
 }

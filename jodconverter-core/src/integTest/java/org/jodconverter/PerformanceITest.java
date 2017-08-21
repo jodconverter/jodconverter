@@ -35,10 +35,9 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.OfficeException;
 
-@SuppressWarnings("PMD.LawOfDemeter")
-public class PerformanceITest extends BaseOfficeITest {
+public class PerformanceITest extends AbstractOfficeITest {
 
-  private static final Logger logger = LoggerFactory.getLogger(PerformanceITest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceITest.class);
 
   private static final int MAX_CONVERSIONS = 10;
   private static final String INPUT_EXTENSION = "odt";
@@ -50,13 +49,13 @@ public class PerformanceITest extends BaseOfficeITest {
       throw new IllegalArgumentException("Duration must be greater than zero!");
     }
 
-    long ms = millis;
+    long localMillis = millis;
     final long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-    ms -= TimeUnit.MINUTES.toMillis(minutes);
+    localMillis -= TimeUnit.MINUTES.toMillis(minutes);
     final long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-    ms -= TimeUnit.SECONDS.toMillis(seconds);
+    localMillis -= TimeUnit.SECONDS.toMillis(seconds);
 
-    return String.format("%d min, %d sec, %d millisec", minutes, seconds, ms);
+    return String.format("%d min, %d sec, %d millisec", minutes, seconds, localMillis);
   }
 
   private void convertFileXTimes(
@@ -72,7 +71,7 @@ public class PerformanceITest extends BaseOfficeITest {
       final File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
       outputFile.deleteOnExit();
 
-      logger.info(
+      LOGGER.info(
           baseName
               + " -- converting "
               + inputFormat.getExtension()
@@ -83,20 +82,20 @@ public class PerformanceITest extends BaseOfficeITest {
 
       stopWatch.split();
       final long splitTime = stopWatch.getSplitTime();
-      logger.info(baseName + "-- conversion done in " + (splitTime - lastSplitTime) + " millisec.");
+      LOGGER.info(baseName + "-- conversion done in " + (splitTime - lastSplitTime) + " millisec.");
       lastSplitTime = splitTime;
     }
     stopWatch.stop();
-    final long totalConversionTime = stopWatch.getTime();
+    final long conversionTime = stopWatch.getTime();
 
-    logger.info(
+    LOGGER.info(
         baseName
             + "-- all "
             + MAX_CONVERSIONS
             + " conversions done in "
-            + getDurationBreakdown(totalConversionTime)
+            + getDurationBreakdown(conversionTime)
             + ". The average per document is "
-            + (totalConversionTime / MAX_CONVERSIONS)
+            + (conversionTime / MAX_CONVERSIONS)
             + " ms.");
   }
 

@@ -39,7 +39,6 @@ import org.jodconverter.office.TemporaryFileMaker;
  *
  * @see DocumentSpecs
  */
-@SuppressWarnings("PMD.LawOfDemeter")
 public abstract class AbstractConverter implements DocumentConverter {
 
   private static final boolean DEFAULT_CLOSE_STREAM = true;

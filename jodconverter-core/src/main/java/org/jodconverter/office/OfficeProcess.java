@@ -38,10 +38,9 @@ import org.jodconverter.process.ProcessQuery;
 /**
  * An OfficeProcess represents an instance of an office program that is executed by JODConverter.
  */
-@SuppressWarnings("PMD.LawOfDemeter")
 class OfficeProcess {
 
-  private static final Logger logger = LoggerFactory.getLogger(OfficeProcess.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcess.class);
 
   private Process process;
   private long pid = PID_UNKNOWN;
@@ -92,7 +91,7 @@ class OfficeProcess {
       // Kill the any running process with the same connection string if the kill switch is on
       if (!(existingPid == PID_NOT_FOUND || existingPid == PID_UNKNOWN)
           && config.isKillExistingProcess()) {
-        logger.warn(
+        LOGGER.warn(
             "A process with acceptString '{}' is already running; pid {}",
             processQuery.getArgument(),
             existingPid);
@@ -121,7 +120,7 @@ class OfficeProcess {
   public void deleteProfileDir() {
 
     if (instanceProfileDir != null) {
-      logger.debug("Deleting instance profile directory '{}'", instanceProfileDir);
+      LOGGER.debug("Deleting instance profile directory '{}'", instanceProfileDir);
       try {
         FileUtils.deleteDirectory(instanceProfileDir);
       } catch (IOException ioEx) { // NOSONAR
@@ -130,12 +129,12 @@ class OfficeProcess {
                 instanceProfileDir.getParentFile(),
                 instanceProfileDir.getName() + ".old." + System.currentTimeMillis());
         if (instanceProfileDir.renameTo(oldProfileDir)) {
-          logger.warn(
+          LOGGER.warn(
               "Could not delete profileDir: {}; renamed it to {}",
               ioEx.getMessage(),
               oldProfileDir);
         } else {
-          logger.error("Could not delete profileDir: {}", ioEx.getMessage());
+          LOGGER.error("Could not delete profileDir: {}", ioEx.getMessage());
         }
       }
     }
@@ -152,7 +151,7 @@ class OfficeProcess {
   public int forciblyTerminate(final long retryInterval, final long retryTimeout) // NOSONAR
       throws OfficeException, RetryTimeoutException {
 
-    logger.info(
+    LOGGER.info(
         "Trying to forcibly terminate process: '{}'{}",
         officeUrl.getConnectionParametersAsString(),
         pid == PID_UNKNOWN ? "" : " (pid " + pid + ")");
@@ -175,7 +174,7 @@ class OfficeProcess {
     try {
       return process.exitValue();
     } catch (IllegalThreadStateException illegalThreadStateEx) {
-      logger.trace("IllegalThreadStateException catch in getExitCode", illegalThreadStateEx);
+      LOGGER.trace("IllegalThreadStateException catch in getExitCode", illegalThreadStateEx);
       return null;
     }
   }
@@ -224,7 +223,7 @@ class OfficeProcess {
    */
   public boolean isRunning() {
 
-    return process == null ? false : getExitCode() == null;
+    return process != null && getExitCode() == null;
   }
 
   /**
@@ -236,7 +235,7 @@ class OfficeProcess {
   private void prepareInstanceProfileDir() throws OfficeException {
 
     if (instanceProfileDir.exists()) {
-      logger.warn("Profile dir '{}' already exists; deleting", instanceProfileDir);
+      LOGGER.warn("Profile dir '{}' already exists; deleting", instanceProfileDir);
       deleteProfileDir();
     }
     if (config.getTemplateProfileDir() != null) {
@@ -316,14 +315,14 @@ class OfficeProcess {
     final ProcessBuilder processBuilder = prepareProcessBuilder(acceptString);
 
     // Launch the process.
-    logger.info(
+    LOGGER.info(
         "Starting process with acceptString '{}' and profileDir '{}'",
         acceptString,
         instanceProfileDir);
     try {
       process = processBuilder.start();
       pid = config.getProcessManager().findPid(processQuery);
-      logger.info("Started process{}", pid == PID_UNKNOWN ? "" : "; pid = " + pid);
+      LOGGER.info("Started process{}", pid == PID_UNKNOWN ? "" : "; pid = " + pid);
     } catch (IOException ioEx) {
       throw new OfficeException(
           String.format(

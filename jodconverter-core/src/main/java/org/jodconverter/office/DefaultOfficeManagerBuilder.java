@@ -33,12 +33,6 @@ import org.jodconverter.process.ProcessManager;
  *
  * @deprecated Use {@link DefaultOfficeManager#builder()} instead.
  */
-@Deprecated
-@SuppressWarnings({
-  "PMD.AtLeastOneConstructor",
-  "PMD.AvoidInstantiatingObjectsInLoops",
-  "PMD.LawOfDemeter"
-})
 public class DefaultOfficeManagerBuilder {
 
   private static final OfficeConnectionProtocol DEFAULT_CONNECTION_PROTOCOL =

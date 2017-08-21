@@ -45,7 +45,7 @@ import org.jodconverter.DocumentConverter;
 public class ConverterServlet extends HttpServlet {
   private static final long serialVersionUID = -591469426224201748L;
 
-  private static final Logger logger = LoggerFactory.getLogger(ConverterServlet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConverterServlet.class);
 
   /** Creates a new servlet. */
   public ConverterServlet() {
@@ -83,7 +83,7 @@ public class ConverterServlet extends HttpServlet {
       final DocumentConverter converter = webappContext.getDocumentConverter();
       final long startTime = System.currentTimeMillis();
       converter.convert(inputFile).to(outputFile).execute();
-      logger.info(
+      LOGGER.info(
           String.format(
               "Successful conversion: %s [%db] to %s in %dms",
               inputExtension,
@@ -96,7 +96,7 @@ public class ConverterServlet extends HttpServlet {
           "Content-Disposition", "attachment; filename=" + baseName + "." + outputExtension);
       sendFile(outputFile, response);
     } catch (Exception exception) {
-      logger.error(
+      LOGGER.error(
           String.format(
               "Failed conversion: %s [%db] to %s; %s; input file: %s",
               inputExtension, inputFile.length(), outputExtension, exception, inputFile.getName()));

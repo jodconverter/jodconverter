@@ -52,7 +52,7 @@ public interface TargetDocumentSpecs extends DocumentSpecs {
    * Called if the conversion finished with an exception.
    *
    * @param file The file to which the conversion result was supposed to be written.
-   * @param ex An exception representing the reason for the failed conversion.
+   * @param exception An exception representing the reason for the failed conversion.
    */
-  void onFailure(File file, Exception ex);
+  void onFailure(File file, Exception exception);
 }

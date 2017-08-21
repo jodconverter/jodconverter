@@ -29,11 +29,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.BaseOfficeITest;
+import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.PageCounterFilter;
 import org.jodconverter.filter.text.PageSelectorFilter;
 
-public class DefaultFilterChainITest extends BaseOfficeITest {
+public class DefaultFilterChainITest extends AbstractOfficeITest {
 
   private static final String SOURCE_FILENAME = "test_multi_page.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
@@ -56,7 +56,7 @@ public class DefaultFilterChainITest extends BaseOfficeITest {
   }
 
   /**
-   * Test that reseting a chain will actually allow us to reuse it
+   * Test that reseting a chain will actually allow us to reuse it.
    *
    * @throws Exception if an error occurs.
    */
@@ -67,14 +67,13 @@ public class DefaultFilterChainITest extends BaseOfficeITest {
     final File targetFile1 = new File(outputDir, SOURCE_FILENAME + ".page1.txt");
     final File targetFile2 = new File(outputDir, SOURCE_FILENAME + ".page1again.txt");
 
-    final PageCounterFilter pageCounterFilter1 = new PageCounterFilter();
-    final PageSelectorFilter pageSelectorFilter = new PageSelectorFilter(1);
-    final PageCounterFilter pageCounterFilter2 = new PageCounterFilter();
+    final PageCounterFilter countFilter1 = new PageCounterFilter();
+    final PageSelectorFilter selectorFilter = new PageSelectorFilter(1);
+    final PageCounterFilter countFilter2 = new PageCounterFilter();
 
     // Test the filters
     final DefaultFilterChain chain =
-        new DefaultFilterChain(
-            pageCounterFilter1, pageSelectorFilter, pageCounterFilter2, RefreshFilter.REFRESH);
+        new DefaultFilterChain(countFilter1, selectorFilter, countFilter2, RefreshFilter.REFRESH);
     converter.convert(SOURCE_FILE).filterWith(chain).to(targetFile1).execute();
 
     final String content = FileUtils.readFileToString(targetFile1, Charset.forName("UTF-8"));
@@ -82,13 +81,13 @@ public class DefaultFilterChainITest extends BaseOfficeITest {
         .contains("Test document Page 1")
         .doesNotContain("Test document Page 2")
         .doesNotContain("Test document Page 3");
-    assertThat(pageCounterFilter1.getPageCount()).isEqualTo(3);
-    assertThat(pageCounterFilter2.getPageCount()).isEqualTo(1);
+    assertThat(countFilter1.getPageCount()).isEqualTo(3);
+    assertThat(countFilter2.getPageCount()).isEqualTo(1);
 
     // Reset the chain and test the filters again
     chain.reset();
     converter.convert(targetFile1).filterWith(chain).to(targetFile2).execute();
-    assertThat(pageCounterFilter1.getPageCount()).isEqualTo(1);
-    assertThat(pageCounterFilter2.getPageCount()).isEqualTo(1);
+    assertThat(countFilter1.getPageCount()).isEqualTo(1);
+    assertThat(countFilter2.getPageCount()).isEqualTo(1);
   }
 }

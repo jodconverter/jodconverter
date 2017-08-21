@@ -42,10 +42,10 @@ import com.sun.star.uno.UnoRuntime;
 import org.jodconverter.filter.Filter;
 
 /** Base class for all filter used to insert a TextContent into a document. */
-@SuppressWarnings({"PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
-public abstract class TextContentInserterFilter implements Filter {
+public abstract class AbstractTextContentInserterFilter implements Filter {
 
-  private static final Logger logger = LoggerFactory.getLogger(TextContentInserterFilter.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(AbstractTextContentInserterFilter.class);
 
   private final Dimension rectSize;
   private final Map<String, Object> shapeProperties;
@@ -109,7 +109,7 @@ public abstract class TextContentInserterFilter implements Filter {
    * @param verticalPosition The vertical position where to insert the text content on the document
    *     (millimeters).
    */
-  public TextContentInserterFilter(
+  public AbstractTextContentInserterFilter(
       final Dimension size, final int horizontalPosition, final int verticalPosition) {
     super();
 
@@ -126,7 +126,7 @@ public abstract class TextContentInserterFilter implements Filter {
    * @see <a
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */
-  public TextContentInserterFilter(
+  public AbstractTextContentInserterFilter(
       final Dimension size, final Map<String, Object> shapeProperties) {
     super();
 
@@ -147,7 +147,7 @@ public abstract class TextContentInserterFilter implements Filter {
     // (doc, docx, rtf) instead of the "AnchorPageNo" property.
     final Object anchorPageNo = shapeProperties.get("AnchorPageNo");
     if (anchorPageNo != null) {
-      logger.debug("Applying AnchorPageNo fix");
+      LOGGER.debug("Applying AnchorPageNo fix");
       final XController controller = docText.getCurrentController();
       final XTextViewCursor viewCursor =
           UnoRuntime.queryInterface(XTextViewCursorSupplier.class, controller).getViewCursor();

@@ -26,13 +26,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.BaseOfficeITest;
+import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.filter.text.TextReplacerFilter;
 import org.jodconverter.office.OfficeException;
 
-@SuppressWarnings("PMD.LawOfDemeter")
-public class MultipleFiltersITest extends BaseOfficeITest {
+public class MultipleFiltersITest extends AbstractOfficeITest {
 
   private static final String SOURCE_FILENAME = "test_replace.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
@@ -64,7 +63,7 @@ public class MultipleFiltersITest extends BaseOfficeITest {
   public void doFilter_WithDefaultProperties() throws OfficeException {
 
     // Create the TextReplacerFilter to test.
-    final TextReplacerFilter testReplacerFilter =
+    final TextReplacerFilter replacerFilter =
         new TextReplacerFilter(
             new String[] {"SEARCH_WORD", "that", "have", "new common language will be more simple"},
             new String[] {
@@ -75,7 +74,7 @@ public class MultipleFiltersITest extends BaseOfficeITest {
             });
 
     // Create the GraphicInserterFilter to test.
-    final GraphicInserterFilter graphicInserterfilter =
+    final GraphicInserterFilter graphicfilter =
         new GraphicInserterFilter(
             IMAGE_FILE.getPath(),
             74, // Image Width // 7.4 CM (half the original size)
@@ -86,7 +85,7 @@ public class MultipleFiltersITest extends BaseOfficeITest {
     // Convert to PDF
     converter
         .convert(SOURCE_FILE)
-        .filterWith(testReplacerFilter, graphicInserterfilter, RefreshFilter.REFRESH)
+        .filterWith(replacerFilter, graphicfilter, RefreshFilter.REFRESH)
         .to(new File(outputDir, SOURCE_FILENAME + ".pdf"))
         .execute();
   }

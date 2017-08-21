@@ -40,7 +40,7 @@ public class WebappContext {
   public static final String PARAMETER_OFFICE_PROFILE = "office.profile";
   public static final String PARAMETER_FILEUPLOAD_FILE_SIZE_MAX = "fileupload.fileSizeMax";
 
-  private static final Logger logger = LoggerFactory.getLogger(WebappContext.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WebappContext.class);
   private static final String KEY = WebappContext.class.getName();
 
   private final ServletFileUpload fileUpload;
@@ -58,10 +58,10 @@ public class WebappContext {
     final String fileSizeMax = servletContext.getInitParameter(PARAMETER_FILEUPLOAD_FILE_SIZE_MAX);
     fileUpload = new ServletFileUpload(fileItemFactory);
     if (fileSizeMax == null) {
-      logger.warn("max file upload size not set");
+      LOGGER.warn("max file upload size not set");
     } else {
       fileUpload.setFileSizeMax(Integer.parseInt(fileSizeMax));
-      logger.info("max file upload size set to {}", fileSizeMax);
+      LOGGER.info("max file upload size set to {}", fileSizeMax);
     }
 
     final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();

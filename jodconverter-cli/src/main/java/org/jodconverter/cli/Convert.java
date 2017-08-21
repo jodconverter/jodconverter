@@ -43,12 +43,6 @@ import org.jodconverter.office.OfficeManager;
 import org.jodconverter.office.OfficeUtils;
 
 /** Command line interface executable. */
-@SuppressWarnings({
-  "PMD.AvoidCatchingGenericException",
-  "PMD.DataflowAnomalyAnalysis",
-  "PMD.LawOfDemeter",
-  "PMD.OnlyOneReturn"
-})
 public final class Convert {
 
   public static final int STATUS_OK = 0;
@@ -140,8 +134,8 @@ public final class Convert {
     }
 
     if (commandLine.hasOption(OPTION_VERSION.getOpt())) {
-      final Package p = Convert.class.getPackage();
-      printInfo("jodconverter-cli version " + p.getImplementationVersion());
+      final Package pack = Convert.class.getPackage();
+      printInfo("jodconverter-cli version " + pack.getImplementationVersion());
       System.exit(0);
     }
   }
@@ -323,9 +317,9 @@ public final class Convert {
 
   private static void printErr(final String err) {
 
-    final PrintWriter pw = new PrintWriter(System.err); // NOSONAR
-    pw.println(err);
-    pw.flush();
+    final PrintWriter writer = new PrintWriter(System.err); // NOSONAR
+    writer.println(err);
+    writer.flush();
   }
 
   private static void printHelp() {
@@ -339,8 +333,8 @@ public final class Convert {
 
   private static void printInfo(final String info) {
 
-    final PrintWriter pw = new PrintWriter(System.out); // NOSONAR
-    pw.println(info);
-    pw.flush();
+    final PrintWriter writer = new PrintWriter(System.out); // NOSONAR
+    writer.println(info);
+    writer.flush();
   }
 }

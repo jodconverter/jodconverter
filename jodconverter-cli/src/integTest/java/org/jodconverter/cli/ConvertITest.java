@@ -38,7 +38,6 @@ import org.jodconverter.office.OfficeUtils;
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
  */
-@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
 public class ConvertITest {
 
   private static final String TEST_OUTPUT_DIR = "build/integTest-results/";

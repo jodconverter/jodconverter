@@ -40,7 +40,6 @@ import org.jodconverter.office.TemporaryFileMaker;
  *
  * @see ConversionJobWithLoadPropertiesUnspecified
  */
-@SuppressWarnings("PMD.LawOfDemeter")
 public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
     implements ConversionJobWithLoadPropertiesUnspecified {
 
@@ -119,13 +118,6 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
             + "interface in order to be able to convert to OutputStream.");
   }
 
-  private AbstractConversionJobWithTargetFormatUnspecified toInternal(
-      final AbstractTargetDocumentSpecs target) {
-
-    Validate.notNull(source.getFormat(), "The source format is missing or not supported");
-    return to(target);
-  }
-
   /**
    * Configures the current conversion to write the result using the specified specifications.
    *
@@ -134,4 +126,11 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
    */
   protected abstract AbstractConversionJobWithTargetFormatUnspecified to(
       AbstractTargetDocumentSpecs target);
+
+  private AbstractConversionJobWithTargetFormatUnspecified toInternal(
+      final AbstractTargetDocumentSpecs target) {
+
+    Validate.notNull(source.getFormat(), "The source format is missing or not supported");
+    return to(target);
+  }
 }

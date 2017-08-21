@@ -30,7 +30,6 @@ import org.jodconverter.document.DocumentFormat;
  *
  * @see TargetDocumentSpecs
  */
-@SuppressWarnings("PMD.DefaultPackage")
 public abstract class AbstractTargetDocumentSpecs extends AbstractDocumentSpecs
     implements TargetDocumentSpecs {
 

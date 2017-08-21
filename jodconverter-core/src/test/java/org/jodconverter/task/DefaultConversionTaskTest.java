@@ -61,7 +61,6 @@ import org.jodconverter.office.OfficeException;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(UnoRuntime.class)
-@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
 public class DefaultConversionTaskTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
@@ -114,7 +113,7 @@ public class DefaultConversionTaskTest {
     }
 
     @Override
-    public void onFailure(final File file, final Exception ex) {
+    public void onFailure(final File file, final Exception exception) {
       // Do nothing here
     }
   }

@@ -40,7 +40,6 @@ import com.sun.star.lib.uno.helper.UnoUrl;
  * a Connection</a> and <a href="http://www.openoffice.org/udk/common/man/spec/uno-url.html">UNO Url
  * - Specification</a> in the OpenOffice.org Developer's Guide for more details.
  */
-@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.DefaultPackage"})
 public class OfficeUrl {
 
   private final UnoUrl unoUrl;

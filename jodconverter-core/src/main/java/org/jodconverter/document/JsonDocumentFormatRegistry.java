@@ -33,7 +33,6 @@ import com.google.gson.reflect.TypeToken;
  * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office
  * that has been loaded loaded from a JSON source.
  */
-@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
 public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
   /**

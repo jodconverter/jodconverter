@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
 
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class OfficeUrlTest {
 
   @Test

@@ -48,7 +48,6 @@ import org.jodconverter.office.OfficeTask;
  *
  * @see OfficeTask
  */
-@SuppressWarnings({"PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
 public abstract class AbstractOfficeTask implements OfficeTask {
 
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";

@@ -50,14 +50,13 @@ import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeUtils;
 
 /** This filter is used to insert a graphics into a document. */
-@SuppressWarnings("PMD.LawOfDemeter")
-public class GraphicInserterFilter extends TextContentInserterFilter {
+public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
   // This class has been inspired by these examples:
   // http://api.libreoffice.org/examples/java/Text/GraphicsInserter.java
   // https://forum.openoffice.org/en/forum/viewtopic.php?t=50114#p252402
 
-  private static final Logger logger = LoggerFactory.getLogger(GraphicInserterFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GraphicInserterFilter.class);
 
   private final String imagePath;
 
@@ -66,12 +65,12 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
   private static Dimension getImageSize(final File image) throws OfficeException {
 
     try {
-      try (final ImageInputStream in = ImageIO.createImageInputStream(image)) {
-        final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
+      try (final ImageInputStream inputStream = ImageIO.createImageInputStream(image)) {
+        final Iterator<ImageReader> readers = ImageIO.getImageReaders(inputStream);
         if (readers.hasNext()) {
           final ImageReader reader = readers.next();
           try {
-            reader.setInput(in);
+            reader.setInput(inputStream);
 
             // Get dimensions of first image in the stream, without decoding pixel values
             return new Dimension(
@@ -214,7 +213,7 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
     // Inserting test image to the container
     final File sourceFile = new File(imagePath);
     final String strUrl = OfficeUtils.toUrl(sourceFile);
-    logger.debug("Embedding image to the bitmap container '{}'", strUrl);
+    LOGGER.debug("Embedding image to the bitmap container '{}'", strUrl);
     bitmapContainer.insertByName(uuid, strUrl);
 
     // Querying property interface for the graphic shape service
@@ -241,7 +240,7 @@ public class GraphicInserterFilter extends TextContentInserterFilter {
     final XTextContent textContent = UnoRuntime.queryInterface(XTextContent.class, graphicShape);
 
     // Embed image into the document text with replacement
-    logger.debug("Inserting image into the document");
+    LOGGER.debug("Inserting image into the document");
     text.insertTextContent(textCursor, textContent, false);
 
     // Invoke the next filter in the chain

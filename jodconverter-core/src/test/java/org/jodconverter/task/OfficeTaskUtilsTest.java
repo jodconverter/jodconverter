@@ -38,7 +38,6 @@ import org.jodconverter.test.util.AssertUtil;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(UnoRuntime.class)
-@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class OfficeTaskUtilsTest {
 
   @Test

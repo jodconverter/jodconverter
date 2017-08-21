@@ -29,10 +29,9 @@ import com.sun.star.util.XRefreshable;
 import org.jodconverter.office.OfficeContext;
 
 /** This filter is used to refresh a document. */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class RefreshFilter implements Filter {
 
-  private static final Logger logger = LoggerFactory.getLogger(RefreshFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RefreshFilter.class);
 
   /**
    * Singleton instance of refresh filter.
@@ -57,21 +56,16 @@ public class RefreshFilter implements Filter {
    */
   public static final FilterChain CHAIN = new UnmodifiableFilterChain(REFRESH);
 
-  /** Creates a new filter that will refresh a document. */
-  public RefreshFilter() {
-    super();
-  }
-
   @Override
   public void doFilter(
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws Exception {
 
-    logger.debug("Applying the RefreshFilter");
+    LOGGER.debug("Applying the RefreshFilter");
 
     final XRefreshable refreshable = UnoRuntime.queryInterface(XRefreshable.class, document);
     if (refreshable != null) {
-      logger.debug("Refreshing...");
+      LOGGER.debug("Refreshing...");
       refreshable.refresh();
     }
     chain.doFilter(context, document);

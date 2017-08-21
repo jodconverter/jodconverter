@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** A ThreadFactory that allows for custom thread names. */
 class NamedThreadFactory implements ThreadFactory {
 
-  private static final AtomicInteger threadIndex = new AtomicInteger(0);
+  private static final AtomicInteger THREAD_INDEX = new AtomicInteger(0);
 
   private final String basename;
   private final boolean daemon;
@@ -54,7 +54,7 @@ class NamedThreadFactory implements ThreadFactory {
   @Override
   public Thread newThread(final Runnable runnable) {
 
-    final Thread thread = new Thread(runnable, basename + "-" + threadIndex.getAndIncrement());
+    final Thread thread = new Thread(runnable, basename + "-" + THREAD_INDEX.getAndIncrement());
     thread.setDaemon(daemon);
     return thread;
   }

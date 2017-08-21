@@ -33,14 +33,9 @@ import org.jodconverter.filter.FilterChain;
  * Runnable used to convert a document. This kind of runner is useful when a conversion must be done
  * in his own thread.
  */
-@SuppressWarnings({
-  "PMD.AvoidCatchingGenericException",
-  "PMD.AvoidThrowingRawExceptionTypes",
-  "PMD.LawOfDemeter"
-})
 public class ConvertRunner implements Runnable {
 
-  private static final Logger logger = Logger.getLogger(ConvertRunner.class);
+  private static final Logger LOGGER = Logger.getLogger(ConvertRunner.class);
 
   private final File source;
   private final File target;
@@ -83,14 +78,14 @@ public class ConvertRunner implements Runnable {
 
     try {
 
-      logger.info(
+      LOGGER.info(
           "-- converting "
               + sourceFormat.getExtension()
               + " to "
               + targetFormat.getExtension()
               + "... ");
       converter.convert(source).filterWith(filterChain).to(target).execute();
-      logger.info("done.\n");
+      LOGGER.info("done.\n");
 
       // Check that the created file is not empty. The programmer still have to
       // manually if the content of the output file looks good.
@@ -109,9 +104,9 @@ public class ConvertRunner implements Runnable {
       if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
         final com.sun.star.task.ErrorCodeIOException ioEx =
             (com.sun.star.task.ErrorCodeIOException) ex.getCause();
-        logger.error(message + " " + ioEx.getMessage(), ioEx);
+        LOGGER.error(message + " " + ioEx.getMessage(), ioEx);
       } else {
-        logger.error(message + " " + ex.getMessage(), ex);
+        LOGGER.error(message + " " + ex.getMessage(), ex);
       }
 
       throw new RuntimeException(ex); // NOSONAR

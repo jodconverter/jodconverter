@@ -29,10 +29,9 @@ import org.junit.Test;
 
 import org.jodconverter.filter.RefreshFilter;
 
-@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
-public class DocumentConverterFunctionalITest extends BaseOfficeITest {
+public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
 
-  private static final int MAX_RUNNING_THREADS = 10;
+  private static final int MAX_THREADS = 10;
 
   private static File outputDir;
 
@@ -98,13 +97,13 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
               }
             });
 
-    final Thread[] threads = new Thread[MAX_RUNNING_THREADS];
-    int t = 0;
+    final Thread[] threads = new Thread[MAX_THREADS];
+    int threadCount = 0;
 
     for (final File sourceFile : sourceFiles) {
 
       // Convert the file to all supported formats in a separated thread
-      final Runnable r =
+      final Runnable runnable =
           new Runnable() {
             @Override
             public void run() {
@@ -113,21 +112,21 @@ public class DocumentConverterFunctionalITest extends BaseOfficeITest {
           };
 
       //final Runner r = new Runner (source, target, RefreshFilter.CHAIN, converter);
-      threads[t] = new Thread(r);
-      threads[t++].start();
+      threads[threadCount] = new Thread(runnable);
+      threads[threadCount++].start();
 
-      if (t == MAX_RUNNING_THREADS) {
-        for (int j = 0; j < t; j++) {
+      if (threadCount == MAX_THREADS) {
+        for (int j = 0; j < threadCount; j++) {
           threads[j].join();
         }
-        t = 0;
+        threadCount = 0;
       }
 
       //convertFileToAllSupportedFormats(sourceFile, outputDir, RefreshFilter.REFRESH);
     }
 
     // Wait for remaining threads.
-    for (int j = 0; j < t; j++) {
+    for (int j = 0; j < threadCount; j++) {
       threads[j].join();
     }
   }

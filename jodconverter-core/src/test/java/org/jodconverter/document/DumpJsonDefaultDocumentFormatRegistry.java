@@ -30,9 +30,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /** Executable class that dumps a JSON version of the DefaultDocumentFormatRegistry. */
-class DumpJsonDefaultDocumentFormatRegistry {
+final class DumpJsonDefaultDocumentFormatRegistry {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerFactory.getLogger(DumpJsonDefaultDocumentFormatRegistry.class);
 
   public static void main(final String[] args) throws Exception {
@@ -44,7 +44,7 @@ class DumpJsonDefaultDocumentFormatRegistry {
             (Map<String, DocumentFormat>) FieldUtils.readField(registry, "fmtsByExtension", true));
 
     final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    logger.info(gson.toJson(formats.values()));
+    LOGGER.info(gson.toJson(formats.values()));
   }
 
   // Private ctor.

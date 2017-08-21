@@ -26,7 +26,6 @@ import java.io.File;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class DefaultOfficeManagerBuilderITest {
 
   @Test
@@ -57,10 +56,10 @@ public class DefaultOfficeManagerBuilderITest {
     assertThat(poolEntries).hasSize(1);
     assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
 
-    final OfficeProcessManager officeProcessManager =
+    final OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
     final OfficeProcess officeProcess =
-        (OfficeProcess) FieldUtils.readField(officeProcessManager, "process", true);
+        (OfficeProcess) FieldUtils.readField(processManager, "process", true);
     final OfficeUrl officeUrl = (OfficeUrl) FieldUtils.readField(officeProcess, "officeUrl", true);
     assertThat(officeUrl.getConnectionAndParametersAsString())
         .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
@@ -111,16 +110,16 @@ public class DefaultOfficeManagerBuilderITest {
     assertThat(poolEntries).hasSize(2);
     assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
 
-    OfficeProcessManager officeProcessManager =
+    OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
     OfficeProcess officeProcess =
-        (OfficeProcess) FieldUtils.readField(officeProcessManager, "process", true);
+        (OfficeProcess) FieldUtils.readField(processManager, "process", true);
     OfficeUrl officeUrl = (OfficeUrl) FieldUtils.readField(officeProcess, "officeUrl", true);
     assertThat(officeUrl.getConnectionAndParametersAsString()).isEqualTo("pipe,name=test");
 
-    officeProcessManager =
+    processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[1], "officeProcessManager", true);
-    officeProcess = (OfficeProcess) FieldUtils.readField(officeProcessManager, "process", true);
+    officeProcess = (OfficeProcess) FieldUtils.readField(processManager, "process", true);
     officeUrl = (OfficeUrl) FieldUtils.readField(officeProcess, "officeUrl", true);
     assertThat(officeUrl.getConnectionAndParametersAsString())
         .isEqualTo("socket,host=127.0.0.1,port=2003,tcpNoDelay=1");
@@ -184,10 +183,10 @@ public class DefaultOfficeManagerBuilderITest {
     assertThat(poolEntries).hasSize(1);
     assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
 
-    final OfficeProcessManager officeProcessManager =
+    final OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
     final OfficeProcess officeProcess =
-        (OfficeProcess) FieldUtils.readField(officeProcessManager, "process", true);
+        (OfficeProcess) FieldUtils.readField(processManager, "process", true);
     final OfficeUrl officeUrl = (OfficeUrl) FieldUtils.readField(officeProcess, "officeUrl", true);
     assertThat(officeUrl.getConnectionAndParametersAsString()).isEqualTo("pipe,name=office");
   }

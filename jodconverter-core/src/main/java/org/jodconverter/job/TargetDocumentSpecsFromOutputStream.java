@@ -63,7 +63,7 @@ class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
   }
 
   @Override
-  public void onFailure(final File tempFile, final Exception ex) {
+  public void onFailure(final File tempFile, final Exception exception) {
 
     // Ensure the created tempFile is deleted
     FileUtils.deleteQuietly(tempFile);

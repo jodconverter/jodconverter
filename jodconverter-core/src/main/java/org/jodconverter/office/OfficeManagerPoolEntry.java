@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 class OfficeManagerPoolEntry implements OfficeManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(OfficeManagerPoolEntry.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OfficeManagerPoolEntry.class);
 
   // The following fields are declared package/private so the compiler won't
   // have to generate accessor methods with package-private visibility
@@ -90,7 +90,7 @@ class OfficeManagerPoolEntry implements OfficeManager {
 
             // Here, we didn't expect this disconnection. We must restart
             // the office process, canceling any task that may be running.
-            logger.warn("Connection lost unexpectedly; attempting restart");
+            LOGGER.warn("Connection lost unexpectedly; attempting restart");
             if (currentTask != null) {
               currentTask.cancel(true);
             }
@@ -137,7 +137,7 @@ class OfficeManagerPoolEntry implements OfficeManager {
             // First check if the office process must be restarted
             final int count = taskCount.getAndIncrement();
             if (config.getMaxTasksPerProcess() > 0 && count == config.getMaxTasksPerProcess()) {
-              logger.info(
+              LOGGER.info(
                   "Reached limit of {} maximum tasks per process; restarting...",
                   config.getMaxTasksPerProcess());
 
@@ -167,9 +167,9 @@ class OfficeManagerPoolEntry implements OfficeManager {
     // Wait for completion of the task, (maximum wait time is the
     // configured task execution timeout)
     try {
-      logger.debug("Waiting for task to complete...");
+      LOGGER.debug("Waiting for task to complete...");
       currentTask.get(config.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
-      logger.debug("Task executed successfully");
+      LOGGER.debug("Task executed successfully");
 
     } catch (TimeoutException timeoutEx) {
 

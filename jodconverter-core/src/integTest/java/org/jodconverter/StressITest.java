@@ -33,18 +33,13 @@ import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeManager;
 
-@SuppressWarnings({
-  "PMD.AtLeastOneConstructor",
-  "PMD.AvoidInstantiatingObjectsInLoops",
-  "PMD.LawOfDemeter"
-})
 public class StressITest {
 
-  private static final Logger logger = Logger.getLogger(StressITest.class);
+  private static final Logger LOGGER = Logger.getLogger(StressITest.class);
 
   private static final int MAX_CONVERSIONS = 1024;
-  private static final int MAX_RUNNING_THREADS = 128;
-  private static final int MAX_TASKS_PER_PROCESS = 10;
+  private static final int MAX_THREADS = 128;
+  private static final int MAX_PROCESS_TASKS = 10;
 
   private static final String INPUT_EXTENSION = "rtf";
   private static final String OUTPUT_EXTENSION = "pdf";
@@ -85,7 +80,7 @@ public class StressITest {
     final OfficeManager officeManager =
         DefaultOfficeManager.builder()
             .portNumbers(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009)
-            .maxTasksPerProcess(MAX_TASKS_PER_PROCESS)
+            .maxTasksPerProcess(MAX_PROCESS_TASKS)
             .build();
     final DocumentConverter converter = DefaultConverter.make(officeManager);
 
@@ -93,10 +88,10 @@ public class StressITest {
     try {
       final File source = new File("src/integTest/resources/documents/test." + INPUT_EXTENSION);
 
-      final Thread[] threads = new Thread[MAX_RUNNING_THREADS];
+      final Thread[] threads = new Thread[MAX_THREADS];
 
       boolean first = true;
-      int t = 0;
+      int threadCount = 0;
 
       for (int i = 0; i < MAX_CONVERSIONS; i++) {
         final File target = File.createTempFile("test", "." + OUTPUT_EXTENSION);
@@ -108,21 +103,22 @@ public class StressITest {
           first = false;
         }
 
-        logger.info("Creating thread " + t);
-        final ConvertRunner r = new ConvertRunner(source, target, RefreshFilter.CHAIN, converter);
-        threads[t] = new Thread(r);
-        threads[t++].start();
+        LOGGER.info("Creating thread " + threadCount);
+        final ConvertRunner rrunnable =
+            new ConvertRunner(source, target, RefreshFilter.CHAIN, converter);
+        threads[threadCount] = new Thread(rrunnable);
+        threads[threadCount++].start();
 
-        if (t == MAX_RUNNING_THREADS) {
-          for (int j = 0; j < t; j++) {
+        if (threadCount == MAX_THREADS) {
+          for (int j = 0; j < threadCount; j++) {
             threads[j].join();
           }
-          t = 0;
+          threadCount = 0;
         }
       }
 
       // Wait for remaining threads.
-      for (int j = 0; j < t; j++) {
+      for (int j = 0; j < threadCount; j++) {
         threads[j].join();
       }
 

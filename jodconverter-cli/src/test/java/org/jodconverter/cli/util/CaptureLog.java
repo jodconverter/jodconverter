@@ -30,6 +30,7 @@ import java.io.PrintStream;
  *
  * @author Glenn L. Nielsen
  */
+@SuppressWarnings("PMD")
 class CaptureLog {
 
   private final ByteArrayOutputStream baos;

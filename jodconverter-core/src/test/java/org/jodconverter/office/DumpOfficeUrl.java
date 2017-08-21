@@ -22,10 +22,9 @@ package org.jodconverter.office;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("PMD.AvoidCatchingGenericException")
 public final class DumpOfficeUrl {
 
-  private static final Logger logger = LoggerFactory.getLogger(DumpOfficeUrl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DumpOfficeUrl.class);
 
   /**
    * Main entry point of the program used to test this class.
@@ -40,36 +39,36 @@ public final class DumpOfficeUrl {
     try {
       OfficeUrl url = new OfficeUrl(2002);
 
-      logger.info("WITH PORT");
-      logger.info("url.getConnection():" + url.getConnection());
-      logger.info(
+      LOGGER.info("WITH PORT");
+      LOGGER.info("url.getConnection():" + url.getConnection());
+      LOGGER.info(
           "url.getConnectionAndParametersAsString():" + url.getConnectionAndParametersAsString());
-      logger.info("url.getConnectionParametersAsString():" + url.getConnectionParametersAsString());
-      logger.info("url.getConnectionParameters():" + url.getConnectionParameters());
-      logger.info("url.getProtocol():" + url.getProtocol());
-      logger.info(
+      LOGGER.info("url.getConnectionParametersAsString():" + url.getConnectionParametersAsString());
+      LOGGER.info("url.getConnectionParameters():" + url.getConnectionParameters());
+      LOGGER.info("url.getProtocol():" + url.getProtocol());
+      LOGGER.info(
           "url.getProtocolAndParametersAsString():" + url.getProtocolAndParametersAsString());
-      logger.info("url.getProtocolParametersAsString():" + url.getProtocolParametersAsString());
-      logger.info("url.getProtocolParameters():" + url.getProtocolParameters());
-      logger.info("url.getRootOid():" + url.getRootOid());
+      LOGGER.info("url.getProtocolParametersAsString():" + url.getProtocolParametersAsString());
+      LOGGER.info("url.getProtocolParameters():" + url.getProtocolParameters());
+      LOGGER.info("url.getRootOid():" + url.getRootOid());
 
-      logger.info("");
-      logger.info("");
+      LOGGER.info("");
+      LOGGER.info("");
 
       url = new OfficeUrl("office");
 
-      logger.info("WITH PIPE");
-      logger.info("url.getConnection():" + url.getConnection());
-      logger.info(
+      LOGGER.info("WITH PIPE");
+      LOGGER.info("url.getConnection():" + url.getConnection());
+      LOGGER.info(
           "url.getConnectionAndParametersAsString():" + url.getConnectionAndParametersAsString());
-      logger.info("url.getConnectionParametersAsString():" + url.getConnectionParametersAsString());
-      logger.info("url.getConnectionParameters():" + url.getConnectionParameters());
-      logger.info("url.getProtocol():" + url.getProtocol());
-      logger.info(
+      LOGGER.info("url.getConnectionParametersAsString():" + url.getConnectionParametersAsString());
+      LOGGER.info("url.getConnectionParameters():" + url.getConnectionParameters());
+      LOGGER.info("url.getProtocol():" + url.getProtocol());
+      LOGGER.info(
           "url.getProtocolAndParametersAsString():" + url.getProtocolAndParametersAsString());
-      logger.info("url.getProtocolParametersAsString():" + url.getProtocolParametersAsString());
-      logger.info("url.getProtocolParameters():" + url.getProtocolParameters());
-      logger.info("url.getRootOid():" + url.getRootOid());
+      LOGGER.info("url.getProtocolParametersAsString():" + url.getProtocolParametersAsString());
+      LOGGER.info("url.getProtocolParameters():" + url.getProtocolParameters());
+      LOGGER.info("url.getRootOid():" + url.getRootOid());
     } catch (Exception ex) { // NOSONAR
       throw new IllegalArgumentException(ex);
     }

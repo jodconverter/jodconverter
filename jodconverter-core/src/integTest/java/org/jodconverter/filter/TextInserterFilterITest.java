@@ -26,12 +26,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.BaseOfficeITest;
+import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.filter.text.TextInserterFilter;
 
-@SuppressWarnings("PMD.LawOfDemeter")
-public class TextInserterFilterITest extends BaseOfficeITest {
+public class TextInserterFilterITest extends AbstractOfficeITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);

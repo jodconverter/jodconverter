@@ -43,16 +43,11 @@ import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.task.DefaultConversionTask;
 
-@SuppressWarnings({
-  "PMD.AvoidCatchingGenericException",
-  "PMD.LawOfDemeter",
-  "PMD.UseConcurrentHashMap"
-})
 public class DefaultConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
-  private static final File SOURCE_FILE_UNSUPPORTED_EXTENSION =
+  private static final File BAD_SOURCE_FILE =
       new File("src/test/resources/documents/test.unsupportedext");
 
   private static File outputDir;
@@ -94,10 +89,7 @@ public class DefaultConverterTest {
 
     final File targetFile = new File(outputDir, "test.pdf");
 
-    DefaultConverter.make(officeManager)
-        .convert(SOURCE_FILE_UNSUPPORTED_EXTENSION)
-        .to(targetFile)
-        .execute();
+    DefaultConverter.make(officeManager).convert(BAD_SOURCE_FILE).to(targetFile).execute();
   }
 
   @Test

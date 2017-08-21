@@ -40,12 +40,6 @@ import org.jodconverter.office.OfficeException;
  *
  * @see Convert
  */
-@SuppressWarnings({
-  "PMD.AvoidInstantiatingObjectsInLoops",
-  "PMD.DataflowAnomalyAnalysis",
-  "PMD.LawOfDemeter",
-  "PMD.OnlyOneReturn"
-})
 public final class CliConverter {
 
   private final PrintWriter out;

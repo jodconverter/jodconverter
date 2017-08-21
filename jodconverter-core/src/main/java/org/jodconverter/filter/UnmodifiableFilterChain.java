@@ -20,7 +20,7 @@
 package org.jodconverter.filter;
 
 /** Unmodifiable implementation of FilterChain. */
-public class UnmodifiableFilterChain extends FilterChainBase {
+public class UnmodifiableFilterChain extends AbstractFilterChain {
 
   /**
    * Creates an unmodifiable FilterChain that will contains the specified filters.

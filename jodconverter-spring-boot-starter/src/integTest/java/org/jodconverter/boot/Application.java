@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * central Java configuration class.
  */
 @SpringBootApplication
-@SuppressWarnings("PMD.UseUtilityClass")
 public class Application {
 
   /**

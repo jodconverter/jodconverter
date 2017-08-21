@@ -31,15 +31,14 @@ import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
 /** Base class of a FilterChain. */
-@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
-public abstract class FilterChainBase implements FilterChain {
+public abstract class AbstractFilterChain implements FilterChain {
 
   private boolean readOnly;
   private List<Filter> filters;
   private int pos; // to maintain the current position in the filter chain.
 
   /** Creates a FilterChain. */
-  public FilterChainBase() {
+  public AbstractFilterChain() {
     this(false);
   }
 
@@ -50,7 +49,7 @@ public abstract class FilterChainBase implements FilterChain {
    *     can be added to the chain), {@code false} otherwise.
    * @param filters The filters to initially add to the chain.
    */
-  public FilterChainBase(final boolean readOnly, final Filter... filters) {
+  public AbstractFilterChain(final boolean readOnly, final Filter... filters) {
 
     this.readOnly = readOnly;
     this.pos = 0;
@@ -72,7 +71,7 @@ public abstract class FilterChainBase implements FilterChain {
    *
    * @param filters The filters to add to the chain.
    */
-  public FilterChainBase(final Filter... filters) {
+  public AbstractFilterChain(final Filter... filters) {
     this(false, filters);
   }
 

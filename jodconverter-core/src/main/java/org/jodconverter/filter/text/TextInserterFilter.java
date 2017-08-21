@@ -40,14 +40,13 @@ import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
 
 /** This filter is used to insert text into a document. */
-@SuppressWarnings("PMD.LawOfDemeter")
-public class TextInserterFilter extends TextContentInserterFilter {
+public class TextInserterFilter extends AbstractTextContentInserterFilter {
 
   // This class has been inspired by these examples:
   // http://api.libreoffice.org/examples/java/Text/SWriter.java
   // http://api.libreoffice.org/examples/DevelopersGuide/Text/TextDocuments.java
 
-  private static final Logger logger = LoggerFactory.getLogger(TextInserterFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TextInserterFilter.class);
 
   private final String insertedText;
 
@@ -141,7 +140,7 @@ public class TextInserterFilter extends TextContentInserterFilter {
     applyAnchorPageNoFix(docText, textCursor);
 
     // Insert the new frame into the document
-    logger.debug("Inserting frame into the document");
+    LOGGER.debug("Inserting frame into the document");
     text.insertTextContent(textCursor, textFrame, false);
 
     // Access the XText interface of the text contained within the frame
@@ -151,7 +150,7 @@ public class TextInserterFilter extends TextContentInserterFilter {
     textCursor = text.createTextCursor();
 
     // Insert text into the frame
-    logger.debug("Writing text to the inserted frame");
+    LOGGER.debug("Writing text to the inserted frame");
     text.insertString(textCursor, insertedText, false);
 
     // Invoke the next filter in the chain

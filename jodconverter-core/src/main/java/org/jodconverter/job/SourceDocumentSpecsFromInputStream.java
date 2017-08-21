@@ -28,7 +28,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 
-@SuppressWarnings("PMD.LawOfDemeter")
 class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
     implements SourceDocumentSpecs {
 

@@ -39,10 +39,9 @@ import org.jodconverter.process.ProcessManager;
  * Default {@link OfficeManager} implementation that uses a pool of office processes to execute
  * conversion tasks.
  */
-@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
 public final class DefaultOfficeManager extends OfficeManagerPool implements TemporaryFileMaker {
 
-  private static final Logger logger = LoggerFactory.getLogger(DefaultOfficeManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultOfficeManager.class);
 
   private final File tempDir;
   private final AtomicLong tempFileCounter;
@@ -105,11 +104,11 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
   private void deleteTempDir() {
 
     if (tempDir != null) {
-      logger.debug("Deleting temporary directory '{}'", tempDir);
+      LOGGER.debug("Deleting temporary directory '{}'", tempDir);
       try {
         FileUtils.deleteDirectory(tempDir);
       } catch (IOException ioEx) { // NOSONAR
-        logger.error("Could not temporary profileDir: {}", ioEx.getMessage());
+        LOGGER.error("Could not temporary profileDir: {}", ioEx.getMessage());
       }
     }
   }

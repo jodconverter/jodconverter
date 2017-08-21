@@ -32,12 +32,10 @@ import com.sun.star.document.UpdateDocMode;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
 public class SourceDocumentSpecsFromFileTest {
 
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
-  private static final String UNEXISTING_SOURCE_FILE =
-      "src/test/resources/documents/unexisting_file.txt";
+  private static final String BAD_SOURCE_FILE = "src/test/resources/documents/unexisting_file.txt";
 
   @Test(expected = NullPointerException.class)
   public void ctor_WithNullFile_ThrowsNullPointerException() {
@@ -48,7 +46,7 @@ public class SourceDocumentSpecsFromFileTest {
   @Test(expected = IllegalArgumentException.class)
   public void ctor_WithUnexistingFile_ThrowsIllegalArgumentsException() {
 
-    new SourceDocumentSpecsFromFile(new File(UNEXISTING_SOURCE_FILE));
+    new SourceDocumentSpecsFromFile(new File(BAD_SOURCE_FILE));
   }
 
   @Test

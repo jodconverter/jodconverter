@@ -41,7 +41,6 @@ import org.jodconverter.office.OfficeUtils;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@SuppressWarnings("PMD.LawOfDemeter")
 public class SpringControllerITest {
 
   private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
@@ -86,9 +85,9 @@ public class SpringControllerITest {
     outputDir.mkdirs();
 
     inputFileTxt = new File(outputDir, "inputFile.txt");
-    try (final PrintWriter pw = new PrintWriter(new FileWriter(inputFileTxt))) {
-      pw.println("This is the first line of the input file.");
-      pw.println("This is the second line of the input file.");
+    try (final PrintWriter writer = new PrintWriter(new FileWriter(inputFileTxt))) {
+      writer.println("This is the first line of the input file.");
+      writer.println("This is the second line of the input file.");
     }
   }
 

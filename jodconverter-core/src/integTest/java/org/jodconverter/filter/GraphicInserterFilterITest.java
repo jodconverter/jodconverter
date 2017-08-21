@@ -27,12 +27,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.BaseOfficeITest;
+import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.office.OfficeException;
 
-@SuppressWarnings("PMD.LawOfDemeter")
-public class GraphicInserterFilterITest extends BaseOfficeITest {
+public class GraphicInserterFilterITest extends AbstractOfficeITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
   private static final String SOURCE_MULTI_PAGE_FILENAME = "test_multi_page.doc";

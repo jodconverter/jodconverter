@@ -36,7 +36,6 @@ import org.junit.Test;
 
 import org.jodconverter.test.util.AssertUtil;
 
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class OfficeUtilsTest {
 
   @Test
@@ -114,13 +113,13 @@ public class OfficeUtilsTest {
   public void validateOfficeTemplateProfileDir_WithUserDirFound_ValidateSuccessfully() {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    final File templateProfileDir = new File(tempDir, UUID.randomUUID().toString());
-    final File userDir = new File(templateProfileDir, "user");
+    final File profileDir = new File(tempDir, UUID.randomUUID().toString());
+    final File userDir = new File(profileDir, "user");
     try {
       userDir.mkdirs();
-      OfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
+      OfficeUtils.validateOfficeTemplateProfileDirectory(profileDir);
     } finally {
-      FileUtils.deleteQuietly(templateProfileDir);
+      FileUtils.deleteQuietly(profileDir);
     }
   }
 
@@ -129,12 +128,12 @@ public class OfficeUtilsTest {
   public void validateOfficeTemplateProfileDir_WithUserDirNotFound_ThrowsIllegalStateException() {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    final File templateProfileDir = new File(tempDir, UUID.randomUUID().toString());
+    final File profileDir = new File(tempDir, UUID.randomUUID().toString());
     try {
-      templateProfileDir.mkdirs();
-      OfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
+      profileDir.mkdirs();
+      OfficeUtils.validateOfficeTemplateProfileDirectory(profileDir);
     } finally {
-      FileUtils.deleteQuietly(templateProfileDir);
+      FileUtils.deleteQuietly(profileDir);
     }
   }
 
@@ -155,9 +154,9 @@ public class OfficeUtilsTest {
       throws IOException {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    final File templateWorkingDir = new File(tempDir, UUID.randomUUID().toString());
+    final File workingDir = new File(tempDir, UUID.randomUUID().toString());
 
-    OfficeUtils.validateOfficeWorkingDirectory(templateWorkingDir);
+    OfficeUtils.validateOfficeWorkingDirectory(workingDir);
   }
 
   /** Tests that an OfficeException is swallowed by the stopQuietly function. */

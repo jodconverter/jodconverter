@@ -46,16 +46,10 @@ import com.sun.star.uno.XComponentContext;
  * An OfficeConnection is responsible to manage the connection to an office process using a given
  * UnoUrl.
  */
-@SuppressWarnings({
-  "PMD.AtLeastOneConstructor",
-  "PMD.AvoidCatchingGenericException",
-  "PMD.LawOfDemeter",
-  "PMD.NullAssignment"
-})
 class OfficeConnection implements OfficeContext, XEventListener {
 
   private static AtomicInteger bridgeIndex = new AtomicInteger();
-  private static final Logger logger = LoggerFactory.getLogger(OfficeConnection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OfficeConnection.class);
 
   private final OfficeUrl officeUrl;
   private Object desktopService;
@@ -91,7 +85,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
   public synchronized void connect() throws OfficeConnectionException {
 
     final String connectPart = officeUrl.getConnectionAndParametersAsString();
-    logger.debug("Connecting with connectString '{}'", connectPart);
+    LOGGER.debug("Connecting with connectString '{}'", connectPart);
     try {
       // Create a default local component context.
       final XComponentContext localContext = Bootstrap.createInitialComponentContext(null);
@@ -161,7 +155,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
 
       // We are now connected
       connected.set(true);
-      logger.info("Connected: '{}'", connectPart);
+      LOGGER.info("Connected: '{}'", connectPart);
 
       // Inform all the listener that we are connected
       final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
@@ -183,7 +177,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
   /** Closes the connection. */
   public synchronized void disconnect() {
 
-    logger.debug("Disconnecting from '{}'", officeUrl.getConnectionAndParametersAsString());
+    LOGGER.debug("Disconnecting from '{}'", officeUrl.getConnectionAndParametersAsString());
 
     // Dispose of the bridge
     bridgeComponent.dispose();
@@ -199,7 +193,7 @@ class OfficeConnection implements OfficeContext, XEventListener {
       desktopService = null;
       bridgeComponent = null;
 
-      logger.info("Disconnected: '{}'", officeUrl.getConnectionAndParametersAsString());
+      LOGGER.info("Disconnected: '{}'", officeUrl.getConnectionAndParametersAsString());
 
       // Inform listeners. Must be done at the end since a listener may recreated the bridge
       final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);

@@ -30,11 +30,6 @@ import com.sun.star.lang.EventObject;
 
 import org.jodconverter.process.PureJavaProcessManager;
 
-@SuppressWarnings({
-  "PMD.AtLeastOneConstructor",
-  "PMD.AvoidCatchingGenericException",
-  "PMD.LawOfDemeter"
-})
 public class OfficeProcessManagerITest {
 
   private static class VetoTerminateListener implements XTerminateListener {
@@ -81,17 +76,17 @@ public class OfficeProcessManagerITest {
             }
           }
         });
-    final OfficeProcessManager officeProcessManager =
+    final OfficeProcessManager processManager =
         new OfficeProcessManager(new OfficeUrl(2002), config);
 
     final VetoTerminateListener terminateListener = new VetoTerminateListener();
 
     try {
       // Start the process manager
-      officeProcessManager.startAndWait();
+      processManager.startAndWait();
 
       // Ensure that the office instance won't be stopped gracefully.
-      officeProcessManager.getConnection().getDesktop().addTerminateListener(terminateListener);
+      processManager.getConnection().getDesktop().addTerminateListener(terminateListener);
 
       // Change the configuration so the retry timeout will be reached.
       config.setProcessTimeout(1L);
@@ -99,7 +94,7 @@ public class OfficeProcessManagerITest {
 
       try {
         // Now this should call the doTerminateProcess()
-        officeProcessManager.stopAndWait();
+        processManager.stopAndWait();
         fail("OfficeException should have been thrown");
 
       } catch (Exception ex) {
@@ -112,11 +107,8 @@ public class OfficeProcessManagerITest {
 
         // Ensure that after the test, the office instance is terminated.
         config.setProcessTimeout(30000L);
-        officeProcessManager
-            .getConnection()
-            .getDesktop()
-            .removeTerminateListener(terminateListener);
-        officeProcessManager.stopAndWait();
+        processManager.getConnection().getDesktop().removeTerminateListener(terminateListener);
+        processManager.stopAndWait();
       }
     }
   }

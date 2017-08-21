@@ -35,13 +35,12 @@ import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
 /** This filter is used to replace text in a document. */
-@SuppressWarnings("PMD.LawOfDemeter")
 public class TextReplacerFilter implements Filter {
 
   // This class has been inspired by this example:
   // http://api.libreoffice.org/examples/java/Text/TextReplace.java
 
-  private static final Logger logger = LoggerFactory.getLogger(TextReplacerFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TextReplacerFilter.class);
 
   private final String[] searchList;
   private final String[] replacementList;
@@ -84,9 +83,9 @@ public class TextReplacerFilter implements Filter {
     // We need a descriptor to set properties for Replace
     final XReplaceDescriptor replaceDescr = replaceable.createReplaceDescriptor();
 
-    logger.debug("Changing all occurrences of ...");
+    LOGGER.debug("Changing all occurrences of ...");
     for (int i = 0; i < searchList.length; i++) {
-      logger.debug("{} -> {}", searchList[i], replacementList[i]);
+      LOGGER.debug("{} -> {}", searchList[i], replacementList[i]);
       // Set the properties the replace method need
       replaceDescr.setSearchString(searchList[i]);
       replaceDescr.setReplaceString(replacementList[i]);

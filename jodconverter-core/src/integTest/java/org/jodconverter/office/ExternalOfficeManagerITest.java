@@ -25,7 +25,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-@SuppressWarnings("PMD.LawOfDemeter")
 public class ExternalOfficeManagerITest {
 
   private static OfficeProcess officeProcess;

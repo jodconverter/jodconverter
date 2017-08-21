@@ -51,10 +51,9 @@ import org.jodconverter.office.OfficeUtils;
  *
  * @author Jose Luis López López
  */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class JodConverterBean implements InitializingBean, DisposableBean {
 
-  private static final Logger logger = LoggerFactory.getLogger(JodConverterBean.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(JodConverterBean.class);
 
   private String officeHome;
   private String portNumbers;
@@ -133,9 +132,9 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   /** Prints the available formats provided by the JODConverter module. */
   private void logSupportedGroupFormats(final String text, final Set<DocumentFormat> formats) {
 
-    logger.info(text);
+    LOGGER.info(text);
     for (final DocumentFormat format : formats) {
-      logger.info(format.getName());
+      LOGGER.info(format.getName());
     }
   }
 

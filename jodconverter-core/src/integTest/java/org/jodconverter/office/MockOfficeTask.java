@@ -27,7 +27,6 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XCloseable;
 
-@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
 public class MockOfficeTask implements OfficeTask {
 
   private long delayTime;

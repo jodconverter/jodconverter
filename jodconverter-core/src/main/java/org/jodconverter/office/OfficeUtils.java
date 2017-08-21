@@ -32,7 +32,6 @@ import org.jodconverter.process.PureJavaProcessManager;
 import org.jodconverter.process.UnixProcessManager;
 import org.jodconverter.process.WindowsProcessManager;
 
-@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
 public final class OfficeUtils {
 
   private static final String EXECUTABLE_DEFAULT = "program/soffice.bin";

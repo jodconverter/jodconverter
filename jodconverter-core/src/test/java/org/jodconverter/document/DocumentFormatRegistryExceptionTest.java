@@ -38,7 +38,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class DocumentFormatRegistryExceptionTest {
 
   @Test
-  public void create_IOExceptionThrownWhileLoading_ThrowDocumentFormatRegistryException()
+  public void create_IoExceptionThrownWhileLoading_ThrowDocumentFormatRegistryException()
       throws Exception {
 
     mockStatic(JsonDocumentFormatRegistry.class);

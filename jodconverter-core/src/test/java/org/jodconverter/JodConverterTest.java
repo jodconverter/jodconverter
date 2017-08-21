@@ -44,7 +44,6 @@ import org.jodconverter.test.util.AssertUtil;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(DefaultConverter.class)
-@SuppressWarnings("PMD.LawOfDemeter")
 public class JodConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
@@ -89,9 +88,9 @@ public class JodConverterTest {
 
     JodConverter.convert(SOURCE_FILE);
 
-    final ArgumentCaptor<File> fileArgument = ArgumentCaptor.forClass(File.class);
-    verify(defaultConverter, times(1)).convert(fileArgument.capture());
-    final File file = fileArgument.getValue();
+    final ArgumentCaptor<File> argument = ArgumentCaptor.forClass(File.class);
+    verify(defaultConverter, times(1)).convert(argument.capture());
+    final File file = argument.getValue();
     assertThat(file).isEqualTo(SOURCE_FILE);
   }
 
@@ -102,10 +101,9 @@ public class JodConverterTest {
 
       JodConverter.convert(inputStream);
 
-      final ArgumentCaptor<InputStream> inputStreamArgument =
-          ArgumentCaptor.forClass(InputStream.class);
-      verify(defaultConverter, times(1)).convert(inputStreamArgument.capture());
-      final InputStream stream = inputStreamArgument.getValue();
+      final ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
+      verify(defaultConverter, times(1)).convert(argument.capture());
+      final InputStream stream = argument.getValue();
       assertThat(stream).isEqualTo(inputStream);
     }
   }
@@ -117,12 +115,10 @@ public class JodConverterTest {
 
       JodConverter.convert(inputStream, false);
 
-      final ArgumentCaptor<InputStream> inputStreamArgument =
-          ArgumentCaptor.forClass(InputStream.class);
+      final ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
       final ArgumentCaptor<Boolean> booleanArgument = ArgumentCaptor.forClass(Boolean.class);
-      verify(defaultConverter, times(1))
-          .convert(inputStreamArgument.capture(), booleanArgument.capture());
-      final InputStream stream = inputStreamArgument.getValue();
+      verify(defaultConverter, times(1)).convert(argument.capture(), booleanArgument.capture());
+      final InputStream stream = argument.getValue();
       assertThat(stream).isEqualTo(inputStream);
     }
   }

@@ -36,7 +36,6 @@ package org.jodconverter.office;
  * <p>This {@link OfficeManager} implementation basically provides the same behavior as JODConverter
  * 2.x, including using <em>synchronized</em> blocks for serializing office operations.
  */
-@SuppressWarnings("PMD.AvoidCatchingGenericException")
 class ExternalOfficeManager implements OfficeManager {
 
   public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.

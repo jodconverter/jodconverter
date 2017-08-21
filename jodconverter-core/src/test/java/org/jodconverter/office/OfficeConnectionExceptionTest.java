@@ -23,13 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class OfficeConnectionExceptionTest {
 
   @Test
   public void ctor_WithConnectString_ExceptionCreatedWithConnectString() {
 
-    final OfficeConnectionException ex = new OfficeConnectionException("message", "host=127.0.0.1");
-    assertThat(ex.getConnectString()).isEqualTo("host=127.0.0.1");
+    final OfficeConnectionException exception =
+        new OfficeConnectionException("message", "host=127.0.0.1");
+    assertThat(exception.getConnectString()).isEqualTo("host=127.0.0.1");
   }
 }

@@ -29,11 +29,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.BaseOfficeITest;
+import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.PageSelectorFilter;
 
-@SuppressWarnings("PMD.LawOfDemeter")
-public class PageSelectorFilterITest extends BaseOfficeITest {
+public class PageSelectorFilterITest extends AbstractOfficeITest {
 
   private static final String SOURCE_FILENAME = "test_multi_page.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
@@ -66,12 +65,12 @@ public class PageSelectorFilterITest extends BaseOfficeITest {
     final File targetFile = new File(outputDir, SOURCE_FILENAME + ".page2.txt");
 
     // Create the PageSelectorFilter to test.
-    final PageSelectorFilter pageSelectorFilter = new PageSelectorFilter(2);
+    final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
 
     // Test the filter
     converter
         .convert(SOURCE_FILE)
-        .filterWith(pageSelectorFilter, RefreshFilter.REFRESH)
+        .filterWith(selectorFilter, RefreshFilter.REFRESH)
         .to(targetFile)
         .execute();
 

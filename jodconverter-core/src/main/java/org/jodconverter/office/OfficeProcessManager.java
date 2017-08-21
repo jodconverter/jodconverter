@@ -37,10 +37,9 @@ import com.sun.star.lang.DisposedException;
  * @see OfficeProcess
  * @see OfficeConnection
  */
-@SuppressWarnings("PMD.LawOfDemeter")
 class OfficeProcessManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(OfficeProcessManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcessManager.class);
 
   private final OfficeProcess process;
   private final OfficeConnection connection;
@@ -71,11 +70,11 @@ class OfficeProcessManager {
     try {
       final int exitCode =
           process.getExitCode(config.getProcessRetryInterval(), config.getProcessTimeout());
-      logger.info("process exited with code {}", exitCode);
+      LOGGER.info("process exited with code {}", exitCode);
 
     } catch (RetryTimeoutException retryTimeoutEx) {
 
-      logger.debug("doEnsureProcessExited times out", retryTimeoutEx);
+      LOGGER.debug("doEnsureProcessExited times out", retryTimeoutEx);
       doTerminateProcess();
 
     } finally {
@@ -103,7 +102,7 @@ class OfficeProcessManager {
       final boolean terminated = connection.getDesktop().terminate();
 
       // Once more: try to terminate
-      logger.debug(
+      LOGGER.debug(
           "The Office Process {}",
           (terminated
               ? "has been terminated"
@@ -111,10 +110,10 @@ class OfficeProcessManager {
 
     } catch (DisposedException disposedEx) {
       // expected so ignore it
-      logger.debug("Expected DisposedException catched and ignored in doStopProcess", disposedEx);
+      LOGGER.debug("Expected DisposedException catched and ignored in doStopProcess", disposedEx);
 
     } catch (Exception ex) {
-      logger.debug("Exception catched in doStopProcess", ex);
+      LOGGER.debug("Exception catched in doStopProcess", ex);
 
       // in case we can't get hold of the desktop
       doTerminateProcess();
@@ -134,7 +133,7 @@ class OfficeProcessManager {
     try {
       final int exitCode =
           process.forciblyTerminate(config.getProcessRetryInterval(), config.getProcessTimeout());
-      logger.info("process forcibly terminated with code {}", exitCode);
+      LOGGER.info("process forcibly terminated with code {}", exitCode);
 
     } catch (Exception ex) {
       throw new OfficeException("Could not terminate process", ex);
@@ -144,7 +143,7 @@ class OfficeProcessManager {
   // Executes the specified task without waiting for the completion of the task
   private void execute(final String taskName, final Runnable task) {
 
-    logger.info("Executing task '{}'...", taskName);
+    LOGGER.info("Executing task '{}'...", taskName);
     executor.execute(task);
   }
 
@@ -196,7 +195,7 @@ class OfficeProcessManager {
               doStartProcessAndConnect();
 
             } catch (OfficeException officeEx) {
-              logger.error("Could not restart process", officeEx);
+              LOGGER.error("Could not restart process", officeEx);
             }
           }
         };
@@ -220,7 +219,7 @@ class OfficeProcessManager {
               // will cause unexpected disconnection and subsequent restart
 
             } catch (OfficeException officeException) {
-              logger.error("Could not restart process", officeException);
+              LOGGER.error("Could not restart process", officeException);
             }
           }
         };
@@ -279,16 +278,16 @@ class OfficeProcessManager {
   private void submitAndWait(final String taskName, final Callable<Void> task)
       throws OfficeException {
 
-    logger.info("Submitting task '{}' and waiting...", taskName);
+    LOGGER.info("Submitting task '{}' and waiting...", taskName);
     final Future<Void> future = executor.submit(task);
 
     // Wait for completion of the restart task
     try {
       future.get();
-      logger.debug("Task '{}' executed successfully", taskName);
+      LOGGER.debug("Task '{}' executed successfully", taskName);
 
     } catch (ExecutionException executionEx) {
-      logger.debug("ExecutionException catched in submitAndWait", executionEx);
+      LOGGER.debug("ExecutionException catched in submitAndWait", executionEx);
 
       // Rethrow the original (cause) exception
       if (executionEx.getCause() instanceof OfficeException) {

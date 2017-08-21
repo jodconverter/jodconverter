@@ -39,7 +39,6 @@ import org.jodconverter.office.OfficeManager;
  * <p>This class is maintained for backward compatibility, but {@link DefaultConverter} should be
  * used instead.
  */
-@SuppressWarnings("PMD.LawOfDemeter")
 public class OfficeDocumentConverter {
 
   private final DefaultConverter delegate;

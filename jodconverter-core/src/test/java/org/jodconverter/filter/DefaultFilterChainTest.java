@@ -36,11 +36,6 @@ import org.jodconverter.office.OfficeException;
  *
  * @see org.jodconverter.filter.DefaultFilterChain
  */
-@SuppressWarnings({
-  "PMD.AtLeastOneConstructor",
-  "PMD.AvoidCatchingGenericException",
-  "PMD.LawOfDemeter"
-})
 public class DefaultFilterChainTest {
 
   /** Tests that a DefaultFilterChain is created empty by default. */

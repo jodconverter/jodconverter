@@ -46,7 +46,6 @@ import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.task.DefaultConversionTask;
 
-@SuppressWarnings({"PMD.LawOfDemeter", "PMD.UseConcurrentHashMap"})
 public class OfficeDocumentConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";

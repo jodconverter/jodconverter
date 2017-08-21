@@ -39,17 +39,16 @@ import org.jodconverter.filter.DefaultFilterChain;
 import org.jodconverter.filter.Filter;
 import org.jodconverter.office.OfficeException;
 
-@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.LawOfDemeter"})
-public abstract class BaseOfficeITest {
+public abstract class AbstractOfficeITest {
 
-  @ClassRule public static TestRule officeManagerResource = OfficeManagerResource.INSTANCE;
+  @ClassRule public static TestRule managerResource = OfficeManagerResource.INSTANCE;
 
   protected static DefaultConverter converter;
   protected static DocumentFormatRegistry formatRegistry;
   protected static final String RESOURCES_DIR = "src/integTest/resources/";
   protected static final String DOCUMENTS_DIR = RESOURCES_DIR + "documents/";
   protected static final String TEST_OUTPUT_DIR = "build/integTest-results/";
-  private static final Logger logger = LoggerFactory.getLogger(BaseOfficeITest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOfficeITest.class);
 
   /**
    * Starts a default office manager before the execution of the first test in this class.
@@ -71,7 +70,7 @@ public abstract class BaseOfficeITest {
     final String inputExtension = FilenameUtils.getExtension(sourceFile.getName());
     final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
     if (inputFormat == null) {
-      logger.info("-- skipping unsupported input format {}... ", inputExtension);
+      LOGGER.info("-- skipping unsupported input format {}... ", inputExtension);
       return;
     }
     assertThat(inputFormat).as("check %s's input format", inputExtension).isNotNull();
@@ -86,11 +85,11 @@ public abstract class BaseOfficeITest {
 
       // Skip conversions that are not supported on all OS.
       if (inputFormat.getExtension().equals("odg") && outputFormat.getExtension().equals("svg")) {
-        logger.info("-- skipping odg to svg test... ");
+        LOGGER.info("-- skipping odg to svg test... ");
         continue;
       }
       if (StringUtils.equalsAny(outputFormat.getExtension(), "png", "sxc", "sxw", "sxi")) {
-        logger.info(
+        LOGGER.info(
             "-- skipping {} to {} test... ",
             inputFormat.getExtension(),
             outputFormat.getExtension());

@@ -29,7 +29,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.google.gson.annotations.SerializedName;
 
 /** Contains the required information used to deal with a specific document format . */
-@SuppressWarnings({"PMD.AvoidInstantiatingObjectsInLoops", "PMD.UseConcurrentHashMap"})
 public class DocumentFormat {
 
   private final String name;

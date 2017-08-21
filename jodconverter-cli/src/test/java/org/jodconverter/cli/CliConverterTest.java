@@ -46,7 +46,6 @@ import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.task.DefaultConversionTask;
 
-@SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.LawOfDemeter"})
 public class CliConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
@@ -58,8 +57,8 @@ public class CliConverterTest {
   private static final String TARGET_FORMAT = "pdf";
   private static final String TARGET_FILENAME_1 = "test1.pdf";
   private static final String TARGET_FILENAME_2 = "test2.pdf";
-  private static final File SOURCE_DIR_TARGET_FILE_1 = new File(SOURCE_DIR, TARGET_FILENAME_1);
-  private static final File SOURCE_DIR_TARGET_FILE_2 = new File(SOURCE_DIR, TARGET_FILENAME_2);
+  private static final File SOURCE_TARGET_FILE_1 = new File(SOURCE_DIR, TARGET_FILENAME_1);
+  private static final File SOURCE_TARGET_FILE_2 = new File(SOURCE_DIR, TARGET_FILENAME_2);
 
   private static File outputDir;
 
@@ -153,11 +152,11 @@ public class CliConverterTest {
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_1, SOURCE_DIR_TARGET_FILE_1);
+        .containsExactly(SOURCE_FILE_1, SOURCE_TARGET_FILE_1);
     assertThat(tasks)
         .element(1)
         .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_2, SOURCE_DIR_TARGET_FILE_2);
+        .containsExactly(SOURCE_FILE_2, SOURCE_TARGET_FILE_2);
   }
 
   @Test
@@ -300,11 +299,11 @@ public class CliConverterTest {
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_1, SOURCE_DIR_TARGET_FILE_1);
+        .containsExactly(SOURCE_FILE_1, SOURCE_TARGET_FILE_1);
     assertThat(tasks)
         .element(1)
         .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_2, SOURCE_DIR_TARGET_FILE_2);
+        .containsExactly(SOURCE_FILE_2, SOURCE_TARGET_FILE_2);
   }
 
   @Test
@@ -400,17 +399,17 @@ public class CliConverterTest {
         .extracting("source.file.name", "target.file.name")
         .isSubsetOf(
             SOURCE_FILE_1.getName(),
-            SOURCE_DIR_TARGET_FILE_1.getName(),
+            SOURCE_TARGET_FILE_1.getName(),
             SOURCE_FILE_2.getName(),
-            SOURCE_DIR_TARGET_FILE_2.getName());
+            SOURCE_TARGET_FILE_2.getName());
     assertThat(tasks)
         .element(1)
         .extracting("source.file.name", "target.file.name")
         .isSubsetOf(
             SOURCE_FILE_1.getName(),
-            SOURCE_DIR_TARGET_FILE_1.getName(),
+            SOURCE_TARGET_FILE_1.getName(),
             SOURCE_FILE_2.getName(),
-            SOURCE_DIR_TARGET_FILE_2.getName());
+            SOURCE_TARGET_FILE_2.getName());
   }
 
   @Test

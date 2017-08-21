@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.LawOfDemeter"})
 public class SimpleDocumentFormatRegistryTest {
 
   /** Tests that calling getFormatByExtension with a null extension will return null. */

@@ -38,11 +38,6 @@ import org.junit.Test;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
-@SuppressWarnings({
-  "PMD.AvoidCatchingGenericException",
-  "PMD.LawOfDemeter",
-  "PMD.UseConcurrentHashMap"
-})
 public class TargetDocumentSpecsFromOutputStreamTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
