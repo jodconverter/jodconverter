@@ -68,21 +68,19 @@ public class DocumentFormat {
     this.mediaType = mediaType;
     this.inputFamily = inputFamily;
 
-    Map<String, Object> loadProps = new HashMap<>();
-    if (loadProperties != null) {
-      loadProps = new HashMap<>(loadProperties);
-    }
-    this.loadProperties = Collections.unmodifiableMap(loadProps);
+    this.loadProperties =
+        loadProperties == null ? null : Collections.unmodifiableMap(new HashMap<>(loadProperties));
 
-    final Map<DocumentFamily, Map<String, Object>> storeProps = new EnumMap<>(DocumentFamily.class);
+    Map<DocumentFamily, Map<String, Object>> storeProps = null;
     if (storeProperties != null) {
+      storeProps = new EnumMap<>(DocumentFamily.class);
       for (final Map.Entry<DocumentFamily, Map<String, Object>> entry :
           storeProperties.entrySet()) {
         storeProps.put(
             entry.getKey(), Collections.unmodifiableMap(new HashMap<>(entry.getValue())));
       }
     }
-    this.storeProperties = Collections.unmodifiableMap(storeProps);
+    this.storeProperties = storeProperties == null ? null : Collections.unmodifiableMap(storeProps);
   }
 
   /**

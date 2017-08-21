@@ -19,6 +19,8 @@
 
 package org.jodconverter.task;
 
+import org.apache.commons.lang3.Validate;
+
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.uno.UnoRuntime;
@@ -38,6 +40,8 @@ final class OfficeTaskUtils {
    */
   public static DocumentFamily getDocumentFamily(final XComponent document) throws OfficeException {
 
+    Validate.notNull(document, "The document is null");
+
     final XServiceInfo serviceInfo = UnoRuntime.queryInterface(XServiceInfo.class, document);
     if (serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")) {
       // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
@@ -49,10 +53,9 @@ final class OfficeTaskUtils {
       return DocumentFamily.PRESENTATION;
     } else if (serviceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
       return DocumentFamily.DRAWING;
-    } else {
-      throw new OfficeException(
-          "Document of unknown family: " + serviceInfo.getImplementationName());
     }
+
+    throw new OfficeException("Document of unknown family: " + serviceInfo.getImplementationName());
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

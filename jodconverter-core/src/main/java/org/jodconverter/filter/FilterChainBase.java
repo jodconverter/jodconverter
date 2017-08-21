@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.sun.star.lang.XComponent;
 
 import org.jodconverter.office.OfficeContext;
@@ -54,7 +56,7 @@ public abstract class FilterChainBase implements FilterChain {
     this.pos = 0;
     this.filters = new ArrayList<>();
 
-    if (filters != null) {
+    if (!ArrayUtils.isEmpty(filters)) {
       for (final Filter filter : filters) {
         this.filters.add(filter);
       }
