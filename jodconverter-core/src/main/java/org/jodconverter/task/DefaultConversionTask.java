@@ -123,12 +123,12 @@ public class DefaultConversionTask extends AbstractOfficeTask {
   // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
 
-    final Map<String, Object> storeProperties =
-        new HashMap<>(
-            target.getFormat().getStoreProperties(OfficeTaskUtils.getDocumentFamily(document)));
-    if (target.getCustomStoreProperties() != null) {
-      storeProperties.putAll(target.getCustomStoreProperties());
-    }
+    final Map<String, Object> storeProperties = new HashMap<>();
+    addPropertiesToMap(
+        storeProperties,
+        target.getFormat().getStoreProperties(OfficeTaskUtils.getDocumentFamily(document)));
+    addPropertiesToMap(storeProperties, target.getCustomStoreProperties());
+
     return storeProperties;
   }
 

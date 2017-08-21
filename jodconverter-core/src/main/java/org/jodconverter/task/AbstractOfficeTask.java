@@ -72,6 +72,14 @@ public abstract class AbstractOfficeTask implements OfficeTask {
     return new HashMap<>(DEFAULT_LOAD_PROPERTIES);
   }
 
+  protected static void addPropertiesToMap(
+      final Map<String, Object> properties, final Map<String, Object> toAddProperties) {
+
+    if (toAddProperties != null) {
+      properties.putAll(toAddProperties);
+    }
+  }
+
   /**
    * Creates a new task with the specified source document.
    *
@@ -101,14 +109,10 @@ public abstract class AbstractOfficeTask implements OfficeTask {
   // Gets the office properties to apply when the input file will be loaded.
   protected Map<String, Object> getLoadProperties() {
 
-    final Map<String, Object> loadProperties = new HashMap<>();
-    if (defaultLoadProperties != null) {
-      loadProperties.putAll(defaultLoadProperties);
-    }
-    loadProperties.putAll(source.getFormat().getLoadProperties());
-    if (source.getCustomLoadProperties() != null) {
-      loadProperties.putAll(source.getCustomLoadProperties());
-    }
+    final Map<String, Object> loadProperties = new HashMap<>(defaultLoadProperties);
+    addPropertiesToMap(loadProperties, source.getFormat().getLoadProperties());
+    addPropertiesToMap(loadProperties, source.getCustomLoadProperties());
+
     return loadProperties;
   }
 
