@@ -19,7 +19,10 @@
 
 package org.jodconverter.job;
 
+import org.apache.commons.lang3.Validate;
+
 import org.jodconverter.filter.FilterChain;
+import org.jodconverter.office.OfficeException;
 
 /**
  * Base class for all conversion job implementations.
@@ -42,4 +45,19 @@ public abstract class AbstractConversionJob implements ConversionJob {
     this.target = target;
     this.filterChain = filterChain;
   }
+
+  @Override
+  public final void execute() throws OfficeException {
+
+    Validate.notNull(target.getFormat(), "The target format is missing or not supported");
+    doExecute();
+  }
+
+  /**
+   * Executes the conversion and blocks until the conversion terminates. Both source and target
+   * document formats are known and valid at this point.
+   *
+   * @throws OfficeException If the conversion failed.
+   */
+  protected abstract void doExecute() throws OfficeException;
 }

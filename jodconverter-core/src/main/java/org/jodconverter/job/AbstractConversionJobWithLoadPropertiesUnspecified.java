@@ -96,7 +96,7 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
       specs.setDocumentFormat(format);
     }
 
-    return to(specs);
+    return toInternal(specs);
   }
 
   @Override
@@ -110,13 +110,20 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
       final OutputStream target, final boolean closeStream) {
 
     if (officeManager instanceof TemporaryFileMaker) {
-      return to(
+      return toInternal(
           new TargetDocumentSpecsFromOutputStream(
               target, ((TemporaryFileMaker) officeManager).makeTemporaryFile("tmp"), closeStream));
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "
             + "interface in order to be able to convert to OutputStream.");
+  }
+
+  private AbstractConversionJobWithTargetFormatUnspecified toInternal(
+      final AbstractTargetDocumentSpecs target) {
+
+    Validate.notNull(source.getFormat(), "The source format is missing or not supported");
+    return to(target);
   }
 
   /**

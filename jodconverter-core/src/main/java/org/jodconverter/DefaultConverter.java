@@ -137,7 +137,7 @@ public class DefaultConverter extends AbstractConverter {
     }
 
     @Override
-    public void execute() throws OfficeException {
+    public void doExecute() throws OfficeException {
 
       // Create a default conversion task and execute it
       final DefaultConversionTask task =
