@@ -2,6 +2,8 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/mvn8oqr2m8xorslk?svg=true)](https://ci.appveyor.com/project/sbraconnier/jodconverter)
 [![Build Status](https://travis-ci.org/sbraconnier/jodconverter.svg?branch=master)](https://travis-ci.org/sbraconnier/jodconverter)
+[![Coverage Status](https://coveralls.io/repos/github/sbraconnier/jodconverter/badge.svg?branch=master)](https://coveralls.io/github/sbraconnier/jodconverter?branch=master)
+[![Dependency Status](https://www.versioneye.com/user/projects/596d252e6725bd000e2d8b3b/badge.svg?style=flat)](https://www.versioneye.com/user/projects/596d252e6725bd000e2d8b3b)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core)
 [![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-core.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-core)
