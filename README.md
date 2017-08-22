@@ -2,8 +2,6 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/mvn8oqr2m8xorslk?svg=true)](https://ci.appveyor.com/project/sbraconnier/jodconverter)
 [![Build Status](https://travis-ci.org/sbraconnier/jodconverter.svg?branch=master)](https://travis-ci.org/sbraconnier/jodconverter)
-[![Coverage Status](https://coveralls.io/repos/github/sbraconnier/jodconverter/badge.svg?branch=master)](https://coveralls.io/github/sbraconnier/jodconverter?branch=master)
-[![Dependency Status](https://www.versioneye.com/user/projects/596d252e6725bd000e2d8b3b/badge.svg?style=flat)](https://www.versioneye.com/user/projects/596d252e6725bd000e2d8b3b)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core)
 [![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-core.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-core)
@@ -51,17 +49,17 @@ gradlew clean build -x test -x integTest -PuseOpenOffice
 gradlew clean build -x test -x integTest distZip
 ```
 
-## Thanks To...
+## Credits...
 
-I cannot say exactly where you could find some similitude between my source code and the one of these forks/projects but here are my favorite/inspiration forks/projects:
+Here are my favorite/inspiration forks/projects:
 
-- [XWiki fork](https://github.com/xwiki/jodconverter): Nice choice if you can afford using the SIGAR tools (which I couldn't sadly).
+- [XWiki fork](https://github.com/xwiki/jodconverter): Nice choice if you can afford using the SIGAR tools (which I couldn't sadly). The **filter** package is strongly inspired by this project.
 - [Nuxeo fork](https://github.com/nuxeo/jodconverter): Nice choice if you don't want to use SIGAR and don't came across an unresponsive office process following a timeout exception that drives you crazy.
-- [documents4j project](https://github.com/documents4j/documents4j): Nice choice if you want 100% perfect conversion using MS Office. But work only on Windows out of the box (Local implementation) and not totally free (since MS Office is not free).
+- [documents4j project](https://github.com/documents4j/documents4j): Nice choice if you want 100% perfect conversion using MS Office. But work only on Windows out of the box (Local implementation) and not totally free (since MS Office is not free). The new "job" package is strongly inspired by this project.
 
 ### A special thanks to:
 
-[@michelole](https://github.com/michelole) who created a pull request in these two forks with a stress test that made my office process to crash every times! I don't know him but my first commit was when I was able to build my things with his stress test on!!  
+[@michelole](https://github.com/michelole) who created a pull request in these two forks with a [stress test](https://github.com/sbraconnier/jodconverter/blob/master/jodconverter-core/src/integTest/java/org/jodconverter/StressITest.java) that made my office process to crash every times! My first commit was when I was able to build my things with his stress test on!!  
 
 ## Original JODConverter
 
