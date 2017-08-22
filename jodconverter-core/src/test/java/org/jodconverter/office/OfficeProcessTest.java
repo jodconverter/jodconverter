@@ -98,6 +98,7 @@ public class OfficeProcessTest {
             });
 
     assertThat(files).hasSize(1);
+    FileUtils.deleteQuietly(workingDir);
   }
 
   @Test
@@ -106,7 +107,7 @@ public class OfficeProcessTest {
     mockStatic(FileUtils.class);
 
     final File workingDir =
-        new File(outputDir, "deleteProfileDir_WhenCannotBeDeleted_RenameDirectory");
+        new File(outputDir, "deleteProfileDir_WhenCannotBeDeleted_OperationIgnored");
 
     doThrow(new IOException()).when(FileUtils.class, "deleteDirectory", isA(File.class));
 
@@ -128,6 +129,7 @@ public class OfficeProcessTest {
             });
 
     assertThat(files).isNullOrEmpty();
+    FileUtils.deleteQuietly(workingDir);
   }
 
   @Test
