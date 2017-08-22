@@ -150,9 +150,14 @@ public abstract class AbstractOfficeTask implements OfficeTask {
       // interface is supported, otherwise use XComponent.dispose
       final XCloseable closeable = UnoRuntime.queryInterface(XCloseable.class, document);
       if (closeable == null) {
+        // If close is not supported by this model - try to dispose it.
         UnoRuntime.queryInterface(XComponent.class, document).dispose();
       } else {
         try {
+          // The boolean parameter deliverOwnership tells objects vetoing the
+          // close process that they may assume ownership if they object the closure
+          // by throwing a CloseVetoException. Here we give up ownership. To be on
+          // the safe side, catch possible veto exception anyway.
           closeable.close(true);
         } catch (CloseVetoException closeVetoEx) { // NOSONAR
           // whoever raised the veto should close the document

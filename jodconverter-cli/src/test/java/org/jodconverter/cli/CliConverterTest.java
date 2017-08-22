@@ -21,6 +21,7 @@ package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,6 +36,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitSecurityManager;
@@ -122,20 +124,6 @@ public class CliConverterTest {
       assertThat(ex)
           .isExactlyInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("Input and Output array lengths don't match");
-    }
-  }
-
-  @Test
-  public void main_WithWithOutputDirAlreadyExistAsFile_ThrowsIllegalArgumentException() {
-
-    try {
-      converter.convert(
-          new String[] {SOURCE_FILE_1.getPath()}, "pdf", SOURCE_FILE_2.getPath(), false, null);
-
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseInstanceOf(IOException.class);
     }
   }
 
@@ -452,6 +440,200 @@ public class CliConverterTest {
       final String capturedlog = SystemLogHandler.stopCapture();
       assertThat(capturedlog)
           .containsPattern("Skipping filename '.*' since it doesn't match an existing file.*");
+    }
+  }
+
+  @Test
+  public void convert_WithOutputDirAlreadyExistingAsFile_ThrowsOfficeException() {
+
+    try {
+      converter.convert(
+          new String[] {SOURCE_FILE_1.getPath()}, "pdf", SOURCE_FILE_2.getPath(), false, null);
+
+    } catch (Exception ex) {
+      assertThat(ex)
+          .isExactlyInstanceOf(OfficeException.class)
+          .hasCauseInstanceOf(IOException.class);
+      assertThat(ex.getCause())
+          .hasMessageMatching("Invalid output directory.*that exists but is a file");
+    }
+  }
+
+  @Test
+  public void prepareOutputDir_WithOutputDirThatCannotBeWrittenTo_ThrowsIOException() {
+
+    final File dir = mock(File.class);
+    given(dir.exists()).willReturn(true);
+    given(dir.isFile()).willReturn(false);
+    given(dir.canWrite()).willReturn(false);
+
+    try {
+      Whitebox.invokeMethod(converter, "prepareOutputDir", dir);
+    } catch (Exception ex) {
+      assertThat(ex)
+          .isExactlyInstanceOf(IOException.class)
+          .hasMessageMatching("Invalid output directory.*that cannot be written to");
+    }
+  }
+
+  @Test
+  public void prepareOutputDir_WithUnexistingOutputDir_OutputDirCreated() throws Exception {
+
+    final File dir =
+        new File(TEST_OUTPUT_DIR, CliConverterTest.class.getSimpleName() + "_prepareTest");
+    assertThat(dir).doesNotExist();
+
+    try {
+      Whitebox.invokeMethod(converter, "prepareOutputDir", dir);
+      assertThat(dir).exists();
+    } finally {
+      FileUtils.deleteQuietly(dir);
+    }
+  }
+
+  @Test
+  public void validateInputFile_WithInputFileThatDoesNotExists_ReturnsFalse() throws Exception {
+
+    final File file = mock(File.class);
+    given(file.exists()).willReturn(false);
+
+    try {
+      SystemLogHandler.startCapture();
+      boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
+      assertThat(valid).isFalse();
+    } finally {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).containsPattern("Skipping file.*that does not exist");
+    }
+  }
+
+  @Test
+  public void validateInputFile_WithInputFileThatExistsAsDirectory_ReturnsFalse() throws Exception {
+
+    final File file = mock(File.class);
+    given(file.exists()).willReturn(true);
+    given(file.isDirectory()).willReturn(true);
+
+    try {
+      SystemLogHandler.startCapture();
+      boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
+      assertThat(valid).isFalse();
+    } finally {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).containsPattern("Skipping file.*that exists but is a directory");
+    }
+  }
+
+  @Test
+  public void validateInputFile_WithInputFileThatCannotBeReadFrom_ReturnsFalse() throws Exception {
+
+    final File file = mock(File.class);
+    given(file.exists()).willReturn(true);
+    given(file.isDirectory()).willReturn(false);
+    given(file.canRead()).willReturn(false);
+
+    try {
+      SystemLogHandler.startCapture();
+      boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
+      assertThat(valid).isFalse();
+    } finally {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).containsPattern("Skipping file.*that cannot be read");
+    }
+  }
+
+  @Test
+  public void validateOutputFile_WithOutputFileThatDoesNotExists_ReturnsTrue() throws Exception {
+
+    final File inputFile = mock(File.class);
+    final File outputFile = mock(File.class);
+    given(outputFile.exists()).willReturn(false);
+
+    boolean valid =
+        Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, false);
+    assertThat(valid).isTrue();
+  }
+
+  @Test
+  public void validateOutputFile_WithOutputFileThatExistsAsDirectory_ReturnsFalse()
+      throws Exception {
+
+    final File inputFile = mock(File.class);
+    final File outputFile = mock(File.class);
+    given(outputFile.exists()).willReturn(true);
+    given(outputFile.isDirectory()).willReturn(true);
+
+    try {
+      SystemLogHandler.startCapture();
+      boolean valid =
+          Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, false);
+      assertThat(valid).isFalse();
+    } finally {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .containsPattern(
+              "Skipping file.*because the output file.*already exists and is a directory");
+    }
+  }
+
+  @Test
+  public void validateOutputFile_WithOutputFileThatExistsAndOverwriteOff_ReturnsFalse()
+      throws Exception {
+
+    final File inputFile = mock(File.class);
+    final File outputFile = mock(File.class);
+    given(outputFile.exists()).willReturn(true);
+    given(outputFile.isDirectory()).willReturn(false);
+
+    try {
+      SystemLogHandler.startCapture();
+      boolean valid =
+          Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, false);
+      assertThat(valid).isFalse();
+    } finally {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .containsPattern(
+              "Skipping file.*because the output file.*already exists and the overwrite switch is off");
+    }
+  }
+
+  @Test
+  public void validateOutputFile_WithOutputFileThatExistsAndOverwriteOn_ReturnsTrue()
+      throws Exception {
+
+    final File inputFile = mock(File.class);
+    final File outputFile = mock(File.class);
+    given(outputFile.exists()).willReturn(true);
+    given(outputFile.isDirectory()).willReturn(false);
+    given(outputFile.delete()).willReturn(true);
+
+    boolean valid =
+        Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, true);
+    assertThat(valid).isTrue();
+  }
+
+  @Test
+  public void
+      validateOutputFile_WithOutputFileThatExistsButCannotBeDeletedAndOverwriteOn_ReturnsFalse()
+          throws Exception {
+
+    final File inputFile = mock(File.class);
+    final File outputFile = mock(File.class);
+    given(outputFile.exists()).willReturn(true);
+    given(outputFile.isDirectory()).willReturn(false);
+    given(outputFile.delete()).willReturn(false);
+
+    try {
+      SystemLogHandler.startCapture();
+      boolean valid =
+          Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, true);
+      assertThat(valid).isFalse();
+    } finally {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .containsPattern(
+              "Skipping file.*because the output file.*already exists and cannot be deleted");
     }
   }
 }
