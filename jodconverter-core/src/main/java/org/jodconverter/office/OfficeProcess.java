@@ -119,23 +119,19 @@ class OfficeProcess {
   /** Deletes the profile directory of the office process. */
   public void deleteProfileDir() {
 
-    if (instanceProfileDir != null) {
-      LOGGER.debug("Deleting instance profile directory '{}'", instanceProfileDir);
-      try {
-        FileUtils.deleteDirectory(instanceProfileDir);
-      } catch (IOException ioEx) { // NOSONAR
-        final File oldProfileDir =
-            new File(
-                instanceProfileDir.getParentFile(),
-                instanceProfileDir.getName() + ".old." + System.currentTimeMillis());
-        if (instanceProfileDir.renameTo(oldProfileDir)) {
-          LOGGER.warn(
-              "Could not delete profileDir: {}; renamed it to {}",
-              ioEx.getMessage(),
-              oldProfileDir);
-        } else {
-          LOGGER.error("Could not delete profileDir: {}", ioEx.getMessage());
-        }
+    LOGGER.debug("Deleting instance profile directory '{}'", instanceProfileDir);
+    try {
+      FileUtils.deleteDirectory(instanceProfileDir);
+    } catch (IOException ioEx) { // NOSONAR
+      final File oldProfileDir =
+          new File(
+              instanceProfileDir.getParentFile(),
+              instanceProfileDir.getName() + ".old." + System.currentTimeMillis());
+      if (instanceProfileDir.renameTo(oldProfileDir)) {
+        LOGGER.warn(
+            "Could not delete profileDir: {}; renamed it to {}", ioEx.getMessage(), oldProfileDir);
+      } else {
+        LOGGER.error("Could not delete profileDir: {}", ioEx.getMessage());
       }
     }
   }
