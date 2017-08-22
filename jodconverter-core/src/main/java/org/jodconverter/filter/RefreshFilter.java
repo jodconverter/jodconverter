@@ -34,27 +34,48 @@ public class RefreshFilter implements Filter {
   private static final Logger LOGGER = LoggerFactory.getLogger(RefreshFilter.class);
 
   /**
-   * Singleton instance of refresh filter.
+   * Singleton instance of refresh filter that won't call the next filter in the chain. Use this
+   * filter only when you are absolutely sure that it will be used as last filter in a filter chain.
    *
    * @since 4.1.0
    */
-  public static final RefreshFilter REFRESH = new RefreshFilter();
+  public static final RefreshFilter LAST_REFRESH = new RefreshFilter(true);
 
   /**
-   * Singleton instance of refresh filter. Please use the identical {@link RefreshFilter#REFRESH}
-   * constant. The new name is more friendly as it doesn't clash with other values when using static
-   * imports.
+   * Singleton instance of refresh filter. Please use the identical {@link
+   * RefreshFilter#LAST_REFRESH} constant. The new name is more friendly as it doesn't clash with
+   * other values when using static imports.
    */
-  @Deprecated public static final RefreshFilter INSTANCE = REFRESH;
+  @Deprecated public static final RefreshFilter INSTANCE = LAST_REFRESH;
 
   /**
    * Singleton instance of a {@link FilterChain} that will always contain a single {@link
-   * RefreshFilter}. If a document is just convert from a format to another format, this chain
-   * should be used.
+   * RefreshFilter} that won't call the next filter in the chain. If a document is just converted
+   * from a format to another format, this chain should be used.
    *
    * @since 4.1.0
    */
-  public static final FilterChain CHAIN = new UnmodifiableFilterChain(REFRESH);
+  public static final FilterChain CHAIN = new UnmodifiableFilterChain(LAST_REFRESH);
+
+  private final boolean lastFilter;
+
+  /** Creates a new refresh filter. */
+  public RefreshFilter() {
+    this(false);
+  }
+
+  /**
+   * Creates a new refresh filter that will call or not the next filter in the chain according to
+   * the specified argument.
+   *
+   * @param lastFilter If {@code true}, then the filter won't call the next filter in the chain. If
+   *     {@code false}, the next filter in the chain, if any, will be applied.
+   */
+  public RefreshFilter(final boolean lastFilter) {
+    super();
+
+    this.lastFilter = lastFilter;
+  }
 
   @Override
   public void doFilter(
@@ -68,6 +89,9 @@ public class RefreshFilter implements Filter {
       LOGGER.debug("Refreshing...");
       refreshable.refresh();
     }
-    chain.doFilter(context, document);
+
+    if (!lastFilter) {
+      chain.doFilter(context, document);
+    }
   }
 }

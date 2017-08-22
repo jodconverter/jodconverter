@@ -72,7 +72,7 @@ public class PageCounterFilterITest extends AbstractOfficeITest {
     // Test the filter
     converter
         .convert(SOURCE_FILE)
-        .filterWith(countFilter1, selectorFilter, countFilter2, RefreshFilter.REFRESH)
+        .filterWith(countFilter1, selectorFilter, countFilter2)
         .to(targetFile)
         .execute();
 

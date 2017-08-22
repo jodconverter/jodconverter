@@ -80,11 +80,7 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
         new TextInserterFilter("This is a test of text insertion", 2, 10, props);
 
     // Convert to PDF
-    converter
-        .convert(SOURCE_MULTI_PAGE_FILE)
-        .filterWith(filter, RefreshFilter.REFRESH)
-        .to(targetFile)
-        .execute();
+    converter.convert(SOURCE_MULTI_PAGE_FILE).filterWith(filter).to(targetFile).execute();
   }
 
   /**
@@ -107,10 +103,6 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
             100); // Vertical Position , 10 CM
 
     // Convert to PDF
-    converter
-        .convert(SOURCE_FILE)
-        .filterWith(filter, RefreshFilter.REFRESH)
-        .to(targetFile)
-        .execute();
+    converter.convert(SOURCE_FILE).filterWith(filter).to(targetFile).execute();
   }
 }

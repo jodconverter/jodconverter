@@ -126,6 +126,7 @@ public abstract class AbstractConverter implements DocumentConverter {
     protected OfficeManager officeManager;
     protected DocumentFormatRegistry formatRegistry;
     protected Map<String, Object> defaultLoadProperties;
+    protected boolean endsWithRefreshFilter;
 
     // Protected ctor so only subclasses can initialize an instance of this builder.
     protected AbstractConverterBuilder() {

@@ -81,7 +81,7 @@ public class GraphicInserterFilterITest extends AbstractOfficeITest {
     // Convert to PDF
     converter
         .convert(SOURCE_MULTI_PAGE_FILE)
-        .filterWith(filter, RefreshFilter.REFRESH)
+        .filterWith(filter)
         .to(new File(outputDir, SOURCE_MULTI_PAGE_FILENAME + ".pdf"))
         .execute();
   }
@@ -104,7 +104,7 @@ public class GraphicInserterFilterITest extends AbstractOfficeITest {
     // Convert to PDF
     converter
         .convert(SOURCE_FILE)
-        .filterWith(filter, RefreshFilter.REFRESH)
+        .filterWith(filter)
         .to(new File(outputDir, SOURCE_FILENAME + ".originalsize.pdf"))
         .execute();
   }
@@ -130,7 +130,7 @@ public class GraphicInserterFilterITest extends AbstractOfficeITest {
     // Convert to PDF
     converter
         .convert(SOURCE_FILE)
-        .filterWith(filter, RefreshFilter.REFRESH)
+        .filterWith(filter)
         .to(new File(outputDir, SOURCE_FILENAME + ".smallersize.pdf"))
         .execute();
   }
@@ -165,7 +165,7 @@ public class GraphicInserterFilterITest extends AbstractOfficeITest {
     // Convert to PDF
     converter
         .convert(SOURCE_MULTI_PAGE_FILE)
-        .filterWith(filter, RefreshFilter.REFRESH)
+        .filterWith(filter)
         .to(new File(outputDir, SOURCE_MULTI_PAGE_FILENAME + ".smallersize.pdf"))
         .execute();
   }

@@ -68,11 +68,7 @@ public class PageSelectorFilterITest extends AbstractOfficeITest {
     final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
 
     // Test the filter
-    converter
-        .convert(SOURCE_FILE)
-        .filterWith(selectorFilter, RefreshFilter.REFRESH)
-        .to(targetFile)
-        .execute();
+    converter.convert(SOURCE_FILE).filterWith(selectorFilter).to(targetFile).execute();
 
     final String content = FileUtils.readFileToString(targetFile, Charset.forName("UTF-8"));
     assertThat(content)

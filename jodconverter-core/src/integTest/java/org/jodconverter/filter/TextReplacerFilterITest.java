@@ -130,11 +130,7 @@ public class TextReplacerFilterITest extends AbstractOfficeITest {
             });
 
     // Convert to PDF
-    converter
-        .convert(SOURCE_FILE)
-        .filterWith(filter, RefreshFilter.REFRESH)
-        .to(targetFile)
-        .execute();
+    converter.convert(SOURCE_FILE).filterWith(filter).to(targetFile).execute();
 
     final String content = FileUtils.readFileToString(targetFile, Charset.forName("UTF-8"));
     assertThat(content)

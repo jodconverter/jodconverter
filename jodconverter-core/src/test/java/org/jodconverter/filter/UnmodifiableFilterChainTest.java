@@ -37,7 +37,7 @@ public class UnmodifiableFilterChainTest {
   @Test(expected = UnsupportedOperationException.class)
   public void create_ShouldBeReadOnly() {
 
-    final UnmodifiableFilterChain chain = new UnmodifiableFilterChain(RefreshFilter.REFRESH);
+    final UnmodifiableFilterChain chain = new UnmodifiableFilterChain(RefreshFilter.LAST_REFRESH);
     chain.addFilter(
         new Filter() {
 

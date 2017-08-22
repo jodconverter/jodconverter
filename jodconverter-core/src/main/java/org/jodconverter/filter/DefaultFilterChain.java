@@ -19,23 +19,69 @@
 
 package org.jodconverter.filter;
 
+import com.sun.star.lang.XComponent;
+
+import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.OfficeException;
+
 /** Default implementation of FilterChain. */
 public class DefaultFilterChain extends AbstractFilterChain {
+
+  private final boolean endsWithRefreshFilter;
+
+  /**
+   * Creates a FilterChain without any filters that will always apply a {@link RefreshFilter} at the
+   * end of the chain. Filters can later on be added using {@link #addFilter(Filter)}.
+   */
+  public DefaultFilterChain() {
+    this(true);
+  }
+
+  /**
+   * Creates a FilterChain that will contains the specified filters and will always apply a {@link
+   * RefreshFilter} at the end of the chain.
+   *
+   * @param filters The filters to add to the chain.
+   */
+  public DefaultFilterChain(final Filter... filters) {
+    this(true, filters);
+  }
 
   /**
    * Creates a FilterChain without any filters. Filters can later on be added using {@link
    * #addFilter(Filter)}.
+   *
+   * @param endsWithRefreshFilter If {@code true}, a {@link RefreshFilter} will always be applied at
+   *     the end of the chain.
    */
-  public DefaultFilterChain() {
+  public DefaultFilterChain(final boolean endsWithRefreshFilter) {
     super();
+
+    this.endsWithRefreshFilter = endsWithRefreshFilter;
   }
 
   /**
    * Creates a FilterChain that will contains the specified filters.
    *
+   * @param endsWithRefreshFilter If {@code true}, a {@link RefreshFilter} will always be applied at
+   *     the end of the chain.
    * @param filters The filters to add to the chain.
    */
-  public DefaultFilterChain(final Filter... filters) {
+  public DefaultFilterChain(final boolean endsWithRefreshFilter, final Filter... filters) {
     super(filters);
+
+    this.endsWithRefreshFilter = endsWithRefreshFilter;
+  }
+
+  @Override
+  public void doFilter(final OfficeContext context, final XComponent document)
+      throws OfficeException {
+
+    // Call the RefreshFilter if we are at the end of the chain
+    if (pos == filters.size() && endsWithRefreshFilter) {
+      doFilter(RefreshFilter.LAST_REFRESH, context, document);
+    } else {
+      super.doFilter(context, document);
+    }
   }
 }

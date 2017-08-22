@@ -85,7 +85,7 @@ public class MultipleFiltersITest extends AbstractOfficeITest {
     // Convert to PDF
     converter
         .convert(SOURCE_FILE)
-        .filterWith(replacerFilter, graphicfilter, RefreshFilter.REFRESH)
+        .filterWith(replacerFilter, graphicfilter)
         .to(new File(outputDir, SOURCE_FILENAME + ".pdf"))
         .execute();
   }

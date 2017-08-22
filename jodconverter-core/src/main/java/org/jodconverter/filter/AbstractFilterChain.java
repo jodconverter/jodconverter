@@ -34,12 +34,21 @@ import org.jodconverter.office.OfficeException;
 public abstract class AbstractFilterChain implements FilterChain {
 
   private boolean readOnly;
-  private List<Filter> filters;
-  private int pos; // to maintain the current position in the filter chain.
+  protected List<Filter> filters;
+  protected int pos; // to maintain the current position in the filter chain.
 
   /** Creates a FilterChain. */
   public AbstractFilterChain() {
     this(false);
+  }
+
+  /**
+   * Creates a FilterChain that will contains the specified filters.
+   *
+   * @param filters The filters to add to the chain.
+   */
+  public AbstractFilterChain(final Filter... filters) {
+    this(false, filters);
   }
 
   /**
@@ -67,15 +76,6 @@ public abstract class AbstractFilterChain implements FilterChain {
   }
 
   /**
-   * Creates a FilterChain that will contains the specified filters.
-   *
-   * @param filters The filters to add to the chain.
-   */
-  public AbstractFilterChain(final Filter... filters) {
-    this(false, filters);
-  }
-
-  /**
    * Adds a filter to the chain.
    *
    * @param filter The filter to add at the end of the chain.
@@ -95,14 +95,28 @@ public abstract class AbstractFilterChain implements FilterChain {
     // Call the next filter if there is one
     if (pos < filters.size()) {
       final Filter filter = filters.get(pos++);
-      try {
-        filter.doFilter(context, document, this);
-      } catch (OfficeException ex) {
-        throw ex;
-      } catch (Exception ex) {
-        throw new OfficeException(
-            "Could not apply filter " + filter.getClass().getName() + ".", ex);
-      }
+      doFilter(filter, context, document);
+    }
+  }
+
+  /**
+   * Causes the specified filter to be invoked.
+   *
+   * @param filter The filter to execute.
+   * @param context The context in use to pass along the chain.
+   * @param document The document being converted to pass along the chain.
+   * @throws OfficeException If an error occurs processing the filter.
+   */
+  protected void doFilter(
+      final Filter filter, final OfficeContext context, final XComponent document)
+      throws OfficeException {
+
+    try {
+      filter.doFilter(context, document, this);
+    } catch (OfficeException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new OfficeException("Could not apply filter " + filter.getClass().getName() + ".", ex);
     }
   }
 

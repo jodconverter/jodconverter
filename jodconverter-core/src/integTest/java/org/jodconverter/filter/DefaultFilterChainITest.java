@@ -20,8 +20,14 @@
 package org.jodconverter.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
@@ -29,9 +35,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.sun.star.lang.XComponent;
+
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.PageCounterFilter;
 import org.jodconverter.filter.text.PageSelectorFilter;
+import org.jodconverter.office.OfficeContext;
 
 public class DefaultFilterChainITest extends AbstractOfficeITest {
 
@@ -73,7 +82,8 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
 
     // Test the filters
     final DefaultFilterChain chain =
-        new DefaultFilterChain(countFilter1, selectorFilter, countFilter2, RefreshFilter.REFRESH);
+        new DefaultFilterChain(
+            countFilter1, selectorFilter, new RefreshFilter(false), countFilter2);
     converter.convert(SOURCE_FILE).filterWith(chain).to(targetFile1).execute();
 
     final String content = FileUtils.readFileToString(targetFile1, Charset.forName("UTF-8"));
@@ -89,5 +99,66 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
     converter.convert(targetFile1).filterWith(chain).to(targetFile2).execute();
     assertThat(countFilter1.getPageCount()).isEqualTo(1);
     assertThat(countFilter2.getPageCount()).isEqualTo(1);
+  }
+
+  /**
+   * Test that putting off the automatic insertion of refresh filter won't execute any refresh.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void reset_WithEndsWithRefreshFilterOff_ShoudNotApplyRefreshFilter() throws Exception {
+
+    // Replace the LAST_REFRESH singleton
+    final RefreshFilter refreshFilter = mock(RefreshFilter.class);
+    setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), refreshFilter);
+
+    // Then execute the test
+    final File targetFile1 = new File(outputDir, SOURCE_FILENAME + ".page1.txt");
+
+    final PageCounterFilter countFilter = new PageCounterFilter();
+    final PageSelectorFilter selectorFilter = new PageSelectorFilter(1);
+
+    final DefaultFilterChain chain = new DefaultFilterChain(false, countFilter, selectorFilter);
+    converter.convert(SOURCE_FILE).filterWith(chain).to(targetFile1).execute();
+
+    // Verify that the
+    verify(refreshFilter, times(0))
+        .doFilter(isA(OfficeContext.class), isA(XComponent.class), isA(FilterChain.class));
+  }
+
+  /**
+   * Test that putting on the automatic insertion of refresh filter will execute it.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void reset_WithEndsWithRefreshFilterOn_ShoudApplyRefreshFilter() throws Exception {
+
+    // Replace the LAST_REFRESH singleton
+    final RefreshFilter refreshFilter = mock(RefreshFilter.class);
+    setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), refreshFilter);
+
+    // Then execute the test
+    final File targetFile1 = new File(outputDir, SOURCE_FILENAME + ".page1.txt");
+
+    final PageCounterFilter countFilter = new PageCounterFilter();
+    final PageSelectorFilter selectorFilter = new PageSelectorFilter(1);
+
+    final DefaultFilterChain chain = new DefaultFilterChain(countFilter, selectorFilter);
+    converter.convert(SOURCE_FILE).filterWith(chain).to(targetFile1).execute();
+
+    // Verify that the
+    verify(refreshFilter, times(1))
+        .doFilter(isA(OfficeContext.class), isA(XComponent.class), isA(FilterChain.class));
+  }
+
+  static void setFinalStatic(final Field field, final Object newValue) throws Exception {
+
+    field.setAccessible(true);
+    final Field modifiersField = Field.class.getDeclaredField("modifiers");
+    modifiersField.setAccessible(true);
+    modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+    field.set(null, newValue);
   }
 }

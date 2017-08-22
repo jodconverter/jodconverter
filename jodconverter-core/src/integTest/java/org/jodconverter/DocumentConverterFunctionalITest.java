@@ -27,8 +27,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.jodconverter.filter.RefreshFilter;
-
 public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
 
   private static final int MAX_THREADS = 10;
@@ -107,7 +105,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
           new Runnable() {
             @Override
             public void run() {
-              convertFileToAllSupportedFormats(sourceFile, outputDir, RefreshFilter.REFRESH);
+              convertFileToAllSupportedFormats(sourceFile, outputDir);
             }
           };
 
@@ -122,7 +120,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
         threadCount = 0;
       }
 
-      //convertFileToAllSupportedFormats(sourceFile, outputDir, RefreshFilter.REFRESH);
+      //convertFileToAllSupportedFormats(sourceFile, outputDir);
     }
 
     // Wait for remaining threads.

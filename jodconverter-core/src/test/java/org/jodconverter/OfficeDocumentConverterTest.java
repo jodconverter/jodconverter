@@ -113,8 +113,7 @@ public class OfficeDocumentConverterTest {
 
     final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
 
-    final FilterChain chain =
-        new DefaultFilterChain(new PageCounterFilter(), RefreshFilter.REFRESH);
+    final FilterChain chain = new DefaultFilterChain(new PageCounterFilter());
 
     final File targetFile = new File(outputDir, "test.pdf");
     converter.convert(chain, SOURCE_FILE, targetFile);
@@ -195,5 +194,35 @@ public class OfficeDocumentConverterTest {
     verify(officeManager, times(1)).execute(taskArgument.capture());
     final DefaultConversionTask task = taskArgument.getValue();
     assertThat(task).extracting("defaultLoadProperties").containsExactly(loadProperties);
+  }
+
+  @Test
+  public void convert_WithDefaultLoadPropertiesSetTwice_TaskExecutedWithExpectedLoadProperties()
+      throws OfficeException {
+
+    final Map<String, Object> loadProperties1 = new HashMap<>();
+    loadProperties1.put("Hidden", false);
+    loadProperties1.put("ReadOnly", false);
+    loadProperties1.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
+
+    final Map<String, Object> loadProperties2 = new HashMap<>();
+    loadProperties2.put("Hidden", true);
+    loadProperties2.put("ReadOnly", true);
+    loadProperties2.put("UpdateDocMode", UpdateDocMode.FULL_UPDATE);
+
+    final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
+    converter.setDefaultLoadProperties(loadProperties1);
+    converter.setDefaultLoadProperties(loadProperties2);
+
+    final File targetFile = new File(outputDir, "test.pdf");
+    converter.convert(SOURCE_FILE, targetFile);
+
+    // Verify that the office manager has executed a task
+    // with the expected properties.
+    final ArgumentCaptor<DefaultConversionTask> taskArgument =
+        ArgumentCaptor.forClass(DefaultConversionTask.class);
+    verify(officeManager, times(1)).execute(taskArgument.capture());
+    final DefaultConversionTask task = taskArgument.getValue();
+    assertThat(task).extracting("defaultLoadProperties").containsExactly(loadProperties2);
   }
 }

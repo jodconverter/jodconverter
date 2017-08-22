@@ -54,12 +54,13 @@ public class DefaultFilterChainTest {
   @SuppressWarnings("unchecked")
   public void create_ShouldBeEditable() throws IllegalAccessException {
 
+    final Filter filter = new RefreshFilter(false);
     final DefaultFilterChain chain = new DefaultFilterChain();
-    chain.addFilter(RefreshFilter.REFRESH);
+    chain.addFilter(filter);
 
     final List<Filter> filters = (List<Filter>) FieldUtils.readField(chain, "filters", true);
     assertThat(filters).hasSize(1);
-    assertThat(filters).containsExactly(RefreshFilter.REFRESH);
+    assertThat(filters).containsExactly(filter);
   }
 
   @Test
