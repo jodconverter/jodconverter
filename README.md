@@ -10,20 +10,21 @@
 
 I created this fork because I had to do some changes to the original project and now it is time to share my work with the community.
 
-## What you want to know...
+### What you want to know...
 
 - **Documentation**: The JODConverter documentation (work in progress) can be found [here](https://github.com/sbraconnier/jodconverter/wiki).
 - **Dependencies**: See [this](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core) for core project dependencies. This fork does not depend on SIGAR. JODConverter only needs to retrieve office processes (PIDs) and kill office processes (using PID). It should work just fine without SIGAR with the actual [process managers](https://github.com/sbraconnier/jodconverter/tree/master/jodconverter-core/src/main/java/org/jodconverter/process) created from an older version of JODConverter. But I added the ability to use any process manager you would like to implement if none of the provided managers can be used. See the [processManager](https://github.com/sbraconnier/jodconverter/wiki/Configuration#capital_abcdprocessmanager) configuration option.
 - **Tests**: JODConverter is supposed to work just fine on recent versions of Windows, MacOS and Unix/Linux. Any confirmation would be welcome so we could build a list of official supported OS distributions.
 supported OS
-## Usage
 
-### Using Gradle:
+### Usage
+
+#### Gradle:
 ```Shell
 compile 'org.jodconverter:jodconverter-core:4.0.0-RELEASE'
 ```
 
-### Using Maven:
+#### Maven:
 ```Shell
 <dependency>
   <groupId>org.jodconverter</groupId>
@@ -32,23 +33,27 @@ compile 'org.jodconverter:jodconverter-core:4.0.0-RELEASE'
 </dependency>
 ```
 
-## Building the Project
+### Building the Project
 
-### Using LibreOffice libraries:
+#### With LibreOffice libraries:
 ```Shell
 gradlew clean build -x test -x integTest
 ```
 
-### Using OpenOffice libraries:
+#### With OpenOffice libraries:
 ```Shell
 gradlew clean build -x test -x integTest -PuseOpenOffice
 ```
 
-## Building Cli Executable
+### Building Cli Executable
 
 ```Shell
 gradlew clean build -x test -x integTest distZip
 ```
+
+#### Support <sup><sup>:speech_balloon:</sup></sup>
+
+JODConverter Gitter Community [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge), growing [FAQ](https://github.com/sbraconnier/jodconverter/wiki/FAQ).
 
 ## Credits...
 
