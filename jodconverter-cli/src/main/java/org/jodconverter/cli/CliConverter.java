@@ -29,10 +29,12 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
+import org.jodconverter.COnlineCoverter;
 import org.jodconverter.DefaultConverter;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.filter.RefreshFilter;
+import org.jodconverter.job.AbstractConverter;
 import org.jodconverter.office.OfficeException;
 
 /**
@@ -43,7 +45,19 @@ import org.jodconverter.office.OfficeException;
 public final class CliConverter {
 
   private final PrintWriter out;
-  private final DefaultConverter converter;
+  private final AbstractConverter converter;
+
+  /**
+   * Creates a new instance of the class that will use the specified manager.
+   *
+   * @param registry the document registry used by the created instance.
+   * @param connectionURL use remote LibreOffice Online server with this address
+   */
+  public CliConverter(final DocumentFormatRegistry registry, final String connectionURL) {
+
+    this.out = new PrintWriter(System.out); // NOSONAR
+    this.converter = COnlineCoverter.builder().formatRegistry(registry).build(connectionURL);
+  }
 
   /**
    * Creates a new instance of the class that will use the specified manager.
