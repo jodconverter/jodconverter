@@ -62,11 +62,10 @@ public class TextReplacerFilter implements Filter {
     final int searchLength = searchList.length;
     final int replacementLength = replacementList.length;
     Validate.isTrue(
-        searchList.length == replacementList.length,
-        "Search and Replace array lengths don't match: "
-            + searchLength
-            + " vs "
-            + replacementLength);
+        searchLength == replacementLength,
+        "search array length [%d] and replacement array length [%d] don't match",
+        searchLength,
+        replacementLength);
 
     // Everything is fine
     this.searchList = ArrayUtils.clone(searchList);

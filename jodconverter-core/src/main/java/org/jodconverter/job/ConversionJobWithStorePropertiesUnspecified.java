@@ -21,8 +21,6 @@ package org.jodconverter.job;
 
 import java.util.Map;
 
-import org.jodconverter.document.DocumentFormat;
-
 /**
  * A sufficiently specified conversion job with store properties that is not yet applied to the
  * converter.
@@ -34,7 +32,7 @@ public interface ConversionJobWithStorePropertiesUnspecified extends ConversionJ
    * conversion task.
    *
    * <p>Custom properties are applied after the store properties of the target {@link
-   * DocumentFormat}.
+   * org.jodconverter.document.DocumentFormat}.
    *
    * @param properties A map containing the custom properties to apply when storing a document.
    * @return This builder instance.

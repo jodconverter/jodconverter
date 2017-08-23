@@ -22,9 +22,6 @@ package org.jodconverter.job;
 import java.io.File;
 import java.util.Map;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.document.DocumentFormat;
-
 /**
  * An interface that provides the behavior to apply when a source file is no longer required by a
  * conversion process.
@@ -36,8 +33,9 @@ public interface SourceDocumentSpecs extends DocumentSpecs {
    * task.
    *
    * <p>Custom load properties are applied after the default load properties of the {@link
-   * DocumentConverter} (only if the converter is a subclass of {@link AbstractConverter}) and after
-   * the load properties of the {@link DocumentFormat} of this SourceDocumentSpecs.
+   * org.jodconverter.DocumentConverter} (only if the converter is a subclass of {@link
+   * org.jodconverter.job.AbstractConverter}) and after the load properties of the {@link
+   * org.jodconverter.document.DocumentFormat} of this SourceDocumentSpecs.
    *
    * @return A map containing the custom properties to apply when loading a document.
    */

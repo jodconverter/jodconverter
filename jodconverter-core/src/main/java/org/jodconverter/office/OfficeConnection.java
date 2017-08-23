@@ -93,19 +93,21 @@ class OfficeConnection implements OfficeContext, XEventListener {
       final XMultiComponentFactory localServiceManager = localContext.getServiceManager();
 
       // Instantiate a connector service.
-      Object x =
-          localServiceManager.createInstanceWithContext(
-              "com.sun.star.connection.Connector", localContext);
-      final XConnector connector = UnoRuntime.queryInterface(XConnector.class, x);
+      final XConnector connector =
+          UnoRuntime.queryInterface(
+              XConnector.class,
+              localServiceManager.createInstanceWithContext(
+                  "com.sun.star.connection.Connector", localContext));
 
       // Connect using the connection string part of the uno-url only.
       final XConnection connection = connector.connect(connectPart);
 
       // Instantiate a bridge factory service.
-      x =
-          localServiceManager.createInstanceWithContext(
-              "com.sun.star.bridge.BridgeFactory", localContext);
-      final XBridgeFactory bridgeFactory = UnoRuntime.queryInterface(XBridgeFactory.class, x);
+      final XBridgeFactory bridgeFactory =
+          UnoRuntime.queryInterface(
+              XBridgeFactory.class,
+              localServiceManager.createInstanceWithContext(
+                  "com.sun.star.bridge.BridgeFactory", localContext));
 
       // Create a remote bridge with no instance provider using the urp protocol.
       final String bridgeName = "jodconverter_" + bridgeIndex.getAndIncrement();
@@ -119,28 +121,26 @@ class OfficeConnection implements OfficeContext, XEventListener {
 
       // Get the remote instance
       final String rootOid = officeUrl.getRootOid();
-      x = bridge.getInstance(rootOid);
+      final Object bridgeInstance = bridge.getInstance(rootOid);
       // Did the remote server export this object ?
-      if (x == null) {
+      if (bridgeInstance == null) {
         throw new OfficeConnectionException(
             "Server didn't provide an instance for '" + rootOid + "'", connectPart);
       }
 
       // Query the initial object for its main factory interface.
       final XMultiComponentFactory officeMultiComponentFactory =
-          UnoRuntime.queryInterface(XMultiComponentFactory.class, x);
+          UnoRuntime.queryInterface(XMultiComponentFactory.class, bridgeInstance);
 
       // Retrieve the component context (it's not yet exported from the office)
       // Query for the XPropertySet interface.
       final XPropertySet properties =
           UnoRuntime.queryInterface(XPropertySet.class, officeMultiComponentFactory);
 
-      // Get the default context from the office server.
-      x = properties.getPropertyValue("DefaultContext");
-
-      // Query for the interface XComponentContext.
+      // Query for the interface XComponentContext using the default context from the office server.
       final XComponentContext officeComponentContext =
-          UnoRuntime.queryInterface(XComponentContext.class, x);
+          UnoRuntime.queryInterface(
+              XComponentContext.class, properties.getPropertyValue("DefaultContext"));
 
       // Now create the desktop service
       // NOTE: use the office component context here !
@@ -175,12 +175,14 @@ class OfficeConnection implements OfficeContext, XEventListener {
   }
 
   /** Closes the connection. */
-  public synchronized void disconnect() {
+  public void disconnect() {
 
-    LOGGER.debug("Disconnecting from '{}'", officeUrl.getConnectionAndParametersAsString());
+    synchronized (this) {
+      LOGGER.debug("Disconnecting from '{}'", officeUrl.getConnectionAndParametersAsString());
 
-    // Dispose of the bridge
-    bridgeComponent.dispose();
+      // Dispose of the bridge
+      bridgeComponent.dispose();
+    }
   }
 
   @Override

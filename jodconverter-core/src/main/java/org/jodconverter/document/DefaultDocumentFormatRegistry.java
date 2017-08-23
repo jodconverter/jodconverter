@@ -274,7 +274,7 @@ public final class DefaultDocumentFormatRegistry {
    * (and thus load default document format) the static INSTANCE only if needed.
    */
   private static class InstanceHolder { // NOSONAR
-    public static DocumentFormatRegistry INSTANCE = create(); // NOSONAR
+    static final DocumentFormatRegistry INSTANCE = create(); // NOSONAR
 
     private static DocumentFormatRegistry create() {
 

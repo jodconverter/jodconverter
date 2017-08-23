@@ -27,6 +27,7 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -57,6 +58,8 @@ public class ConvertITest {
     outputDir.mkdirs();
 
     // Don't allow the program to exit the VM
+    System.setOut(new SystemLogHandler(System.out));
+    System.setErr(new SystemLogHandler(System.err));
     System.setSecurityManager(new NoExitSecurityManager());
   }
 
@@ -71,23 +74,28 @@ public class ConvertITest {
     System.setSecurityManager(null);
   }
 
+  /** Reset the ExitException instance. */
+  @Before
+  public void setUp() {
+
+    ExitException.INSTANCE.reset();
+  }
+
   @Test
-  public void convert_WithFilenames_ShouldSucceed() throws Exception {
+  public void main_WithFilenames_ShouldSucceed() throws Exception {
 
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(outputDir, "convert.pdf");
+    final File outputFile = new File(outputDir, "main_WithFilenames.pdf");
 
     assertThat(outputFile).doesNotExist();
 
     try {
-      SystemLogHandler.startCapture();
-      Convert.main(new String[] {inputFile.getPath(), outputFile.getPath()});
+      Convert.main(new String[] {"-o", inputFile.getPath(), outputFile.getPath()});
 
       // Be sure the ExitException exception is thrown.
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
@@ -95,10 +103,11 @@ public class ConvertITest {
       assertThat(outputFile).isFile();
       assertThat(outputFile.length()).isGreaterThan(0L);
     }
+    FileUtils.deleteQuietly(outputFile);
   }
 
   @Test
-  public void convert_WithOutputFormat_ShouldSucceed() throws Exception {
+  public void main_WithOutputFormat_ShouldSucceed() throws Exception {
 
     final File inputFile = new File(SOURCE_FILE);
     final File outputFile =
@@ -108,36 +117,32 @@ public class ConvertITest {
     assertThat(outputFile).doesNotExist();
 
     try {
-      SystemLogHandler.startCapture();
       Convert.main(new String[] {"-f", "pdf", inputFile.getPath()});
 
       // Be sure the ExitException exception is thrown.
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
 
       assertThat(outputFile).isFile();
       assertThat(outputFile.length()).isGreaterThan(0L);
-
-      FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
     }
+    FileUtils.deleteQuietly(outputFile);
   }
 
   @Test
-  public void convert_WithMultipleFilters_ShouldSucceed() throws Exception {
+  public void main_WithMultipleFilters_ShouldSucceed() throws Exception {
 
     final File filterChainFile = new File(CONFIG_DIR, "applicationContext_multipleFilters.xml");
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(outputDir, "convert_WithMultipleFilters.pdf");
+    final File outputFile = new File(outputDir, "main_WithMultipleFilters.pdf");
 
     assertThat(outputFile).doesNotExist();
 
     try {
-      SystemLogHandler.startCapture();
       Convert.main(
           new String[] {
             "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
@@ -147,7 +152,6 @@ public class ConvertITest {
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
@@ -155,19 +159,19 @@ public class ConvertITest {
       assertThat(outputFile).isFile();
       assertThat(outputFile.length()).isGreaterThan(0L);
     }
+    FileUtils.deleteQuietly(outputFile);
   }
 
   @Test
-  public void convert_WithSingleFilter_ShouldSucceed() throws Exception {
+  public void main_WithSingleFilter_ShouldSucceed() throws Exception {
 
     final File filterChainFile = new File(CONFIG_DIR, "applicationContext_singleFilter.xml");
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(outputDir, "convert_WithSingleFilter.pdf");
+    final File outputFile = new File(outputDir, "main_WithSingleFilter.pdf");
 
     assertThat(outputFile).doesNotExist();
 
     try {
-      SystemLogHandler.startCapture();
       Convert.main(
           new String[] {
             "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
@@ -177,7 +181,6 @@ public class ConvertITest {
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
@@ -185,6 +188,7 @@ public class ConvertITest {
       assertThat(outputFile).isFile();
       assertThat(outputFile.length()).isGreaterThan(0L);
     }
+    FileUtils.deleteQuietly(outputFile);
   }
 
   @Test
@@ -195,19 +199,47 @@ public class ConvertITest {
           new String[] {
             "-i", OfficeUtils.getDefaultOfficeHome().getPath(),
             "-m", OfficeUtils.findBestProcessManager().getClass().getName(),
+            "-u", "src/integTest/resources/templateProfileDir",
             "-t", "30000",
             "-p", "2002",
             "input1.txt", "output1.pdf"
           });
 
-      // Be sure an exception is thrown.
+      // Be sure the ExitException exception is thrown.
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
     }
+  }
+
+  @Test
+  public void main_WithCustomDocumentFormats_ShouldSupportOnlyCustomFormats() throws Exception {
+
+    final File outputFile = new File(outputDir, "main_WithCustomDocumentFormats.pdf");
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(
+          new String[] {
+            "-o",
+            "-r",
+            new File("src/integTest/resources/cli-document-formats.json").getPath(),
+            SOURCE_FILE,
+            outputFile.getPath()
+          });
+
+      // Be sure the ExitException exception is thrown.
+      fail();
+
+    } catch (Exception ex) {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("The source format is missing or not supported");
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 2);
+    }
+    FileUtils.deleteQuietly(outputFile);
   }
 }

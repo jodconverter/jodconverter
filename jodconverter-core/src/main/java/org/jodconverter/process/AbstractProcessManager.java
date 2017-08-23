@@ -132,11 +132,10 @@ public abstract class AbstractProcessManager implements ProcessManager {
     }
 
     final List<String> outLines = outPumper.getOutputLines();
-    final List<String> errLines = errPumper.getOutputLines();
 
     if (LOGGER.isDebugEnabled()) {
       final String out = buildOutput(outLines);
-      final String err = buildOutput(errLines);
+      final String err = buildOutput(errPumper.getOutputLines());
 
       if (!StringUtils.isBlank(out)) {
         LOGGER.debug("Command Output: {}", out);

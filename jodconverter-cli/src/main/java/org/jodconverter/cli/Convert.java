@@ -49,93 +49,93 @@ public final class Convert {
   public static final int STATUS_MISSING_INPUT_FILE = 1;
   public static final int STATUS_INVALID_ARGUMENTS = 255;
 
-  private static final Option OPTION_APPLICATION_CONTEXT =
+  private static final Option OPT_APPLICATION_CONTEXT =
       Option.builder("a")
           .longOpt("application-context")
           .argName("file")
           .hasArg()
           .desc("Application context file (optional)")
           .build();
-  private static final Option OPTION_OUTPUT_DIRECTORY =
+  private static final Option OPT_OUTPUT_DIRECTORY =
       Option.builder("d")
           .longOpt("output-directory")
           .argName("dir")
           .hasArg()
           .desc("output directory (optional; defaults to input directory)")
           .build();
-  private static final Option OPTION_OUTPUT_FORMAT =
+  private static final Option OPT_OUTPUT_FORMAT =
       Option.builder("f")
           .longOpt("output-format")
           .hasArg()
           .desc("output format (e.g. pdf)")
           .build();
-  private static final Option OPTION_HELP =
+  private static final Option OPT_HELP =
       Option.builder("h").longOpt("help").desc("print help message").build();
-  private static final Option OPTION_OFFICE_HOME =
+  private static final Option OPT_OFFICE_HOME =
       Option.builder("i")
           .longOpt("office-home")
           .argName("dir")
           .hasArg()
           .desc("office home directory (optional; defaults to auto-detect)")
           .build();
-  private static final Option OPTION_KILL_EXISTING_PROCESS =
+  private static final Option OPT_KILL_EXISTING_PROCESS =
       Option.builder("k")
           .longOpt("kill-process")
           .desc("Kill existing office process (optional)")
           .build();
-  private static final Option OPTION_PROCESS_MANAGER =
+  private static final Option OPT_PROCESS_MANAGER =
       Option.builder("m")
           .longOpt("process-manager")
           .argName("classname")
           .hasArg()
           .desc("class name of the process manager to use (optional; defaults to auto-detect)")
           .build();
-  private static final Option OPTION_OVERWRITE =
+  private static final Option OPT_OVERWRITE =
       Option.builder("o")
           .longOpt("overwrite")
           .desc("overwrite existing output file (optional; defaults to false)")
           .build();
-  private static final Option OPTION_PORT =
+  private static final Option OPT_PORT =
       Option.builder("p")
           .longOpt("port")
           .hasArg()
           .desc("office socket port (optional; defaults to 2002)")
           .build();
-  private static final Option OPTION_REGISTRY =
+  private static final Option OPT_REGISTRY =
       Option.builder("r")
           .longOpt("registry")
           .argName("file")
           .hasArg()
           .desc("document formats registry configuration file (optional)")
           .build();
-  private static final Option OPTION_TIMEOUT =
+  private static final Option OPT_TIMEOUT =
       Option.builder("t")
           .longOpt("timeout")
           .hasArg()
           .desc("maximum conversion time in seconds (optional; defaults to 120)")
           .build();
-  private static final Option OPTION_USER_PROFILE =
+  private static final Option OPT_USER_PROFILE =
       Option.builder("u")
           .longOpt("user-profile")
           .argName("dir")
           .hasArg()
           .desc("use settings from the given user installation dir (optional)")
           .build();
-  private static final Option OPTION_VERSION =
+  private static final Option OPT_VERSION =
       Option.builder("v").longOpt("version").desc("print version").build();
 
   private static final Options OPTIONS = initOptions();
 
   private static void checkPrintInfoAndExit(final CommandLine commandLine) {
 
-    if (commandLine.hasOption(OPTION_HELP.getOpt())) {
+    if (commandLine.hasOption(OPT_HELP.getOpt())) {
       printHelp();
       System.exit(0);
     }
 
-    if (commandLine.hasOption(OPTION_VERSION.getOpt())) {
+    if (commandLine.hasOption(OPT_VERSION.getOpt())) {
       final Package pack = Convert.class.getPackage();
-      printInfo("jodconverter-cli version " + pack.getImplementationVersion());
+      printInfo("jodconverter-cli version %s", pack.getImplementationVersion());
       System.exit(0);
     }
   }
@@ -145,28 +145,27 @@ public final class Convert {
     final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
     //configuration.setWorkingDir(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
 
-    if (commandLine.hasOption(OPTION_OFFICE_HOME.getOpt())) {
-      builder.officeHome(commandLine.getOptionValue(OPTION_OFFICE_HOME.getOpt()));
+    if (commandLine.hasOption(OPT_OFFICE_HOME.getOpt())) {
+      builder.officeHome(commandLine.getOptionValue(OPT_OFFICE_HOME.getOpt()));
     }
 
-    builder.killExistingProcess(commandLine.hasOption(OPTION_KILL_EXISTING_PROCESS.getOpt()));
+    builder.killExistingProcess(commandLine.hasOption(OPT_KILL_EXISTING_PROCESS.getOpt()));
 
-    if (commandLine.hasOption(OPTION_PROCESS_MANAGER.getOpt())) {
-      builder.processManager(commandLine.getOptionValue(OPTION_PROCESS_MANAGER.getOpt()));
+    if (commandLine.hasOption(OPT_PROCESS_MANAGER.getOpt())) {
+      builder.processManager(commandLine.getOptionValue(OPT_PROCESS_MANAGER.getOpt()));
     }
 
-    if (commandLine.hasOption(OPTION_PORT.getOpt())) {
-      builder.portNumbers(Integer.parseInt(commandLine.getOptionValue(OPTION_PORT.getOpt())));
+    if (commandLine.hasOption(OPT_PORT.getOpt())) {
+      builder.portNumbers(Integer.parseInt(commandLine.getOptionValue(OPT_PORT.getOpt())));
     }
 
-    if (commandLine.hasOption(OPTION_TIMEOUT.getOpt())) {
+    if (commandLine.hasOption(OPT_TIMEOUT.getOpt())) {
       builder.taskExecutionTimeout(
-          Long.parseLong(commandLine.getOptionValue(OPTION_TIMEOUT.getOpt())) * 1000L);
+          Long.parseLong(commandLine.getOptionValue(OPT_TIMEOUT.getOpt())) * 1000L);
     }
 
-    if (commandLine.hasOption(OPTION_USER_PROFILE.getOpt())) {
-      builder.templateProfileDir(
-          new File(commandLine.getOptionValue(OPTION_USER_PROFILE.getOpt())));
+    if (commandLine.hasOption(OPT_USER_PROFILE.getOpt())) {
+      builder.templateProfileDir(new File(commandLine.getOptionValue(OPT_USER_PROFILE.getOpt())));
     }
 
     return builder.install().build();
@@ -175,10 +174,10 @@ public final class Convert {
   private static AbstractApplicationContext getApplicationContextOption(
       final CommandLine commandLine) {
 
-    if (commandLine.hasOption(OPTION_APPLICATION_CONTEXT.getOpt())) {
+    if (commandLine.hasOption(OPT_APPLICATION_CONTEXT.getOpt())) {
 
       return new FileSystemXmlApplicationContext(
-          commandLine.getOptionValue(OPTION_APPLICATION_CONTEXT.getOpt()));
+          commandLine.getOptionValue(OPT_APPLICATION_CONTEXT.getOpt()));
     }
 
     return null;
@@ -196,10 +195,10 @@ public final class Convert {
   private static DocumentFormatRegistry getRegistryOption(final CommandLine commandLine)
       throws IOException {
 
-    if (commandLine.hasOption(OPTION_REGISTRY.getOpt())) {
+    if (commandLine.hasOption(OPT_REGISTRY.getOpt())) {
       return JsonDocumentFormatRegistry.create(
           FileUtils.readFileToString(
-              new File(commandLine.getOptionValue(OPTION_REGISTRY.getOpt())), "UTF-8"));
+              new File(commandLine.getOptionValue(OPT_REGISTRY.getOpt())), "UTF-8"));
     }
 
     return null;
@@ -218,19 +217,19 @@ public final class Convert {
   private static Options initOptions() {
 
     final Options options = new Options();
-    options.addOption(OPTION_HELP);
-    options.addOption(OPTION_VERSION);
-    options.addOption(OPTION_APPLICATION_CONTEXT);
-    options.addOption(OPTION_OUTPUT_DIRECTORY);
-    options.addOption(OPTION_OUTPUT_FORMAT);
-    options.addOption(OPTION_OFFICE_HOME);
-    options.addOption(OPTION_KILL_EXISTING_PROCESS);
-    options.addOption(OPTION_PROCESS_MANAGER);
-    options.addOption(OPTION_OVERWRITE);
-    options.addOption(OPTION_PORT);
-    options.addOption(OPTION_REGISTRY);
-    options.addOption(OPTION_TIMEOUT);
-    options.addOption(OPTION_USER_PROFILE);
+    options.addOption(OPT_HELP);
+    options.addOption(OPT_VERSION);
+    options.addOption(OPT_APPLICATION_CONTEXT);
+    options.addOption(OPT_OUTPUT_DIRECTORY);
+    options.addOption(OPT_OUTPUT_FORMAT);
+    options.addOption(OPT_OFFICE_HOME);
+    options.addOption(OPT_KILL_EXISTING_PROCESS);
+    options.addOption(OPT_PROCESS_MANAGER);
+    options.addOption(OPT_OVERWRITE);
+    options.addOption(OPT_PORT);
+    options.addOption(OPT_REGISTRY);
+    options.addOption(OPT_TIMEOUT);
+    options.addOption(OPT_USER_PROFILE);
     return options;
   }
 
@@ -241,7 +240,6 @@ public final class Convert {
    */
   public static void main(final String[] arguments) {
 
-    AbstractApplicationContext context = null;
     try {
       final CommandLine commandLine = new DefaultParser().parse(OPTIONS, arguments);
 
@@ -249,14 +247,11 @@ public final class Convert {
       // to print some info and then exit.
       checkPrintInfoAndExit(commandLine);
 
-      // Load the application context if provided
-      context = getApplicationContextOption(commandLine);
-
       // Get conversion arguments
-      final String outputFormat = getStringOption(commandLine, OPTION_OUTPUT_FORMAT.getOpt());
-      final String outputDirPath = getStringOption(commandLine, OPTION_OUTPUT_DIRECTORY.getOpt());
+      final String outputFormat = getStringOption(commandLine, OPT_OUTPUT_FORMAT.getOpt());
+      final String outputDirPath = getStringOption(commandLine, OPT_OUTPUT_DIRECTORY.getOpt());
       final DocumentFormatRegistry registry = getRegistryOption(commandLine);
-      final boolean overwrite = commandLine.hasOption(OPTION_OVERWRITE.getOpt());
+      final boolean overwrite = commandLine.hasOption(OPT_OVERWRITE.getOpt());
       final String[] filenames = commandLine.getArgs();
 
       // Validate arguments length
@@ -264,6 +259,9 @@ public final class Convert {
         printHelp();
         System.exit(STATUS_INVALID_ARGUMENTS);
       }
+
+      // Load the application context if provided
+      final AbstractApplicationContext context = getApplicationContextOption(commandLine);
 
       // Create a default office manager from the command line
       final OfficeManager officeManager = createOfficeManager(commandLine);
@@ -297,29 +295,22 @@ public final class Convert {
       } finally {
         printInfo("Stopping office");
         OfficeUtils.stopQuietly(officeManager);
+
+        // Close the application context
+        IOUtils.closeQuietly(context);
       }
 
       System.exit(0);
 
     } catch (ParseException e) {
-      printErr("jodconverter-cli: " + e.getMessage());
+      printErr("jodconverter-cli: %s", e.getMessage());
       printHelp();
       System.exit(2);
     } catch (Exception e) { // NOSONAR
-      printErr("jodconverter-cli: " + e.getMessage());
+      printErr("jodconverter-cli: %s", e.getMessage());
       e.printStackTrace(System.err); // NOSONAR
       System.exit(2);
-    } finally {
-      // Close the application context
-      IOUtils.closeQuietly(context);
     }
-  }
-
-  private static void printErr(final String err) {
-
-    final PrintWriter writer = new PrintWriter(System.err); // NOSONAR
-    writer.println(err);
-    writer.flush();
   }
 
   private static void printHelp() {
@@ -331,10 +322,17 @@ public final class Convert {
             OPTIONS);
   }
 
-  private static void printInfo(final String info) {
+  private static void printErr(final String message, final Object... values) {
+
+    final PrintWriter writer = new PrintWriter(System.err); // NOSONAR
+    writer.println(String.format(message, values));
+    writer.flush();
+  }
+
+  private static void printInfo(final String message, final Object... values) {
 
     final PrintWriter writer = new PrintWriter(System.out); // NOSONAR
-    writer.println(info);
+    writer.println(String.format(message, values));
     writer.flush();
   }
 }

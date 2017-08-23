@@ -38,8 +38,6 @@ class OfficeManagerPool implements OfficeManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeManagerPool.class);
 
-  public static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds
-
   private static final int POOL_STOPPED = 0;
   private static final int POOL_STARTED = 1;
   private static final int POOL_SHUTDOWN = 2;
@@ -129,7 +127,22 @@ class OfficeManagerPool implements OfficeManager {
   }
 
   @Override
-  public synchronized void start() throws OfficeException {
+  public void start() throws OfficeException {
+
+    synchronized (this) {
+      doStart();
+    }
+  }
+
+  @Override
+  public void stop() throws OfficeException {
+
+    synchronized (this) {
+      doStop();
+    }
+  }
+
+  private void doStart() throws OfficeException {
 
     if (poolState.get() == POOL_SHUTDOWN) {
       throw new IllegalStateException("This office manager has been shutdown.");
@@ -148,8 +161,7 @@ class OfficeManagerPool implements OfficeManager {
     poolState.set(POOL_STARTED);
   }
 
-  @Override
-  public synchronized void stop() throws OfficeException {
+  private void doStop() throws OfficeException {
 
     if (poolState.get() == POOL_SHUTDOWN) {
       // Already shutdown, just exit

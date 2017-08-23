@@ -21,9 +21,6 @@ package org.jodconverter.job;
 
 import java.util.Map;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.document.DocumentFormat;
-
 /** A conversion job with load properties that is not yet applied to the converter. */
 public interface ConversionJobWithLoadPropertiesUnspecified
     extends ConversionJobWithFilterChainUnspecified {
@@ -33,8 +30,9 @@ public interface ConversionJobWithLoadPropertiesUnspecified
    * conversion task.
    *
    * <p>Custom load properties are applied after the default load properties of the {@link
-   * DocumentConverter} (only if the converter is a subclass of {@link AbstractConverter}) and after
-   * the load properties of the {@link DocumentFormat} of this SourceDocumentSpecs.
+   * org.jodconverter.DocumentConverter} (only if the converter is a subclass of {@link
+   * org.jodconverter.job.AbstractConverter}) and after the load properties of the {@link
+   * org.jodconverter.document.DocumentFormat} of this SourceDocumentSpecs.
    *
    * @param properties A map containing the custom properties to apply when loading a document.
    * @return This builder instance.

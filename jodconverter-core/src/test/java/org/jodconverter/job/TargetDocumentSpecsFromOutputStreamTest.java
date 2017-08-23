@@ -104,8 +104,8 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
-    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+    try (final FileOutputStream outputStream =
+        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
 
@@ -128,8 +128,8 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
-    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+    try (final FileOutputStream outputStream =
+        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
 
@@ -152,8 +152,8 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
-    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+    try (final FileOutputStream outputStream =
+        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
 
@@ -176,8 +176,8 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
-    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+    try (final FileOutputStream outputStream =
+        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
 
@@ -199,8 +199,8 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
-    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+    try (final FileOutputStream outputStream =
+        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
 
       final Map<String, Object> storeProperties = new HashMap<>();
       storeProperties.put("Overwrite", true);

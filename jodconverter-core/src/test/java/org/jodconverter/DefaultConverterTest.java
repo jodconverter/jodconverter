@@ -200,9 +200,8 @@ public class DefaultConverterTest {
   public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream()
       throws Exception {
 
-    final File targetFile = new File(outputDir, "test.pdf");
-
-    try (final FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+    try (final FileOutputStream outputStream =
+        new FileOutputStream(new File(outputDir, "test.pdf"))) {
       DefaultConverter.make(officeManager)
           .convert(SOURCE_FILE)
           .to(outputStream)

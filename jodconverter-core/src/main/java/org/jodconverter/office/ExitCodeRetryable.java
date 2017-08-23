@@ -20,7 +20,7 @@
 package org.jodconverter.office;
 
 /** Gets the exit code value of an office process. */
-public class ExitCodeRetryable extends Retryable {
+public class ExitCodeRetryable extends AbstractRetryable {
 
   private final Process process;
   private int exitCode;

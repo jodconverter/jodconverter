@@ -80,13 +80,11 @@ class OfficeProcess {
    */
   private void checkForExistingProcess(final ProcessQuery processQuery) throws OfficeException {
 
-    long existingPid = PID_UNKNOWN;
-
     try {
       // Search for an existing process that would prevent us to start a new
       // office process with the same connection string.
       final ProcessManager processManager = config.getProcessManager();
-      existingPid = processManager.findPid(processQuery);
+      long existingPid = processManager.findPid(processQuery);
 
       // Kill the any running process with the same connection string if the kill switch is on
       if (!(existingPid == PID_NOT_FOUND || existingPid == PID_UNKNOWN)
@@ -100,19 +98,19 @@ class OfficeProcess {
         existingPid = processManager.findPid(processQuery);
       }
 
+      if (existingPid != PID_NOT_FOUND && existingPid != PID_UNKNOWN) {
+        throw new OfficeException(
+            String.format(
+                "A process with acceptString '%s' is already running; pid %d",
+                processQuery.getArgument(), existingPid));
+      }
+
     } catch (IOException ioEx) {
       throw new OfficeException(
           String.format(
               "Unable to check if there is already an existing process with acceptString '%s'",
               processQuery.getArgument()),
           ioEx);
-    }
-
-    if (existingPid != PID_NOT_FOUND && existingPid != PID_UNKNOWN) {
-      throw new OfficeException(
-          String.format(
-              "A process with acceptString '%s' is already running; pid %d",
-              processQuery.getArgument(), existingPid));
     }
   }
 

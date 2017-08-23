@@ -41,6 +41,7 @@
 	<!-- Use the entire 'design' ruleset -->
 	<rule ref="rulesets/java/design.xml">
         <exclude name="AccessorClassGeneration" />
+        <exclude name="AccessorMethodGeneration" />
     </rule>
 
 	<!-- Use the entire 'finalizers' ruleset -->
@@ -80,7 +81,7 @@
 	</rule>
     <rule ref="rulesets/java/naming.xml/LongVariable">
         <properties>
-            <property name="minimum" value="25" />
+            <property name="minimum" value="30" />
         </properties>
     </rule>
 	<rule ref="rulesets/java/naming.xml/MethodNamingConventions">

@@ -52,13 +52,13 @@ class OfficeManagerPoolEntry implements OfficeManager {
   // See:
   // https://pmd.github.io/pmd-5.8.1/pmd-java/rules/java/design.html#AccessorMethodGeneration
 
-  final OfficeManagerPoolEntryConfig config;
-  final OfficeProcessManager officeProcessManager;
-  final SuspendableThreadPoolExecutor taskExecutor;
+  private final OfficeManagerPoolEntryConfig config;
+  private final OfficeProcessManager officeProcessManager;
+  private final SuspendableThreadPoolExecutor taskExecutor;
 
-  Future<?> currentTask;
-  final AtomicInteger taskCount = new AtomicInteger(0);
-  final AtomicBoolean disconnectExpected = new AtomicBoolean(false);
+  private Future<?> currentTask;
+  private final AtomicInteger taskCount = new AtomicInteger(0);
+  private final AtomicBoolean disconnectExpected = new AtomicBoolean(false);
 
   /**
    * This connection event listener will be notified when a connection is established or closed/lost
@@ -130,41 +130,40 @@ class OfficeManagerPoolEntry implements OfficeManager {
   @Override
   public void execute(final OfficeTask task) throws OfficeException {
 
-    // Create the command to be executed
-    final Callable<Void> command = new Callable<Void>() { // NOSONAR
-
-          @Override
-          public Void call() throws Exception {
-
-            // First check if the office process must be restarted
-            final int count = taskCount.getAndIncrement();
-            if (config.getMaxTasksPerProcess() > 0 && count == config.getMaxTasksPerProcess()) {
-              LOGGER.info(
-                  "Reached limit of {} maximum tasks per process; restarting...",
-                  config.getMaxTasksPerProcess());
-
-              // The executor is no longer available
-              taskExecutor.setAvailable(false);
-
-              // Indicates that the disconnection to follow is expected
-              disconnectExpected.set(true);
-
-              // Restart the office instance
-              officeProcessManager.restartAndWait();
-
-              // taskCount will be 0 rather than 1 at this point, so fix this.
-              taskCount.getAndIncrement();
-            }
-
-            // Execute the task
-            task.execute(officeProcessManager.getConnection());
-
-            return null;
-          }
-        };
-
     // Submit the task to the executor
-    currentTask = taskExecutor.submit(command);
+    currentTask =
+        taskExecutor.submit(
+            new Callable<Void>() { // NOSONAR
+
+              @Override
+              public Void call() throws Exception {
+
+                // First check if the office process must be restarted
+                final int count = taskCount.getAndIncrement();
+                if (config.getMaxTasksPerProcess() > 0 && count == config.getMaxTasksPerProcess()) {
+                  LOGGER.info(
+                      "Reached limit of {} maximum tasks per process; restarting...",
+                      config.getMaxTasksPerProcess());
+
+                  // The executor is no longer available
+                  taskExecutor.setAvailable(false);
+
+                  // Indicates that the disconnection to follow is expected
+                  disconnectExpected.set(true);
+
+                  // Restart the office instance
+                  officeProcessManager.restartAndWait();
+
+                  // taskCount will be 0 rather than 1 at this point, so fix this.
+                  taskCount.getAndIncrement();
+                }
+
+                // Execute the task
+                task.execute(officeProcessManager.getConnection());
+
+                return null;
+              }
+            });
 
     // Wait for completion of the task, (maximum wait time is the
     // configured task execution timeout)

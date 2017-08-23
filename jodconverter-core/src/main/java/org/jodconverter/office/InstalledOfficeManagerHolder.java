@@ -19,11 +19,10 @@
 
 package org.jodconverter.office;
 
-import org.jodconverter.DefaultConverter;
-
 /**
- * Holds a unique instance of an {@link OfficeManager} that will be used by created {@link
- * DefaultConverter} when no office manager are given to the converter builder.
+ * Holds a unique instance of an {@link org.jodconverter.office.OfficeManager} that will be used by
+ * created {@link org.jodconverter.DefaultConverter} when no office manager are given to the
+ * converter builder.
  */
 public final class InstalledOfficeManagerHolder {
 
@@ -34,9 +33,11 @@ public final class InstalledOfficeManagerHolder {
    *
    * @return The main default office manager.
    */
-  public static synchronized OfficeManager getInstance() {
+  public static OfficeManager getInstance() {
 
-    return instance;
+    synchronized (InstalledOfficeManagerHolder.class) {
+      return instance;
+    }
   }
 
   /**
@@ -46,11 +47,13 @@ public final class InstalledOfficeManagerHolder {
    * @return the previous installed office manager, or {@code null} if there was no installed office
    *     manager.
    */
-  public static synchronized OfficeManager setInstance(final OfficeManager manager) {
+  public static OfficeManager setInstance(final OfficeManager manager) {
 
-    final OfficeManager oldManager = instance;
-    instance = manager;
-    return oldManager;
+    synchronized (InstalledOfficeManagerHolder.class) {
+      final OfficeManager oldManager = instance;
+      instance = manager;
+      return oldManager;
+    }
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

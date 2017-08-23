@@ -23,10 +23,10 @@ package org.jodconverter.office;
  * Object that will attempt to execute a task until it succeeds or that a specific timeout is
  * reached.
  */
-abstract class Retryable {
+abstract class AbstractRetryable {
 
   /** Initializes a new instance of the class. */
-  protected Retryable() {
+  protected AbstractRetryable() {
     super();
   }
 

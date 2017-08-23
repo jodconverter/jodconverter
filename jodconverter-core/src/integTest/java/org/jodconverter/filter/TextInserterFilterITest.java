@@ -22,6 +22,7 @@ package org.jodconverter.filter;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,9 +35,8 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
-  private static final String SOURCE_MULTI_PAGE_FILENAME = "test_multi_page.doc";
-  private static final File SOURCE_MULTI_PAGE_FILE =
-      new File(DOCUMENTS_DIR, SOURCE_MULTI_PAGE_FILENAME);
+  private static final String MULTI_PAGE_FILENAME = "test_multi_page.doc";
+  private static final File SOURCE_MULTI_PAGE_FILE = new File(DOCUMENTS_DIR, MULTI_PAGE_FILENAME);
 
   private static File outputDir;
 
@@ -52,7 +52,7 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
   @AfterClass
   public static void tearDownClass() {
 
-    //FileUtils.deleteQuietly(outputDir);
+    FileUtils.deleteQuietly(outputDir);
   }
 
   /**
@@ -63,7 +63,7 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
   @Test
   public void doFilter_WithCustomizedProperties() throws Exception {
 
-    final File targetFile = new File(outputDir, SOURCE_MULTI_PAGE_FILENAME + ".pdf");
+    final File targetFile = new File(outputDir, MULTI_PAGE_FILENAME + ".pdf");
 
     // Create the properties of the filter
     final Map<String, Object> props =

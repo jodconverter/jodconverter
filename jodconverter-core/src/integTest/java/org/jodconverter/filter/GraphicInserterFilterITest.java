@@ -34,10 +34,9 @@ import org.jodconverter.office.OfficeException;
 public class GraphicInserterFilterITest extends AbstractOfficeITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
-  private static final String SOURCE_MULTI_PAGE_FILENAME = "test_multi_page.doc";
+  private static final String MULTI_PAGE_FILENAME = "test_multi_page.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
-  private static final File SOURCE_MULTI_PAGE_FILE =
-      new File(DOCUMENTS_DIR, SOURCE_MULTI_PAGE_FILENAME);
+  private static final File SOURCE_MULTI_PAGE_FILE = new File(DOCUMENTS_DIR, MULTI_PAGE_FILENAME);
   private static final File IMAGE_FILE = new File(RESOURCES_DIR, "images/sample-1.jpg");
 
   private static File outputDir;
@@ -82,7 +81,7 @@ public class GraphicInserterFilterITest extends AbstractOfficeITest {
     converter
         .convert(SOURCE_MULTI_PAGE_FILE)
         .filterWith(filter)
-        .to(new File(outputDir, SOURCE_MULTI_PAGE_FILENAME + ".pdf"))
+        .to(new File(outputDir, MULTI_PAGE_FILENAME + ".pdf"))
         .execute();
   }
 
@@ -166,7 +165,7 @@ public class GraphicInserterFilterITest extends AbstractOfficeITest {
     converter
         .convert(SOURCE_MULTI_PAGE_FILE)
         .filterWith(filter)
-        .to(new File(outputDir, SOURCE_MULTI_PAGE_FILENAME + ".smallersize.pdf"))
+        .to(new File(outputDir, MULTI_PAGE_FILENAME + ".smallersize.pdf"))
         .execute();
   }
 }

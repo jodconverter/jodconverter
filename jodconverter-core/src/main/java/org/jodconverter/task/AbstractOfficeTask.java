@@ -118,13 +118,17 @@ public abstract class AbstractOfficeTask implements OfficeTask {
   protected XComponent loadDocument(final OfficeContext context, final File sourceFile)
       throws OfficeException {
 
-    XComponent document = null;
     try {
-      document =
+      final XComponent document =
           context
               .getComponentLoader()
               .loadComponentFromURL(
                   toUrl(sourceFile), "_blank", 0, toUnoProperties(getLoadProperties()));
+
+      // The document cannot be null
+      Validate.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
+      return document;
+
     } catch (IllegalArgumentException illegalArgumentEx) {
       throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), illegalArgumentEx);
     } catch (ErrorCodeIOException errorCodeIoEx) {
@@ -134,10 +138,6 @@ public abstract class AbstractOfficeTask implements OfficeTask {
     } catch (IOException ioEx) {
       throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), ioEx);
     }
-
-    // The document cannot be null
-    Validate.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
-    return document;
   }
 
   // Closes the specified document.

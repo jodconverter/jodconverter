@@ -66,38 +66,34 @@ public class DefaultFilterChainTest {
   @Test
   public void doFilter_WithFilterThrowingException_ThrowsOfficeException() {
 
-    Filter filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
-            throw new OfficeException("Unsupported Filter");
-          }
-        };
-
-    FilterChain chain = new DefaultFilterChain(filter);
     try {
-      chain.doFilter(null, null);
+      new DefaultFilterChain(
+              new Filter() {
+                @Override
+                public void doFilter(
+                    final OfficeContext context, final XComponent document, final FilterChain chain)
+                    throws Exception {
+                  throw new OfficeException("Unsupported Filter");
+                }
+              })
+          .doFilter(null, null);
     } catch (Exception e) {
       assertThat(e).isInstanceOf(OfficeException.class);
       assertThat(e).hasNoCause();
       assertThat(e).hasMessage("Unsupported Filter");
     }
 
-    filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
-            throw new IndexOutOfBoundsException();
-          }
-        };
-
-    chain = new DefaultFilterChain(filter);
     try {
-      chain.doFilter(null, null);
+      new DefaultFilterChain(
+              new Filter() {
+                @Override
+                public void doFilter(
+                    final OfficeContext context, final XComponent document, final FilterChain chain)
+                    throws Exception {
+                  throw new IndexOutOfBoundsException();
+                }
+              })
+          .doFilter(null, null);
     } catch (Exception e) {
       assertThat(e).isInstanceOf(OfficeException.class);
       assertThat(e).hasCauseExactlyInstanceOf(IndexOutOfBoundsException.class);

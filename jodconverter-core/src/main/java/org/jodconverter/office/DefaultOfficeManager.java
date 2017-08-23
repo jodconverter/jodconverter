@@ -77,12 +77,14 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
   }
 
   @Override
-  public synchronized void stop() throws OfficeException {
+  public void stop() throws OfficeException {
 
-    try {
-      super.stop();
-    } finally {
-      deleteTempDir();
+    synchronized (this) {
+      try {
+        super.stop();
+      } finally {
+        deleteTempDir();
+      }
     }
   }
 
@@ -148,43 +150,11 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
     private int maxTasksPerProcess = OfficeManagerPoolEntryConfig.DEFAULT_MAX_TASKS_PER_PROCESS;
 
     // OfficeManagerPool
-    private long taskQueueTimeout = OfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
+    private long taskQueueTimeout = OfficeManagerPoolConfig.DEFAULT_TASK_QUEUE_TIMEOUT;
 
     // Private ctor so only DefaultOfficeManager can initialize an instance of this builder.
     private Builder() {
       super();
-    }
-
-    private OfficeUrl[] buildOfficeUrls() {
-
-      // Assign default value if no pipe names or port numbers have been specified.
-      if (portNumbers == null && pipeNames == null) {
-        portNumbers = new int[] {2002};
-      }
-
-      // Count the number of office instances that must be launched
-      int numInstances = 0;
-      if (pipeNames != null) {
-        numInstances += pipeNames.length;
-      }
-      if (portNumbers != null) {
-        numInstances += portNumbers.length;
-      }
-
-      // Build the office URL list and return it
-      final OfficeUrl[] officeUrls = new OfficeUrl[numInstances];
-      int i = 0;
-      if (pipeNames != null) {
-        for (final String pipeName : pipeNames) {
-          officeUrls[i++] = new OfficeUrl(pipeName);
-        }
-      }
-      if (portNumbers != null) {
-        for (final int portNumber : portNumbers) {
-          officeUrls[i++] = new OfficeUrl(portNumber);
-        }
-      }
-      return officeUrls;
     }
 
     /**
@@ -213,7 +183,7 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
       OfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
 
       // Build the office URLs
-      final OfficeUrl[] officeUrls = buildOfficeUrls();
+      final OfficeUrl[] officeUrls = OfficeUtils.buildOfficeUrls(portNumbers, pipeNames);
 
       final OfficeManagerPoolConfig config =
           new OfficeManagerPoolConfig(officeHome, workingDir, processManager);

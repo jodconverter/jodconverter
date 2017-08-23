@@ -20,8 +20,12 @@
 package org.jodconverter.office;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 import com.sun.star.beans.PropertyValue;
@@ -47,7 +51,7 @@ public final class OfficeUtils {
     static final File INSTANCE;
 
     static {
-      if (System.getProperty("office.home") != null) {
+      if (StringUtils.isNotBlank(System.getProperty("office.home"))) {
         INSTANCE = new File(System.getProperty("office.home"));
 
       } else if (SystemUtils.IS_OS_WINDOWS) {
@@ -61,35 +65,29 @@ public final class OfficeUtils {
         INSTANCE =
             findOfficeHome(
                 EXECUTABLE_WINDOWS,
-                new String[] {
-                  programFiles64 + File.separator + "LibreOffice 5",
-                  programFiles64 + File.separator + "LibreOffice 4",
-                  programFiles64 + File.separator + "LibreOffice 3",
-                  programFiles32 + File.separator + "LibreOffice 5",
-                  programFiles32 + File.separator + "LibreOffice 4",
-                  programFiles32 + File.separator + "LibreOffice 3",
-                  programFiles32 + File.separator + "OpenOffice 4",
-                  programFiles32 + File.separator + "OpenOffice.org 3"
-                });
+                programFiles64 + File.separator + "LibreOffice 5",
+                programFiles64 + File.separator + "LibreOffice 4",
+                programFiles64 + File.separator + "LibreOffice 3",
+                programFiles32 + File.separator + "LibreOffice 5",
+                programFiles32 + File.separator + "LibreOffice 4",
+                programFiles32 + File.separator + "LibreOffice 3",
+                programFiles32 + File.separator + "OpenOffice 4",
+                programFiles32 + File.separator + "OpenOffice.org 3");
 
       } else if (SystemUtils.IS_OS_MAC) {
 
         File homeDir =
             findOfficeHome(
                 EXECUTABLE_MAC_41,
-                new String[] {
-                  "/Applications/LibreOffice.app/Contents",
-                  "/Applications/OpenOffice.org.app/Contents"
-                });
+                "/Applications/LibreOffice.app/Contents",
+                "/Applications/OpenOffice.org.app/Contents");
 
         if (homeDir == null) {
           homeDir =
               findOfficeHome(
                   EXECUTABLE_MAC,
-                  new String[] {
-                    "/Applications/LibreOffice.app/Contents",
-                    "/Applications/OpenOffice.org.app/Contents"
-                  });
+                  "/Applications/LibreOffice.app/Contents",
+                  "/Applications/OpenOffice.org.app/Contents");
         }
 
         INSTANCE = homeDir;
@@ -102,22 +100,20 @@ public final class OfficeUtils {
         INSTANCE =
             findOfficeHome(
                 EXECUTABLE_DEFAULT,
-                new String[] {
-                  "/usr/lib64/libreoffice",
-                  "/usr/lib/libreoffice",
-                  "/opt/libreoffice",
-                  "/usr/lib64/openoffice",
-                  "/usr/lib64/openoffice.org3",
-                  "/usr/lib64/openoffice.org",
-                  "/usr/lib/openoffice",
-                  "/usr/lib/openoffice.org3",
-                  "/usr/lib/openoffice.org",
-                  "/opt/openoffice.org3"
-                });
+                "/usr/lib64/libreoffice",
+                "/usr/lib/libreoffice",
+                "/opt/libreoffice",
+                "/usr/lib64/openoffice",
+                "/usr/lib64/openoffice.org3",
+                "/usr/lib64/openoffice.org",
+                "/usr/lib/openoffice",
+                "/usr/lib/openoffice.org3",
+                "/usr/lib/openoffice.org",
+                "/opt/openoffice.org3");
       }
     }
 
-    private static File findOfficeHome(final String executablePath, final String[] homePaths) {
+    private static File findOfficeHome(final String executablePath, final String... homePaths) {
 
       for (final String homePath : homePaths) {
         final File homeDir = new File(homePath);
@@ -151,6 +147,37 @@ public final class OfficeUtils {
       // because of the 80-char limit on ps output there
       return PureJavaProcessManager.getDefault();
     }
+  }
+
+  /**
+   * Builds an array of {@link OfficeUrl} from an array of port numbers and an array of pipe names.
+   *
+   * @param portNumbers The port numbers from which office URLs will be created, may be null.
+   * @param pipeNames The pipe names from which office URLs will be created, may be null.
+   * @return an array of office URL. If both arguments are null, then an array is returned with a
+   *     single office URL, using the default port number 2002.
+   */
+  public static OfficeUrl[] buildOfficeUrls(final int[] portNumbers, final String[] pipeNames) {
+
+    // Assign default value if no pipe names or port numbers have been specified.
+    if (portNumbers == null && pipeNames == null) {
+      return new OfficeUrl[] {new OfficeUrl(2002)};
+    }
+
+    // Build the office URL list and return it
+    final List<OfficeUrl> officeUrls =
+        new ArrayList<>(ArrayUtils.getLength(portNumbers) + ArrayUtils.getLength(pipeNames));
+    if (pipeNames != null) {
+      for (final String pipeName : pipeNames) {
+        officeUrls.add(new OfficeUrl(pipeName));
+      }
+    }
+    if (portNumbers != null) {
+      for (final int portNumber : portNumbers) {
+        officeUrls.add(new OfficeUrl(portNumber));
+      }
+    }
+    return officeUrls.toArray(new OfficeUrl[officeUrls.size()]);
   }
 
   /**
@@ -251,8 +278,7 @@ public final class OfficeUtils {
    */
   public static PropertyValue[] toUnoProperties(final Map<String, Object> properties) {
 
-    final PropertyValue[] propertyValues = new PropertyValue[properties.size()];
-    int i = 0;
+    final List<PropertyValue> propertyValues = new ArrayList<>(properties.size());
     for (final Map.Entry<String, Object> entry : properties.entrySet()) {
       Object value = entry.getValue();
       if (value instanceof Map) {
@@ -260,9 +286,9 @@ public final class OfficeUtils {
         final Map<String, Object> subProperties = (Map<String, Object>) value;
         value = toUnoProperties(subProperties);
       }
-      propertyValues[i++] = property((String) entry.getKey(), value);
+      propertyValues.add(property((String) entry.getKey(), value));
     }
-    return propertyValues;
+    return propertyValues.toArray(new PropertyValue[propertyValues.size()]);
   }
 
   /**

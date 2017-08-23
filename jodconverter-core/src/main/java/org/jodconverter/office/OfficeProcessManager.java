@@ -163,28 +163,28 @@ class OfficeProcessManager {
    */
   public void restartAndWait() throws OfficeException {
 
-    // Create the restart task to be execute
-    final Callable<Void> restartTask =
+    // Submit a restart task to the executor and wait
+    submitAndWait(
+        "Restart",
         new Callable<Void>() {
 
           @Override
           public Void call() throws Exception {
+
             doStopProcess();
             doStartProcessAndConnect();
 
             return null;
           }
-        };
-
-    // Submit the task to the executor and wait
-    submitAndWait("Restart", restartTask);
+        });
   }
 
   /** Restarts the office process when the connection is lost. */
   public void restartDueToLostConnection() {
 
-    // Create the restart task to be execute
-    final Runnable restartTask =
+    // Execute the restart task
+    execute(
+        "Restart After Lost Connection",
         new Runnable() {
 
           @Override
@@ -198,17 +198,15 @@ class OfficeProcessManager {
               LOGGER.error("Could not restart process", officeEx);
             }
           }
-        };
-
-    // Execute the task
-    execute("Restart After Lost Connection", restartTask);
+        });
   }
 
   /** Restarts the office process when there is a timeout while executing a task. */
   public void restartDueToTaskTimeout() {
 
-    // Create the restart task to be execute
-    final Runnable restartTask =
+    // Execute the restart task
+    execute(
+        "Restart After Timeout",
         new Runnable() {
 
           @Override
@@ -222,10 +220,7 @@ class OfficeProcessManager {
               LOGGER.error("Could not restart process", officeException);
             }
           }
-        };
-
-    // Execute the task
-    execute("Restart After Timeout", restartTask);
+        });
   }
 
   /**
@@ -235,20 +230,19 @@ class OfficeProcessManager {
    */
   public void startAndWait() throws OfficeException {
 
-    // Create the start task to be execute
-    final Callable<Void> startTask =
+    // Submit a start task to the executor and wait
+    submitAndWait(
+        "Start",
         new Callable<Void>() {
 
           @Override
           public Void call() throws Exception {
+
             doStartProcessAndConnect();
 
             return null;
           }
-        };
-
-    // Submit the task to the executor and wait
-    submitAndWait("Start", startTask);
+        });
   }
 
   /**
@@ -258,20 +252,19 @@ class OfficeProcessManager {
    */
   public void stopAndWait() throws OfficeException {
 
-    // Create the stop task to be execute
-    final Callable<Void> stopTask =
+    // Submit a stop task to the executor and wait
+    submitAndWait(
+        "Stop",
         new Callable<Void>() {
 
           @Override
           public Void call() throws Exception {
+
             doStopProcess();
 
             return null;
           }
-        };
-
-    // Submit the task to the executor and wait
-    submitAndWait("Stop", stopTask);
+        });
   }
 
   // Submits the specified task to the executor and waits for its completion

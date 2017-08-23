@@ -56,17 +56,6 @@ public final class CliConverter {
     this.converter = DefaultConverter.builder().formatRegistry(registry).build();
   }
 
-  private void convert(final FilterChain filterChain, final File inputFile, final File outputFile)
-      throws OfficeException {
-
-    printInfo("Converting '" + inputFile.getPath() + "' to '" + outputFile.getPath() + "'");
-    converter
-        .convert(inputFile)
-        .filterWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
-        .to(outputFile)
-        .execute();
-  }
-
   /**
    * Converts the specified files into the specified format.
    *
@@ -90,61 +79,48 @@ public final class CliConverter {
     Validate.notEmpty(outputFormat, "The validated output format is empty");
 
     // Prepare the output directory
-    File outputDir = null;
-    if (outputDirPath != null) {
-      outputDir = new File(outputDirPath);
-      try {
-        prepareOutputDir(outputDir);
-      } catch (IOException ex) {
-        throw new OfficeException("Unable to prepare the output directory", ex);
-      }
-    }
+    final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
+    prepareOutputDir(outputDir);
 
     // For all the filenames... Note that a filename may contains wildcards.
     for (final String filename : filenames) {
 
       // Create a file instance with the argument and also get the parent directory
       final File inputFile = new File(filename);
-      final File inputFileParent = inputFile.getParentFile();
 
       // If the filename is a file, we will have only 1
       // file to convert for this loop iteration
       if (inputFile.isFile()) {
 
-        // Create output file instance and validate that it can be converted
-        final File outputFile =
-            new File(
-                outputDir == null ? inputFileParent : outputDir,
-                FilenameUtils.getBaseName(filename) + "." + outputFormat);
-        if (validateOutputFile(inputFile, outputFile, overwrite)) {
-
-          // We can now convert the document
-          convert(filterChain, inputFile, outputFile);
-        }
+        // Convert the file
+        convertFile(
+            inputFile,
+            outputDir == null ? inputFile.getParentFile() : outputDir,
+            FilenameUtils.getBaseName(inputFile.getName()) + "." + outputFormat,
+            overwrite,
+            filterChain);
 
       } else {
 
         // If the filename is not a file, check if it has wildcards
         // to match multiple files
+        final File inputFileParent = inputFile.getParentFile();
         if (inputFileParent.isDirectory()) {
           final String wildcard = FilenameUtils.getBaseName(filename);
           final File[] files =
               inputFileParent.listFiles((FileFilter) new WildcardFileFilter(wildcard));
           for (final File file : files) {
 
-            // Create output file instance and validate that it can be converted
-            final File outputFile =
-                new File(
-                    outputDir == null ? inputFileParent : outputDir,
-                    FilenameUtils.getBaseName(file.getName()) + "." + outputFormat);
-            if (validateOutputFile(inputFile, outputFile, overwrite)) {
-
-              convert(filterChain, file, outputFile);
-            }
+            // Convert the file
+            convertFile(
+                file,
+                outputDir == null ? inputFile.getParentFile() : outputDir,
+                FilenameUtils.getBaseName(file.getName()) + "." + outputFormat,
+                overwrite,
+                filterChain);
           }
         } else {
-          printInfo(
-              "Skipping filename '" + inputFile + "' since it doesn't match an existing file...");
+          printInfo("Skipping filename '%s' since it doesn't match an existing file...", inputFile);
         }
       }
     }
@@ -177,21 +153,15 @@ public final class CliConverter {
     final int outputLength = outputFilenames.length;
 
     // Make sure lengths are ok, these need to be equal
-    if (inputLength != outputLength) {
-      throw new IllegalArgumentException(
-          "Input and Output array lengths don't match: " + inputLength + " vs " + outputLength);
-    }
+    Validate.isTrue(
+        inputLength == outputLength,
+        "input filenames array length [%d] and output filenames array length [%d] don't match",
+        inputLength,
+        outputLength);
 
     // Prepare the output directory
-    File outputDir = null;
-    if (outputDirPath != null) {
-      outputDir = new File(outputDirPath);
-      try {
-        prepareOutputDir(outputDir);
-      } catch (IOException ex) {
-        throw new OfficeException("Unable to prepare the output directory", ex);
-      }
-    }
+    final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
+    prepareOutputDir(outputDir);
 
     // For all the input/output filename pairs...
     for (int i = 0; i < inputFilenames.length; i++) {
@@ -199,50 +169,89 @@ public final class CliConverter {
       // Get the input and output files
       final String inputFilename = inputFilenames[i];
       final String inputFullPath = FilenameUtils.getFullPath(inputFilename);
-      final File inputFile = new File(inputFilename);
       final String outputFilename = outputFilenames[i];
       final String outputFullPath = FilenameUtils.getFullPath(outputFilename);
       final File outputDirectory =
           StringUtils.isBlank(outputFullPath)
               ? (outputDir == null // NOSONAR
-                  ? (StringUtils.isBlank(inputFullPath) ? null : new File(inputFullPath)) // NOSONAR
+                  ? (StringUtils.isBlank(inputFullPath) // NOSONAR
+                      ? new File(".")
+                      : new File(inputFullPath))
                   : outputDir)
               : new File(outputFullPath);
-      final File outputFile =
-          (outputDirectory == null
-              ? new File(outputFilename)
-              : new File(outputDirectory, FilenameUtils.getName(outputFilename)));
 
-      // Validate that the file can be converted
-      if (validateInputFile(inputFile) && validateOutputFile(inputFile, outputFile, overwrite)) {
+      // Convert the file
+      convertFile(
+          new File(inputFilename),
+          outputDirectory,
+          FilenameUtils.getName(outputFilename),
+          overwrite,
+          filterChain);
+    }
+  }
 
-        convert(filterChain, inputFile, outputFile);
+  private void convert(final File inputFile, final File outputFile, final FilterChain filterChain)
+      throws OfficeException {
+
+    printInfo("Converting '%s' to '%s'", inputFile, outputFile);
+    converter
+        .convert(inputFile)
+        .filterWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
+        .to(outputFile)
+        .execute();
+  }
+
+  private void convertFile(
+      final File inputFile,
+      final File outputDir,
+      final String outputFilename,
+      final boolean overwrite,
+      final FilterChain filterChain)
+      throws OfficeException {
+
+    // First validate the input file is a valid source file
+    if (validateInputFile(inputFile)) {
+
+      // Create output file instance and validate that it is a valid target
+      final File outputFile = new File(outputDir, outputFilename);
+      if (validateOutputFile(inputFile, outputFile, overwrite)) {
+
+        // We can now convert the document
+        convert(inputFile, outputFile, filterChain);
       }
     }
   }
 
-  private void prepareOutputDir(final File outputDir) throws IOException {
+  private void prepareOutputDir(final File outputDir) throws OfficeException {
 
-    if (outputDir.exists()) {
-      if (outputDir.isFile()) {
-        throw new IOException(
-            "Invalid output directory '" + outputDir + "' that exists but is a file");
+    if (outputDir != null) {
+      try {
+
+        if (outputDir.exists()) {
+          if (outputDir.isFile()) {
+            throw new IOException(
+                "Invalid output directory '" + outputDir + "' that exists but is a file");
+          }
+
+          if (!outputDir.canWrite()) {
+            throw new IOException(
+                "Invalid output directory '" + outputDir + "' that cannot be written to");
+          }
+
+        } else {
+          // Create the output directory
+          outputDir.mkdirs();
+        }
+
+      } catch (IOException ex) {
+        throw new OfficeException("Unable to prepare the output directory", ex);
       }
-
-      if (!outputDir.canWrite()) {
-        throw new IOException(
-            "Invalid output directory '" + outputDir + "' that cannot be written to");
-      }
-
-    } else {
-      // Create the output directory
-      outputDir.mkdirs();
     }
   }
 
-  private void printInfo(final String info) {
+  private void printInfo(final String message, final Object... values) {
 
-    out.println(info);
+    out.println(String.format(message, values));
     out.flush();
   }
 
@@ -250,17 +259,17 @@ public final class CliConverter {
 
     if (inputFile.exists()) {
       if (inputFile.isDirectory()) {
-        printInfo("Skipping file '" + inputFile + "' that exists but is a directory");
+        printInfo("Skipping file '%s' that exists but is a directory", inputFile);
         return false;
       }
 
       if (!inputFile.canRead()) {
-        printInfo("Skipping file '" + inputFile + "' that cannot be read");
+        printInfo("Skipping file '%s' that cannot be read", inputFile);
         return false;
       }
 
     } else {
-      printInfo("Skipping file '" + inputFile + "' that does not exist");
+      printInfo("Skipping file '%s' that does not exist", inputFile);
       return false;
     }
     return true;
@@ -273,31 +282,23 @@ public final class CliConverter {
 
       if (outputFile.isDirectory()) {
         printInfo(
-            "Skipping file '"
-                + inputFile
-                + "' because the output file '"
-                + outputFile
-                + "' already exists and is a directory");
+            "Skipping file '%s' because the output file '%s' already exists and is a directory",
+            inputFile, outputFile);
         return false;
       }
 
       if (!overwrite) {
         printInfo(
-            "Skipping file '"
-                + inputFile
-                + "' because the output file '"
-                + outputFile
-                + "' already exists and the overwrite switch is off");
+            "Skipping file '%s' because the output file '%s' already exists and the "
+                + "overwrite switch is off",
+            inputFile, outputFile);
         return false;
       }
 
       if (!outputFile.delete()) {
         printInfo(
-            "Skipping file '"
-                + inputFile
-                + "' because the output file '"
-                + outputFile
-                + "' already exists and cannot be deleted");
+            "Skipping file '%s' because the output file '%s' already exists and cannot be deleted",
+            inputFile, outputFile);
         return false;
       }
     }

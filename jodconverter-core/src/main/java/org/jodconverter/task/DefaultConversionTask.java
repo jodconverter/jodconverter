@@ -78,20 +78,19 @@ public class DefaultConversionTask extends AbstractOfficeTask {
 
     LOGGER.info("Executing default conversion task...");
 
-    File sourceFile = null;
-    File targetFile = null;
+    // Obtain a source file that can be loaded by office. If the source if
+    // an input stream, then a temporary file will be created from the
+    // stream. The temporary file will be deleted once the task is done.
+    final File sourceFile = source.getFile();
     try {
-      // Obtain a source file that can be loaded by office. If the source if
-      // an input stream, then a temporary file will be created from the
-      // stream. The temporary file will be deleted once the task is done.
-      sourceFile = source.getFile();
 
-      XComponent document = null;
+      // Get the target file (which is a temporary file if the
+      // output target is an output stream).
+      final File targetFile = target.getFile();
+
+      final XComponent document = loadDocument(context, sourceFile);
       try {
-        document = loadDocument(context, sourceFile);
         modifyDocument(context, document);
-
-        targetFile = target.getFile();
         storeDocument(document, targetFile);
         target.onComplete(targetFile);
 

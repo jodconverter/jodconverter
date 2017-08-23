@@ -29,6 +29,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.junit.Test;
 
+import org.jodconverter.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.DefaultOfficeManager;
 import org.jodconverter.office.OfficeManager;
@@ -41,8 +43,10 @@ public class StressITest {
   private static final int MAX_THREADS = 128;
   private static final int MAX_PROCESS_TASKS = 10;
 
-  private static final String INPUT_EXTENSION = "rtf";
-  private static final String OUTPUT_EXTENSION = "pdf";
+  private static final DocumentFormat INPUT_FORMAT =
+      DefaultDocumentFormatRegistry.getFormatByExtension("rtf");
+  private static final DocumentFormat OUTPUT_FORMAT =
+      DefaultDocumentFormatRegistry.getFormatByExtension("pdf");
 
   private static final String PATTERN = "%d{ISO8601} %-5p [%c{3}] [%t] %m%n";
 
@@ -86,7 +90,8 @@ public class StressITest {
 
     officeManager.start();
     try {
-      final File source = new File("src/integTest/resources/documents/test." + INPUT_EXTENSION);
+      final File source =
+          new File("src/integTest/resources/documents/test." + INPUT_FORMAT.getExtension());
 
       final Thread[] threads = new Thread[MAX_THREADS];
 
@@ -94,7 +99,7 @@ public class StressITest {
       int threadCount = 0;
 
       for (int i = 0; i < MAX_CONVERSIONS; i++) {
-        final File target = File.createTempFile("test", "." + OUTPUT_EXTENSION);
+        final File target = File.createTempFile("test", "." + OUTPUT_FORMAT.getExtension());
         target.deleteOnExit();
 
         // Converts the first document without threads to ensure everything is OK.

@@ -40,8 +40,8 @@ public class PerformanceITest extends AbstractOfficeITest {
   private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceITest.class);
 
   private static final int MAX_CONVERSIONS = 10;
-  private static final String INPUT_EXTENSION = "odt";
-  private static final String OUTPUT_EXTENSION = "pdf";
+  private static final DocumentFormat INPUT_FORMAT = formatRegistry.getFormatByExtension("odt");
+  private static final DocumentFormat OUTPUT_FORMAT = formatRegistry.getFormatByExtension("pdf");
 
   private static String getDurationBreakdown(final long millis) {
 
@@ -102,16 +102,13 @@ public class PerformanceITest extends AbstractOfficeITest {
   @Test
   public void runTest() throws Exception {
 
-    final DocumentFormat inputFormat = formatRegistry.getFormatByExtension(INPUT_EXTENSION);
-    final DocumentFormat outputFormat = formatRegistry.getFormatByExtension(OUTPUT_EXTENSION);
-
     final File dir = new File("src/integTest/resources/performance");
     final File[] files =
         dir.listFiles((FileFilter) new WildcardFileFilter("*.odt", IOCase.INSENSITIVE));
 
     for (final File inputFile : files) {
 
-      convertFileXTimes(inputFile, inputFormat, outputFormat);
+      convertFileXTimes(inputFile, INPUT_FORMAT, OUTPUT_FORMAT);
     }
   }
 }

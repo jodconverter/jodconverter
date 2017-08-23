@@ -85,19 +85,19 @@ public class OfficeProcessTest {
     instanceProfileDir.mkdirs();
     Whitebox.invokeMethod(process, "deleteProfileDir");
 
-    final File[] files =
-        workingDir.listFiles(
-            new FileFilter() {
+    assertThat(
+            workingDir.listFiles(
+                new FileFilter() {
 
-              @Override
-              public boolean accept(File pathname) {
-                return pathname.isDirectory()
-                    && StringUtils.startsWith(
-                        pathname.getName(), instanceProfileDir.getName() + ".old.");
-              }
-            });
+                  @Override
+                  public boolean accept(final File pathname) {
+                    return pathname.isDirectory()
+                        && StringUtils.startsWith(
+                            pathname.getName(), instanceProfileDir.getName() + ".old.");
+                  }
+                }))
+        .hasSize(1);
 
-    assertThat(files).hasSize(1);
     FileUtils.deleteQuietly(workingDir);
   }
 
@@ -116,24 +116,24 @@ public class OfficeProcessTest {
     final File instanceProfileDir = Whitebox.invokeMethod(process, "getInstanceProfileDir");
     Whitebox.invokeMethod(process, "deleteProfileDir");
 
-    final File[] files =
-        workingDir.listFiles(
-            new FileFilter() {
+    assertThat(
+            workingDir.listFiles(
+                new FileFilter() {
 
-              @Override
-              public boolean accept(final File pathname) {
-                return pathname.isDirectory()
-                    && StringUtils.startsWith(
-                        pathname.getName(), instanceProfileDir.getName() + ".old.");
-              }
-            });
+                  @Override
+                  public boolean accept(final File pathname) {
+                    return pathname.isDirectory()
+                        && StringUtils.startsWith(
+                            pathname.getName(), instanceProfileDir.getName() + ".old.");
+                  }
+                }))
+        .isNullOrEmpty();
 
-    assertThat(files).isNullOrEmpty();
     FileUtils.deleteQuietly(workingDir);
   }
 
   @Test
-  public void forciblyTerminate_WhenIOExceptionCatched_TrowsOfficeException() throws Exception {
+  public void forciblyTerminate_WhenIoExceptionCatched_TrowsOfficeException() throws Exception {
 
     final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
     config.setProcessManager(

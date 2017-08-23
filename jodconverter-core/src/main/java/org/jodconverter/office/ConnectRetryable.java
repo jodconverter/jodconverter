@@ -23,9 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Performs a connection to an office process. */
-public class ConnectRetryable extends Retryable {
+public class ConnectRetryable extends AbstractRetryable {
 
-  private static final Integer EXIT_CODE_NEW_INSTALLATION = Integer.valueOf(81);
+  private static final Integer EXIT_CODE_81 = Integer.valueOf(81);
   private static final Logger LOGGER = LoggerFactory.getLogger(ConnectRetryable.class);
 
   private final OfficeProcess process;
@@ -75,7 +75,7 @@ public class ConnectRetryable extends Retryable {
         // Process is running; retry later
         throw new TemporaryException(connectionEx);
 
-      } else if (exitCode.equals(EXIT_CODE_NEW_INSTALLATION)) {
+      } else if (exitCode.equals(EXIT_CODE_81)) {
 
         // Restart and retry later
         // see http://code.google.com/p/jodconverter/issues/detail?id=84

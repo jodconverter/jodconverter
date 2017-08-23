@@ -76,7 +76,7 @@ public class AbstractOfficeTaskITest extends AbstractOfficeITest {
     }
 
     @Override
-    protected XComponent loadDocument(OfficeContext context, File sourceFile)
+    protected XComponent loadDocument(final OfficeContext context, final File sourceFile)
         throws OfficeException {
 
       final XComponent document = super.loadDocument(context, sourceFile);

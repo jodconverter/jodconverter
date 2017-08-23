@@ -123,7 +123,8 @@ public class CliConverterTest {
     } catch (Exception ex) {
       assertThat(ex)
           .isExactlyInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Input and Output array lengths don't match");
+          .hasMessageMatching(
+              "input filenames array length.*and output filenames array length.*don't match");
     }
   }
 
@@ -460,7 +461,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void prepareOutputDir_WithOutputDirThatCannotBeWrittenTo_ThrowsIOException() {
+  public void prepareOutputDir_WithOutputDirThatCannotBeWrittenTo_ThrowsOfficeException() {
 
     final File dir = mock(File.class);
     given(dir.exists()).willReturn(true);
@@ -471,7 +472,9 @@ public class CliConverterTest {
       Whitebox.invokeMethod(converter, "prepareOutputDir", dir);
     } catch (Exception ex) {
       assertThat(ex)
-          .isExactlyInstanceOf(IOException.class)
+          .isExactlyInstanceOf(OfficeException.class)
+          .hasCauseExactlyInstanceOf(IOException.class);
+      assertThat(ex.getCause())
           .hasMessageMatching("Invalid output directory.*that cannot be written to");
     }
   }
@@ -499,7 +502,7 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
+      final boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();
@@ -516,7 +519,7 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
+      final boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();
@@ -534,7 +537,7 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
+      final boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();
@@ -549,7 +552,7 @@ public class CliConverterTest {
     final File outputFile = mock(File.class);
     given(outputFile.exists()).willReturn(false);
 
-    boolean valid =
+    final boolean valid =
         Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, false);
     assertThat(valid).isTrue();
   }
@@ -565,7 +568,7 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      boolean valid =
+      final boolean valid =
           Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, false);
       assertThat(valid).isFalse();
     } finally {
@@ -587,14 +590,15 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      boolean valid =
+      final boolean valid =
           Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, false);
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();
       assertThat(capturedlog)
           .containsPattern(
-              "Skipping file.*because the output file.*already exists and the overwrite switch is off");
+              "Skipping file.*because the output file.*already "
+                  + "exists and the overwrite switch is off");
     }
   }
 
@@ -608,7 +612,7 @@ public class CliConverterTest {
     given(outputFile.isDirectory()).willReturn(false);
     given(outputFile.delete()).willReturn(true);
 
-    boolean valid =
+    final boolean valid =
         Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, true);
     assertThat(valid).isTrue();
   }
@@ -626,7 +630,7 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      boolean valid =
+      final boolean valid =
           Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, true);
       assertThat(valid).isFalse();
     } finally {

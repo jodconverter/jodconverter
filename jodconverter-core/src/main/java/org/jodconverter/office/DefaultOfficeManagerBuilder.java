@@ -35,11 +35,10 @@ import org.jodconverter.process.ProcessManager;
  */
 public class DefaultOfficeManagerBuilder {
 
-  private static final OfficeConnectionProtocol DEFAULT_CONNECTION_PROTOCOL =
-      OfficeConnectionProtocol.SOCKET;
+  private static final OfficeConnectionProtocol DEFAULT_PROTOCOL = OfficeConnectionProtocol.SOCKET;
 
   // OfficeProcess
-  private OfficeConnectionProtocol connectionProtocol = DEFAULT_CONNECTION_PROTOCOL;
+  private OfficeConnectionProtocol connectionProtocol = DEFAULT_PROTOCOL;
   private String[] pipeNames;
   private int[] portNumbers;
   private File officeHome;
@@ -58,7 +57,7 @@ public class DefaultOfficeManagerBuilder {
   private int maxTasksPerProcess = OfficeManagerPoolEntryConfig.DEFAULT_MAX_TASKS_PER_PROCESS;
 
   // OfficeManagerPool
-  private long taskQueueTimeout = OfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
+  private long taskQueueTimeout = OfficeManagerPoolConfig.DEFAULT_TASK_QUEUE_TIMEOUT;
 
   private OfficeUrl[] buildOfficeUrls() {
 
@@ -71,29 +70,7 @@ public class DefaultOfficeManagerBuilder {
       }
     }
 
-    // Count the number of office instances that must be launched
-    int numInstances = 0;
-    if (pipeNames != null) {
-      numInstances += pipeNames.length;
-    }
-    if (portNumbers != null) {
-      numInstances += portNumbers.length;
-    }
-
-    // Build the office URL list and return it
-    final OfficeUrl[] officeUrls = new OfficeUrl[numInstances];
-    int i = 0;
-    if (pipeNames != null) {
-      for (final String pipeName : pipeNames) {
-        officeUrls[i++] = new OfficeUrl(pipeName);
-      }
-    }
-    if (portNumbers != null) {
-      for (final int portNumber : portNumbers) {
-        officeUrls[i++] = new OfficeUrl(portNumber);
-      }
-    }
-    return officeUrls;
+    return OfficeUtils.buildOfficeUrls(portNumbers, pipeNames);
   }
 
   /**
