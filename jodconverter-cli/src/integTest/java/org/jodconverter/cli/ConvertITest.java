@@ -30,6 +30,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.jodconverter.cli.util.COnlineServerMock;
 import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitSecurityManager;
 import org.jodconverter.cli.util.SystemLogHandler;
@@ -183,6 +184,43 @@ public class ConvertITest {
 
       assertThat(outputFile).isFile();
       assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+  }
+
+  @Test
+  public void main_Convert_WithConnectionOption_WithOutputFormat_ShouldSucceed() throws Exception {
+    final File inputFile = new File(SOURCE_FILE);
+    final File outputFile =
+        new File(
+            inputFile.getParentFile(), FilenameUtils.getBaseName(inputFile.getName()) + ".pdf");
+
+    assertThat(outputFile).doesNotExist();
+
+    COnlineServerMock server = new COnlineServerMock();
+    try {
+      // start mock server
+      server.listen();
+
+      SystemLogHandler.startCapture();
+      Convert.main(
+          new String[] {
+            "-f", "pdf", inputFile.getPath(), "-c", "http://localhost:9980/lool/convert-to/pdf"
+          });
+
+      server.stop();
+      // Be sure the ExitException exception is thrown.
+      fail();
+
+    } catch (Exception ex) {
+      SystemLogHandler.stopCapture();
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 0);
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+
+      FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
     }
   }
 
