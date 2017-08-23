@@ -37,9 +37,10 @@ public interface DocumentConverter {
    * Converts a source file that is stored on the local file system.
    *
    * @param source The conversion input as a file.
+   * @param connectionURL URL of remote LibreOffice online server
    * @return The current conversion specification.
    */
-  ConversionJobWithOptionalSourceFormatUnspecified convert(File source);
+  ConversionJobWithOptionalSourceFormatUnspecified convert(File source, String connectionURL);
 
   /**
    * Converts a source stream input stream.

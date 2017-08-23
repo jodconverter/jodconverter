@@ -85,28 +85,28 @@ public class JodConverterITest {
   @Test
   public void testTxtToRtf() throws Exception {
 
-    converter.convert(inputFileTxt).to(outputFileRtf).execute();
+    converter.convert(inputFileTxt, null).to(outputFileRtf).execute();
     assertTrue("RTF File not created.", outputFileRtf.exists() && outputFileRtf.length() > 0);
   }
 
   @Test
   public void testTxtToDoc() throws Exception {
 
-    converter.convert(inputFileTxt).to(outputFileDoc).execute();
+    converter.convert(inputFileTxt, null).to(outputFileDoc).execute();
     assertTrue("DOC File not created.", outputFileDoc.exists() && outputFileDoc.length() > 0);
   }
 
   @Test
   public void testTxtToDocx() throws Exception {
 
-    converter.convert(inputFileTxt).to(outputFileDocx).execute();
+    converter.convert(inputFileTxt, null).to(outputFileDocx).execute();
     assertTrue("DOCX File not created.", outputFileDocx.exists() && outputFileDocx.length() > 0);
   }
 
   @Test
   public void testTxtToPdf() throws Exception {
 
-    converter.convert(inputFileTxt).to(outputFilePdf).execute();
+    converter.convert(inputFileTxt, null).to(outputFilePdf).execute();
     assertTrue("PDF File not created.", outputFilePdf.exists() && outputFilePdf.length() > 0);
   }
 }

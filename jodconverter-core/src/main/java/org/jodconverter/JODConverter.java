@@ -43,9 +43,10 @@ public final class JODConverter {
    * @param source The conversion input as a file.
    * @return The current conversion specification.
    */
-  public static ConversionJobWithOptionalSourceFormatUnspecified convert(final File source) {
+  public static ConversionJobWithOptionalSourceFormatUnspecified convert(
+      final File source, final String connectionURL) {
 
-    return DefaultConverter.make().convert(source);
+    return DefaultConverter.make().convert(source, connectionURL);
   }
 
   /**

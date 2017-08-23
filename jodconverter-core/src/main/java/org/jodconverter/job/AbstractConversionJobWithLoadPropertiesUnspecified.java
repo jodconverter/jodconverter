@@ -47,14 +47,17 @@ public abstract class AbstractConversionJobWithLoadPropertiesUnspecified
   protected final AbstractSourceDocumentSpecs source;
   protected final OfficeManager officeManager;
   protected final DocumentFormatRegistry formatRegistry;
+  protected final String connectionURL;
   protected FilterChain filterChain;
 
   protected AbstractConversionJobWithLoadPropertiesUnspecified(
       final AbstractSourceDocumentSpecs source,
       final OfficeManager officeManager,
-      final DocumentFormatRegistry formatRegistry) {
+      final DocumentFormatRegistry formatRegistry,
+      final String connectionURL) {
     super();
 
+    this.connectionURL = connectionURL;
     this.source = source;
     this.officeManager = officeManager;
     this.formatRegistry = formatRegistry;

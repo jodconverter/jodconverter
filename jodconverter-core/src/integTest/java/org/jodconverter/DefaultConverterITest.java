@@ -64,7 +64,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
     final File outputFile = new File(OUTPUT_DIR + "convert_FromFileToFile.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    converter.convert(inputFile).to(outputFile).execute();
+    converter.convert(inputFile, null).to(outputFile).execute();
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);
   }
@@ -111,7 +111,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
     FileUtils.deleteQuietly(outputFile);
 
     try (OutputStream outputStream = new FileOutputStream(outputFile)) {
-      converter.convert(inputFile).to(outputStream).as(null).execute();
+      converter.convert(inputFile, null).to(outputStream).as(null).execute();
     }
   }
 
@@ -125,7 +125,7 @@ public class DefaultConverterITest extends BaseOfficeITest {
 
     final OutputStream outputStream = new FileOutputStream(outputFile);
     converter
-        .convert(inputFile)
+        .convert(inputFile, null)
         .to(outputStream)
         .as(formatRegistry.getFormatByExtension("pdf"))
         .execute();

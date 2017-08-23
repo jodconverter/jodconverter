@@ -58,6 +58,7 @@ public abstract class AbstractConverter implements DocumentConverter {
   protected final OfficeManager officeManager;
   protected final DocumentFormatRegistry formatRegistry;
   protected final Map<String, Object> defaultLoadProperties;
+  protected final String connectionURL;
 
   // Provides default properties to use when we load (open) a document before
   // a conversion, regardless the input type of the document.
@@ -69,7 +70,8 @@ public abstract class AbstractConverter implements DocumentConverter {
   protected AbstractConverter(
       final OfficeManager officeManager,
       final DocumentFormatRegistry formatRegistry,
-      final Map<String, Object> defaultLoadProperties) {
+      final Map<String, Object> defaultLoadProperties,
+      final String connectionURL) {
     super();
 
     // An office manager is required
@@ -82,6 +84,7 @@ public abstract class AbstractConverter implements DocumentConverter {
       }
     }
 
+    this.connectionURL = connectionURL;
     this.officeManager = manager;
     this.formatRegistry =
         formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry;
@@ -90,12 +93,13 @@ public abstract class AbstractConverter implements DocumentConverter {
   }
 
   @Override
-  public ConversionJobWithOptionalSourceFormatUnspecified convert(final File source) {
+  public ConversionJobWithOptionalSourceFormatUnspecified convert(
+      final File source, final String connectionURL) {
 
     final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(source);
     specs.setDocumentFormat(
         formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName())));
-    return convert(specs);
+    return convert(specs, connectionURL);
   }
 
   @Override
@@ -111,7 +115,8 @@ public abstract class AbstractConverter implements DocumentConverter {
     if (officeManager instanceof TemporaryFileMaker) {
       return convert(
           new SourceDocumentSpecsFromInputStream(
-              source, ((TemporaryFileMaker) officeManager).makeTemporaryFile("tmp"), closeStream));
+              source, ((TemporaryFileMaker) officeManager).makeTemporaryFile("tmp"), closeStream),
+          null);
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "
@@ -125,7 +130,7 @@ public abstract class AbstractConverter implements DocumentConverter {
    * @return The current conversion specification.
    */
   protected abstract AbstractConversionJobWithSourceFormatUnspecified convert(
-      AbstractSourceDocumentSpecs source);
+      AbstractSourceDocumentSpecs source, final String connectionURL);
 
   @Override
   public DocumentFormatRegistry getFormatRegistry() {
@@ -138,9 +143,15 @@ public abstract class AbstractConverter implements DocumentConverter {
     protected OfficeManager officeManager;
     protected DocumentFormatRegistry formatRegistry;
     protected Map<String, Object> defaultLoadProperties;
+    protected String connectionURL = null;
 
     // Protected ctor so only subclasses can initialize an instance of this builder.
     protected AbstractConverterBuilder() {}
+
+    public T connectionURL(final String url) {
+      this.connectionURL = url;
+      return (T) this;
+    }
 
     /**
      * Specifies the {@link OfficeManager} the converter will use to execute office tasks.

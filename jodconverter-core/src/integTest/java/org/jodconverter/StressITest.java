@@ -102,7 +102,12 @@ public class StressITest {
 
         // Converts the first document without threads to ensure everything is OK.
         if (first) {
-          converter.convert(inputFile).as(inputFormat).to(outputFile).as(outputFormat).execute();
+          converter
+              .convert(inputFile, null)
+              .as(inputFormat)
+              .to(outputFile)
+              .as(outputFormat)
+              .execute();
           first = false;
         }
 
@@ -161,7 +166,12 @@ public class StressITest {
                 + " to "
                 + outputFormat.getExtension()
                 + "... ");
-        converter.convert(inputFile).as(inputFormat).to(outputFile).as(outputFormat).execute();
+        converter
+            .convert(inputFile, null)
+            .as(inputFormat)
+            .to(outputFile)
+            .as(outputFormat)
+            .execute();
         logger.info("done.\n");
       } catch (Exception ex) {
         logger.error(ex.getMessage(), ex);

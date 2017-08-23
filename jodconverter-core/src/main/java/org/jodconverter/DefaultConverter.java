@@ -32,6 +32,7 @@ import org.jodconverter.job.AbstractTargetDocumentSpecs;
 import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
+import org.jodconverter.task.COnlineConversationTask;
 import org.jodconverter.task.DefaultConversionTask;
 
 /**
@@ -79,15 +80,16 @@ public class DefaultConverter extends AbstractConverter {
   private DefaultConverter(
       final OfficeManager officeManager,
       final DocumentFormatRegistry formatRegistry,
-      final Map<String, Object> defaultLoadProperties) {
-    super(officeManager, formatRegistry, defaultLoadProperties);
+      final Map<String, Object> defaultLoadProperties,
+      final String connectionURL) {
+    super(officeManager, formatRegistry, defaultLoadProperties, connectionURL);
   }
 
   @Override
   protected AbstractConversionJobWithSourceFormatUnspecified convert(
-      final AbstractSourceDocumentSpecs source) {
+      final AbstractSourceDocumentSpecs source, final String connectionURL) {
 
-    return new DefaultConversionJobWithSourceFormatUnspecified(source);
+    return new DefaultConversionJobWithSourceFormatUnspecified(source, connectionURL);
   }
 
   /**
@@ -110,8 +112,12 @@ public class DefaultConverter extends AbstractConverter {
       extends AbstractConversionJobWithSourceFormatUnspecified {
 
     private DefaultConversionJobWithSourceFormatUnspecified(
-        final AbstractSourceDocumentSpecs source) {
-      super(source, DefaultConverter.this.officeManager, DefaultConverter.this.formatRegistry);
+        final AbstractSourceDocumentSpecs source, final String connectionURL) {
+      super(
+          source,
+          DefaultConverter.this.officeManager,
+          DefaultConverter.this.formatRegistry,
+          connectionURL);
     }
 
     @Override
@@ -135,11 +141,19 @@ public class DefaultConverter extends AbstractConverter {
 
     @Override
     public void execute() throws OfficeException {
-
       // Create a default conversion task and execute it
-      final DefaultConversionTask task =
-          new DefaultConversionTask(source, target, defaultLoadProperties, filterChain);
-      officeManager.execute(task);
+
+      // if there is a connection string specified than use remote LibreOffice server
+      if (connectionURL != null) {
+        final COnlineConversationTask task =
+            new COnlineConversationTask(
+                source, target, defaultLoadProperties, filterChain, connectionURL);
+        officeManager.execute(task);
+      } else {
+        final DefaultConversionTask task =
+            new DefaultConversionTask(source, target, defaultLoadProperties, filterChain);
+        officeManager.execute(task);
+      }
     }
   }
 
@@ -157,7 +171,8 @@ public class DefaultConverter extends AbstractConverter {
     public DefaultConverter build() {
 
       // Create the converter
-      return new DefaultConverter(officeManager, formatRegistry, defaultLoadProperties);
+      return new DefaultConverter(
+          officeManager, formatRegistry, defaultLoadProperties, connectionURL);
     }
   }
 }

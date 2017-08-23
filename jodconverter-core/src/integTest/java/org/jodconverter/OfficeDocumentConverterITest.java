@@ -72,7 +72,7 @@ public class OfficeDocumentConverterITest extends BaseOfficeITest {
 
     final OfficeDocumentConverter officeDocumentConverter =
         new OfficeDocumentConverter(InstalledOfficeManagerHolder.getInstance());
-    officeDocumentConverter.convert(inputFile, outputFile);
+    officeDocumentConverter.convert(inputFile, outputFile, null);
 
     assertTrue(outputFile.isFile() && outputFile.length() > 0);
 
@@ -87,7 +87,8 @@ public class OfficeDocumentConverterITest extends BaseOfficeITest {
     officeDocumentConverter.convert(
         inputFile,
         outputFile,
-        officeDocumentConverter.getFormatRegistry().getFormatByExtension("pdf"));
+        officeDocumentConverter.getFormatRegistry().getFormatByExtension("pdf"),
+        null);
     assertTrue(outputFile.isFile() && outputFile.length() > 0);
   }
 }
