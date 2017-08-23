@@ -96,7 +96,7 @@ apply plugin: 'checkstyle'
 // Configures the checkstyle task
 checkstyle {
   toolVersion = checkstyleVersion
-  config = rootProject.resources.text.fromFile('etc/checkstyle/rules.xml')
+  config = rootProject.resources.text.fromFile('checkstyle.xml')
 }
 
 // Disable checkstyle for test code
@@ -120,7 +120,7 @@ apply plugin: 'pmd' // Also performs quality checks on Java source files and gen
 // Configures the pmd task
 pmd {
   toolVersion = pmdVersion
-  ruleSetConfig = rootProject.resources.text.fromFile('etc/pmd/ruleset.xml')
+  ruleSetConfig = rootProject.resources.text.fromFile('ruleset.xml')
   ignoreFailures = true
   rulePriority = 5
 }

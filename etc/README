@@ -1,4 +1,4 @@
-checkstyle/rules.xml comes from:
+checkstyle.xml comes from:
 https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml
 
 eclipse/eclipse-java-google-style.xml comes from:
