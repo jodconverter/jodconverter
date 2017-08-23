@@ -38,9 +38,8 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   protected AbstractConversionJobWithSourceFormatUnspecified(
       final AbstractSourceDocumentSpecs source,
       final OfficeManager officeManager,
-      final DocumentFormatRegistry formatRegistry,
-      final String connectionURL) {
-    super(source, officeManager, formatRegistry, connectionURL);
+      final DocumentFormatRegistry formatRegistry) {
+    super(source, officeManager, formatRegistry);
   }
 
   @Override

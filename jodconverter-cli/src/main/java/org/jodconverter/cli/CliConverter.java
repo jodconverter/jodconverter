@@ -56,16 +56,12 @@ public final class CliConverter {
     this.converter = DefaultConverter.builder().formatRegistry(registry).build();
   }
 
-  private void convert(
-      final FilterChain filterChain,
-      final File inputFile,
-      final File outputFile,
-      final String connectionURL)
+  private void convert(final FilterChain filterChain, final File inputFile, final File outputFile)
       throws OfficeException {
 
     printInfo("Converting '" + inputFile.getPath() + "' to '" + outputFile.getPath() + "'");
     converter
-        .convert(inputFile, connectionURL)
+        .convert(inputFile)
         .filterWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
         .to(outputFile)
         .execute();
@@ -117,7 +113,7 @@ public final class CliConverter {
       final boolean overwrite)
       throws OfficeException {
 
-    convert(filenames, outputFormat, outputDirPath, overwrite, null, null);
+    convert(filenames, outputFormat, outputDirPath, overwrite, null);
   }
 
   /**
@@ -129,8 +125,6 @@ public final class CliConverter {
    *     will be created into the same directory as the input file.
    * @param overwrite indicates whether an output file that already exists must be overwritten.
    * @param filterChain filter chain to apply when converting a file.
-   * @param connectionURL address of remote LibreOffice Online server. Program will use the remote
-   *     server if specified
    * @throws OfficeException if an error occurs while converting the files.
    */
   public void convert(
@@ -138,8 +132,7 @@ public final class CliConverter {
       final String outputFormat,
       final String outputDirPath,
       final boolean overwrite,
-      final FilterChain filterChain,
-      final String connectionURL)
+      final FilterChain filterChain)
       throws OfficeException {
 
     Validate.notEmpty(filenames, "The validated filenames array is empty");
@@ -175,7 +168,7 @@ public final class CliConverter {
         if (validateOutputFile(inputFile, outputFile, overwrite)) {
 
           // We can now convert the document
-          convert(filterChain, inputFile, outputFile, connectionURL);
+          convert(filterChain, inputFile, outputFile);
         }
 
       } else {
@@ -195,7 +188,7 @@ public final class CliConverter {
                     FilenameUtils.getBaseName(file.getName()) + "." + outputFormat);
             if (validateOutputFile(inputFile, outputFile, overwrite)) {
 
-              convert(filterChain, inputFile, outputFile, connectionURL);
+              convert(filterChain, inputFile, outputFile);
             }
           }
         } else {
@@ -254,7 +247,7 @@ public final class CliConverter {
       final boolean overwrite)
       throws OfficeException {
 
-    convert(inputFilenames, outputFilenames, outputDirPath, overwrite, null, null);
+    convert(inputFilenames, outputFilenames, outputDirPath, overwrite, null);
   }
 
   /**
@@ -267,8 +260,6 @@ public final class CliConverter {
    *     converted file will be created into the same directory as the input files.
    * @param overwrite indicates whether an output file that already exists must be overwritten.
    * @param filterChain filter chain to apply when converting a file.
-   * @param connectionURL address of remote LibreOffice Online server. Program will use the remote
-   *     server if specified
    * @throws OfficeException if an error occurs while converting the files.
    */
   public void convert(
@@ -276,8 +267,7 @@ public final class CliConverter {
       final String[] outputFilenames,
       final String outputDirPath,
       final boolean overwrite,
-      final FilterChain filterChain,
-      final String connectionURL)
+      final FilterChain filterChain)
       throws OfficeException {
 
     Validate.notEmpty(inputFilenames, "The validated input filenames array is empty");
@@ -326,7 +316,7 @@ public final class CliConverter {
       // Validate that the file can be converted
       if (validateInputFile(inputFile) && validateOutputFile(inputFile, outputFile, overwrite)) {
 
-        convert(filterChain, inputFile, outputFile, connectionURL);
+        convert(filterChain, inputFile, outputFile);
       }
     }
   }

@@ -76,7 +76,7 @@ public class ConverterServlet extends HttpServlet {
     try {
       final DocumentConverter converter = webappContext.getDocumentConverter();
       final long startTime = System.currentTimeMillis();
-      converter.convert(inputFile, null).to(outputFile).execute();
+      converter.convert(inputFile).to(outputFile).execute();
       logger.info(
           String.format(
               "Successful conversion: %s [%db] to %s in %dms",

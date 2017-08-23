@@ -110,28 +110,28 @@ public class SpringControllerITest {
   @Test
   public void testTxtToRtf() throws Exception {
 
-    bean.getConverter().convert(inputFileTxt, null).to(outputFileRtf).execute();
+    bean.getConverter().convert(inputFileTxt).to(outputFileRtf).execute();
     assertTrue("RTF File not created.", outputFileRtf.exists() && outputFileRtf.length() > 0);
   }
 
   @Test
   public void testTxtToDoc() throws Exception {
 
-    bean.getConverter().convert(inputFileTxt, null).to(outputFileDoc).execute();
+    bean.getConverter().convert(inputFileTxt).to(outputFileDoc).execute();
     assertTrue("DOC File not created.", outputFileDoc.exists() && outputFileDoc.length() > 0);
   }
 
   @Test
   public void testTxtToDocx() throws Exception {
 
-    bean.getConverter().convert(inputFileTxt, null).to(outputFileDocx).execute();
+    bean.getConverter().convert(inputFileTxt).to(outputFileDocx).execute();
     assertTrue("DOCX File not created.", outputFileDocx.exists() && outputFileDocx.length() > 0);
   }
 
   @Test
   public void testTxtToPdf() throws Exception {
 
-    bean.getConverter().convert(inputFileTxt, null).to(outputFilePdf).execute();
+    bean.getConverter().convert(inputFileTxt).to(outputFilePdf).execute();
     assertTrue("PDF File not created.", outputFilePdf.exists() && outputFilePdf.length() > 0);
   }
 

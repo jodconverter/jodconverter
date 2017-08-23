@@ -79,10 +79,9 @@ public class OfficeDocumentConverter {
    * @param outputFile The target output file.
    * @throws OfficeException If the conversion fails.
    */
-  public void convert(final File inputFile, final File outputFile, final String connectionURL)
-      throws OfficeException {
+  public void convert(final File inputFile, final File outputFile) throws OfficeException {
 
-    convert(inputFile, outputFile, null, connectionURL);
+    convert(inputFile, outputFile, null);
   }
 
   /**
@@ -95,13 +94,10 @@ public class OfficeDocumentConverter {
    * @throws OfficeException If the conversion fails.
    */
   public void convert(
-      final File inputFile,
-      final File outputFile,
-      final DocumentFormat outputFormat,
-      final String connectionURL)
+      final File inputFile, final File outputFile, final DocumentFormat outputFormat)
       throws OfficeException {
 
-    convert(inputFile, outputFile, null, outputFormat, connectionURL);
+    convert(inputFile, outputFile, null, outputFormat);
   }
 
   /**
@@ -117,11 +113,10 @@ public class OfficeDocumentConverter {
       final File inputFile,
       final File outputFile,
       final DocumentFormat inputFormat,
-      final DocumentFormat outputFormat,
-      final String connectionURL)
+      final DocumentFormat outputFormat)
       throws OfficeException {
 
-    convert(null, inputFile, outputFile, inputFormat, outputFormat, connectionURL);
+    convert(null, inputFile, outputFile, inputFormat, outputFormat);
   }
 
   /**
@@ -135,14 +130,10 @@ public class OfficeDocumentConverter {
    * @param outputFile The target output file.
    * @throws OfficeException If the conversion fails.
    */
-  public void convert(
-      final FilterChain filterChain,
-      final File inputFile,
-      final File outputFile,
-      final String connectionURL)
+  public void convert(final FilterChain filterChain, final File inputFile, final File outputFile)
       throws OfficeException {
 
-    convert(filterChain, inputFile, outputFile, null, connectionURL);
+    convert(filterChain, inputFile, outputFile, null);
   }
 
   /**
@@ -161,11 +152,10 @@ public class OfficeDocumentConverter {
       final FilterChain filterChain,
       final File inputFile,
       final File outputFile,
-      final DocumentFormat outputFormat,
-      final String connectionURL)
+      final DocumentFormat outputFormat)
       throws OfficeException {
 
-    convert(filterChain, inputFile, outputFile, null, outputFormat, connectionURL);
+    convert(filterChain, inputFile, outputFile, null, outputFormat);
   }
 
   /**
@@ -185,12 +175,11 @@ public class OfficeDocumentConverter {
       final File inputFile,
       final File outputFile,
       final DocumentFormat inputFormat,
-      final DocumentFormat outputFormat,
-      final String connectionURL)
+      final DocumentFormat outputFormat)
       throws OfficeException {
 
     delegate
-        .convert(inputFile, connectionURL)
+        .convert(inputFile)
         .as(
             inputFormat == null && inputFile != null
                 ? getFormatRegistry()
