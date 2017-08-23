@@ -19,6 +19,8 @@
 
 package org.jodconverter.office;
 
+import org.jodconverter.task.OfficeTask;
+
 /**
  * {@link OfficeManager} implementation that connects to an external Office process.
  *

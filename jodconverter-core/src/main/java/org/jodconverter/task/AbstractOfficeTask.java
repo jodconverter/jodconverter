@@ -41,7 +41,6 @@ import com.sun.star.util.XCloseable;
 import org.jodconverter.job.SourceDocumentSpecs;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeTask;
 
 /**
  * Base class for all office tasks implementation.

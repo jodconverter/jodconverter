@@ -17,7 +17,10 @@
  * limitations under the License.
  */
 
-package org.jodconverter.office;
+package org.jodconverter.task;
+
+import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.OfficeException;
 
 /** Represents a task executed by an office process. */
 public interface OfficeTask {

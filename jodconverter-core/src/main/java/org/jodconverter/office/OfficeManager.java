@@ -19,6 +19,8 @@
 
 package org.jodconverter.office;
 
+import org.jodconverter.task.OfficeTask;
+
 /**
  * An office manager knows how to execute an {@link OfficeTask}. An office manager must be started
  * before performing conversion tasks and must be stopped once it is no longer required. Once

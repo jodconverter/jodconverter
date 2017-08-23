@@ -27,6 +27,8 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XCloseable;
 
+import org.jodconverter.task.OfficeTask;
+
 public class MockOfficeTask implements OfficeTask {
 
   private long delayTime;

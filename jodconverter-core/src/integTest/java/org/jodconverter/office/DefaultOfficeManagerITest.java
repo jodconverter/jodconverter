@@ -26,6 +26,8 @@ import java.io.File;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
+import org.jodconverter.task.OfficeTask;
+
 public class DefaultOfficeManagerITest {
 
   private static class SleepyOfficeTaskRunner implements Runnable {

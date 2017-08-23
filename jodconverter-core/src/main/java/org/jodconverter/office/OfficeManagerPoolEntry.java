@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.jodconverter.task.OfficeTask;
+
 /**
  * A OfficeProcessManagerPoolEntry is responsible to execute tasks submitted through a {@link
  * OfficeManagerPool}. It will submit tasks to its inner {@link OfficeProcessManager} and wait until

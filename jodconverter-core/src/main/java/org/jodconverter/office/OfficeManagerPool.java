@@ -27,6 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.jodconverter.task.OfficeTask;
+
 /**
  * A OfficeManagerPool is responsible to maintain a pool of {@link OfficeManagerPoolEntry} that will
  * be used to execute {@link OfficeTask}. The pool will use the first {@link OfficeManagerPoolEntry}
