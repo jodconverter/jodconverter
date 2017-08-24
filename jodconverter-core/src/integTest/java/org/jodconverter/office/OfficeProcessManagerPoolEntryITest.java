@@ -372,6 +372,7 @@ public class OfficeProcessManagerPoolEntryITest {
       assertThat(getOfficeProcess(officeManager).getExitCode(0, 0)).isEqualTo(0);
 
       officeProcess.forciblyTerminate(1000L, 5000L);
+      officeProcess.deleteProfileDir();
     }
   }
 
@@ -406,6 +407,7 @@ public class OfficeProcessManagerPoolEntryITest {
           .containsExactly(false, false);
 
       officeProcess.forciblyTerminate(1000L, 5000L);
+      officeProcess.deleteProfileDir();
     }
   }
 

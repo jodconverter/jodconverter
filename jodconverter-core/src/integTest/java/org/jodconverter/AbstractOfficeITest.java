@@ -102,6 +102,7 @@ public abstract class AbstractOfficeITest {
       // Create an output file
       final File targetFile =
           new File(outputDir, sourceFile.getName() + "." + outputFormat.getExtension());
+      targetFile.deleteOnExit();
 
       // Delete existing file
       FileUtils.deleteQuietly(targetFile);

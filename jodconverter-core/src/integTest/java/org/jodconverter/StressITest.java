@@ -22,11 +22,13 @@ package org.jodconverter;
 import java.io.File;
 import java.io.OutputStreamWriter;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
@@ -39,7 +41,8 @@ public class StressITest {
 
   private static final Logger LOGGER = Logger.getLogger(StressITest.class);
 
-  private static final int MAX_CONVERSIONS = 1024;
+  private static final int MAX_CONVERSIONS = 10;
+  //private static final int MAX_CONVERSIONS = 1024;
   private static final int MAX_THREADS = 128;
   private static final int MAX_PROCESS_TASKS = 10;
 
@@ -49,6 +52,18 @@ public class StressITest {
       DefaultDocumentFormatRegistry.getFormatByExtension("pdf");
 
   private static final String PATTERN = "%d{ISO8601} %-5p [%c{3}] [%t] %m%n";
+  private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
+
+  private static File outputDir;
+
+  /** Creates an output test directory just once. */
+  @BeforeClass
+  public static void setUpClass() {
+
+    outputDir = new File(TEST_OUTPUT_DIR, StressITest.class.getSimpleName());
+    FileUtils.deleteQuietly(outputDir);
+    outputDir.mkdirs();
+  }
 
   /**
    * This test will run multiple parallel conversions, using 8 office processes. Just change the
@@ -60,7 +75,8 @@ public class StressITest {
   @Test
   public void runParallelConversions() throws Exception {
 
-    Logger.getRootLogger().removeAllAppenders();
+    final File logFile = new File(outputDir, "/test.log");
+    FileUtils.deleteQuietly(logFile);
 
     // Create console appender
     final ConsoleAppender console = new ConsoleAppender();
@@ -73,7 +89,7 @@ public class StressITest {
     // Keep a log file to be able to see if an error occurred
     final FileAppender fileAppender = new FileAppender();
     fileAppender.setName("FileLogger");
-    fileAppender.setFile("test-output/" + StressITest.class.getSimpleName() + "/test.log");
+    fileAppender.setFile(logFile.getPath());
     fileAppender.setLayout(new PatternLayout(PATTERN));
     fileAppender.setThreshold(Level.DEBUG);
     fileAppender.setAppend(true);
@@ -84,6 +100,7 @@ public class StressITest {
     final OfficeManager officeManager =
         DefaultOfficeManager.builder()
             .portNumbers(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009)
+            //.portNumbers(2002, 2003)
             .maxTasksPerProcess(MAX_PROCESS_TASKS)
             .build();
     final DocumentConverter converter = DefaultConverter.make(officeManager);
@@ -99,7 +116,7 @@ public class StressITest {
       int threadCount = 0;
 
       for (int i = 0; i < MAX_CONVERSIONS; i++) {
-        final File target = File.createTempFile("test", "." + OUTPUT_FORMAT.getExtension());
+        final File target = new File(outputDir, "test_" + i + "." + OUTPUT_FORMAT.getExtension());
         target.deleteOnExit();
 
         // Converts the first document without threads to ensure everything is OK.
@@ -129,6 +146,8 @@ public class StressITest {
 
     } finally {
       officeManager.stop();
+      Logger.getRootLogger().removeAppender(console);
+      Logger.getRootLogger().removeAppender(fileAppender);
     }
   }
 }

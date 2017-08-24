@@ -53,8 +53,8 @@ class OfficeManagerPool implements OfficeManager, TemporaryFileMaker {
   private final BlockingQueue<OfficeManager> pool;
   private final OfficeManager[] entries;
   private final OfficeManagerPoolConfig config;
-  private final File tempDir;
   private final AtomicLong tempFileCounter;
+  private File tempDir;
 
   private static File makeTempDir(final File workingDir) {
 
@@ -80,8 +80,7 @@ class OfficeManagerPool implements OfficeManager, TemporaryFileMaker {
       entries[i] = new OfficeProcessManagerPoolEntry(officeUrls[i], config);
     }
 
-    // Create the temporary dir
-    tempDir = makeTempDir(config.getWorkingDir());
+    // Initialize the temp file counter
     tempFileCounter = new AtomicLong(0);
   }
 
@@ -98,8 +97,7 @@ class OfficeManagerPool implements OfficeManager, TemporaryFileMaker {
       entries[i] = new SimpleOfficeManagerPoolEntry(config);
     }
 
-    // Create the temporary dir
-    tempDir = makeTempDir(config.getWorkingDir());
+    // Initialize the temp file counter
     tempFileCounter = new AtomicLong(0);
   }
 
@@ -135,6 +133,9 @@ class OfficeManagerPool implements OfficeManager, TemporaryFileMaker {
 
     synchronized (this) {
       doStart();
+
+      // Create the temporary dir is the pool has successfully started
+      tempDir = makeTempDir(config.getWorkingDir());
     }
   }
 
