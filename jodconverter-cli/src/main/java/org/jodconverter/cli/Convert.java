@@ -283,8 +283,13 @@ public final class Convert {
         printInfo("Starting office");
         officeManager.start();
 
+        final CliConverter converter;
         // Build a client converter and start the conversion
-        final CliConverter converter = new CliConverter(registry);
+        if (connectionURL != null) {
+          converter = new CliConverter(registry, connectionURL);
+        } else {
+          converter = new CliConverter(registry);
+        }
 
         if (outputFormat == null) {
 
