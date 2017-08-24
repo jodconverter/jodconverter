@@ -51,10 +51,10 @@ public class DefaultOfficeManagerBuilder {
   // OfficeProcessManager
   private long processTimeout = OfficeProcessManagerConfig.DEFAULT_PROCESS_TIMEOUT;
   private long processRetryInterval = OfficeProcessManagerConfig.DEFAULT_PROCESS_RETRY_INTERVAL;
+  private int maxTasksPerProcess = OfficeProcessManagerConfig.DEFAULT_MAX_TASKS_PER_PROCESS;
 
   // OfficeManagerPoolEntry
   private long taskExecutionTimeout = OfficeManagerPoolEntryConfig.DEFAULT_TASK_EXECUTION_TIMEOUT;
-  private int maxTasksPerProcess = OfficeManagerPoolEntryConfig.DEFAULT_MAX_TASKS_PER_PROCESS;
 
   // OfficeManagerPool
   private long taskQueueTimeout = OfficeManagerPoolConfig.DEFAULT_TASK_QUEUE_TIMEOUT;
@@ -101,15 +101,15 @@ public class DefaultOfficeManagerBuilder {
     // Build the office URLs
     final OfficeUrl[] officeUrls = buildOfficeUrls();
 
-    final OfficeManagerPoolConfig config =
-        new OfficeManagerPoolConfig(officeHome, workingDir, processManager);
+    final OfficeProcessManagerPoolConfig config =
+        new OfficeProcessManagerPoolConfig(officeHome, workingDir, processManager);
     config.setRunAsArgs(runAsArgs);
     config.setTemplateProfileDir(templateProfileDir);
     config.setKillExistingProcess(killExistingProcess);
     config.setProcessTimeout(processTimeout);
     config.setProcessRetryInterval(processRetryInterval);
-    config.setTaskExecutionTimeout(taskExecutionTimeout);
     config.setMaxTasksPerProcess(maxTasksPerProcess);
+    config.setTaskExecutionTimeout(taskExecutionTimeout);
     config.setTaskQueueTimeout(taskQueueTimeout);
 
     return new OfficeManagerPool(officeUrls, config);
@@ -359,6 +359,25 @@ public class DefaultOfficeManagerBuilder {
     return this;
   }
 
+  /**
+   * Specifies the maximum number of tasks an office process can execute before restarting.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 200
+   *
+   * @param maxTasksPerProcess The new maximum number of tasks an office process can execute.
+   * @return This builder instance.
+   */
+  public DefaultOfficeManagerBuilder setMaxTasksPerProcess(final int maxTasksPerProcess) {
+
+    Validate.inclusiveBetween(
+        1,
+        Integer.MAX_VALUE,
+        maxTasksPerProcess,
+        String.format("The maxTasksPerProcess %s greater than 0", maxTasksPerProcess));
+    this.maxTasksPerProcess = maxTasksPerProcess;
+    return this;
+  }
+
   //
   // OfficeManagerPoolEntry
   //
@@ -381,25 +400,6 @@ public class DefaultOfficeManagerBuilder {
         String.format(
             "The taskExecutionTimeout %s must greater than or equal to 0", taskExecutionTimeout));
     this.taskExecutionTimeout = taskExecutionTimeout;
-    return this;
-  }
-
-  /**
-   * Specifies the maximum number of tasks an office process can execute before restarting.
-   *
-   * <p>&nbsp; <b><i>Default</i></b>: 200
-   *
-   * @param maxTasksPerProcess The new maximum number of tasks an office process can execute.
-   * @return This builder instance.
-   */
-  public DefaultOfficeManagerBuilder setMaxTasksPerProcess(final int maxTasksPerProcess) {
-
-    Validate.inclusiveBetween(
-        1,
-        Integer.MAX_VALUE,
-        maxTasksPerProcess,
-        String.format("The maxTasksPerProcess %s greater than 0", maxTasksPerProcess));
-    this.maxTasksPerProcess = maxTasksPerProcess;
     return this;
   }
 

@@ -20,7 +20,9 @@
 package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
@@ -150,12 +152,25 @@ public class OfficeProcessTest {
         });
     final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
 
+    Process proc = mock(Process.class);
     try {
+      Whitebox.setInternalState(process, "process", proc);
       process.forciblyTerminate(0L, 0L);
+      fail("Exception expected");
     } catch (Exception ex) {
       assertThat(ex)
           .isExactlyInstanceOf(OfficeException.class)
           .hasCauseExactlyInstanceOf(IOException.class);
     }
+  }
+
+  @Test
+  public void getExitCode_WhenNotStarted_ShouldReturn0() throws Exception {
+
+    final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
+    final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
+
+    assertThat(process.getExitCode()).isEqualTo(0);
+    assertThat(process.getExitCode(0L, 0L)).isEqualTo(0);
   }
 }

@@ -145,12 +145,18 @@ class OfficeProcess {
   public int forciblyTerminate(final long retryInterval, final long retryTimeout) // NOSONAR
       throws OfficeException, RetryTimeoutException {
 
+    // No need to terminate anything if the process has never been started
+    if (process == null) {
+      return 0; // success
+    }
+
     LOGGER.info(
-        "Trying to forcibly terminate process: '{}'{}",
+        "Trying to forcibly terminate process: '{}'; pid: {}",
         officeUrl.getConnectionParametersAsString(),
-        pid == PID_UNKNOWN ? "" : " (pid " + pid + ")");
+        pid == PID_UNKNOWN ? "NA" : pid);
 
     try {
+      // No need to terminate anything if the process has never been started
       config.getProcessManager().kill(process, pid);
       return getExitCode(retryInterval, retryTimeout);
     } catch (IOException ioEx) {
@@ -166,7 +172,8 @@ class OfficeProcess {
   public Integer getExitCode() {
 
     try {
-      return process.exitValue();
+      // If the process has never been started, just return a success exit code
+      return process == null ? 0 : process.exitValue();
     } catch (IllegalThreadStateException illegalThreadStateEx) {
       LOGGER.trace("IllegalThreadStateException catch in getExitCode", illegalThreadStateEx);
       return null;
@@ -185,6 +192,11 @@ class OfficeProcess {
    */
   public int getExitCode(final long retryInterval, final long retryTimeout) // NOSONAR
       throws OfficeException, RetryTimeoutException {
+
+    // If the process has never been started, just return a success exit code
+    if (process == null) {
+      return 0; // success
+    }
 
     try {
       final ExitCodeRetryable retryable = new ExitCodeRetryable(process);

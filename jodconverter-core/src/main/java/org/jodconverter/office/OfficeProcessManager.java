@@ -85,11 +85,14 @@ class OfficeProcessManager {
   /** Starts the office process managed by this class and connect to the process. */
   private void doStartProcessAndConnect() throws OfficeException {
 
+    process.start();
+
     try {
-      process.start();
       new ConnectRetryable(process, connection)
           .execute(config.getProcessRetryInterval(), config.getProcessTimeout());
 
+    } catch (OfficeException ex) {
+      throw ex;
     } catch (Exception ex) {
       throw new OfficeException("Could not establish connection", ex);
     }

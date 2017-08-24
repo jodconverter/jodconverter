@@ -20,16 +20,10 @@
 package org.jodconverter.office;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.jodconverter.DefaultConverter;
 import org.jodconverter.process.AbstractProcessManager;
@@ -39,12 +33,7 @@ import org.jodconverter.process.ProcessManager;
  * Default {@link OfficeManager} implementation that uses a pool of office processes to execute
  * conversion tasks.
  */
-public final class DefaultOfficeManager extends OfficeManagerPool implements TemporaryFileMaker {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultOfficeManager.class);
-
-  private final File tempDir;
-  private final AtomicLong tempFileCounter;
+public final class DefaultOfficeManager extends OfficeManagerPool {
 
   /**
    * Creates a new builder instance.
@@ -76,50 +65,9 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
     return builder().install().build();
   }
 
-  @Override
-  public void stop() throws OfficeException {
-
-    synchronized (this) {
-      try {
-        super.stop();
-      } finally {
-        deleteTempDir();
-      }
-    }
-  }
-
-  private static File makeTempDir(final File workingDir) {
-
-    final File tempDir = new File(workingDir, "jodconverter_" + UUID.randomUUID().toString());
-    tempDir.mkdir();
-    if (!tempDir.isDirectory()) {
-      throw new IllegalStateException(String.format("Cannot create temp directory: %s", tempDir));
-    }
-    return tempDir;
-  }
-
-  @Override
-  public File makeTemporaryFile(final String extension) {
-    return new File(tempDir, "tempfile_" + tempFileCounter.getAndIncrement() + "." + extension);
-  }
-
-  private void deleteTempDir() {
-
-    if (tempDir != null) {
-      LOGGER.debug("Deleting temporary directory '{}'", tempDir);
-      try {
-        FileUtils.deleteDirectory(tempDir);
-      } catch (IOException ioEx) { // NOSONAR
-        LOGGER.error("Could not temporary profileDir: {}", ioEx.getMessage());
-      }
-    }
-  }
-
-  private DefaultOfficeManager(final OfficeUrl[] officeUrls, final OfficeManagerPoolConfig config) {
+  private DefaultOfficeManager(
+      final OfficeUrl[] officeUrls, final OfficeProcessManagerPoolConfig config) {
     super(officeUrls, config);
-
-    tempDir = makeTempDir(config.getWorkingDir());
-    tempFileCounter = new AtomicLong(0);
   }
 
   /**
@@ -144,10 +92,10 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
     // OfficeProcessManager
     private long processTimeout = OfficeProcessManagerConfig.DEFAULT_PROCESS_TIMEOUT;
     private long processRetryInterval = OfficeProcessManagerConfig.DEFAULT_PROCESS_RETRY_INTERVAL;
+    private int maxTasksPerProcess = OfficeProcessManagerConfig.DEFAULT_MAX_TASKS_PER_PROCESS;
 
     // OfficeManagerPoolEntry
     private long taskExecutionTimeout = OfficeManagerPoolEntryConfig.DEFAULT_TASK_EXECUTION_TIMEOUT;
-    private int maxTasksPerProcess = OfficeManagerPoolEntryConfig.DEFAULT_MAX_TASKS_PER_PROCESS;
 
     // OfficeManagerPool
     private long taskQueueTimeout = OfficeManagerPoolConfig.DEFAULT_TASK_QUEUE_TIMEOUT;
@@ -185,15 +133,15 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
       // Build the office URLs
       final OfficeUrl[] officeUrls = OfficeUtils.buildOfficeUrls(portNumbers, pipeNames);
 
-      final OfficeManagerPoolConfig config =
-          new OfficeManagerPoolConfig(officeHome, workingDir, processManager);
+      final OfficeProcessManagerPoolConfig config =
+          new OfficeProcessManagerPoolConfig(officeHome, workingDir, processManager);
       config.setRunAsArgs(runAsArgs);
       config.setTemplateProfileDir(templateProfileDir);
       config.setKillExistingProcess(killExistingProcess);
       config.setProcessTimeout(processTimeout);
       config.setProcessRetryInterval(processRetryInterval);
-      config.setTaskExecutionTimeout(taskExecutionTimeout);
       config.setMaxTasksPerProcess(maxTasksPerProcess);
+      config.setTaskExecutionTimeout(taskExecutionTimeout);
       config.setTaskQueueTimeout(taskQueueTimeout);
 
       final DefaultOfficeManager manager = new DefaultOfficeManager(officeUrls, config);
@@ -449,6 +397,25 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
       return this;
     }
 
+    /**
+     * Specifies the maximum number of tasks an office process can execute before restarting.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: 200
+     *
+     * @param maxTasksPerProcess The new maximum number of tasks an office process can execute.
+     * @return This builder instance.
+     */
+    public Builder maxTasksPerProcess(final int maxTasksPerProcess) {
+
+      Validate.inclusiveBetween(
+          1,
+          Integer.MAX_VALUE,
+          maxTasksPerProcess,
+          String.format("The maxTasksPerProcess %s greater than 0", maxTasksPerProcess));
+      this.maxTasksPerProcess = maxTasksPerProcess;
+      return this;
+    }
+
     //
     // OfficeManagerPoolEntry
     //
@@ -471,25 +438,6 @@ public final class DefaultOfficeManager extends OfficeManagerPool implements Tem
           String.format(
               "The taskExecutionTimeout %s must greater than or equal to 0", taskExecutionTimeout));
       this.taskExecutionTimeout = taskExecutionTimeout;
-      return this;
-    }
-
-    /**
-     * Specifies the maximum number of tasks an office process can execute before restarting.
-     *
-     * <p>&nbsp; <b><i>Default</i></b>: 200
-     *
-     * @param maxTasksPerProcess The new maximum number of tasks an office process can execute.
-     * @return This builder instance.
-     */
-    public Builder maxTasksPerProcess(final int maxTasksPerProcess) {
-
-      Validate.inclusiveBetween(
-          1,
-          Integer.MAX_VALUE,
-          maxTasksPerProcess,
-          String.format("The maxTasksPerProcess %s greater than 0", maxTasksPerProcess));
-      this.maxTasksPerProcess = maxTasksPerProcess;
       return this;
     }
 

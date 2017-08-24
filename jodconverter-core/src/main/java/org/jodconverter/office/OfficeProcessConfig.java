@@ -56,7 +56,6 @@ class OfficeProcessConfig {
   /**
    * Creates configuration with the specified values.
    *
-   * @param officeUrl The office URL for the configuration.
    * @param officeHome The home directory of the office installation.
    * @param workingDir The working directory to set to office.
    * @param processManager The process manager to use to deal with created processes.

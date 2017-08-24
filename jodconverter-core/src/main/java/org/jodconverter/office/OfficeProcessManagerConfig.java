@@ -34,6 +34,9 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
   public static final long DEFAULT_PROCESS_TIMEOUT = 120000L; // 2 minutes
   /** The default delay between each try when executing a process call (start/terminate). */
   public static final long DEFAULT_PROCESS_RETRY_INTERVAL = 250L; // 0.25 secs.
+  /** The default maximum number of tasks an office process can execute before restarting. */
+  public static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
+
   /**
    * The minimum value for the delay between each try when executing a process call
    * (start/terminate).
@@ -47,6 +50,7 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
 
   private long processTimeout = DEFAULT_PROCESS_TIMEOUT;
   private long processRetryInterval = DEFAULT_PROCESS_RETRY_INTERVAL;
+  private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
   /** Creates configuration with default values. */
   public OfficeProcessManagerConfig() {
@@ -90,6 +94,17 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
   }
 
   /**
+   * Gets the maximum number of tasks an office process can execute before restarting.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 200
+   *
+   * @return The number of tasks an office process can execute.
+   */
+  public int getMaxTasksPerProcess() {
+    return maxTasksPerProcess;
+  }
+
+  /**
    * Sets the timeout, in milliseconds, when trying to execute an office process call
    * (start/terminate).
    *
@@ -107,5 +122,14 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
    */
   public void setProcessRetryInterval(final long processRetryInterval) {
     this.processRetryInterval = processRetryInterval;
+  }
+
+  /**
+   * Sets the maximum number of tasks an office process can execute before restarting.
+   *
+   * @param maxTasksPerProcess The new number of tasks an office process can execute.
+   */
+  public void setMaxTasksPerProcess(final int maxTasksPerProcess) {
+    this.maxTasksPerProcess = maxTasksPerProcess;
   }
 }

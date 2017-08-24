@@ -21,31 +21,15 @@ package org.jodconverter.office;
 
 import java.io.File;
 
-import org.jodconverter.process.ProcessManager;
-
 /**
- * This class holds the configuration of an {@link OfficeManagerPool}.
+ * This class provides the configuration of an {@link OfficeManagerPool}.
  *
  * @see OfficeManagerPool
  */
-class OfficeManagerPoolConfig extends OfficeManagerPoolEntryConfig {
+interface OfficeManagerPoolConfig { // NOSONAR
 
   /** The default maximum living time of a task in the conversion queue. */
   public static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds
-
-  private long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
-
-  /**
-   * Creates configuration with the specified values.
-   *
-   * @param officeHome The home directory of the office installation.
-   * @param workingDir The working directory to set to office.
-   * @param processManager The process manager to use to deal with created processes.
-   */
-  public OfficeManagerPoolConfig(
-      final File officeHome, final File workingDir, final ProcessManager processManager) {
-    super(officeHome, workingDir, processManager);
-  }
 
   /**
    * Sets the maximum living time of a task in the conversion queue. The task will be removed from
@@ -55,9 +39,17 @@ class OfficeManagerPoolConfig extends OfficeManagerPoolEntryConfig {
    *
    * @return The task queue timeout, in milliseconds.
    */
-  public long getTaskQueueTimeout() {
-    return taskQueueTimeout;
-  }
+  public long getTaskQueueTimeout();
+
+  /**
+   * Gets the directory where temporary files will be created when working with streams.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: The system temporary directory as specified by the <code>
+   * java.io.tmpdir</code> system property.
+   *
+   * @return The working directory.
+   */
+  public File getWorkingDir();
 
   /**
    * Sets the maximum living time of a task in the conversion queue. The task will be removed from
@@ -67,7 +59,12 @@ class OfficeManagerPoolConfig extends OfficeManagerPoolEntryConfig {
    *
    * @param taskQueueTimeout The task queue timeout, in milliseconds.
    */
-  public void setTaskQueueTimeout(final long taskQueueTimeout) {
-    this.taskQueueTimeout = taskQueueTimeout;
-  }
+  public void setTaskQueueTimeout(final long taskQueueTimeout);
+
+  /**
+   * Sets the directory where temporary files will be created when working with streams.
+   *
+   * @param workingDir The new working directory.
+   */
+  public void setWorkingDir(final File workingDir);
 }

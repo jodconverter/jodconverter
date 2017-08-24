@@ -31,14 +31,22 @@ import org.jodconverter.task.OfficeTask;
 
 public class MockOfficeTask implements OfficeTask {
 
-  private long delayTime;
+  private final long delayTime;
   private boolean completed;
 
+  /** Create a new task with default values. */
   public MockOfficeTask() {
-    // default
+    this(0L);
   }
 
+  /**
+   * Create a new task with the specified delay.
+   *
+   * @param delayTime The delay.
+   */
   public MockOfficeTask(final long delayTime) {
+    super();
+
     this.delayTime = delayTime;
   }
 

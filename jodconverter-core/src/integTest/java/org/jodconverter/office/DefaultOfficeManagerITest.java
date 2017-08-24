@@ -26,8 +26,6 @@ import java.io.File;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
-import org.jodconverter.task.OfficeTask;
-
 public class DefaultOfficeManagerITest {
 
   private static class SleepyOfficeTaskRunner implements Runnable {
@@ -44,17 +42,7 @@ public class DefaultOfficeManagerITest {
     @Override
     public void run() {
       try {
-        manager.execute(
-            new OfficeTask() {
-              @Override
-              public void execute(final OfficeContext context) throws OfficeException {
-                try {
-                  Thread.sleep(sleep); // NOSONAR
-                } catch (InterruptedException e) {
-                  Thread.currentThread().interrupt();
-                }
-              }
-            });
+        manager.execute(new SimpleOfficeTask(sleep));
       } catch (OfficeException e) {
         exception = e;
       }
@@ -81,8 +69,8 @@ public class DefaultOfficeManagerITest {
     final OfficeManager manager = DefaultOfficeManager.make();
 
     assertThat(manager).isInstanceOf(DefaultOfficeManager.class);
-    final OfficeManagerPoolConfig config =
-        (OfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config =
+        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(OfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -93,14 +81,14 @@ public class DefaultOfficeManagerITest {
     assertThat(config.isKillExistingProcess()).isTrue();
     assertThat(config.getProcessTimeout()).isEqualTo(120000L);
     assertThat(config.getProcessRetryInterval()).isEqualTo(250L);
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
     assertThat(config.getMaxTasksPerProcess()).isEqualTo(200);
+    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(30000L);
 
     final OfficeManager[] poolEntries =
         (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
     assertThat(poolEntries).hasSize(1);
-    assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
+    assertThat(poolEntries[0]).isInstanceOf(OfficeProcessManagerPoolEntry.class);
 
     final OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
@@ -127,14 +115,14 @@ public class DefaultOfficeManagerITest {
             .killExistingProcess(false)
             .processTimeout(5000)
             .processRetryInterval(1000)
-            .taskExecutionTimeout(20000)
             .maxTasksPerProcess(10)
+            .taskExecutionTimeout(20000)
             .taskQueueTimeout(1000)
             .build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
-    final OfficeManagerPoolConfig config =
-        (OfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config =
+        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(OfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -146,14 +134,14 @@ public class DefaultOfficeManagerITest {
     assertThat(config.isKillExistingProcess()).isEqualTo(false);
     assertThat(config.getProcessTimeout()).isEqualTo(5000L);
     assertThat(config.getProcessRetryInterval()).isEqualTo(1000L);
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
     assertThat(config.getMaxTasksPerProcess()).isEqualTo(10);
+    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(1000L);
 
     final OfficeManager[] poolEntries =
         (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
     assertThat(poolEntries).hasSize(2);
-    assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
+    assertThat(poolEntries[0]).isInstanceOf(OfficeProcessManagerPoolEntry.class);
 
     OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
@@ -182,8 +170,8 @@ public class DefaultOfficeManagerITest {
             .build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
-    final OfficeManagerPoolConfig config =
-        (OfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config =
+        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(OfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -205,8 +193,8 @@ public class DefaultOfficeManagerITest {
             .build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
-    final OfficeManagerPoolConfig config =
-        (OfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config =
+        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(OfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -290,14 +278,7 @@ public class DefaultOfficeManagerITest {
   @Test(expected = IllegalStateException.class)
   public void execute_WithoutBeeingStared_ThrowIllegalStateException() throws Exception {
 
-    DefaultOfficeManager.make()
-        .execute(
-            new OfficeTask() {
-              @Override
-              public void execute(final OfficeContext context) throws OfficeException {
-                // This task won't do anything
-              }
-            });
+    DefaultOfficeManager.make().execute(new SimpleOfficeTask());
   }
 
   @Test(expected = IllegalStateException.class)
@@ -310,13 +291,7 @@ public class DefaultOfficeManagerITest {
       manager.stop();
     }
 
-    manager.execute(
-        new OfficeTask() {
-          @Override
-          public void execute(final OfficeContext context) throws OfficeException {
-            // The task won't do anything
-          }
-        });
+    manager.execute(new SimpleOfficeTask());
   }
 
   @Test

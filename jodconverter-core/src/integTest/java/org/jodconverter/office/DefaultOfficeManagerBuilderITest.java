@@ -35,8 +35,8 @@ public class DefaultOfficeManagerBuilderITest {
     final OfficeManager manager = new DefaultOfficeManagerBuilder().build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
-    final OfficeManagerPoolConfig config =
-        (OfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config =
+        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(OfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -47,14 +47,14 @@ public class DefaultOfficeManagerBuilderITest {
     assertThat(config.isKillExistingProcess()).isTrue();
     assertThat(config.getProcessTimeout()).isEqualTo(120000L);
     assertThat(config.getProcessRetryInterval()).isEqualTo(250L);
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
     assertThat(config.getMaxTasksPerProcess()).isEqualTo(200);
+    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(30000L);
 
     final OfficeManager[] poolEntries =
         (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
     assertThat(poolEntries).hasSize(1);
-    assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
+    assertThat(poolEntries[0]).isInstanceOf(OfficeProcessManagerPoolEntry.class);
 
     final OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
@@ -82,14 +82,14 @@ public class DefaultOfficeManagerBuilderITest {
             .setKillExistingProcess(false)
             .setRetryTimeout(5000)
             .setRetryInterval(1000)
-            .setTaskExecutionTimeout(20000)
             .setMaxTasksPerProcess(10)
+            .setTaskExecutionTimeout(20000)
             .setTaskQueueTimeout(1000)
             .build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
-    final OfficeManagerPoolConfig config =
-        (OfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config =
+        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(OfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -101,14 +101,14 @@ public class DefaultOfficeManagerBuilderITest {
     assertThat(config.isKillExistingProcess()).isEqualTo(false);
     assertThat(config.getProcessTimeout()).isEqualTo(5000L);
     assertThat(config.getProcessRetryInterval()).isEqualTo(1000L);
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
     assertThat(config.getMaxTasksPerProcess()).isEqualTo(10);
+    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(1000L);
 
     final OfficeManager[] poolEntries =
         (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
     assertThat(poolEntries).hasSize(2);
-    assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
+    assertThat(poolEntries[0]).isInstanceOf(OfficeProcessManagerPoolEntry.class);
 
     OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);
@@ -137,8 +137,8 @@ public class DefaultOfficeManagerBuilderITest {
             .build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
-    final OfficeManagerPoolConfig config =
-        (OfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config =
+        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(OfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -160,8 +160,8 @@ public class DefaultOfficeManagerBuilderITest {
             .build();
 
     assertThat(manager).isInstanceOf(OfficeManagerPool.class);
-    final OfficeManagerPoolConfig config =
-        (OfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config =
+        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(OfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -181,7 +181,7 @@ public class DefaultOfficeManagerBuilderITest {
     final OfficeManager[] poolEntries =
         (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
     assertThat(poolEntries).hasSize(1);
-    assertThat(poolEntries[0]).isInstanceOf(OfficeManagerPoolEntry.class);
+    assertThat(poolEntries[0]).isInstanceOf(OfficeProcessManagerPoolEntry.class);
 
     final OfficeProcessManager processManager =
         (OfficeProcessManager) FieldUtils.readField(poolEntries[0], "officeProcessManager", true);

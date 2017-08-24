@@ -19,22 +19,28 @@
 
 package org.jodconverter.office;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.task.OfficeTask;
 
 /**
- * A OfficeManagerPool is responsible to maintain a pool of {@link OfficeManagerPoolEntry} that will
- * be used to execute {@link OfficeTask}. The pool will use the first {@link OfficeManagerPoolEntry}
- * to execute a given task when the {@link #execute(OfficeTask)} function is called.
+ * A OfficeManagerPool is responsible to maintain a pool of {@link OfficeProcessManagerPoolEntry}
+ * that will be used to execute {@link OfficeTask}. The pool will use the first {@link
+ * OfficeProcessManagerPoolEntry} to execute a given task when the {@link #execute(OfficeTask)}
+ * function is called.
  */
-class OfficeManagerPool implements OfficeManager {
+class OfficeManagerPool implements OfficeManager, TemporaryFileMaker {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeManagerPool.class);
 
@@ -47,40 +53,54 @@ class OfficeManagerPool implements OfficeManager {
   private final BlockingQueue<OfficeManager> pool;
   private final OfficeManager[] entries;
   private final OfficeManagerPoolConfig config;
+  private final File tempDir;
+  private final AtomicLong tempFileCounter;
+
+  private static File makeTempDir(final File workingDir) {
+
+    final File tempDir = new File(workingDir, "jodconverter_" + UUID.randomUUID().toString());
+    tempDir.mkdir();
+    if (!tempDir.isDirectory()) {
+      throw new IllegalStateException(String.format("Cannot create temp directory: %s", tempDir));
+    }
+    return tempDir;
+  }
 
   /** Constructs a new instance of the class with the specified settings. */
-  protected OfficeManagerPool(final OfficeUrl[] officeUrls, final OfficeManagerPoolConfig config) {
+  protected OfficeManagerPool(
+      final OfficeUrl[] officeUrls, final OfficeProcessManagerPoolConfig config) {
+    super();
 
     this.config = config;
 
     // Create the pool and all its entries
     pool = new ArrayBlockingQueue<>(officeUrls.length);
-    entries = new OfficeManagerPoolEntry[officeUrls.length];
+    entries = new OfficeProcessManagerPoolEntry[officeUrls.length];
     for (int i = 0; i < officeUrls.length; i++) {
-      entries[i] = new OfficeManagerPoolEntry(officeUrls[i], config);
+      entries[i] = new OfficeProcessManagerPoolEntry(officeUrls[i], config);
     }
+
+    // Create the temporary dir
+    tempDir = makeTempDir(config.getWorkingDir());
+    tempFileCounter = new AtomicLong(0);
   }
 
-  /**
-   * Acquires a manager, waiting the configured timeout for an entry to become available.
-   *
-   * @return A manager that was available.
-   * @throws OfficeException If we are unable to acquire a manager.
-   */
-  private OfficeManager acquireManager() throws OfficeException {
+  /** Constructs a new instance of the class with the specified settings. */
+  protected OfficeManagerPool(final int poolSize, final SimpleOfficeManagerPoolConfig config) {
+    super();
 
-    try {
-      final OfficeManager manager = pool.poll(config.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
-      if (manager == null) {
-        throw new OfficeException(
-            "No office manager available after " + config.getTaskQueueTimeout() + " millisec.");
-      }
-      return manager;
-    } catch (InterruptedException interruptedEx) { // NOSONAR
-      throw new OfficeException(
-          "Thread has been interrupted while waiting for a manager to become available.",
-          interruptedEx);
+    this.config = config;
+
+    // Create the pool and all its entries
+    pool = new ArrayBlockingQueue<>(poolSize);
+    entries = new SimpleOfficeManagerPoolEntry[poolSize];
+    for (int i = 0; i < poolSize; i++) {
+      entries[i] = new SimpleOfficeManagerPoolEntry(config);
     }
+
+    // Create the temporary dir
+    tempDir = makeTempDir(config.getWorkingDir());
+    tempFileCounter = new AtomicLong(0);
   }
 
   @Override
@@ -110,6 +130,53 @@ class OfficeManagerPool implements OfficeManager {
     return poolState.get() == POOL_STARTED;
   }
 
+  @Override
+  public void start() throws OfficeException {
+
+    synchronized (this) {
+      doStart();
+    }
+  }
+
+  @Override
+  public void stop() throws OfficeException {
+
+    synchronized (this) {
+      try {
+        doStop();
+      } finally {
+        deleteTempDir();
+      }
+    }
+  }
+
+  @Override
+  public File makeTemporaryFile(final String extension) {
+    return new File(tempDir, "tempfile_" + tempFileCounter.getAndIncrement() + "." + extension);
+  }
+
+  /**
+   * Acquires a manager, waiting the configured timeout for an entry to become available.
+   *
+   * @return A manager that was available.
+   * @throws OfficeException If we are unable to acquire a manager.
+   */
+  private OfficeManager acquireManager() throws OfficeException {
+
+    try {
+      final OfficeManager manager = pool.poll(config.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
+      if (manager == null) {
+        throw new OfficeException(
+            "No office manager available after " + config.getTaskQueueTimeout() + " millisec.");
+      }
+      return manager;
+    } catch (InterruptedException interruptedEx) { // NOSONAR
+      throw new OfficeException(
+          "Thread has been interrupted while waiting for a manager to become available.",
+          interruptedEx);
+    }
+  }
+
   /**
    * Make the given manager available to executes tasks.
    *
@@ -123,22 +190,6 @@ class OfficeManagerPool implements OfficeManager {
     } catch (InterruptedException interruptedEx) { // NOSONAR
       // Not supposed to happened
       throw new OfficeException("interrupted", interruptedEx);
-    }
-  }
-
-  @Override
-  public void start() throws OfficeException {
-
-    synchronized (this) {
-      doStart();
-    }
-  }
-
-  @Override
-  public void stop() throws OfficeException {
-
-    synchronized (this) {
-      doStop();
     }
   }
 
@@ -189,5 +240,17 @@ class OfficeManagerPool implements OfficeManager {
     }
 
     LOGGER.info("Office manager stopped");
+  }
+
+  private void deleteTempDir() {
+
+    if (tempDir != null) {
+      LOGGER.debug("Deleting temporary directory '{}'", tempDir);
+      try {
+        FileUtils.deleteDirectory(tempDir);
+      } catch (IOException ioEx) { // NOSONAR
+        LOGGER.error("Could not temporary profileDir: {}", ioEx.getMessage());
+      }
+    }
   }
 }

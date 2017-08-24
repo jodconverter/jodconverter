@@ -19,41 +19,15 @@
 
 package org.jodconverter.office;
 
-import java.io.File;
-
-import org.jodconverter.process.ProcessManager;
-
 /**
- * This class holds the configuration of an {@link OfficeManagerPoolEntry}.
+ * This interface provides the configuration of an {@link OfficeProcessManagerPoolEntry}.
  *
- * @see OfficeManagerPoolEntry
+ * @see OfficeProcessManagerPoolEntry
  */
-class OfficeManagerPoolEntryConfig extends OfficeProcessManagerConfig {
+interface OfficeManagerPoolEntryConfig { // NOSONAR
 
   /** The default timeout when processing a task. */
   public static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120000L; // 2 minutes
-  /** The default maximum number of tasks an office process can execute before restarting. */
-  public static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
-
-  private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
-  private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
-
-  /** Creates configuration with default values. */
-  public OfficeManagerPoolEntryConfig() {
-    super();
-  }
-
-  /**
-   * Creates configuration with the specified values.
-   *
-   * @param officeHome The home directory of the office installation.
-   * @param workingDir The working directory to set to office.
-   * @param processManager The process manager to use to deal with created processes.
-   */
-  public OfficeManagerPoolEntryConfig(
-      final File officeHome, final File workingDir, final ProcessManager processManager) {
-    super(officeHome, workingDir, processManager);
-  }
 
   /**
    * Gets the maximum time allowed to process a task. If the processing time of a task is longer
@@ -63,20 +37,7 @@ class OfficeManagerPoolEntryConfig extends OfficeProcessManagerConfig {
    *
    * @return The task execution timeout, in milliseconds.
    */
-  public long getTaskExecutionTimeout() {
-    return taskExecutionTimeout;
-  }
-
-  /**
-   * Gets the maximum number of tasks an office process can execute before restarting.
-   *
-   * <p>&nbsp; <b><i>Default</i></b>: 200
-   *
-   * @return The number of tasks an office process can execute.
-   */
-  public int getMaxTasksPerProcess() {
-    return maxTasksPerProcess;
-  }
+  public long getTaskExecutionTimeout();
 
   /**
    * Sets the maximum time allowed to process a task. If the processing time of a task is longer
@@ -84,16 +45,5 @@ class OfficeManagerPoolEntryConfig extends OfficeProcessManagerConfig {
    *
    * @param taskExecutionTimeout The new task execution timeout.
    */
-  public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
-    this.taskExecutionTimeout = taskExecutionTimeout;
-  }
-
-  /**
-   * Sets the maximum number of tasks an office process can execute before restarting.
-   *
-   * @param maxTasksPerProcess The new number of tasks an office process can execute.
-   */
-  public void setMaxTasksPerProcess(final int maxTasksPerProcess) {
-    this.maxTasksPerProcess = maxTasksPerProcess;
-  }
+  public void setTaskExecutionTimeout(final long taskExecutionTimeout);
 }
