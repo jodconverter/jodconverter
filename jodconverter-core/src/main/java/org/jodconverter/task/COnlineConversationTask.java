@@ -81,7 +81,6 @@ public class COnlineConversationTask implements OfficeTask {
   public void execute(OfficeContext context) throws OfficeException {
     try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
 
-      // TODO set url / choose URL
       StringBuilder urlBuilder = new StringBuilder(connectionURL);
 
       try {
