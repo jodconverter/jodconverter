@@ -100,7 +100,7 @@ public class COnlineCoverter extends AbstractConverter {
     }
 
     @Override
-    public void execute() throws OfficeException {
+    public void doExecute() throws OfficeException {
 
       // Create a default conversion task and execute it
       final COnlineConversationTask task =

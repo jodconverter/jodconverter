@@ -40,7 +40,6 @@ import org.jodconverter.job.SourceDocumentSpecs;
 import org.jodconverter.job.TargetDocumentSpecs;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeTask;
 
 public class COnlineConversationTask implements OfficeTask {
   private static final Logger logger = LoggerFactory.getLogger(DefaultConversionTask.class);
