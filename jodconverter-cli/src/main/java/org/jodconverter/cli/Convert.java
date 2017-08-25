@@ -56,6 +56,13 @@ public final class Convert {
           .hasArg()
           .desc("Application context file (optional)")
           .build();
+  private static final Option OPTION_CONNECTION_URL =
+      Option.builder("c")
+          .longOpt("connection-url")
+          .argName("url")
+          .hasArg()
+          .desc("Using remote LibreOffice Online server for conversion")
+          .build();
   private static final Option OPT_OUTPUT_DIRECTORY =
       Option.builder("d")
           .longOpt("output-directory")
@@ -230,6 +237,8 @@ public final class Convert {
     options.addOption(OPT_REGISTRY);
     options.addOption(OPT_TIMEOUT);
     options.addOption(OPT_USER_PROFILE);
+    options.addOption(OPTION_CONNECTION_URL);
+
     return options;
   }
 
@@ -250,6 +259,7 @@ public final class Convert {
       // Get conversion arguments
       final String outputFormat = getStringOption(commandLine, OPT_OUTPUT_FORMAT.getOpt());
       final String outputDirPath = getStringOption(commandLine, OPT_OUTPUT_DIRECTORY.getOpt());
+      final String connectionURL = getStringOption(commandLine, OPTION_CONNECTION_URL.getOpt());
       final DocumentFormatRegistry registry = getRegistryOption(commandLine);
       final boolean overwrite = commandLine.hasOption(OPT_OVERWRITE.getOpt());
       final String[] filenames = commandLine.getArgs();
@@ -271,8 +281,13 @@ public final class Convert {
         printInfo("Starting office");
         officeManager.start();
 
+        final CliConverter converter;
         // Build a client converter and start the conversion
-        final CliConverter converter = new CliConverter(registry);
+        if (connectionURL != null) {
+          converter = new CliConverter(registry, connectionURL);
+        } else {
+          converter = new CliConverter(registry);
+        }
 
         if (outputFormat == null) {
 
