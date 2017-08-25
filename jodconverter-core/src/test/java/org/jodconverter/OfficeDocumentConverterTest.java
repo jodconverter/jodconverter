@@ -28,11 +28,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 
 import com.sun.star.document.UpdateDocMode;
@@ -48,27 +47,11 @@ import org.jodconverter.task.DefaultConversionTask;
 
 public class OfficeDocumentConverterTest {
 
-  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/integTest/resources/documents/test.doc");
 
-  private static File outputDir;
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   private OfficeManager officeManager;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, OfficeDocumentConverterTest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
 
   /** Setup the office manager before each test. */
   @Before
@@ -83,7 +66,7 @@ public class OfficeDocumentConverterTest {
 
     final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
 
-    final File targetFile = new File(outputDir, "test.pdf");
+    final File targetFile = new File(testFolder.getRoot(), "test.pdf");
     converter.convert(SOURCE_FILE, targetFile);
 
     // Verify that the office manager has executed a task
@@ -115,7 +98,7 @@ public class OfficeDocumentConverterTest {
 
     final FilterChain chain = new DefaultFilterChain(new PageCounterFilter());
 
-    final File targetFile = new File(outputDir, "test.pdf");
+    final File targetFile = new File(testFolder.getRoot(), "test.pdf");
     converter.convert(chain, SOURCE_FILE, targetFile);
 
     // Verify that the office manager has executed a task
@@ -145,7 +128,7 @@ public class OfficeDocumentConverterTest {
 
     final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
 
-    final File targetFile = new File(outputDir, "test.tmp");
+    final File targetFile = new File(testFolder.getRoot(), "test.tmp");
     converter.convert(
         SOURCE_FILE,
         targetFile,
@@ -184,7 +167,7 @@ public class OfficeDocumentConverterTest {
     final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
     converter.setDefaultLoadProperties(loadProperties);
 
-    final File targetFile = new File(outputDir, "test.pdf");
+    final File targetFile = new File(testFolder.getRoot(), "test.pdf");
     converter.convert(SOURCE_FILE, targetFile);
 
     // Verify that the office manager has executed a task
@@ -214,7 +197,7 @@ public class OfficeDocumentConverterTest {
     converter.setDefaultLoadProperties(loadProperties1);
     converter.setDefaultLoadProperties(loadProperties2);
 
-    final File targetFile = new File(outputDir, "test.pdf");
+    final File targetFile = new File(testFolder.getRoot(), "test.pdf");
     converter.convert(SOURCE_FILE, targetFile);
 
     // Verify that the office manager has executed a task

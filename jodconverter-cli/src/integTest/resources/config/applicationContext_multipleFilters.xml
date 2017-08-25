@@ -34,7 +34,6 @@
 			</list>
 		</constructor-arg>
 	</bean>
-	<bean id="refreshFilter" class="org.jodconverter.filter.RefreshFilter" />
 
 	<!-- Configure the filter chain that will be used while converting a document. 
 		The id of the bean is important here since we search for the filter chain 
@@ -46,7 +45,6 @@
 				<ref bean="textInserterFilter" />
 				<ref bean="graphicInserterFilter" />
 				<ref bean="textReplacerFilter" />
-				<ref bean="refreshFilter" />
 			</list>
 		</constructor-arg>
 	</bean>

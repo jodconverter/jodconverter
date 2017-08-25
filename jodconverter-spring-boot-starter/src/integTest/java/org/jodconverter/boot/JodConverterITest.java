@@ -29,7 +29,9 @@ import java.io.PrintWriter;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,10 +43,9 @@ import org.jodconverter.DocumentConverter;
 @SpringBootTest
 public class JodConverterITest {
 
-  private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   private static File inputFileTxt;
-  private static File outputDir;
 
   @Autowired private DocumentConverter converter;
 
@@ -56,10 +57,7 @@ public class JodConverterITest {
   @BeforeClass
   public static void setUpClass() throws IOException {
 
-    outputDir = new File(TEST_OUTPUT_DIR, JodConverterITest.class.getSimpleName());
-    outputDir.mkdirs();
-
-    inputFileTxt = new File(outputDir, "inputFile.txt");
+    inputFileTxt = testFolder.newFile("inputFile.txt");
     try (final PrintWriter writer = new PrintWriter(new FileWriter(inputFileTxt))) {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
@@ -70,13 +68,13 @@ public class JodConverterITest {
   @AfterClass
   public static void tearDownClass() {
 
-    FileUtils.deleteQuietly(outputDir);
+    FileUtils.deleteQuietly(testFolder.getRoot());
   }
 
   @Test
   public void testTxtToRtf() throws Exception {
 
-    final File outputFile = new File(outputDir, "outputFile.rtf");
+    final File outputFile = new File(testFolder.getRoot(), "outputFile.rtf");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -88,7 +86,7 @@ public class JodConverterITest {
   @Test
   public void testTxtToDoc() throws Exception {
 
-    final File outputFile = new File(outputDir, "outputFile.doc");
+    final File outputFile = new File(testFolder.getRoot(), "outputFile.doc");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -100,7 +98,7 @@ public class JodConverterITest {
   @Test
   public void testTxtToDocx() throws Exception {
 
-    final File outputFile = new File(outputDir, "outputFile.docx");
+    final File outputFile = new File(testFolder.getRoot(), "outputFile.docx");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -112,7 +110,7 @@ public class JodConverterITest {
   @Test
   public void testTxtToPdf() throws Exception {
 
-    final File outputFile = new File(outputDir, "outputFile.pdf");
+    final File outputFile = new File(testFolder.getRoot(), "outputFile.pdf");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();

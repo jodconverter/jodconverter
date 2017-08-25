@@ -22,10 +22,9 @@ package org.jodconverter.filter;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.GraphicInserterFilter;
@@ -38,22 +37,7 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
   private static final String MULTI_PAGE_FILENAME = "test_multi_page.doc";
   private static final File SOURCE_MULTI_PAGE_FILE = new File(DOCUMENTS_DIR, MULTI_PAGE_FILENAME);
 
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, TextInserterFilterITest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   /**
    * Test the conversion of a document inserting text along the way.
@@ -63,7 +47,7 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
   @Test
   public void doFilter_WithCustomizedProperties() throws Exception {
 
-    final File targetFile = new File(outputDir, MULTI_PAGE_FILENAME + ".pdf");
+    final File targetFile = new File(testFolder.getRoot(), MULTI_PAGE_FILENAME + ".pdf");
 
     // Create the properties of the filter
     final Map<String, Object> props =
@@ -91,7 +75,7 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
   @Test
   public void doFilter_WithDefaultProperties() throws Exception {
 
-    final File targetFile = new File(outputDir, SOURCE_FILENAME + ".pdf");
+    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".pdf");
 
     // Create the TextInserterFilter to test.
     final TextInserterFilter filter =

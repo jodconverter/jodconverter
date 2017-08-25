@@ -31,15 +31,17 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.powermock.reflect.Whitebox;
 
-import org.jodconverter.cli.util.ExitException;
-import org.jodconverter.cli.util.NoExitSecurityManager;
+import org.jodconverter.cli.util.ConsoleStreamsListener;
+import org.jodconverter.cli.util.NoExitResource;
+import org.jodconverter.cli.util.ResetExitExceptionResource;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormatRegistry;
@@ -62,37 +64,13 @@ public class CliConverterTest {
   private static final File SOURCE_TARGET_FILE_1 = new File(SOURCE_DIR, TARGET_FILENAME_1);
   private static final File SOURCE_TARGET_FILE_2 = new File(SOURCE_DIR, TARGET_FILENAME_2);
 
-  private static File outputDir;
+  @ClassRule public static NoExitResource noExit = new NoExitResource();
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
+  @ClassRule public static ConsoleStreamsListener consoleListener = new ConsoleStreamsListener();
 
   private OfficeManager officeManager;
   private CliConverter converter;
-
-  /**
-   * Redirects the console output and also changes the security manager so we can trap the exit code
-   * of the application.
-   */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, CliConverterTest.class.getSimpleName());
-
-    // Don't allow the program to exit the VM and redirect
-    // console streams.
-    System.setOut(new SystemLogHandler(System.out));
-    System.setErr(new SystemLogHandler(System.err));
-    System.setSecurityManager(new NoExitSecurityManager());
-  }
-
-  /** Resets the security manager and deletes the output directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    // Delete the output directory
-    FileUtils.deleteQuietly(outputDir);
-
-    // Restore security manager
-    System.setSecurityManager(null);
-  }
+  @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
 
   /** Setup the office manager before each test. */
   @Before
@@ -103,16 +81,14 @@ public class CliConverterTest {
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
 
     converter = new CliConverter(registry);
-
-    ExitException.INSTANCE.reset();
   }
 
   @Test
   public void main_WithWrongInputOutputFilenamesLengthMismatch_ThrowsIllegalArgumentException() {
 
     try {
-      final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-      final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+      final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+      final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
       converter.convert(
           new String[] {SOURCE_FILE_1.getPath()},
           new String[] {targetFile1.getPath(), targetFile2.getPath()},
@@ -161,7 +137,7 @@ public class CliConverterTest {
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
-        new String[] {outputDir.getPath(), outputDir.getPath()},
+        new String[] {testFolder.getRoot().getPath(), testFolder.getRoot().getPath()},
         null,
         false,
         null);
@@ -171,8 +147,8 @@ public class CliConverterTest {
   @Test
   public void convert_FilenamesToFilenames_TasksExecuted() throws Exception {
 
-    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
@@ -198,13 +174,13 @@ public class CliConverterTest {
   @Test
   public void convert_FilenamesToFilenamesAllowingOverwrite_TasksExecuted() throws Exception {
 
-    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
-        outputDir.getPath(),
+        testFolder.getRoot().getPath(),
         true,
         null);
 
@@ -225,8 +201,8 @@ public class CliConverterTest {
   @Test
   public void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted() throws Exception {
 
-    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
 
     FileUtils.touch(targetFile1);
     FileUtils.touch(targetFile2);
@@ -234,7 +210,7 @@ public class CliConverterTest {
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
-        outputDir.getPath(),
+        testFolder.getRoot().getPath(),
         false,
         null);
 
@@ -247,13 +223,13 @@ public class CliConverterTest {
   @Test
   public void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted() throws Exception {
 
-    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
-        outputDir.getPath(),
+        testFolder.getRoot().getPath(),
         false,
         null);
 
@@ -298,13 +274,13 @@ public class CliConverterTest {
   @Test
   public void convert_FilenamesToFormatWithOutputDir_TasksExecuted() throws Exception {
 
-    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         TARGET_FORMAT,
-        outputDir.getPath(),
+        testFolder.getRoot().getPath(),
         false,
         null);
 
@@ -325,16 +301,16 @@ public class CliConverterTest {
   @Test
   public void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted() throws Exception {
 
-    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
 
-    FileUtils.touch(targetFile1);
-    FileUtils.touch(targetFile2);
+    targetFile1.createNewFile();
+    targetFile2.createNewFile();
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         TARGET_FORMAT,
-        outputDir.getPath(),
+        testFolder.getRoot().getPath(),
         true,
         null);
 
@@ -355,16 +331,16 @@ public class CliConverterTest {
   @Test
   public void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted() throws Exception {
 
-    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
 
-    FileUtils.touch(targetFile1);
-    FileUtils.touch(targetFile2);
+    targetFile1.createNewFile();
+    targetFile2.createNewFile();
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         TARGET_FORMAT,
-        outputDir.getPath(),
+        testFolder.getRoot().getPath(),
         false,
         null);
 
@@ -404,10 +380,11 @@ public class CliConverterTest {
   @Test
   public void convert_DirWithWildcardAndOutputDir_TasksExecuted() throws Exception {
 
-    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", outputDir.getPath(), false, null);
+    converter.convert(
+        new String[] {SOURCE_DIR + "*"}, "pdf", testFolder.getRoot().getPath(), false, null);
 
-    final File targetFile1 = new File(outputDir, TARGET_FILENAME_1);
-    final File targetFile2 = new File(outputDir, TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
 
     final ArgumentCaptor<DefaultConversionTask> taskArgument =
         ArgumentCaptor.forClass(DefaultConversionTask.class);

@@ -26,9 +26,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.TextReplacerFilter;
@@ -38,22 +38,7 @@ public class TextReplacerFilterITest extends AbstractOfficeITest {
   private static final String SOURCE_FILENAME = "test_replace.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
 
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, TextReplacerFilterITest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   /**
    * Test that the creation of a TextReplacerFilter with a search list and replacement list of
@@ -116,7 +101,7 @@ public class TextReplacerFilterITest extends AbstractOfficeITest {
   @Test
   public void doFilter_WithDefaultProperties() throws Exception {
 
-    final File targetFile = new File(outputDir, SOURCE_FILENAME + ".txt");
+    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".txt");
 
     // Create the GraphicInserterFilter to test.
     final TextReplacerFilter filter =

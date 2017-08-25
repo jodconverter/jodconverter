@@ -21,44 +21,22 @@ package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
+import org.jodconverter.cli.util.ConsoleStreamsListener;
 import org.jodconverter.cli.util.ExitException;
-import org.jodconverter.cli.util.NoExitSecurityManager;
+import org.jodconverter.cli.util.NoExitResource;
+import org.jodconverter.cli.util.ResetExitExceptionResource;
 import org.jodconverter.cli.util.SystemLogHandler;
 
 public class ConvertTest {
 
-  /**
-   * Redirects the console output and also changes the security manager so we can trap the exit code
-   * of the application.
-   */
-  @BeforeClass
-  public static void setUpClass() {
+  @ClassRule public static NoExitResource noExit = new NoExitResource();
+  @ClassRule public static ConsoleStreamsListener consoleListener = new ConsoleStreamsListener();
 
-    // Don't allow the program to exit the VM and redirect
-    // console streams.
-    System.setOut(new SystemLogHandler(System.out));
-    System.setErr(new SystemLogHandler(System.err));
-    System.setSecurityManager(new NoExitSecurityManager());
-  }
-
-  /** Resets the security manager. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    // Restore security manager
-    System.setSecurityManager(null);
-  }
-
-  @Before
-  public void setUp() {
-
-    ExitException.INSTANCE.reset();
-  }
+  @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
 
   @Test
   public void main_WithOptionHelp_PrintHelpAndExitWithCode0() throws Exception {

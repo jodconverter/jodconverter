@@ -27,14 +27,15 @@ import static org.mockito.Mockito.verify;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 
 import com.sun.star.document.UpdateDocMode;
@@ -45,28 +46,25 @@ import org.jodconverter.task.DefaultConversionTask;
 
 public class DefaultConverterTest {
 
-  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
   private static final File BAD_SOURCE_FILE =
       new File("src/test/resources/documents/test.unsupportedext");
 
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
   private static File outputDir;
 
   private OfficeManager officeManager;
 
-  /** Creates an output test directory just once. */
+  /**
+   * Creates a output directory for our tests.
+   *
+   * @throws IOException If an IO error occurs.
+   */
   @BeforeClass
-  public static void setUpClass() {
+  public static void setUpClass() throws IOException {
 
-    outputDir = new File(TEST_OUTPUT_DIR, DefaultConverterTest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
+    // Creates an output directory for the class
+    outputDir = testFolder.newFolder();
   }
 
   /** Setup the office manager before each test. */

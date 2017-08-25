@@ -34,7 +34,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -47,27 +49,32 @@ import org.jodconverter.process.ProcessQuery;
 @PrepareForTest(FileUtils.class)
 public class OfficeProcessTest {
 
-  private static final String TEST_OUTPUT_DIR = "build/test-results/";
-
-  private static File outputDir;
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   /**
-   * Redirects the console output and also changes the security manager so we can trap the exit code
-   * of the application.
+   * Creates the test folder.
+   *
+   * @throws IOException If an IO error occurs.
    */
   @BeforeClass
-  public static void setUpClass() {
+  public static void setUpClass() throws IOException {
 
-    outputDir = new File(TEST_OUTPUT_DIR, OfficeProcessTest.class.getSimpleName());
-    outputDir.mkdirs();
+    // PowerMock reloads a test class with custom class loader
+    // it is done after jUnit applies @ClassRule, so we have to
+    // do this.
+    // See https://github.com/powermock/powermock/issues/687
+    testFolder.create();
   }
 
-  /** Deletes the output directory once the tests are all done. */
+  /**
+   * Deletes the test folder.
+   *
+   * @throws IOException If an IO error occurs.
+   */
   @AfterClass
   public static void tearDownClass() {
 
-    // Delete the output directory
-    FileUtils.deleteQuietly(outputDir);
+    testFolder.delete();
   }
 
   @Test
@@ -77,7 +84,7 @@ public class OfficeProcessTest {
     mockStatic(FileUtils.class);
 
     final File workingDir =
-        new File(outputDir, "deleteProfileDir_WhenCannotBeDeleted_RenameDirectory");
+        testFolder.newFolder("deleteProfileDir_WhenCannotBeDeleted_RenameDirectory");
 
     doThrow(new IOException()).when(FileUtils.class, "deleteDirectory", isA(File.class));
 
@@ -109,7 +116,7 @@ public class OfficeProcessTest {
     mockStatic(FileUtils.class);
 
     final File workingDir =
-        new File(outputDir, "deleteProfileDir_WhenCannotBeDeleted_OperationIgnored");
+        testFolder.newFolder("deleteProfileDir_WhenCannotBeDeleted_OperationIgnored");
 
     doThrow(new IOException()).when(FileUtils.class, "deleteDirectory", isA(File.class));
 
@@ -130,8 +137,6 @@ public class OfficeProcessTest {
                   }
                 }))
         .isNullOrEmpty();
-
-    FileUtils.deleteQuietly(workingDir);
   }
 
   @Test
@@ -152,7 +157,7 @@ public class OfficeProcessTest {
         });
     final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
 
-    Process proc = mock(Process.class);
+    final Process proc = mock(Process.class);
     try {
       Whitebox.setInternalState(process, "process", proc);
       process.forciblyTerminate(0L, 0L);

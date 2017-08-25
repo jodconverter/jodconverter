@@ -26,10 +26,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,10 +43,9 @@ import org.jodconverter.office.OfficeUtils;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SpringControllerITest {
 
-  private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
-
   private static File inputFileTxt;
-  private static File outputDir;
+
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Autowired private JodConverterBean bean;
 
@@ -81,27 +80,17 @@ public class SpringControllerITest {
   @BeforeClass
   public static void setUpClass() throws IOException {
 
-    outputDir = new File(TEST_OUTPUT_DIR, SpringControllerITest.class.getSimpleName());
-    outputDir.mkdirs();
-
-    inputFileTxt = new File(outputDir, "inputFile.txt");
+    inputFileTxt = testFolder.newFile("inputFile.txt");
     try (final PrintWriter writer = new PrintWriter(new FileWriter(inputFileTxt))) {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
     }
   }
 
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
-
   @Test
   public void testTxtToRtf() throws Exception {
 
-    final File outputFile = new File(outputDir, "outputFile.rtf");
+    final File outputFile = new File(testFolder.getRoot(), "outputFile.rtf");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -113,7 +102,7 @@ public class SpringControllerITest {
   @Test
   public void testTxtToDoc() throws Exception {
 
-    final File outputFile = new File(outputDir, "outputFile.doc");
+    final File outputFile = new File(testFolder.getRoot(), "outputFile.doc");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -125,7 +114,7 @@ public class SpringControllerITest {
   @Test
   public void testTxtToDocx() throws Exception {
 
-    final File outputFile = new File(outputDir, "outputFile.docx");
+    final File outputFile = new File(testFolder.getRoot(), "outputFile.docx");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -137,7 +126,7 @@ public class SpringControllerITest {
   @Test
   public void testTxtToPdf() throws Exception {
 
-    final File outputFile = new File(outputDir, "outputFile.pdf");
+    final File outputFile = new File(testFolder.getRoot(), "outputFile.pdf");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();

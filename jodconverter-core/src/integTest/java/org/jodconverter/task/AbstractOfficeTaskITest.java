@@ -36,7 +36,6 @@ import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.job.AbstractSourceDocumentSpecs;
-import org.jodconverter.job.SourceDocumentSpecs;
 import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
@@ -68,11 +67,14 @@ public class AbstractOfficeTaskITest extends AbstractOfficeITest {
 
   private static class VetoCloseOfficeTask extends AbstractOfficeTask {
 
-    XCloseable closeable;
-    final VetoCloseListener closeListener = new VetoCloseListener();
+    private final FooSourceSpecs source;
+    private XCloseable closeable;
+    private final VetoCloseListener closeListener = new VetoCloseListener();
 
-    public VetoCloseOfficeTask(final SourceDocumentSpecs source) {
+    public VetoCloseOfficeTask(final FooSourceSpecs source) {
       super(source);
+
+      this.source = source;
     }
 
     @Override
@@ -89,7 +91,13 @@ public class AbstractOfficeTaskITest extends AbstractOfficeITest {
 
     @Override
     public void execute(final OfficeContext context) throws OfficeException {
-      // Do nothing here
+      
+      final XComponent document = super.loadDocument(context, source.getFile());
+      closeable = UnoRuntime.queryInterface(XCloseable.class, document);
+      if (closeable != null) {
+        closeable.addCloseListener(closeListener);
+      }
+      closeDocument(document);
     }
 
     void closeForGood() {
@@ -128,7 +136,7 @@ public class AbstractOfficeTaskITest extends AbstractOfficeITest {
   }
 
   @Test
-  public void close_CatchVetoCloseException_DocumentNotClosed() throws Exception {
+  public void close_WhenVetoCloseExceptionCatch_DocumentNotClosed() throws Exception {
 
     final VetoCloseOfficeTask task = new VetoCloseOfficeTask(new FooSourceSpecs(SOURCE_FILE));
 

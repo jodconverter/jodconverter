@@ -32,49 +32,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
 public class TargetDocumentSpecsFromOutputStreamTest {
 
-  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
   private static final String TARGET_FILENAME = "test.pdf";
 
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir =
-        new File(TEST_OUTPUT_DIR, TargetDocumentSpecsFromOutputStreamTest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test(expected = NullPointerException.class)
   public void ctor_WithNullOutputStream_ThrowsNullPointerException() throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "pdf");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("ctor_WithNullOutputStream.doc");
     new TargetDocumentSpecsFromOutputStream(null, tempFile, true);
   }
 
   @Test
-  public void onComplete_IoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
+  public void onComplete_WhenIoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "txt");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("onComplete_WhenIoExceptionCatch.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
@@ -96,16 +77,15 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   }
 
   @Test
-  public void onComplete_CloseStreamTrue_ShouldDeleteTempFileAndCloseOutputStream()
+  public void onComplete_WhenCloseStreamIsTrue_ShouldDeleteTempFileAndCloseOutputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "txt");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("onComplete_WhenCloseStreamIsTrue.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
     try (final FileOutputStream outputStream =
-        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
+        new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
 
@@ -120,16 +100,15 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   }
 
   @Test
-  public void onConsumed_CloseStreamFalse_ShouldDeleteTempFileAndNotCloseOutputStream()
+  public void onConsumed_WhenCloseStreamIsFalse_ShouldDeleteTempFileAndNotCloseOutputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "txt");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("onConsumed_WhenCloseStreamIsFalse.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
     try (final FileOutputStream outputStream =
-        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
+        new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
 
@@ -144,16 +123,15 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   }
 
   @Test
-  public void onFailure_CloseStreamTrue_ShouldDeleteTempFileAndNotCloseOutputStream()
+  public void onFailure_WhenCloseStreamIsTrue_ShouldDeleteTempFileAndNotCloseOutputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "txt");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("onFailure_WhenCloseStreamIsTrue.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
     try (final FileOutputStream outputStream =
-        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
+        new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
 
@@ -168,16 +146,15 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   }
 
   @Test
-  public void onFailure_CloseStreamFalse_ShouldDeleteTempFileAndNotCloseOutputStream()
+  public void onFailure_WhenCloseStreamIsFalse_ShouldDeleteTempFileAndNotCloseOutputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "txt");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("onFailure_WhenCloseStreamIsFalse.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
     try (final FileOutputStream outputStream =
-        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
+        new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
 
@@ -194,13 +171,12 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   @Test
   public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "txt");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("ctor_WithValidValues.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
     try (final FileOutputStream outputStream =
-        new FileOutputStream(new File(outputDir, TARGET_FILENAME))) {
+        new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
 
       final Map<String, Object> storeProperties = new HashMap<>();
       storeProperties.put("Overwrite", true);

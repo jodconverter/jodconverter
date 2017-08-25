@@ -30,10 +30,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import com.sun.star.document.UpdateDocMode;
 
@@ -41,41 +40,23 @@ import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
 public class SourceDocumentSpecsFromInputStreamTest {
 
-  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
 
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir =
-        new File(TEST_OUTPUT_DIR, SourceDocumentSpecsFromInputStreamTest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test(expected = NullPointerException.class)
   public void ctor_WithNullInputStream_ThrowsNullPointerException() throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("ctor_WithNullInputStream.doc");
     new SourceDocumentSpecsFromInputStream(null, tempFile, true);
   }
 
   @Test
-  public void getFile_IoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
+  public void getFile_WhenIoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
 
     try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       final SourceDocumentSpecsFromInputStream specs =
-          new SourceDocumentSpecsFromInputStream(inputStream, outputDir, false);
+          new SourceDocumentSpecsFromInputStream(inputStream, testFolder.getRoot(), false);
 
       try {
         specs.getFile();
@@ -88,10 +69,9 @@ public class SourceDocumentSpecsFromInputStreamTest {
   }
 
   @Test
-  public void onConsumed_IoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
+  public void onConsumed_WhenIoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("onConsumed_WhenIoExceptionCatch.doc");
     assertThat(tempFile).exists();
 
     final FileInputStream inputStream = mock(FileInputStream.class);
@@ -110,11 +90,10 @@ public class SourceDocumentSpecsFromInputStreamTest {
   }
 
   @Test
-  public void onConsumed_CloseStreamTrue_ShouldDeleteTempFileAndCloseInputStream()
+  public void onConsumed_WhenCloseStreamIsTrue_ShouldDeleteTempFileAndCloseInputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("onConsumed_WhenCloseStreamIsTrue_.doc");
     assertThat(tempFile).exists();
 
     try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
@@ -132,11 +111,10 @@ public class SourceDocumentSpecsFromInputStreamTest {
   }
 
   @Test
-  public void onConsumed_CloseStreamFalse_ShouldDeleteTempFileAndNotCloseInputStream()
+  public void onConsumed_WhenCloseStreamIsFalse_ShouldDeleteTempFileAndNotCloseInputStream()
       throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("onConsumed_WhenCloseStreamIsFalse.doc");
     assertThat(tempFile).exists();
 
     try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
@@ -156,8 +134,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
   @Test
   public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
 
-    final File tempFile = File.createTempFile(getClass().getName(), "doc");
-    tempFile.deleteOnExit();
+    final File tempFile = testFolder.newFile("ctor_WithValidValues.doc");
     assertThat(tempFile).exists();
 
     try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {

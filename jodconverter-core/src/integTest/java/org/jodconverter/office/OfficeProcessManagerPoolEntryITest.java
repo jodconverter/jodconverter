@@ -73,7 +73,7 @@ public class OfficeProcessManagerPoolEntryITest {
   private static OfficeProcess startOfficeProcess(final OfficeUrl officeUrl) throws Exception {
 
     // Starts an office process
-    final OfficeProcess officeProcess = new OfficeProcess(CONNECT_URL);
+    final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
     officeProcess.start();
     Thread.sleep(1000); // NOSONAR
     final Integer exitCode = officeProcess.getExitCode();

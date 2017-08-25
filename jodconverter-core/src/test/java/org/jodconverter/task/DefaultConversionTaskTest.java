@@ -30,10 +30,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -63,11 +64,10 @@ import org.jodconverter.office.OfficeException;
 @PrepareForTest(UnoRuntime.class)
 public class DefaultConversionTaskTest {
 
-  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
   private static final String TARGET_FILENAME = "test.pdf";
 
-  private static File outputDir;
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   private static class FooSourceSpecs extends AbstractSourceDocumentSpecs {
 
@@ -118,19 +118,30 @@ public class DefaultConversionTaskTest {
     }
   }
 
-  /** Creates an output test directory just once. */
+  /**
+   * Creates the test folder.
+   *
+   * @throws java.nio.IOException If an IO error occurs.
+   */
   @BeforeClass
-  public static void setUpClass() {
+  public static void setUpClass() throws java.io.IOException {
 
-    outputDir = new File(TEST_OUTPUT_DIR, DefaultConversionTaskTest.class.getSimpleName());
-    outputDir.mkdirs();
+    // PowerMock reloads a test class with custom class loader
+    // it is done after jUnit applies @ClassRule, so we have to
+    // do this.
+    // See https://github.com/powermock/powermock/issues/687
+    testFolder.create();
   }
 
-  /** Deletes the output test directory once the tests are all done. */
+  /**
+   * Deletes the test folder.
+   *
+   * @throws IOException If an IO error occurs.
+   */
   @AfterClass
   public static void tearDownClass() {
 
-    FileUtils.deleteQuietly(outputDir);
+    testFolder.delete();
   }
 
   @Test
@@ -149,7 +160,7 @@ public class DefaultConversionTaskTest {
     given(UnoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
     given(UnoRuntime.queryInterface(XStorable.class, document)).willReturn(storable);
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    final File targetFile = new File(testFolder.getRoot(), TARGET_FILENAME);
     final DefaultConversionTask task =
         new DefaultConversionTask(
             new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null);
@@ -178,7 +189,7 @@ public class DefaultConversionTaskTest {
     given(UnoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
     given(UnoRuntime.queryInterface(XStorable.class, document)).willReturn(storable);
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    final File targetFile = new File(testFolder.getRoot(), TARGET_FILENAME);
     final DefaultConversionTask task =
         new DefaultConversionTask(
             new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null);
@@ -215,7 +226,7 @@ public class DefaultConversionTaskTest {
     given(UnoRuntime.queryInterface(XStorable.class, document)).willReturn(storable);
     given(UnoRuntime.queryInterface(XComponent.class, document)).willReturn(document);
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    final File targetFile = new File(testFolder.getRoot(), TARGET_FILENAME);
     final DefaultConversionTask task =
         new DefaultConversionTask(
             new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null);
@@ -253,7 +264,7 @@ public class DefaultConversionTaskTest {
     given(UnoRuntime.queryInterface(XStorable.class, document)).willReturn(storable);
     given(UnoRuntime.queryInterface(XComponent.class, document)).willReturn(document);
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    final File targetFile = new File(testFolder.getRoot(), TARGET_FILENAME);
     final DefaultConversionTask task =
         new DefaultConversionTask(
             new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null);

@@ -30,35 +30,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class DefaultConverterITest extends AbstractOfficeITest {
 
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR + "test.doc");
 
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, DefaultConverterITest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
   public void convert_FromFileToFile_ShouldSucceeded() throws Exception {
 
-    final File outputFile = new File(outputDir, "convert_FromFileToFile.pdf");
+    final File outputFile = new File(testFolder.getRoot(), "convert_FromFileToFile.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     converter.convert(SOURCE_FILE).to(outputFile).execute();
@@ -71,7 +56,8 @@ public class DefaultConverterITest extends AbstractOfficeITest {
   public void convert_UsingCustomStoreProperties_ShouldSucceeded() throws Exception {
 
     final File inputFile = new File(DOCUMENTS_DIR, "test_multi_page.doc");
-    final File outputFile = new File(outputDir, "convert_FromMultipleFileToPDFOnlyPage2.pdf");
+    final File outputFile =
+        new File(testFolder.getRoot(), "convert_FromMultipleFileToPDFOnlyPage2.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     final Map<String, Object> filterData = new HashMap<>();
@@ -91,7 +77,7 @@ public class DefaultConverterITest extends AbstractOfficeITest {
       throws Exception {
 
     final File outputFile =
-        new File(outputDir, "convert_FromStreamToFileWithMissingInputFormat.pdf");
+        new File(testFolder.getRoot(), "convert_FromStreamToFileWithMissingInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     try (InputStream inputStream = new FileInputStream(SOURCE_FILE)) {
@@ -103,7 +89,7 @@ public class DefaultConverterITest extends AbstractOfficeITest {
   public void convert_FromStreamToFileWithSupportedInputFormat_ShouldSucceeded() throws Exception {
 
     final File outputFile =
-        new File(outputDir, "convert_FromStreamToFileWithSupportedInputFormat.pdf");
+        new File(testFolder.getRoot(), "convert_FromStreamToFileWithSupportedInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     final InputStream inputStream = new FileInputStream(SOURCE_FILE);
@@ -122,7 +108,7 @@ public class DefaultConverterITest extends AbstractOfficeITest {
       throws Exception {
 
     final File outputFile =
-        new File(outputDir, "convert_FromFileToStreamWithMissingOutputFormat.pdf");
+        new File(testFolder.getRoot(), "convert_FromFileToStreamWithMissingOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     try (OutputStream outputStream = new FileOutputStream(outputFile)) {
@@ -134,7 +120,7 @@ public class DefaultConverterITest extends AbstractOfficeITest {
   public void convert_FromFileToStreamWithSupportedOutputFormat_ShouldSucceeded() throws Exception {
 
     final File outputFile =
-        new File(outputDir, "convert_FromFileToStreamWithSupportedOutputFormat.pdf");
+        new File(testFolder.getRoot(), "convert_FromFileToStreamWithSupportedOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     final OutputStream outputStream = new FileOutputStream(outputFile);

@@ -22,31 +22,15 @@ package org.jodconverter;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
 
   private static final int MAX_THREADS = 10;
 
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, DocumentConverterFunctionalITest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   /**
    * Test the conversion of an HTML file that contains an image.
@@ -57,7 +41,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
   public void htmlWithImageConversion() throws Exception {
 
     final File source = new File(DOCUMENTS_DIR, "index.html");
-    final File target = new File(outputDir, "index.pdf");
+    final File target = new File(testFolder.getRoot(), "index.pdf");
 
     // Convert the file to PDF
     converter.convert(source).to(target);
@@ -72,7 +56,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
   public void testHtmlConversion() throws Exception {
 
     final File source = new File(DOCUMENTS_DIR, "test.html");
-    final File target = new File(outputDir, "test.pdf");
+    final File target = new File(testFolder.getRoot(), "test.pdf");
 
     // Convert the file to PDF
     converter.convert(source).to(target);
@@ -105,7 +89,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
           new Runnable() {
             @Override
             public void run() {
-              convertFileToAllSupportedFormats(sourceFile, outputDir);
+              convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
             }
           };
 
@@ -120,7 +104,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
         threadCount = 0;
       }
 
-      //convertFileToAllSupportedFormats(sourceFile, outputDir);
+      //convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
     }
 
     // Wait for remaining threads.

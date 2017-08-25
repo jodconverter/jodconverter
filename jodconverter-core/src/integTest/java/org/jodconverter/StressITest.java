@@ -41,8 +41,8 @@ public class StressITest {
 
   private static final Logger LOGGER = Logger.getLogger(StressITest.class);
 
-  private static final int MAX_CONVERSIONS = 10;
-  //private static final int MAX_CONVERSIONS = 1024;
+  //private static final int MAX_CONVERSIONS = 10;
+  private static final int MAX_CONVERSIONS = 1024;
   private static final int MAX_THREADS = 128;
   private static final int MAX_PROCESS_TASKS = 10;
 

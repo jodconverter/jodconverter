@@ -30,7 +30,7 @@ public class ExternalOfficeManagerITest {
   private static OfficeProcess officeProcess;
 
   /**
-   * Starts am office process just once.
+   * Starts an office process just once.
    *
    * @throws Exception If an error occurs.
    */

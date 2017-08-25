@@ -23,47 +23,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class OfficeManagerPoolTest {
 
   protected static final String TEST_OUTPUT_DIR = "build/test-results/";
 
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, OfficeManagerPoolTest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
   public void create_WithCustomConfig_ShouldUseCustomConfig() throws Exception {
 
     final SimpleOfficeManagerPoolConfig config =
         new SimpleOfficeManagerPoolConfig(new File(System.getProperty("java.io.tmpdir")));
-    config.setWorkingDir(outputDir);
+    config.setWorkingDir(testFolder.getRoot());
     config.setTaskExecutionTimeout(5000L);
     config.setTaskQueueTimeout(9000L);
 
-    OfficeManagerPool pool = new OfficeManagerPool(1, config);
+    final OfficeManagerPool pool = new OfficeManagerPool(1, config);
 
     final SimpleOfficeManagerPoolConfig setupConfig =
         (SimpleOfficeManagerPoolConfig) FieldUtils.readField(pool, "config", true);
-    assertThat(setupConfig.getWorkingDir().getPath()).isEqualTo(outputDir.getPath());
+    assertThat(setupConfig.getWorkingDir().getPath()).isEqualTo(testFolder.getRoot().getPath());
     assertThat(setupConfig.getTaskExecutionTimeout()).isEqualTo(5000L);
     assertThat(setupConfig.getTaskQueueTimeout()).isEqualTo(9000L);
   }

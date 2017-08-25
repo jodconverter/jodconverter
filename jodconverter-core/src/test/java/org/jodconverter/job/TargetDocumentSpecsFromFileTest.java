@@ -27,39 +27,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
 public class TargetDocumentSpecsFromFileTest {
 
-  private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
   private static final String TARGET_FILENAME = "test.pdf";
 
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, TargetDocumentSpecsFromFileTest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
   public void onFailure_ShouldDeleteTargetFile() throws IOException {
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    final File targetFile = new File(testFolder.getRoot(), TARGET_FILENAME);
     FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
     assertThat(targetFile).exists();
 
@@ -74,7 +58,7 @@ public class TargetDocumentSpecsFromFileTest {
   @Test
   public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
 
-    final File targetFile = new File(outputDir, TARGET_FILENAME);
+    final File targetFile = new File(testFolder.getRoot(), TARGET_FILENAME);
     FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
     assertThat(targetFile).exists();
 

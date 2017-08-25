@@ -25,9 +25,9 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.filter.text.PageCounterFilter;
@@ -38,22 +38,7 @@ public class PageCounterFilterITest extends AbstractOfficeITest {
   private static final String SOURCE_FILENAME = "test_multi_page.doc";
   private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
 
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, PageCounterFilterITest.class.getSimpleName());
-    outputDir.mkdirs();
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(outputDir);
-  }
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   /**
    * Test the conversion of a document replacing text along the way.
@@ -63,7 +48,7 @@ public class PageCounterFilterITest extends AbstractOfficeITest {
   @Test
   public void doFilter_SelectPage2BetweenCounter_ShouldCount3Then1() throws Exception {
 
-    final File targetFile = new File(outputDir, SOURCE_FILENAME + ".page2.txt");
+    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page2.txt");
 
     final PageCounterFilter countFilter1 = new PageCounterFilter();
     final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
