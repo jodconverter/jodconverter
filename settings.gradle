@@ -2,6 +2,8 @@ rootProject.name = 'jodconverter'
 
 String[] modules = [
     'jodconverter-core',
+    'jodconverter-local',
+    'jodconverter-online',
     'jodconverter-cli',
     'jodconverter-spring',
     'jodconverter-spring-boot-starter',

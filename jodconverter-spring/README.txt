@@ -1,7 +1,7 @@
-JODConverter - Cli
-==================
+JODConverter - Spring
+=====================
 
-This is the client command line tool module of the
+This is the spring integration module of the
 Java OpenDocument Converter (JODConverter) project.
 
 JODConverter automates conversions between office

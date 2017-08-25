@@ -1,8 +1,8 @@
-JODConverter - Cli
-==================
+JODConverter - Online
+=====================
 
-This is the client command line tool module of the
-Java OpenDocument Converter (JODConverter) project.
+This is the module required to process online conversions for
+the Java OpenDocument Converter (JODConverter) project.
 
 JODConverter automates conversions between office
 document formats using LibreOffice or Apache OpenOffice.

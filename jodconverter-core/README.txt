@@ -1,8 +1,11 @@
-JODConverter
-============
+JODConverter - Core
+===================
 
-JODConverter automates conversions between office document formats
-using LibreOffice or Apache OpenOffice. 
+This is the core module of the Java OpenDocument
+Converter (JODConverter) project.
+
+JODConverter automates conversions between office
+document formats using LibreOffice or Apache OpenOffice.
 
 Licensing
 ---------
