@@ -91,7 +91,7 @@ public class AbstractOfficeTaskITest extends AbstractOfficeITest {
 
     @Override
     public void execute(final OfficeContext context) throws OfficeException {
-      
+
       final XComponent document = super.loadDocument(context, source.getFile());
       closeable = UnoRuntime.queryInterface(XCloseable.class, document);
       if (closeable != null) {
