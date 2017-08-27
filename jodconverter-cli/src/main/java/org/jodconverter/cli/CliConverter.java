@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.DocumentConverter;
-import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.OfficeException;
 
 /**
@@ -46,10 +45,9 @@ public final class CliConverter {
   /**
    * Creates a new instance of the class that will use the specified manager.
    *
-   * @param registry The document registry used by the created instance.
    * @param converter The converter responsible of the conversion.
    */
-  public CliConverter(final DocumentFormatRegistry registry, final DocumentConverter converter) {
+  public CliConverter(final DocumentConverter converter) {
 
     this.out = new PrintWriter(System.out); // NOSONAR
     this.converter = converter;

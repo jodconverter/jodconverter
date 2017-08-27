@@ -155,8 +155,8 @@ public final class Convert {
     // If the URL is present, we will use the online office manager and thus,
     // an office installation won't be required locally.
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
-      final String connectionURL = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
-      return OnlineOfficeManager.builder().urlConnection(connectionURL).build();
+      final String connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
+      return OnlineOfficeManager.builder().urlConnection(connectionUrl).build();
     }
 
     // Not online conversion...
@@ -340,7 +340,8 @@ public final class Convert {
       final DocumentFormatRegistry registry) {
 
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
-      return new CliConverter(registry, OnlineConverter.make(officeManager));
+      return new CliConverter(
+          OnlineConverter.builder().officeManager(officeManager).formatRegistry(registry).build());
     }
 
     final FilterChain filterChain = getFilterChain(context);
@@ -349,7 +350,7 @@ public final class Convert {
     if (filterChain != null) {
       builder.filterWith(filterChain);
     }
-    return new CliConverter(registry, builder.build());
+    return new CliConverter(builder.build());
   }
 
   private static void printHelp() {
