@@ -24,14 +24,15 @@ import static org.assertj.core.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
-public class OfficeProcessManagerPoolEntryITest {
+public class OnlineOfficeManagerPoolEntryITest {
 
   @Test
-  public void execute_WhenIOExceptionCatch_ShouldThrowOfficeException() throws Exception {
+  public void execute_WhenMalformedUrlExceptionCatch_ShouldThrowOfficeException() throws Exception {
 
     final OnlineOfficeManagerPoolConfig config = new OnlineOfficeManagerPoolConfig(null);
     config.setWorkingDir(new File(System.getProperty("java.io.tmpdir")));
@@ -43,12 +44,39 @@ public class OfficeProcessManagerPoolEntryITest {
       assertThat(officeManager.isRunning()).isTrue();
 
       try {
+        officeManager.execute(new SimpleOfficeTask());
+        fail("OfficeException should have been thrown");
+      } catch (Exception ex) {
+        assertThat(ex)
+            .isExactlyInstanceOf(OfficeException.class)
+            .hasCauseExactlyInstanceOf(MalformedURLException.class);
+      }
+    } finally {
+
+      officeManager.stop();
+      assertThat(officeManager.isRunning()).isFalse();
+    }
+  }
+
+  @Test
+  public void execute_WhenIoExceptionExceptionCatch_ShouldThrowOfficeException() throws Exception {
+
+    final OnlineOfficeManagerPoolConfig config = new OnlineOfficeManagerPoolConfig(null);
+    config.setWorkingDir(new File(System.getProperty("java.io.tmpdir")));
+
+    final OnlineOfficeManagerPoolEntry officeManager =
+        new OnlineOfficeManagerPoolEntry("http://localhost/", config);
+    try {
+      officeManager.start();
+      assertThat(officeManager.isRunning()).isTrue();
+
+      try {
         officeManager.execute(new SimpleOfficeTask(new IOException()));
         fail("OfficeException should have been thrown");
       } catch (Exception ex) {
         assertThat(ex)
             .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(OfficeException.class);
+            .hasCauseExactlyInstanceOf(IOException.class);
       }
     } finally {
 
