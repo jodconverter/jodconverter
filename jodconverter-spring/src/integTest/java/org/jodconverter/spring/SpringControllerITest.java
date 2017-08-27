@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.jodconverter.office.OfficeUtils;
+import org.jodconverter.office.LocalOfficeUtils;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -58,7 +58,7 @@ public class SpringControllerITest {
 
       final JodConverterBean bean = new JodConverterBean();
       bean.setPortNumbers("2005");
-      bean.setOfficeHome(OfficeUtils.getDefaultOfficeHome().getPath());
+      bean.setOfficeHome(LocalOfficeUtils.getDefaultOfficeHome().getPath());
       bean.setWorkingDir(null);
       bean.setTemplateProfileDir(null);
       bean.setKillExistingProcess(true);

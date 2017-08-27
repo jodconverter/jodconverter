@@ -19,28 +19,7 @@
 
 package org.jodconverter.task;
 
-import static org.jodconverter.office.OfficeUtils.toUnoProperties;
-import static org.jodconverter.office.OfficeUtils.toUrl;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.Validate;
-
-import com.sun.star.document.UpdateDocMode;
-import com.sun.star.io.IOException;
-import com.sun.star.lang.IllegalArgumentException;
-import com.sun.star.lang.XComponent;
-import com.sun.star.task.ErrorCodeIOException;
-import com.sun.star.uno.UnoRuntime;
-import com.sun.star.util.CloseVetoException;
-import com.sun.star.util.XCloseable;
-
 import org.jodconverter.job.SourceDocumentSpecs;
-import org.jodconverter.office.OfficeContext;
-import org.jodconverter.office.OfficeException;
 
 /**
  * Base class for all office tasks implementation.
@@ -49,34 +28,7 @@ import org.jodconverter.office.OfficeException;
  */
 public abstract class AbstractOfficeTask implements OfficeTask {
 
-  private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
-  protected static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
-
   protected final SourceDocumentSpecs source;
-  protected Map<String, Object> defaultLoadProperties;
-
-  static {
-    final Map<String, Object> loadProperties = new HashMap<>();
-    loadProperties.put("Hidden", true);
-    loadProperties.put("ReadOnly", true);
-    loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
-    DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
-  }
-
-  // Provides default properties to use when we load (open) a document before
-  // a conversion, regardless the input type of the document.
-  private static Map<String, Object> createDefaultLoadProperties() {
-
-    return new HashMap<>(DEFAULT_LOAD_PROPERTIES);
-  }
-
-  protected static void addPropertiesToMap(
-      final Map<String, Object> properties, final Map<String, Object> toAddProperties) {
-
-    if (toAddProperties != null) {
-      properties.putAll(toAddProperties);
-    }
-  }
 
   /**
    * Creates a new task with the specified source document.
@@ -84,84 +36,8 @@ public abstract class AbstractOfficeTask implements OfficeTask {
    * @param source The source specifications of the document.
    */
   public AbstractOfficeTask(final SourceDocumentSpecs source) {
-    this(source, null);
-  }
-
-  /**
-   * Creates a new task with the specified source document.
-   *
-   * @param source The source specifications of the document.
-   * @param defaultLoadProperties The default properties to be applied when loading the document.
-   *     These properties are added before the load properties of the document format specified in
-   *     the {@code source} arguments.
-   */
-  public AbstractOfficeTask(
-      final SourceDocumentSpecs source, final Map<String, Object> defaultLoadProperties) {
     super();
 
     this.source = source;
-    this.defaultLoadProperties =
-        defaultLoadProperties == null ? createDefaultLoadProperties() : defaultLoadProperties;
-  }
-
-  // Gets the office properties to apply when the input file will be loaded.
-  protected Map<String, Object> getLoadProperties() {
-
-    final Map<String, Object> loadProperties = new HashMap<>(defaultLoadProperties);
-    addPropertiesToMap(loadProperties, source.getFormat().getLoadProperties());
-    addPropertiesToMap(loadProperties, source.getCustomLoadProperties());
-
-    return loadProperties;
-  }
-
-  // Loads the document from the specified source file.
-  protected XComponent loadDocument(final OfficeContext context, final File sourceFile)
-      throws OfficeException {
-
-    try {
-      final XComponent document =
-          context
-              .getComponentLoader()
-              .loadComponentFromURL(
-                  toUrl(sourceFile), "_blank", 0, toUnoProperties(getLoadProperties()));
-
-      // The document cannot be null
-      Validate.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
-      return document;
-
-    } catch (IllegalArgumentException illegalArgumentEx) {
-      throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), illegalArgumentEx);
-    } catch (ErrorCodeIOException errorCodeIoEx) {
-      throw new OfficeException(
-          ERROR_MESSAGE_LOAD + sourceFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
-          errorCodeIoEx);
-    } catch (IOException ioEx) {
-      throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), ioEx);
-    }
-  }
-
-  // Closes the specified document.
-  protected void closeDocument(final XComponent document) {
-
-    if (document != null) {
-
-      // Closing the converted document. Use XCloseable.close if the
-      // interface is supported, otherwise use XComponent.dispose
-      final XCloseable closeable = UnoRuntime.queryInterface(XCloseable.class, document);
-      if (closeable == null) {
-        // If close is not supported by this model - try to dispose it.
-        UnoRuntime.queryInterface(XComponent.class, document).dispose();
-      } else {
-        try {
-          // The boolean parameter deliverOwnership tells objects vetoing the
-          // close process that they may assume ownership if they object the closure
-          // by throwing a CloseVetoException. Here we give up ownership. To be on
-          // the safe side, catch possible veto exception anyway.
-          closeable.close(true);
-        } catch (CloseVetoException closeVetoEx) { // NOSONAR
-          // whoever raised the veto should close the document
-        }
-      }
-    }
   }
 }

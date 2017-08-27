@@ -30,16 +30,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.jodconverter.DefaultConverter;
 import org.jodconverter.DocumentConverter;
+import org.jodconverter.LocalConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFamily;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.office.DefaultOfficeManager;
+import org.jodconverter.office.LocalOfficeManager;
+import org.jodconverter.office.LocalOfficeUtils;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
-import org.jodconverter.office.OfficeUtils;
 
 /**
  * The purpose of this class is to provide to the Spring Container a Bean that encapsulates the
@@ -72,7 +72,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   @Override
   public void afterPropertiesSet() throws OfficeException { // NOSONAR
 
-    final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
+    final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
 
     if (!StringUtils.isBlank(portNumbers)) {
       final Set<Integer> iports = new HashSet<>();
@@ -94,7 +94,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
 
     // Starts the manager
     officeManager = builder.build();
-    documentConverter = DefaultConverter.make(officeManager);
+    documentConverter = LocalConverter.make(officeManager);
     officeManager.start();
   }
 
@@ -111,7 +111,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   @Override
   public void destroy() {
 
-    OfficeUtils.stopQuietly(officeManager);
+    LocalOfficeUtils.stopQuietly(officeManager);
   }
 
   /** Prints the available formats provided by the JODConverter module. */

@@ -19,7 +19,7 @@
 
 /**
  * This package contains the interfaces/classes used by the {@link
- * org.jodconverter.DefaultConverter} converter implementation that offers a fluent API to execute
+ * org.jodconverter.DocumentConverter} converter implementation that offers a fluent API to execute
  * document conversions.
  */
 package org.jodconverter.job;

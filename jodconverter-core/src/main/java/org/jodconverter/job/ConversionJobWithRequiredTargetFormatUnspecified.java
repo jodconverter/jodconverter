@@ -30,5 +30,5 @@ public interface ConversionJobWithRequiredTargetFormatUnspecified {
    * @param format The document format of the target document.
    * @return The current conversion specification.
    */
-  ConversionJobWithStorePropertiesUnspecified as(DocumentFormat format);
+  ConversionJob as(DocumentFormat format);
 }

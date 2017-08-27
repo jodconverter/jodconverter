@@ -27,14 +27,10 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.sun.star.document.UpdateDocMode;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
@@ -139,17 +135,13 @@ public class SourceDocumentSpecsFromInputStreamTest {
 
     try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
 
-      final Map<String, Object> loadProperties = new HashMap<>();
-      loadProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
-
       final SourceDocumentSpecsFromInputStream specs =
           new SourceDocumentSpecsFromInputStream(inputStream, tempFile, false);
       specs.setDocumentFormat(DefaultDocumentFormatRegistry.ODS);
-      specs.setCustomLoadProperties(loadProperties);
 
       assertThat(specs)
-          .extracting("inputStream", "documentFormat", "customLoadProperties")
-          .containsExactly(inputStream, DefaultDocumentFormatRegistry.ODS, loadProperties);
+          .extracting("inputStream", "documentFormat")
+          .containsExactly(inputStream, DefaultDocumentFormatRegistry.ODS);
     }
   }
 }

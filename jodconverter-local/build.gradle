@@ -1,4 +1,20 @@
 description = 'JODConverter - Local'
 
 dependencies {
+  compile project(':jodconverter-core')
+  
+  compile libraries.office_juh
+  compile libraries.office_jurt
+  compile libraries.office_ridl
+  compile libraries.office_unoil
+  compile libraries.slf4j_api
+
+  testCompile libraries.slf4j_log4j
+  testCompile project(path: ':jodconverter-core', configuration: 'tests')
+}
+
+integrationTest {
+  // Run the stress and performance tests manually only
+  exclude 'org/jodconverter/StressITest.class'
+  exclude 'org/jodconverter/PerformanceITest.class'
 }

@@ -22,9 +22,9 @@ package org.jodconverter.office;
 import java.io.File;
 
 /**
- * This class provides the configuration of an {@link OfficeManagerPool}.
+ * This class provides the configuration of an {@link AbstractOfficeManagerPool}.
  *
- * @see OfficeManagerPool
+ * @see AbstractOfficeManagerPool
  */
 interface OfficeManagerPoolConfig { // NOSONAR
 

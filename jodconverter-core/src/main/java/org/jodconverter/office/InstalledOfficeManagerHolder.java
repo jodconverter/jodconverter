@@ -21,7 +21,7 @@ package org.jodconverter.office;
 
 /**
  * Holds a unique instance of an {@link org.jodconverter.office.OfficeManager} that will be used by
- * created {@link org.jodconverter.DefaultConverter} when no office manager are given to the
+ * created {@link org.jodconverter.DocumentConverter} when no office manager are given to the
  * converter builder.
  */
 public final class InstalledOfficeManagerHolder {
@@ -33,7 +33,7 @@ public final class InstalledOfficeManagerHolder {
    *
    * @return The main default office manager.
    */
-  public static OfficeManager getInstance() {
+  public static OfficeManager getInstance() { // NOSONAR
 
     synchronized (InstalledOfficeManagerHolder.class) {
       return instance;
@@ -47,7 +47,7 @@ public final class InstalledOfficeManagerHolder {
    * @return the previous installed office manager, or {@code null} if there was no installed office
    *     manager.
    */
-  public static OfficeManager setInstance(final OfficeManager manager) {
+  public static OfficeManager setInstance(final OfficeManager manager) { // NOSONAR
 
     synchronized (InstalledOfficeManagerHolder.class) {
       final OfficeManager oldManager = instance;

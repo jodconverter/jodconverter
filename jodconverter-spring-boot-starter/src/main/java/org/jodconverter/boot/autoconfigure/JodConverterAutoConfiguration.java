@@ -33,9 +33,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.jodconverter.DefaultConverter;
 import org.jodconverter.DocumentConverter;
-import org.jodconverter.office.DefaultOfficeManager;
+import org.jodconverter.LocalConverter;
+import org.jodconverter.office.LocalOfficeManager;
 import org.jodconverter.office.OfficeManager;
 
 @Configuration
@@ -58,7 +58,7 @@ public class JodConverterAutoConfiguration {
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager() {
 
-    final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
+    final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
 
     if (!StringUtils.isBlank(properties.getPortNumbers())) {
       final Set<Integer> iports = new HashSet<>();
@@ -95,6 +95,6 @@ public class JodConverterAutoConfiguration {
   @ConditionalOnBean(OfficeManager.class)
   public DocumentConverter jodConverter(final OfficeManager officeManager) {
 
-    return DefaultConverter.make(officeManager);
+    return LocalConverter.make(officeManager);
   }
 }

@@ -20,26 +20,12 @@
 package org.jodconverter.job;
 
 import java.io.File;
-import java.util.Map;
-
-import org.jodconverter.document.DocumentFormat;
 
 /**
  * An interface that provides the behavior to apply when a target file is no longer required by a
  * conversion process.
  */
 public interface TargetDocumentSpecs extends DocumentSpecs {
-
-  /**
-   * Gets the custom properties that will be applied when a document is stored during a conversion
-   * task.
-   *
-   * <p>Custom properties are applied after the stored properties of the {@link DocumentFormat} of
-   * this TargetDocumentSpecs.
-   *
-   * @return A map containing the custom properties to apply when storing a document.
-   */
-  Map<String, Object> getCustomStoreProperties();
 
   /**
    * Called if the conversion was completed successfully.

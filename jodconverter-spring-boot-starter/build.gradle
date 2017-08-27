@@ -10,7 +10,7 @@ dependencyManagement {
 }
 
 dependencies {
-  compile project(':jodconverter-core')
+  compile project(':jodconverter-local')
   compile libraries.spring_boot_starter
   compile libraries.spring_boot_configuration_processor
 

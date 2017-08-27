@@ -23,18 +23,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import org.jodconverter.cli.util.COnlineServerMock;
 import org.jodconverter.cli.util.ExitException;
-import org.jodconverter.cli.util.NoExitSecurityManager;
+import org.jodconverter.cli.util.NoExitResource;
+import org.jodconverter.cli.util.ResetExitExceptionResource;
 import org.jodconverter.cli.util.SystemLogHandler;
-import org.jodconverter.office.OfficeUtils;
+import org.jodconverter.office.LocalOfficeUtils;
 
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
@@ -43,45 +45,25 @@ public class ConvertITest {
 
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
   private static final String SOURCE_FILE = "src/integTest/resources/documents/test1.doc";
-  private static final String OUTPUT_DIR = "test-output/" + ConvertITest.class.getSimpleName();
+  private static final String SOURCE_MULTI_FILE =
+      "src/integTest/resources/documents/test_multi_page.doc";
 
-  /**
-   * Ensures we start with a fresh output directory. Also changes the security manager so we can
-   * trap the exit code of the application.
-   */
-  @BeforeClass
-  public static void createOutputDir() {
+  @ClassRule public static NoExitResource noExit = new NoExitResource();
+  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
-    // Ensure we start with a fresh output directory
-    final File outputDir = new File(OUTPUT_DIR);
-    FileUtils.deleteQuietly(outputDir);
-    outputDir.mkdirs();
-
-    System.setSecurityManager(new NoExitSecurityManager());
-  }
-
-  /**  Deletes the output directory and resets the security manager. */
-  @AfterClass
-  public static void deleteOutputDir() {
-
-    // Delete the output directory
-    FileUtils.deleteQuietly(new File(OUTPUT_DIR));
-
-    // Restore security manager
-    System.setSecurityManager(null);
-  }
+  @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
 
   @Test
   public void convert_WithFilenames_ShouldSucceed() throws Exception {
 
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "convert.pdf");
+    final File outputFile = new File(testFolder.getRoot(), "convert_WithFilenames.pdf");
 
     assertThat(outputFile).doesNotExist();
 
     try {
       SystemLogHandler.startCapture();
-      Convert.main(new String[] {inputFile.getPath(), outputFile.getPath()});
+      Convert.main(new String[] {"-k", inputFile.getPath(), outputFile.getPath()});
 
       // Be sure the ExitException exception is thrown.
       fail();
@@ -101,29 +83,32 @@ public class ConvertITest {
   public void convert_WithOutputFormat_ShouldSucceed() throws Exception {
 
     final File inputFile = new File(SOURCE_FILE);
+    FileUtils.copyFileToDirectory(inputFile, testFolder.getRoot());
+    final File inputFileTmp = new File(testFolder.getRoot(), FilenameUtils.getName(SOURCE_FILE));
     final File outputFile =
-        new File(
-            inputFile.getParentFile(), FilenameUtils.getBaseName(inputFile.getName()) + ".pdf");
+        new File(testFolder.getRoot(), FilenameUtils.getBaseName(inputFile.getName()) + ".pdf");
 
     assertThat(outputFile).doesNotExist();
 
     try {
       SystemLogHandler.startCapture();
-      Convert.main(new String[] {"-f", "pdf", inputFile.getPath()});
+      Convert.main(new String[] {"-k", "-f", "pdf", inputFileTmp.getPath()});
 
       // Be sure the ExitException exception is thrown.
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
-      assertThat(ex)
-          .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 0);
+      try {
+        SystemLogHandler.stopCapture();
+        assertThat(ex)
+            .isExactlyInstanceOf(ExitException.class)
+            .hasFieldOrPropertyWithValue("status", 0);
 
-      assertThat(outputFile).isFile();
-      assertThat(outputFile.length()).isGreaterThan(0L);
-
-      FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
+        assertThat(outputFile).isFile();
+        assertThat(outputFile.length()).isGreaterThan(0L);
+      } finally {
+        FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
+      }
     }
   }
 
@@ -132,7 +117,7 @@ public class ConvertITest {
 
     final File filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "convert_WithMultipleFilters.pdf");
+    final File outputFile = new File(testFolder.getRoot(), "convert_WithMultipleFilters.pdf");
 
     assertThat(outputFile).doesNotExist();
 
@@ -140,7 +125,7 @@ public class ConvertITest {
       SystemLogHandler.startCapture();
       Convert.main(
           new String[] {
-            "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
+            "-k", "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
           });
 
       // Be sure the ExitException exception is thrown.
@@ -160,9 +145,9 @@ public class ConvertITest {
   @Test
   public void convert_WithSingleFilter_ShouldSucceed() throws Exception {
 
-    final File filterChainFile = new File(CONFIG_DIR + "applicationContext_singleFilter.xml");
-    final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(OUTPUT_DIR, "convert_WithSingleFilter.pdf");
+    final File filterChainFile = new File(CONFIG_DIR + "applicationContext_pageSelectorFilter.xml");
+    final File inputFile = new File(SOURCE_MULTI_FILE);
+    final File outputFile = new File(testFolder.getRoot(), "convert_WithSingleFilter.txt");
 
     assertThat(outputFile).doesNotExist();
 
@@ -170,7 +155,7 @@ public class ConvertITest {
       SystemLogHandler.startCapture();
       Convert.main(
           new String[] {
-            "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
+            "-k", "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
           });
 
       // Be sure the ExitException exception is thrown.
@@ -182,45 +167,11 @@ public class ConvertITest {
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
 
-      assertThat(outputFile).isFile();
-      assertThat(outputFile.length()).isGreaterThan(0L);
-    }
-  }
-
-  @Test
-  public void main_Convert_WithConnectionOption_WithOutputFormat_ShouldSucceed() throws Exception {
-    final File inputFile = new File(SOURCE_FILE);
-    final File outputFile =
-        new File(
-            inputFile.getParentFile(), FilenameUtils.getBaseName(inputFile.getName()) + ".pdf");
-
-    assertThat(outputFile).doesNotExist();
-
-    COnlineServerMock server = new COnlineServerMock();
-    try {
-      // start mock server
-      server.listen();
-
-      SystemLogHandler.startCapture();
-      Convert.main(
-          new String[] {
-            "-f", "pdf", inputFile.getPath(), "-c", "http://localhost:9980/lool/convert-to/pdf"
-          });
-
-      server.stop();
-      // Be sure the ExitException exception is thrown.
-      fail();
-
-    } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
-      assertThat(ex)
-          .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 0);
-
-      assertThat(outputFile).isFile();
-      assertThat(outputFile.length()).isGreaterThan(0L);
-
-      FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
+      final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+      assertThat(content)
+          .contains("Test document Page 2")
+          .doesNotContain("Test document Page 1")
+          .doesNotContain("Test document Page 3");
     }
   }
 
@@ -230,11 +181,17 @@ public class ConvertITest {
     try {
       Convert.main(
           new String[] {
-            "-i", OfficeUtils.getDefaultOfficeHome().getPath(),
-            "-m", OfficeUtils.findBestProcessManager().getClass().getName(),
-            "-t", "30000",
-            "-p", "2002",
-            "input1.txt", "output1.pdf"
+            "-k",
+            "-i",
+            LocalOfficeUtils.getDefaultOfficeHome().getPath(),
+            "-m",
+            LocalOfficeUtils.findBestProcessManager().getClass().getName(),
+            "-t",
+            "30000",
+            "-p",
+            "2002",
+            "input1.txt",
+            "output1.pdf"
           });
 
       // Be sure an exception is thrown.

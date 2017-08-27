@@ -1,13 +1,16 @@
 description = 'JODConverter - Cli'
 
 dependencies {
-  compile project(':jodconverter-core')
+  compile project(':jodconverter-local')
+  compile project(':jodconverter-online')
     
   compile libraries.commons_cli
   compile libraries.spring_core
   compile libraries.spring_context
-
+  
   runtime libraries.slf4j_log4j // Runtime so it is included in the distribution
+
+  testCompile libraries.wiremock
 }
 
 // Create an executable for the client module

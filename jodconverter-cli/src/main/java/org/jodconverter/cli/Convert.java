@@ -35,12 +35,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import org.jodconverter.LocalConverter;
+import org.jodconverter.OnlineConverter;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.document.JsonDocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
-import org.jodconverter.office.DefaultOfficeManager;
+import org.jodconverter.office.LocalOfficeManager;
+import org.jodconverter.office.LocalOfficeUtils;
 import org.jodconverter.office.OfficeManager;
-import org.jodconverter.office.OfficeUtils;
+import org.jodconverter.office.OnlineOfficeManager;
 
 /** Command line interface executable. */
 public final class Convert {
@@ -56,12 +59,12 @@ public final class Convert {
           .hasArg()
           .desc("Application context file (optional)")
           .build();
-  private static final Option OPTION_CONNECTION_URL =
+  private static final Option OPT_CONNECTION_URL =
       Option.builder("c")
           .longOpt("connection-url")
           .argName("url")
           .hasArg()
-          .desc("Using remote LibreOffice Online server for conversion")
+          .desc("remote LibreOffice Online server URL for conversion")
           .build();
   private static final Option OPT_OUTPUT_DIRECTORY =
       Option.builder("d")
@@ -149,7 +152,16 @@ public final class Convert {
 
   private static OfficeManager createOfficeManager(final CommandLine commandLine) {
 
-    final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
+    // If the URL is present, we will use the online office manager and thus,
+    // an office installation won't be required locally.
+    if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
+      final String connectionURL = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
+      return OnlineOfficeManager.builder().urlConnection(connectionURL).build();
+    }
+
+    // Not online conversion...
+
+    final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
     //configuration.setWorkingDir(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
 
     if (commandLine.hasOption(OPT_OFFICE_HOME.getOpt())) {
@@ -237,7 +249,7 @@ public final class Convert {
     options.addOption(OPT_REGISTRY);
     options.addOption(OPT_TIMEOUT);
     options.addOption(OPT_USER_PROFILE);
-    options.addOption(OPTION_CONNECTION_URL);
+    options.addOption(OPT_CONNECTION_URL);
 
     return options;
   }
@@ -259,7 +271,6 @@ public final class Convert {
       // Get conversion arguments
       final String outputFormat = getStringOption(commandLine, OPT_OUTPUT_FORMAT.getOpt());
       final String outputDirPath = getStringOption(commandLine, OPT_OUTPUT_DIRECTORY.getOpt());
-      final String connectionURL = getStringOption(commandLine, OPTION_CONNECTION_URL.getOpt());
       final DocumentFormatRegistry registry = getRegistryOption(commandLine);
       final boolean overwrite = commandLine.hasOption(OPT_OVERWRITE.getOpt());
       final String[] filenames = commandLine.getArgs();
@@ -281,13 +292,9 @@ public final class Convert {
         printInfo("Starting office");
         officeManager.start();
 
-        final CliConverter converter;
         // Build a client converter and start the conversion
-        if (connectionURL != null) {
-          converter = new CliConverter(registry, connectionURL);
-        } else {
-          converter = new CliConverter(registry);
-        }
+        final CliConverter converter =
+            createCliConverter(commandLine, context, officeManager, registry);
 
         if (outputFormat == null) {
 
@@ -299,17 +306,15 @@ public final class Convert {
             inputFilenames[j] = filenames[i];
             outputFilenames[j] = filenames[i + 1];
           }
-          converter.convert(
-              inputFilenames, outputFilenames, outputDirPath, overwrite, getFilterChain(context));
+          converter.convert(inputFilenames, outputFilenames, outputDirPath, overwrite);
 
         } else {
 
-          converter.convert(
-              filenames, outputFormat, outputDirPath, overwrite, getFilterChain(context));
+          converter.convert(filenames, outputFormat, outputDirPath, overwrite);
         }
       } finally {
         printInfo("Stopping office");
-        OfficeUtils.stopQuietly(officeManager);
+        LocalOfficeUtils.stopQuietly(officeManager);
 
         // Close the application context
         IOUtils.closeQuietly(context);
@@ -326,6 +331,25 @@ public final class Convert {
       e.printStackTrace(System.err); // NOSONAR
       System.exit(2);
     }
+  }
+
+  private static CliConverter createCliConverter(
+      final CommandLine commandLine,
+      final AbstractApplicationContext context,
+      final OfficeManager officeManager,
+      final DocumentFormatRegistry registry) {
+
+    if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
+      return new CliConverter(registry, OnlineConverter.make(officeManager));
+    }
+
+    final FilterChain filterChain = getFilterChain(context);
+    final LocalConverter.Builder builder = LocalConverter.builder();
+    builder.officeManager(officeManager).formatRegistry(registry);
+    if (filterChain != null) {
+      builder.filterWith(filterChain);
+    }
+    return new CliConverter(registry, builder.build());
   }
 
   private static void printHelp() {

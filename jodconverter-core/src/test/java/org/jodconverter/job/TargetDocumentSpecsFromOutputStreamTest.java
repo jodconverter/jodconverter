@@ -183,11 +183,10 @@ public class TargetDocumentSpecsFromOutputStreamTest {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
       specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);
-      specs.setCustomStoreProperties(storeProperties);
 
       assertThat(specs)
-          .extracting("outputStream", "documentFormat", "customStoreProperties")
-          .containsExactly(outputStream, DefaultDocumentFormatRegistry.CSV, storeProperties);
+          .extracting("outputStream", "documentFormat")
+          .containsExactly(outputStream, DefaultDocumentFormatRegistry.CSV);
     }
   }
 }

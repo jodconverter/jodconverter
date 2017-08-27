@@ -23,12 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Test;
-
-import com.sun.star.document.UpdateDocMode;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
@@ -53,15 +49,12 @@ public class SourceDocumentSpecsFromFileTest {
   public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
 
     final File sourceFile = new File(SOURCE_FILE);
-    final Map<String, Object> loadProperties = new HashMap<>();
-    loadProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
 
     final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(sourceFile);
     specs.setDocumentFormat(DefaultDocumentFormatRegistry.ODS);
-    specs.setCustomLoadProperties(loadProperties);
 
     assertThat(specs)
-        .extracting("file", "documentFormat", "customLoadProperties")
-        .containsExactly(sourceFile, DefaultDocumentFormatRegistry.ODS, loadProperties);
+        .extracting("file", "documentFormat")
+        .containsExactly(sourceFile, DefaultDocumentFormatRegistry.ODS);
   }
 }

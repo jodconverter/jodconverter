@@ -67,10 +67,9 @@ public class TargetDocumentSpecsFromFileTest {
 
     final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(targetFile);
     specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);
-    specs.setCustomStoreProperties(storeProperties);
 
     assertThat(specs)
-        .extracting("file", "documentFormat", "customStoreProperties")
-        .containsExactly(targetFile, DefaultDocumentFormatRegistry.CSV, storeProperties);
+        .extracting("file", "documentFormat")
+        .containsExactly(targetFile, DefaultDocumentFormatRegistry.CSV);
   }
 }

@@ -20,8 +20,6 @@
 package org.jodconverter.job;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Base class for all source document specifications implementations.
@@ -31,31 +29,7 @@ import java.util.Map;
 public abstract class AbstractSourceDocumentSpecs extends AbstractDocumentSpecs
     implements SourceDocumentSpecs {
 
-  private Map<String, Object> customLoadProperties;
-
   protected AbstractSourceDocumentSpecs(final File file) {
     super(file);
-  }
-
-  @Override
-  public Map<String, Object> getCustomLoadProperties() {
-    return customLoadProperties;
-  }
-
-  /**
-   * Sets the custom properties that will be applied when a document is loaded during the conversion
-   * task.
-   *
-   * <p>Custom load properties are applied after the default load properties of the {@link
-   * org.jodconverter.DocumentConverter} (only if the converter is a subclass of {@link
-   * org.jodconverter.job.AbstractConverter}) and after the load properties of the {@link
-   * org.jodconverter.document.DocumentFormat} of this SourceDocumentSpecs.
-   *
-   * @param customLoadProperties A map containing the custom properties to apply when loading a
-   *     document.
-   */
-  void setCustomLoadProperties(final Map<String, Object> customLoadProperties) {
-
-    this.customLoadProperties = new HashMap<>(customLoadProperties);
   }
 }

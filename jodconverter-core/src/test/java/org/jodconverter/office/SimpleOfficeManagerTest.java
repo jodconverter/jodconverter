@@ -76,10 +76,15 @@ public class SimpleOfficeManagerTest {
     assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(30000L);
 
-    final OfficeManager[] poolEntries =
-        (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
-    assertThat(poolEntries).hasSize(1);
-    assertThat(poolEntries[0]).isInstanceOf(SimpleOfficeManagerPoolEntry.class);
+    manager.start();
+    try {
+      final OfficeManager[] poolEntries =
+          (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
+      assertThat(poolEntries).hasSize(1);
+      assertThat(poolEntries[0]).isInstanceOf(SimpleOfficeManagerPoolEntry.class);
+    } finally {
+      manager.stop();
+    }
   }
 
   @Test
@@ -94,7 +99,7 @@ public class SimpleOfficeManagerTest {
             .poolSize(2)
             .build();
 
-    assertThat(manager).isInstanceOf(OfficeManagerPool.class);
+    assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
     final SimpleOfficeManagerPoolConfig config =
         (SimpleOfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getWorkingDir().getPath())
@@ -102,10 +107,15 @@ public class SimpleOfficeManagerTest {
     assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(1000L);
 
-    final OfficeManager[] poolEntries =
-        (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
-    assertThat(poolEntries).hasSize(2);
-    assertThat(poolEntries[0]).isInstanceOf(SimpleOfficeManagerPoolEntry.class);
+    manager.start();
+    try {
+      final OfficeManager[] poolEntries =
+          (OfficeManager[]) FieldUtils.readField(manager, "entries", true);
+      assertThat(poolEntries).hasSize(2);
+      assertThat(poolEntries[0]).isInstanceOf(SimpleOfficeManagerPoolEntry.class);
+    } finally {
+      manager.stop();
+    }
   }
 
   @Test
@@ -117,7 +127,7 @@ public class SimpleOfficeManagerTest {
             .workingDir(new File(System.getProperty("java.io.tmpdir")).getPath())
             .build();
 
-    assertThat(manager).isInstanceOf(OfficeManagerPool.class);
+    assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
     final SimpleOfficeManagerPoolConfig config =
         (SimpleOfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getWorkingDir().getPath())
@@ -130,7 +140,7 @@ public class SimpleOfficeManagerTest {
 
     final OfficeManager manager = SimpleOfficeManager.builder().workingDir("   ").build();
 
-    assertThat(manager).isInstanceOf(OfficeManagerPool.class);
+    assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
     final SimpleOfficeManagerPoolConfig config =
         (SimpleOfficeManagerPoolConfig) FieldUtils.readField(manager, "config", true);
     assertThat(config.getWorkingDir().getPath())

@@ -21,7 +21,6 @@ package org.jodconverter.job;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
@@ -37,7 +36,7 @@ import org.jodconverter.office.TemporaryFileMaker;
 /**
  * Base class for all document converter implementations.
  *
- * @see DocumentSpecs
+ * @see DocumentConverter
  */
 public abstract class AbstractConverter implements DocumentConverter {
 
@@ -45,12 +44,9 @@ public abstract class AbstractConverter implements DocumentConverter {
 
   protected final OfficeManager officeManager;
   protected final DocumentFormatRegistry formatRegistry;
-  protected Map<String, Object> defaultLoadProperties;
 
   protected AbstractConverter(
-      final OfficeManager officeManager,
-      final DocumentFormatRegistry formatRegistry,
-      final Map<String, Object> defaultLoadProperties) {
+      final OfficeManager officeManager, final DocumentFormatRegistry formatRegistry) {
     super();
 
     // An office manager is required
@@ -66,7 +62,6 @@ public abstract class AbstractConverter implements DocumentConverter {
     this.officeManager = manager;
     this.formatRegistry =
         formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry;
-    this.defaultLoadProperties = defaultLoadProperties;
   }
 
   @Override
@@ -121,12 +116,10 @@ public abstract class AbstractConverter implements DocumentConverter {
    *
    * @see AbstractConverter
    */
-  public abstract static class AbstractConverterBuilder<T extends AbstractConverterBuilder<T>> {
+  public abstract static class AbstractConverterBuilder<B extends AbstractConverterBuilder<B>> {
 
     protected OfficeManager officeManager;
     protected DocumentFormatRegistry formatRegistry;
-    protected Map<String, Object> defaultLoadProperties;
-    protected boolean endsWithRefreshFilter;
 
     // Protected ctor so only subclasses can initialize an instance of this builder.
     protected AbstractConverterBuilder() {
@@ -140,11 +133,11 @@ public abstract class AbstractConverter implements DocumentConverter {
      * @return This builder instance.
      */
     @SuppressWarnings("unchecked")
-    public T officeManager(final OfficeManager manager) {
+    public B officeManager(final OfficeManager manager) {
 
       Validate.notNull(manager);
       this.officeManager = manager;
-      return (T) this;
+      return (B) this;
     }
 
     /**
@@ -155,26 +148,10 @@ public abstract class AbstractConverter implements DocumentConverter {
      * @return This builder instance.
      */
     @SuppressWarnings("unchecked")
-    public T formatRegistry(final DocumentFormatRegistry registry) {
+    public B formatRegistry(final DocumentFormatRegistry registry) {
 
       this.formatRegistry = registry;
-      return (T) this;
-    }
-
-    /**
-     * Specifies the default properties that will be applied when a document is loaded during a
-     * conversion task, regardless of the input format of the document.
-     *
-     * <p>Using this function will replace the default load properties map.
-     *
-     * @param properties A map containing the default properties to apply when loading a document.
-     * @return This builder instance.
-     */
-    @SuppressWarnings("unchecked")
-    public T defaultLoadProperties(final Map<String, Object> properties) {
-
-      this.defaultLoadProperties = properties;
-      return (T) this;
+      return (B) this;
     }
 
     /**

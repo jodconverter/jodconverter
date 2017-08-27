@@ -20,10 +20,6 @@
 package org.jodconverter.job;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.jodconverter.document.DocumentFormat;
 
 /**
  * Base class for all target document specifications implementations.
@@ -33,29 +29,7 @@ import org.jodconverter.document.DocumentFormat;
 public abstract class AbstractTargetDocumentSpecs extends AbstractDocumentSpecs
     implements TargetDocumentSpecs {
 
-  private Map<String, Object> customStoreProperties;
-
   protected AbstractTargetDocumentSpecs(final File file) {
     super(file);
-  }
-
-  @Override
-  public Map<String, Object> getCustomStoreProperties() {
-    return customStoreProperties;
-  }
-
-  /**
-   * Sets the custom properties that will be applied when a document is stored during a conversion
-   * task.
-   *
-   * <p>Custom properties are applied after the stored properties of the {@link DocumentFormat} of
-   * this TargetDocumentSpecs.
-   *
-   * @param customStoreProperties A map containing the custom properties to apply when storing a
-   *     document.
-   */
-  void setCustomStoreProperties(final Map<String, Object> customStoreProperties) {
-
-    this.customStoreProperties = new HashMap<>(customStoreProperties);
   }
 }

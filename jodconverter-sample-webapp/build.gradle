@@ -3,7 +3,7 @@ apply plugin: 'war'
 description = 'JODConverter - Sample Web App'
 
 dependencies {
-  compile project(':jodconverter-core')
+  compile project(':jodconverter-local')
   compile libraries.commons_fileupload
 
   providedCompile libraries.servlet_api

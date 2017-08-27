@@ -19,23 +19,5 @@
 
 package org.jodconverter.office;
 
-import com.sun.star.frame.XComponentLoader;
-import com.sun.star.frame.XDesktop;
-
-/** Represents an office context. */
-public interface OfficeContext {
-
-  /**
-   * Gets the office component loader for this context.
-   *
-   * @return The component loader.
-   */
-  XComponentLoader getComponentLoader();
-
-  /**
-   * Gets the office desktop for this context.
-   *
-   * @return The desktop.
-   */
-  XDesktop getDesktop();
-}
+/** Base interface for all office context interfaces. */
+public interface OfficeContext {}

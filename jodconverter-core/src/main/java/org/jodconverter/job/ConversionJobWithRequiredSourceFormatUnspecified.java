@@ -30,5 +30,5 @@ public interface ConversionJobWithRequiredSourceFormatUnspecified {
    * @param format The document format of the source document.
    * @return The current conversion specification.
    */
-  ConversionJobWithLoadPropertiesUnspecified as(DocumentFormat format);
+  ConversionJobWithSourceSpecified as(DocumentFormat format);
 }

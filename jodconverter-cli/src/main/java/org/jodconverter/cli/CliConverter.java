@@ -29,12 +29,8 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-import org.jodconverter.COnlineCoverter;
-import org.jodconverter.DefaultConverter;
+import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.filter.FilterChain;
-import org.jodconverter.filter.RefreshFilter;
-import org.jodconverter.job.AbstractConverter;
 import org.jodconverter.office.OfficeException;
 
 /**
@@ -45,48 +41,35 @@ import org.jodconverter.office.OfficeException;
 public final class CliConverter {
 
   private final PrintWriter out;
-  private final AbstractConverter converter;
+  private final DocumentConverter converter;
 
   /**
    * Creates a new instance of the class that will use the specified manager.
    *
-   * @param registry the document registry used by the created instance.
-   * @param connectionURL use remote LibreOffice Online server with this address
+   * @param registry The document registry used by the created instance.
+   * @param converter The converter responsible of the conversion.
    */
-  public CliConverter(final DocumentFormatRegistry registry, final String connectionURL) {
+  public CliConverter(final DocumentFormatRegistry registry, final DocumentConverter converter) {
 
     this.out = new PrintWriter(System.out); // NOSONAR
-    this.converter = COnlineCoverter.builder().formatRegistry(registry).build(connectionURL);
-  }
-
-  /**
-   * Creates a new instance of the class that will use the specified manager.
-   *
-   * @param registry the document registry used by the created instance.
-   */
-  public CliConverter(final DocumentFormatRegistry registry) {
-
-    this.out = new PrintWriter(System.out); // NOSONAR
-    this.converter = DefaultConverter.builder().formatRegistry(registry).build();
+    this.converter = converter;
   }
 
   /**
    * Converts the specified files into the specified format.
    *
-   * @param filenames an array containing the filenames of the files to convert.
-   * @param outputFormat the output format to convert to files to.
-   * @param outputDirPath the directory where to create a converted file. If null, a converted file
+   * @param filenames An array containing the filenames of the files to convert.
+   * @param outputFormat The output format to convert to files to.
+   * @param outputDirPath The directory where to create a converted file. If null, a converted file
    *     will be created into the same directory as the input file.
-   * @param overwrite indicates whether an output file that already exists must be overwritten.
-   * @param filterChain filter chain to apply when converting a file.
-   * @throws OfficeException if an error occurs while converting the files.
+   * @param overwrite Indicates whether an output file that already exists must be overwritten.
+   * @throws OfficeException If an error occurs while converting the files.
    */
   public void convert(
       final String[] filenames,
       final String outputFormat,
       final String outputDirPath,
-      final boolean overwrite,
-      final FilterChain filterChain)
+      final boolean overwrite)
       throws OfficeException {
 
     Validate.notEmpty(filenames, "The validated filenames array is empty");
@@ -111,8 +94,7 @@ public final class CliConverter {
             inputFile,
             outputDir == null ? inputFile.getParentFile() : outputDir,
             FilenameUtils.getBaseName(inputFile.getName()) + "." + outputFormat,
-            overwrite,
-            filterChain);
+            overwrite);
 
       } else {
 
@@ -130,8 +112,7 @@ public final class CliConverter {
                 file,
                 outputDir == null ? inputFile.getParentFile() : outputDir,
                 FilenameUtils.getBaseName(file.getName()) + "." + outputFormat,
-                overwrite,
-                filterChain);
+                overwrite);
           }
         } else {
           printInfo("Skipping filename '%s' since it doesn't match an existing file...", inputFile);
@@ -143,21 +124,19 @@ public final class CliConverter {
   /**
    * Converts the specified files. The output format are generate from the output filenames.
    *
-   * @param inputFilenames an array containing the filenames of the files to convert.
-   * @param outputFilenames an array containing the output filenames to convert into.
-   * @param outputDirPath the directory where to create a converted file if not specified in the
+   * @param inputFilenames An array containing the filenames of the files to convert.
+   * @param outputFilenames An array containing the output filenames to convert into.
+   * @param outputDirPath The directory where to create a converted file if not specified in the
    *     output filename. If null and the directory is not specified in the output filename, a
    *     converted file will be created into the same directory as the input files.
-   * @param overwrite indicates whether an output file that already exists must be overwritten.
-   * @param filterChain filter chain to apply when converting a file.
-   * @throws OfficeException if an error occurs while converting the files.
+   * @param overwrite Indicates whether an output file that already exists must be overwritten.
+   * @throws OfficeException If an error occurs while converting the files.
    */
   public void convert(
       final String[] inputFilenames,
       final String[] outputFilenames,
       final String outputDirPath,
-      final boolean overwrite,
-      final FilterChain filterChain)
+      final boolean overwrite)
       throws OfficeException {
 
     Validate.notEmpty(inputFilenames, "The validated input filenames array is empty");
@@ -199,28 +178,21 @@ public final class CliConverter {
           new File(inputFilename),
           outputDirectory,
           FilenameUtils.getName(outputFilename),
-          overwrite,
-          filterChain);
+          overwrite);
     }
   }
 
-  private void convert(final File inputFile, final File outputFile, final FilterChain filterChain)
-      throws OfficeException {
+  private void convert(final File inputFile, final File outputFile) throws OfficeException {
 
     printInfo("Converting '%s' to '%s'", inputFile, outputFile);
-    converter
-        .convert(inputFile)
-        .filterWith(filterChain == null ? RefreshFilter.CHAIN : filterChain)
-        .to(outputFile)
-        .execute();
+    converter.convert(inputFile).to(outputFile).execute();
   }
 
   private void convertFile(
       final File inputFile,
       final File outputDir,
       final String outputFilename,
-      final boolean overwrite,
-      final FilterChain filterChain)
+      final boolean overwrite)
       throws OfficeException {
 
     // First validate the input file is a valid source file
@@ -231,7 +203,7 @@ public final class CliConverter {
       if (validateOutputFile(inputFile, outputFile, overwrite)) {
 
         // We can now convert the document
-        convert(inputFile, outputFile, filterChain);
+        convert(inputFile, outputFile);
       }
     }
   }

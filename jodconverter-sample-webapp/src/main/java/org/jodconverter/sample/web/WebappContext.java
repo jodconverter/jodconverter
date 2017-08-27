@@ -26,9 +26,9 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.DefaultConverter;
 import org.jodconverter.DocumentConverter;
-import org.jodconverter.office.DefaultOfficeManager;
+import org.jodconverter.LocalConverter;
+import org.jodconverter.office.LocalOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
@@ -64,7 +64,7 @@ public class WebappContext {
       LOGGER.info("max file upload size set to {}", fileSizeMax);
     }
 
-    final DefaultOfficeManager.Builder builder = DefaultOfficeManager.builder();
+    final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
     final String officePortParam = servletContext.getInitParameter(PARAMETER_OFFICE_PORT);
     if (officePortParam != null) {
       builder.portNumbers(Integer.parseInt(officePortParam));
@@ -75,7 +75,7 @@ public class WebappContext {
     builder.templateProfileDir(officeProfileParam);
 
     officeManager = builder.build();
-    documentConverter = DefaultConverter.make(officeManager);
+    documentConverter = LocalConverter.make(officeManager);
   }
 
   protected static void init(final ServletContext servletContext) throws OfficeException {

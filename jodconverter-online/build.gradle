@@ -1,4 +1,12 @@
 description = 'JODConverter - Online'
 
 dependencies {
+  compile project(':jodconverter-core')
+  
+  compile libraries.httpcomponents_httpmime
+  compile libraries.httpcomponents_httpcore
+  compile libraries.httpcomponents_httpclient
+  
+  testCompile libraries.slf4j_log4j
+  testCompile project(path: ':jodconverter-core', configuration: 'tests')
 }

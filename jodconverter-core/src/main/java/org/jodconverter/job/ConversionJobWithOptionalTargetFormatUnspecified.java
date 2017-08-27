@@ -19,17 +19,6 @@
 
 package org.jodconverter.job;
 
-import org.jodconverter.document.DocumentFormat;
-
 /** A conversion job with optional target format that is not yet applied to the converter. */
 public interface ConversionJobWithOptionalTargetFormatUnspecified
-    extends ConversionJobWithStorePropertiesUnspecified {
-
-  /**
-   * Defines the target document format for the given output document.
-   *
-   * @param format The document format of the output document.
-   * @return The current conversion specification.
-   */
-  ConversionJobWithStorePropertiesUnspecified as(DocumentFormat format);
-}
+    extends ConversionJobWithRequiredTargetFormatUnspecified, ConversionJob {}

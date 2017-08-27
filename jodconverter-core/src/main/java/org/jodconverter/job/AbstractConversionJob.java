@@ -21,7 +21,7 @@ package org.jodconverter.job;
 
 import org.apache.commons.lang3.Validate;
 
-import org.jodconverter.filter.FilterChain;
+import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.OfficeException;
 
 /**
@@ -29,21 +29,25 @@ import org.jodconverter.office.OfficeException;
  *
  * @see ConversionJob
  */
-public abstract class AbstractConversionJob implements ConversionJob {
+public abstract class AbstractConversionJob
+    implements ConversionJobWithOptionalTargetFormatUnspecified {
 
-  protected final AbstractSourceDocumentSpecs source;
-  protected final AbstractTargetDocumentSpecs target;
-  protected final FilterChain filterChain;
+  protected AbstractSourceDocumentSpecs source;
+  protected AbstractTargetDocumentSpecs target;
 
   protected AbstractConversionJob(
-      final AbstractSourceDocumentSpecs source,
-      final AbstractTargetDocumentSpecs target,
-      final FilterChain filterChain) {
+      final AbstractSourceDocumentSpecs source, final AbstractTargetDocumentSpecs target) {
     super();
 
     this.source = source;
     this.target = target;
-    this.filterChain = filterChain;
+  }
+
+  @Override
+  public ConversionJob as(final DocumentFormat format) {
+
+    target.setDocumentFormat(format);
+    return this;
   }
 
   @Override

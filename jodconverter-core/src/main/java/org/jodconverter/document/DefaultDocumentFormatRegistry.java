@@ -21,6 +21,7 @@ package org.jodconverter.document;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 /**
  * Holds the default {@code DocumentFormat} registry. It contains the list of {@code DocumentFormat}
@@ -319,6 +320,17 @@ public final class DefaultDocumentFormatRegistry {
   public static DocumentFormat getFormatByMediaType(final String mediaType) {
 
     return getInstance().getFormatByMediaType(mediaType);
+  }
+
+  /**
+   * Gets all the {@link DocumentFormat}s of a given family.
+   *
+   * @param family The family whose document formats will be returned.
+   * @return A set with all the document formats for the specified family.
+   */
+  public static Set<DocumentFormat> getOutputFormats(final DocumentFamily family) {
+
+    return getInstance().getOutputFormats(family);
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

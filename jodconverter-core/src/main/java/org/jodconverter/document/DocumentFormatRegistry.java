@@ -46,7 +46,7 @@ public interface DocumentFormatRegistry {
   DocumentFormat getFormatByMediaType(String mediaType);
 
   /**
-   * Gets all the {@link DocumentFormat}s.
+   * Gets all the {@link DocumentFormat}s of a given family.
    *
    * @param family The family whose document formats will be returned.
    * @return A set with all the document formats for the specified family.

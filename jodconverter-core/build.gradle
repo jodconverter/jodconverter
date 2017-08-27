@@ -4,34 +4,27 @@ dependencies {
   compile libraries.commons_io
   compile libraries.commons_lang3
   compile libraries.gson
-  compile libraries.office_juh
-  compile libraries.office_jurt
-  compile libraries.office_ridl
-  compile libraries.office_unoil
   compile libraries.slf4j_api
-
-  compile "org.apache.httpcomponents:httpmime:4.2.3"
-  compile "org.apache.httpcomponents:httpcore:4.2.2"
-  compile "org.apache.httpcomponents:httpclient:4.5.3"
-
+  
   testCompile libraries.slf4j_log4j
 }
 
-integrationTest {
-  // Run the stress and performance tests manually only
-  exclude 'org/jodconverter/StressITest.class'
-  exclude 'org/jodconverter/PerformanceITest.class'
-}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Versioneye configuration
+// Tests setup
 
-// Update project's dependencies status on http://www.versioneye.com
-apply plugin: 'org.standardout.versioneye'
+// Configuration groups used to manage tests dependencies
+// (when test classes depend on test classes from another project)
 
-versioneye {
-  includePlugins = false
-  exclude 'testCompile', 'testCompileClasspath', 'testCompileOnly', 'testImplementation', 'testRuntime', 'testRuntimeClasspath', 'testRuntimeOnly', 'integTestCompile', 'integTestCompileClasspath', 'integTestCompileOnly', 'integTestImplementation', 'integTestRuntime', 'integTestRuntimeClasspath', 'integTestRuntimeOnly', 'checkstyle', 'jacocoAgent', 'jacocoAnt', 'pmd'
+configurations {
+    tests
 }
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+task testJar (type: Jar) {
+    from sourceSets.test.output
+    classifier = 'test'
+}
+
+artifacts {
+    tests testJar
+}

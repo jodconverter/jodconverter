@@ -38,7 +38,7 @@ import org.jodconverter.task.OfficeTask;
  * when the manager is stopped that the availability is set to false.
  *
  * @see OfficeManager
- * @see OfficeManagerPool
+ * @see AbstractOfficeManagerPool
  */
 abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
 
