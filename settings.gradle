@@ -7,7 +7,7 @@ String[] modules = [
     'jodconverter-cli',
     'jodconverter-spring',
     'jodconverter-spring-boot-starter',
-    'jodconverter-sample-webapp'
+    'jodconverter-samples:jodconverter-sample-webapp'
 ]
 
 include modules
