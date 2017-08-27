@@ -69,7 +69,7 @@ public class MultipleFiltersITest extends AbstractOfficeITest {
 
     // Convert to PDF
     LocalConverter.builder()
-        .filterWith(replacerFilter, graphicfilter)
+        .filterChain(replacerFilter, graphicfilter)
         .build()
         .convert(SOURCE_FILE)
         .to(new File(testFolder.getRoot(), SOURCE_FILENAME + ".pdf"))

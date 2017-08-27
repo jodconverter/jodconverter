@@ -56,7 +56,7 @@ public class PageSelectorFilterITest extends AbstractOfficeITest {
     // Test the filter
 
     LocalConverter.builder()
-        .filterWith(selectorFilter)
+        .filterChain(selectorFilter)
         .build()
         .convert(SOURCE_FILE)
         .to(targetFile)

@@ -118,7 +118,7 @@ public class TextReplacerFilterITest extends AbstractOfficeITest {
     // Convert to PDF
 
     LocalConverter.builder()
-        .filterWith(filter)
+        .filterChain(filter)
         .build()
         .convert(SOURCE_FILE)
         .to(targetFile)

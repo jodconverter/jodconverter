@@ -67,7 +67,7 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
     // Convert to PDF
 
     LocalConverter.builder()
-        .filterWith(filter)
+        .filterChain(filter)
         .build()
         .convert(SOURCE_MULTI_PAGE_FILE)
         .to(targetFile)
@@ -96,7 +96,7 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
     // Convert to PDF
 
     LocalConverter.builder()
-        .filterWith(filter)
+        .filterChain(filter)
         .build()
         .convert(SOURCE_FILE)
         .to(targetFile)

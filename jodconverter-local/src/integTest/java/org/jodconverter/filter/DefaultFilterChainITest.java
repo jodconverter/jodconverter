@@ -70,7 +70,7 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
     final DefaultFilterChain chain =
         new DefaultFilterChain(
             countFilter1, selectorFilter, new RefreshFilter(false), countFilter2);
-    final LocalConverter converter = LocalConverter.builder().filterWith(chain).build();
+    final LocalConverter converter = LocalConverter.builder().filterChain(chain).build();
     converter.convert(SOURCE_FILE).to(targetFile1).execute();
 
     final String content = FileUtils.readFileToString(targetFile1, Charset.forName("UTF-8"));
@@ -108,7 +108,7 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
 
     final DefaultFilterChain chain = new DefaultFilterChain(false, countFilter, selectorFilter);
     LocalConverter.builder()
-        .filterWith(chain)
+        .filterChain(chain)
         .build()
         .convert(SOURCE_FILE)
         .to(targetFile1)
@@ -139,7 +139,7 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
 
     final DefaultFilterChain chain = new DefaultFilterChain(countFilter, selectorFilter);
     LocalConverter.builder()
-        .filterWith(chain)
+        .filterChain(chain)
         .build()
         .convert(SOURCE_FILE)
         .to(targetFile1)

@@ -244,7 +244,7 @@ public class LocalConverter extends AbstractConverter {
      *     (converted) in the new document format.
      * @return This builder instance.
      */
-    public Builder filterWith(final Filter... filters) {
+    public Builder filterChain(final Filter... filters) {
 
       Validate.notEmpty(filters);
       this.filterChain = new DefaultFilterChain(filters);
@@ -260,7 +260,7 @@ public class LocalConverter extends AbstractConverter {
      *     is stored (converted) in the new document format.
      * @return This builder instance.
      */
-    public Builder filterWith(final FilterChain filterChain) {
+    public Builder filterChain(final FilterChain filterChain) {
 
       Validate.notNull(filterChain);
       this.filterChain = filterChain;

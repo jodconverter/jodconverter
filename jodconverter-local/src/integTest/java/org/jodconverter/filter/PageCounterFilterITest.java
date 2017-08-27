@@ -57,7 +57,7 @@ public class PageCounterFilterITest extends AbstractOfficeITest {
 
     // Test the filter
     LocalConverter.builder()
-        .filterWith(countFilter1, selectorFilter, countFilter2)
+        .filterChain(countFilter1, selectorFilter, countFilter2)
         .build()
         .convert(SOURCE_FILE)
         .to(targetFile)

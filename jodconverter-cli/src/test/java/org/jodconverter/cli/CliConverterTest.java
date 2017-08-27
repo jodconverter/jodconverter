@@ -81,7 +81,7 @@ public class CliConverterTest {
     InstalledOfficeManagerHolder.setInstance(officeManager);
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
 
-    converter = new CliConverter(registry, LocalConverter.make());
+    converter = new CliConverter(LocalConverter.builder().formatRegistry(registry).build());
   }
 
   @Test

@@ -348,7 +348,7 @@ public final class Convert {
     final LocalConverter.Builder builder = LocalConverter.builder();
     builder.officeManager(officeManager).formatRegistry(registry);
     if (filterChain != null) {
-      builder.filterWith(filterChain);
+      builder.filterChain(filterChain);
     }
     return new CliConverter(builder.build());
   }
