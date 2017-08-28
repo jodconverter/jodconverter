@@ -256,7 +256,7 @@ task wrapper(type: Wrapper) {
   description = 'Generates gradlew[.bat] scripts'
   group = "wrapper"
 
-  gradleVersion = '4.0'
+  gradleVersion = '4.1'
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
