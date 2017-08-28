@@ -41,7 +41,7 @@ ext {
 
     // Other Libraries
     gson                               : "com.google.code.gson:gson:$gsonVersion",
-    servlet_api                        : "javax.servlet:servlet-api:$servletApiVersion",
+    servlet_api                        : "javax.servlet:javax.servlet-api:$servletApiVersion",
 
     // Tests
     assertj                            : "org.assertj:assertj-core:$assertjVersion",

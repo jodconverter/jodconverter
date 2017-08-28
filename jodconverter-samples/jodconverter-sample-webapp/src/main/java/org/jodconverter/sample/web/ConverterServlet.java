@@ -47,14 +47,20 @@ public class ConverterServlet extends HttpServlet {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConverterServlet.class);
 
-  /** Creates a new servlet. */
-  public ConverterServlet() {
-    super();
+  @Override
+  public void init() throws ServletException {
+    LOGGER.info("Servlet {} has started", this.getServletName());
+  }
+
+  @Override
+  public void destroy() {
+    LOGGER.info("Servlet {} has stopped", this.getServletName());
   }
 
   @Override
   protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException, IOException {
+
     if (!ServletFileUpload.isMultipartContent(request)) {
       response.sendError(HttpServletResponse.SC_FORBIDDEN, "Only multipart requests are allowed");
       return;
@@ -108,18 +114,16 @@ public class ConverterServlet extends HttpServlet {
   }
 
   private void sendFile(final File file, final HttpServletResponse response) throws IOException {
+
     response.setContentLength((int) file.length());
-    InputStream inputStream = null;
-    try {
-      inputStream = new FileInputStream(file);
+    try (InputStream inputStream = new FileInputStream(file)) {
       IOUtils.copy(inputStream, response.getOutputStream());
-    } finally {
-      IOUtils.closeQuietly(inputStream);
     }
   }
 
   private void writeUploadedFile(final FileItem uploadedFile, final File destinationFile)
       throws ServletException {
+
     try {
       uploadedFile.write(destinationFile);
     } catch (Exception exception) {
