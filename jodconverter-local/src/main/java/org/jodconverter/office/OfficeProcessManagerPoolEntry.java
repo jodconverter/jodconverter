@@ -235,14 +235,14 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
                       .getServiceManager()
                       .createInstanceWithContext(
                           "com.sun.star.configuration.ConfigurationProvider", officeContext)),
-              "/org.openoffice.Office.Common/VCL");
+              "/org.openoffice.Office.Common");
       try {
 
         // Check if the OpenGL option is on
         final XHierarchicalPropertySet properties =
             UnoRuntime.queryInterface(XHierarchicalPropertySet.class, viewRoot);
 
-        final Object oUseOpengl = properties.getHierarchicalPropertyValue("UseOpenGL");
+        final Object oUseOpengl = properties.getHierarchicalPropertyValue("VCL/UseOpenGL");
         if (oUseOpengl != null) {
           final boolean useOpengl = (Boolean) oUseOpengl;
           LOGGER.info("Use OpenGL is set to {}", useOpengl);
@@ -257,6 +257,8 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
             return true;
           }
         }
+      } catch (com.sun.star.beans.UnknownPropertyException ex) {
+        // If the property does not exist, just swallow the exception.
       } finally {
         // We are done with the view - dispose it
         UnoRuntime.queryInterface(XComponent.class, viewRoot).dispose();
