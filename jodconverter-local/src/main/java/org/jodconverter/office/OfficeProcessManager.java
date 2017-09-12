@@ -63,9 +63,13 @@ class OfficeProcessManager {
   /**
    * Ensures that the process exited.
    *
+   * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
+   *     deleted. We don't want to delete the instance profile directory on restart since it may be
+   *     an expensive operation.
    * @throws OfficeException If an exception occurs.
    */
-  private void doEnsureProcessExited() throws OfficeException {
+  private void doEnsureProcessExited(final boolean deleteInstanceProfileDir)
+      throws OfficeException {
 
     try {
       final int exitCode =
@@ -78,14 +82,21 @@ class OfficeProcessManager {
       doTerminateProcess();
 
     } finally {
-      process.deleteProfileDir();
+      if (deleteInstanceProfileDir) {
+        process.deleteInstanceProfileDir();
+      }
     }
   }
 
-  /** Starts the office process managed by this class and connect to the process. */
-  private void doStartProcessAndConnect() throws OfficeException {
+  /**
+   * Starts the office process managed by this class and connect to the process.
+   *
+   * @param restart Indicates whether it is a fresh start of a restart after a failure. A restart
+   *     will assume that the instance profile directory is already created.
+   */
+  private void doStartProcessAndConnect(final boolean restart) throws OfficeException {
 
-    process.start();
+    process.start(restart);
 
     try {
       new ConnectRetryable(process, connection)
@@ -98,8 +109,14 @@ class OfficeProcessManager {
     }
   }
 
-  /** Stops the office process managed by this OfficeProcessManager. */
-  private void doStopProcess() throws OfficeException {
+  /**
+   * Stops the office process managed by this OfficeProcessManager.
+   *
+   * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
+   *     deleted. We don't want to delete the instance profile directory on restart since it may be
+   *     an expensive operation.
+   */
+  private void doStopProcess(final boolean deleteInstanceProfileDir) throws OfficeException {
 
     try {
       final boolean terminated = connection.getDesktop().terminate();
@@ -122,7 +139,7 @@ class OfficeProcessManager {
       doTerminateProcess();
 
     } finally {
-      doEnsureProcessExited();
+      doEnsureProcessExited(deleteInstanceProfileDir);
     }
   }
 
@@ -174,8 +191,8 @@ class OfficeProcessManager {
           @Override
           public Void call() throws Exception {
 
-            doStopProcess();
-            doStartProcessAndConnect();
+            doStopProcess(false);
+            doStartProcessAndConnect(true);
 
             return null;
           }
@@ -194,8 +211,8 @@ class OfficeProcessManager {
           public void run() {
 
             try {
-              doEnsureProcessExited();
-              doStartProcessAndConnect();
+              doEnsureProcessExited(false);
+              doStartProcessAndConnect(true);
 
             } catch (OfficeException officeEx) {
               LOGGER.error("Could not restart process", officeEx);
@@ -216,8 +233,7 @@ class OfficeProcessManager {
           public void run() {
 
             try {
-              doTerminateProcess();
-              // will cause unexpected disconnection and subsequent restart
+              doTerminateProcess(); // will cause unexpected disconnection and subsequent restart
 
             } catch (OfficeException officeException) {
               LOGGER.error("Could not restart process", officeException);
@@ -241,7 +257,7 @@ class OfficeProcessManager {
           @Override
           public Void call() throws Exception {
 
-            doStartProcessAndConnect();
+            doStartProcessAndConnect(false);
 
             return null;
           }
@@ -263,7 +279,7 @@ class OfficeProcessManager {
           @Override
           public Void call() throws Exception {
 
-            doStopProcess();
+            doStopProcess(true);
 
             return null;
           }

@@ -105,6 +105,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
     private long processTimeout = OfficeProcessManagerConfig.DEFAULT_PROCESS_TIMEOUT;
     private long processRetryInterval = OfficeProcessManagerConfig.DEFAULT_PROCESS_RETRY_INTERVAL;
     private int maxTasksPerProcess = OfficeProcessManagerConfig.DEFAULT_MAX_TASKS_PER_PROCESS;
+    private boolean disableOpengl = OfficeProcessManagerConfig.DEFAULT_DISABLE_OPENGL;
 
     // Private ctor so only LocalOfficeManager can initialize an instance of this builder.
     private Builder() {
@@ -147,6 +148,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
       config.setProcessTimeout(processTimeout);
       config.setProcessRetryInterval(processRetryInterval);
       config.setMaxTasksPerProcess(maxTasksPerProcess);
+      config.setDisableOpengl(disableOpengl);
       config.setTaskExecutionTimeout(taskExecutionTimeout);
       config.setTaskQueueTimeout(taskQueueTimeout);
 
@@ -372,6 +374,22 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
           maxTasksPerProcess,
           String.format("The maxTasksPerProcess %s greater than 0", maxTasksPerProcess));
       this.maxTasksPerProcess = maxTasksPerProcess;
+      return this;
+    }
+
+    /**
+     * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
+     * done is OpenGL is already disabled according to the user profile used with the office
+     * process. If the options is changed, then office must be restarted.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: false
+     *
+     * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
+     * @return This builder instance.
+     */
+    public Builder disableOpengl(final boolean disableOpengl) {
+
+      this.disableOpengl = disableOpengl;
       return this;
     }
   }

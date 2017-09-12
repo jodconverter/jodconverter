@@ -82,6 +82,7 @@ public class LocalOfficeManagerITest {
     assertThat(config.getProcessTimeout()).isEqualTo(120000L);
     assertThat(config.getProcessRetryInterval()).isEqualTo(250L);
     assertThat(config.getMaxTasksPerProcess()).isEqualTo(200);
+    assertThat(config.isDisableOpengl()).isFalse();
     assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(30000L);
 
@@ -108,6 +109,7 @@ public class LocalOfficeManagerITest {
             .processTimeout(5000)
             .processRetryInterval(1000)
             .maxTasksPerProcess(10)
+            .disableOpengl(true)
             .taskExecutionTimeout(20000)
             .taskQueueTimeout(1000)
             .build();
@@ -127,6 +129,7 @@ public class LocalOfficeManagerITest {
     assertThat(config.getProcessTimeout()).isEqualTo(5000L);
     assertThat(config.getProcessRetryInterval()).isEqualTo(1000L);
     assertThat(config.getMaxTasksPerProcess()).isEqualTo(10);
+    assertThat(config.isDisableOpengl()).isEqualTo(true);
     assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(1000L);
 

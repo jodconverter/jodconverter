@@ -79,6 +79,8 @@ public final class Convert {
           .hasArg()
           .desc("output format (e.g. pdf)")
           .build();
+  private static final Option OPT_DISABLE_OPENGL =
+      Option.builder("g").longOpt("disable-opengl").desc("Disable OpenGL (optional)").build();
   private static final Option OPT_HELP =
       Option.builder("h").longOpt("help").desc("print help message").build();
   private static final Option OPT_OFFICE_HOME =
@@ -170,6 +172,8 @@ public final class Convert {
 
     builder.killExistingProcess(commandLine.hasOption(OPT_KILL_EXISTING_PROCESS.getOpt()));
 
+    builder.disableOpengl(commandLine.hasOption(OPT_DISABLE_OPENGL.getOpt()));
+
     if (commandLine.hasOption(OPT_PROCESS_MANAGER.getOpt())) {
       builder.processManager(commandLine.getOptionValue(OPT_PROCESS_MANAGER.getOpt()));
     }
@@ -243,6 +247,7 @@ public final class Convert {
     options.addOption(OPT_OUTPUT_FORMAT);
     options.addOption(OPT_OFFICE_HOME);
     options.addOption(OPT_KILL_EXISTING_PROCESS);
+    options.addOption(OPT_DISABLE_OPENGL);
     options.addOption(OPT_PROCESS_MANAGER);
     options.addOption(OPT_OVERWRITE);
     options.addOption(OPT_PORT);
