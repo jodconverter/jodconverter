@@ -50,7 +50,7 @@ import org.jodconverter.cli.util.SystemLogHandler;
 public class OnlineConvertITest {
 
   private static final String SOURCE_FILE_DOC = "src/integTest/resources/documents/test1.doc";
-  private static final String SOURCE_FILE_TXT = "src/integTest/resources/documents/test1.txt";
+  //private static final String SOURCE_FILE_TXT = "src/integTest/resources/documents/test1.txt";
 
   @ClassRule public static NoExitResource noExit = new NoExitResource();
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
