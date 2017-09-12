@@ -54,7 +54,7 @@ public class DefaultFilterChainTest {
   @SuppressWarnings("unchecked")
   public void create_ShouldBeEditable() throws IllegalAccessException {
 
-    final Filter filter = new RefreshFilter(false);
+    final Filter filter = new RefreshFilter();
     final DefaultFilterChain chain = new DefaultFilterChain();
     chain.addFilter(filter);
 

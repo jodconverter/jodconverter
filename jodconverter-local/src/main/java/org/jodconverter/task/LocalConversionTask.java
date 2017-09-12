@@ -97,16 +97,19 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       // output target is an output stream).
       final File targetFile = target.getFile();
 
-      final XComponent document = loadDocument(localContext, sourceFile);
+      XComponent document = null;
       try {
+        document = loadDocument(localContext, sourceFile);
         modifyDocument(context, document);
         storeDocument(document, targetFile);
         target.onComplete(targetFile);
 
       } catch (OfficeException officeEx) {
+        LOGGER.error("Conversion failed.", officeEx);
         target.onFailure(targetFile, officeEx);
         throw officeEx;
       } catch (Exception ex) {
+        LOGGER.error("Conversion failed.", ex);
         final OfficeException officeEx = new OfficeException("Conversion failed", ex);
         target.onFailure(targetFile, officeEx);
         throw officeEx;
@@ -140,9 +143,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   void modifyDocument(final OfficeContext context, final XComponent document)
       throws OfficeException {
 
-    if (filterChain != null) {
-      filterChain.doFilter(context, document);
-    }
+    filterChain.doFilter(context, document);
   }
 
   // Stores the converted document as the output file.

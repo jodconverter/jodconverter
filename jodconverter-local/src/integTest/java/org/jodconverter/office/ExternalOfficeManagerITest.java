@@ -57,7 +57,7 @@ public class ExternalOfficeManagerITest {
   public static void tearDownClass() throws Exception {
 
     officeProcess.forciblyTerminate(1000, 5000);
-    officeProcess.deleteProfileDir();
+    officeProcess.deleteInstanceProfileDir();
   }
 
   // TODO test auto-reconnection

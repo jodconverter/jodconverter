@@ -26,8 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
@@ -52,30 +50,6 @@ public class LocalConverterITest extends AbstractOfficeITest {
 
     assertThat(outputFile).isFile();
     assertThat(outputFile.length()).isGreaterThan(0L);
-  }
-
-  @Test
-  public void convert_UsingCustomStoreProperties_ShouldSucceeded() throws Exception {
-
-    final File inputFile = new File(DOCUMENTS_DIR, "test_multi_page.doc");
-    final File outputFile =
-        new File(testFolder.getRoot(), "convert_FromMultipleFileToPDFOnlyPage2.pdf");
-    FileUtils.deleteQuietly(outputFile);
-
-    final Map<String, Object> filterData = new HashMap<>();
-    filterData.put("PageRange", "2");
-    final Map<String, Object> customProperties = new HashMap<>();
-    customProperties.put("FilterData", filterData);
-    LocalConverter.make()
-        .setStoreProperties(customProperties)
-        .convert(inputFile)
-        .to(outputFile)
-        .execute();
-
-    assertThat(outputFile).isFile();
-    assertThat(outputFile.length()).isGreaterThan(0L);
-
-    // TODO Check that only page 2 is printed (custom store properties are applied)
   }
 
   @Test(expected = NullPointerException.class)
