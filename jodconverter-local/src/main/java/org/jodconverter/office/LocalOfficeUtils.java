@@ -315,10 +315,14 @@ public final class LocalOfficeUtils {
 
     if (officeHome == null) {
       throw new IllegalStateException("officeHome not set and could not be auto-detected");
-    } else if (!officeHome.isDirectory()) {
+    }
+
+    if (!officeHome.isDirectory()) {
       throw new IllegalStateException(
           "officeHome doesn't exist or is not a directory: " + officeHome);
-    } else if (!getOfficeExecutable(officeHome).isFile()) {
+    }
+
+    if (!getOfficeExecutable(officeHome).isFile()) {
       throw new IllegalStateException(
           "Invalid officeHome: it doesn't contain soffice.bin: " + officeHome);
     }

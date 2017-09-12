@@ -42,7 +42,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitResource;
 import org.jodconverter.cli.util.ResetExitExceptionResource;
-import org.jodconverter.cli.util.SystemLogHandler;
 
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
@@ -50,7 +49,7 @@ import org.jodconverter.cli.util.SystemLogHandler;
 public class OnlineConvertITest {
 
   private static final String SOURCE_FILE_DOC = "src/integTest/resources/documents/test1.doc";
-  private static final String SOURCE_FILE_TXT = "src/integTest/resources/documents/test1.txt";
+  //private static final String SOURCE_FILE_TXT = "src/integTest/resources/documents/test1.txt";
 
   @ClassRule public static NoExitResource noExit = new NoExitResource();
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
@@ -76,7 +75,6 @@ public class OnlineConvertITest {
 
     try {
 
-      SystemLogHandler.startCapture();
       Convert.main(
           new String[] {
             inputFileTmp.getPath(), "-f", "txt", "-c", "http://localhost:9980/lool/convert-to/"
@@ -87,7 +85,6 @@ public class OnlineConvertITest {
 
     } catch (Exception ex) {
       try {
-        SystemLogHandler.stopCapture();
         assertThat(ex)
             .isExactlyInstanceOf(ExitException.class)
             .hasFieldOrPropertyWithValue("status", 0);

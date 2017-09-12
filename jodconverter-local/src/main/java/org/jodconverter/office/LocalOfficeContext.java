@@ -21,6 +21,7 @@ package org.jodconverter.office;
 
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDesktop;
+import com.sun.star.uno.XComponentContext;
 
 /** Represents an office context for local conversions. */
 public interface LocalOfficeContext extends OfficeContext {
@@ -31,6 +32,13 @@ public interface LocalOfficeContext extends OfficeContext {
    * @return The component loader.
    */
   XComponentLoader getComponentLoader();
+
+  /**
+   * Gets the office component context for this context.
+   *
+   * @return The component context.
+   */
+  XComponentContext getComponentContext();
 
   /**
    * Gets the office desktop for this context.

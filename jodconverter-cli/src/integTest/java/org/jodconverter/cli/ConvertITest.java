@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.jodconverter.cli.util.ConsoleStreamsListener;
 import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitResource;
 import org.jodconverter.cli.util.ResetExitExceptionResource;
@@ -50,8 +51,38 @@ public class ConvertITest {
 
   @ClassRule public static NoExitResource noExit = new NoExitResource();
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
+  @ClassRule public static ConsoleStreamsListener consoleListener = new ConsoleStreamsListener();
 
   @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
+
+  @Test
+  public void convert_WithCustomFormatRegistry_ShouldSupportOnlyTxtToPdf() throws Exception {
+
+    final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
+    final File inputFile = new File(SOURCE_FILE);
+    final File outputFile = new File(testFolder.getRoot(), "convert_WithMultipleFilters.pdf");
+
+    assertThat(outputFile).doesNotExist();
+
+    try {
+      SystemLogHandler.startCapture();
+      Convert.main(
+          new String[] {
+            "-k", "-r", registryFile.getPath(), inputFile.getPath(), outputFile.getPath()
+          });
+
+      // Be sure the ExitException exception is thrown.
+      fail();
+
+    } catch (Exception ex) {
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 2);
+
+      assertThat(capturedlog).contains("The source format is missing or not supported");
+    }
+  }
 
   @Test
   public void convert_WithFilenames_ShouldSucceed() throws Exception {
@@ -62,14 +93,12 @@ public class ConvertITest {
     assertThat(outputFile).doesNotExist();
 
     try {
-      SystemLogHandler.startCapture();
       Convert.main(new String[] {"-k", inputFile.getPath(), outputFile.getPath()});
 
       // Be sure the ExitException exception is thrown.
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
@@ -91,7 +120,6 @@ public class ConvertITest {
     assertThat(outputFile).doesNotExist();
 
     try {
-      SystemLogHandler.startCapture();
       Convert.main(new String[] {"-k", "-f", "pdf", inputFileTmp.getPath()});
 
       // Be sure the ExitException exception is thrown.
@@ -99,7 +127,6 @@ public class ConvertITest {
 
     } catch (Exception ex) {
       try {
-        SystemLogHandler.stopCapture();
         assertThat(ex)
             .isExactlyInstanceOf(ExitException.class)
             .hasFieldOrPropertyWithValue("status", 0);
@@ -122,7 +149,6 @@ public class ConvertITest {
     assertThat(outputFile).doesNotExist();
 
     try {
-      SystemLogHandler.startCapture();
       Convert.main(
           new String[] {
             "-k", "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
@@ -132,7 +158,6 @@ public class ConvertITest {
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
@@ -152,7 +177,6 @@ public class ConvertITest {
     assertThat(outputFile).doesNotExist();
 
     try {
-      SystemLogHandler.startCapture();
       Convert.main(
           new String[] {
             "-k", "-a", filterChainFile.getPath(), inputFile.getPath(), outputFile.getPath()
@@ -162,7 +186,6 @@ public class ConvertITest {
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
@@ -181,6 +204,7 @@ public class ConvertITest {
     try {
       Convert.main(
           new String[] {
+            "-g",
             "-k",
             "-i",
             LocalOfficeUtils.getDefaultOfficeHome().getPath(),
@@ -198,7 +222,6 @@ public class ConvertITest {
       fail();
 
     } catch (Exception ex) {
-      SystemLogHandler.stopCapture();
       assertThat(ex)
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);

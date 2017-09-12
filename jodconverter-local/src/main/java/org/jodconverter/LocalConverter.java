@@ -113,7 +113,7 @@ public class LocalConverter extends AbstractConverter {
    * @param loadProperties The default properties to apply when loading a document.
    * @return This converter instance.
    */
-  public LocalConverter setLoadProperties(final Map<String, Object> loadProperties) {
+  LocalConverter setLoadProperties(final Map<String, Object> loadProperties) {
 
     if (this.loadProperties == null) {
       this.loadProperties = new HashMap<>();
@@ -130,32 +130,15 @@ public class LocalConverter extends AbstractConverter {
    * FilterChain is used to modify the document before the conversion (after it has been loaded).
    * Filters are applied in the same order they appear in the chain.
    *
+   * <p>This function should be called only by OfficeDocumentConverter for backward compatibility.
+   *
    * @param filterChain The FilterChain to be applied after the document is loaded and before it is
    *     stored (converted) in the new document format.
    * @return This converter instance.
    */
-  public LocalConverter setFilterChain(final FilterChain filterChain) {
+  LocalConverter setFilterChain(final FilterChain filterChain) {
 
     this.filterChain = filterChain;
-
-    return this;
-  }
-
-  /**
-   * Sets, for this converter, the properties to use when we store (save) a document, regardless the
-   * input type of the document.
-   *
-   * @param storeProperties The properties to apply when storing a document.
-   * @return This converter instance.
-   */
-  public LocalConverter setStoreProperties(final Map<String, Object> storeProperties) {
-
-    if (this.storeProperties == null) {
-      this.storeProperties = new HashMap<>();
-    }
-
-    this.storeProperties.clear();
-    this.storeProperties.putAll(storeProperties);
 
     return this;
   }

@@ -97,8 +97,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   protected Map<String, Object> getLoadProperties() {
 
     final Map<String, Object> loadProps =
-        new HashMap<>(
-            loadProperties == null ? new HashMap<>(DEFAULT_LOAD_PROPERTIES) : loadProperties);
+        new HashMap<>(loadProperties == null ? DEFAULT_LOAD_PROPERTIES : loadProperties);
     addPropertiesToMap(loadProps, source.getFormat().getLoadProperties());
 
     return loadProps;

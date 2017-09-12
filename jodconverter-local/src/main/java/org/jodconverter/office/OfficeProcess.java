@@ -115,7 +115,7 @@ class OfficeProcess {
   }
 
   /** Deletes the profile directory of the office process. */
-  public void deleteProfileDir() {
+  public void deleteInstanceProfileDir() {
 
     LOGGER.debug("Deleting instance profile directory '{}'", instanceProfileDir);
     try {
@@ -242,7 +242,7 @@ class OfficeProcess {
 
     if (instanceProfileDir.exists()) {
       LOGGER.warn("Profile dir '{}' already exists; deleting", instanceProfileDir);
-      deleteProfileDir();
+      deleteInstanceProfileDir();
     }
     if (config.getTemplateProfileDir() != null) {
       try {
@@ -267,17 +267,28 @@ class OfficeProcess {
     if (config.getRunAsArgs() != null) {
       command.addAll(Arrays.asList(config.getRunAsArgs()));
     }
+
+    // LibreOffice:
+    // https://help.libreoffice.org/Common/Starting_the_Software_With_Parameters
+    //
+    // Apache OpenOffice:
+    // https://wiki.openoffice.org/wiki/Framework/Article/Command_Line_Arguments
+
     command.add(executable.getAbsolutePath());
     command.add("-accept=" + acceptString);
     command.add("-env:UserInstallation=" + LocalOfficeUtils.toUrl(instanceProfileDir));
-    command.add("-headless");
     command.add("-invisible");
-    command.add("-nocrashreport");
-    command.add("-nodefault");
-    command.add("-nofirststartwizard");
-    command.add("-nolockcheck");
-    command.add("-nologo");
     command.add("-norestore");
+    command.add("-nofirststartwizard");
+    command.add("-nologo");
+    command.add("-nodefault");
+    command.add("-nolockcheck");
+    command.add("-headless");
+    command.add("-nocrashreport");
+
+    // It could be interesting to use the LibreOffice pidfile switch
+    // to retrieve the LibreOffice pid. But is it reliable ? And it would
+    // not work with Apache OpenOffice.
 
     return new ProcessBuilder(command);
   }
@@ -295,7 +306,8 @@ class OfficeProcess {
   /**
    * Starts the office process.
    *
-   * @param restart Indicates whether it is a fresh start of a restart after a failure.
+   * @param restart Indicates whether it is a fresh start of a restart after a failure. A restart
+   *     will assume that the instance profile directory is already created.
    * @return The PID of the started office process, or -1 of the PID is unknown.
    * @throws OfficeException If the office process cannot be started.
    */

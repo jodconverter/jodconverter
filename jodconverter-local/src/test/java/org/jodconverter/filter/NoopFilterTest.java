@@ -19,20 +19,35 @@
 
 package org.jodconverter.filter;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Test;
 
 /**
- * Contains tests for the {@link org.jodconverter.filter.UnmodifiableFilterChain} class.
+ * Contains tests for the {@link org.jodconverter.filter.NoopFilter} class.
  *
- * @see org.jodconverter.filter.UnmodifiableFilterChain
+ * @see org.jodconverter.filter.NoopFilter
  */
-public class UnmodifiableFilterChainTest {
+public class NoopFilterTest {
 
-  /** Tests that a UnmodifiableFilterChain.addFilter throws an exception after creation. */
+  /** Tests that a NoopFilter.CHAIN is read only. */
   @Test(expected = UnsupportedOperationException.class)
-  public void create_ShouldBeReadOnly() {
+  public void chain_ShouldBeReadOnly() {
 
-    final UnmodifiableFilterChain chain = new UnmodifiableFilterChain(RefreshFilter.LAST_REFRESH);
-    chain.addFilter(NoopFilter.NOOP);
+    NoopFilter.CHAIN.addFilter(NoopFilter.NOOP);
+  }
+
+  /** Tests that a NoopFilter#doFilter execute the next filter in the chain. */
+  @Test
+  public void doFilter_ShouldCallNextFilter() throws Exception {
+
+    final Filter filter = mock(Filter.class);
+    final DefaultFilterChain chain = new DefaultFilterChain(NoopFilter.NOOP, filter);
+    chain.doFilter(null, null);
+
+    // Verify that the
+    verify(filter, times(1)).doFilter(null, null, chain);
   }
 }
