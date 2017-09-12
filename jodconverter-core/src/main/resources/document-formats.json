@@ -66,7 +66,7 @@
     "inputFamily": "TEXT",
     "storeProperties": {
       "TEXT": {
-        "FilterName": "writer8"
+        "FilterName": "writer8_template"
       }
     }
   },
@@ -154,7 +154,7 @@
     "inputFamily": "SPREADSHEET",
     "storeProperties": {
       "SPREADSHEET": {
-        "FilterName": "calc8"
+        "FilterName": "calc8_template"
       }
     }
   },
@@ -241,7 +241,7 @@
     "inputFamily": "PRESENTATION",
     "storeProperties": {
       "PRESENTATION": {
-        "FilterName": "impress8"
+        "FilterName": "impress8_template"
       }
     }
   },
@@ -296,7 +296,7 @@
     "inputFamily": "DRAWING",
     "storeProperties": {
       "DRAWING": {
-        "FilterName": "draw8"
+        "FilterName": "draw8_template"
       }
     }
   },
