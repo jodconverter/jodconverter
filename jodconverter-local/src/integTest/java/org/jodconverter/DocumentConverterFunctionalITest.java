@@ -80,7 +80,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
             .listFiles(
                 new FilenameFilter() {
                   public boolean accept(final File dir, final String name) {
-                    return name.charAt(0) != '.';
+                    return name.startsWith("test.");
                   }
                 })) {
 
