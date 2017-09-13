@@ -64,8 +64,8 @@ class OfficeProcessManager {
    * Ensures that the process exited.
    *
    * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
-   *     deleted. We don't want to delete the instance profile directory on restart since it may be
-   *     an expensive operation.
+   *     deleted. We don't always want to delete the instance profile directory on restart since it
+   *     may be an expensive operation.
    * @throws OfficeException If an exception occurs.
    */
   private void doEnsureProcessExited(final boolean deleteInstanceProfileDir)
@@ -91,8 +91,9 @@ class OfficeProcessManager {
   /**
    * Starts the office process managed by this class and connect to the process.
    *
-   * @param restart Indicates whether it is a fresh start of a restart after a failure. A restart
-   *     will assume that the instance profile directory is already created.
+   * @param restart Indicates whether it is a fresh start or a restart. A restart will assume that
+   *     the instance profile directory is already created. To recreate the instance profile
+   *     directory, {@code restart} should be set to {@code false}.
    */
   private void doStartProcessAndConnect(final boolean restart) throws OfficeException {
 
@@ -113,8 +114,8 @@ class OfficeProcessManager {
    * Stops the office process managed by this OfficeProcessManager.
    *
    * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
-   *     deleted. We don't want to delete the instance profile directory on restart since it may be
-   *     an expensive operation.
+   *     deleted. We don't always want to delete the instance profile directory on restart since it
+   *     may be an expensive operation.
    */
   private void doStopProcess(final boolean deleteInstanceProfileDir) throws OfficeException {
 
@@ -160,13 +161,6 @@ class OfficeProcessManager {
     }
   }
 
-  // Executes the specified task without waiting for the completion of the task
-  private void execute(final String taskName, final Runnable task) {
-
-    LOGGER.info("Executing task '{}'...", taskName);
-    executor.execute(task);
-  }
-
   /**
    * Gets the connection of this manager.
    *
@@ -191,6 +185,8 @@ class OfficeProcessManager {
           @Override
           public Void call() throws Exception {
 
+            // On clean restart, we won't delete the instance profile directory,
+            // causing a faster start of an office process.
             doStopProcess(false);
             doStartProcessAndConnect(true);
 
@@ -202,20 +198,23 @@ class OfficeProcessManager {
   /** Restarts the office process when the connection is lost. */
   public void restartDueToLostConnection() {
 
-    // Execute the restart task
-    execute(
-        "Restart After Lost Connection",
+    // Execute the task
+    LOGGER.info("Executing task 'Restart After Lost Connection'...");
+    executor.execute(
         new Runnable() {
 
           @Override
           public void run() {
 
             try {
-              doEnsureProcessExited(false);
-              doStartProcessAndConnect(true);
+              // Since we have lost the connection, it could mean that
+              // the office process has crashed. Thus, we want a clean
+              // instance profile directory on restart.
+              doEnsureProcessExited(true);
+              doStartProcessAndConnect(false);
 
             } catch (OfficeException officeEx) {
-              LOGGER.error("Could not restart process", officeEx);
+              LOGGER.error("Could not restart process after connection lost.", officeEx);
             }
           }
         });
@@ -225,18 +224,19 @@ class OfficeProcessManager {
   public void restartDueToTaskTimeout() {
 
     // Execute the restart task
-    execute(
-        "Restart After Timeout",
+    LOGGER.info("Executing task 'Restart After Timeout'...");
+    executor.execute(
         new Runnable() {
 
           @Override
           public void run() {
 
             try {
-              doTerminateProcess(); // will cause unexpected disconnection and subsequent restart
+              // This will cause unexpected disconnection and subsequent restart.
+              doTerminateProcess();
 
             } catch (OfficeException officeException) {
-              LOGGER.error("Could not restart process", officeException);
+              LOGGER.error("Could not terminate process after task timeout.", officeException);
             }
           }
         });

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.beans.XHierarchicalPropertySet;
+import com.sun.star.beans.XHierarchicalPropertySetInfo;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.UnoRuntime;
@@ -49,6 +50,7 @@ import org.jodconverter.task.OfficeTask;
  */
 class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
+  private static final String PROPPATH_USE_OPENGL = "/VCL/UseOpenGL";
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcessManagerPoolEntry.class);
 
   private final OfficeProcessManager officeProcessManager;
@@ -132,18 +134,11 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // First check if the office process must be restarted
     final int count = taskCount.getAndIncrement();
     if (entryConfig.getMaxTasksPerProcess() > 0 && count == entryConfig.getMaxTasksPerProcess()) {
+
       LOGGER.info(
           "Reached limit of {} maximum tasks per process; restarting...",
           entryConfig.getMaxTasksPerProcess());
-
-      // The executor is no longer available
-      taskExecutor.setAvailable(false);
-
-      // Indicates that the disconnection to follow is expected
-      disconnectExpected.set(true);
-
-      // Restart the office instance
-      officeProcessManager.restartAndWait();
+      restart();
 
       // taskCount will be 0 rather than 1 at this point, so fix this.
       taskCount.getAndIncrement();
@@ -179,16 +174,9 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
         (OfficeProcessManagerPoolEntryConfig) config;
     if (entryConfig.isDisableOpengl()
         && disableOpengl(officeProcessManager.getConnection().getComponentContext())) {
+
       LOGGER.info("OpenGL has been disabled and a restart is required; restarting...");
-
-      // The executor is no longer available
-      taskExecutor.setAvailable(false);
-
-      // Indicates that the disconnection to follow is expected
-      disconnectExpected.set(true);
-
-      // Restart the office instance
-      officeProcessManager.restartAndWait();
+      restart();
     }
   }
 
@@ -200,6 +188,18 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     // Now we can stopped the running office process
     officeProcessManager.stopAndWait();
+  }
+
+  private void restart() throws OfficeException {
+
+    // The executor is no longer available
+    taskExecutor.setAvailable(false);
+
+    // Indicates that the disconnection to follow is expected
+    disconnectExpected.set(true);
+
+    // Restart the office instance
+    officeProcessManager.restartAndWait();
   }
 
   // Create a configuration view for the specified configuration path.
@@ -242,12 +242,13 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
         final XHierarchicalPropertySet properties =
             UnoRuntime.queryInterface(XHierarchicalPropertySet.class, viewRoot);
 
-        final Object oUseOpengl = properties.getHierarchicalPropertyValue("VCL/UseOpenGL");
-        if (oUseOpengl != null) {
-          final boolean useOpengl = (Boolean) oUseOpengl;
+        final XHierarchicalPropertySetInfo propsInfo = properties.getHierarchicalPropertySetInfo();
+        if (propsInfo.hasPropertyByHierarchicalName(PROPPATH_USE_OPENGL)) {
+          final boolean useOpengl =
+              (boolean) properties.getHierarchicalPropertyValue(PROPPATH_USE_OPENGL);
           LOGGER.info("Use OpenGL is set to {}", useOpengl);
           if (useOpengl) {
-            properties.setHierarchicalPropertyValue("UseOpenGL", Boolean.FALSE);
+            properties.setHierarchicalPropertyValue(PROPPATH_USE_OPENGL, false);
             // Changes have been applied to the view here
             final XChangesBatch updateControl =
                 UnoRuntime.queryInterface(XChangesBatch.class, viewRoot);
@@ -257,8 +258,6 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
             return true;
           }
         }
-      } catch (com.sun.star.beans.UnknownPropertyException ex) {
-        // If the property does not exist, just swallow the exception.
       } finally {
         // We are done with the view - dispose it
         UnoRuntime.queryInterface(XComponent.class, viewRoot).dispose();

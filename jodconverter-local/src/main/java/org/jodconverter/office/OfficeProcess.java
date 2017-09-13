@@ -306,8 +306,9 @@ class OfficeProcess {
   /**
    * Starts the office process.
    *
-   * @param restart Indicates whether it is a fresh start of a restart after a failure. A restart
-   *     will assume that the instance profile directory is already created.
+   * @param restart Indicates whether it is a fresh start or a restart. A restart will assume that
+   *     the instance profile directory is already created. To recreate the instance profile
+   *     directory, {@code restart} should be set to {@code false}.
    * @return The PID of the started office process, or -1 of the PID is unknown.
    * @throws OfficeException If the office process cannot be started.
    */

@@ -379,7 +379,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
 
     /**
      * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
-     * done is OpenGL is already disabled according to the user profile used with the office
+     * done if OpenGL is already disabled according to the user profile used with the office
      * process. If the options is changed, then office must be restarted.
      *
      * <p>&nbsp; <b><i>Default</i></b>: false

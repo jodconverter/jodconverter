@@ -149,7 +149,7 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
 
   /**
    * Gets whether OpenGL must be disabled when starting a new office process. Nothing will be done
-   * is OpenGL is already disabled according to the user profile used with the office process. If
+   * if OpenGL is already disabled according to the user profile used with the office process. If
    * the option is changed, then office must be restarted.
    *
    * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
