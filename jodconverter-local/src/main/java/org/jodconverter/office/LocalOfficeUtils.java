@@ -66,12 +66,12 @@ public final class LocalOfficeUtils {
             findOfficeHome(
                 EXECUTABLE_WINDOWS,
                 programFiles64 + File.separator + "LibreOffice 5",
-                programFiles64 + File.separator + "LibreOffice 4",
-                programFiles64 + File.separator + "LibreOffice 3",
                 programFiles32 + File.separator + "LibreOffice 5",
-                programFiles32 + File.separator + "LibreOffice 4",
-                programFiles32 + File.separator + "LibreOffice 3",
                 programFiles32 + File.separator + "OpenOffice 4",
+                programFiles64 + File.separator + "LibreOffice 4",
+                programFiles32 + File.separator + "LibreOffice 4",
+                programFiles64 + File.separator + "LibreOffice 3",
+                programFiles32 + File.separator + "LibreOffice 3",
                 programFiles32 + File.separator + "OpenOffice.org 3");
 
       } else if (SystemUtils.IS_OS_MAC) {
