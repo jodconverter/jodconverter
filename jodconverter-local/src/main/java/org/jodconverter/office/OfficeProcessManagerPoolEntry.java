@@ -50,7 +50,7 @@ import org.jodconverter.task.OfficeTask;
  */
 class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
-  private static final String PROPPATH_USE_OPENGL = "/VCL/UseOpenGL";
+  private static final String PROPPATH_USE_OPENGL = "VCL/UseOpenGL";
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcessManagerPoolEntry.class);
 
   private final OfficeProcessManager officeProcessManager;
