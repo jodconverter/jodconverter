@@ -90,7 +90,6 @@ public class OnlineConvertITest {
             .hasFieldOrPropertyWithValue("status", 0);
 
         final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
-        System.out.println(content);
         assertThat(content).contains("Test Document");
       } finally {
         FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
