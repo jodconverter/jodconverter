@@ -31,25 +31,6 @@ import com.google.gson.annotations.SerializedName;
 /** Contains the required information used to deal with a specific document format . */
 public class DocumentFormat {
 
-  /**
-   * Creates a new {@link DocumentFormat} and modifiable from the specified format.
-   *
-   * @param sourceFormat The source document format.
-   * @return A {@link DocumentFormat}, which will not be read only, like the default document
-   *     formats are.
-   */
-  public static DocumentFormat copy(DocumentFormat sourceFormat) {
-
-    return new DocumentFormat(
-        sourceFormat.getName(),
-        sourceFormat.getExtension(),
-        sourceFormat.getMediaType(),
-        sourceFormat.getInputFamily(),
-        sourceFormat.getLoadProperties(),
-        sourceFormat.getStoreProperties(),
-        false);
-  }
-
   private final String name;
   private final String extension;
   private final String mediaType;
@@ -62,6 +43,25 @@ public class DocumentFormat {
     alternate = {"storePropertiesByFamily"}
   )
   private final Map<DocumentFamily, Map<String, Object>> storeProperties;
+
+  /**
+   * Creates a new {@link DocumentFormat} and modifiable from the specified format.
+   *
+   * @param sourceFormat The source document format.
+   * @return A {@link DocumentFormat}, which will not be read only, like the default document
+   *     formats are.
+   */
+  public static DocumentFormat copy(final DocumentFormat sourceFormat) {
+
+    return new DocumentFormat(
+        sourceFormat.getName(),
+        sourceFormat.getExtension(),
+        sourceFormat.getMediaType(),
+        sourceFormat.getInputFamily(),
+        sourceFormat.getLoadProperties(),
+        sourceFormat.getStoreProperties(),
+        false);
+  }
 
   /**
    * Creates a new read-only document format with the specified name, extension and mime-type.
@@ -88,14 +88,12 @@ public class DocumentFormat {
     this.mediaType = mediaType;
     this.inputFamily = inputFamily;
 
-    if (loadProperties == null) {
-      this.loadProperties = null;
-    } else {
-      this.loadProperties =
-          readOnly
-              ? Collections.unmodifiableMap(new HashMap<>(loadProperties))
-              : new HashMap<>(loadProperties);
-    }
+    this.loadProperties =
+        loadProperties == null
+            ? null
+            : readOnly // NOSONAR
+                ? Collections.unmodifiableMap(new HashMap<>(loadProperties))
+                : new HashMap<>(loadProperties);
 
     Map<DocumentFamily, Map<String, Object>> storeProps = null;
     if (storeProperties != null) {
@@ -110,11 +108,10 @@ public class DocumentFormat {
       }
     }
 
-    if (storeProps == null) {
-      this.storeProperties = null;
-    } else {
-      this.storeProperties = readOnly ? Collections.unmodifiableMap(storeProps) : storeProps;
-    }
+    this.storeProperties =
+        storeProps == null
+            ? null
+            : readOnly ? Collections.unmodifiableMap(storeProps) : storeProps; // NOSONAR
   }
 
   /**

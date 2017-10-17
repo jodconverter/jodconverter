@@ -139,7 +139,8 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
         final XPropertySet properties =
             UnoRuntime.queryInterface(XPropertySet.class, officeMultiComponentFactory);
 
-        // Query for the interface XComponentContext using the default context from the office server.
+        // Query for the interface XComponentContext using the default
+        // context from the office server.
         componentContext =
             UnoRuntime.queryInterface(
                 XComponentContext.class, properties.getPropertyValue("DefaultContext"));

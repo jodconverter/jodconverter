@@ -50,7 +50,7 @@ public class LocalConverter extends AbstractConverter {
 
   private Map<String, Object> loadProperties;
   private FilterChain filterChain;
-  private Map<String, Object> storeProperties;
+  private final Map<String, Object> storeProperties;
 
   /**
    * Creates a new builder instance.
