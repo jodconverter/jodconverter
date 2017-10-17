@@ -252,11 +252,12 @@ configure(publishedprojects) {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Install a wrapper in the current projet (gradlew)
+// Latest version -> https://gradle.org/install/
 task wrapper(type: Wrapper) {
   description = 'Generates gradlew[.bat] scripts'
   group = "wrapper"
 
-  gradleVersion = '4.1'
+  gradleVersion = '4.2.1'
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
