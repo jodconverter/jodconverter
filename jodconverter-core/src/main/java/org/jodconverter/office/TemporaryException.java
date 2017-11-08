@@ -29,7 +29,7 @@ class TemporaryException extends Exception {
   /**
    * Constructs a new exception with the specified cause.
    *
-   * @param cause The cause
+   * @param cause The cause.
    */
   public TemporaryException(final Throwable cause) {
     super(cause);

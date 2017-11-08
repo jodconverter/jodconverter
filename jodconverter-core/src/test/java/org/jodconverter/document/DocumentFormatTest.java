@@ -19,6 +19,8 @@
 
 package org.jodconverter.document;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Set;
 
 import org.junit.Test;
@@ -47,5 +49,17 @@ public class DocumentFormatTest {
     toString(registry.getOutputFormats(DocumentFamily.PRESENTATION));
     // DRAWING output format
     toString(registry.getOutputFormats(DocumentFamily.DRAWING));
+  }
+
+  @Test
+  public void copy_ShouldCreateModifiableCopy() {
+
+    // If an exception is thrown, the test will automatically fail.
+    final DocumentFormat copy = DocumentFormat.copy(DefaultDocumentFormatRegistry.CSV);
+    assertThat(copy).isNotEqualTo(DefaultDocumentFormatRegistry.CSV);
+    assertThat(copy.getName()).isEqualTo(DefaultDocumentFormatRegistry.CSV.getName());
+
+    // Ensure it is modifiable
+    copy.getLoadProperties().put("PropertyX", "ValueX");
   }
 }

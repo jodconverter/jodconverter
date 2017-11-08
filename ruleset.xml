@@ -7,19 +7,19 @@
         This is the JODConverter Official PMD ruleset.
     </description>
 
-	<!-- Use the entire 'basic' ruleset -->
+	<!-- Use the 'basic' ruleset -->
 	<rule ref="rulesets/java/basic.xml" />
 
-	<!-- Use the entire 'braces' ruleset -->
+	<!-- Use the 'braces' ruleset -->
 	<rule ref="rulesets/java/braces.xml" />
 
-	<!-- Use the entire 'clone' ruleset -->
+	<!-- Use the 'clone' ruleset -->
 	<rule ref="rulesets/java/clone.xml" />
 
-	<!-- Use the entire 'code size' ruleset -->
+	<!-- Use the 'code size' ruleset -->
 	<rule ref="rulesets/java/codesize.xml" />
 
-	<!-- Use the entire 'controversial' ruleset -->
+	<!-- Use the 'controversial' ruleset -->
 	<rule ref="rulesets/java/controversial.xml">
 		<exclude name="AtLeastOneConstructor" />
 		<exclude name="DefaultPackage" />
@@ -32,22 +32,22 @@
 		</properties>
 	</rule>
 
-	<!-- Use the entire 'coupling' ruleset -->
+	<!-- Use the 'coupling' ruleset -->
 	<rule ref="rulesets/java/coupling.xml">
 		<exclude name="LawOfDemeter" />
 		<exclude name="LoosePackageCoupling" />
 	</rule>
 
-	<!-- Use the entire 'design' ruleset -->
+	<!-- Use the 'design' ruleset -->
 	<rule ref="rulesets/java/design.xml">
         <exclude name="AccessorClassGeneration" />
         <exclude name="AccessorMethodGeneration" />
     </rule>
 
-	<!-- Use the entire 'finalizers' ruleset -->
+	<!-- Use the 'finalizers' ruleset -->
 	<rule ref="rulesets/java/finalizers.xml" />
 
-	<!-- Use the entire 'empty' ruleset -->
+	<!-- Use the 'empty' ruleset -->
 	<rule ref="rulesets/java/imports.xml" />
     <rule ref="rulesets/java/imports.xml/TooManyStaticImports">
         <properties>
@@ -55,12 +55,12 @@
         </properties>
     </rule>
 
-	<!-- Use the entire 'javabeans' ruleset -->
+	<!-- Use the 'javabeans' ruleset -->
 	<rule ref="rulesets/java/javabeans.xml">
 		<exclude name="BeanMembersShouldSerialize" />
 	</rule>
 
-	<!-- Use the entire 'javabeans' ruleset -->
+	<!-- Use the 'junit' ruleset -->
 	<rule ref="rulesets/java/junit.xml" />
 	<rule ref="rulesets/java/junit.xml/JUnitTestContainsTooManyAsserts">
 		<properties>
@@ -69,13 +69,13 @@
 		</properties>
 	</rule>
 
-	<!-- Use the entire 'java logging' ruleset -->
+	<!-- Use the 'java logging' ruleset -->
 	<rule ref="rulesets/java/logging-java.xml" />
 
-	<!-- Use the entire 'migrating' ruleset -->
+	<!-- Use the 'migrating' ruleset -->
 	<rule ref="rulesets/java/migrating.xml" />
 
-	<!-- Use the entire 'naming' ruleset -->
+	<!-- Use the 'naming' ruleset -->
 	<rule ref="rulesets/java/naming.xml">
 		<exclude name="AvoidFieldNameMatchingMethodName" />
 	</rule>
@@ -98,19 +98,19 @@
         </properties>
     </rule>
 
-	<!-- Use the entire 'optimizations' ruleset -->
+	<!-- Use the 'optimizations' ruleset -->
 	<rule ref="rulesets/java/optimizations.xml">
 		<exclude name="AvoidInstantiatingObjectsInLoops" />
 	</rule>
 
-	<!-- Use the entire 'strict exceptions' ruleset -->
+	<!-- Use the 'strict exceptions' ruleset -->
 	<rule ref="rulesets/java/strictexception.xml">
 		<exclude name="AvoidCatchingGenericException" />
 		<exclude name="AvoidThrowingRawExceptionTypes" />
 		<exclude name="SignatureDeclareThrowsException" />
 	</rule>
 
-	<!-- Use the entire 'strings' ruleset -->
+	<!-- Use the 'strings' ruleset -->
 	<rule ref="rulesets/java/strings.xml" />
 	<rule ref="rulesets/java/strings.xml/AvoidDuplicateLiterals">
 		<properties>
@@ -121,15 +121,15 @@
 		</properties>
 	</rule>
 
-	<!-- Use the entire 'sun security' ruleset -->
+	<!-- Use the 'sun security' ruleset -->
 	<rule ref="rulesets/java/sunsecure.xml" />
 
-	<!-- Use the entire 'type resolution' ruleset -->
+	<!-- Use the 'type resolution' ruleset -->
 	<rule ref="rulesets/java/typeresolution.xml">
 		<exclude name="SignatureDeclareThrowsException" />
 	</rule>
 
-	<!-- Use the entire 'unused code' ruleset -->
+	<!-- Use the 'unused code' ruleset -->
 	<rule ref="rulesets/java/unusedcode.xml" />
 
 </ruleset>

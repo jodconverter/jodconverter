@@ -92,7 +92,7 @@ public class OfficeProcessTest {
     final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
     final File instanceProfileDir = Whitebox.invokeMethod(process, "getInstanceProfileDir");
     instanceProfileDir.mkdirs();
-    Whitebox.invokeMethod(process, "deleteProfileDir");
+    Whitebox.invokeMethod(process, "deleteInstanceProfileDir");
 
     assertThat(
             workingDir.listFiles(
@@ -123,7 +123,7 @@ public class OfficeProcessTest {
     final OfficeProcessConfig config = new OfficeProcessConfig(null, workingDir, null);
     final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
     final File instanceProfileDir = Whitebox.invokeMethod(process, "getInstanceProfileDir");
-    Whitebox.invokeMethod(process, "deleteProfileDir");
+    Whitebox.invokeMethod(process, "deleteInstanceProfileDir");
 
     assertThat(
             workingDir.listFiles(

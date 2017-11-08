@@ -36,6 +36,8 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
   public static final long DEFAULT_PROCESS_RETRY_INTERVAL = 250L; // 0.25 secs.
   /** The default maximum number of tasks an office process can execute before restarting. */
   public static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
+  /** The default behavior when an office process is started regarding to OpenGL usage. */
+  public static final boolean DEFAULT_DISABLE_OPENGL = false;
 
   /**
    * The minimum value for the delay between each try when executing a process call
@@ -51,6 +53,7 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
   private long processTimeout = DEFAULT_PROCESS_TIMEOUT;
   private long processRetryInterval = DEFAULT_PROCESS_RETRY_INTERVAL;
   private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
+  private boolean disableOpengl = DEFAULT_DISABLE_OPENGL;
 
   /** Creates configuration with default values. */
   public OfficeProcessManagerConfig() {
@@ -105,6 +108,17 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
   }
 
   /**
+   * Gets whether OpenGL must be disabled when starting a new office process.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: false
+   *
+   * @return {@code true} to disable OpenGL, {@code false} otherwise.
+   */
+  public boolean isDisableOpengl() {
+    return disableOpengl;
+  }
+
+  /**
    * Sets the timeout, in milliseconds, when trying to execute an office process call
    * (start/terminate).
    *
@@ -131,5 +145,16 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
    */
   public void setMaxTasksPerProcess(final int maxTasksPerProcess) {
     this.maxTasksPerProcess = maxTasksPerProcess;
+  }
+
+  /**
+   * Gets whether OpenGL must be disabled when starting a new office process. Nothing will be done
+   * if OpenGL is already disabled according to the user profile used with the office process. If
+   * the option is changed, then office must be restarted.
+   *
+   * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
+   */
+  public void setDisableOpengl(final boolean disableOpengl) {
+    this.disableOpengl = disableOpengl;
   }
 }

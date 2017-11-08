@@ -84,7 +84,8 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
               format.getMediaType(),
               format.getInputFamily(),
               format.getLoadProperties(),
-              format.getStoreProperties()));
+              format.getStoreProperties(),
+              true));
     }
   }
 }

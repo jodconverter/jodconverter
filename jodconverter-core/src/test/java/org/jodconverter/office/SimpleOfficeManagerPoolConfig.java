@@ -32,6 +32,7 @@ class SimpleOfficeManagerPoolConfig extends SimpleOfficeManagerPoolEntryConfig
 
   private long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
   private File workingDir;
+
   /**
    * Creates configuration with the specified values.
    *

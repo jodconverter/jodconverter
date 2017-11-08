@@ -60,18 +60,18 @@ public class DefaultDocumentFormatRegistryTest {
     // TEXT output format
     Set<DocumentFormat> outputFormats = registry.getOutputFormats(DocumentFamily.TEXT);
     assertExpectedExtensions(
-        outputFormats, "doc", "docx", "html", "odt", "pdf", "png", "rtf", "sxw", "txt");
+        outputFormats, "doc", "docx", "html", "odt", "ott", "pdf", "png", "rtf", "sxw", "txt");
     // SPREADSHEET output format
     outputFormats = registry.getOutputFormats(DocumentFamily.SPREADSHEET);
     assertExpectedExtensions(
-        outputFormats, "csv", "html", "ods", "pdf", "png", "sxc", "tsv", "xls", "xlsx");
+        outputFormats, "csv", "html", "ods", "ots", "pdf", "png", "sxc", "tsv", "xls", "xlsx");
     // PRESENTATION output format
     outputFormats = registry.getOutputFormats(DocumentFamily.PRESENTATION);
     assertExpectedExtensions(
-        outputFormats, "html", "odp", "pdf", "png", "ppt", "pptx", "swf", "sxi");
+        outputFormats, "html", "odp", "otp", "pdf", "png", "ppt", "pptx", "swf", "sxi");
     // DRAWING output format
     outputFormats = registry.getOutputFormats(DocumentFamily.DRAWING);
-    assertExpectedExtensions(outputFormats, "odg", "pdf", "png", "svg", "swf");
+    assertExpectedExtensions(outputFormats, "odg", "otg", "pdf", "png", "svg", "swf");
   }
 
   @Test
@@ -85,6 +85,8 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.HTML);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("odt"))
         .isEqualTo(DefaultDocumentFormatRegistry.ODT);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("ott"))
+        .isEqualTo(DefaultDocumentFormatRegistry.OTT);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("sxw"))
         .isEqualTo(DefaultDocumentFormatRegistry.SXW);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("doc"))
@@ -99,6 +101,8 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.TXT);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("ods"))
         .isEqualTo(DefaultDocumentFormatRegistry.ODS);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("ots"))
+        .isEqualTo(DefaultDocumentFormatRegistry.OTS);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("sxc"))
         .isEqualTo(DefaultDocumentFormatRegistry.SXC);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("xls"))
@@ -111,6 +115,8 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.TSV);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("odp"))
         .isEqualTo(DefaultDocumentFormatRegistry.ODP);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("otp"))
+        .isEqualTo(DefaultDocumentFormatRegistry.OTP);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("sxi"))
         .isEqualTo(DefaultDocumentFormatRegistry.SXI);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("ppt"))
@@ -119,6 +125,8 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.PPTX);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("odg"))
         .isEqualTo(DefaultDocumentFormatRegistry.ODG);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("otg"))
+        .isEqualTo(DefaultDocumentFormatRegistry.OTG);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("svg"))
         .isEqualTo(DefaultDocumentFormatRegistry.SVG);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("png"))
@@ -138,6 +146,10 @@ public class DefaultDocumentFormatRegistryTest {
             DefaultDocumentFormatRegistry.getFormatByMediaType(
                 "application/vnd.oasis.opendocument.text"))
         .isEqualTo(DefaultDocumentFormatRegistry.ODT);
+    assertThat(
+            DefaultDocumentFormatRegistry.getFormatByMediaType(
+                "application/vnd.oasis.opendocument.text-template"))
+        .isEqualTo(DefaultDocumentFormatRegistry.OTT);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.sun.xml.writer"))
         .isEqualTo(DefaultDocumentFormatRegistry.SXW);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/msword"))
@@ -156,6 +168,10 @@ public class DefaultDocumentFormatRegistryTest {
             DefaultDocumentFormatRegistry.getFormatByMediaType(
                 "application/vnd.oasis.opendocument.spreadsheet"))
         .isEqualTo(DefaultDocumentFormatRegistry.ODS);
+    assertThat(
+            DefaultDocumentFormatRegistry.getFormatByMediaType(
+                "application/vnd.oasis.opendocument.spreadsheet-template"))
+        .isEqualTo(DefaultDocumentFormatRegistry.OTS);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.sun.xml.calc"))
         .isEqualTo(DefaultDocumentFormatRegistry.SXC);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.ms-excel"))
@@ -173,6 +189,10 @@ public class DefaultDocumentFormatRegistryTest {
                 "application/vnd.oasis.opendocument.presentation"))
         .isEqualTo(DefaultDocumentFormatRegistry.ODP);
     assertThat(
+            DefaultDocumentFormatRegistry.getFormatByMediaType(
+                "application/vnd.oasis.opendocument.presentation-template"))
+        .isEqualTo(DefaultDocumentFormatRegistry.OTP);
+    assertThat(
             DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.sun.xml.impress"))
         .isEqualTo(DefaultDocumentFormatRegistry.SXI);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.ms-powerpoint"))
@@ -185,6 +205,10 @@ public class DefaultDocumentFormatRegistryTest {
             DefaultDocumentFormatRegistry.getFormatByMediaType(
                 "application/vnd.oasis.opendocument.graphics"))
         .isEqualTo(DefaultDocumentFormatRegistry.ODG);
+    assertThat(
+            DefaultDocumentFormatRegistry.getFormatByMediaType(
+                "application/vnd.oasis.opendocument.graphics-template"))
+        .isEqualTo(DefaultDocumentFormatRegistry.OTG);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/svg+xml"))
         .isEqualTo(DefaultDocumentFormatRegistry.SVG);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/png"))

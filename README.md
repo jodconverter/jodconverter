@@ -6,8 +6,8 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/20f3adafce26439fb6f38a7767388944)](https://www.codacy.com/app/sbraconnier/jodconverter?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sbraconnier/jodconverter&amp;utm_campaign=Badge_Grade)
 [![Dependency Status](https://www.versioneye.com/user/projects/596d252e6725bd000e2d8b3b/badge.svg?style=flat)](https://www.versioneye.com/user/projects/596d252e6725bd000e2d8b3b)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core)
-[![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-core.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-core)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local)
+[![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-local.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-local)
 [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 I created this fork because I had to do some changes to the original project and now it is time to share my work with the community.
@@ -15,23 +15,22 @@ I created this fork because I had to do some changes to the original project and
 ### What you want to know...
 
 - **Documentation**: The JODConverter documentation (work in progress) can be found [here](https://github.com/sbraconnier/jodconverter/wiki).
-- **Dependencies**: See [this](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core) for core project dependencies. This fork does not depend on SIGAR. JODConverter only needs to retrieve office processes (PIDs) and kill office processes (using PID). It should work just fine without SIGAR with the actual [process managers](https://github.com/sbraconnier/jodconverter/tree/master/jodconverter-core/src/main/java/org/jodconverter/process) created from an older version of JODConverter. But I added the ability to use any process manager you would like to implement if none of the provided managers can be used. See the [processManager](https://github.com/sbraconnier/jodconverter/wiki/Configuration#capital_abcdprocessmanager) configuration option.
+- **Dependencies**: See [this](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local) for main project dependencies. This fork does not depend on SIGAR. JODConverter only needs to retrieve office processes (PIDs) and kill office processes (using PID). It should work just fine without SIGAR with the actual [process managers](https://github.com/sbraconnier/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/process) created from an older version of JODConverter. But I added the ability to use any process manager you would like to implement if none of the provided managers can be used. See the [processManager](https://github.com/sbraconnier/jodconverter/wiki/Configuration#capital_abcdprocessmanager) configuration option.
 - **Tests**: JODConverter is supposed to work just fine on recent versions of Windows, MacOS and Unix/Linux. Any confirmation would be welcome so we could build a list of official supported OS distributions.
-supported OS
 
-### Usage
+### Usage for local conversions
 
 #### Gradle:
 ```Shell
-compile 'org.jodconverter:jodconverter-core:4.0.0-RELEASE'
+compile 'org.jodconverter:jodconverter-local:4.1.0'
 ```
 
 #### Maven:
 ```Shell
 <dependency>
   <groupId>org.jodconverter</groupId>
-  <artifactId>jodconverter-core</artifactId>
-  <version>4.0.0-RELEASE</version>
+  <artifactId>jodconverter-local</artifactId>
+  <version>4.1.0</version>
 </dependency>
 ```
 
@@ -76,7 +75,7 @@ Here are my favorite/inspiration forks/projects:
 
 ### A special thanks to:
 
-[@michelole](https://github.com/michelole) who created a pull request in these two forks with a [stress test](https://github.com/sbraconnier/jodconverter/blob/master/jodconverter-core/src/integTest/java/org/jodconverter/StressITest.java) that made my office process to crash every times! My first commit was when I was able to build my things with his stress test on!!  
+[@michelole](https://github.com/michelole) who created a pull request in these two forks with a [stress test](https://github.com/sbraconnier/jodconverter/blob/master/jodconverter-local/src/integTest/java/org/jodconverter/StressITest.java) that made my office process to crash every times! My first commit was when I was able to build my things with his stress test on!!  
 
 ## Original JODConverter
 

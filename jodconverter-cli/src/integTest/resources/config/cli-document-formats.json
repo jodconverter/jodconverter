@@ -19,23 +19,6 @@
     }
   },
   {
-    "name": "HTML",
-    "extension": "html",
-    "mediaType": "text/html",
-    "inputFamily": "TEXT",
-    "storeProperties": {
-      "SPREADSHEET": {
-        "FilterName": "HTML (StarCalc)"
-      },
-      "PRESENTATION": {
-        "FilterName": "impress_html_Export"
-      },
-      "TEXT": {
-        "FilterName": "HTML (StarWriter)"
-      }
-    }
-  },
-  {
     "name": "Plain Text",
     "extension": "txt",
     "mediaType": "text/plain",

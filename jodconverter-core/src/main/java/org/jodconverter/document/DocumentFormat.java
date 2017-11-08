@@ -37,14 +37,34 @@ public class DocumentFormat {
   private final DocumentFamily inputFamily;
   private final Map<String, Object> loadProperties;
 
+  // Be backward compatible
   @SerializedName(
     value = "storeProperties",
-    alternate = {"storePropertiesByFamily"} // Be backward compatible
+    alternate = {"storePropertiesByFamily"}
   )
   private final Map<DocumentFamily, Map<String, Object>> storeProperties;
 
   /**
-   * Creates a new document format with the specified name, extension and mime-type.
+   * Creates a new {@link DocumentFormat} and modifiable from the specified format.
+   *
+   * @param sourceFormat The source document format.
+   * @return A {@link DocumentFormat}, which will not be read only, like the default document
+   *     formats are.
+   */
+  public static DocumentFormat copy(final DocumentFormat sourceFormat) {
+
+    return new DocumentFormat(
+        sourceFormat.getName(),
+        sourceFormat.getExtension(),
+        sourceFormat.getMediaType(),
+        sourceFormat.getInputFamily(),
+        sourceFormat.getLoadProperties(),
+        sourceFormat.getStoreProperties(),
+        false);
+  }
+
+  /**
+   * Creates a new read-only document format with the specified name, extension and mime-type.
    *
    * @param name The name of the format.
    * @param extension The extension of the format.
@@ -54,13 +74,14 @@ public class DocumentFormat {
    * @param storeProperties The properties required to store(save) a document of this format to a
    *     document of another family.
    */
-  public DocumentFormat(
+  DocumentFormat(
       final String name,
       final String extension,
       final String mediaType,
       final DocumentFamily inputFamily,
       final Map<String, Object> loadProperties,
-      final Map<DocumentFamily, Map<String, Object>> storeProperties) {
+      final Map<DocumentFamily, Map<String, Object>> storeProperties,
+      final boolean readOnly) {
 
     this.name = name;
     this.extension = extension;
@@ -68,7 +89,11 @@ public class DocumentFormat {
     this.inputFamily = inputFamily;
 
     this.loadProperties =
-        loadProperties == null ? null : Collections.unmodifiableMap(new HashMap<>(loadProperties));
+        loadProperties == null
+            ? null
+            : readOnly // NOSONAR
+                ? Collections.unmodifiableMap(new HashMap<>(loadProperties))
+                : new HashMap<>(loadProperties);
 
     Map<DocumentFamily, Map<String, Object>> storeProps = null;
     if (storeProperties != null) {
@@ -76,10 +101,17 @@ public class DocumentFormat {
       for (final Map.Entry<DocumentFamily, Map<String, Object>> entry :
           storeProperties.entrySet()) {
         storeProps.put(
-            entry.getKey(), Collections.unmodifiableMap(new HashMap<>(entry.getValue())));
+            entry.getKey(),
+            readOnly
+                ? Collections.unmodifiableMap(new HashMap<>(entry.getValue()))
+                : new HashMap<>(entry.getValue()));
       }
     }
-    this.storeProperties = storeProperties == null ? null : Collections.unmodifiableMap(storeProps);
+
+    this.storeProperties =
+        storeProps == null
+            ? null
+            : readOnly ? Collections.unmodifiableMap(storeProps) : storeProps; // NOSONAR
   }
 
   /**

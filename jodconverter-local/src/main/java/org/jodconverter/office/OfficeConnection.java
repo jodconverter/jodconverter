@@ -54,7 +54,8 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
   private final OfficeUrl officeUrl;
   private Object desktopService;
   private XComponent bridgeComponent;
-  private XComponentLoader officeComponentLoader;
+  private XComponentContext componentContext;
+  private XComponentLoader componentLoader;
   private final List<OfficeConnectionEventListener> connectionEventListeners;
   private final AtomicBoolean connected = new AtomicBoolean();
 
@@ -82,95 +83,98 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
   }
 
   /** Establishes the connection to an office instance. */
-  public synchronized void connect() throws OfficeConnectionException {
+  public void connect() throws OfficeConnectionException {
 
-    final String connectPart = officeUrl.getConnectionAndParametersAsString();
-    LOGGER.debug("Connecting with connectString '{}'", connectPart);
-    try {
-      // Create a default local component context.
-      final XComponentContext localContext = Bootstrap.createInitialComponentContext(null);
-      // Initial service manager.
-      final XMultiComponentFactory localServiceManager = localContext.getServiceManager();
+    synchronized (this) {
+      final String connectPart = officeUrl.getConnectionAndParametersAsString();
+      LOGGER.debug("Connecting with connectString '{}'", connectPart);
+      try {
+        // Create a default local component context.
+        final XComponentContext localContext = Bootstrap.createInitialComponentContext(null);
+        // Initial service manager.
+        final XMultiComponentFactory localServiceManager = localContext.getServiceManager();
 
-      // Instantiate a connector service.
-      final XConnector connector =
-          UnoRuntime.queryInterface(
-              XConnector.class,
-              localServiceManager.createInstanceWithContext(
-                  "com.sun.star.connection.Connector", localContext));
+        // Instantiate a connector service.
+        final XConnector connector =
+            UnoRuntime.queryInterface(
+                XConnector.class,
+                localServiceManager.createInstanceWithContext(
+                    "com.sun.star.connection.Connector", localContext));
 
-      // Connect using the connection string part of the uno-url only.
-      final XConnection connection = connector.connect(connectPart);
+        // Connect using the connection string part of the uno-url only.
+        final XConnection connection = connector.connect(connectPart);
 
-      // Instantiate a bridge factory service.
-      final XBridgeFactory bridgeFactory =
-          UnoRuntime.queryInterface(
-              XBridgeFactory.class,
-              localServiceManager.createInstanceWithContext(
-                  "com.sun.star.bridge.BridgeFactory", localContext));
+        // Instantiate a bridge factory service.
+        final XBridgeFactory bridgeFactory =
+            UnoRuntime.queryInterface(
+                XBridgeFactory.class,
+                localServiceManager.createInstanceWithContext(
+                    "com.sun.star.bridge.BridgeFactory", localContext));
 
-      // Create a remote bridge with no instance provider using the urp protocol.
-      final String bridgeName = "jodconverter_" + bridgeIndex.getAndIncrement();
-      final XBridge bridge =
-          bridgeFactory.createBridge(
-              bridgeName, officeUrl.getProtocolAndParametersAsString(), connection, null);
+        // Create a remote bridge with no instance provider using the urp protocol.
+        final String bridgeName = "jodconverter_" + bridgeIndex.getAndIncrement();
+        final XBridge bridge =
+            bridgeFactory.createBridge(
+                bridgeName, officeUrl.getProtocolAndParametersAsString(), connection, null);
 
-      // Query for the XComponent interface and add this as event listener.
-      bridgeComponent = UnoRuntime.queryInterface(XComponent.class, bridge);
-      bridgeComponent.addEventListener(this);
+        // Query for the XComponent interface and add this as event listener.
+        bridgeComponent = UnoRuntime.queryInterface(XComponent.class, bridge);
+        bridgeComponent.addEventListener(this);
 
-      // Get the remote instance
-      final String rootOid = officeUrl.getRootOid();
-      final Object bridgeInstance = bridge.getInstance(rootOid);
-      // Did the remote server export this object ?
-      if (bridgeInstance == null) {
+        // Get the remote instance
+        final String rootOid = officeUrl.getRootOid();
+        final Object bridgeInstance = bridge.getInstance(rootOid);
+        // Did the remote server export this object ?
+        if (bridgeInstance == null) {
+          throw new OfficeConnectionException(
+              "Server didn't provide an instance for '" + rootOid + "'", connectPart);
+        }
+
+        // Query the initial object for its main factory interface.
+        final XMultiComponentFactory officeMultiComponentFactory =
+            UnoRuntime.queryInterface(XMultiComponentFactory.class, bridgeInstance);
+
+        // Retrieve the component context (it's not yet exported from the office)
+        // Query for the XPropertySet interface.
+        final XPropertySet properties =
+            UnoRuntime.queryInterface(XPropertySet.class, officeMultiComponentFactory);
+
+        // Query for the interface XComponentContext using the default
+        // context from the office server.
+        componentContext =
+            UnoRuntime.queryInterface(
+                XComponentContext.class, properties.getPropertyValue("DefaultContext"));
+
+        // Now create the desktop service
+        // NOTE: use the office component context here !
+        desktopService =
+            officeMultiComponentFactory.createInstanceWithContext(
+                "com.sun.star.frame.Desktop", componentContext);
+        componentLoader = UnoRuntime.queryInterface(XComponentLoader.class, desktopService);
+        if (componentLoader == null) {
+          throw new OfficeConnectionException(
+              "Couldn't instantiate com.sun.star.frame.Desktop", connectPart);
+        }
+
+        // We are now connected
+        connected.set(true);
+        LOGGER.info("Connected: '{}'", connectPart);
+
+        // Inform all the listener that we are connected
+        final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
+        for (final OfficeConnectionEventListener listener : connectionEventListeners) {
+          listener.connected(connectionEvent);
+        }
+
+      } catch (OfficeConnectionException connectionEx) {
+        throw connectionEx;
+
+      } catch (Exception ex) {
         throw new OfficeConnectionException(
-            "Server didn't provide an instance for '" + rootOid + "'", connectPart);
+            String.format("Connection failed: '%s'; %s", connectPart, ex.getMessage()),
+            connectPart,
+            ex);
       }
-
-      // Query the initial object for its main factory interface.
-      final XMultiComponentFactory officeMultiComponentFactory =
-          UnoRuntime.queryInterface(XMultiComponentFactory.class, bridgeInstance);
-
-      // Retrieve the component context (it's not yet exported from the office)
-      // Query for the XPropertySet interface.
-      final XPropertySet properties =
-          UnoRuntime.queryInterface(XPropertySet.class, officeMultiComponentFactory);
-
-      // Query for the interface XComponentContext using the default context from the office server.
-      final XComponentContext officeComponentContext =
-          UnoRuntime.queryInterface(
-              XComponentContext.class, properties.getPropertyValue("DefaultContext"));
-
-      // Now create the desktop service
-      // NOTE: use the office component context here !
-      desktopService =
-          officeMultiComponentFactory.createInstanceWithContext(
-              "com.sun.star.frame.Desktop", officeComponentContext);
-      officeComponentLoader = UnoRuntime.queryInterface(XComponentLoader.class, desktopService);
-      if (officeComponentLoader == null) {
-        throw new OfficeConnectionException(
-            "Couldn't instantiate com.sun.star.frame.Desktop", connectPart);
-      }
-
-      // We are now connected
-      connected.set(true);
-      LOGGER.info("Connected: '{}'", connectPart);
-
-      // Inform all the listener that we are connected
-      final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
-      for (final OfficeConnectionEventListener listener : connectionEventListeners) {
-        listener.connected(connectionEvent);
-      }
-
-    } catch (OfficeConnectionException connectionEx) {
-      throw connectionEx;
-
-    } catch (Exception ex) {
-      throw new OfficeConnectionException(
-          String.format("Connection failed: '%s'; %s", connectPart, ex.getMessage()),
-          connectPart,
-          ex);
     }
   }
 
@@ -189,9 +193,11 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
   public void disposing(final EventObject eventObject) {
 
     if (connected.get()) {
+
       // Remote bridge has gone down, because the office crashed or was terminated.
       connected.set(false);
-      officeComponentLoader = null;
+      componentContext = null;
+      componentLoader = null;
       desktopService = null;
       bridgeComponent = null;
 
@@ -207,9 +213,15 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
   }
 
   @Override
+  public XComponentContext getComponentContext() {
+
+    return componentContext;
+  }
+
+  @Override
   public XComponentLoader getComponentLoader() {
 
-    return officeComponentLoader;
+    return componentLoader;
   }
 
   @Override

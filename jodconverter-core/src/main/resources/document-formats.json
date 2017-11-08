@@ -60,6 +60,17 @@
     }
   },
   {
+    "name": "OpenDocument Text Template",
+    "extension": "ott",
+    "mediaType": "application/vnd.oasis.opendocument.text-template",
+    "inputFamily": "TEXT",
+    "storeProperties": {
+      "TEXT": {
+        "FilterName": "writer8_template"
+      }
+    }
+  },
+  {
     "name": "OpenOffice.org 1.0 Text Document",
     "extension": "sxw",
     "mediaType": "application/vnd.sun.xml.writer",
@@ -133,6 +144,17 @@
     "storeProperties": {
       "SPREADSHEET": {
         "FilterName": "calc8"
+      }
+    }
+  },
+  {
+    "name": "OpenDocument Spreadsheet Template",
+    "extension": "ots",
+    "mediaType": "application/vnd.oasis.opendocument.spreadsheet-template",
+    "inputFamily": "SPREADSHEET",
+    "storeProperties": {
+      "SPREADSHEET": {
+        "FilterName": "calc8_template"
       }
     }
   },
@@ -213,6 +235,17 @@
     }
   },
   {
+    "name": "OpenDocument Presentation Template",
+    "extension": "otp",
+    "mediaType": "application/vnd.oasis.opendocument.presentation-template",
+    "inputFamily": "PRESENTATION",
+    "storeProperties": {
+      "PRESENTATION": {
+        "FilterName": "impress8_template"
+      }
+    }
+  },
+  {
     "name": "OpenOffice.org 1.0 Presentation",
     "extension": "sxi",
     "mediaType": "application/vnd.sun.xml.impress",
@@ -253,6 +286,17 @@
     "storeProperties": {
       "DRAWING": {
         "FilterName": "draw8"
+      }
+    }
+  },
+  {
+    "name": "OpenDocument Drawing Template",
+    "extension": "otg",
+    "mediaType": "application/vnd.oasis.opendocument.graphics-template",
+    "inputFamily": "DRAWING",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw8_template"
       }
     }
   },

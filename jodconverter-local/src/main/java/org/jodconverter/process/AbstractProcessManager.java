@@ -138,11 +138,11 @@ public abstract class AbstractProcessManager implements ProcessManager {
       final String err = buildOutput(errPumper.getOutputLines());
 
       if (!StringUtils.isBlank(out)) {
-        LOGGER.debug("Command Output: {}", out);
+        LOGGER.trace("Command Output: {}", out);
       }
 
       if (!StringUtils.isBlank(err)) {
-        LOGGER.debug("Command Error: {}", err);
+        LOGGER.trace("Command Error: {}", err);
       }
     }
 
@@ -158,7 +158,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
     final Pattern processLinePattern = getRunningProcessLinePattern();
     final String[] currentProcessesCommand = getRunningProcessesCommand(query.getCommand());
 
-    LOGGER.debug(
+    LOGGER.trace(
         "Finding PID using\n"
             + "Command to get current running processes: {}\n"
             + "Regex used to match current running process lines: {}\n"
@@ -173,13 +173,13 @@ public abstract class AbstractProcessManager implements ProcessManager {
         // Skip this one
         continue;
       }
-      LOGGER.debug(
+      LOGGER.trace(
           "Checking if process line matches the process line regex\nProcess line: {}", line);
       final Matcher lineMatcher = processLinePattern.matcher(line);
       if (lineMatcher.matches()) {
         final String pid = lineMatcher.group("Pid");
         final String commandLine = lineMatcher.group("CommanLine");
-        LOGGER.debug(
+        LOGGER.trace(
             "Line matches!\n"
                 + "pid: {}; Command line: {}\n"
                 + "Checking if this command line matches the office command line regex",

@@ -26,6 +26,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.star.beans.PropertyValue;
+import com.sun.star.beans.XHierarchicalPropertySet;
+import com.sun.star.beans.XHierarchicalPropertySetInfo;
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XMultiServiceFactory;
+import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
+import com.sun.star.util.XChangesBatch;
+
 import org.jodconverter.task.OfficeTask;
 
 /**
@@ -41,6 +50,7 @@ import org.jodconverter.task.OfficeTask;
  */
 class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
+  private static final String PROPPATH_USE_OPENGL = "VCL/UseOpenGL";
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcessManagerPoolEntry.class);
 
   private final OfficeProcessManager officeProcessManager;
@@ -124,18 +134,11 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // First check if the office process must be restarted
     final int count = taskCount.getAndIncrement();
     if (entryConfig.getMaxTasksPerProcess() > 0 && count == entryConfig.getMaxTasksPerProcess()) {
+
       LOGGER.info(
           "Reached limit of {} maximum tasks per process; restarting...",
           entryConfig.getMaxTasksPerProcess());
-
-      // The executor is no longer available
-      taskExecutor.setAvailable(false);
-
-      // Indicates that the disconnection to follow is expected
-      disconnectExpected.set(true);
-
-      // Restart the office instance
-      officeProcessManager.restartAndWait();
+      restart();
 
       // taskCount will be 0 rather than 1 at this point, so fix this.
       taskCount.getAndIncrement();
@@ -163,6 +166,18 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     // Start the office process and connect to it.
     officeProcessManager.startAndWait();
+
+    // Here a connection has been made successfully. Check to disable
+    // the usage of OpenGL. Some file won't load properly if OpenGL
+    // is on (LibreOffice).
+    final OfficeProcessManagerPoolEntryConfig entryConfig =
+        (OfficeProcessManagerPoolEntryConfig) config;
+    if (entryConfig.isDisableOpengl()
+        && disableOpengl(officeProcessManager.getConnection().getComponentContext())) {
+
+      LOGGER.info("OpenGL has been disabled and a restart is required; restarting...");
+      restart();
+    }
   }
 
   @Override
@@ -173,5 +188,84 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     // Now we can stopped the running office process
     officeProcessManager.stopAndWait();
+  }
+
+  private void restart() throws OfficeException {
+
+    // The executor is no longer available
+    taskExecutor.setAvailable(false);
+
+    // Indicates that the disconnection to follow is expected
+    disconnectExpected.set(true);
+
+    // Restart the office instance
+    officeProcessManager.restartAndWait();
+  }
+
+  // Create a configuration view for the specified configuration path.
+  private Object createConfigurationView(final XMultiServiceFactory provider, final String path)
+      throws com.sun.star.uno.Exception {
+
+    // Creation arguments: nodepath
+    final PropertyValue argument = new PropertyValue();
+    argument.Name = "nodepath";
+    argument.Value = path;
+
+    final Object[] arguments = new Object[1];
+    arguments[0] = argument;
+
+    // create the view
+    return provider.createInstanceWithArguments(
+        "com.sun.star.configuration.ConfigurationUpdateAccess", arguments);
+  }
+
+  private boolean disableOpengl(final XComponentContext officeContext) throws OfficeException {
+
+    // See configuration registry for more options.
+    // e.g: C:\Program Files\LibreOffice 5\share\registry\main.xcd
+
+    try {
+
+      // Create the view to the root element where UseOpenGL option lives
+      final Object viewRoot =
+          createConfigurationView(
+              UnoRuntime.queryInterface(
+                  XMultiServiceFactory.class,
+                  officeContext
+                      .getServiceManager()
+                      .createInstanceWithContext(
+                          "com.sun.star.configuration.ConfigurationProvider", officeContext)),
+              "/org.openoffice.Office.Common");
+      try {
+
+        // Check if the OpenGL option is on
+        final XHierarchicalPropertySet properties =
+            UnoRuntime.queryInterface(XHierarchicalPropertySet.class, viewRoot);
+
+        final XHierarchicalPropertySetInfo propsInfo = properties.getHierarchicalPropertySetInfo();
+        if (propsInfo.hasPropertyByHierarchicalName(PROPPATH_USE_OPENGL)) {
+          final boolean useOpengl =
+              (boolean) properties.getHierarchicalPropertyValue(PROPPATH_USE_OPENGL);
+          LOGGER.info("Use OpenGL is set to {}", useOpengl);
+          if (useOpengl) {
+            properties.setHierarchicalPropertyValue(PROPPATH_USE_OPENGL, false);
+            // Changes have been applied to the view here
+            final XChangesBatch updateControl =
+                UnoRuntime.queryInterface(XChangesBatch.class, viewRoot);
+            updateControl.commitChanges();
+
+            // A restart is required.
+            return true;
+          }
+        }
+      } finally {
+        // We are done with the view - dispose it
+        UnoRuntime.queryInterface(XComponent.class, viewRoot).dispose();
+      }
+      return false; // No restart needed
+
+    } catch (com.sun.star.uno.Exception ex) {
+      throw new OfficeException("Unable to check if the Use OpenGL option is on.", ex);
+    }
   }
 }

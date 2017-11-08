@@ -22,7 +22,11 @@ package org.jodconverter.task;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
-/** Represents a task executed by an {@link org.jodconverter.office.OfficeManager}. */
+/**
+ * Represents a task executed by an {@link org.jodconverter.office.OfficeManager}.
+ *
+ * @see OfficeContext
+ */
 public interface OfficeTask {
 
   /**

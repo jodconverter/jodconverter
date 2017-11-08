@@ -80,6 +80,16 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat ODT = getInstance().getFormatByExtension("odt");
 
   /**
+   * OpenDocument Text Template.
+   *
+   * <ul>
+   *   <li>Extension: ott
+   *   <li>Media Type: application/vnd.oasis.opendocument.text-template
+   * </ul>
+   */
+  public static final DocumentFormat OTT = getInstance().getFormatByExtension("ott");
+
+  /**
    * OpenOffice.org 1.0 Text Document.
    *
    * <ul>
@@ -150,6 +160,16 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat ODS = getInstance().getFormatByExtension("ods");
 
   /**
+   * OpenDocument Spreadsheet Template.
+   *
+   * <ul>
+   *   <li>Extension: ots
+   *   <li>Media Type: application/vnd.oasis.opendocument.spreadsheet-template
+   * </ul>
+   */
+  public static final DocumentFormat OTS = getInstance().getFormatByExtension("ots");
+
+  /**
    * OpenOffice.org 1.0 Spreadsheet.
    *
    * <ul>
@@ -210,6 +230,16 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat ODP = getInstance().getFormatByExtension("odp");
 
   /**
+   * OpenDocument Presentation Template.
+   *
+   * <ul>
+   *   <li>Extension: otp
+   *   <li>Media Type: application/vnd.oasis.opendocument.presentation-template
+   * </ul>
+   */
+  public static final DocumentFormat OTP = getInstance().getFormatByExtension("otp");
+
+  /**
    * OpenOffice.org 1.0 Presentation.
    *
    * <ul>
@@ -248,6 +278,16 @@ public final class DefaultDocumentFormatRegistry {
    * </ul>
    */
   public static final DocumentFormat ODG = getInstance().getFormatByExtension("odg");
+
+  /**
+   * OpenDocument Drawing Template.
+   *
+   * <ul>
+   *   <li>Extension: otg
+   *   <li>Media Type: application/vnd.oasis.opendocument.graphics
+   * </ul>
+   */
+  public static final DocumentFormat OTG = getInstance().getFormatByExtension("otg");
 
   /**
    * Scalable Vector Graphics.
