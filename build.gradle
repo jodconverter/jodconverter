@@ -10,7 +10,7 @@ buildscript {
     mavenCentral()
 
     //Needed only for SNAPSHOT versions
-    maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+    //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://plugins.gradle.org/m2" }
   }
 
@@ -27,9 +27,6 @@ buildscript {
 ext {
   baselineJavaVersion = JavaVersion.VERSION_1_7
   sourceEncoding = "UTF-8"
-
-  ext.releaseBuild = version.endsWith('RELEASE')
-  ext.snapshotBuild = version.endsWith('SNAPSHOT')
 
   // Set up different subproject lists for individual configuration
   ext.javaprojects = subprojects.findAll { new File(it.projectDir, 'src/main/java').directory }
@@ -109,7 +106,7 @@ allprojects {
 // Apply the configuration for the java projects only
 configure(javaprojects) {
 
-  // Spotless need a buildscript repository for all java project
+  // Spotless needs a buildscript repository for all java project
   buildscript {
     repositories {
       maven { url "https://plugins.gradle.org/m2" }
@@ -131,7 +128,7 @@ apply plugin: 'org.standardout.versioneye'
 versioneye {
   includePlugins = false
   includeSubProjects = true
-  exclude 'testCompile', 'testCompileClasspath', 'testCompileOnly', 'testImplementation', 'testRuntime', 'testRuntimeClasspath', 'testRuntimeOnly', 'integTestCompile', 'integTestCompileClasspath', 'integTestCompileOnly', 'integTestImplementation', 'integTestRuntime', 'integTestRuntimeClasspath', 'integTestRuntimeOnly', 'checkstyle', 'jacocoAgent', 'jacocoAnt', 'pmd'
+  exclude 'testCompile', 'testCompileClasspath', 'testCompileOnly', 'testImplementation', 'testRuntime', 'testRuntimeClasspath', 'testRuntimeOnly', 'integTestCompile', 'integTestCompileClasspath', 'integTestCompileOnly', 'integTestImplementation', 'integTestRuntime', 'integTestRuntimeClasspath', 'integTestRuntimeOnly', 'checkstyle', 'jacocoAgent', 'jacocoAnt', 'pmd', 'tomcat'
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -249,7 +246,23 @@ configure(publishedprojects) {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Utilities
+task printConfigurations {
+  group "Help"
+  doLast {
+  
+    subprojects.findAll().each { p ->
+      println "${p}"
+      p.configurations.each { println "  | " + it.name }
+      println ""
+    }
+  }
+}
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+ 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Install a wrapper in the current projet (gradlew)
 // Latest version -> https://gradle.org/install/
