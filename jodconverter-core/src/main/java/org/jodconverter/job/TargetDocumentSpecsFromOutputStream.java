@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 
 class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
@@ -50,7 +49,7 @@ class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
     try {
       FileUtils.copyFile(tempFile, outputStream);
       if (closeStream) {
-        IOUtils.closeQuietly(outputStream);
+        outputStream.close();
       }
 
     } catch (IOException ex) {

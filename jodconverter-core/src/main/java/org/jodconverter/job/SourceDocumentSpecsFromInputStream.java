@@ -56,7 +56,7 @@ class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
         return tempFile;
       } finally {
         // Note: This will implicitly release the file lock.
-        IOUtils.closeQuietly(outputStream);
+        outputStream.close();
       }
     } catch (IOException ex) {
       throw new DocumentSpecsIOException("Could not write stream to file " + tempFile, ex);

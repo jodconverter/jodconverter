@@ -30,7 +30,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -164,7 +163,6 @@ public final class Convert {
     // Not online conversion...
 
     final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
-    //configuration.setWorkingDir(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
 
     if (commandLine.hasOption(OPT_OFFICE_HOME.getOpt())) {
       builder.officeHome(commandLine.getOptionValue(OPT_OFFICE_HOME.getOpt()));
@@ -321,8 +319,10 @@ public final class Convert {
         printInfo("Stopping office");
         LocalOfficeUtils.stopQuietly(officeManager);
 
-        // Close the application context
-        IOUtils.closeQuietly(context);
+        // Close the application context if required
+        if (context != null) {
+          context.close();
+        }
       }
 
       System.exit(0);
