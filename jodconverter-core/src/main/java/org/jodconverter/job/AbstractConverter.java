@@ -116,6 +116,7 @@ public abstract class AbstractConverter implements DocumentConverter {
    *
    * @see AbstractConverter
    */
+  @SuppressWarnings("unchecked")
   public abstract static class AbstractConverterBuilder<B extends AbstractConverterBuilder<B>> {
 
     protected OfficeManager officeManager;
@@ -132,7 +133,6 @@ public abstract class AbstractConverter implements DocumentConverter {
      * @param manager The office manager this converter will use.
      * @return This builder instance.
      */
-    @SuppressWarnings("unchecked")
     public B officeManager(final OfficeManager manager) {
 
       Validate.notNull(manager);
@@ -147,7 +147,6 @@ public abstract class AbstractConverter implements DocumentConverter {
      * @param registry The registry that contains the supported formats.
      * @return This builder instance.
      */
-    @SuppressWarnings("unchecked")
     public B formatRegistry(final DocumentFormatRegistry registry) {
 
       this.formatRegistry = registry;

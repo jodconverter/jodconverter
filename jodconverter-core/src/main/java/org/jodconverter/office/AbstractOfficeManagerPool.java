@@ -256,6 +256,7 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
    *
    * @see AbstractOfficeManagerPool
    */
+  @SuppressWarnings("unchecked")
   public abstract static class AbstractOfficeManagerPoolBuilder<
       B extends AbstractOfficeManagerPoolBuilder<B>> {
 
@@ -280,7 +281,6 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
      *
      * @return This builder instance.
      */
-    @SuppressWarnings("unchecked")
     public B install() {
 
       this.install = true;
@@ -296,7 +296,6 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
      * @param workingDir The new working directory to set.
      * @return This builder instance.
      */
-    @SuppressWarnings("unchecked")
     public B workingDir(final File workingDir) {
 
       this.workingDir = workingDir;
@@ -312,7 +311,6 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
      * @param workingDir The new working directory to set.
      * @return This builder instance.
      */
-    @SuppressWarnings("unchecked")
     public B workingDir(final String workingDir) {
 
       return StringUtils.isBlank(workingDir) ? (B) this : workingDir(new File(workingDir));
@@ -327,7 +325,6 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
      * @param taskExecutionTimeout The task execution timeout, in milliseconds.
      * @return This builder instance.
      */
-    @SuppressWarnings("unchecked")
     public B taskExecutionTimeout(final long taskExecutionTimeout) {
 
       Validate.inclusiveBetween(
@@ -349,7 +346,6 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
      * @param taskQueueTimeout The task queue timeout, in milliseconds.
      * @return This builder instance.
      */
-    @SuppressWarnings("unchecked")
     public B taskQueueTimeout(final long taskQueueTimeout) {
 
       Validate.inclusiveBetween(

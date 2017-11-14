@@ -36,11 +36,11 @@ import org.jodconverter.office.OfficeException;
  *
  * @see org.jodconverter.filter.DefaultFilterChain
  */
+@SuppressWarnings("unchecked")
 public class DefaultFilterChainTest {
 
   /** Tests that a DefaultFilterChain is created empty by default. */
   @Test
-  @SuppressWarnings("unchecked")
   public void create_WithoutFilters_ShouldBeEmpty() throws IllegalAccessException {
 
     final DefaultFilterChain chain = new DefaultFilterChain();
@@ -51,7 +51,6 @@ public class DefaultFilterChainTest {
 
   /** Tests that a DefaultFilterChain.addFilter works as expected. */
   @Test
-  @SuppressWarnings("unchecked")
   public void create_ShouldBeEditable() throws IllegalAccessException {
 
     final Filter filter = new RefreshFilter();
