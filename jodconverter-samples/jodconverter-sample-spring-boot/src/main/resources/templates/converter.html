@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>JODConverter Sample - Spring Boot Starter</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+</head>
+
+<body th:attr="onload=${errorMessage != null &amp;&amp; errorMessage != ''} ? 'showError(\'__${errorMessage}__\')' : null">
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="http://www.jodconverter.org">JODConverter</a>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container">
+
+		<div class="row text-center">
+          <a href="http://www.jodconverter.org">
+            <img alt="JODConverter" src="/img/jodconverter_w250.png" />
+          </a>
+        </div>
+        
+        <div class="page-header" id="pageHeader">
+            <h2>Sample&nbsp;&nbsp;<small>Spring Boot Starter</small></h2>
+        </div>
+
+        <div id="errorMessage"></div>
+
+		<div class="panel panel-default">
+            <div class="panel-heading"><h4>Convert Office Documents</h4></div>
+			<div class="panel-body">
+
+				<form class="form-horizontal" action="/converter" enctype="multipart/form-data" method="post">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="inputFileText">Document:</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+	                            <input type="text" class="form-control" id="inputFileText" readonly="readonly" required="required" placeholder="Document to convert..." />
+	                            <span class="input-group-btn">
+	                                <label class="btn btn-default btn-file">
+	                                    <input type="file" id="inputFile" name="inputFile" onchange="onInputFileChange()" style="display: none;" />
+	                                    Browse...
+	                                </label>
+	                            </span>
+                            </div>
+                        </div>
+                    </div>
+					
+					<div class="form-group">
+						<label for="outputFormat" class="col-sm-2 control-label">Convert To:</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="outputFormat" name="outputFormat" required="required" disabled="disabled"></select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" id="goButton" class="btn btn-primary" disabled="disabled">Convert!</button>
+						</div>
+					</div>
+
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/lib/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/js/documentFormats.js"></script>
+	<script type="text/javascript" src="/js/converter.js"></script>
+
+</body>
+</html>

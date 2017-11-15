@@ -1,0 +1,15 @@
+
+server:
+  port: 8082
+  
+spring:
+  http:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+  application:
+    name: JODConverter Spring Boot Bootstrap 
+
+jodconverter:
+  enabled: true
+  

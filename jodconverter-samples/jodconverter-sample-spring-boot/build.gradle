@@ -1,0 +1,32 @@
+description = 'JODConverter - Sample Spring Boot Web Application'
+
+buildscript {
+  ext {
+    // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
+    springBootVersion = '1.5.8.RELEASE'
+  }
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+  }
+}
+
+apply plugin: 'war'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile project(':jodconverter-spring-boot-starter')
+  compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+  compile 'org.springframework.boot:spring-boot-devtools'
+  
+  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+}

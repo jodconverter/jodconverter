@@ -21,3 +21,6 @@ test-output
 
 # Markdown
 *.md.html
+
+# Spring
+.springBeans
