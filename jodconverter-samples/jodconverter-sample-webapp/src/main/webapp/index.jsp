@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
-    <title>JODConverter</title>
+    <title>JODConverter Sample Webapp</title>
     <style>
 
 body { font-family: sans-serif; font-size: 13px; }
@@ -45,7 +45,7 @@ function doSubmit(form) {
   </head>
   <body onload="updateOutputFormats(document.forms[0].inputDocument)">
 
-      <h1>JODConverter Web Application</h1>
+      <h1>JODConverter Sample - Web Application</h1>
       <h2>Convert office documents</h2>
 
       <form method="post" enctype="multipart/form-data" action="converted/document.pdf" onsubmit="return doSubmit(this)">
