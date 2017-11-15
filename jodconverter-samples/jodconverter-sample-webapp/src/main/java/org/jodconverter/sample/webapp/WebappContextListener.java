@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jodconverter.sample.web;
+package org.jodconverter.sample.webapp;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

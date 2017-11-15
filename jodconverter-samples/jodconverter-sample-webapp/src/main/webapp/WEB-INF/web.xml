@@ -31,12 +31,12 @@
     -->
 
 	<listener>
-		<listener-class>org.jodconverter.sample.web.WebappContextListener</listener-class>
+		<listener-class>org.jodconverter.sample.webapp.WebappContextListener</listener-class>
 	</listener>
 
 	<servlet>
 		<servlet-name>ConverterServlet</servlet-name>
-		<servlet-class>org.jodconverter.sample.web.ConverterServlet</servlet-class>
+		<servlet-class>org.jodconverter.sample.webapp.ConverterServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
