@@ -84,7 +84,7 @@ public class ExternalOfficeManagerITest {
       assertThat(task.isCompleted()).isTrue();
 
     } finally {
-      LocalOfficeUtils.stopQuietly(manager);
+      OfficeUtils.stopQuietly(manager);
     }
   }
 
@@ -110,7 +110,7 @@ public class ExternalOfficeManagerITest {
       assertThat(task.isCompleted()).isTrue();
 
     } finally {
-      LocalOfficeUtils.stopQuietly(manager);
+      OfficeUtils.stopQuietly(manager);
     }
   }
 
