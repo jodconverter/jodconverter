@@ -138,7 +138,7 @@ public class SslConfig {
   }
 
   /**
-   * Sets the password used to access the key store
+   * Sets the password used to access the key store.
    *
    * @param keyStorePassword The key store password.
    */

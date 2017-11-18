@@ -218,7 +218,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     if (store != null) {
       Validate.notNull(storePassword, "The password of store {0} must not be null", store);
 
-      KeyStore keyStore = null;
+      KeyStore keyStore;
 
       final String type = storeType == null ? KeyStore.getDefaultType() : storeType;
       if (storeProvider == null) {

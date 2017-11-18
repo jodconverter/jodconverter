@@ -158,17 +158,10 @@ public final class Convert {
     // If the URL is present, we will use the online office manager and thus,
     // an office installation won't be required locally.
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
-
-      // Check if there is an SslConfig provided.
-      SslConfig sslConfig = null;
-      if (context != null) {
-        sslConfig = context.getBean(SslConfig.class);
-      }
-
       final String connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
       return OnlineOfficeManager.builder()
           .urlConnection(connectionUrl)
-          .sslConfig(sslConfig)
+          .sslConfig(context == null ? null : context.getBean(SslConfig.class))
           .build();
     }
 
