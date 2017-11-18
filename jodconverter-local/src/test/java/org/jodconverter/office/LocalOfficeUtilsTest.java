@@ -22,8 +22,6 @@ package org.jodconverter.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.office.LocalOfficeUtils.toUrl;
 import static org.junit.Assume.assumeTrue;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +42,7 @@ public class LocalOfficeUtilsTest {
     AssertUtil.assertUtilityClassWellDefined(LocalOfficeUtils.class);
   }
 
-  /** Tests the OfficeUtils.toUrl function on unix OS. */
+  /** Tests the LocalOfficeUtils.toUrl function on unix OS. */
   @Test
   public void unixToUrl() {
 
@@ -55,7 +53,7 @@ public class LocalOfficeUtilsTest {
         .isEqualTo("file:///tmp/document%20with%20spaces.odt");
   }
 
-  /** Tests the OfficeUtils.toUrl function on Windows OS. */
+  /** Tests the LocalOfficeUtils.toUrl function on Windows OS. */
   @Test
   public void windowsToUrl() {
 
@@ -83,7 +81,7 @@ public class LocalOfficeUtilsTest {
   public void validateOfficeHome_WithNonDirectoryOfficeHome_ThrowsIllegalStateException()
       throws IOException {
 
-    final File tempFile = File.createTempFile("OfficeUtilsTest", "tmp");
+    final File tempFile = File.createTempFile("LocalOfficeUtilsTest", "tmp");
     tempFile.deleteOnExit();
 
     LocalOfficeUtils.validateOfficeHome(tempFile);
@@ -142,7 +140,7 @@ public class LocalOfficeUtilsTest {
   public void validateOfficeWorkingDirectory_WithFile_ThrowsIllegalStateException()
       throws IOException {
 
-    final File tempFile = File.createTempFile("OfficeUtilsTest", "tmp");
+    final File tempFile = File.createTempFile("LocalOfficeUtilsTest", "tmp");
     tempFile.deleteOnExit();
 
     LocalOfficeUtils.validateOfficeWorkingDirectory(tempFile);
@@ -157,15 +155,5 @@ public class LocalOfficeUtilsTest {
     final File workingDir = new File(tempDir, UUID.randomUUID().toString());
 
     LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir);
-  }
-
-  /** Tests that an OfficeException is swallowed by the stopQuietly function. */
-  @Test
-  public void stopQuietly_OfficeExceptionThrown_ExceptionSwallowed() throws OfficeException {
-
-    final OfficeManager officeManager = mock(OfficeManager.class);
-    doThrow(OfficeException.class).when(officeManager).stop();
-
-    LocalOfficeUtils.stopQuietly(officeManager);
   }
 }

@@ -257,16 +257,11 @@ public final class LocalOfficeUtils {
    * </pre>
    *
    * @param manager the manager to stop, may be null or already stopped.
+   * @deprecated Use {@link OfficeUtils#stopQuietly(OfficeManager)} instead.
    */
   public static void stopQuietly(final OfficeManager manager) {
 
-    try {
-      if (manager != null) {
-        manager.stop();
-      }
-    } catch (final OfficeException ex) { // NOSONAR
-      // ignore
-    }
+    OfficeUtils.stopQuietly(manager);
   }
 
   /**
