@@ -20,11 +20,12 @@
 package org.jodconverter.task;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
@@ -73,7 +74,7 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
       final HttpResponse response = onlineContext.getHttpClient().execute(request);
 
       final int code = response.getStatusLine().getStatusCode();
-      if (code >= 300) {
+      if (code != HttpStatus.SC_OK) {
         final OfficeException officeEx =
             new OfficeException(
                 "Error while connecting to LibreOffice Online server. Status Code: " + code);
@@ -82,8 +83,12 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
       }
 
       // Save converted file
-      final InputStream fileInputStream = response.getEntity().getContent();
-      FileUtils.copyInputStreamToFile(fileInputStream, target.getFile());
+      final HttpEntity entity = response.getEntity();
+      if (entity == null) {
+        throw new OfficeException("No content returned from LO online");
+      }
+      // Save converted file
+      FileUtils.copyInputStreamToFile(entity.getContent(), target.getFile());
       LOGGER.debug("Online conversion task terminated sucessfully.");
 
     } catch (IOException e) {

@@ -8,5 +8,6 @@ dependencies {
   compile libraries.httpcomponents_httpclient
   
   testCompile libraries.slf4j_log4j
+  testCompile libraries.wiremock
   testCompile project(path: ':jodconverter-core', configuration: 'tests')
 }

@@ -38,7 +38,7 @@ public class OnlineOfficeManagerPoolEntryITest {
     config.setWorkingDir(new File(System.getProperty("java.io.tmpdir")));
 
     final OnlineOfficeManagerPoolEntry officeManager =
-        new OnlineOfficeManagerPoolEntry("localhost", config);
+        new OnlineOfficeManagerPoolEntry("localhost", null, config);
     try {
       officeManager.start();
       assertThat(officeManager.isRunning()).isTrue();
@@ -65,7 +65,7 @@ public class OnlineOfficeManagerPoolEntryITest {
     config.setWorkingDir(new File(System.getProperty("java.io.tmpdir")));
 
     final OnlineOfficeManagerPoolEntry officeManager =
-        new OnlineOfficeManagerPoolEntry("http://localhost/", config);
+        new OnlineOfficeManagerPoolEntry("http://localhost/", null, config);
     try {
       officeManager.start();
       assertThat(officeManager.isRunning()).isTrue();
@@ -90,7 +90,8 @@ public class OnlineOfficeManagerPoolEntryITest {
       throws Exception {
 
     final OnlineOfficeManagerPoolEntry officeManager =
-        new OnlineOfficeManagerPoolEntry("localhost", new OnlineOfficeManagerPoolConfig(null));
+        new OnlineOfficeManagerPoolEntry(
+            "localhost", null, new OnlineOfficeManagerPoolConfig(null));
 
     String url =
         Whitebox.invokeMethod(officeManager, "buildUrl", "http://localhost/lool/convert-to");

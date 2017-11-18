@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+	<!-- Configure the SSL to secure communication with a Libre Office Online server. -->
+	<bean class="org.jodconverter.ssl.SslConfig">
+        <property name="enabled" value="true" />
+        
+        <!-- Available properties
+        <property name="enabled" value="true" />
+        <property name="clientAuth" value="want" />
+        <property name="ciphers" value="ciphers" />
+        <property name="enabledProtocols" value="enabledProtocols" />
+        <property name="keyAlias" value="keyAlias" />
+        <property name="keyPassword" value="keyPassword" />
+        <property name="keyStore" value="keyStore" />
+        <property name="keyStorePassword" value="keyStorePassword" />
+        <property name="keyStoreType" value="keyStoreType" />
+        <property name="keyStoreProvider" value="keyStoreProvider" />
+        <property name="trustStore" value="trustStore" />
+        <property name="trustStorePassword" value="trustStorePassword" />
+        <property name="trustStoreType" value="trustStoreType" />
+        <property name="trustStoreProvider" value="trustStoreProvider" />
+        <property name="protocol" value="TLS" />
+        -->
+        
+        <property name="trustStore" value="src/integTest/resources/clienttruststore.jks" />
+        <property name="trustStorePassword" value="clienttruststore" />
+        <property name="verifyHostname" value="false" />
+        
+    </bean>
+
+</beans>

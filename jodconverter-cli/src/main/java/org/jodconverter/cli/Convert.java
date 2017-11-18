@@ -40,9 +40,10 @@ import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.document.JsonDocumentFormatRegistry;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.LocalOfficeManager;
-import org.jodconverter.office.LocalOfficeUtils;
 import org.jodconverter.office.OfficeManager;
+import org.jodconverter.office.OfficeUtils;
 import org.jodconverter.office.OnlineOfficeManager;
+import org.jodconverter.ssl.SslConfig;
 
 /** Command line interface executable. */
 public final class Convert {
@@ -151,13 +152,24 @@ public final class Convert {
     }
   }
 
-  private static OfficeManager createOfficeManager(final CommandLine commandLine) {
+  private static OfficeManager createOfficeManager(
+      final CommandLine commandLine, final AbstractApplicationContext context) {
 
     // If the URL is present, we will use the online office manager and thus,
     // an office installation won't be required locally.
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
+
+      // Check if there is an SslConfig provided.
+      SslConfig sslConfig = null;
+      if (context != null) {
+        sslConfig = context.getBean(SslConfig.class);
+      }
+
       final String connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
-      return OnlineOfficeManager.builder().urlConnection(connectionUrl).build();
+      return OnlineOfficeManager.builder()
+          .urlConnection(connectionUrl)
+          .sslConfig(sslConfig)
+          .build();
     }
 
     // Not online conversion...
@@ -207,7 +219,7 @@ public final class Convert {
   private static FilterChain getFilterChain(final ApplicationContext context) {
 
     if (context != null) {
-      return (FilterChain) context.getBean("filterChain");
+      return context.getBean(FilterChain.class);
     }
 
     return null;
@@ -288,7 +300,7 @@ public final class Convert {
       final AbstractApplicationContext context = getApplicationContextOption(commandLine);
 
       // Create a default office manager from the command line
-      final OfficeManager officeManager = createOfficeManager(commandLine);
+      final OfficeManager officeManager = createOfficeManager(commandLine, context);
 
       try {
         // Starts the manager
@@ -317,7 +329,7 @@ public final class Convert {
         }
       } finally {
         printInfo("Stopping office");
-        LocalOfficeUtils.stopQuietly(officeManager);
+        OfficeUtils.stopQuietly(officeManager);
 
         // Close the application context if required
         if (context != null) {

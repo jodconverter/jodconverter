@@ -23,6 +23,8 @@ import java.io.File;
 
 import org.apache.commons.lang3.Validate;
 
+import org.jodconverter.ssl.SslConfig;
+
 /**
  * {@link OfficeManager} pool implementation that does not depend on an office installation to
  * process conversion taks.
@@ -31,6 +33,7 @@ public final class OnlineOfficeManager extends AbstractOfficeManagerPool {
 
   private final int poolSize;
   private final String urlConnection;
+  private final SslConfig sslConfig;
 
   /**
    * Creates a new builder instance.
@@ -65,11 +68,15 @@ public final class OnlineOfficeManager extends AbstractOfficeManagerPool {
   }
 
   private OnlineOfficeManager(
-      final int poolSize, final String urlConnection, final OnlineOfficeManagerPoolConfig config) {
+      final int poolSize,
+      final String urlConnection,
+      final SslConfig sslConfig,
+      final OnlineOfficeManagerPoolConfig config) {
     super(poolSize, config);
 
     this.poolSize = poolSize;
     this.urlConnection = urlConnection;
+    this.sslConfig = sslConfig;
   }
 
   @Override
@@ -79,7 +86,7 @@ public final class OnlineOfficeManager extends AbstractOfficeManagerPool {
     for (int i = 0; i < poolSize; i++) {
       entries[i] =
           new OnlineOfficeManagerPoolEntry(
-              urlConnection, (OnlineOfficeManagerPoolEntryConfig) config);
+              urlConnection, sslConfig, (OnlineOfficeManagerPoolEntryConfig) config);
     }
     return entries;
   }
@@ -98,8 +105,8 @@ public final class OnlineOfficeManager extends AbstractOfficeManagerPool {
     public static final int MAX_POOL_SIZE = 1000;
 
     private int poolSize = DEFAULT_POOL_SIZE;
-
     private String urlConnection;
+    private SslConfig sslConfig;
 
     // Private ctor so only OnlineOfficeManager can initialize an instance of this builder.
     private Builder() {
@@ -123,7 +130,8 @@ public final class OnlineOfficeManager extends AbstractOfficeManagerPool {
       config.setTaskExecutionTimeout(taskExecutionTimeout);
       config.setTaskQueueTimeout(taskQueueTimeout);
 
-      final OnlineOfficeManager manager = new OnlineOfficeManager(poolSize, urlConnection, config);
+      final OnlineOfficeManager manager =
+          new OnlineOfficeManager(poolSize, urlConnection, sslConfig, config);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
@@ -157,6 +165,18 @@ public final class OnlineOfficeManager extends AbstractOfficeManagerPool {
 
       Validate.notBlank(urlConnection);
       this.urlConnection = urlConnection;
+      return this;
+    }
+
+    /**
+     * Specifies the SSL configuration to secure communication with LibreOffice Online.
+     *
+     * @param sslConfig TheSSL configuration .
+     * @return This builder instance.
+     */
+    public Builder sslConfig(final SslConfig sslConfig) {
+
+      this.sslConfig = sslConfig;
       return this;
     }
   }

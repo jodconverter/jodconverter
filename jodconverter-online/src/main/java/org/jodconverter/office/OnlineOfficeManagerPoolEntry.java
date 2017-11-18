@@ -19,15 +19,35 @@
 
 package org.jodconverter.office;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.Map;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.HttpClient;
+import org.apache.commons.lang3.Validate;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.PrivateKeyDetails;
+import org.apache.http.ssl.PrivateKeyStrategy;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
 
+import org.jodconverter.ssl.SslConfig;
 import org.jodconverter.task.OfficeTask;
 
 /**
@@ -40,53 +60,45 @@ import org.jodconverter.task.OfficeTask;
  */
 class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
-  final String connectionUrl;
+  private final String connectionUrl;
+  private final SslConfig sslConfig;
+
+  private static final class SelectByAlias implements PrivateKeyStrategy {
+
+    private final String keyAlias;
+
+    @Override
+    public String chooseAlias(final Map<String, PrivateKeyDetails> aliases, final Socket socket) {
+
+      for (final String key : aliases.keySet()) {
+        if (StringUtils.equalsIgnoreCase(key, keyAlias)) {
+          return key;
+        }
+      }
+      return null;
+    }
+
+    public SelectByAlias(final String keyAlias) {
+      this.keyAlias = keyAlias;
+    }
+  }
 
   /**
    * Creates a new pool entry with the specified configuration.
    *
    * @param connectionUrl The URL to the LibreOffice Online server.
+   * @param sslConfig The SSL configuration used to secure communication with LibreOffice Online
+   *     server.
    * @param config The entry configuration.
    */
   public OnlineOfficeManagerPoolEntry(
-      final String connectionUrl, final OnlineOfficeManagerPoolEntryConfig config) {
+      final String connectionUrl,
+      final SslConfig sslConfig,
+      final OnlineOfficeManagerPoolEntryConfig config) {
     super(config);
 
     this.connectionUrl = connectionUrl;
-  }
-
-  @Override
-  protected void doStart() throws OfficeException {
-
-    taskExecutor.setAvailable(true);
-  }
-
-  @Override
-  protected void doExecute(final OfficeTask task) throws OfficeException {
-
-    try (final CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
-      final String conversionUrl = buildUrl(connectionUrl);
-      task.execute(
-          // TODO: Create a dedicated class for an OnlineOfficeContext
-          new OnlineOfficeContext() {
-            @Override
-            public HttpClient getHttpClient() {
-              return httpClient;
-            }
-
-            @Override
-            public String getConversionUrl() {
-              return conversionUrl;
-            }
-          });
-    } catch (IOException ex) {
-      throw new OfficeException("Unable to create the HTTP client", ex);
-    }
-  }
-
-  @Override
-  protected void doStop() throws OfficeException {
-    // Nothing to stop here.
+    this.sslConfig = sslConfig;
   }
 
   private String buildUrl(final String connectionUrl) throws MalformedURLException {
@@ -98,10 +110,129 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     final String path = url.toExternalForm().toLowerCase();
     if (StringUtils.endsWithAny(path, "lool/convert-to", "lool/convert-to/")) {
       return StringUtils.appendIfMissing(connectionUrl, "/");
-    } else if (StringUtils.endsWith(path, "/")) {
-      return connectionUrl + "lool/convert-to/";
-    } else {
-      return connectionUrl + "/lool/convert-to/";
+    } else if (StringUtils.endsWithAny(path, "lool", "lool/")) {
+      return StringUtils.appendIfMissing(connectionUrl, "/") + "convert-to/";
     }
+    return StringUtils.appendIfMissing(connectionUrl, "/") + "lool/convert-to/";
+  }
+
+  private void configureKeyMaterial(final SSLContextBuilder sslBuilder)
+      throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException,
+          CertificateException, IOException, NoSuchProviderException {
+
+    final KeyStore keystore =
+        loadStore(
+            sslConfig.getKeyStore(),
+            sslConfig.getKeyStorePassword(),
+            sslConfig.getKeyStoreType(),
+            sslConfig.getKeyStoreProvider());
+    if (keystore != null) {
+      sslBuilder.loadKeyMaterial(
+          keystore,
+          sslConfig.getKeyPassword() != null
+              ? sslConfig.getKeyPassword().toCharArray()
+              : sslConfig.getKeyStorePassword().toCharArray(),
+          sslConfig.getKeyAlias() == null ? null : new SelectByAlias(sslConfig.getKeyAlias()));
+    }
+  }
+
+  private SSLConnectionSocketFactory configureSsl() throws OfficeException {
+
+    if (sslConfig == null || !sslConfig.isEnabled()) {
+      return null;
+    }
+
+    try {
+      final SSLContextBuilder sslBuilder = SSLContexts.custom();
+      sslBuilder.setProtocol(sslConfig.getProtocol());
+      configureKeyMaterial(sslBuilder);
+      configureTrustMaterial(sslBuilder);
+
+      final SSLContext sslcontext = sslBuilder.build();
+
+      return new SSLConnectionSocketFactory(
+          sslcontext,
+          sslConfig.getEnabledProtocols(),
+          sslConfig.getCiphers(),
+          sslConfig.isVerifyHostname()
+              ? SSLConnectionSocketFactory.getDefaultHostnameVerifier()
+              : NoopHostnameVerifier.INSTANCE);
+
+    } catch (IOException
+        | KeyManagementException
+        | NoSuchAlgorithmException
+        | KeyStoreException
+        | CertificateException
+        | UnrecoverableKeyException
+        | NoSuchProviderException ex) {
+      throw new OfficeException("Unable to create SSL context.", ex);
+    }
+  }
+
+  private void configureTrustMaterial(final SSLContextBuilder sslBuilder)
+      throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException,
+          NoSuchProviderException {
+
+    final KeyStore truststore =
+        loadStore(
+            sslConfig.getTrustStore(),
+            sslConfig.getTrustStorePassword(),
+            sslConfig.getTrustStoreType(),
+            sslConfig.getTrustStoreProvider());
+    if (truststore != null) {
+      sslBuilder.loadTrustMaterial(truststore, null);
+    }
+  }
+
+  @Override
+  protected void doExecute(final OfficeTask task) throws OfficeException {
+
+    final SSLConnectionSocketFactory sslFactory = configureSsl();
+    try (final CloseableHttpClient httpClient =
+        HttpClients.custom().setSSLSocketFactory(sslFactory).build()) {
+      task.execute(new OnlineOfficeConnection(httpClient, buildUrl(connectionUrl)));
+    } catch (IOException ex) {
+      throw new OfficeException("Unable to create the HTTP client", ex);
+    }
+  }
+
+  @Override
+  protected void doStart() throws OfficeException {
+
+    taskExecutor.setAvailable(true);
+  }
+
+  @Override
+  protected void doStop() throws OfficeException {
+    // Nothing to stop here.
+  }
+
+  private KeyStore loadStore(
+      final String store,
+      final String storePassword,
+      final String storeType,
+      final String storeProvider)
+      throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException,
+          NoSuchProviderException {
+
+    if (store != null) {
+      Validate.notNull(storePassword, "The password of store {0} must not be null", store);
+
+      KeyStore keyStore = null;
+
+      final String type = storeType == null ? KeyStore.getDefaultType() : storeType;
+      if (storeProvider == null) {
+        keyStore = KeyStore.getInstance(type);
+      } else {
+        keyStore = KeyStore.getInstance(type, storeProvider);
+      }
+
+      try (FileInputStream instream = new FileInputStream(new File(store))) {
+        keyStore.load(instream, storePassword.toCharArray());
+      }
+
+      return keyStore;
+    }
+    return null;
   }
 }
