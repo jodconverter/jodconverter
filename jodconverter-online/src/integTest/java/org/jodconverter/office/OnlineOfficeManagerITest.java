@@ -264,6 +264,7 @@ public class OnlineOfficeManagerITest {
       final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
       assertThat(content).contains("Test Document");
     } finally {
+      FileUtils.deleteQuietly(outputFile);
       manager.stop();
     }
   }
