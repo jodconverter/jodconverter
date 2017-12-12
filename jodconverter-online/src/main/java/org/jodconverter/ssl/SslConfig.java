@@ -129,7 +129,7 @@ public class SslConfig {
   }
 
   /**
-   * Gets the password used to access the key store.
+   * Gets the password used to load the key store.
    *
    * @return The key store password.
    */
@@ -138,7 +138,7 @@ public class SslConfig {
   }
 
   /**
-   * Sets the password used to access the key store.
+   * Sets the password used to load the key store.
    *
    * @param keyStorePassword The key store password.
    */
@@ -219,7 +219,7 @@ public class SslConfig {
   }
 
   /**
-   * Gets the password used to access the trust store.
+   * Gets the password used to load the trust store.
    *
    * @return The trust store password.
    */
@@ -228,7 +228,7 @@ public class SslConfig {
   }
 
   /**
-   * Sets the password used to access the trust store.
+   * Sets the password used to load the trust store.
    *
    * @param trustStorePassword The trust store password.
    */

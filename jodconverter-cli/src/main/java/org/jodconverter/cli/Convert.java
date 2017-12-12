@@ -82,7 +82,7 @@ public final class Convert {
   private static final Option OPT_DISABLE_OPENGL =
       Option.builder("g").longOpt("disable-opengl").desc("Disable OpenGL (optional)").build();
   private static final Option OPT_HELP =
-      Option.builder("h").longOpt("help").desc("print help message").build();
+      Option.builder("h").longOpt("help").desc("displays help at the command prompt").build();
   private static final Option OPT_OFFICE_HOME =
       Option.builder("i")
           .longOpt("office-home")
@@ -134,7 +134,7 @@ public final class Convert {
           .desc("use settings from the given user installation dir (optional)")
           .build();
   private static final Option OPT_VERSION =
-      Option.builder("v").longOpt("version").desc("print version").build();
+      Option.builder("v").longOpt("version").desc("displays version information and exit").build();
 
   private static final Options OPTIONS = initOptions();
 
