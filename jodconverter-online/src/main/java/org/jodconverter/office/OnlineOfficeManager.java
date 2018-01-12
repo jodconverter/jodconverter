@@ -20,6 +20,7 @@
 package org.jodconverter.office;
 
 import java.io.File;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.Validate;
 
@@ -82,13 +83,12 @@ public final class OnlineOfficeManager extends AbstractOfficeManagerPool {
   @Override
   protected OnlineOfficeManagerPoolEntry[] createPoolEntries() {
 
-    OnlineOfficeManagerPoolEntry[] entries = new OnlineOfficeManagerPoolEntry[poolSize];
-    for (int i = 0; i < poolSize; i++) {
-      entries[i] =
-          new OnlineOfficeManagerPoolEntry(
-              urlConnection, sslConfig, (OnlineOfficeManagerPoolEntryConfig) config);
-    }
-    return entries;
+    return IntStream.range(0, poolSize)
+        .mapToObj(
+            i ->
+                new OnlineOfficeManagerPoolEntry(
+                    urlConnection, sslConfig, (OnlineOfficeManagerPoolEntryConfig) config))
+        .toArray(OnlineOfficeManagerPoolEntry[]::new);
   }
 
   /**

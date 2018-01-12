@@ -24,8 +24,8 @@ import static org.assertj.core.api.Assertions.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 public final class AssertUtil {
 
@@ -62,12 +62,14 @@ public final class AssertUtil {
     }
 
     // Check for static method only
-    for (final Method method : clazz.getMethods()) {
-      assertThat(
-              !Modifier.isStatic(method.getModifiers()) && method.getDeclaringClass().equals(clazz))
-          .as("Check class non-static method")
-          .isFalse();
-    }
+    Arrays.stream(clazz.getMethods())
+        .forEach(
+            method ->
+                assertThat(
+                        !Modifier.isStatic(method.getModifiers())
+                            && method.getDeclaringClass().equals(clazz))
+                    .as("Check class non-static method")
+                    .isFalse());
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -92,14 +93,8 @@ public abstract class AbstractProcessManager implements ProcessManager {
       return "";
     }
 
-    final StringBuilder strlines = new StringBuilder();
-    for (final String line : lines) {
-      // Ignore empty lines
-      if (!StringUtils.isBlank(line)) {
-        strlines.append('\n').append(line);
-      }
-    }
-    return strlines.toString();
+    // Ignore empty lines
+    return lines.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("\n"));
   }
 
   /**

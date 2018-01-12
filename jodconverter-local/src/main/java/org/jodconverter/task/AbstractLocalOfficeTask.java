@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
 
@@ -64,9 +65,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   protected static void addPropertiesToMap(
       final Map<String, Object> properties, final Map<String, Object> toAddProperties) {
 
-    if (toAddProperties != null) {
-      properties.putAll(toAddProperties);
-    }
+    Optional.ofNullable(toAddProperties).ifPresent(properties::putAll);
   }
 
   /**

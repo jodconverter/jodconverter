@@ -19,8 +19,8 @@
 
 package org.jodconverter.spring;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -75,11 +75,11 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
     final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
 
     if (!StringUtils.isBlank(portNumbers)) {
-      final Set<Integer> iports = new HashSet<>();
-      for (final String portNumber : StringUtils.split(portNumbers, ", ")) {
-        iports.add(NumberUtils.toInt(portNumber, 2002));
-      }
-      builder.portNumbers(ArrayUtils.toPrimitive(iports.toArray(new Integer[iports.size()])));
+      builder.portNumbers(
+          ArrayUtils.toPrimitive(
+              Stream.of(StringUtils.split(portNumbers, ", "))
+                  .map(str -> NumberUtils.toInt(str, 2002))
+                  .toArray(Integer[]::new)));
     }
 
     builder.officeHome(officeHome);
@@ -133,9 +133,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   private void logSupportedGroupFormats(final String text, final Set<DocumentFormat> formats) {
 
     LOGGER.info(text);
-    for (final DocumentFormat format : formats) {
-      LOGGER.info(format.getName());
-    }
+    formats.stream().map(DocumentFormat::getName).forEach(LOGGER::info);
   }
 
   /**

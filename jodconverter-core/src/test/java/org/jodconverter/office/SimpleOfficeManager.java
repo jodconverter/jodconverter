@@ -20,6 +20,7 @@
 package org.jodconverter.office;
 
 import java.io.File;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.Validate;
 
@@ -70,11 +71,10 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
   @Override
   protected SimpleOfficeManagerPoolEntry[] createPoolEntries() {
 
-    SimpleOfficeManagerPoolEntry[] entries = new SimpleOfficeManagerPoolEntry[poolSize];
-    for (int i = 0; i < poolSize; i++) {
-      entries[i] = new SimpleOfficeManagerPoolEntry((SimpleOfficeManagerPoolEntryConfig) config);
-    }
-    return entries;
+    return IntStream.range(0, poolSize)
+        .mapToObj(
+            i -> new SimpleOfficeManagerPoolEntry((SimpleOfficeManagerPoolEntryConfig) config))
+        .toArray(SimpleOfficeManagerPoolEntry[]::new);
   }
 
   /**

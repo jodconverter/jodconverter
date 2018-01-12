@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.DocumentConverter;
 
-@SuppressWarnings("PMD")
 public class ConverterServlet extends HttpServlet {
   private static final long serialVersionUID = -591469426224201748L;
 
@@ -136,12 +134,11 @@ public class ConverterServlet extends HttpServlet {
       final ServletFileUpload fileUpload, final HttpServletRequest request)
       throws FileUploadException {
 
-    final List<FileItem> fileItems = fileUpload.parseRequest(request);
-    for (final FileItem fileItem : fileItems) {
-      if (!fileItem.isFormField()) {
-        return fileItem;
-      }
-    }
-    return null;
+    return fileUpload
+        .parseRequest(request)
+        .stream()
+        .filter(fileItem -> !fileItem.isFormField())
+        .findFirst()
+        .orElse(null);
   }
 }

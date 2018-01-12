@@ -22,6 +22,7 @@ package org.jodconverter.cli;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Optional;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -211,11 +212,7 @@ public final class Convert {
 
   private static FilterChain getFilterChain(final ApplicationContext context) {
 
-    if (context != null) {
-      return context.getBean(FilterChain.class);
-    }
-
-    return null;
+    return Optional.ofNullable(context).map(ctx -> ctx.getBean(FilterChain.class)).orElse(null);
   }
 
   private static DocumentFormatRegistry getRegistryOption(final CommandLine commandLine)

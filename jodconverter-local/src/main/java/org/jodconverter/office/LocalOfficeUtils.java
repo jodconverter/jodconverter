@@ -21,8 +21,11 @@ package org.jodconverter.office;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -115,13 +118,11 @@ public final class LocalOfficeUtils {
 
     private static File findOfficeHome(final String executablePath, final String... homePaths) {
 
-      for (final String homePath : homePaths) {
-        final File homeDir = new File(homePath);
-        if (new File(homeDir, executablePath).isFile()) {
-          return homeDir;
-        }
-      }
-      return null;
+      return Stream.of(homePaths)
+          .map(File::new)
+          .filter(homeDir -> new File(homeDir, executablePath).isFile())
+          .findFirst()
+          .orElse(null);
     }
   }
 
@@ -167,15 +168,12 @@ public final class LocalOfficeUtils {
     // Build the office URL list and return it
     final List<OfficeUrl> officeUrls =
         new ArrayList<>(ArrayUtils.getLength(portNumbers) + ArrayUtils.getLength(pipeNames));
-    if (pipeNames != null) {
-      for (final String pipeName : pipeNames) {
-        officeUrls.add(new OfficeUrl(pipeName));
-      }
-    }
+    Optional.ofNullable(pipeNames)
+        .map(Stream::of)
+        .ifPresent(stream -> stream.map(OfficeUrl::new).forEach(officeUrls::add));
+    // We cannot do the same for an int[]
     if (portNumbers != null) {
-      for (final int portNumber : portNumbers) {
-        officeUrls.add(new OfficeUrl(portNumber));
-      }
+      Arrays.stream(portNumbers).forEach(portNumber -> officeUrls.add(new OfficeUrl(portNumber)));
     }
     return officeUrls.toArray(new OfficeUrl[officeUrls.size()]);
   }

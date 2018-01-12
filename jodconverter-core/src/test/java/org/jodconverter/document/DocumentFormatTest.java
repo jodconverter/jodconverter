@@ -29,9 +29,7 @@ public class DocumentFormatTest {
 
   private void toString(final Set<DocumentFormat> formats) {
 
-    for (final DocumentFormat format : formats) {
-      format.toString();
-    }
+    formats.stream().forEach(DocumentFormat::toString);
   }
 
   /** Since toString is overridden, ensure that none of the default formats throws an exception. */

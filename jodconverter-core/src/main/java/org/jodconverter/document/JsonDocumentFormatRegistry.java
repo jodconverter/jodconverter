@@ -76,16 +76,6 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
     // Fill the registry with loaded formats. Note that we have to use
     // the constructor in order top create read only formats.
-    for (final DocumentFormat format : formats) {
-      addFormat(
-          new DocumentFormat(
-              format.getName(),
-              format.getExtension(),
-              format.getMediaType(),
-              format.getInputFamily(),
-              format.getLoadProperties(),
-              format.getStoreProperties(),
-              true));
-    }
+    formats.stream().map(DocumentFormat::readOnlyCopy).forEach(this::addFormat);
   }
 }

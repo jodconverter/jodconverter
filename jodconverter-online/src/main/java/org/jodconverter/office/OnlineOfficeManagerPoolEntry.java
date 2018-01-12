@@ -70,12 +70,12 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     @Override
     public String chooseAlias(final Map<String, PrivateKeyDetails> aliases, final Socket socket) {
 
-      for (final String key : aliases.keySet()) {
-        if (StringUtils.equalsIgnoreCase(key, keyAlias)) {
-          return key;
-        }
-      }
-      return null;
+      return aliases
+          .keySet()
+          .stream()
+          .filter(key -> StringUtils.equalsIgnoreCase(key, keyAlias))
+          .findFirst()
+          .orElse(null);
     }
 
     public SelectByAlias(final String keyAlias) {

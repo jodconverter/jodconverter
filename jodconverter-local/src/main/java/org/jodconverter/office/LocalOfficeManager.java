@@ -77,12 +77,12 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
   @Override
   protected OfficeProcessManagerPoolEntry[] createPoolEntries() {
 
-    OfficeProcessManagerPoolEntry[] entries = new OfficeProcessManagerPoolEntry[officeUrls.length];
-    for (int i = 0; i < officeUrls.length; i++) {
-      entries[i] =
-          new OfficeProcessManagerPoolEntry(officeUrls[i], (OfficeProcessManagerPoolConfig) config);
-    }
-    return entries;
+    return Arrays.stream(officeUrls)
+        .map(
+            officeUrl ->
+                new OfficeProcessManagerPoolEntry(
+                    officeUrl, (OfficeProcessManagerPoolConfig) config))
+        .toArray(OfficeProcessManagerPoolEntry[]::new);
   }
 
   /**

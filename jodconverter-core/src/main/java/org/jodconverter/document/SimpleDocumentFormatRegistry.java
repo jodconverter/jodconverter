@@ -22,7 +22,9 @@ package org.jodconverter.document;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,15 +60,14 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
   @Override
   public Set<DocumentFormat> getOutputFormats(final DocumentFamily family) {
 
-    final Set<DocumentFormat> formats = new HashSet<>();
-
-    if (family != null) {
-      for (final DocumentFormat format : fmtsByExtension.values()) {
-        if (format.getStoreProperties(family) != null) {
-          formats.add(format);
-        }
-      }
-    }
-    return formats;
+    return Optional.ofNullable(family)
+        .map(
+            docFam ->
+                fmtsByExtension
+                    .values()
+                    .stream()
+                    .filter(format -> format.getStoreProperties(docFam) != null)
+                    .collect(Collectors.toSet()))
+        .orElse(new HashSet<>());
   }
 }

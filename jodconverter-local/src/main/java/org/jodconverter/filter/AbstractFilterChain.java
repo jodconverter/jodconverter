@@ -19,11 +19,11 @@
 
 package org.jodconverter.filter;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.lang3.ArrayUtils;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.sun.star.lang.XComponent;
 
@@ -62,13 +62,9 @@ public abstract class AbstractFilterChain implements FilterChain {
 
     this.readOnly = readOnly;
     this.pos = 0;
-    this.filters = new ArrayList<>();
-
-    if (!ArrayUtils.isEmpty(filters)) {
-      for (final Filter filter : filters) {
-        this.filters.add(filter);
-      }
-    }
+    this.filters =
+        Arrays.stream(Optional.ofNullable(filters).orElse(new Filter[0]))
+            .collect(Collectors.toList());
 
     if (readOnly) {
       this.filters = Collections.unmodifiableList(this.filters);

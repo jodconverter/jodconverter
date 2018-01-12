@@ -45,11 +45,11 @@ public class DocumentFormat {
   private final Map<DocumentFamily, Map<String, Object>> storeProperties;
 
   /**
-   * Creates a new {@link DocumentFormat} and modifiable from the specified format.
+   * Creates a new modifiable {@link DocumentFormat} from the specified format.
    *
    * @param sourceFormat The source document format.
-   * @return A {@link DocumentFormat}, which will not be read only, like the default document
-   *     formats are.
+   * @return A {@link DocumentFormat}, which will be modifiable, unlike the default document formats
+   *     are.
    */
   public static DocumentFormat copy(final DocumentFormat sourceFormat) {
 
@@ -61,6 +61,25 @@ public class DocumentFormat {
         sourceFormat.getLoadProperties(),
         sourceFormat.getStoreProperties(),
         false);
+  }
+
+  /**
+   * Creates a new unmodifiable {@link DocumentFormat} from the specified format.
+   *
+   * @param sourceFormat The source document format.
+   * @return A {@link DocumentFormat}, which will be unmodifiable, like the default document formats
+   *     are.
+   */
+  public static DocumentFormat readOnlyCopy(final DocumentFormat sourceFormat) {
+
+    return new DocumentFormat(
+        sourceFormat.getName(),
+        sourceFormat.getExtension(),
+        sourceFormat.getMediaType(),
+        sourceFormat.getInputFamily(),
+        sourceFormat.getLoadProperties(),
+        sourceFormat.getStoreProperties(),
+        true);
   }
 
   /**

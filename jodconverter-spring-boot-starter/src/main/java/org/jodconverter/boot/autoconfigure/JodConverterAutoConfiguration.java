@@ -19,8 +19,7 @@
 
 package org.jodconverter.boot.autoconfigure;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,11 +60,11 @@ public class JodConverterAutoConfiguration {
     final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
 
     if (!StringUtils.isBlank(properties.getPortNumbers())) {
-      final Set<Integer> iports = new HashSet<>();
-      for (final String portNumber : StringUtils.split(properties.getPortNumbers(), ", ")) {
-        iports.add(NumberUtils.toInt(portNumber, 2002));
-      }
-      builder.portNumbers(ArrayUtils.toPrimitive(iports.toArray(new Integer[iports.size()])));
+      builder.portNumbers(
+          ArrayUtils.toPrimitive(
+              Stream.of(StringUtils.split(properties.getPortNumbers(), ", "))
+                  .map(str -> NumberUtils.toInt(str, 2002))
+                  .toArray(Integer[]::new)));
     }
 
     builder.officeHome(properties.getOfficeHome());
