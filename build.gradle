@@ -20,7 +20,6 @@ buildscript {
     classpath "io.spring.gradle:dependency-management-plugin:$springDependencyManagementVersion"
     classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$nexusStagingVersion"
     classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:$coverallsVersion"
-    classpath "org.standardout:gradle-versioneye-plugin:$versioneyeVersion"
   }
 }
 
@@ -115,20 +114,6 @@ configure(javaprojects) {
 
   // Apply the gradle file specific to all java projects
   apply from: "$rootDir/gradle/java-projects.gradle"
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Versioneye configuration
-
-// Update project's dependencies status on http://www.versioneye.com
-apply plugin: 'org.standardout.versioneye'
-
-versioneye {
-  includePlugins = false
-  includeSubProjects = true
-  exclude 'testCompile', 'testCompileClasspath', 'testCompileOnly', 'testImplementation', 'testRuntime', 'testRuntimeClasspath', 'testRuntimeOnly', 'integTestCompile', 'integTestCompileClasspath', 'integTestCompileOnly', 'integTestImplementation', 'integTestRuntime', 'integTestRuntimeClasspath', 'integTestRuntimeOnly', 'checkstyle', 'jacocoAgent', 'jacocoAnt', 'pmd', 'tomcat'
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
