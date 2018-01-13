@@ -164,11 +164,11 @@ public final class CliConverter {
       final String outputFullPath = FilenameUtils.getFullPath(outputFilename);
       final File outputDirectory =
           StringUtils.isBlank(outputFullPath)
-              ? (outputDir == null // NOSONAR
-                  ? (StringUtils.isBlank(inputFullPath) // NOSONAR
+              ? outputDir == null // NOSONAR
+                  ? StringUtils.isBlank(inputFullPath) // NOSONAR
                       ? new File(".")
-                      : new File(inputFullPath))
-                  : outputDir)
+                      : new File(inputFullPath)
+                  : outputDir
               : new File(outputFullPath);
 
       // Convert the file

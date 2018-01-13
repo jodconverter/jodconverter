@@ -29,7 +29,7 @@ import java.io.File;
 interface OfficeManagerPoolConfig { // NOSONAR
 
   /** The default maximum living time of a task in the conversion queue. */
-  public static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds
+  long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds
 
   /**
    * Sets the maximum living time of a task in the conversion queue. The task will be removed from
@@ -39,7 +39,7 @@ interface OfficeManagerPoolConfig { // NOSONAR
    *
    * @return The task queue timeout, in milliseconds.
    */
-  public long getTaskQueueTimeout();
+  long getTaskQueueTimeout();
 
   /**
    * Gets the directory where temporary files will be created when working with streams.
@@ -49,7 +49,7 @@ interface OfficeManagerPoolConfig { // NOSONAR
    *
    * @return The working directory.
    */
-  public File getWorkingDir();
+  File getWorkingDir();
 
   /**
    * Sets the maximum living time of a task in the conversion queue. The task will be removed from
@@ -59,12 +59,12 @@ interface OfficeManagerPoolConfig { // NOSONAR
    *
    * @param taskQueueTimeout The task queue timeout, in milliseconds.
    */
-  public void setTaskQueueTimeout(final long taskQueueTimeout);
+  void setTaskQueueTimeout(final long taskQueueTimeout);
 
   /**
    * Sets the directory where temporary files will be created when working with streams.
    *
    * @param workingDir The new working directory.
    */
-  public void setWorkingDir(final File workingDir);
+  void setWorkingDir(final File workingDir);
 }

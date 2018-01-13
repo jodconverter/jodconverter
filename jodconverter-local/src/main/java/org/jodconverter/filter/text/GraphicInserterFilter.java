@@ -65,7 +65,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
   private static Dimension getImageSize(final File image) throws OfficeException {
 
     try {
-      try (final ImageInputStream inputStream = ImageIO.createImageInputStream(image)) {
+      try (ImageInputStream inputStream = ImageIO.createImageInputStream(image)) {
         final Iterator<ImageReader> readers = ImageIO.getImageReaders(inputStream);
         if (readers.hasNext()) {
           final ImageReader reader = readers.next();

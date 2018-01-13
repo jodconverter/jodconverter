@@ -152,7 +152,7 @@ public class LocalConverterTest {
 
     final File targetFile = new File(outputDir, "test.pdf");
 
-    try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       LocalConverter.make(officeManager)
           .convert(inputStream)
           .as(DefaultDocumentFormatRegistry.TXT)
@@ -169,8 +169,7 @@ public class LocalConverterTest {
   public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream()
       throws Exception {
 
-    try (final FileOutputStream outputStream =
-        new FileOutputStream(new File(outputDir, "test.pdf"))) {
+    try (FileOutputStream outputStream = new FileOutputStream(new File(outputDir, "test.pdf"))) {
       LocalConverter.make(officeManager)
           .convert(SOURCE_FILE)
           .to(outputStream)

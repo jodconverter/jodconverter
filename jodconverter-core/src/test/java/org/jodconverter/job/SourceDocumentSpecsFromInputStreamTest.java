@@ -50,7 +50,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
   @Test
   public void getFile_WhenIoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
 
-    try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       final SourceDocumentSpecsFromInputStream specs =
           new SourceDocumentSpecsFromInputStream(inputStream, testFolder.getRoot(), false);
 
@@ -92,7 +92,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
     final File tempFile = testFolder.newFile("onConsumed_WhenCloseStreamIsTrue_.doc");
     assertThat(tempFile).exists();
 
-    try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       final SourceDocumentSpecsFromInputStream specs =
           new SourceDocumentSpecsFromInputStream(inputStream, tempFile, true);
 
@@ -113,7 +113,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
     final File tempFile = testFolder.newFile("onConsumed_WhenCloseStreamIsFalse.doc");
     assertThat(tempFile).exists();
 
-    try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       final SourceDocumentSpecsFromInputStream specs =
           new SourceDocumentSpecsFromInputStream(inputStream, tempFile, false);
 
@@ -133,7 +133,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
     final File tempFile = testFolder.newFile("ctor_WithValidValues.doc");
     assertThat(tempFile).exists();
 
-    try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
 
       final SourceDocumentSpecsFromInputStream specs =
           new SourceDocumentSpecsFromInputStream(inputStream, tempFile, false);

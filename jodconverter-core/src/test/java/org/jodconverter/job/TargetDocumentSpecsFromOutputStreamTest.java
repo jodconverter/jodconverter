@@ -84,7 +84,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    try (final FileOutputStream outputStream =
+    try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
@@ -107,7 +107,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    try (final FileOutputStream outputStream =
+    try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
@@ -130,7 +130,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    try (final FileOutputStream outputStream =
+    try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
@@ -153,7 +153,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    try (final FileOutputStream outputStream =
+    try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
@@ -175,7 +175,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
 
-    try (final FileOutputStream outputStream =
+    try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
 
       final Map<String, Object> storeProperties = new HashMap<>();

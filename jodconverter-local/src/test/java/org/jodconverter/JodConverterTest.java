@@ -76,7 +76,7 @@ public class JodConverterTest {
   @Test
   public void convert_FromStream_CallForwardToLocalConverter() throws Exception {
 
-    try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
 
       JodConverter.convert(inputStream);
 
@@ -90,7 +90,7 @@ public class JodConverterTest {
   @Test
   public void convert_FromStreamWithCloseArgument_CallForwardToLocalConverter() throws Exception {
 
-    try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
 
       JodConverter.convert(inputStream, false);
 

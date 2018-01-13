@@ -319,7 +319,7 @@ public final class DefaultDocumentFormatRegistry {
 
     private static DocumentFormatRegistry create() {
 
-      try (final InputStream input =
+      try (InputStream input =
           DefaultDocumentFormatRegistry.class.getResourceAsStream("/document-formats.json")) {
         return JsonDocumentFormatRegistry.create(input);
       } catch (IOException ex) {

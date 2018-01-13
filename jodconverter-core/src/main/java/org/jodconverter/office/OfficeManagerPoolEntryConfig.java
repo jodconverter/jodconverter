@@ -27,7 +27,7 @@ package org.jodconverter.office;
 interface OfficeManagerPoolEntryConfig { // NOSONAR
 
   /** The default timeout when processing a task. */
-  public static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120000L; // 2 minutes
+  long DEFAULT_TASK_EXECUTION_TIMEOUT = 120000L; // 2 minutes
 
   /**
    * Gets the maximum time allowed to process a task. If the processing time of a task is longer
@@ -37,7 +37,7 @@ interface OfficeManagerPoolEntryConfig { // NOSONAR
    *
    * @return The task execution timeout, in milliseconds.
    */
-  public long getTaskExecutionTimeout();
+  long getTaskExecutionTimeout();
 
   /**
    * Sets the maximum time allowed to process a task. If the processing time of a task is longer
@@ -45,5 +45,5 @@ interface OfficeManagerPoolEntryConfig { // NOSONAR
    *
    * @param taskExecutionTimeout The new task execution timeout.
    */
-  public void setTaskExecutionTimeout(final long taskExecutionTimeout);
+  void setTaskExecutionTimeout(final long taskExecutionTimeout);
 }

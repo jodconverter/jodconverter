@@ -7,129 +7,116 @@
         This is the JODConverter Official PMD ruleset.
     </description>
 
-	<!-- Use the 'basic' ruleset -->
-	<rule ref="rulesets/java/basic.xml" />
+	<!-- Use the 'bestpractices' category -->
+	<rule ref="category/java/bestpractices.xml">
+		<exclude name="AccessorClassGeneration" />
+		<exclude name="AccessorMethodGeneration" />
+		<exclude name="JUnitAssertionsShouldIncludeMessage" />
+	</rule>
+	<rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+		<properties>
+			<property name="maximumAsserts" value="10" />
+		</properties>
+	</rule>
+	<rule ref="category/java/bestpractices.xml/GuardLogStatement">
+		<properties>
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
 
-	<!-- Use the 'braces' ruleset -->
-	<rule ref="rulesets/java/braces.xml" />
-
-	<!-- Use the 'clone' ruleset -->
-	<rule ref="rulesets/java/clone.xml" />
-
-	<!-- Use the 'code size' ruleset -->
-	<rule ref="rulesets/java/codesize.xml" />
-
-	<!-- Use the 'controversial' ruleset -->
-	<rule ref="rulesets/java/controversial.xml">
+	<!-- Use the 'code style' category -->
+	<rule ref="category/java/codestyle.xml">
 		<exclude name="AtLeastOneConstructor" />
 		<exclude name="DefaultPackage" />
 		<exclude name="OnlyOneReturn" />
-		<exclude name="UseConcurrentHashMap" />
 	</rule>
-	<rule ref="rulesets/java/controversial.xml/DataflowAnomalyAnalysis">
+	<rule ref="category/java/codestyle.xml/MethodNamingConventions">
+		<properties>
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+	<rule ref="category/java/codestyle.xml/TooManyStaticImports">
+		<properties>
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+	<rule ref="category/java/codestyle.xml/LongVariable">
+		<properties>
+			<property name="minimum" value="30" />
+		</properties>
+	</rule>
+	<rule ref="category/java/codestyle.xml/ShortMethodName">
+		<properties>
+			<property name="minimum" value="2" />
+		</properties>
+	</rule>
+
+	<!-- Use the 'design' category -->
+	<rule ref="category/java/design.xml">
+		<exclude name="LawOfDemeter" />
+		<exclude name="LoosePackageCoupling" />
+		<exclude name="AvoidCatchingGenericException" />
+		<exclude name="AvoidThrowingRawExceptionTypes" />
+		<exclude name="SignatureDeclareThrowsException" />
+	</rule>
+	<rule ref="category/java/design.xml/NcssCount">
+		<properties>
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+
+	<!-- Use the 'documentation' category -->
+	<rule ref="category/java/documentation.xml">
+		<exclude name="CommentSize" />
+	</rule>
+	<rule ref="category/java/documentation.xml/CommentRequired">
+		<properties>
+			<property name="fieldCommentRequirement" value="Ignored" />
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+
+	<!-- Use the 'errorprone' category -->
+	<rule ref="category/java/errorprone.xml">
+		<exclude name="BeanMembersShouldSerialize" />
+		<exclude name="AvoidFieldNameMatchingMethodName" />
+	</rule>
+	<rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
+		<properties>
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+	<rule ref="category/java/errorprone.xml/DataflowAnomalyAnalysis">
 		<properties>
 			<property name="violationSuppressRegex" value="^Found 'UR'-anomaly.*" />
 		</properties>
 	</rule>
 
-	<!-- Use the 'coupling' ruleset -->
-	<rule ref="rulesets/java/coupling.xml">
-		<exclude name="LawOfDemeter" />
-		<exclude name="LoosePackageCoupling" />
+	<!-- Use the 'multithreading' category -->
+	<rule ref="category/java/multithreading.xml">
+		<exclude name="UseConcurrentHashMap" />
 	</rule>
-
-	<!-- Use the 'design' ruleset -->
-	<rule ref="rulesets/java/design.xml">
-        <exclude name="AccessorClassGeneration" />
-        <exclude name="AccessorMethodGeneration" />
-    </rule>
-
-	<!-- Use the 'finalizers' ruleset -->
-	<rule ref="rulesets/java/finalizers.xml" />
-
-	<!-- Use the 'empty' ruleset -->
-	<rule ref="rulesets/java/imports.xml" />
-    <rule ref="rulesets/java/imports.xml/TooManyStaticImports">
-        <properties>
-            <property name="maximumStaticImports" value="10" />
-        </properties>
-    </rule>
-
-	<!-- Use the 'javabeans' ruleset -->
-	<rule ref="rulesets/java/javabeans.xml">
-		<exclude name="BeanMembersShouldSerialize" />
-	</rule>
-
-	<!-- Use the 'junit' ruleset -->
-	<rule ref="rulesets/java/junit.xml" />
-	<rule ref="rulesets/java/junit.xml/JUnitTestContainsTooManyAsserts">
-		<properties>
-			<!-- The default '1' is too restrictive -->
-			<property name="maximumAsserts" value="10" />
-		</properties>
-	</rule>
-
-	<!-- Use the 'java logging' ruleset -->
-	<rule ref="rulesets/java/logging-java.xml" />
-
-	<!-- Use the 'migrating' ruleset -->
-	<rule ref="rulesets/java/migrating.xml" />
-
-	<!-- Use the 'naming' ruleset -->
-	<rule ref="rulesets/java/naming.xml">
-		<exclude name="AvoidFieldNameMatchingMethodName" />
-	</rule>
-    <rule ref="rulesets/java/naming.xml/LongVariable">
-        <properties>
-            <property name="minimum" value="30" />
-        </properties>
-    </rule>
-	<rule ref="rulesets/java/naming.xml/MethodNamingConventions">
-		<properties>
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
-    <rule ref="rulesets/java/naming.xml/ShortMethodName">
-        <properties>
-            <property name="minimum" value="2" />
-        </properties>
-    </rule>
-
-	<!-- Use the 'optimizations' ruleset -->
-	<rule ref="rulesets/java/optimizations.xml">
+	<!-- Use the 'performance' category -->
+	<rule ref="category/java/performance.xml">
 		<exclude name="AvoidInstantiatingObjectsInLoops" />
 	</rule>
-
-	<!-- Use the 'strict exceptions' ruleset -->
-	<rule ref="rulesets/java/strictexception.xml">
-		<exclude name="AvoidCatchingGenericException" />
-		<exclude name="AvoidThrowingRawExceptionTypes" />
-		<exclude name="SignatureDeclareThrowsException" />
-	</rule>
-
-	<!-- Use the 'strings' ruleset -->
-	<rule ref="rulesets/java/strings.xml" />
-	<rule ref="rulesets/java/strings.xml/AvoidDuplicateLiterals">
-		<properties>
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
-
-	<!-- Use the 'sun security' ruleset -->
-	<rule ref="rulesets/java/sunsecure.xml" />
-
-	<!-- Use the 'type resolution' ruleset -->
-	<rule ref="rulesets/java/typeresolution.xml">
-		<exclude name="SignatureDeclareThrowsException" />
-	</rule>
-
-	<!-- Use the 'unused code' ruleset -->
-	<rule ref="rulesets/java/unusedcode.xml" />
 
 </ruleset>
