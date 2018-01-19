@@ -141,8 +141,8 @@ public abstract class AbstractConverter implements DocumentConverter {
     }
 
     /**
-     * Specifies the {@link DocumentFormatRegistry} the which contains the document formats that
-     * will be supported by this converter.
+     * Specifies the {@link DocumentFormatRegistry} which contains the document formats that will be
+     * supported by this converter.
      *
      * @param registry The registry that contains the supported formats.
      * @return This builder instance.

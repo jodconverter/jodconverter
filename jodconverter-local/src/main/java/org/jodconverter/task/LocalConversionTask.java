@@ -87,8 +87,8 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     LOGGER.info("Executing local conversion task...");
     final LocalOfficeContext localContext = (LocalOfficeContext) context;
 
-    // Obtain a source file that can be loaded by office. If the source if
-    // an input stream, then a temporary file will be created from the
+    // Obtain a source file that can be loaded by office. If the source
+    // is an input stream, then a temporary file will be created from the
     // stream. The temporary file will be deleted once the task is done.
     final File sourceFile = source.getFile();
     try {
@@ -102,15 +102,19 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
         document = loadDocument(localContext, sourceFile);
         modifyDocument(context, document);
         storeDocument(document, targetFile);
+
+        // onComplete on target will copy the temp file to
+        // the OutputStream and then delete the temp file
+        // if the output is an OutputStream
         target.onComplete(targetFile);
 
       } catch (OfficeException officeEx) {
-        LOGGER.error("Conversion failed.", officeEx);
+        LOGGER.error("Local conversion failed.", officeEx);
         target.onFailure(targetFile, officeEx);
         throw officeEx;
       } catch (Exception ex) {
-        LOGGER.error("Conversion failed.", ex);
-        final OfficeException officeEx = new OfficeException("Conversion failed", ex);
+        LOGGER.error("Local conversion failed.", ex);
+        final OfficeException officeEx = new OfficeException("Local conversion failed", ex);
         target.onFailure(targetFile, officeEx);
         throw officeEx;
       } finally {
@@ -130,10 +134,10 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
 
     final Map<String, Object> storeProps = new HashMap<>();
-    addPropertiesToMap(
+    appendProperties(
         storeProps,
         target.getFormat().getStoreProperties(LocalOfficeTaskUtils.getDocumentFamily(document)));
-    addPropertiesToMap(storeProps, storeProperties);
+    appendProperties(storeProps, storeProperties);
 
     return storeProps;
   }

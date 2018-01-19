@@ -52,7 +52,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
 
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
   protected static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
-  protected Map<String, Object> loadProperties;
+  protected final Map<String, Object> loadProperties;
 
   static {
     final Map<String, Object> loadProperties = new HashMap<>();
@@ -62,7 +62,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
     DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
   }
 
-  protected static void addPropertiesToMap(
+  protected static void appendProperties(
       final Map<String, Object> properties, final Map<String, Object> toAddProperties) {
 
     Optional.ofNullable(toAddProperties).ifPresent(properties::putAll);
@@ -96,8 +96,8 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   protected Map<String, Object> getLoadProperties() {
 
     final Map<String, Object> loadProps =
-        new HashMap<>(loadProperties == null ? DEFAULT_LOAD_PROPERTIES : loadProperties);
-    addPropertiesToMap(loadProps, source.getFormat().getLoadProperties());
+        new HashMap<>(Optional.ofNullable(loadProperties).orElse(DEFAULT_LOAD_PROPERTIES));
+    appendProperties(loadProps, source.getFormat().getLoadProperties());
 
     return loadProps;
   }
