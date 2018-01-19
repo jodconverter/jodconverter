@@ -19,14 +19,12 @@
 
 package org.jodconverter.task;
 
-import java.io.IOException;
+import java.io.File;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.fluent.Executor;
+import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.slf4j.Logger;
@@ -37,6 +35,7 @@ import org.jodconverter.job.TargetDocumentSpecs;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OnlineOfficeContext;
+import org.jodconverter.office.RequestConfig;
 
 /** Represents the default behavior for an online conversion task. */
 public class OnlineConversionTask extends AbstractOnlineOfficeTask {
@@ -60,42 +59,54 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
   @Override
   public void execute(final OfficeContext context) throws OfficeException {
 
+    LOGGER.info("Executing local conversion task...");
     final OnlineOfficeContext onlineContext = (OnlineOfficeContext) context;
 
-    final String url = buildUrl(onlineContext.getConversionUrl());
+    // Obtain a source file that can be loaded by office. If the source
+    // is an input stream, then a temporary file will be created from the
+    // stream. The temporary file will be deleted once the task is done.
+    final File sourceFile = source.getFile();
     try {
-      final HttpPost request = new HttpPost(url);
 
-      // see LibreOffice Online API at wsd/reference.txt in source code
-      final MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-      builder.addPart("data", new FileBody(source.getFile()));
-      request.setEntity(builder.build());
+      // Get the target file (which is a temporary file if the
+      // output target is an output stream).
+      final File targetFile = target.getFile();
 
-      final HttpResponse response = onlineContext.getHttpClient().execute(request);
+      try {
+        // TODO: Add the ability to pass on a custom charset to FileBody
 
-      final int code = response.getStatusLine().getStatusCode();
-      if (code != HttpStatus.SC_OK) {
-        final OfficeException officeEx =
-            new OfficeException(
-                "Error while connecting to LibreOffice Online server. Status Code: " + code);
-        target.onFailure(target.getFile(), officeEx);
+        // See https://github.com/LibreOffice/online/blob/master/wsd/reference.txt
+        final HttpEntity entity =
+            MultipartEntityBuilder.create().addPart("data", new FileBody(source.getFile())).build();
+
+        // Use the fluent API to post the file and
+        // save the response into the target file.
+        final RequestConfig requestConfig = onlineContext.getRequestConfig();
+        Executor.newInstance(onlineContext.getHttpClient())
+            .execute(
+                Request.Post(buildUrl(requestConfig.getUrl()))
+                    .connectTimeout(requestConfig.getConnectTimeout())
+                    .socketTimeout(requestConfig.getSocketTimeout())
+                    .body(entity))
+            .saveContent(target.getFile());
+
+        // onComplete on target will copy the temp file to
+        // the OutputStream and then delete the temp file
+        // if the output is an OutputStream
+        target.onComplete(targetFile);
+
+      } catch (Exception ex) {
+        LOGGER.error("Online conversion failed.", ex);
+        final OfficeException officeEx = new OfficeException("Local conversion failed", ex);
+        target.onFailure(targetFile, officeEx);
         throw officeEx;
       }
 
-      // Save converted file
-      final HttpEntity entity = response.getEntity();
-      if (entity == null) {
-        throw new OfficeException("No content returned from LO online");
-      }
-      // Save converted file
-      FileUtils.copyInputStreamToFile(entity.getContent(), target.getFile());
-      LOGGER.debug("Online conversion task terminated sucessfully.");
+    } finally {
 
-    } catch (IOException e) {
-
-      final OfficeException officeEx = new OfficeException("Online conversion task failed", e);
-      target.onFailure(target.getFile(), officeEx);
-      throw officeEx;
+      // Here the source file is no longer required so we can delete
+      // any temporary file that has been created if required.
+      source.onConsumed(sourceFile);
     }
   }
 

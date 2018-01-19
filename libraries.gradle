@@ -31,9 +31,10 @@ ext {
     spring_boot_starter_test           : 'org.springframework.boot:spring-boot-starter-test',
 
     // HTTP Components libraries
-    httpcomponents_httpcore            : "org.apache.httpcomponents:httpcore:$httpcomponentsCoreVersion",
-    httpcomponents_httpclient          : "org.apache.httpcomponents:httpclient:$httpcomponentsClientVersion",
-    httpcomponents_httpmime            : "org.apache.httpcomponents:httpmime:$httpcomponentsMimeVersion",
+    httpcomponents_httpcore            : "org.apache.httpcomponents:httpcore:$httpcomponentsHttpCoreVersion",
+    httpcomponents_httpclient          : "org.apache.httpcomponents:httpclient:$httpcomponentsHttpClientVersion",
+    httpcomponents_fluenthc            : "org.apache.httpcomponents:fluent-hc:$httpcomponentsFluentHcVersion",
+    httpcomponents_httpmime            : "org.apache.httpcomponents:httpmime:$httpcomponentsHttpMimeVersion",
 
     // Logging Libraries
     slf4j_api                          : "org.slf4j:slf4j-api:$slf4jVersion",

@@ -23,25 +23,26 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 
 /**
- * An OnlineOfficeConnection holds the HTTP client and URL used to communicate with the LibreOffice
+ * An OnlineOfficeConnection holds the request configuration to communicate with the LibreOffice
  * Online server.
  */
 class OnlineOfficeConnection implements OnlineOfficeContext {
 
   private final CloseableHttpClient httpClient;
-  private final String conversionUrl;
+  private final RequestConfig requestConfig;
 
   /**
    * Constructs a new connection with the specified client and URL.
    *
    * @param httpClient The HTTP client (already initialized) used to communicate with the
    *     LibreOffice Online server.
-   * @param conversionUrl The URL for the conversion.
+   * @param requestConfig The request configuration for the conversion.
    */
-  public OnlineOfficeConnection(final CloseableHttpClient httpClient, final String conversionUrl) {
+  public OnlineOfficeConnection(
+      final CloseableHttpClient httpClient, final RequestConfig requestConfig) {
 
     this.httpClient = httpClient;
-    this.conversionUrl = conversionUrl;
+    this.requestConfig = requestConfig;
   }
 
   @Override
@@ -50,7 +51,7 @@ class OnlineOfficeConnection implements OnlineOfficeContext {
   }
 
   @Override
-  public String getConversionUrl() {
-    return conversionUrl;
+  public RequestConfig getRequestConfig() {
+    return requestConfig;
   }
 }

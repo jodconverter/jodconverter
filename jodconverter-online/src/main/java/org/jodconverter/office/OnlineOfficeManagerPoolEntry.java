@@ -19,6 +19,8 @@
 
 package org.jodconverter.office;
 
+import static java.lang.Math.toIntExact;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -103,7 +105,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
   private String buildUrl(final String connectionUrl) throws MalformedURLException {
 
-    // an example URL is like:
+    // An example URL is like:
     // http://localhost:9980/lool/convert-to/docx
 
     final URL url = new URL(connectionUrl);
@@ -190,7 +192,16 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     final SSLConnectionSocketFactory sslFactory = configureSsl();
     try (final CloseableHttpClient httpClient =
         HttpClients.custom().setSSLSocketFactory(sslFactory).build()) {
-      task.execute(new OnlineOfficeConnection(httpClient, buildUrl(connectionUrl)));
+
+      // Use the task execution timeout as connection and socket timeout.
+      // TODO: Should the user be able to customize connection and socket timeout ?
+      final RequestConfig requestConfig =
+          new RequestConfig(
+              buildUrl(connectionUrl),
+              toIntExact(config.getTaskExecutionTimeout()),
+              toIntExact(config.getTaskExecutionTimeout()));
+      task.execute(new OnlineOfficeConnection(httpClient, requestConfig));
+
     } catch (IOException ex) {
       throw new OfficeException("Unable to create the HTTP client", ex);
     }

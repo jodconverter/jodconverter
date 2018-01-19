@@ -32,9 +32,9 @@ public interface OnlineOfficeContext extends OfficeContext {
   public HttpClient getHttpClient();
 
   /**
-   * Gets the URL where conversion request can be sent.
+   * Gets the request configuration.
    *
-   * @return The URL where to send conversion request.
+   * @return The request configuration.
    */
-  public String getConversionUrl();
+  public RequestConfig getRequestConfig();
 }

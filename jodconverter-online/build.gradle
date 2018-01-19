@@ -6,6 +6,7 @@ dependencies {
   compile libraries.httpcomponents_httpmime
   compile libraries.httpcomponents_httpcore
   compile libraries.httpcomponents_httpclient
+  compile libraries.httpcomponents_fluenthc
   
   testCompile libraries.slf4j_log4j
   testCompile libraries.wiremock
