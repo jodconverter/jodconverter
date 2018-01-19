@@ -27,6 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
@@ -39,6 +42,7 @@ import org.junit.rules.TemporaryFolder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import org.jodconverter.OnlineConverter;
+import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
 public class OnlineOfficeManagerITest {
 
@@ -240,7 +244,8 @@ public class OnlineOfficeManagerITest {
   }
 
   @Test
-  public void execute_WhenReturn200OK_ShouldSucceed() throws Exception {
+  public void execute_FromFileToFileReturning200OK_TargetShouldContaingExpectedResult()
+      throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -259,6 +264,46 @@ public class OnlineOfficeManagerITest {
 
       // Try to converter the input document
       OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+
+      // Check that the output file was created with the expected content.
+      final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+      assertThat(content).contains("Test Document");
+    } finally {
+      FileUtils.deleteQuietly(outputFile);
+      manager.stop();
+    }
+  }
+
+  @Test
+  public void
+      execute_FromInputStreamToOutputStreamReturning200OK_TargetShouldContaingExpectedResult()
+          throws Exception {
+
+    final File inputFile = new File(SOURCE_FILE_PATH);
+    final File outputFile = new File(testFolder.getRoot(), "out.txt");
+
+    assertThat(outputFile).doesNotExist();
+
+    final OfficeManager manager =
+        OnlineOfficeManager.builder()
+            .urlConnection("http://localhost:8000/lool/convert-to/")
+            .build();
+    try {
+      manager.start();
+      stubFor(
+          post(urlEqualTo("/lool/convert-to/txt"))
+              .willReturn(aResponse().withStatus(200).withBody("Test Document")));
+
+      // Try to converter the input document
+      try (FileInputStream inputStream = new FileInputStream(inputFile);
+          OutputStream outputStream = new FileOutputStream(outputFile)) {
+        OnlineConverter.make(manager)
+            .convert(inputStream)
+            .as(DefaultDocumentFormatRegistry.DOC)
+            .to(outputStream)
+            .as(DefaultDocumentFormatRegistry.TXT)
+            .execute();
+      }
 
       // Check that the output file was created with the expected content.
       final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
