@@ -39,6 +39,10 @@ import java.util.Set;
  */
 public final class DefaultDocumentFormatRegistry {
 
+  // Another sources
+  // https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_SO_8
+  // https://ask.libreoffice.org/en/question/59204/what-are-the-5x-writer-importexport-filters/
+
   /**
    * Portable Document Format.
    *
@@ -88,6 +92,16 @@ public final class DefaultDocumentFormatRegistry {
    * </ul>
    */
   public static final DocumentFormat OTT = getInstance().getFormatByExtension("ott");
+
+  /**
+   * OpenDocument Text Flat XML.
+   *
+   * <ul>
+   *   <li>Extension: fodt
+   *   <li>Media Type: application/vnd.oasis.opendocument.text-flat-xml
+   * </ul>
+   */
+  public static final DocumentFormat FODT = getInstance().getFormatByExtension("fodt");
 
   /**
    * OpenOffice.org 1.0 Text Document.
@@ -170,6 +184,16 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat OTS = getInstance().getFormatByExtension("ots");
 
   /**
+   * OpenDocument Spreadsheet Flat XML.
+   *
+   * <ul>
+   *   <li>Extension: fods
+   *   <li>Media Type: application/vnd.oasis.opendocument.spreadsheet-flat-xml
+   * </ul>
+   */
+  public static final DocumentFormat FODS = getInstance().getFormatByExtension("fods");
+
+  /**
    * OpenOffice.org 1.0 Spreadsheet.
    *
    * <ul>
@@ -240,6 +264,16 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat OTP = getInstance().getFormatByExtension("otp");
 
   /**
+   * OpenDocument Presentation Flat XML.
+   *
+   * <ul>
+   *   <li>Extension: fodp
+   *   <li>Media Type: application/vnd.oasis.opendocument.presentation-flat-xml
+   * </ul>
+   */
+  public static final DocumentFormat FODP = getInstance().getFormatByExtension("fodp");
+
+  /**
    * OpenOffice.org 1.0 Presentation.
    *
    * <ul>
@@ -288,6 +322,16 @@ public final class DefaultDocumentFormatRegistry {
    * </ul>
    */
   public static final DocumentFormat OTG = getInstance().getFormatByExtension("otg");
+
+  /**
+   * OpenDocument Drawing Flat XML.
+   *
+   * <ul>
+   *   <li>Extension: fodg
+   *   <li>Media Type: application/vnd.oasis.opendocument.graphics-flat-xml
+   * </ul>
+   */
+  public static final DocumentFormat FODG = getInstance().getFormatByExtension("fodg");
 
   /**
    * Scalable Vector Graphics.

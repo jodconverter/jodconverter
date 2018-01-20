@@ -71,6 +71,17 @@
     }
   },
   {
+    "name": "OpenDocument Text Flat XML",
+    "extension": "fodt",
+    "mediaType": "application/vnd.oasis.opendocument.text-flat-xml",
+    "inputFamily": "TEXT",
+    "storeProperties": {
+      "TEXT": {
+        "FilterName": "OpenDocument Text Flat XML"
+      }
+    }
+  },
+  {
     "name": "OpenOffice.org 1.0 Text Document",
     "extension": "sxw",
     "mediaType": "application/vnd.sun.xml.writer",
@@ -155,6 +166,17 @@
     "storeProperties": {
       "SPREADSHEET": {
         "FilterName": "calc8_template"
+      }
+    }
+  },
+  {
+    "name": "OpenDocument Spreadsheet Flat XML",
+    "extension": "fods",
+    "mediaType": "application/vnd.oasis.opendocument.spreadsheet-flat-xml",
+    "inputFamily": "SPREADSHEET",
+    "storeProperties": {
+      "SPREADSHEET": {
+        "FilterName": "OpenDocument Spreadsheet Flat XML"
       }
     }
   },
@@ -246,6 +268,17 @@
     }
   },
   {
+    "name": "OpenDocument Presentation Flat XML",
+    "extension": "fodp",
+    "mediaType": "application/vnd.oasis.opendocument.presentation-flat-xml",
+    "inputFamily": "PRESENTATION",
+    "storeProperties": {
+      "PRESENTATION": {
+        "FilterName": "OpenDocument Presentation Flat XML"
+      }
+    }
+  },
+  {
     "name": "OpenOffice.org 1.0 Presentation",
     "extension": "sxi",
     "mediaType": "application/vnd.sun.xml.impress",
@@ -297,6 +330,17 @@
     "storeProperties": {
       "DRAWING": {
         "FilterName": "draw8_template"
+      }
+    }
+  },
+  {
+    "name": "OpenDocument Drawing Flat XML",
+    "extension": "fodg",
+    "mediaType": "application/vnd.oasis.opendocument.graphics-flat-xml",
+    "inputFamily": "DRAWING",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "OpenDocument Drawing Flat XML"
       }
     }
   },

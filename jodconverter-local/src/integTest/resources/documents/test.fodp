@@ -1,0 +1,1137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:rpt="http://openoffice.org/2005/report" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:officeooo="http://openoffice.org/2009/office" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:css3t="http://www.w3.org/TR/css3-text/" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.presentation">
+ <office:meta><meta:initial-creator>Mirko Nasato</meta:initial-creator><dc:creator>Mirko Nasato</dc:creator><meta:document-statistic meta:object-count="25"/><meta:generator>LibreOffice/5.4.1.2$Windows_x86 LibreOffice_project/ea7cb86e6eeb2bf3a5af73a8f7777ac570321527</meta:generator></office:meta>
+ <office:settings>
+  <config:config-item-set config:name="ooo:view-settings">
+   <config:config-item config:name="VisibleAreaTop" config:type="int">0</config:config-item>
+   <config:config-item config:name="VisibleAreaLeft" config:type="int">0</config:config-item>
+   <config:config-item config:name="VisibleAreaWidth" config:type="int">28001</config:config-item>
+   <config:config-item config:name="VisibleAreaHeight" config:type="int">20998</config:config-item>
+   <config:config-item-map-indexed config:name="Views">
+    <config:config-item-map-entry>
+     <config:config-item config:name="ViewId" config:type="string">view1</config:config-item>
+     <config:config-item config:name="GridIsVisible" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="GridIsFront" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="IsSnapToGrid" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="IsSnapToPageMargins" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="IsSnapToSnapLines" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="IsSnapToObjectFrame" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="IsSnapToObjectPoints" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="IsPlusHandlesAlwaysVisible" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="IsFrameDragSingles" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="EliminatePolyPointLimitAngle" config:type="int">1500</config:config-item>
+     <config:config-item config:name="IsEliminatePolyPoints" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="VisibleLayers" config:type="base64Binary">//////////////////////////////////////////8=</config:config-item>
+     <config:config-item config:name="PrintableLayers" config:type="base64Binary">//////////////////////////////////////////8=</config:config-item>
+     <config:config-item config:name="LockedLayers" config:type="base64Binary"/>
+     <config:config-item config:name="NoAttribs" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="NoColors" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="RulerIsVisible" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="PageKind" config:type="short">0</config:config-item>
+     <config:config-item config:name="SelectedPage" config:type="short">0</config:config-item>
+     <config:config-item config:name="IsLayerMode" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="IsDoubleClickTextEdit" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="IsClickChangeRotation" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="SlidesPerRow" config:type="short">4</config:config-item>
+     <config:config-item config:name="EditMode" config:type="int">0</config:config-item>
+     <config:config-item config:name="VisibleAreaTop" config:type="int">-324</config:config-item>
+     <config:config-item config:name="VisibleAreaLeft" config:type="int">-4293</config:config-item>
+     <config:config-item config:name="VisibleAreaWidth" config:type="int">36893</config:config-item>
+     <config:config-item config:name="VisibleAreaHeight" config:type="int">21792</config:config-item>
+     <config:config-item config:name="GridCoarseWidth" config:type="int">2000</config:config-item>
+     <config:config-item config:name="GridCoarseHeight" config:type="int">2000</config:config-item>
+     <config:config-item config:name="GridFineWidth" config:type="int">200</config:config-item>
+     <config:config-item config:name="GridFineHeight" config:type="int">200</config:config-item>
+     <config:config-item config:name="GridSnapWidthXNumerator" config:type="int">200</config:config-item>
+     <config:config-item config:name="GridSnapWidthXDenominator" config:type="int">1</config:config-item>
+     <config:config-item config:name="GridSnapWidthYNumerator" config:type="int">200</config:config-item>
+     <config:config-item config:name="GridSnapWidthYDenominator" config:type="int">1</config:config-item>
+     <config:config-item config:name="IsAngleSnapEnabled" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="SnapAngle" config:type="int">1500</config:config-item>
+     <config:config-item config:name="ZoomOnPage" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="AnchoredTextOverflowLegacy" config:type="boolean">false</config:config-item>
+    </config:config-item-map-entry>
+   </config:config-item-map-indexed>
+  </config:config-item-set>
+  <config:config-item-set config:name="ooo:configuration-settings">
+   <config:config-item config:name="ApplyUserData" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="BitmapTableURL" config:type="string">$(inst)/share/palette%3B$(user)/config/standard.sob</config:config-item>
+   <config:config-item config:name="CharacterCompressionType" config:type="short">0</config:config-item>
+   <config:config-item config:name="ColorTableURL" config:type="string">$(inst)/share/palette%3B$(user)/config/standard.soc</config:config-item>
+   <config:config-item config:name="DashTableURL" config:type="string">$(inst)/share/palette%3B$(user)/config/standard.sod</config:config-item>
+   <config:config-item config:name="DefaultTabStop" config:type="int">1250</config:config-item>
+   <config:config-item config:name="EmbedFonts" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="GradientTableURL" config:type="string">$(inst)/share/palette%3B$(user)/config/standard.sog</config:config-item>
+   <config:config-item config:name="HandoutsHorizontal" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="HatchTableURL" config:type="string">$(inst)/share/palette%3B$(user)/config/standard.soh</config:config-item>
+   <config:config-item config:name="IsKernAsianPunctuation" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsPrintBooklet" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsPrintBookletBack" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="IsPrintBookletFront" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="IsPrintDate" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsPrintDrawing" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="IsPrintFitPage" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsPrintHandout" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsPrintHiddenPages" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="IsPrintNotes" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsPrintOutline" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsPrintPageName" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsPrintTilePage" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsPrintTime" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="LineEndTableURL" config:type="string">$(inst)/share/palette%3B$(user)/config/standard.soe</config:config-item>
+   <config:config-item config:name="LoadReadonly" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="PageNumberFormat" config:type="int">4</config:config-item>
+   <config:config-item config:name="ParagraphSummation" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="PrintQuality" config:type="int">0</config:config-item>
+   <config:config-item config:name="PrinterIndependentLayout" config:type="string">low-resolution</config:config-item>
+   <config:config-item config:name="PrinterName" config:type="string"/>
+   <config:config-item config:name="PrinterSetup" config:type="base64Binary"/>
+   <config:config-item config:name="SaveVersionOnClose" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="SlidesPerHandout" config:type="short">6</config:config-item>
+   <config:config-item config:name="UpdateFromTemplate" config:type="boolean">true</config:config-item>
+  </config:config-item-set>
+ </office:settings>
+ <office:scripts>
+  <office:script script:language="ooo:Basic">
+   <ooo:libraries xmlns:ooo="http://openoffice.org/2004/office" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+  </office:script>
+ </office:scripts>
+ <office:font-face-decls>
+  <style:font-face style:name="DejaVu Sans" svg:font-family="&apos;DejaVu Sans&apos;" style:font-pitch="variable"/>
+  <style:font-face style:name="Arial" svg:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable"/>
+  <style:font-face style:name="Liberation Sans" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="roman" style:font-pitch="variable"/>
+  <style:font-face style:name="Liberation Serif" svg:font-family="&apos;Liberation Serif&apos;" style:font-family-generic="roman" style:font-pitch="variable"/>
+  <style:font-face style:name="Times New Roman" svg:font-family="&apos;Times New Roman&apos;" style:font-family-generic="roman" style:font-pitch="variable"/>
+  <style:font-face style:name="Lucida Sans" svg:font-family="&apos;Lucida Sans&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
+  <style:font-face style:name="Microsoft YaHei" svg:font-family="&apos;Microsoft YaHei&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
+  <style:font-face style:name="Segoe UI" svg:font-family="&apos;Segoe UI&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
+  <style:font-face style:name="Tahoma" svg:font-family="Tahoma" style:font-family-generic="system" style:font-pitch="variable"/>
+ </office:font-face-decls>
+ <office:styles>
+  <draw:marker draw:name="Arrow" svg:viewBox="0 0 20 30" svg:d="M10 0l-10 30h20z"/>
+  <style:default-style style:family="graphic">
+   <style:graphic-properties svg:stroke-color="#3465a4" draw:fill-color="#729fcf" fo:wrap-option="no-wrap"/>
+   <style:paragraph-properties style:text-autospace="ideograph-alpha" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="false">
+    <style:tab-stops/>
+   </style:paragraph-properties>
+   <style:text-properties style:use-window-font-color="true" style:font-name="Liberation Serif" fo:font-size="24pt" fo:language="en" fo:country="CA" style:font-name-asian="Segoe UI" style:font-size-asian="24pt" style:language-asian="zh" style:country-asian="CN" style:font-name-complex="Tahoma" style:font-size-complex="24pt" style:language-complex="hi" style:country-complex="IN"/>
+  </style:default-style>
+  <style:style style:name="standard" style:family="graphic">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0cm" svg:stroke-color="#3465a4" draw:marker-start-width="0.2cm" draw:marker-start-center="false" draw:marker-end-width="0.2cm" draw:marker-end-center="false" draw:fill="solid" draw:fill-color="#729fcf" draw:textarea-horizontal-align="justify" fo:padding-top="0.125cm" fo:padding-bottom="0.125cm" fo:padding-left="0.25cm" fo:padding-right="0.25cm" draw:shadow="hidden" draw:shadow-offset-x="0.2cm" draw:shadow-offset-y="0.2cm" draw:shadow-color="#808080">
+    <text:list-style style:name="standard">
+     <text:list-level-style-number text:level="1" style:num-format="">
+      <style:list-level-properties/>
+      <style:text-properties fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-number>
+     <text:list-level-style-bullet text:level="2" text:bullet-char="">
+      <style:list-level-properties text:space-before="0.599cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="3" text:bullet-char="">
+      <style:list-level-properties text:space-before="1.199cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="4" text:bullet-char="">
+      <style:list-level-properties text:space-before="1.799cm" text:min-label-width="0.599cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="5" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="6" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="7" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="8" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="9" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="10" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+    </text:list-style>
+   </style:graphic-properties>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0cm"/>
+     <style:tab-stop style:position="1.247cm"/>
+     <style:tab-stop style:position="2.495cm"/>
+     <style:tab-stop style:position="3.743cm"/>
+     <style:tab-stop style:position="4.991cm"/>
+     <style:tab-stop style:position="6.239cm"/>
+     <style:tab-stop style:position="7.487cm"/>
+     <style:tab-stop style:position="8.735cm"/>
+     <style:tab-stop style:position="9.983cm"/>
+     <style:tab-stop style:position="11.231cm"/>
+     <style:tab-stop style:position="12.479cm"/>
+     <style:tab-stop style:position="13.727cm"/>
+     <style:tab-stop style:position="14.975cm"/>
+     <style:tab-stop style:position="16.223cm"/>
+     <style:tab-stop style:position="17.471cm"/>
+     <style:tab-stop style:position="18.719cm"/>
+     <style:tab-stop style:position="19.967cm"/>
+     <style:tab-stop style:position="21.215cm"/>
+     <style:tab-stop style:position="22.463cm"/>
+     <style:tab-stop style:position="23.711cm"/>
+     <style:tab-stop style:position="24.959cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:font-variant="normal" fo:text-transform="none" fo:color="#000000" style:text-outline="false" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="18pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="18pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="18pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+  </style:style>
+  <style:style style:name="objectwitharrow" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.15cm" svg:stroke-color="#000000" draw:marker-start="Arrow" draw:marker-start-width="0.7cm" draw:marker-start-center="true" draw:marker-end-width="0.3cm"/>
+  </style:style>
+  <style:style style:name="objectwithshadow" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:shadow="visible" draw:shadow-offset-x="0.2cm" draw:shadow-offset-y="0.2cm" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="objectwithoutfill" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties svg:stroke-color="#000000" draw:fill="none"/>
+  </style:style>
+  <style:style style:name="Object_20_with_20_no_20_fill_20_and_20_no_20_line" style:display-name="Object with no fill and no line" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none"/>
+  </style:style>
+  <style:style style:name="text" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none"/>
+  </style:style>
+  <style:style style:name="textbody" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none"/>
+   <style:text-properties fo:font-size="16pt"/>
+  </style:style>
+  <style:style style:name="textbodyjustfied" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none"/>
+   <style:paragraph-properties fo:text-align="justify"/>
+  </style:style>
+  <style:style style:name="textbodyindent" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none"/>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:text-indent="0.6cm"/>
+  </style:style>
+  <style:style style:name="title" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none"/>
+   <style:text-properties fo:font-size="44pt"/>
+  </style:style>
+  <style:style style:name="title1" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="solid" draw:fill-color="#008080" draw:shadow="visible" draw:shadow-offset-x="0.2cm" draw:shadow-offset-y="0.2cm" draw:shadow-color="#808080"/>
+   <style:paragraph-properties fo:text-align="center"/>
+   <style:text-properties fo:font-size="24pt"/>
+  </style:style>
+  <style:style style:name="title2" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties svg:stroke-width="0.05cm" draw:fill-color="#ffcc99" draw:shadow="visible" draw:shadow-offset-x="0.2cm" draw:shadow-offset-y="0.2cm" draw:shadow-color="#808080"/>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0.2cm" fo:margin-top="0.1cm" fo:margin-bottom="0.1cm" fo:text-align="center" fo:text-indent="0cm"/>
+   <style:text-properties fo:font-size="36pt"/>
+  </style:style>
+  <style:style style:name="headline" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none"/>
+   <style:paragraph-properties fo:margin-top="0.42cm" fo:margin-bottom="0.21cm"/>
+   <style:text-properties fo:font-size="24pt"/>
+  </style:style>
+  <style:style style:name="headline1" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none"/>
+   <style:paragraph-properties fo:margin-top="0.42cm" fo:margin-bottom="0.21cm"/>
+   <style:text-properties fo:font-size="18pt" fo:font-weight="bold"/>
+  </style:style>
+  <style:style style:name="headline2" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none"/>
+   <style:paragraph-properties fo:margin-top="0.42cm" fo:margin-bottom="0.21cm"/>
+   <style:text-properties fo:font-size="14pt" fo:font-style="italic" fo:font-weight="bold"/>
+  </style:style>
+  <style:style style:name="measure" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-color="#000000" draw:marker-start="Arrow" draw:marker-start-width="0.2cm" draw:marker-end="Arrow" draw:marker-end-width="0.2cm" draw:fill="none" draw:show-unit="true"/>
+   <style:text-properties fo:font-size="12pt"/>
+  </style:style>
+  <style:style style:name="Default-background" style:family="presentation">
+   <style:graphic-properties draw:stroke="none" draw:fill="solid" draw:fill-color="#ffffff" draw:textarea-horizontal-align="center" draw:textarea-vertical-align="middle" draw:shadow-color="#808080"/>
+   <style:paragraph-properties fo:text-align="center"/>
+  </style:style>
+  <style:style style:name="Default-backgroundobjects" style:family="presentation">
+   <style:graphic-properties draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="top" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm" draw:shadow="hidden" draw:shadow-offset-x="0.2cm" draw:shadow-offset-y="0.2cm" draw:shadow-color="#808080">
+    <text:list-style style:name="Default-backgroundobjects">
+     <text:list-level-style-number text:level="1" style:num-format="">
+      <style:list-level-properties/>
+      <style:text-properties fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-number>
+     <text:list-level-style-bullet text:level="2" text:bullet-char="">
+      <style:list-level-properties text:space-before="0.599cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="3" text:bullet-char="">
+      <style:list-level-properties text:space-before="1.199cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="4" text:bullet-char="">
+      <style:list-level-properties text:space-before="1.799cm" text:min-label-width="0.599cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="5" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="6" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="7" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="8" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="9" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="10" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+    </text:list-style>
+   </style:graphic-properties>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0cm"/>
+     <style:tab-stop style:position="1.247cm"/>
+     <style:tab-stop style:position="2.495cm"/>
+     <style:tab-stop style:position="3.743cm"/>
+     <style:tab-stop style:position="4.991cm"/>
+     <style:tab-stop style:position="6.239cm"/>
+     <style:tab-stop style:position="7.487cm"/>
+     <style:tab-stop style:position="8.735cm"/>
+     <style:tab-stop style:position="9.983cm"/>
+     <style:tab-stop style:position="11.231cm"/>
+     <style:tab-stop style:position="12.479cm"/>
+     <style:tab-stop style:position="13.727cm"/>
+     <style:tab-stop style:position="14.975cm"/>
+     <style:tab-stop style:position="16.223cm"/>
+     <style:tab-stop style:position="17.471cm"/>
+     <style:tab-stop style:position="18.719cm"/>
+     <style:tab-stop style:position="19.967cm"/>
+     <style:tab-stop style:position="21.215cm"/>
+     <style:tab-stop style:position="22.463cm"/>
+     <style:tab-stop style:position="23.711cm"/>
+     <style:tab-stop style:position="24.959cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:color="#000000" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="18pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="18pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="18pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:font-relief="none"/>
+  </style:style>
+  <style:style style:name="Default-notes" style:family="presentation">
+   <style:graphic-properties draw:stroke="none" draw:fill="none">
+    <text:list-style style:name="Default-notes">
+     <text:list-level-style-number text:level="1" style:num-format="">
+      <style:list-level-properties/>
+      <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-number>
+     <text:list-level-style-bullet text:level="2" text:bullet-char="–">
+      <style:list-level-properties text:space-before="1.27cm" text:min-label-width="0.793cm"/>
+      <style:text-properties style:font-name="Times New Roman" fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="3" text:bullet-char="•">
+      <style:list-level-properties text:space-before="2.54cm" text:min-label-width="0.635cm"/>
+      <style:text-properties style:font-name="Times New Roman" fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="4" text:bullet-char="–">
+      <style:list-level-properties text:space-before="3.81cm" text:min-label-width="0.635cm"/>
+      <style:text-properties style:font-name="Times New Roman" fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="5" text:bullet-char="»">
+      <style:list-level-properties text:space-before="5.08cm" text:min-label-width="0.635cm"/>
+      <style:text-properties style:font-name="Times New Roman" fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="6" text:bullet-char="»">
+      <style:list-level-properties text:space-before="5.08cm" text:min-label-width="0.635cm"/>
+      <style:text-properties style:font-name="Times New Roman" fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="7" text:bullet-char="»">
+      <style:list-level-properties text:space-before="5.08cm" text:min-label-width="0.635cm"/>
+      <style:text-properties style:font-name="Times New Roman" fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="8" text:bullet-char="»">
+      <style:list-level-properties text:space-before="5.08cm" text:min-label-width="0.635cm"/>
+      <style:text-properties style:font-name="Times New Roman" fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="9" text:bullet-char="»">
+      <style:list-level-properties text:space-before="5.08cm" text:min-label-width="0.635cm"/>
+      <style:text-properties style:font-name="Times New Roman" fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="10" text:bullet-char="»">
+      <style:list-level-properties text:space-before="5.08cm" text:min-label-width="0.635cm"/>
+      <style:text-properties style:font-name="Times New Roman" fo:color="#000000" fo:font-size="100%"/>
+     </text:list-level-style-bullet>
+    </text:list-style>
+   </style:graphic-properties>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0.158cm" fo:margin-bottom="0cm" fo:line-height="100%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="normal" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0cm"/>
+     <style:tab-stop style:position="1.247cm"/>
+     <style:tab-stop style:position="2.495cm"/>
+     <style:tab-stop style:position="3.743cm"/>
+     <style:tab-stop style:position="4.991cm"/>
+     <style:tab-stop style:position="6.239cm"/>
+     <style:tab-stop style:position="7.487cm"/>
+     <style:tab-stop style:position="8.735cm"/>
+     <style:tab-stop style:position="9.983cm"/>
+     <style:tab-stop style:position="11.231cm"/>
+     <style:tab-stop style:position="12.479cm"/>
+     <style:tab-stop style:position="13.727cm"/>
+     <style:tab-stop style:position="14.975cm"/>
+     <style:tab-stop style:position="16.223cm"/>
+     <style:tab-stop style:position="17.471cm"/>
+     <style:tab-stop style:position="18.719cm"/>
+     <style:tab-stop style:position="19.967cm"/>
+     <style:tab-stop style:position="21.215cm"/>
+     <style:tab-stop style:position="22.463cm"/>
+     <style:tab-stop style:position="23.711cm"/>
+     <style:tab-stop style:position="24.959cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:font-variant="normal" fo:text-transform="none" fo:color="#000000" style:text-outline="false" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Times New Roman" fo:font-family="&apos;Times New Roman&apos;" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="12pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" fo:background-color="transparent" style:font-name-asian="Microsoft YaHei" style:font-family-asian="&apos;Microsoft YaHei&apos;" style:font-family-generic-asian="system" style:font-pitch-asian="variable" style:font-size-asian="12pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="Lucida Sans" style:font-family-complex="&apos;Lucida Sans&apos;" style:font-family-generic-complex="system" style:font-pitch-complex="variable" style:font-size-complex="12pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+  </style:style>
+  <style:style style:name="Default-outline1" style:family="presentation">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="top" draw:auto-grow-height="false" draw:fit-to-size="shrink-to-fit" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm">
+    <text:list-style style:name="Default-outline1">
+     <text:list-level-style-bullet text:level="1" text:bullet-char="">
+      <style:list-level-properties text:space-before="0.299cm" text:min-label-width="0.9cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="2" text:bullet-char="">
+      <style:list-level-properties text:space-before="1.6cm" text:min-label-width="0.798cm"/>
+      <style:text-properties fo:font-family="Symbol" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="75%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="3" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.998cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="4" text:bullet-char="">
+      <style:list-level-properties text:space-before="4.198cm" text:min-label-width="0.599cm"/>
+      <style:text-properties fo:font-family="Symbol" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="75%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="5" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="6" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="7" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="8" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="9" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="10" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+    </text:list-style>
+   </style:graphic-properties>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0.502cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0.048cm"/>
+     <style:tab-stop style:position="1.296cm"/>
+     <style:tab-stop style:position="2.544cm"/>
+     <style:tab-stop style:position="3.792cm"/>
+     <style:tab-stop style:position="5.04cm"/>
+     <style:tab-stop style:position="6.288cm"/>
+     <style:tab-stop style:position="7.536cm"/>
+     <style:tab-stop style:position="8.784cm"/>
+     <style:tab-stop style:position="10.032cm"/>
+     <style:tab-stop style:position="11.28cm"/>
+     <style:tab-stop style:position="12.528cm"/>
+     <style:tab-stop style:position="13.775cm"/>
+     <style:tab-stop style:position="15.023cm"/>
+     <style:tab-stop style:position="16.271cm"/>
+     <style:tab-stop style:position="17.519cm"/>
+     <style:tab-stop style:position="18.767cm"/>
+     <style:tab-stop style:position="20.015cm"/>
+     <style:tab-stop style:position="21.263cm"/>
+     <style:tab-stop style:position="22.511cm"/>
+     <style:tab-stop style:position="23.759cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:font-variant="normal" fo:text-transform="none" fo:color="#000000" style:text-outline="false" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="32pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" fo:background-color="transparent" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="32pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="32pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+  </style:style>
+  <style:style style:name="Default-outline2" style:family="presentation" style:parent-style-name="Default-outline1">
+   <style:graphic-properties>
+    <text:list-style style:name="Default-outline2">
+     <text:list-level-style-bullet text:level="1" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="2" text:bullet-char="">
+      <style:list-level-properties text:space-before="1.6cm" text:min-label-width="0.798cm"/>
+      <style:text-properties fo:font-family="Symbol" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="75%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="3" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.998cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="4" text:bullet-char="">
+      <style:list-level-properties text:space-before="4.198cm" text:min-label-width="0.599cm"/>
+      <style:text-properties fo:font-family="Symbol" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="75%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="5" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="6" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="7" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="8" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="9" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="10" text:bullet-char="">
+      <style:list-level-properties text:space-before="5.397cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+    </text:list-style>
+   </style:graphic-properties>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0.401cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0.097cm"/>
+     <style:tab-stop style:position="1.344cm"/>
+     <style:tab-stop style:position="2.592cm"/>
+     <style:tab-stop style:position="3.84cm"/>
+     <style:tab-stop style:position="5.088cm"/>
+     <style:tab-stop style:position="6.336cm"/>
+     <style:tab-stop style:position="7.584cm"/>
+     <style:tab-stop style:position="8.832cm"/>
+     <style:tab-stop style:position="10.08cm"/>
+     <style:tab-stop style:position="11.328cm"/>
+     <style:tab-stop style:position="12.576cm"/>
+     <style:tab-stop style:position="13.824cm"/>
+     <style:tab-stop style:position="15.072cm"/>
+     <style:tab-stop style:position="16.32cm"/>
+     <style:tab-stop style:position="17.568cm"/>
+     <style:tab-stop style:position="18.816cm"/>
+     <style:tab-stop style:position="20.064cm"/>
+     <style:tab-stop style:position="21.312cm"/>
+     <style:tab-stop style:position="22.56cm"/>
+     <style:tab-stop style:position="23.808cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:color="#000000" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="28pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="28pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="28pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:font-relief="none"/>
+  </style:style>
+  <style:style style:name="Default-outline3" style:family="presentation" style:parent-style-name="Default-outline2">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0.299cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0.145cm"/>
+     <style:tab-stop style:position="1.393cm"/>
+     <style:tab-stop style:position="2.641cm"/>
+     <style:tab-stop style:position="3.889cm"/>
+     <style:tab-stop style:position="5.137cm"/>
+     <style:tab-stop style:position="6.385cm"/>
+     <style:tab-stop style:position="7.633cm"/>
+     <style:tab-stop style:position="8.881cm"/>
+     <style:tab-stop style:position="10.129cm"/>
+     <style:tab-stop style:position="11.377cm"/>
+     <style:tab-stop style:position="12.625cm"/>
+     <style:tab-stop style:position="13.872cm"/>
+     <style:tab-stop style:position="15.12cm"/>
+     <style:tab-stop style:position="16.368cm"/>
+     <style:tab-stop style:position="17.616cm"/>
+     <style:tab-stop style:position="18.864cm"/>
+     <style:tab-stop style:position="20.112cm"/>
+     <style:tab-stop style:position="21.36cm"/>
+     <style:tab-stop style:position="22.608cm"/>
+     <style:tab-stop style:position="23.856cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:color="#000000" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="24pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="24pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="24pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:font-relief="none"/>
+  </style:style>
+  <style:style style:name="Default-outline4" style:family="presentation" style:parent-style-name="Default-outline3">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0.202cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0.194cm"/>
+     <style:tab-stop style:position="1.441cm"/>
+     <style:tab-stop style:position="2.689cm"/>
+     <style:tab-stop style:position="3.937cm"/>
+     <style:tab-stop style:position="5.185cm"/>
+     <style:tab-stop style:position="6.433cm"/>
+     <style:tab-stop style:position="7.681cm"/>
+     <style:tab-stop style:position="8.929cm"/>
+     <style:tab-stop style:position="10.177cm"/>
+     <style:tab-stop style:position="11.425cm"/>
+     <style:tab-stop style:position="12.673cm"/>
+     <style:tab-stop style:position="13.921cm"/>
+     <style:tab-stop style:position="15.169cm"/>
+     <style:tab-stop style:position="16.417cm"/>
+     <style:tab-stop style:position="17.665cm"/>
+     <style:tab-stop style:position="18.913cm"/>
+     <style:tab-stop style:position="20.161cm"/>
+     <style:tab-stop style:position="21.409cm"/>
+     <style:tab-stop style:position="22.657cm"/>
+     <style:tab-stop style:position="23.905cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:color="#000000" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="20pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="20pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="20pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:font-relief="none"/>
+  </style:style>
+  <style:style style:name="Default-outline5" style:family="presentation" style:parent-style-name="Default-outline4">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0.101cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0.242cm"/>
+     <style:tab-stop style:position="1.49cm"/>
+     <style:tab-stop style:position="2.738cm"/>
+     <style:tab-stop style:position="3.986cm"/>
+     <style:tab-stop style:position="5.234cm"/>
+     <style:tab-stop style:position="6.482cm"/>
+     <style:tab-stop style:position="7.73cm"/>
+     <style:tab-stop style:position="8.978cm"/>
+     <style:tab-stop style:position="10.226cm"/>
+     <style:tab-stop style:position="11.474cm"/>
+     <style:tab-stop style:position="12.722cm"/>
+     <style:tab-stop style:position="13.97cm"/>
+     <style:tab-stop style:position="15.217cm"/>
+     <style:tab-stop style:position="16.465cm"/>
+     <style:tab-stop style:position="17.713cm"/>
+     <style:tab-stop style:position="18.961cm"/>
+     <style:tab-stop style:position="20.209cm"/>
+     <style:tab-stop style:position="21.457cm"/>
+     <style:tab-stop style:position="22.705cm"/>
+     <style:tab-stop style:position="23.953cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:color="#000000" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="20pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="20pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="20pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:font-relief="none"/>
+  </style:style>
+  <style:style style:name="Default-outline6" style:family="presentation" style:parent-style-name="Default-outline5">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0.101cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0.242cm"/>
+     <style:tab-stop style:position="1.49cm"/>
+     <style:tab-stop style:position="2.738cm"/>
+     <style:tab-stop style:position="3.986cm"/>
+     <style:tab-stop style:position="5.234cm"/>
+     <style:tab-stop style:position="6.482cm"/>
+     <style:tab-stop style:position="7.73cm"/>
+     <style:tab-stop style:position="8.978cm"/>
+     <style:tab-stop style:position="10.226cm"/>
+     <style:tab-stop style:position="11.474cm"/>
+     <style:tab-stop style:position="12.722cm"/>
+     <style:tab-stop style:position="13.97cm"/>
+     <style:tab-stop style:position="15.217cm"/>
+     <style:tab-stop style:position="16.465cm"/>
+     <style:tab-stop style:position="17.713cm"/>
+     <style:tab-stop style:position="18.961cm"/>
+     <style:tab-stop style:position="20.209cm"/>
+     <style:tab-stop style:position="21.457cm"/>
+     <style:tab-stop style:position="22.705cm"/>
+     <style:tab-stop style:position="23.953cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:color="#000000" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="20pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="20pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="20pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:font-relief="none"/>
+  </style:style>
+  <style:style style:name="Default-outline7" style:family="presentation" style:parent-style-name="Default-outline6">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0.101cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0.242cm"/>
+     <style:tab-stop style:position="1.49cm"/>
+     <style:tab-stop style:position="2.738cm"/>
+     <style:tab-stop style:position="3.986cm"/>
+     <style:tab-stop style:position="5.234cm"/>
+     <style:tab-stop style:position="6.482cm"/>
+     <style:tab-stop style:position="7.73cm"/>
+     <style:tab-stop style:position="8.978cm"/>
+     <style:tab-stop style:position="10.226cm"/>
+     <style:tab-stop style:position="11.474cm"/>
+     <style:tab-stop style:position="12.722cm"/>
+     <style:tab-stop style:position="13.97cm"/>
+     <style:tab-stop style:position="15.217cm"/>
+     <style:tab-stop style:position="16.465cm"/>
+     <style:tab-stop style:position="17.713cm"/>
+     <style:tab-stop style:position="18.961cm"/>
+     <style:tab-stop style:position="20.209cm"/>
+     <style:tab-stop style:position="21.457cm"/>
+     <style:tab-stop style:position="22.705cm"/>
+     <style:tab-stop style:position="23.953cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:color="#000000" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="20pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="20pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="20pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:font-relief="none"/>
+  </style:style>
+  <style:style style:name="Default-outline8" style:family="presentation" style:parent-style-name="Default-outline7">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0.101cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0.242cm"/>
+     <style:tab-stop style:position="1.49cm"/>
+     <style:tab-stop style:position="2.738cm"/>
+     <style:tab-stop style:position="3.986cm"/>
+     <style:tab-stop style:position="5.234cm"/>
+     <style:tab-stop style:position="6.482cm"/>
+     <style:tab-stop style:position="7.73cm"/>
+     <style:tab-stop style:position="8.978cm"/>
+     <style:tab-stop style:position="10.226cm"/>
+     <style:tab-stop style:position="11.474cm"/>
+     <style:tab-stop style:position="12.722cm"/>
+     <style:tab-stop style:position="13.97cm"/>
+     <style:tab-stop style:position="15.217cm"/>
+     <style:tab-stop style:position="16.465cm"/>
+     <style:tab-stop style:position="17.713cm"/>
+     <style:tab-stop style:position="18.961cm"/>
+     <style:tab-stop style:position="20.209cm"/>
+     <style:tab-stop style:position="21.457cm"/>
+     <style:tab-stop style:position="22.705cm"/>
+     <style:tab-stop style:position="23.953cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:color="#000000" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="20pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="20pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="20pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:font-relief="none"/>
+  </style:style>
+  <style:style style:name="Default-outline9" style:family="presentation" style:parent-style-name="Default-outline8">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0.101cm" fo:line-height="93%" fo:text-align="start" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0.242cm"/>
+     <style:tab-stop style:position="1.49cm"/>
+     <style:tab-stop style:position="2.738cm"/>
+     <style:tab-stop style:position="3.986cm"/>
+     <style:tab-stop style:position="5.234cm"/>
+     <style:tab-stop style:position="6.482cm"/>
+     <style:tab-stop style:position="7.73cm"/>
+     <style:tab-stop style:position="8.978cm"/>
+     <style:tab-stop style:position="10.226cm"/>
+     <style:tab-stop style:position="11.474cm"/>
+     <style:tab-stop style:position="12.722cm"/>
+     <style:tab-stop style:position="13.97cm"/>
+     <style:tab-stop style:position="15.217cm"/>
+     <style:tab-stop style:position="16.465cm"/>
+     <style:tab-stop style:position="17.713cm"/>
+     <style:tab-stop style:position="18.961cm"/>
+     <style:tab-stop style:position="20.209cm"/>
+     <style:tab-stop style:position="21.457cm"/>
+     <style:tab-stop style:position="22.705cm"/>
+     <style:tab-stop style:position="23.953cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:color="#000000" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="20pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="20pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="20pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:font-relief="none"/>
+  </style:style>
+  <style:style style:name="Default-subtitle" style:family="presentation">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:textarea-vertical-align="middle">
+    <text:list-style style:name="Default-subtitle">
+     <text:list-level-style-number text:level="1" style:num-format="">
+      <style:list-level-properties/>
+      <style:text-properties fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-number>
+     <text:list-level-style-bullet text:level="2" text:bullet-char="">
+      <style:list-level-properties text:space-before="0.599cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="3" text:bullet-char="">
+      <style:list-level-properties text:space-before="1.199cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="4" text:bullet-char="">
+      <style:list-level-properties text:space-before="1.799cm" text:min-label-width="0.599cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="5" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="6" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="7" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="8" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="9" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+     <text:list-level-style-bullet text:level="10" text:bullet-char="">
+      <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+      <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-bullet>
+    </text:list-style>
+   </style:graphic-properties>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0cm" fo:line-height="93%" fo:text-align="center" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0cm"/>
+     <style:tab-stop style:position="1.247cm"/>
+     <style:tab-stop style:position="2.495cm"/>
+     <style:tab-stop style:position="3.743cm"/>
+     <style:tab-stop style:position="4.991cm"/>
+     <style:tab-stop style:position="6.239cm"/>
+     <style:tab-stop style:position="7.487cm"/>
+     <style:tab-stop style:position="8.735cm"/>
+     <style:tab-stop style:position="9.983cm"/>
+     <style:tab-stop style:position="11.231cm"/>
+     <style:tab-stop style:position="12.479cm"/>
+     <style:tab-stop style:position="13.727cm"/>
+     <style:tab-stop style:position="14.975cm"/>
+     <style:tab-stop style:position="16.223cm"/>
+     <style:tab-stop style:position="17.471cm"/>
+     <style:tab-stop style:position="18.719cm"/>
+     <style:tab-stop style:position="19.967cm"/>
+     <style:tab-stop style:position="21.215cm"/>
+     <style:tab-stop style:position="22.463cm"/>
+     <style:tab-stop style:position="23.711cm"/>
+     <style:tab-stop style:position="24.959cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:font-variant="normal" fo:text-transform="none" fo:color="#000000" style:text-outline="false" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="32pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" fo:background-color="transparent" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="32pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="32pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+  </style:style>
+  <style:style style:name="Default-title" style:family="presentation">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="middle" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm">
+    <text:list-style style:name="Default-title">
+     <text:list-level-style-number text:level="1" style:num-format="">
+      <style:list-level-properties/>
+      <style:text-properties fo:color="#000000" fo:font-size="45%"/>
+     </text:list-level-style-number>
+    </text:list-style>
+   </style:graphic-properties>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm" fo:margin-bottom="0cm" fo:line-height="93%" fo:text-align="center" fo:text-indent="0cm" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="true">
+    <style:tab-stops>
+     <style:tab-stop style:position="0cm"/>
+     <style:tab-stop style:position="1.247cm"/>
+     <style:tab-stop style:position="2.495cm"/>
+     <style:tab-stop style:position="3.743cm"/>
+     <style:tab-stop style:position="4.991cm"/>
+     <style:tab-stop style:position="6.239cm"/>
+     <style:tab-stop style:position="7.487cm"/>
+     <style:tab-stop style:position="8.735cm"/>
+     <style:tab-stop style:position="9.983cm"/>
+     <style:tab-stop style:position="11.231cm"/>
+     <style:tab-stop style:position="12.479cm"/>
+     <style:tab-stop style:position="13.727cm"/>
+     <style:tab-stop style:position="14.975cm"/>
+     <style:tab-stop style:position="16.223cm"/>
+     <style:tab-stop style:position="17.471cm"/>
+     <style:tab-stop style:position="18.719cm"/>
+     <style:tab-stop style:position="19.967cm"/>
+     <style:tab-stop style:position="21.215cm"/>
+     <style:tab-stop style:position="22.463cm"/>
+     <style:tab-stop style:position="23.711cm"/>
+     <style:tab-stop style:position="24.959cm"/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+   <style:text-properties fo:font-variant="normal" fo:text-transform="none" fo:color="#000000" style:text-outline="false" style:text-line-through-style="none" style:text-line-through-type="none" style:text-position="0% 100%" style:font-name="Arial" fo:font-family="Arial" style:font-family-generic="roman" style:font-pitch="variable" fo:font-size="44pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" fo:background-color="transparent" style:font-name-asian="DejaVu Sans" style:font-family-asian="&apos;DejaVu Sans&apos;" style:font-pitch-asian="variable" style:font-size-asian="44pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="DejaVu Sans" style:font-family-complex="&apos;DejaVu Sans&apos;" style:font-pitch-complex="variable" style:font-size-complex="44pt" style:font-style-complex="normal" style:font-weight-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+  </style:style>
+  <style:presentation-page-layout style:name="AL0T26">
+   <presentation:placeholder presentation:object="handout" svg:x="2.058cm" svg:y="1.743cm" svg:width="10.556cm" svg:height="-0.233cm"/>
+   <presentation:placeholder presentation:object="handout" svg:x="15.414cm" svg:y="1.743cm" svg:width="10.556cm" svg:height="-0.233cm"/>
+   <presentation:placeholder presentation:object="handout" svg:x="2.058cm" svg:y="3.612cm" svg:width="10.556cm" svg:height="-0.233cm"/>
+   <presentation:placeholder presentation:object="handout" svg:x="15.414cm" svg:y="3.612cm" svg:width="10.556cm" svg:height="-0.233cm"/>
+   <presentation:placeholder presentation:object="handout" svg:x="2.058cm" svg:y="5.481cm" svg:width="10.556cm" svg:height="-0.233cm"/>
+   <presentation:placeholder presentation:object="handout" svg:x="15.414cm" svg:y="5.481cm" svg:width="10.556cm" svg:height="-0.233cm"/>
+  </style:presentation-page-layout>
+ </office:styles>
+ <office:automatic-styles>
+  <style:page-layout style:name="PM0">
+   <style:page-layout-properties fo:margin-top="0cm" fo:margin-bottom="0cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:page-width="21cm" fo:page-height="29.7cm" style:print-orientation="portrait"/>
+  </style:page-layout>
+  <style:page-layout style:name="PM1">
+   <style:page-layout-properties fo:margin-top="0cm" fo:margin-bottom="0cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:page-width="28cm" fo:page-height="21cm" style:print-orientation="landscape"/>
+  </style:page-layout>
+  <style:style style:name="dp1" style:family="drawing-page">
+   <style:drawing-page-properties draw:background-size="border" draw:fill="solid" draw:fill-color="#ffffff"/>
+  </style:style>
+  <style:style style:name="dp2" style:family="drawing-page">
+   <style:drawing-page-properties presentation:display-header="true" presentation:display-footer="true" presentation:display-page-number="false" presentation:display-date-time="true"/>
+  </style:style>
+  <style:style style:name="dp3" style:family="drawing-page">
+   <style:drawing-page-properties presentation:transition-type="semi-automatic" presentation:background-visible="true" presentation:background-objects-visible="true" draw:fill="solid" draw:fill-color="#ffffff" presentation:display-footer="true" presentation:display-page-number="false" presentation:display-date-time="true"/>
+  </style:style>
+  <style:style style:name="gr1" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:auto-grow-height="false" fo:min-height="0cm"/>
+  </style:style>
+  <style:style style:name="gr2" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:auto-grow-height="false" fo:min-height="1.485cm"/>
+  </style:style>
+  <style:style style:name="gr3" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-vertical-align="bottom" draw:auto-grow-height="false" fo:min-height="1.485cm"/>
+  </style:style>
+  <style:style style:name="gr4" style:family="graphic" style:parent-style-name="standard" style:list-style-name="L1">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="top" draw:auto-grow-height="false" draw:auto-grow-width="false" fo:min-height="1.443cm" fo:min-width="0cm" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm" fo:wrap-option="wrap" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="gr5" style:family="graphic" style:parent-style-name="standard" style:list-style-name="L1">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="top" draw:auto-grow-height="false" draw:auto-grow-width="false" fo:min-height="1.443cm" fo:min-width="0cm" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm" fo:wrap-option="wrap" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="gr6" style:family="graphic" style:parent-style-name="standard" style:list-style-name="L1">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="top" draw:auto-grow-height="false" draw:auto-grow-width="false" fo:min-height="1.443cm" fo:min-width="0cm" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm" fo:wrap-option="wrap" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="gr7" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" svg:stroke-width="0.026cm" svg:stroke-color="#000000" draw:stroke-linejoin="miter" svg:stroke-linecap="square" draw:fill="solid" draw:fill-color="#ffffff" draw:textarea-horizontal-align="center" draw:textarea-vertical-align="middle" draw:shadow-color="#808080" style:protect="position size"/>
+  </style:style>
+  <style:style style:name="gr8" style:family="graphic" style:parent-style-name="standard" style:list-style-name="L1">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="top" draw:auto-grow-height="false" draw:auto-grow-width="false" fo:min-height="1.483cm" fo:min-width="0cm" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm" fo:wrap-option="wrap" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="gr9" style:family="graphic" style:parent-style-name="standard" style:list-style-name="L1">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="top" draw:auto-grow-height="false" draw:auto-grow-width="false" fo:min-height="1.483cm" fo:min-width="0cm" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm" fo:wrap-option="wrap" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="gr10" style:family="graphic" style:parent-style-name="standard" style:list-style-name="L1">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="bottom" draw:auto-grow-height="false" draw:auto-grow-width="false" fo:min-height="1.483cm" fo:min-width="0cm" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm" fo:wrap-option="wrap" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="gr11" style:family="graphic" style:parent-style-name="standard" style:list-style-name="L1">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="bottom" draw:auto-grow-height="false" draw:auto-grow-width="false" fo:min-height="1.483cm" fo:min-width="0cm" fo:padding-top="0cm" fo:padding-bottom="0cm" fo:padding-left="0cm" fo:padding-right="0cm" fo:wrap-option="wrap" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="gr12" style:family="graphic" style:parent-style-name="standard" style:list-style-name="L1">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="top" draw:auto-grow-height="false" fo:min-height="0.712cm" fo:min-width="5.502cm" fo:padding-top="0.125cm" fo:padding-bottom="0.125cm" fo:padding-left="0.25cm" fo:padding-right="0.25cm" fo:wrap-option="wrap" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="pr1" style:family="presentation" style:parent-style-name="Default-notes">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="justify" draw:textarea-vertical-align="middle" draw:auto-grow-height="false" draw:auto-grow-width="false" fo:min-height="13.107cm" fo:min-width="0cm" fo:padding-top="0.13cm" fo:padding-bottom="0.13cm" fo:padding-left="0.25cm" fo:padding-right="0.25cm" fo:wrap-option="no-wrap" draw:shadow-color="#808080"/>
+  </style:style>
+  <style:style style:name="P1" style:family="paragraph">
+   <style:text-properties fo:font-size="14pt" style:font-size-asian="14pt" style:font-size-complex="14pt"/>
+  </style:style>
+  <style:style style:name="P2" style:family="paragraph">
+   <loext:graphic-properties draw:fill="none" draw:fill-color="#ffffff"/>
+   <style:text-properties fo:font-size="14pt" style:font-size-asian="14pt" style:font-size-complex="14pt"/>
+  </style:style>
+  <style:style style:name="P3" style:family="paragraph">
+   <style:paragraph-properties fo:text-align="end"/>
+   <style:text-properties fo:font-size="14pt" style:font-size-asian="14pt" style:font-size-complex="14pt"/>
+  </style:style>
+  <style:style style:name="P4" style:family="paragraph">
+   <loext:graphic-properties draw:fill="none" draw:fill-color="#ffffff"/>
+   <style:paragraph-properties fo:text-align="end"/>
+   <style:text-properties fo:font-size="14pt" style:font-size-asian="14pt" style:font-size-complex="14pt"/>
+  </style:style>
+  <style:style style:name="P5" style:family="paragraph">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:line-height="93%" fo:text-indent="0cm" style:line-break="strict"/>
+  </style:style>
+  <style:style style:name="P6" style:family="paragraph">
+   <loext:graphic-properties draw:fill="none" draw:fill-color="#ffffff"/>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:line-height="93%" fo:text-indent="0cm" style:line-break="strict" style:writing-mode="lr-tb" style:font-independent-line-spacing="true"/>
+  </style:style>
+  <style:style style:name="P7" style:family="paragraph">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:line-height="93%" fo:text-align="center" fo:text-indent="0cm" style:line-break="strict"/>
+  </style:style>
+  <style:style style:name="P8" style:family="paragraph">
+   <loext:graphic-properties draw:fill="none" draw:fill-color="#ffffff"/>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:line-height="93%" fo:text-align="center" fo:text-indent="0cm" style:line-break="strict" style:writing-mode="lr-tb" style:font-independent-line-spacing="true"/>
+  </style:style>
+  <style:style style:name="P9" style:family="paragraph">
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:line-height="93%" fo:text-align="end" fo:text-indent="0cm" style:line-break="strict"/>
+  </style:style>
+  <style:style style:name="P10" style:family="paragraph">
+   <loext:graphic-properties draw:fill="none" draw:fill-color="#ffffff"/>
+   <style:paragraph-properties fo:margin-left="0cm" fo:margin-right="0cm" fo:line-height="93%" fo:text-align="end" fo:text-indent="0cm" style:line-break="strict" style:writing-mode="lr-tb" style:font-independent-line-spacing="true"/>
+  </style:style>
+  <style:style style:name="P11" style:family="paragraph">
+   <loext:graphic-properties draw:fill="solid" draw:fill-color="#ffffff"/>
+   <style:paragraph-properties fo:text-align="center"/>
+  </style:style>
+  <style:style style:name="P12" style:family="paragraph">
+   <loext:graphic-properties draw:fill="none" draw:fill-color="#ffffff"/>
+   <style:paragraph-properties style:writing-mode="lr-tb" style:font-independent-line-spacing="true"/>
+  </style:style>
+  <style:style style:name="T1" style:family="text">
+   <style:text-properties fo:color="#000000" style:font-name="Times New Roman" fo:font-size="14pt" fo:language="en" fo:country="GB" style:font-size-asian="14pt" style:language-asian="en" style:country-asian="GB" style:font-size-complex="14pt" style:language-complex="en" style:country-complex="GB"/>
+  </style:style>
+  <style:style style:name="T2" style:family="text">
+   <style:text-properties fo:color="#000000" fo:language="en" fo:country="GB" style:language-asian="en" style:country-asian="GB" style:language-complex="en" style:country-complex="GB"/>
+  </style:style>
+  <text:list-style style:name="L1">
+   <text:list-level-style-number text:level="1" style:num-format="">
+    <style:list-level-properties/>
+    <style:text-properties fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-number>
+   <text:list-level-style-bullet text:level="2" text:bullet-char="">
+    <style:list-level-properties text:space-before="0.599cm" text:min-label-width="0.6cm"/>
+    <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-bullet>
+   <text:list-level-style-bullet text:level="3" text:bullet-char="">
+    <style:list-level-properties text:space-before="1.199cm" text:min-label-width="0.6cm"/>
+    <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-bullet>
+   <text:list-level-style-bullet text:level="4" text:bullet-char="">
+    <style:list-level-properties text:space-before="1.799cm" text:min-label-width="0.599cm"/>
+    <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-bullet>
+   <text:list-level-style-bullet text:level="5" text:bullet-char="">
+    <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+    <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-bullet>
+   <text:list-level-style-bullet text:level="6" text:bullet-char="">
+    <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+    <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-bullet>
+   <text:list-level-style-bullet text:level="7" text:bullet-char="">
+    <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+    <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-bullet>
+   <text:list-level-style-bullet text:level="8" text:bullet-char="">
+    <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+    <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-bullet>
+   <text:list-level-style-bullet text:level="9" text:bullet-char="">
+    <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+    <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-bullet>
+   <text:list-level-style-bullet text:level="10" text:bullet-char="">
+    <style:list-level-properties text:space-before="2.398cm" text:min-label-width="0.6cm"/>
+    <style:text-properties fo:font-family="Wingdings" style:font-pitch="variable" style:font-charset="x-symbol" fo:color="#000000" fo:font-size="45%"/>
+   </text:list-level-style-bullet>
+  </text:list-style>
+ </office:automatic-styles>
+ <office:master-styles>
+  <draw:layer-set>
+   <draw:layer draw:name="layout"/>
+   <draw:layer draw:name="background"/>
+   <draw:layer draw:name="backgroundobjects"/>
+   <draw:layer draw:name="controls"/>
+   <draw:layer draw:name="measurelines"/>
+  </draw:layer-set>
+  <style:handout-master presentation:presentation-page-layout-name="AL0T26" style:page-layout-name="PM0" draw:style-name="dp2">
+   <draw:page-thumbnail draw:layer="backgroundobjects" svg:width="8.999cm" svg:height="6.749cm" svg:x="1cm" svg:y="2.898cm"/>
+   <draw:page-thumbnail draw:layer="backgroundobjects" svg:width="8.999cm" svg:height="6.749cm" svg:x="1cm" svg:y="11.474cm"/>
+   <draw:page-thumbnail draw:layer="backgroundobjects" svg:width="8.999cm" svg:height="6.749cm" svg:x="1cm" svg:y="20.05cm"/>
+   <draw:page-thumbnail draw:layer="backgroundobjects" svg:width="8.999cm" svg:height="6.749cm" svg:x="11cm" svg:y="2.898cm"/>
+   <draw:page-thumbnail draw:layer="backgroundobjects" svg:width="8.999cm" svg:height="6.749cm" svg:x="11cm" svg:y="11.474cm"/>
+   <draw:page-thumbnail draw:layer="backgroundobjects" svg:width="8.999cm" svg:height="6.749cm" svg:x="11cm" svg:y="20.05cm"/>
+   <draw:frame draw:style-name="gr1" draw:text-style-name="P2" draw:layer="backgroundobjects" svg:width="0cm" svg:height="0cm" svg:x="0cm" svg:y="0cm" presentation:class="header">
+    <draw:text-box>
+     <text:p text:style-name="P1"><presentation:header/></text:p>
+    </draw:text-box>
+   </draw:frame>
+   <draw:frame draw:style-name="gr2" draw:text-style-name="P4" draw:layer="backgroundobjects" svg:width="9.113cm" svg:height="1.484cm" svg:x="0cm" svg:y="28.215cm" presentation:class="date-time">
+    <draw:text-box>
+     <text:p text:style-name="P3"><presentation:date-time/></text:p>
+    </draw:text-box>
+   </draw:frame>
+   <draw:frame draw:style-name="gr3" draw:text-style-name="P2" draw:layer="backgroundobjects" svg:width="9.113cm" svg:height="1.484cm" svg:x="0cm" svg:y="0cm" presentation:class="footer">
+    <draw:text-box>
+     <text:p text:style-name="P1"><presentation:footer/></text:p>
+    </draw:text-box>
+   </draw:frame>
+   <draw:frame draw:style-name="gr3" draw:text-style-name="P4" draw:layer="backgroundobjects" svg:width="9.113cm" svg:height="1.484cm" svg:x="11.886cm" svg:y="0cm" presentation:class="page-number">
+    <draw:text-box>
+     <text:p text:style-name="P3"><text:page-number>&lt;number&gt;</text:page-number></text:p>
+    </draw:text-box>
+   </draw:frame>
+  </style:handout-master>
+  <style:master-page style:name="Default" style:page-layout-name="PM1" draw:style-name="dp1">
+   <draw:frame presentation:style-name="Default-title" draw:layer="backgroundobjects" svg:width="25.193cm" svg:height="3.501cm" svg:x="1.397cm" svg:y="0.837cm" presentation:class="title" presentation:placeholder="true">
+    <draw:text-box/>
+   </draw:frame>
+   <draw:frame presentation:style-name="Default-outline1" draw:layer="backgroundobjects" svg:width="25.193cm" svg:height="13.856cm" svg:x="1.397cm" svg:y="4.912cm" presentation:class="outline" presentation:placeholder="true">
+    <draw:text-box/>
+   </draw:frame>
+   <draw:frame draw:style-name="gr4" draw:text-style-name="P6" draw:layer="backgroundobjects" svg:width="6.517cm" svg:height="1.442cm" svg:x="1.397cm" svg:y="19.129cm" presentation:class="date-time">
+    <draw:text-box>
+     <text:list text:style-name="L1">
+      <text:list-header>
+       <text:p text:style-name="P5"><text:span text:style-name="T1"><presentation:date-time/></text:span></text:p>
+      </text:list-header>
+     </text:list>
+    </draw:text-box>
+   </draw:frame>
+   <draw:frame draw:style-name="gr5" draw:text-style-name="P8" draw:layer="backgroundobjects" svg:width="8.872cm" svg:height="1.442cm" svg:x="9.578cm" svg:y="19.129cm" presentation:class="footer">
+    <draw:text-box>
+     <text:list text:style-name="L1">
+      <text:list-header>
+       <text:p text:style-name="P7"><text:span text:style-name="T1"><presentation:footer/></text:span></text:p>
+      </text:list-header>
+     </text:list>
+    </draw:text-box>
+   </draw:frame>
+   <draw:frame draw:style-name="gr6" draw:text-style-name="P10" draw:layer="backgroundobjects" svg:width="6.518cm" svg:height="1.442cm" svg:x="20.073cm" svg:y="19.129cm" presentation:class="page-number">
+    <draw:text-box>
+     <text:list text:style-name="L1">
+      <text:list-header>
+       <text:p text:style-name="P9"><text:span text:style-name="T1"><text:page-number>&lt;number&gt;</text:page-number></text:span></text:p>
+      </text:list-header>
+     </text:list>
+    </draw:text-box>
+   </draw:frame>
+   <presentation:notes style:page-layout-name="PM0">
+    <draw:rect draw:style-name="gr7" draw:text-style-name="P11" draw:layer="backgroundobjects" svg:width="21cm" svg:height="29.7cm" svg:x="0cm" svg:y="0cm">
+     <text:p/>
+    </draw:rect>
+    <draw:page-thumbnail presentation:style-name="Default-title" draw:layer="backgroundobjects" svg:width="14.843cm" svg:height="11.13cm" svg:x="3.073cm" svg:y="2.258cm" presentation:class="page"/>
+    <draw:frame presentation:style-name="Default-notes" draw:layer="backgroundobjects" svg:width="16.797cm" svg:height="13.361cm" svg:x="2.098cm" svg:y="14.106cm" presentation:class="notes" presentation:placeholder="true">
+     <draw:text-box/>
+    </draw:frame>
+    <draw:frame draw:style-name="gr8" draw:text-style-name="P6" draw:layer="backgroundobjects" svg:width="9.106cm" svg:height="1.482cm" svg:x="0cm" svg:y="0cm" presentation:class="header">
+     <draw:text-box>
+      <text:list text:style-name="L1">
+       <text:list-header>
+        <text:p text:style-name="P5"><text:span text:style-name="T1"><presentation:header/></text:span></text:p>
+       </text:list-header>
+      </text:list>
+     </draw:text-box>
+    </draw:frame>
+    <draw:frame draw:style-name="gr9" draw:text-style-name="P10" draw:layer="backgroundobjects" svg:width="9.106cm" svg:height="1.482cm" svg:x="11.889cm" svg:y="0cm" presentation:class="date-time">
+     <draw:text-box>
+      <text:list text:style-name="L1">
+       <text:list-header>
+        <text:p text:style-name="P9"><text:span text:style-name="T1"><presentation:date-time/></text:span></text:p>
+       </text:list-header>
+      </text:list>
+     </draw:text-box>
+    </draw:frame>
+    <draw:frame draw:style-name="gr10" draw:text-style-name="P6" draw:layer="backgroundobjects" svg:width="9.106cm" svg:height="1.482cm" svg:x="0cm" svg:y="28.213cm" presentation:class="footer">
+     <draw:text-box>
+      <text:list text:style-name="L1">
+       <text:list-header>
+        <text:p text:style-name="P5"><text:span text:style-name="T1"><presentation:footer/></text:span></text:p>
+       </text:list-header>
+      </text:list>
+     </draw:text-box>
+    </draw:frame>
+    <draw:frame draw:style-name="gr11" draw:text-style-name="P10" draw:layer="backgroundobjects" svg:width="9.106cm" svg:height="1.482cm" svg:x="11.889cm" svg:y="28.213cm" presentation:class="page-number">
+     <draw:text-box>
+      <text:list text:style-name="L1">
+       <text:list-header>
+        <text:p text:style-name="P9"><text:span text:style-name="T1"><text:page-number>&lt;number&gt;</text:page-number></text:span></text:p>
+       </text:list-header>
+      </text:list>
+     </draw:text-box>
+    </draw:frame>
+   </presentation:notes>
+  </style:master-page>
+ </office:master-styles>
+ <office:body>
+  <office:presentation>
+   <draw:page draw:name="page1" draw:style-name="dp3" draw:master-page-name="Default">
+    <draw:custom-shape draw:style-name="gr12" draw:text-style-name="P6" draw:layer="layout" svg:width="6.002cm" svg:height="0.962cm" svg:x="1.001cm" svg:y="0.498cm">
+     <text:list text:style-name="L1">
+      <text:list-header>
+       <text:p text:style-name="P5"><text:span text:style-name="T2">Test presentation</text:span></text:p>
+      </text:list-header>
+     </text:list>
+     <draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="mso-spt202" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/>
+    </draw:custom-shape>
+    <presentation:notes draw:style-name="dp2">
+     <draw:page-thumbnail draw:layer="layout" svg:width="14.847cm" svg:height="11.134cm" svg:x="3.074cm" svg:y="2.258cm" draw:page-number="1" presentation:class="page"/>
+     <draw:frame presentation:style-name="pr1" draw:text-style-name="P12" draw:layer="layout" svg:width="16.801cm" svg:height="13.366cm" svg:x="2.098cm" svg:y="14.107cm">
+      <draw:text-box>
+       <text:p/>
+      </draw:text-box>
+     </draw:frame>
+    </presentation:notes>
+   </draw:page>
+   <presentation:settings presentation:mouse-visible="false"/>
+  </office:presentation>
+ </office:body>
+</office:document>
