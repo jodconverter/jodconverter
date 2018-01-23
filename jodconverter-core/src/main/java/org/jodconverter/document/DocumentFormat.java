@@ -357,7 +357,7 @@ public class DocumentFormat {
      * Specifies whether the document format is unmodifiable after creation. Default to {@code
      * true}.
      *
-     * @param readOnly {@code true} if the created document format cannot be modified after
+     * @param unmodifiable {@code true} if the created document format cannot be modified after
      *     creation, {@code false} otherwise.
      * @return This builder instance.
      */
