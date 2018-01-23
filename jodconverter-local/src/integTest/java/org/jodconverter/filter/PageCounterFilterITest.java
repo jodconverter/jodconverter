@@ -42,7 +42,7 @@ public class PageCounterFilterITest extends AbstractOfficeITest {
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   /**
-   * Test the conversion of a document replacing text along the way.
+   * Test the conversion of a document, choosing a specific page.
    *
    * @throws Exception if an error occurs.
    */

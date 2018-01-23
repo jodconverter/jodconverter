@@ -69,20 +69,17 @@ public abstract class AbstractOfficeITest {
 
       // Skip conversions that are not supported on all OS.
       if (StringUtils.equalsAny(
-          inputFormat.getExtension(), "odg", "svg", "fodg", "fodp", "fods", "fodt")) {
-        LOGGER.info("-- skipping odg to svg test... ");
-        continue;
-      }
-      if (StringUtils.equalsAny(
-          outputFormat.getExtension(),
-          "png",
-          "sxc",
-          "sxw",
-          "sxi",
-          "fodg",
-          "fodp",
-          "fods",
-          "fodt")) {
+              inputFormat.getExtension(), "odg", "svg", "fodg", "fodp", "fods", "fodt")
+          || StringUtils.equalsAny(
+              outputFormat.getExtension(),
+              "png",
+              "sxc",
+              "sxw",
+              "sxi",
+              "fodg",
+              "fodp",
+              "fods",
+              "fodt")) {
         LOGGER.info(
             "-- skipping {} to {} test... ",
             inputFormat.getExtension(),
