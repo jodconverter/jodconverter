@@ -77,7 +77,7 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
 
         // See https://github.com/LibreOffice/online/blob/master/wsd/reference.txt
         final HttpEntity entity =
-            MultipartEntityBuilder.create().addPart("data", new FileBody(source.getFile())).build();
+            MultipartEntityBuilder.create().addPart("data", new FileBody(sourceFile)).build();
 
         // Use the fluent API to post the file and
         // save the response into the target file.
@@ -88,7 +88,7 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
                     .connectTimeout(requestConfig.getConnectTimeout())
                     .socketTimeout(requestConfig.getSocketTimeout())
                     .body(entity))
-            .saveContent(target.getFile());
+            .saveContent(targetFile);
 
         // onComplete on target will copy the temp file to
         // the OutputStream and then delete the temp file
