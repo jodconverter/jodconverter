@@ -89,7 +89,7 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
     if (officeManager instanceof TemporaryFileMaker) {
       return toInternal(
           new TargetDocumentSpecsFromOutputStream(
-              target, ((TemporaryFileMaker) officeManager).makeTemporaryFile("tmp"), closeStream));
+              target, (TemporaryFileMaker) officeManager, closeStream));
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "

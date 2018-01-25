@@ -23,31 +23,41 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
+
+import org.jodconverter.office.TemporaryFileMaker;
 
 class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
     implements SourceDocumentSpecs {
 
   private final InputStream inputStream;
   private final boolean closeStream;
+  private final TemporaryFileMaker fileMaker;
 
   public SourceDocumentSpecsFromInputStream(
-      final InputStream inputStream, final File tempFile, final boolean closeStream) {
-    super(tempFile);
+      final InputStream inputStream,
+      final TemporaryFileMaker fileMaker,
+      final boolean closeStream) {
+    super(fileMaker.makeTemporaryFile());
 
     Validate.notNull(inputStream, "The inputStream is null");
     this.inputStream = inputStream;
     this.closeStream = closeStream;
+    this.fileMaker = fileMaker;
   }
 
   @Override
   public File getFile() {
 
     // Write the InputStream to the temp file
-    final File tempFile = super.getFile();
+    final File tempFile =
+        Optional.ofNullable(getFormat())
+            .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
+            .orElse(super.getFile());
     try {
       final FileOutputStream outputStream = new FileOutputStream(tempFile); // NOSONAR
       outputStream.getChannel().lock();

@@ -25,10 +25,17 @@ import java.io.File;
 public interface TemporaryFileMaker {
 
   /**
-   * Creates a new temporary file with the the specified extension.
+   * Creates a new temporary file without an extension.
+   *
+   * @return the created file.
+   */
+  File makeTemporaryFile();
+
+  /**
+   * Creates a new temporary file with the specified extension.
    *
    * @param extension the extension of the file to create.
-   * @return the create file.
+   * @return the created file.
    */
   File makeTemporaryFile(String extension);
 }

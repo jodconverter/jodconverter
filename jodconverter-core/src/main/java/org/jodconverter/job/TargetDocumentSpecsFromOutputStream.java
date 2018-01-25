@@ -22,23 +22,38 @@ package org.jodconverter.job;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
+
+import org.jodconverter.office.TemporaryFileMaker;
 
 class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
     implements TargetDocumentSpecs {
 
   private final OutputStream outputStream;
   private final boolean closeStream;
+  private final TemporaryFileMaker fileMaker;
 
   public TargetDocumentSpecsFromOutputStream(
-      final OutputStream outputStream, final File tempFile, final boolean closeStream) {
-    super(tempFile);
+      final OutputStream outputStream,
+      final TemporaryFileMaker fileMaker,
+      final boolean closeStream) {
+    super(fileMaker.makeTemporaryFile());
 
     Validate.notNull(outputStream, "The outputStream is null");
     this.outputStream = outputStream;
     this.closeStream = closeStream;
+    this.fileMaker = fileMaker;
+  }
+
+  @Override
+  public File getFile() {
+
+    return Optional.ofNullable(getFormat())
+        .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
+        .orElse(super.getFile());
   }
 
   @Override

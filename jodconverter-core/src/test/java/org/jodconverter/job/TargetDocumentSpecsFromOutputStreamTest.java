@@ -22,6 +22,7 @@ package org.jodconverter.job;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -32,11 +33,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.office.TemporaryFileMaker;
 
 public class TargetDocumentSpecsFromOutputStreamTest {
 
@@ -45,11 +48,24 @@ public class TargetDocumentSpecsFromOutputStreamTest {
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
+  private TemporaryFileMaker fileMaker;
+
+  /**
+   * Setup the file maker before each test.
+   *
+   * @throws IOException If an IO error occurs.
+   */
+  @Before
+  public void setUp() throws IOException {
+
+    fileMaker = mock(TemporaryFileMaker.class);
+    given(fileMaker.makeTemporaryFile()).willReturn(new File(testFolder.getRoot(), "temp"));
+  }
+
   @Test(expected = NullPointerException.class)
   public void ctor_WithNullOutputStream_ThrowsNullPointerException() throws IOException {
 
-    final File tempFile = testFolder.newFile("ctor_WithNullOutputStream.doc");
-    new TargetDocumentSpecsFromOutputStream(null, tempFile, true);
+    new TargetDocumentSpecsFromOutputStream(null, fileMaker, true);
   }
 
   @Test
@@ -58,6 +74,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     final File tempFile = testFolder.newFile("onComplete_WhenIoExceptionCatch.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     final FileOutputStream outputStream = mock(FileOutputStream.class);
     doThrow(IOException.class)
@@ -65,7 +82,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
         .write(isA(byte[].class), isA(int.class), isA(int.class));
 
     final TargetDocumentSpecsFromOutputStream specs =
-        new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
+        new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
 
     try {
       specs.onComplete(tempFile);
@@ -83,11 +100,12 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     final File tempFile = testFolder.newFile("onComplete_WhenCloseStreamIsTrue.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
-          new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
+          new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, true);
 
       specs.onComplete(tempFile);
 
@@ -106,11 +124,12 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     final File tempFile = testFolder.newFile("onConsumed_WhenCloseStreamIsFalse.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
-          new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
+          new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
 
       specs.onComplete(tempFile);
 
@@ -129,11 +148,12 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     final File tempFile = testFolder.newFile("onFailure_WhenCloseStreamIsTrue.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
-          new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, true);
+          new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, true);
 
       specs.onFailure(tempFile, new IOException());
 
@@ -152,11 +172,12 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     final File tempFile = testFolder.newFile("onFailure_WhenCloseStreamIsFalse.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
-          new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
+          new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
 
       specs.onFailure(tempFile, new IOException());
 
@@ -174,6 +195,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     final File tempFile = testFolder.newFile("ctor_WithValidValues.txt");
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
@@ -181,7 +203,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
       final Map<String, Object> storeProperties = new HashMap<>();
       storeProperties.put("Overwrite", true);
       final TargetDocumentSpecsFromOutputStream specs =
-          new TargetDocumentSpecsFromOutputStream(outputStream, tempFile, false);
+          new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
       specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);
 
       assertThat(specs)

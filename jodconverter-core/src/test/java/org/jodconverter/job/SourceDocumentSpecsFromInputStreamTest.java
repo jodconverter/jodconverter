@@ -21,6 +21,8 @@ package org.jodconverter.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -28,11 +30,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.office.TemporaryFileMaker;
 
 public class SourceDocumentSpecsFromInputStreamTest {
 
@@ -40,19 +44,35 @@ public class SourceDocumentSpecsFromInputStreamTest {
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
+  private TemporaryFileMaker fileMaker;
+
+  /**
+   * Setup the file maker before each test.
+   *
+   * @throws IOException If an IO error occurs.
+   */
+  @Before
+  public void setUp() throws IOException {
+
+    fileMaker = mock(TemporaryFileMaker.class);
+    given(fileMaker.makeTemporaryFile()).willReturn(new File(testFolder.getRoot(), "temp"));
+  }
+
   @Test(expected = NullPointerException.class)
   public void ctor_WithNullInputStream_ThrowsNullPointerException() throws IOException {
 
-    final File tempFile = testFolder.newFile("ctor_WithNullInputStream.doc");
-    new SourceDocumentSpecsFromInputStream(null, tempFile, true);
+    new SourceDocumentSpecsFromInputStream(null, fileMaker, true);
   }
 
   @Test
   public void getFile_WhenIoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
 
+    given(fileMaker.makeTemporaryFile()).willReturn(testFolder.getRoot());
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(testFolder.getRoot());
+
     try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       final SourceDocumentSpecsFromInputStream specs =
-          new SourceDocumentSpecsFromInputStream(inputStream, testFolder.getRoot(), false);
+          new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
 
       try {
         specs.getFile();
@@ -69,12 +89,13 @@ public class SourceDocumentSpecsFromInputStreamTest {
 
     final File tempFile = testFolder.newFile("onConsumed_WhenIoExceptionCatch.doc");
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     final FileInputStream inputStream = mock(FileInputStream.class);
     doThrow(IOException.class).when(inputStream).close();
 
     final SourceDocumentSpecsFromInputStream specs =
-        new SourceDocumentSpecsFromInputStream(inputStream, tempFile, true);
+        new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, true);
 
     try {
       specs.onConsumed(tempFile);
@@ -91,10 +112,11 @@ public class SourceDocumentSpecsFromInputStreamTest {
 
     final File tempFile = testFolder.newFile("onConsumed_WhenCloseStreamIsTrue_.doc");
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       final SourceDocumentSpecsFromInputStream specs =
-          new SourceDocumentSpecsFromInputStream(inputStream, tempFile, true);
+          new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, true);
 
       specs.onConsumed(tempFile);
 
@@ -112,10 +134,11 @@ public class SourceDocumentSpecsFromInputStreamTest {
 
     final File tempFile = testFolder.newFile("onConsumed_WhenCloseStreamIsFalse.doc");
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
       final SourceDocumentSpecsFromInputStream specs =
-          new SourceDocumentSpecsFromInputStream(inputStream, tempFile, false);
+          new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
 
       specs.onConsumed(tempFile);
 
@@ -132,11 +155,12 @@ public class SourceDocumentSpecsFromInputStreamTest {
 
     final File tempFile = testFolder.newFile("ctor_WithValidValues.doc");
     assertThat(tempFile).exists();
+    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
     try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
 
       final SourceDocumentSpecsFromInputStream specs =
-          new SourceDocumentSpecsFromInputStream(inputStream, tempFile, false);
+          new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
       specs.setDocumentFormat(DefaultDocumentFormatRegistry.ODS);
 
       assertThat(specs)

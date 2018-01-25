@@ -90,7 +90,7 @@ public abstract class AbstractConverter implements DocumentConverter {
     if (officeManager instanceof TemporaryFileMaker) {
       return convert(
           new SourceDocumentSpecsFromInputStream(
-              source, ((TemporaryFileMaker) officeManager).makeTemporaryFile("tmp"), closeStream));
+              source, (TemporaryFileMaker) officeManager, closeStream));
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "
