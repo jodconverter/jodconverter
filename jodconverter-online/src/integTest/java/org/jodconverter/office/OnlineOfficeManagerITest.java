@@ -22,7 +22,7 @@ package org.jodconverter.office;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -227,7 +227,7 @@ public class OnlineOfficeManagerITest {
             .build();
     try {
       manager.start();
-      stubFor(post(urlEqualTo("/lool/convert-to/txt")).willReturn(aResponse().withStatus(400)));
+      stubFor(post(urlPathEqualTo("/lool/convert-to/txt")).willReturn(aResponse().withStatus(400)));
 
       // Try to converter the input document
       OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
@@ -259,7 +259,7 @@ public class OnlineOfficeManagerITest {
     try {
       manager.start();
       stubFor(
-          post(urlEqualTo("/lool/convert-to/txt"))
+          post(urlPathEqualTo("/lool/convert-to/txt"))
               .willReturn(aResponse().withStatus(200).withBody("Test Document")));
 
       // Try to converter the input document
@@ -291,7 +291,7 @@ public class OnlineOfficeManagerITest {
     try {
       manager.start();
       stubFor(
-          post(urlEqualTo("/lool/convert-to/txt"))
+          post(urlPathEqualTo("/lool/convert-to/txt"))
               .willReturn(aResponse().withStatus(200).withBody("Test Document")));
 
       // Try to converter the input document

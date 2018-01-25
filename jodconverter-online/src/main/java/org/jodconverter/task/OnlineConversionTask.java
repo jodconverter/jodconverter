@@ -20,11 +20,13 @@
 package org.jodconverter.task;
 
 import java.io.File;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.slf4j.Logger;
@@ -59,7 +61,7 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
   @Override
   public void execute(final OfficeContext context) throws OfficeException {
 
-    LOGGER.info("Executing local conversion task...");
+    LOGGER.info("Executing online conversion task...");
     final OnlineOfficeContext onlineContext = (OnlineOfficeContext) context;
 
     // Obtain a source file that can be loaded by office. If the source
@@ -82,9 +84,38 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
         // Use the fluent API to post the file and
         // save the response into the target file.
         final RequestConfig requestConfig = onlineContext.getRequestConfig();
+        final URIBuilder uriBuilder = new URIBuilder(buildUrl(requestConfig.getUrl()));
+        // We suppose that the server only support custom
+        // FilterOptions properties, which is better than nothing
+        // for now.... LibreOffice does not support custom
+        // properties, only the sample web service do.
+        // If we want to support other types, we know the
+        // list of possible load/store properties.
+        Optional.ofNullable(target.getFormat().getLoadProperties())
+            .ifPresent(
+                map ->
+                    map.entrySet()
+                        .stream()
+                        .filter(entry -> entry.getKey().equals("FilterOptions"))
+                        .forEach(
+                            entry ->
+                                uriBuilder.addParameter(
+                                    "loadOptions", entry.getValue().toString())));
+        Optional.ofNullable(
+                target.getFormat().getStoreProperties(source.getFormat().getInputFamily()))
+            .ifPresent(
+                map ->
+                    map.entrySet()
+                        .stream()
+                        .filter(entry -> entry.getKey().equals("FilterOptions"))
+                        .forEach(
+                            entry ->
+                                uriBuilder.addParameter(
+                                    "storeOptions", entry.getValue().toString())));
         Executor.newInstance(onlineContext.getHttpClient())
             .execute(
-                Request.Post(buildUrl(requestConfig.getUrl()))
+                // Request.Post(buildUrl(requestConfig.getUrl()))
+                Request.Post(uriBuilder.build())
                     .connectTimeout(requestConfig.getConnectTimeout())
                     .socketTimeout(requestConfig.getSocketTimeout())
                     .body(entity))
@@ -97,7 +128,7 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
 
       } catch (Exception ex) {
         LOGGER.error("Online conversion failed.", ex);
-        final OfficeException officeEx = new OfficeException("Local conversion failed", ex);
+        final OfficeException officeEx = new OfficeException("Online conversion failed", ex);
         target.onFailure(targetFile, officeEx);
         throw officeEx;
       }
