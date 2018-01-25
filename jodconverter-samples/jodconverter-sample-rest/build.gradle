@@ -1,9 +1,10 @@
-description = 'JODConverter - Sample Spring Boot Web Application'
+description = 'JODConverter - Sample Rest Web Api'
 
 buildscript {
   ext {
     // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
     springBootVersion = '1.5.9.RELEASE'
+    swaggerVersion = '2.8.0'
   }
   repositories {
     mavenCentral()
@@ -13,11 +14,13 @@ buildscript {
   }
 }
 
-apply plugin: 'war'
+apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
   mavenCentral()
@@ -25,8 +28,7 @@ repositories {
 
 dependencies {
   compile project(':jodconverter-spring-boot-starter')
-  compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
-  compile 'org.springframework.boot:spring-boot-devtools'
-  
-  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+  compile 'org.springframework.boot:spring-boot-starter-web'
+  compile "io.springfox:springfox-swagger2:$swaggerVersion"
+  compile "io.springfox:springfox-swagger-ui:$swaggerVersion"
 }
