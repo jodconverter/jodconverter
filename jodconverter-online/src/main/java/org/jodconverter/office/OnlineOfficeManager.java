@@ -85,7 +85,7 @@ public final class OnlineOfficeManager extends AbstractOfficeManagerPool {
 
     return IntStream.range(0, poolSize)
         .mapToObj(
-            i ->
+            idx ->
                 new OnlineOfficeManagerPoolEntry(
                     urlConnection, sslConfig, (OnlineOfficeManagerPoolEntryConfig) config))
         .toArray(OnlineOfficeManagerPoolEntry[]::new);

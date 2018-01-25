@@ -37,7 +37,7 @@ import org.jodconverter.office.OfficeContext;
 /** This filter is used to insert a document at the end of the document being converted. */
 public class DocumentInserterFilter implements Filter {
 
-  private File documentToInsert;
+  private final File documentToInsert;
 
   /**
    * Creates a new filter that will insert the specified document.
@@ -66,7 +66,7 @@ public class DocumentInserterFilter implements Filter {
 
     // Insert the document to merge at the end of the current document.
     // TODO: Should we allow custom load properties ?
-    XDocumentInsertable insertable =
+    final XDocumentInsertable insertable =
         UnoRuntime.queryInterface(XDocumentInsertable.class, textCursor);
     insertable.insertDocumentFromURL(toUrl(documentToInsert), new PropertyValue[0]);
 

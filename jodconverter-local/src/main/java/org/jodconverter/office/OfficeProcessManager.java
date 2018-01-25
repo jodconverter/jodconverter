@@ -125,9 +125,9 @@ class OfficeProcessManager {
       // Once more: try to terminate
       LOGGER.debug(
           "The Office Process {}",
-          (terminated
+          terminated
               ? "has been terminated"
-              : "is still running. Someone else prevents termination, e.g. the quickstarter"));
+              : "is still running. Someone else prevents termination, e.g. the quickstarter");
 
     } catch (DisposedException disposedEx) {
       // expected so ignore it

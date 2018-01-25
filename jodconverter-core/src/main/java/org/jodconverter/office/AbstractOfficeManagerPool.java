@@ -160,6 +160,11 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
   }
 
   @Override
+  public File makeTemporaryFile() {
+    return new File(tempDir, "tempfile_" + tempFileCounter.getAndIncrement());
+  }
+
+  @Override
   public File makeTemporaryFile(final String extension) {
     return new File(tempDir, "tempfile_" + tempFileCounter.getAndIncrement() + "." + extension);
   }
@@ -210,9 +215,9 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
   protected void doStart() throws OfficeException {
 
     // Start all PooledOfficeManager and make them available to execute tasks.
-    for (int i = 0; i < entries.length; i++) {
-      entries[i].start();
-      releaseManager(entries[i]);
+    for (final OfficeManager manager : entries) {
+      manager.start();
+      releaseManager(manager);
     }
   }
 
@@ -222,9 +227,9 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
     pool.clear();
 
     OfficeException firstException = null;
-    for (int i = 0; i < entries.length; i++) {
+    for (final OfficeManager manager : entries) {
       try {
-        entries[i].stop();
+        manager.stop();
       } catch (OfficeException ex) {
         if (firstException == null) {
           firstException = ex;

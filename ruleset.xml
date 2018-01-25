@@ -62,19 +62,12 @@
 
 	<!-- Use the 'design' category -->
 	<rule ref="category/java/design.xml">
-		<exclude name="LawOfDemeter" />
-		<exclude name="LoosePackageCoupling" />
 		<exclude name="AvoidCatchingGenericException" />
 		<exclude name="AvoidThrowingRawExceptionTypes" />
+		<exclude name="LawOfDemeter" />
+		<exclude name="LoosePackageCoupling" />
+		<exclude name="NcssCount" />
 		<exclude name="SignatureDeclareThrowsException" />
-	</rule>
-	<rule ref="category/java/design.xml/NcssCount">
-		<properties>
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
 	</rule>
 
 	<!-- Use the 'documentation' category -->

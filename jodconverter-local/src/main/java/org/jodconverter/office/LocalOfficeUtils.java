@@ -175,7 +175,7 @@ public final class LocalOfficeUtils {
     if (portNumbers != null) {
       Arrays.stream(portNumbers).forEach(portNumber -> officeUrls.add(new OfficeUrl(portNumber)));
     }
-    return officeUrls.toArray(new OfficeUrl[officeUrls.size()]);
+    return officeUrls.toArray(new OfficeUrl[0]);
   }
 
   /**
@@ -281,7 +281,7 @@ public final class LocalOfficeUtils {
       }
       propertyValues.add(property((String) entry.getKey(), value));
     }
-    return propertyValues.toArray(new PropertyValue[propertyValues.size()]);
+    return propertyValues.toArray(new PropertyValue[0]);
   }
 
   /**
