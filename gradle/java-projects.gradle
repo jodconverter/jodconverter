@@ -119,6 +119,8 @@ pmd {
   ruleSetConfig = rootProject.resources.text.fromFile('ruleset.xml')
   ignoreFailures = true
   rulePriority = 5
+  // Don't use the default gradle rule sets
+  ruleSets = []
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

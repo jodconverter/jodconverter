@@ -12,6 +12,7 @@
 		<exclude name="AccessorClassGeneration" />
 		<exclude name="AccessorMethodGeneration" />
 		<exclude name="JUnitAssertionsShouldIncludeMessage" />
+		<exclude name="JUnitTestsShouldIncludeAssert" />
 	</rule>
 	<rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
 		<properties>
@@ -23,7 +24,8 @@
 			<!-- Ignore the rule for test classes -->
 			<property name="violationSuppressXPath"
 				value="
-                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
+	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
 		</properties>
 	</rule>
 
@@ -32,26 +34,36 @@
 		<exclude name="AtLeastOneConstructor" />
 		<exclude name="DefaultPackage" />
 		<exclude name="OnlyOneReturn" />
+		<exclude name="ShortVariable" />
+		<exclude name="TooManyStaticImports" />
 	</rule>
 	<rule ref="category/java/codestyle.xml/MethodNamingConventions">
 		<properties>
 			<!-- Ignore the rule for test classes -->
 			<property name="violationSuppressXPath"
 				value="
-                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
-	<rule ref="category/java/codestyle.xml/TooManyStaticImports">
-		<properties>
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
+	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
 		</properties>
 	</rule>
 	<rule ref="category/java/codestyle.xml/LongVariable">
 		<properties>
-			<property name="minimum" value="30" />
+			<property name="minimum" value="35" />
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
+	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+	<rule ref="category/java/codestyle.xml/ShortClassName">
+		<properties>
+			<property name="minimum" value="3" />
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
+	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
 		</properties>
 	</rule>
 	<rule ref="category/java/codestyle.xml/ShortMethodName">
@@ -64,10 +76,39 @@
 	<rule ref="category/java/design.xml">
 		<exclude name="AvoidCatchingGenericException" />
 		<exclude name="AvoidThrowingRawExceptionTypes" />
+		<exclude name="DataClass" />
 		<exclude name="LawOfDemeter" />
 		<exclude name="LoosePackageCoupling" />
 		<exclude name="NcssCount" />
 		<exclude name="SignatureDeclareThrowsException" />
+	</rule>
+	<rule ref="category/java/design.xml/ExcessiveImports">
+		<properties>
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
+	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/ExcessiveMethodLength">
+		<properties>
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
+	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/TooManyMethods">
+		<properties>
+			<property name="maxmethods" value="15" />
+			<!-- Ignore the rule for test classes -->
+			<property name="violationSuppressXPath"
+				value="
+	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
+	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+		</properties>
 	</rule>
 
 	<!-- Use the 'documentation' category -->
@@ -80,7 +121,8 @@
 			<!-- Ignore the rule for test classes -->
 			<property name="violationSuppressXPath"
 				value="
-                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
+	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
 		</properties>
 	</rule>
 
@@ -94,7 +136,8 @@
 			<!-- Ignore the rule for test classes -->
 			<property name="violationSuppressXPath"
 				value="
-                //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
+	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
 		</properties>
 	</rule>
 	<rule ref="category/java/errorprone.xml/DataflowAnomalyAnalysis">
