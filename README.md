@@ -21,7 +21,7 @@ I created this fork because I had to do some changes to the original project and
 
 #### Gradle:
 ```Shell
-compile 'org.jodconverter:jodconverter-local:4.1.0'
+compile 'org.jodconverter:jodconverter-local:4.1.1'
 ```
 
 #### Maven:
@@ -29,7 +29,7 @@ compile 'org.jodconverter:jodconverter-local:4.1.0'
 <dependency>
   <groupId>org.jodconverter</groupId>
   <artifactId>jodconverter-local</artifactId>
-  <version>4.1.0</version>
+  <version>4.1.1</version>
 </dependency>
 ```
 
@@ -37,18 +37,18 @@ compile 'org.jodconverter:jodconverter-local:4.1.0'
 
 #### With LibreOffice libraries:
 ```Shell
-gradlew clean build -x test -x integTest
+gradlew clean build -x test
 ```
 
 #### With OpenOffice libraries:
 ```Shell
-gradlew clean build -x test -x integTest -PuseOpenOffice
+gradlew clean build -x test -PuseOpenOffice
 ```
 
 ### Building Cli Executable
 
 ```Shell
-gradlew clean build -x test -x integTest distZip
+gradlew clean build -x test distZip
 ```
 
 #### Support <sup><sup>:speech_balloon:</sup></sup>
