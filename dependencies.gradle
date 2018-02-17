@@ -62,7 +62,7 @@ ext {
     // Latest version -> https://mvnrepository.com/artifact/org.springframework/spring-core
     spring_version : '5.0.3.RELEASE',
     // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    springBoot_version : '1.5.9.RELEASE',
+    spring_boot_version : '1.5.9.RELEASE',
     
     // Test
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~
