@@ -38,7 +38,7 @@ targetCompatibility = rootProject.baselineJavaVersion
 apply plugin: 'jacoco'
 
 jacoco {
-  toolVersion = jacocoVersion
+  toolVersion = versions.jacoco_version
 }
 
 // Configures the jacocoTestReport task
@@ -91,7 +91,7 @@ apply plugin: 'checkstyle'
 
 // Configures the checkstyle task
 checkstyle {
-  toolVersion = checkstyleVersion
+  toolVersion = versions.checkstyle_version
   config = rootProject.resources.text.fromFile('checkstyle.xml')
 }
 
@@ -115,7 +115,7 @@ apply plugin: 'pmd' // Also performs quality checks on Java source files and gen
 
 // Configures the pmd task
 pmd {
-  toolVersion = pmdVersion
+  toolVersion = versions.pmd_version
   ruleSetConfig = rootProject.resources.text.fromFile('ruleset.xml')
   ignoreFailures = true
   rulePriority = 5

@@ -1,10 +1,14 @@
 // Import the content of the libraries.gradle file
-apply from: "./libraries.gradle"
+apply from: "dependencies.gradle"
 
 description = 'JODConverter'
 
 // External dependencies for the build script
 buildscript {
+  
+  // Gradle will not find vars defined in an external file when referring to them
+  // in the buildscript block, unless you link it from the buildscript block, too.
+  apply from: "dependencies.gradle"
 
   repositories {
     mavenCentral()
@@ -15,11 +19,11 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.netflix.nebula:nebula-project-plugin:$nebulaProjectVersion"
-    classpath "com.diffplug.spotless:spotless-plugin-gradle:$spotlessVersion"
-    classpath "io.spring.gradle:dependency-management-plugin:$springDependencyManagementVersion"
-    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$nexusStagingVersion"
-    classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:$coverallsVersion"
+    classpath gradlePlugins.coveralls
+    classpath gradlePlugins.dependency_management
+    classpath gradlePlugins.nebula_project
+    classpath gradlePlugins.nexus_staging
+    classpath gradlePlugins.spotless
   }
 }
 
@@ -128,7 +132,7 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 // Configures the JaCoCo plugin
 jacoco {
-  toolVersion = jacocoVersion
+  toolVersion = versions.jacoco_version
 }
 
 // Creates an aggregated JaCoCo executionData for all
