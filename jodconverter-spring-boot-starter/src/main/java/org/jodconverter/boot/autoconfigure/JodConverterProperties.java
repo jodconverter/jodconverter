@@ -25,29 +25,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("jodconverter")
 public class JodConverterProperties {
 
-  /**
-   * Enable JODConverter, which means that office instances will be launched. If not set, it
-   * defaults to false.
-   */
+  /** Enable JODConverter, which means that office instances will be launched. */
   private boolean enabled;
 
-  /**
-   * Represents the office home directory. If not set, it defaults to an auto-detected home
-   * directory (most recent version of LibreOffice first).
-   */
+  /** Represents the office home directory. */
   private String officeHome;
 
   /**
    * List of ports, separated by commas, used by each JODConverter processing thread. The number of
    * office instances is equal to the number of ports, since 1 office will be launched for each port
-   * number. If not set, it defaults to a list with a single port, 2002.
+   * number.
    */
   private String portNumbers = "2002";
 
-  /**
-   * Directory where temporary office profiles will be created. If not set, it defaults to the
-   * system temporary directory as specified by the java.io.tmpdir system property.
-   */
+  /** Directory where temporary office profiles will be created. */
   private String workingDir;
 
   /**
@@ -58,38 +49,34 @@ public class JodConverterProperties {
 
   /**
    * Indicates whether we must kill existing office process when an office process already exists
-   * for the same connection string. If not set, it defaults to true.
+   * for the same connection string.
    */
   private boolean killExistingProcess = true;
 
   /**
    * Process timeout (milliseconds). Used when trying to execute an office process call
-   * (start/terminate). If not set, it defaults to 120000 (2 minutes).
+   * (start/terminate).
    */
   private long processTimeout = 120000L;
 
   /**
    * Process retry interval (milliseconds). Used for waiting between office process call tries
-   * (start/terminate). If not set, it defaults to 250.
+   * (start/terminate).
    */
   private long processRetryInterval = 250L;
 
   /**
    * Maximum time allowed to process a task. If the processing time of a task is longer than this
-   * timeout, this task will be aborted and the next task is processed. If not set, it defaults to
-   * 120000 (2 minutes).
+   * timeout, this task will be aborted and the next task is processed.
    */
   private long taskExecutionTimeout = 120000L;
 
-  /**
-   * Maximum number of tasks an office process can execute before restarting. If not set, it
-   * defaults to 200.
-   */
+  /** Maximum number of tasks an office process can execute before restarting. */
   private int maxTasksPerProcess = 200;
 
   /**
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
-   * if the waiting time is longer than this timeout. If not set, it defaults to 30000 (30 seconds).
+   * if the waiting time is longer than this timeout.
    */
   private long taskQueueTimeout = 30000L;
 

@@ -1,0 +1,20 @@
+{"properties": [
+  {
+    "name": "jodconverter.office-home",
+    "defaultValue": "auto-detect"
+  },
+  {
+    "name": "jodconverter.working-dir",
+    "defaultValue": "System.getProperty(\"java.io.tmpdir\")"
+  }
+],"hints": [
+  {
+    "name": "jodconverter.office-home",
+    "values": [
+      {
+        "value": "auto-detect",
+        "description": "Office installation directory is auto-detected, most recent version of LibreOffice first."
+      }
+    ]
+  }
+]}
