@@ -68,6 +68,7 @@ public final class LocalOfficeUtils {
         INSTANCE =
             findOfficeHome(
                 EXECUTABLE_WINDOWS,
+                programFiles64 + File.separator + "LibreOffice",
                 programFiles64 + File.separator + "LibreOffice 5",
                 programFiles32 + File.separator + "LibreOffice 5",
                 programFiles32 + File.separator + "OpenOffice 4",
