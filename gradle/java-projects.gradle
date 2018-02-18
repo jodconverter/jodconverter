@@ -2,9 +2,27 @@
 apply plugin: 'java'
 // Add integration tests support (Add new SourceSet, task, etc.)
 apply plugin: 'nebula.integtest'
+// Provides spring dependency management functionality
+apply plugin: 'io.spring.dependency-management'
   
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Dependencies setup
+
+// See https://github.com/spring-gradle-plugins/dependency-management-plugin
+dependencyManagement {
+  imports {
+    mavenBom (libraries.spring_boot_dependencies) {
+      bomProperties([
+        'mockito.version' : versions.mockito_version,
+        'httpcore.version' : versions.httpcomponents_httpcore_version,
+        'httpclient.version' : versions.httpcomponents_httpclient_version
+      ])
+    }
+  }
+  dependencies {
+    dependency "org.apache.httpcomponents:fluent-hc:$versions.httpcomponents_httpclient_version"
+  }
+}
 
 // Appropriately inject the common dependencies into each java projects
 dependencies {
