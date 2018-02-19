@@ -28,17 +28,23 @@ public class JodConverterProperties {
   /** Enable JODConverter, which means that office instances will be launched. */
   private boolean enabled;
 
-  /** Represents the office home directory. */
+  /**
+   * Represents the office home directory. If not set, the office installation directory is
+   * auto-detected, most recent version of LibreOffice first.
+   */
   private String officeHome;
 
   /**
    * List of ports, separated by commas, used by each JODConverter processing thread. The number of
-   * office instances is equal to the number of ports, since 1 office will be launched for each port
-   * number.
+   * office instances is equal to the number of ports, since 1 office process will be launched for
+   * each port number.
    */
   private String portNumbers = "2002";
 
-  /** Directory where temporary office profiles will be created. */
+  /**
+   * Directory where temporary office profiles will be created. If not set, it defaults to the
+   * system temporary directory as specified by the java.io.tmpdir system property.
+   */
   private String workingDir;
 
   /**
