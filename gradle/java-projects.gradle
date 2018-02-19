@@ -13,14 +13,13 @@ dependencyManagement {
   imports {
     mavenBom (libraries.spring_boot_dependencies) {
       bomProperties([
-        'mockito.version' : versions.mockito_version,
-        'httpcore.version' : versions.httpcomponents_httpcore_version,
-        'httpclient.version' : versions.httpcomponents_httpclient_version
+        'mockito.version' : versions.mockito_version
       ])
     }
   }
+  def httpclient_version = managedVersions['org.apache.httpcomponents:httpclient']
   dependencies {
-    dependency "org.apache.httpcomponents:fluent-hc:$versions.httpcomponents_httpclient_version"
+    dependency "org.apache.httpcomponents:fluent-hc:$httpclient_version"
   }
 }
 
