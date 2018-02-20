@@ -23,9 +23,12 @@ import static java.lang.Math.toIntExact;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -82,6 +85,67 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     public SelectByAlias(final String keyAlias) {
       this.keyAlias = keyAlias;
+    }
+  }
+
+  // Taken from Spring org.springframework.util.ClassUtils class.
+  private static ClassLoader getDefaultClassLoader() {
+
+    ClassLoader cl = null;
+    try {
+      cl = Thread.currentThread().getContextClassLoader();
+    } catch (Throwable ex) {
+      // Cannot access thread context ClassLoader - falling back...
+    }
+    if (cl == null) {
+      // No thread context class loader -> use class loader of this class.
+      cl = OnlineOfficeManagerPoolEntry.class.getClassLoader();
+      if (cl == null) {
+        // getClassLoader() returning null indicates the bootstrap ClassLoader
+        try {
+          cl = ClassLoader.getSystemClassLoader();
+        } catch (Throwable ex) { // NOSONAR
+          // Cannot access system ClassLoader - oh well, maybe the caller can live with null...
+        }
+      }
+    }
+    return cl;
+  }
+
+  // Taken from spring org.springframework.util.ResourceUtils class
+  private static File getFile(final URL url) {
+
+    try {
+      return new File(
+          new URI(StringUtils.replace(url.toString(), " ", "%20")).getSchemeSpecificPart());
+    } catch (URISyntaxException ex) {
+      // Fallback for URLs that are not valid URIs (should hardly ever happen).
+      return new File(url.getFile());
+    }
+  }
+
+  // Taken from spring org.springframework.util.ResourceUtils class
+  private static File getFile(final String resourceLocation) throws FileNotFoundException {
+
+    Validate.notNull(resourceLocation, "Resource location must not be null");
+    if (resourceLocation.startsWith("classpath:")) {
+      final String path = resourceLocation.substring("classpath:".length());
+      final String description = "class path resource [" + path + "]";
+      final ClassLoader cl = getDefaultClassLoader();
+      final URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
+      if (url == null) {
+        throw new FileNotFoundException(
+            description + " cannot be resolved to absolute file path because it does not exist");
+      }
+      return getFile(url.toString());
+    }
+
+    try {
+      // try URL
+      return getFile(new URL(resourceLocation));
+    } catch (MalformedURLException ex) {
+      // no URL -> treat as file path
+      return new File(resourceLocation);
     }
   }
 
@@ -238,7 +302,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
         keyStore = KeyStore.getInstance(type, storeProvider);
       }
 
-      try (FileInputStream instream = new FileInputStream(new File(store))) {
+      try (FileInputStream instream = new FileInputStream(getFile(store))) {
         keyStore.load(instream, storePassword.toCharArray());
       }
 

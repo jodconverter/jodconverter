@@ -10,7 +10,8 @@ spring:
     name: JODConverter Sample Rest Api
 
 jodconverter:
-  enabled: true
+  local:
+    enabled: true
   
 logging:
   level:

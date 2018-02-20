@@ -38,19 +38,19 @@ import org.jodconverter.office.LocalOfficeManager;
 import org.jodconverter.office.OfficeManager;
 
 @Configuration
-@ConditionalOnClass({DocumentConverter.class})
+@ConditionalOnClass(LocalConverter.class)
 @ConditionalOnProperty(
-  prefix = "jodconverter",
+  prefix = "jodconverter.local",
   name = "enabled",
   havingValue = "true",
   matchIfMissing = false
 )
-@EnableConfigurationProperties(JodConverterProperties.class)
-public class JodConverterAutoConfiguration {
+@EnableConfigurationProperties(JodConverterLocalProperties.class)
+public class JodConverterLocalAutoConfiguration {
 
-  private final JodConverterProperties properties;
+  private final JodConverterLocalProperties properties;
 
-  public JodConverterAutoConfiguration(final JodConverterProperties properties) {
+  public JodConverterLocalAutoConfiguration(final JodConverterLocalProperties properties) {
     this.properties = properties;
   }
 
@@ -81,19 +81,19 @@ public class JodConverterAutoConfiguration {
     return builder.build();
   }
 
-  @Bean(initMethod = "start", destroyMethod = "stop")
-  @ConditionalOnMissingBean
-  public OfficeManager officeManager() {
+  @Bean(name = "localOfficeManager", initMethod = "start", destroyMethod = "stop")
+  @ConditionalOnMissingBean(name = "localOfficeManager")
+  public OfficeManager localOfficeManager() {
 
     return createOfficeManager();
   }
 
-  // Must appear after the OfficeManager bean creation. Do not reorder this class by name.
+  // Must appear after the localOfficeManager bean creation. Do not reorder this class by name.
   @Bean
-  @ConditionalOnMissingBean
-  @ConditionalOnBean(OfficeManager.class)
-  public DocumentConverter jodConverter(final OfficeManager officeManager) {
+  @ConditionalOnMissingBean(name = "localDocumentConverter")
+  @ConditionalOnBean(name = "localOfficeManager")
+  public DocumentConverter localDocumentConverter(final OfficeManager localOfficeManager) {
 
-    return LocalConverter.make(officeManager);
+    return LocalConverter.make(localOfficeManager);
   }
 }

@@ -26,8 +26,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -35,13 +33,15 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import org.jodconverter.DocumentConverter;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class JodConverterITest {
+@TestPropertySource(locations = "classpath:config/application-local.properties")
+public class LocalConverterITest {
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
@@ -62,13 +62,6 @@ public class JodConverterITest {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
     }
-  }
-
-  /** Deletes the output test directory once the tests are all done. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    FileUtils.deleteQuietly(testFolder.getRoot());
   }
 
   @Test

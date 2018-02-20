@@ -22,8 +22,8 @@ package org.jodconverter.boot.autoconfigure;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /** Configuration class for JODConverter. */
-@ConfigurationProperties("jodconverter")
-public class JodConverterProperties {
+@ConfigurationProperties("jodconverter.local")
+public class JodConverterLocalProperties {
 
   /** Enable JODConverter, which means that office instances will be launched. */
   private boolean enabled;

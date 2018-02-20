@@ -3,7 +3,7 @@ description = 'JODConverter - Sample Spring Boot Web Application'
 buildscript {
   ext {
     // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    springBootVersion = '1.5.9.RELEASE'
+    springBootVersion = '1.5.10.RELEASE'
   }
   repositories {
     mavenCentral()

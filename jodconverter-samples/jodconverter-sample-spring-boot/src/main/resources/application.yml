@@ -10,4 +10,5 @@ spring:
     name: JODConverter Sample Spring Boot 
 
 jodconverter:
-  enabled: true
+  local:
+    enabled: true
