@@ -9,4 +9,7 @@ dependencies {
 
   testCompile libraries.wiremock
   testCompile libraries.spring_boot_starter_test
+  
+  testCompileOnly project(':jodconverter-local')
+  testCompileOnly project(':jodconverter-online')
 }
