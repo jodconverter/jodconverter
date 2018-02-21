@@ -27,6 +27,7 @@ repositories {
 }
 
 dependencies {
+  compile project(':jodconverter-local')
   compile project(':jodconverter-spring-boot-starter')
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile "io.springfox:springfox-swagger2:$swaggerVersion"

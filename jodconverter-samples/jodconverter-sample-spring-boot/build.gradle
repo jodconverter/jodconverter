@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+  compile project(':jodconverter-local')
   compile project(':jodconverter-spring-boot-starter')
   compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
   compile 'org.springframework.boot:spring-boot-devtools'
