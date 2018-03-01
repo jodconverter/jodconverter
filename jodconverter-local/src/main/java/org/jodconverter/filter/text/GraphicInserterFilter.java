@@ -184,6 +184,8 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws Exception {
 
+    LOGGER.debug("Applying the GraphicInserterFilter");
+
     // Querying for the interface XTextDocument (text interface) on the XComponent
     final XTextDocument docText = UnoRuntime.queryInterface(XTextDocument.class, document);
 

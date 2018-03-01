@@ -19,6 +19,9 @@
 
 package org.jodconverter.filter.text;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
@@ -31,12 +34,16 @@ import org.jodconverter.office.OfficeContext;
 /** This filter is used to count the number of pages of a document. */
 public class PageCounterFilter implements Filter {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PageCounterFilter.class);
+
   private int pageCount;
 
   @Override
   public void doFilter(
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws Exception {
+
+    LOGGER.debug("Applying the PageSelectorFilter");
 
     // Save the PageCount property of the document.
     final XPropertySet propertySet =

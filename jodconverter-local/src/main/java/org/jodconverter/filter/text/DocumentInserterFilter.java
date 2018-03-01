@@ -23,6 +23,9 @@ import static org.jodconverter.office.LocalOfficeUtils.toUrl;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.document.XDocumentInsertable;
 import com.sun.star.lang.XComponent;
@@ -36,6 +39,8 @@ import org.jodconverter.office.OfficeContext;
 
 /** This filter is used to insert a document at the end of the document being converted. */
 public class DocumentInserterFilter implements Filter {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentInserterFilter.class);
 
   private final File documentToInsert;
 
@@ -54,6 +59,8 @@ public class DocumentInserterFilter implements Filter {
   public void doFilter(
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws Exception {
+
+    LOGGER.debug("Applying the DocumentInserterFilter");
 
     // Querying for the interface XTextDocument (text interface) on the XComponent.
     final XTextDocument docText = UnoRuntime.queryInterface(XTextDocument.class, document);

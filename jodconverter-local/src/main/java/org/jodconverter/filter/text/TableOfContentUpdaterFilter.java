@@ -19,6 +19,9 @@
 
 package org.jodconverter.filter.text;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XIndexAccess;
 import com.sun.star.lang.XComponent;
@@ -32,6 +35,8 @@ import org.jodconverter.office.OfficeContext;
 
 /** This filter update all indexes in a document. */
 public class TableOfContentUpdaterFilter implements Filter {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(TableOfContentUpdaterFilter.class);
 
   // This class has been inspired by these examples:
   // https://forum.openoffice.org/en/forum/viewtopic.php?f=25&t=54982#
@@ -59,6 +64,8 @@ public class TableOfContentUpdaterFilter implements Filter {
   public void doFilter(
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws Exception {
+
+    LOGGER.debug("Applying the TableOfContentUpdaterFilter");
 
     // Get the DocumentIndexesSupplier interface of the document
     final XDocumentIndexesSupplier documentIndexesSupplier =

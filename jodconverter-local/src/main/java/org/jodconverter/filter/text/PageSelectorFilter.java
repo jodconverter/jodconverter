@@ -19,6 +19,9 @@
 
 package org.jodconverter.filter.text;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.datatransfer.XTransferable;
 import com.sun.star.datatransfer.XTransferableSupplier;
 import com.sun.star.frame.XController;
@@ -40,6 +43,8 @@ import org.jodconverter.office.OfficeContext;
  * selected page.
  */
 public class PageSelectorFilter implements Filter {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(PageSelectorFilter.class);
 
   // This class has been inspired by these examples:
   // https://wiki.openoffice.org/wiki/API/Tutorials/PDF_export
@@ -63,6 +68,8 @@ public class PageSelectorFilter implements Filter {
   public void doFilter(
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws Exception {
+
+    LOGGER.debug("Applying the PageSelectorFilter");
 
     // Querying for the interface XTextDocument (text interface) on the XComponent.
     final XTextDocument docText = UnoRuntime.queryInterface(XTextDocument.class, document);

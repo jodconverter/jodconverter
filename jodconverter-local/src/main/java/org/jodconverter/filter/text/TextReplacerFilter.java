@@ -77,6 +77,8 @@ public class TextReplacerFilter implements Filter {
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws OfficeException {
 
+    LOGGER.debug("Applying the TextReplacerFilter");
+
     final XReplaceable replaceable = UnoRuntime.queryInterface(XReplaceable.class, document);
 
     // We need a descriptor to set properties for Replace
