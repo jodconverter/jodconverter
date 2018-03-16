@@ -19,33 +19,71 @@
 
 package org.jodconverter.document;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 
 /** Contains the required information used to deal with a specific document format . */
 public class DocumentFormat {
 
   private final String name;
-  private final String extension;
+  // Be backward compatible. Former json file doesn't
+  // support multiple document format extensions.
+  @SerializedName(
+    value = "extensions",
+    alternate = {"extension"}
+  )
+  @JsonAdapter(ExtensionsAdapter.class)
+  private final List<String> extensions;
+
   private final String mediaType;
   private final DocumentFamily inputFamily;
   private final Map<String, Object> loadProperties;
-
-  // Be backward compatible
+  // Be backward compatible. storePropertiesByFamily
+  // has been renamed storeProperties
   @SerializedName(
     value = "storeProperties",
     alternate = {"storePropertiesByFamily"}
   )
   private final Map<DocumentFamily, Map<String, Object>> storeProperties;
+
+  /**
+   * Special adapter used to support backward compatibility when loading a document format json
+   * file. Former json file doesn't support multiple document format extensions.
+   */
+  private static class ExtensionsAdapter implements JsonDeserializer<List<String>> {
+
+    @Override
+    public List<String> deserialize(
+        final JsonElement json, final Type type, final JsonDeserializationContext cxt) {
+
+      if (json.isJsonArray()) {
+        final Type listType = new TypeToken<List<String>>() {}.getType();
+        return cxt.deserialize(json, listType);
+      }
+      return Stream.of(json.getAsString()).collect(Collectors.toList());
+    }
+  }
 
   /**
    * Creates a new builder instance.
@@ -84,7 +122,7 @@ public class DocumentFormat {
    * Creates a new read-only document format with the specified name, extension and mime-type.
    *
    * @param name The name of the format.
-   * @param extension The extension of the format.
+   * @param extensions The file name extensions of the format.
    * @param mediaType The media type (mime type) of the format.
    * @param inputFamily The DocumentFamily of the document.
    * @param loadProperties The properties required to load(open) a document of this format.
@@ -95,7 +133,7 @@ public class DocumentFormat {
    */
   private DocumentFormat(
       final String name,
-      final String extension,
+      final Collection<String> extensions,
       final String mediaType,
       final DocumentFamily inputFamily,
       final Map<String, Object> loadProperties,
@@ -103,7 +141,7 @@ public class DocumentFormat {
       final boolean unmodifiable) {
 
     this.name = name;
-    this.extension = extension;
+    this.extensions = new ArrayList<>(extensions);
     this.mediaType = mediaType;
     this.inputFamily = inputFamily;
     this.loadProperties =
@@ -135,12 +173,22 @@ public class DocumentFormat {
   }
 
   /**
-   * Gets the extension associated with the document format.
+   * Gets the extension associated with the document format. It will return the same extension as
+   * {@code #getExtensions().get(0)}.
    *
    * @return A string that represents an extension.
    */
   public String getExtension() {
-    return extension;
+    return extensions.get(0);
+  }
+
+  /**
+   * Gets the file name extensions of the document format.
+   *
+   * @return A list of string that represents the extensions.
+   */
+  public List<String> getExtensions() {
+    return extensions;
   }
 
   /**
@@ -215,7 +263,7 @@ public class DocumentFormat {
   public static final class Builder {
 
     private String name;
-    private String extension;
+    private Set<String> extensions;
     private String mediaType;
     private DocumentFamily inputFamily;
     private Map<String, Object> loadProperties;
@@ -235,7 +283,7 @@ public class DocumentFormat {
     public DocumentFormat build() {
 
       return new DocumentFormat(
-          name, extension, mediaType, inputFamily, loadProperties, storeProperties, unmodifiable);
+          name, extensions, mediaType, inputFamily, loadProperties, storeProperties, unmodifiable);
     }
 
     /**
@@ -248,7 +296,7 @@ public class DocumentFormat {
 
       Validate.notNull(sourceFormat);
       this.name = sourceFormat.getName();
-      this.extension = sourceFormat.getExtension();
+      this.extensions = new LinkedHashSet<>(sourceFormat.getExtensions());
       this.mediaType = sourceFormat.getMediaType();
       this.inputFamily = sourceFormat.getInputFamily();
       this.loadProperties =
@@ -282,7 +330,10 @@ public class DocumentFormat {
     public Builder extension(final String extension) {
 
       Validate.notBlank(extension);
-      this.extension = extension;
+      if (this.extensions == null) {
+        this.extensions = new LinkedHashSet<>();
+      }
+      this.extensions.add(extension);
       return this;
     }
 

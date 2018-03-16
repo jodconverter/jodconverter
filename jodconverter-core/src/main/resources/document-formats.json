@@ -1,7 +1,7 @@
 [
   {
     "name": "Portable Document Format",
-    "extension": "pdf",
+    "extensions": ["pdf"],
     "mediaType": "application/pdf",
     "storeProperties": {
       "DRAWING": {
@@ -20,7 +20,7 @@
   },
   {
     "name": "Macromedia Flash",
-    "extension": "swf",
+    "extensions": ["swf"],
     "mediaType": "application/x-shockwave-flash",
     "storeProperties": {
       "DRAWING": {
@@ -33,7 +33,7 @@
   },
   {
     "name": "HTML",
-    "extension": "html",
+    "extensions": ["html"],
     "mediaType": "text/html",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -50,7 +50,7 @@
   },
   {
     "name": "OpenDocument Text",
-    "extension": "odt",
+    "extensions": ["odt"],
     "mediaType": "application/vnd.oasis.opendocument.text",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -61,7 +61,7 @@
   },
   {
     "name": "OpenDocument Text Template",
-    "extension": "ott",
+    "extensions": ["ott"],
     "mediaType": "application/vnd.oasis.opendocument.text-template",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -72,7 +72,7 @@
   },
   {
     "name": "OpenDocument Text Flat XML",
-    "extension": "fodt",
+    "extensions": ["fodt"],
     "mediaType": "application/vnd.oasis.opendocument.text-flat-xml",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -83,7 +83,7 @@
   },
   {
     "name": "OpenOffice.org 1.0 Text Document",
-    "extension": "sxw",
+    "extensions": ["sxw"],
     "mediaType": "application/vnd.sun.xml.writer",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -94,7 +94,7 @@
   },
   {
     "name": "Microsoft Word 97-2003",
-    "extension": "doc",
+    "extensions": ["doc"],
     "mediaType": "application/msword",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -105,7 +105,7 @@
   },
   {
     "name": "Microsoft Word 2007-2013 XML",
-    "extension": "docx",
+    "extensions": ["docx"],
     "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -116,7 +116,7 @@
   },
   {
     "name": "Rich Text Format",
-    "extension": "rtf",
+    "extensions": ["rtf"],
     "mediaType": "text/rtf",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -127,13 +127,13 @@
   },
   {
     "name": "WordPerfect",
-    "extension": "wpd",
+    "extensions": ["wpd"],
     "mediaType": "application/wordperfect",
     "inputFamily": "TEXT"
   },
   {
     "name": "Plain Text",
-    "extension": "txt",
+    "extensions": ["txt"],
     "mediaType": "text/plain",
     "inputFamily": "TEXT",
     "loadProperties": {
@@ -149,7 +149,7 @@
   },
   {
     "name": "OpenDocument Spreadsheet",
-    "extension": "ods",
+    "extensions": ["ods"],
     "mediaType": "application/vnd.oasis.opendocument.spreadsheet",
     "inputFamily": "SPREADSHEET",
     "storeProperties": {
@@ -160,7 +160,7 @@
   },
   {
     "name": "OpenDocument Spreadsheet Template",
-    "extension": "ots",
+    "extensions": ["ots"],
     "mediaType": "application/vnd.oasis.opendocument.spreadsheet-template",
     "inputFamily": "SPREADSHEET",
     "storeProperties": {
@@ -171,7 +171,7 @@
   },
   {
     "name": "OpenDocument Spreadsheet Flat XML",
-    "extension": "fods",
+    "extensions": ["fods"],
     "mediaType": "application/vnd.oasis.opendocument.spreadsheet-flat-xml",
     "inputFamily": "SPREADSHEET",
     "storeProperties": {
@@ -182,7 +182,7 @@
   },
   {
     "name": "OpenOffice.org 1.0 Spreadsheet",
-    "extension": "sxc",
+    "extensions": ["sxc"],
     "mediaType": "application/vnd.sun.xml.calc",
     "inputFamily": "SPREADSHEET",
     "storeProperties": {
@@ -193,7 +193,7 @@
   },
   {
     "name": "Microsoft Excel 97-2003",
-    "extension": "xls",
+    "extensions": ["xls"],
     "mediaType": "application/vnd.ms-excel",
     "inputFamily": "SPREADSHEET",
     "storeProperties": {
@@ -204,7 +204,7 @@
   },
   {
     "name": "Microsoft Excel 2007-2013 XML",
-    "extension": "xlsx",
+    "extensions": ["xlsx"],
     "mediaType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "inputFamily": "SPREADSHEET",
     "storeProperties": {
@@ -215,7 +215,7 @@
   },
   {
     "name": "Comma Separated Values",
-    "extension": "csv",
+    "extensions": ["csv"],
     "mediaType": "text/csv",
     "inputFamily": "SPREADSHEET",
     "loadProperties": {
@@ -231,7 +231,7 @@
   },
   {
     "name": "Tab Separated Values",
-    "extension": "tsv",
+    "extensions": ["tsv"],
     "mediaType": "text/tab-separated-values",
     "inputFamily": "SPREADSHEET",
     "loadProperties": {
@@ -247,7 +247,7 @@
   },
   {
     "name": "OpenDocument Presentation",
-    "extension": "odp",
+    "extensions": ["odp"],
     "mediaType": "application/vnd.oasis.opendocument.presentation",
     "inputFamily": "PRESENTATION",
     "storeProperties": {
@@ -258,7 +258,7 @@
   },
   {
     "name": "OpenDocument Presentation Template",
-    "extension": "otp",
+    "extensions": ["otp"],
     "mediaType": "application/vnd.oasis.opendocument.presentation-template",
     "inputFamily": "PRESENTATION",
     "storeProperties": {
@@ -269,7 +269,7 @@
   },
   {
     "name": "OpenDocument Presentation Flat XML",
-    "extension": "fodp",
+    "extensions": ["fodp"],
     "mediaType": "application/vnd.oasis.opendocument.presentation-flat-xml",
     "inputFamily": "PRESENTATION",
     "storeProperties": {
@@ -280,7 +280,7 @@
   },
   {
     "name": "OpenOffice.org 1.0 Presentation",
-    "extension": "sxi",
+    "extensions": ["sxi"],
     "mediaType": "application/vnd.sun.xml.impress",
     "inputFamily": "PRESENTATION",
     "storeProperties": {
@@ -291,7 +291,7 @@
   },
   {
     "name": "Microsoft PowerPoint 97-2003",
-    "extension": "ppt",
+    "extensions": ["ppt"],
     "mediaType": "application/vnd.ms-powerpoint",
     "inputFamily": "PRESENTATION",
     "storeProperties": {
@@ -302,7 +302,7 @@
   },
   {
     "name": "Microsoft PowerPoint 2007-2013 XML",
-    "extension": "pptx",
+    "extensions": ["pptx"],
     "mediaType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     "inputFamily": "PRESENTATION",
     "storeProperties": {
@@ -313,7 +313,7 @@
   },
   {
     "name": "OpenDocument Drawing",
-    "extension": "odg",
+    "extensions": ["odg"],
     "mediaType": "application/vnd.oasis.opendocument.graphics",
     "inputFamily": "DRAWING",
     "storeProperties": {
@@ -324,7 +324,7 @@
   },
   {
     "name": "OpenDocument Drawing Template",
-    "extension": "otg",
+    "extensions": ["otg"],
     "mediaType": "application/vnd.oasis.opendocument.graphics-template",
     "inputFamily": "DRAWING",
     "storeProperties": {
@@ -335,7 +335,7 @@
   },
   {
     "name": "OpenDocument Drawing Flat XML",
-    "extension": "fodg",
+    "extensions": ["fodg"],
     "mediaType": "application/vnd.oasis.opendocument.graphics-flat-xml",
     "inputFamily": "DRAWING",
     "storeProperties": {
@@ -346,7 +346,7 @@
   },
   {
     "name": "Scalable Vector Graphics",
-    "extension": "svg",
+    "extensions": ["svg"],
     "mediaType": "image/svg+xml",
     "storeProperties": {
       "DRAWING": {
@@ -356,7 +356,7 @@
   },
   {
     "name": "Portable Network Graphics",
-    "extension": "png",
+    "extensions": ["png"],
     "mediaType": "image/png",
     "storeProperties": {
       "DRAWING": {
@@ -370,6 +370,51 @@
       },
       "TEXT": {
         "FilterName": "writer_png_Export"
+      }
+    }
+  },
+  {
+    "name": "Joint Photographic Experts Group",
+    "extensions": ["jpg", "jpeg"],
+    "mediaType": "image/jpeg",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_jpg_Export"
+      },
+      "SPREADSHEET": {
+        "FilterName": "calc_jpg_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_jpg_Export"
+      },
+      "TEXT": {
+        "FilterName": "writer_jpg_Export"
+      }
+    }
+  },
+  {
+    "name": "Tagged Image File Format",
+    "extensions": ["tif", "tiff"],
+    "mediaType": "image/tiff",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_tif_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_tif_Export"
+      }
+    }
+  },
+  {
+    "name": "Graphics Interchange Format",
+    "extensions": ["gif"],
+    "mediaType": "image/gif",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_gif_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_gif_Export"
       }
     }
   }

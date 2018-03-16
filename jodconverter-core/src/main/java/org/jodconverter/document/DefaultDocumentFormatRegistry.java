@@ -354,6 +354,36 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat PNG = getInstance().getFormatByExtension("png");
 
   /**
+   * Joint Photographic Experts Group.
+   *
+   * <ul>
+   *   <li>Extensions: jpg, jpeg
+   *   <li>Media Type: image/jpg
+   * </ul>
+   */
+  public static final DocumentFormat JPEG = getInstance().getFormatByExtension("jpg");
+
+  /**
+   * Tagged Image File Format.
+   *
+   * <ul>
+   *   <li>Extensions: tif, tiff
+   *   <li>Media Type: image/tif
+   * </ul>
+   */
+  public static final DocumentFormat TIFF = getInstance().getFormatByExtension("tif");
+
+  /**
+   * Graphic Interchange Format.
+   *
+   * <ul>
+   *   <li>Extension: gif
+   *   <li>Media Type: image/gif
+   * </ul>
+   */
+  public static final DocumentFormat GIF = getInstance().getFormatByExtension("gif");
+
+  /**
    * The InstanceHolder inner class is used to initialize the static INSTANCE on demand (the
    * instance will be initialized the first time it is used). Working this way allow us to create
    * (and thus load default document format) the static INSTANCE only if needed.
