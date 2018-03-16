@@ -155,6 +155,16 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.SVG);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("png"))
         .isEqualTo(DefaultDocumentFormatRegistry.PNG);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("jpg"))
+        .isEqualTo(DefaultDocumentFormatRegistry.JPG);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("jpeg"))
+        .isEqualTo(DefaultDocumentFormatRegistry.JPEG);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("tif"))
+        .isEqualTo(DefaultDocumentFormatRegistry.TIF);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("tiff"))
+        .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("gif"))
+        .isEqualTo(DefaultDocumentFormatRegistry.GIF);
   }
 
   @Test
