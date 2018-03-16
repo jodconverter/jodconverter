@@ -372,5 +372,100 @@
         "FilterName": "writer_png_Export"
       }
     }
+  },
+  {
+    "name": "Joint Photographic Experts Group",
+    "extension": "jpg",
+    "mediaType": "image/jpg",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_jpg_Export"
+      },
+      "SPREADSHEET": {
+        "FilterName": "calc_jpg_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_jpg_Export"
+      },
+      "TEXT": {
+        "FilterName": "writer_jpg_Export"
+      }
+    }
+  },
+  {
+    "name": "Joint Photographic Experts Group",
+    "extension": "jpeg",
+    "mediaType": "image/jpg",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_jpeg_Export"
+      },
+      "SPREADSHEET": {
+        "FilterName": "calc_jpeg_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_jpeg_Export"
+      },
+      "TEXT": {
+        "FilterName": "writer_jpeg_Export"
+      }
+    }
+  },
+  {
+    "name": "Tagged Image File Format",
+    "extension": "tif",
+    "mediaType": "image/tif",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_tif_Export"
+      },
+      "SPREADSHEET": {
+        "FilterName": "calc_tif_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_tif_Export"
+      },
+      "TEXT": {
+        "FilterName": "writer_tif_Export"
+      }
+    }
+  },
+  {
+    "name": "Tagged Image File Format",
+    "extension": "tiff",
+    "mediaType": "image/tif",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_tiff_Export"
+      },
+      "SPREADSHEET": {
+        "FilterName": "calc_tiff_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_tiff_Export"
+      },
+      "TEXT": {
+        "FilterName": "writer_tiff_Export"
+      }
+    }
+  },
+  {
+    "name": "Graphic Interchange Format",
+    "extension": "gif",
+    "mediaType": "image/gif",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_gif_Export"
+      },
+      "SPREADSHEET": {
+        "FilterName": "calc_gif_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_gif_Export"
+      },
+      "TEXT": {
+        "FilterName": "writer_gif_Export"
+      }
+    }
   }
 ]
