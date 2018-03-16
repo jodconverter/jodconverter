@@ -58,6 +58,7 @@ public class DefaultDocumentFormatRegistryTest {
         "doc",
         "docx",
         "html",
+        "jpg",
         "odt",
         "ott",
         "fodt",
@@ -72,6 +73,7 @@ public class DefaultDocumentFormatRegistryTest {
         outputFormats,
         "csv",
         "html",
+        "jpg",
         "ods",
         "ots",
         "fods",
@@ -84,10 +86,24 @@ public class DefaultDocumentFormatRegistryTest {
     // PRESENTATION output format
     outputFormats = registry.getOutputFormats(DocumentFamily.PRESENTATION);
     assertExpectedExtensions(
-        outputFormats, "html", "odp", "otp", "fodp", "pdf", "png", "ppt", "pptx", "swf", "sxi");
+        outputFormats,
+        "gif",
+        "html",
+        "jpg",
+        "odp",
+        "otp",
+        "fodp",
+        "pdf",
+        "png",
+        "ppt",
+        "pptx",
+        "swf",
+        "sxi",
+        "tif");
     // DRAWING output format
     outputFormats = registry.getOutputFormats(DocumentFamily.DRAWING);
-    assertExpectedExtensions(outputFormats, "odg", "otg", "fodg", "pdf", "png", "svg", "swf");
+    assertExpectedExtensions(
+        outputFormats, "gif", "jpg", "odg", "otg", "fodg", "pdf", "png", "svg", "swf", "tif");
   }
 
   @Test
@@ -156,11 +172,11 @@ public class DefaultDocumentFormatRegistryTest {
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("png"))
         .isEqualTo(DefaultDocumentFormatRegistry.PNG);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("jpg"))
-        .isEqualTo(DefaultDocumentFormatRegistry.JPG);
+        .isEqualTo(DefaultDocumentFormatRegistry.JPEG);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("jpeg"))
         .isEqualTo(DefaultDocumentFormatRegistry.JPEG);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("tif"))
-        .isEqualTo(DefaultDocumentFormatRegistry.TIF);
+        .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("tiff"))
         .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("gif"))
@@ -263,6 +279,12 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.SVG);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/png"))
         .isEqualTo(DefaultDocumentFormatRegistry.PNG);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/jpeg"))
+        .isEqualTo(DefaultDocumentFormatRegistry.JPEG);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/gif"))
+        .isEqualTo(DefaultDocumentFormatRegistry.GIF);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/tiff"))
+        .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
   }
 
   @Test

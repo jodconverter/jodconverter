@@ -357,41 +357,21 @@ public final class DefaultDocumentFormatRegistry {
    * Joint Photographic Experts Group.
    *
    * <ul>
-   *   <li>Extension: jpg
+   *   <li>Extensions: jpg, jpeg
    *   <li>Media Type: image/jpg
    * </ul>
    */
-  public static final DocumentFormat JPG = getInstance().getFormatByExtension("jpg");
-
-  /**
-   * Joint Photographic Experts Group.
-   *
-   * <ul>
-   *   <li>Extension: jpeg
-   *   <li>Media Type: image/jpg
-   * </ul>
-   */
-  public static final DocumentFormat JPEG = getInstance().getFormatByExtension("jpeg");
+  public static final DocumentFormat JPEG = getInstance().getFormatByExtension("jpg");
 
   /**
    * Tagged Image File Format.
    *
    * <ul>
-   *   <li>Extension: tif
+   *   <li>Extensions: tif, tiff
    *   <li>Media Type: image/tif
    * </ul>
    */
-  public static final DocumentFormat TIF = getInstance().getFormatByExtension("tif");
-
-  /**
-   * Tagged Image File Format.
-   *
-   * <ul>
-   *   <li>Extension: tiff
-   *   <li>Media Type: image/tif
-   * </ul>
-   */
-  public static final DocumentFormat TIFF = getInstance().getFormatByExtension("tiff");
+  public static final DocumentFormat TIFF = getInstance().getFormatByExtension("tif");
 
   /**
    * Graphic Interchange Format.

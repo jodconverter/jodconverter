@@ -41,7 +41,11 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
    */
   public void addFormat(final DocumentFormat documentFormat) {
 
-    fmtsByExtension.put(StringUtils.lowerCase(documentFormat.getExtension()), documentFormat);
+    documentFormat
+        .getExtensions()
+        .stream()
+        .map(StringUtils::lowerCase)
+        .forEach(ext -> fmtsByExtension.put(ext, documentFormat));
     fmtsByMediaType.put(StringUtils.lowerCase(documentFormat.getMediaType()), documentFormat);
   }
 
@@ -63,7 +67,9 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
     return Optional.ofNullable(family)
         .map(
             docFam ->
-                fmtsByExtension
+                // Use fmtsByMediaType since fmtsByExtension may contain the same
+                // DocumentFormat with multiple extensions (e.g: jpg, jpeg).
+                fmtsByMediaType
                     .values()
                     .stream()
                     .filter(format -> format.getStoreProperties(docFam) != null)
