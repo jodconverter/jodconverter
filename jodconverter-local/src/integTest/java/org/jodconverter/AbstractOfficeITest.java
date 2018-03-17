@@ -73,6 +73,11 @@ public abstract class AbstractOfficeITest {
           || StringUtils.equalsAny(
               outputFormat.getExtension(),
               "png",
+              "jpg",
+              "jpeg",
+              "tif",
+              "tiff",
+              "gif",
               "sxc",
               "sxw",
               "sxi",
