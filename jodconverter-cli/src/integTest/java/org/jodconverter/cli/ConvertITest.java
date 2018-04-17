@@ -199,6 +199,33 @@ public class ConvertITest {
   }
 
   @Test
+  public void convert_WithCustomStoreProperties_ShouldSucceed() throws Exception {
+
+    final File inputFile = new File(SOURCE_MULTI_FILE);
+    final File outputFile = new File(testFolder.getRoot(), "convert_WithCustomStoreProperties.pdf");
+
+    assertThat(outputFile).doesNotExist();
+
+    try {
+      Convert.main(
+          new String[] {"-k", "-sFDPageRange=2-2", inputFile.getPath(), outputFile.getPath()});
+
+      // Be sure the ExitException exception is thrown.
+      fail();
+
+    } catch (Exception ex) {
+      assertThat(ex)
+          .isExactlyInstanceOf(ExitException.class)
+          .hasFieldOrPropertyWithValue("status", 0);
+
+      // If the document (with the image) is fully converted, it will
+      // be much greater that 30K (over 70K). Only the second page
+      // doesn't have an image.
+      assertThat(outputFile.length()).isLessThan(30000);
+    }
+  }
+
+  @Test
   public void main_WithAllCustomizableOption_ExecuteAndExitWithCod0() throws Exception {
 
     try {

@@ -23,14 +23,12 @@ import static org.jodconverter.office.LocalOfficeUtils.toUnoProperties;
 import static org.jodconverter.office.LocalOfficeUtils.toUrl;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
 
-import com.sun.star.document.UpdateDocMode;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
@@ -39,6 +37,7 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 
+import org.jodconverter.LocalConverter;
 import org.jodconverter.job.SourceDocumentSpecs;
 import org.jodconverter.office.LocalOfficeContext;
 import org.jodconverter.office.OfficeException;
@@ -51,16 +50,7 @@ import org.jodconverter.office.OfficeException;
 public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
 
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
-  protected static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
   protected final Map<String, Object> loadProperties;
-
-  static {
-    final Map<String, Object> loadProperties = new HashMap<>();
-    loadProperties.put("Hidden", true);
-    loadProperties.put("ReadOnly", true);
-    loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
-    DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
-  }
 
   protected static void appendProperties(
       final Map<String, Object> properties, final Map<String, Object> toAddProperties) {
@@ -96,7 +86,8 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   protected Map<String, Object> getLoadProperties() {
 
     final Map<String, Object> loadProps =
-        new HashMap<>(Optional.ofNullable(loadProperties).orElse(DEFAULT_LOAD_PROPERTIES));
+        new HashMap<>(
+            Optional.ofNullable(loadProperties).orElse(LocalConverter.DEFAULT_LOAD_PROPERTIES));
     appendProperties(loadProps, source.getFormat().getLoadProperties());
 
     return loadProps;

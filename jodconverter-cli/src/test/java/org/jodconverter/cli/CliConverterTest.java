@@ -73,7 +73,7 @@ public class CliConverterTest {
   private CliConverter converter;
   @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
 
-  /** Setup the office manager before each test. */
+  /** Setup the office manager once before each tests. */
   @Before
   public void setUp() {
 

@@ -22,7 +22,11 @@ package org.jodconverter.cli;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -31,6 +35,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -96,6 +101,13 @@ public final class Convert {
           .longOpt("kill-process")
           .desc("Kill existing office process (optional)")
           .build();
+  private static final Option OPT_LOAD_FILTER_OPTION =
+      Option.builder("l")
+          .longOpt("load-filter-option")
+          .valueSeparator()
+          .hasArgs()
+          .desc("load filter option (optional; eg. -lPassword=myPassword)")
+          .build();
   private static final Option OPT_PROCESS_MANAGER =
       Option.builder("m")
           .longOpt("process-manager")
@@ -120,6 +132,13 @@ public final class Convert {
           .argName("file")
           .hasArg()
           .desc("document formats registry configuration file (optional)")
+          .build();
+  private static final Option OPT_STORE_FILTER_OPTION =
+      Option.builder("s")
+          .longOpt("store-filter-option")
+          .valueSeparator()
+          .hasArgs()
+          .desc("store filter option (optional; eg. -sOverwrite=true -sFDPageRange=1-2)")
           .build();
   private static final Option OPT_TIMEOUT =
       Option.builder("t")
@@ -247,11 +266,13 @@ public final class Convert {
     options.addOption(OPT_OUTPUT_FORMAT);
     options.addOption(OPT_OFFICE_HOME);
     options.addOption(OPT_KILL_EXISTING_PROCESS);
+    options.addOption(OPT_LOAD_FILTER_OPTION);
     options.addOption(OPT_DISABLE_OPENGL);
     options.addOption(OPT_PROCESS_MANAGER);
     options.addOption(OPT_OVERWRITE);
     options.addOption(OPT_PORT);
     options.addOption(OPT_REGISTRY);
+    options.addOption(OPT_STORE_FILTER_OPTION);
     options.addOption(OPT_TIMEOUT);
     options.addOption(OPT_USER_PROFILE);
     options.addOption(OPT_CONNECTION_URL);
@@ -340,6 +361,32 @@ public final class Convert {
     }
   }
 
+  private static final Map<String, Object> toMap(final String[] options) {
+
+    if (options == null || options.length == 0 || options.length % 2 != 0) {
+      return null;
+    }
+
+    return IntStream.range(0, options.length)
+        .filter(i -> i % 2 == 0)
+        .boxed()
+        .collect(
+            Collectors.toMap(
+                i -> options[i],
+                i -> {
+                  final String val = options[i + 1];
+                  final Boolean bool = BooleanUtils.toBooleanObject(val);
+                  if (bool != null) {
+                    return bool.booleanValue();
+                  }
+                  try {
+                    return Integer.parseInt(val);
+                  } catch (NumberFormatException nfe) {
+                    return val;
+                  }
+                }));
+  }
+
   private static CliConverter createCliConverter(
       final CommandLine commandLine,
       final AbstractApplicationContext context,
@@ -351,9 +398,44 @@ public final class Convert {
           OnlineConverter.builder().officeManager(officeManager).formatRegistry(registry).build());
     }
 
+    final LocalConverter.Builder builder =
+        LocalConverter.builder().officeManager(officeManager).formatRegistry(registry);
+
+    // Specify custom load properties if required
+    final Map<String, Object> loadProperties =
+        toMap(commandLine.getOptionValues(OPT_LOAD_FILTER_OPTION.getOpt()));
+    if (loadProperties != null) {
+      // Ensure the default properties will be applied.
+      final Map<String, Object> props = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      props.putAll(loadProperties);
+      builder.loadProperties(props);
+    }
+
+    // Specify custom store properties if required
+    final Map<String, Object> storeProperties =
+        toMap(commandLine.getOptionValues(OPT_STORE_FILTER_OPTION.getOpt()));
+    if (storeProperties != null) {
+      // Extract FilterData
+      final Map<String, Object> filterDataProperties =
+          storeProperties
+              .entrySet()
+              .stream()
+              .filter(e -> e.getKey().length() > 2 && e.getKey().startsWith("FD"))
+              .collect(Collectors.toMap(e -> e.getKey().substring(2), Map.Entry::getValue));
+      final Map<String, Object> props =
+          storeProperties
+              .entrySet()
+              .stream()
+              .filter(e -> !e.getKey().startsWith("FD"))
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+      if (!filterDataProperties.isEmpty()) {
+        props.put("FilterData", filterDataProperties);
+      }
+      builder.storeProperties(props);
+    }
+
+    // Specify a filter chain if required
     final FilterChain filterChain = getFilterChain(context);
-    final LocalConverter.Builder builder = LocalConverter.builder();
-    builder.officeManager(officeManager).formatRegistry(registry);
     if (filterChain != null) {
       builder.filterChain(filterChain);
     }

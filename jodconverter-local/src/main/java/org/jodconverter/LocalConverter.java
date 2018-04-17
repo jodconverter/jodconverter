@@ -19,10 +19,13 @@
 
 package org.jodconverter;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
+
+import com.sun.star.document.UpdateDocMode;
 
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.DefaultFilterChain;
@@ -48,9 +51,22 @@ import org.jodconverter.task.LocalConversionTask;
  */
 public class LocalConverter extends AbstractConverter {
 
+  /**
+   * The properties which are applied by default when loading a document if not manually overridden.
+   */
+  public static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
+
   private Map<String, Object> loadProperties;
   private FilterChain filterChain;
   private final Map<String, Object> storeProperties;
+
+  static {
+    final Map<String, Object> loadProperties = new HashMap<>();
+    loadProperties.put("Hidden", true);
+    loadProperties.put("ReadOnly", true);
+    loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
+    DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
+  }
 
   /**
    * Creates a new builder instance.
@@ -62,9 +78,8 @@ public class LocalConverter extends AbstractConverter {
   }
 
   /**
-   * Creates a new {@link LocalConverter} using with default configuration. The {@link
-   * OfficeManager} that will be used is the one holden by the {@link InstalledOfficeManagerHolder}
-   * class, if any.
+   * Creates a new {@link LocalConverter} with default configuration. The {@link OfficeManager} that
+   * will be used is the one holden by the {@link InstalledOfficeManagerHolder} class, if any.
    *
    * @return A {@link LocalConverter} with default configuration.
    */

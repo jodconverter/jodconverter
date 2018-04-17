@@ -49,9 +49,8 @@ public class OnlineConverter extends AbstractConverter {
   }
 
   /**
-   * Creates a new {@link OnlineConverter} using with default configuration. The {@link
-   * OfficeManager} that will be used is the one holden by the {@link InstalledOfficeManagerHolder}
-   * class, if any.
+   * Creates a new {@link OnlineConverter} with default configuration. The {@link OfficeManager}
+   * that will be used is the one holden by the {@link InstalledOfficeManagerHolder} class, if any.
    *
    * @return A {@link OnlineConverter} with default configuration.
    */
