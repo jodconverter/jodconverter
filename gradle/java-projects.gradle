@@ -17,10 +17,6 @@ dependencyManagement {
       ])
     }
   }
-  def httpclient_version = managedVersions['org.apache.httpcomponents:httpclient']
-  dependencies {
-    dependency "org.apache.httpcomponents:fluent-hc:$httpclient_version"
-  }
 }
 
 // Appropriately inject the common dependencies into each java projects
