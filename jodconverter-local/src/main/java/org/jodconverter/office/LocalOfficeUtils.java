@@ -84,6 +84,7 @@ public final class LocalOfficeUtils {
             findOfficeHome(
                 EXECUTABLE_MAC_41,
                 "/Applications/LibreOffice.app/Contents",
+                "/Applications/OpenOffice.app/Contents",
                 "/Applications/OpenOffice.org.app/Contents");
 
         if (homeDir == null) {
@@ -91,6 +92,7 @@ public final class LocalOfficeUtils {
               findOfficeHome(
                   EXECUTABLE_MAC,
                   "/Applications/LibreOffice.app/Contents",
+                  "/Applications/OpenOffice.app/Contents",
                   "/Applications/OpenOffice.org.app/Contents");
         }
 
