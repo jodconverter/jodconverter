@@ -23,8 +23,8 @@ import java.io.File;
 import java.io.OutputStream;
 
 import org.apache.commons.io.FilenameUtils;
-
 import org.apache.commons.lang3.Validate;
+
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.OfficeManager;
