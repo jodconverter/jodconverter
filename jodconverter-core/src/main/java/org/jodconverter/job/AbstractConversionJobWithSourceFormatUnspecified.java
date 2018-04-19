@@ -24,6 +24,7 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.FilenameUtils;
 
+import org.apache.commons.lang3.Validate;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.office.OfficeManager;
@@ -104,6 +105,9 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   protected abstract AbstractConversionJob to(AbstractTargetDocumentSpecs target);
 
   private AbstractConversionJob toInternal(final AbstractTargetDocumentSpecs target) {
+    if (FilenameUtils.getExtension(source.getFile().getName()).length()>0) {
+      Validate.notNull(source.getFormat(), "The source format is missing or not supported");
+    }
 
     return to(target);
   }
