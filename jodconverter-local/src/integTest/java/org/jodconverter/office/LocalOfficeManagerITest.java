@@ -258,7 +258,7 @@ public class LocalOfficeManagerITest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void execute_WithoutBeeingStared_ThrowIllegalStateException() throws Exception {
+  public void execute_WithoutBeeingStarted_ThrowIllegalStateException() throws Exception {
 
     LocalOfficeManager.make().execute(new SimpleOfficeTask());
   }
