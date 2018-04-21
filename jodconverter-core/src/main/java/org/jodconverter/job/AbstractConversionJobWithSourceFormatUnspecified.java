@@ -105,7 +105,10 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   protected abstract AbstractConversionJob to(AbstractTargetDocumentSpecs target);
 
   private AbstractConversionJob toInternal(final AbstractTargetDocumentSpecs target) {
-    if (FilenameUtils.getExtension(source.getFile().getName()).length() > 0) {
+
+    // Validate that we know the format, but only if the extension was provided.
+    // For a source file, we can let OOo guess what is the type of the source file.
+    if (!FilenameUtils.getExtension(source.getFile().getName()).isEmpty()) {
       Validate.notNull(source.getFormat(), "The source format is missing or not supported");
     }
 
