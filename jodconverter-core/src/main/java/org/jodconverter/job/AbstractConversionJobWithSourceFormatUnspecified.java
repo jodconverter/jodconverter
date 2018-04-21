@@ -105,8 +105,10 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   protected abstract AbstractConversionJob to(AbstractTargetDocumentSpecs target);
 
   private AbstractConversionJob toInternal(final AbstractTargetDocumentSpecs target) {
+    if (FilenameUtils.getExtension(source.getFile().getName()).length() > 0) {
+      Validate.notNull(source.getFormat(), "The source format is missing or not supported");
+    }
 
-    Validate.notNull(source.getFormat(), "The source format is missing or not supported");
     return to(target);
   }
 }
