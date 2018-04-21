@@ -156,4 +156,16 @@ public class LocalOfficeUtilsTest {
 
     LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir);
   }
+
+  /** Tests the validateOfficeWorkingDirectory with a read only dicrectory as argument fails. */
+  @Test(expected = IllegalStateException.class)
+  public void validateOfficeWorkingDirectory_WithReadOnlyDirectory_ThrowsIllegalStateException()
+      throws IOException {
+
+    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File workingDir = new File(tempDir, UUID.randomUUID().toString());
+    workingDir.setWritable(false);
+
+    LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir);
+  }
 }

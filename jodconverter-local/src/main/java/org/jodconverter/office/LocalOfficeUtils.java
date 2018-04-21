@@ -353,6 +353,10 @@ public final class LocalOfficeUtils {
       throw new IllegalStateException(
           "workingDir doesn't exist or is not a directory: " + workingDir);
     }
+
+    if (!workingDir.canWrite()) {
+      throw new IllegalStateException("workingDir '" + workingDir + "' cannot be written to");
+    }
   }
 
   // Suppresses default constructor, ensuring non-instantiability.
