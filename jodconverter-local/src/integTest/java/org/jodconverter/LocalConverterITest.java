@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
@@ -112,5 +113,23 @@ public class LocalConverterITest extends AbstractOfficeITest {
 
     assertThat(outputFile).isFile();
     assertThat(outputFile.length()).isGreaterThan(0L);
+  }
+
+  @Test
+  public void convert_FromFileFileWithoutExtension_ShouldSucceeded() throws Exception {
+
+    final File outputFile =
+        new File(testFolder.getRoot(), "convert_FromFileFileWithoutExtension.pdf");
+    FileUtils.deleteQuietly(outputFile);
+
+    final OutputStream outputStream = new FileOutputStream(outputFile);
+    LocalConverter.make()
+        .convert(new File(DOCUMENTS_DIR + "test"))
+        .to(outputStream)
+        .as(DefaultDocumentFormatRegistry.getFormatByExtension("txt"))
+        .execute();
+
+    final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+    assertThat(content).contains("Test document");
   }
 }
