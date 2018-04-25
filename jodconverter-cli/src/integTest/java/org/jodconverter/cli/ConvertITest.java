@@ -56,11 +56,11 @@ public class ConvertITest {
   @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
 
   @Test
-  public void convert_WithCustomFormatRegistry_ShouldSupportOnlyTxtToPdf() throws Exception {
+  public void convert_WithCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf() throws Exception {
 
     final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
     final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(testFolder.getRoot(), "convert_WithMultipleFilters.pdf");
+    final File outputFile = new File(testFolder.getRoot(), "convert_WithMultipleFilters.doc");
 
     assertThat(outputFile).doesNotExist();
 
@@ -80,7 +80,7 @@ public class ConvertITest {
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 2);
 
-      assertThat(capturedlog).contains("The source format is missing or not supported");
+      assertThat(capturedlog).contains("The target format is missing or not supported");
     }
   }
 

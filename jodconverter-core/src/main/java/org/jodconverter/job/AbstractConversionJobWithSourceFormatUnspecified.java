@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.OutputStream;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
@@ -106,11 +105,8 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
 
   private AbstractConversionJob toInternal(final AbstractTargetDocumentSpecs target) {
 
-    // Validate that we know the format, but only if the extension was provided.
-    // For a source file, we can let OOo guess what is the type of the source file.
-    if (!FilenameUtils.getExtension(source.getFile().getName()).isEmpty()) {
-      Validate.notNull(source.getFormat(), "The source format is missing or not supported");
-    }
+    // No need to validate that the source format is provided. We will let
+    // OOo deal with the detection of the source file format.
 
     return to(target);
   }

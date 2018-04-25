@@ -47,8 +47,6 @@ import org.jodconverter.task.LocalConversionTask;
 public class LocalConverterTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
-  private static final File BAD_SOURCE_FILE =
-      new File("src/test/resources/documents/test.unsupportedext");
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
   private static File outputDir;
@@ -80,14 +78,6 @@ public class LocalConverterTest {
     final File targetFile = new File(outputDir, "test.pdf");
 
     LocalConverter.make().convert(SOURCE_FILE).to(targetFile).execute();
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void convert_WithoutSourceFileFormat_ThrowsNullPointerException() throws Exception {
-
-    final File targetFile = new File(outputDir, "test.pdf");
-
-    LocalConverter.make(officeManager).convert(BAD_SOURCE_FILE).to(targetFile).execute();
   }
 
   @Test
