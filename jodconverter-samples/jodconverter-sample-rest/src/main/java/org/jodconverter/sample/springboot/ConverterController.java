@@ -21,12 +21,11 @@ package org.jodconverter.sample.springboot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,21 +66,26 @@ public class ConverterController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConverterController.class);
 
+  private static final String FILTER_DATA = "FilterData";
+  private static final String FILTER_DATA_PREFIX_PARAM = "fd";
+  private static final String LOAD_PROPERTIES_PREFIX_PARAM = "l";
+  private static final String LOAD_FILTER_DATA_PREFIX_PARAM =
+      LOAD_PROPERTIES_PREFIX_PARAM + FILTER_DATA_PREFIX_PARAM;
+  private static final String STORE_PROPERTIES_PREFIX_PARAM = "s";
+  private static final String STORE_FILTER_DATA_PREFIX_PARAM =
+      STORE_PROPERTIES_PREFIX_PARAM + FILTER_DATA_PREFIX_PARAM;
+
   private final OfficeManager officeManager;
-  private final DocumentConverter defaultConverter;
 
   /**
    * Creates a new controller.
    *
    * @param officeManager The manager used to execute conversions.
-   * @param defaultConverter The default converter used to execute conversions.
    */
-  public ConverterController(
-      final OfficeManager officeManager, final DocumentConverter defaultConverter) {
+  public ConverterController(final OfficeManager officeManager) {
     super();
 
     this.officeManager = officeManager;
-    this.defaultConverter = defaultConverter;
   }
 
   @ApiOperation(
@@ -100,15 +104,12 @@ public class ConverterController {
       @ApiParam(value = "The document format to convert the input document to.", required = true)
           @RequestParam(name = "format")
           final String convertToFormat,
-      @ApiParam(value = "The custom FilterOptions to apply when loading the input document.")
-          @RequestParam(name = "loadOptions", required = false)
-          final String loadOptions,
-      @ApiParam(value = "The custom FilterOptions to apply when storing the output document.")
-          @RequestParam(name = "storeOptions", required = false)
-          final String storeOptions) {
+      @ApiParam(value = "The custom options to apply to the conversion.")
+          @RequestParam(required = false)
+          final Map<String, String> parameters) {
 
     LOGGER.debug("convertUsingRequestParam > Converting file to {}", convertToFormat);
-    return convert(inputFile, convertToFormat, loadOptions, storeOptions);
+    return convert(inputFile, convertToFormat, parameters);
   }
 
   @ApiOperation(
@@ -127,22 +128,78 @@ public class ConverterController {
       @ApiParam(value = "The document format to convert the input document to.", required = true)
           @PathVariable(name = "format")
           final String convertToFormat,
-      @ApiParam(value = "The custom FilterOptions to apply when loading the input document.")
-          @RequestParam(name = "loadOptions", required = false)
-          final String loadOptions,
-      @ApiParam(value = "The custom FilterOptions to apply when storing the output document.")
-          @RequestParam(name = "storeOptions", required = false)
-          final String storeOptions) {
+      @ApiParam(value = "The custom options to apply to the conversion.")
+          @RequestParam(required = false)
+          final Map<String, String> parameters) {
 
     LOGGER.debug("convertUsingPathVariable > Converting file to {}", convertToFormat);
-    return convert(inputFile, convertToFormat, loadOptions, storeOptions);
+    return convert(inputFile, convertToFormat, parameters);
+  }
+
+  private void addFilterDataProperty(
+      final Map<String, Object> properties, final String name, final String value) {
+
+    final Boolean bool = BooleanUtils.toBooleanObject(value);
+    if (bool != null) {
+      properties.put(name, bool);
+    }
+    try {
+      final int ival = Integer.parseInt(value);
+      properties.put(name, ival);
+    } catch (NumberFormatException nfe) {
+      properties.put(name, value);
+    }
+  }
+
+  private void decodeParameters(
+      final Map<String, String> parameters,
+      final Map<String, Object> loadProperties,
+      final Map<String, Object> storeProperties) {
+
+    if (parameters == null || parameters.isEmpty()) {
+      return;
+    }
+
+    final Map<String, Object> loadFilterDataProperties = new HashMap<>();
+    final Map<String, Object> storeFilterDataProperties = new HashMap<>();
+    for (final Map.Entry<String, String> param : parameters.entrySet()) {
+      final String key = param.getKey().toLowerCase();
+      if (key.startsWith(LOAD_FILTER_DATA_PREFIX_PARAM)) {
+        addFilterDataProperty(
+            loadFilterDataProperties,
+            param.getKey().substring(LOAD_FILTER_DATA_PREFIX_PARAM.length()),
+            param.getValue());
+      } else if (key.startsWith(LOAD_PROPERTIES_PREFIX_PARAM)) {
+        addFilterDataProperty(
+            loadProperties,
+            param.getKey().substring(LOAD_PROPERTIES_PREFIX_PARAM.length()),
+            param.getValue());
+      } else if (key.startsWith(STORE_FILTER_DATA_PREFIX_PARAM)) {
+        addFilterDataProperty(
+            storeFilterDataProperties,
+            param.getKey().substring(STORE_FILTER_DATA_PREFIX_PARAM.length()),
+            param.getValue());
+      } else if (key.startsWith(STORE_PROPERTIES_PREFIX_PARAM)) {
+        addFilterDataProperty(
+            storeProperties,
+            param.getKey().substring(STORE_PROPERTIES_PREFIX_PARAM.length()),
+            param.getValue());
+      }
+    }
+
+    if (!loadFilterDataProperties.isEmpty()) {
+      loadProperties.put(FILTER_DATA, loadFilterDataProperties);
+    }
+
+    if (!storeFilterDataProperties.isEmpty()) {
+      storeProperties.put(FILTER_DATA, storeFilterDataProperties);
+    }
   }
 
   private ResponseEntity<Object> convert(
       final MultipartFile inputFile,
       final String outputFormat,
-      final String loadOptions,
-      final String storeOptions) {
+      final Map<String, String> parameters) {
 
     if (inputFile.isEmpty()) {
       return ResponseEntity.badRequest().build();
@@ -158,34 +215,19 @@ public class ConverterController {
       final DocumentFormat targetFormat =
           DefaultDocumentFormatRegistry.getFormatByExtension(outputFormat);
 
+      // Decode the parameters to load and store properties.
       final Map<String, Object> loadProperties =
-          Optional.ofNullable(loadOptions)
-              .filter(StringUtils::isNotBlank)
-              .map(
-                  options ->
-                      Stream.of(options)
-                          .collect(
-                              Collectors.toMap(opts -> "FilterOptions", opts -> (Object) opts)))
-              .orElse(null);
+          new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      final Map<String, Object> storeProperties = new HashMap<>();
+      decodeParameters(parameters, loadProperties, storeProperties);
 
-      final Map<String, Object> storeProperties =
-          Optional.ofNullable(storeOptions)
-              .filter(StringUtils::isNotBlank)
-              .map(
-                  options ->
-                      Stream.of(options)
-                          .collect(
-                              Collectors.toMap(opts -> "FilterOptions", opts -> (Object) opts)))
-              .orElse(null);
-
+      // Create a converter with the properties.
       final DocumentConverter converter =
-          loadProperties == null && storeProperties == null
-              ? defaultConverter
-              : LocalConverter.builder()
-                  .officeManager(officeManager)
-                  .loadProperties(storeProperties)
-                  .storeProperties(storeProperties)
-                  .build();
+          LocalConverter.builder()
+              .officeManager(officeManager)
+              .loadProperties(loadProperties)
+              .storeProperties(storeProperties)
+              .build();
 
       // Convert...
       converter

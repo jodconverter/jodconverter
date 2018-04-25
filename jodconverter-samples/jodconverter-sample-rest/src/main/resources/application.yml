@@ -12,7 +12,8 @@ spring:
 jodconverter:
   local:
     enabled: true
+    port-numbers: 2002,2003
   
 logging:
   level:
-    root: debug
+    org.jodconverter: debug

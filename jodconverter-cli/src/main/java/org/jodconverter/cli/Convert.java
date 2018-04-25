@@ -101,12 +101,12 @@ public final class Convert {
           .longOpt("kill-process")
           .desc("Kill existing office process (optional)")
           .build();
-  private static final Option OPT_LOAD_FILTER_OPTION =
+  private static final Option OPT_LOAD_PROPERTIES =
       Option.builder("l")
-          .longOpt("load-filter-option")
+          .longOpt("load-properties")
           .valueSeparator()
           .hasArgs()
-          .desc("load filter option (optional; eg. -lPassword=myPassword)")
+          .desc("load properties (optional; eg. -lPassword=myPassword)")
           .build();
   private static final Option OPT_PROCESS_MANAGER =
       Option.builder("m")
@@ -133,12 +133,12 @@ public final class Convert {
           .hasArg()
           .desc("document formats registry configuration file (optional)")
           .build();
-  private static final Option OPT_STORE_FILTER_OPTION =
+  private static final Option OPT_STORE_PROPERTIES =
       Option.builder("s")
-          .longOpt("store-filter-option")
+          .longOpt("store-properties")
           .valueSeparator()
           .hasArgs()
-          .desc("store filter option (optional; eg. -sOverwrite=true -sFDPageRange=1-2)")
+          .desc("store properties (optional; eg. -sOverwrite=true -sFDPageRange=1-2)")
           .build();
   private static final Option OPT_TIMEOUT =
       Option.builder("t")
@@ -266,13 +266,13 @@ public final class Convert {
     options.addOption(OPT_OUTPUT_FORMAT);
     options.addOption(OPT_OFFICE_HOME);
     options.addOption(OPT_KILL_EXISTING_PROCESS);
-    options.addOption(OPT_LOAD_FILTER_OPTION);
+    options.addOption(OPT_LOAD_PROPERTIES);
     options.addOption(OPT_DISABLE_OPENGL);
     options.addOption(OPT_PROCESS_MANAGER);
     options.addOption(OPT_OVERWRITE);
     options.addOption(OPT_PORT);
     options.addOption(OPT_REGISTRY);
-    options.addOption(OPT_STORE_FILTER_OPTION);
+    options.addOption(OPT_STORE_PROPERTIES);
     options.addOption(OPT_TIMEOUT);
     options.addOption(OPT_USER_PROFILE);
     options.addOption(OPT_CONNECTION_URL);
@@ -387,6 +387,31 @@ public final class Convert {
                 }));
   }
 
+  private static Map<String, Object> buildProperties(final String[] args) {
+
+    if (args == null || args.length == 0) {
+      return null;
+    }
+
+    final Map<String, Object> argsMap = toMap(args);
+
+    final Map<String, Object> properties = new HashMap<>();
+    final Map<String, Object> filterDataProperties = new HashMap<>();
+    for (final Map.Entry<String, Object> entry : argsMap.entrySet()) {
+      final String key = entry.getKey();
+      if (key.length() > 2 && key.startsWith("FD")) {
+        filterDataProperties.put(key.substring("FD".length()), entry.getValue());
+      } else {
+        properties.put(key, entry.getValue());
+      }
+    }
+    if (!filterDataProperties.isEmpty()) {
+      properties.put("FilterData", filterDataProperties);
+    }
+
+    return properties;
+  }
+
   private static CliConverter createCliConverter(
       final CommandLine commandLine,
       final AbstractApplicationContext context,
@@ -403,7 +428,7 @@ public final class Convert {
 
     // Specify custom load properties if required
     final Map<String, Object> loadProperties =
-        toMap(commandLine.getOptionValues(OPT_LOAD_FILTER_OPTION.getOpt()));
+        buildProperties(commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
     if (loadProperties != null) {
       // Ensure the default properties will be applied.
       final Map<String, Object> props = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
@@ -413,25 +438,9 @@ public final class Convert {
 
     // Specify custom store properties if required
     final Map<String, Object> storeProperties =
-        toMap(commandLine.getOptionValues(OPT_STORE_FILTER_OPTION.getOpt()));
+        buildProperties(commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt()));
     if (storeProperties != null) {
-      // Extract FilterData
-      final Map<String, Object> filterDataProperties =
-          storeProperties
-              .entrySet()
-              .stream()
-              .filter(e -> e.getKey().length() > 2 && e.getKey().startsWith("FD"))
-              .collect(Collectors.toMap(e -> e.getKey().substring(2), Map.Entry::getValue));
-      final Map<String, Object> props =
-          storeProperties
-              .entrySet()
-              .stream()
-              .filter(e -> !e.getKey().startsWith("FD"))
-              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-      if (!filterDataProperties.isEmpty()) {
-        props.put("FilterData", filterDataProperties);
-      }
-      builder.storeProperties(props);
+      builder.storeProperties(storeProperties);
     }
 
     // Specify a filter chain if required

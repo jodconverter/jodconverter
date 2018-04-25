@@ -20,7 +20,7 @@
 package org.jodconverter.task;
 
 import java.io.File;
-import java.util.Optional;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -43,6 +43,10 @@ import org.jodconverter.office.RequestConfig;
 public class OnlineConversionTask extends AbstractOnlineOfficeTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OnlineConversionTask.class);
+  private static final String FILTER_DATA = "FilterData";
+  private static final String FILTER_DATA_PREFIX_PARAM = "fd";
+  private static final String LOAD_PROPERTIES_PREFIX_PARAM = "l";
+  private static final String STORE_PROPERTIES_PREFIX_PARAM = "s";
 
   private final TargetDocumentSpecs target;
 
@@ -56,6 +60,32 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
     super(source);
 
     this.target = target;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void addPropertiesToBuilder(
+      final URIBuilder uriBuilder,
+      final Map<String, Object> properties,
+      final String parameterPrefix) {
+
+    if (properties != null && !properties.isEmpty()) {
+      for (final Map.Entry<String, Object> entry : properties.entrySet()) {
+        final String key = entry.getKey();
+        final Object value = entry.getValue();
+
+        // First, check if we are dealing with the FilterData property
+        if (FILTER_DATA.equalsIgnoreCase(key) && Map.class.isInstance(value)) {
+          // Add all the FilterData properties
+          for (final Map.Entry<String, Object> fdentry : ((Map<String, Object>) value).entrySet()) {
+            uriBuilder.addParameter(
+                parameterPrefix + FILTER_DATA_PREFIX_PARAM + fdentry.getKey(),
+                fdentry.getValue().toString());
+          }
+        } else if (value instanceof String || value.getClass().isPrimitive()) {
+          uriBuilder.addParameter(parameterPrefix + key, value.toString());
+        }
+      }
+    }
   }
 
   @Override
@@ -85,33 +115,21 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
         // save the response into the target file.
         final RequestConfig requestConfig = onlineContext.getRequestConfig();
         final URIBuilder uriBuilder = new URIBuilder(buildUrl(requestConfig.getUrl()));
-        // We suppose that the server only support custom
-        // FilterOptions properties, which is better than nothing
-        // for now.... LibreOffice does not support custom
-        // properties, only the sample web service do.
-        // If we want to support other types, we know the
-        // list of possible load/store properties.
-        Optional.ofNullable(target.getFormat().getLoadProperties())
-            .ifPresent(
-                map ->
-                    map.entrySet()
-                        .stream()
-                        .filter(entry -> entry.getKey().equals("FilterOptions"))
-                        .forEach(
-                            entry ->
-                                uriBuilder.addParameter(
-                                    "loadOptions", entry.getValue().toString())));
-        Optional.ofNullable(
-                target.getFormat().getStoreProperties(source.getFormat().getInputFamily()))
-            .ifPresent(
-                map ->
-                    map.entrySet()
-                        .stream()
-                        .filter(entry -> entry.getKey().equals("FilterOptions"))
-                        .forEach(
-                            entry ->
-                                uriBuilder.addParameter(
-                                    "storeOptions", entry.getValue().toString())));
+
+        // We suppose that the server supports custom load properties,
+        // but LibreOffice does not support custom load properties,
+        // only the sample web service do.
+        addPropertiesToBuilder(
+            uriBuilder, target.getFormat().getLoadProperties(), LOAD_PROPERTIES_PREFIX_PARAM);
+
+        // We suppose that the server supports custom store properties,
+        // but LibreOffice does not support custom store properties,
+        // only the sample web service do.
+        addPropertiesToBuilder(
+            uriBuilder,
+            target.getFormat().getStoreProperties(source.getFormat().getInputFamily()),
+            STORE_PROPERTIES_PREFIX_PARAM);
+
         Executor.newInstance(onlineContext.getHttpClient())
             .execute(
                 // Request.Post(buildUrl(requestConfig.getUrl()))
