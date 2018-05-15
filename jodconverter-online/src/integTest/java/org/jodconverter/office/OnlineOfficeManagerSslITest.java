@@ -156,7 +156,11 @@ public class OnlineOfficeManagerSslITest {
       sslConfig.setVerifyHostname(false);
       final OfficeManager manager =
           OnlineOfficeManager.builder()
-              .urlConnection("https://localhost:8001") // try all accepted URL paths...
+              .urlConnection("https://localhost:8001") // try
+              // all
+              // accepted
+              // URL
+              // paths...
               .sslConfig(sslConfig)
               .build();
       try {
@@ -208,7 +212,11 @@ public class OnlineOfficeManagerSslITest {
       sslConfig.setVerifyHostname(false);
       final OfficeManager manager =
           OnlineOfficeManager.builder()
-              .urlConnection("https://localhost:8001/") // try all accepted URL paths...
+              .urlConnection("https://localhost:8001/") // try
+              // all
+              // accepted
+              // URL
+              // paths...
               .sslConfig(sslConfig)
               .build();
       try {
@@ -272,9 +280,7 @@ public class OnlineOfficeManagerSslITest {
         fail();
 
       } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(SSLHandshakeException.class);
+        assertThat(ex).isExactlyInstanceOf(OfficeException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -330,9 +336,7 @@ public class OnlineOfficeManagerSslITest {
         fail();
 
       } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(SSLHandshakeException.class);
+        assertThat(ex).isExactlyInstanceOf(OfficeException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -373,7 +377,11 @@ public class OnlineOfficeManagerSslITest {
       sslConfig.setVerifyHostname(false);
       final OfficeManager manager =
           OnlineOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool") // try all accepted URL paths...
+              .urlConnection("https://localhost:8001/lool") // try
+              // all
+              // accepted
+              // URL
+              // paths...
               .sslConfig(sslConfig)
               .build();
       try {
@@ -468,7 +476,11 @@ public class OnlineOfficeManagerSslITest {
       sslConfig.setVerifyHostname(false);
       final OfficeManager manager =
           OnlineOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/") // try all accepted URL paths...
+              .urlConnection("https://localhost:8001/lool/") // try
+              // all
+              // accepted
+              // URL
+              // paths...
               .sslConfig(sslConfig)
               .build();
       try {
