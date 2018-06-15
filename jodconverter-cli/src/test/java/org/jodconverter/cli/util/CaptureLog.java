@@ -22,8 +22,8 @@ package org.jodconverter.cli.util;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-//Class taken from
-//org.apache.tomcat.util.log
+// Class taken from
+// org.apache.tomcat.util.log
 
 /**
  * Per Thread System.err and System.out log capture data.

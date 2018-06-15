@@ -139,7 +139,7 @@ public class AbstractLocalOfficeTaskITest extends AbstractOfficeITest {
       InstalledOfficeManagerHolder.getInstance().execute(task);
 
       // TODO: How could we check that the document is not closed ?
-      //assertThat ??
+      // assertThat ??
 
     } finally {
       task.closeForGood();

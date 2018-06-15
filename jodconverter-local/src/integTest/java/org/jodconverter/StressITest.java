@@ -41,7 +41,7 @@ public class StressITest {
 
   private static final Logger LOGGER = Logger.getLogger(StressITest.class);
 
-  //private static final int MAX_CONVERSIONS = 10;
+  // private static final int MAX_CONVERSIONS = 10;
   private static final int MAX_CONVERSIONS = 1024;
   private static final int MAX_THREADS = 128;
   private static final int MAX_PROCESS_TASKS = 10;
@@ -100,7 +100,7 @@ public class StressITest {
     final OfficeManager officeManager =
         LocalOfficeManager.builder()
             .portNumbers(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009)
-            //.portNumbers(2002, 2003)
+            // .portNumbers(2002, 2003)
             .maxTasksPerProcess(MAX_PROCESS_TASKS)
             .build();
     final LocalConverter converter = LocalConverter.make(officeManager);

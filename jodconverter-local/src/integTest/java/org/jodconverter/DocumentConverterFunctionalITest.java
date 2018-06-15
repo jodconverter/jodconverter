@@ -97,7 +97,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
             }
           };
 
-      //final Runner r = new Runner (source, target, RefreshFilter.CHAIN, converter);
+      // final Runner r = new Runner (source, target, RefreshFilter.CHAIN, converter);
       threads[threadCount] = new Thread(runnable);
       threads[threadCount++].start();
 
@@ -111,7 +111,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
         }
       }
 
-      //convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
+      // convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
     }
 
     // Wait for remaining threads.

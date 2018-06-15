@@ -92,8 +92,8 @@ public class ProcessManagerTest {
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     // Won't work on Windows, skip this assertion
-    //Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
-    //assertThat(pid).isEqualTo(javaPid.longValue());
+    // Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
+    // assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
     assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);

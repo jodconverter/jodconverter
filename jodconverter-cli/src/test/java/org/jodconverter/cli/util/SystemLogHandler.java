@@ -144,7 +144,7 @@ public class SystemLogHandler extends PrintStream {
 
   @Override
   protected void setError() {
-    //findStream().setError();
+    // findStream().setError();
   }
 
   @Override
