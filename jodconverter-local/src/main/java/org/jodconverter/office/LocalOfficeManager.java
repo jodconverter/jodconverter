@@ -25,6 +25,8 @@ import java.util.Arrays;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.process.AbstractProcessManager;
 import org.jodconverter.process.ProcessManager;
@@ -34,6 +36,8 @@ import org.jodconverter.process.ProcessManager;
  * conversion tasks.
  */
 public final class LocalOfficeManager extends AbstractOfficeManagerPool {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeManager.class);
 
   private final OfficeUrl[] officeUrls;
 
@@ -99,6 +103,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
     private ProcessManager processManager;
     private String[] runAsArgs;
     private File templateProfileDir;
+    private boolean useDefaultOnInvalidTemplateProfileDir;
     private boolean killExistingProcess = OfficeProcessConfig.DEFAULT_KILL_EXISTING_PROCESS;
 
     // OfficeProcessManager
@@ -135,7 +140,17 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
       // Validate the office directories
       LocalOfficeUtils.validateOfficeHome(officeHome);
       LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir);
-      LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
+      if (useDefaultOnInvalidTemplateProfileDir) {
+        try {
+          LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
+        } catch (IllegalStateException ex) {
+          // Use default
+          templateProfileDir = null;
+          LOGGER.warn("Falling back to default templateProfileDir. Cause: ", ex.getMessage());
+        }
+      } else {
+        LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
+      }
 
       // Build the office URLs
       final OfficeUrl[] officeUrls = LocalOfficeUtils.buildOfficeUrls(portNumbers, pipeNames);
@@ -293,6 +308,36 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
       return StringUtils.isBlank(templateProfileDir)
           ? this
           : templateProfileDir(new File(templateProfileDir));
+    }
+
+    /**
+     * Specifies the directory to copy to the temporary office profile directories to be created. If
+     * the given templateProfileDir is not valid, it will be ignored and the default behavior will
+     * be applied.
+     *
+     * @param templateProfileDir The new template profile directory.
+     * @return This builder instance.
+     */
+    public Builder templateProfileDirOrDefault(final File templateProfileDir) {
+
+      this.useDefaultOnInvalidTemplateProfileDir = true;
+      this.templateProfileDir = templateProfileDir;
+      return this;
+    }
+
+    /**
+     * Specifies the directory to copy to the temporary office profile directories to be created. If
+     * the given templateProfileDir is not valid, it will be ignored and the default behavior will
+     * be applied.
+     *
+     * @param templateProfileDir The new template profile directory.
+     * @return This builder instance.
+     */
+    public Builder templateProfileDirOrDefault(final String templateProfileDir) {
+
+      return StringUtils.isBlank(templateProfileDir)
+          ? this
+          : templateProfileDirOrDefault(new File(templateProfileDir));
     }
 
     /**

@@ -141,6 +141,20 @@ public class LocalOfficeManagerITest {
   }
 
   @Test
+  public void
+      build_WithInvalidTemplateProfileAndDefault_ShouldInitializedOfficeManagerWithDefaults()
+          throws Exception {
+
+    final OfficeManager manager =
+        LocalOfficeManager.builder().templateProfileDirOrDefault("src/foo/foo/foo/foo/foo").build();
+
+    assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
+    final OfficeProcessManagerPoolConfig config =
+        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    assertThat(config.getTemplateProfileDir()).isNull();
+  }
+
+  @Test
   public void build_WithValuesAsString_ShouldInitializedOfficeManagerWithCustomValues()
       throws Exception {
 
@@ -172,6 +186,7 @@ public class LocalOfficeManagerITest {
             .workingDir("   ")
             .processManager("   ")
             .templateProfileDir("   ")
+            .templateProfileDirOrDefault("   ")
             .build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
