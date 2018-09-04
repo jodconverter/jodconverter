@@ -104,7 +104,18 @@ public class DefaultDocumentFormatRegistryTest {
     // DRAWING output format
     outputFormats = registry.getOutputFormats(DocumentFamily.DRAWING);
     assertExpectedExtensions(
-        outputFormats, "gif", "jpg", "odg", "otg", "fodg", "pdf", "png", "svg", "swf", "tif", "bmp");
+        outputFormats,
+        "gif",
+        "jpg",
+        "odg",
+        "otg",
+        "fodg",
+        "pdf",
+        "png",
+        "svg",
+        "swf",
+        "tif",
+        "bmp");
   }
 
   @Test
