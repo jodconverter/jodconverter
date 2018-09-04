@@ -384,6 +384,16 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat GIF = getInstance().getFormatByExtension("gif");
 
   /**
+   * Windows Bitmap.
+   *
+   * <ul>
+   *   <li>Extension: bmp
+   *   <li>Media Type: image/bmp
+   * </ul>
+   */
+  public static final DocumentFormat BMP = getInstance().getFormatByExtension("bmp");
+
+  /**
    * The InstanceHolder inner class is used to initialize the static INSTANCE on demand (the
    * instance will be initialized the first time it is used). Working this way allow us to create
    * (and thus load default document format) the static INSTANCE only if needed.
