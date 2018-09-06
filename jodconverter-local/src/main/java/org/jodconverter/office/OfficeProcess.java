@@ -290,7 +290,7 @@ class OfficeProcess {
     // to retrieve the LibreOffice pid. But is it reliable ? And it would
     // not work with Apache OpenOffice.
 
-    return new ProcessBuilder(command);
+    return new ProcessBuilder(command).inheritIO();
   }
 
   /**
