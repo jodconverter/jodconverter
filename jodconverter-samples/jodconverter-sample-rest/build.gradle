@@ -3,7 +3,7 @@ description = 'JODConverter - Sample Rest Web Api'
 buildscript {
   ext {
     // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    springBootVersion = '2.0.1.RELEASE'
+    springBootVersion = '2.0.5.RELEASE'
     swaggerVersion = '2.8.0'
   }
   repositories {
@@ -30,6 +30,7 @@ dependencies {
   compile project(':jodconverter-local')
   compile project(':jodconverter-spring-boot-starter')
   compile 'org.springframework.boot:spring-boot-starter-web'
+  compile 'org.glassfish.jaxb:jaxb-runtime:2.3.0.1'
   compile "io.springfox:springfox-swagger2:$swaggerVersion"
   compile "io.springfox:springfox-swagger-ui:$swaggerVersion"
 }
