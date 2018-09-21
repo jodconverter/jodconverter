@@ -417,5 +417,18 @@
         "FilterName": "impress_gif_Export"
       }
     }
+  },
+  {
+    "name": "Windows Bitmap",
+    "extensions": ["bmp"],
+    "mediaType": "image/bmp",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_bmp_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_bmp_Export"
+      }
+    }
   }
 ]

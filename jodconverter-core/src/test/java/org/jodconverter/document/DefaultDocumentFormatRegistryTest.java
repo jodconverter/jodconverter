@@ -99,11 +99,23 @@ public class DefaultDocumentFormatRegistryTest {
         "pptx",
         "swf",
         "sxi",
-        "tif");
+        "tif",
+        "bmp");
     // DRAWING output format
     outputFormats = registry.getOutputFormats(DocumentFamily.DRAWING);
     assertExpectedExtensions(
-        outputFormats, "gif", "jpg", "odg", "otg", "fodg", "pdf", "png", "svg", "swf", "tif");
+        outputFormats,
+        "gif",
+        "jpg",
+        "odg",
+        "otg",
+        "fodg",
+        "pdf",
+        "png",
+        "svg",
+        "swf",
+        "tif",
+        "bmp");
   }
 
   @Test
@@ -181,6 +193,8 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("gif"))
         .isEqualTo(DefaultDocumentFormatRegistry.GIF);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("bmp"))
+        .isEqualTo(DefaultDocumentFormatRegistry.BMP);
   }
 
   @Test
@@ -285,6 +299,8 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.GIF);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/tiff"))
         .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/bmp"))
+        .isEqualTo(DefaultDocumentFormatRegistry.BMP);
   }
 
   @Test
