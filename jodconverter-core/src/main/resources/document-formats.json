@@ -44,7 +44,8 @@
         "FilterName": "impress_html_Export"
       },
       "TEXT": {
-        "FilterName": "HTML (StarWriter)"
+        "FilterName": "HTML (StarWriter)",
+        "FilterOptions": "EmbedImages"
       }
     }
   },
