@@ -155,8 +155,8 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
 
     final Map<String, Object> storeProps = getStoreProperties(document);
 
-    // The properties cannot be null
-    Validate.notNull(storeProps, "Unsupported conversion");
+    // FilterName must be specify.
+    Validate.isTrue(storeProps.containsKey("FilterName"), "Unsupported conversion");
 
     try {
       UnoRuntime.queryInterface(XStorable.class, document)
