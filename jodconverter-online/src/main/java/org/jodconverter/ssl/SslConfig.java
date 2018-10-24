@@ -36,6 +36,7 @@ public class SslConfig {
   private String trustStoreType;
   private String trustStoreProvider;
   private String protocol = "TLS";
+  private boolean trustAll = false;
   private boolean verifyHostname = true;
 
   /**
@@ -288,6 +289,25 @@ public class SslConfig {
    */
   public void setProtocol(final String protocol) {
     this.protocol = protocol;
+  }
+
+  /**
+   * Gets whether all certificates are trusted (certificate validation becomes disabled). If not
+   * set, it defaults to false.
+   *
+   * @return {@code true} if all certificates are trusted, {@code false} otherwise.
+   */
+  public boolean isTrustAll() {
+    return this.trustAll;
+  }
+
+  /**
+   * Sets whether all certificates are trusted (certificate validation becomes disabled).
+   *
+   * @param trustAll {@code true} to trust all certificates, {@code false} otherwise.
+   */
+  public void setTrustAll(final boolean trustAll) {
+    this.trustAll = trustAll;
   }
 
   /**

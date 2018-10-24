@@ -476,11 +476,54 @@ public class OnlineOfficeManagerSslITest {
       sslConfig.setVerifyHostname(false);
       final OfficeManager manager =
           OnlineOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/") // try
-              // all
-              // accepted
-              // URL
-              // paths...
+              .urlConnection("https://localhost:8001/lool/") // try all accepted URL paths...
+              .sslConfig(sslConfig)
+              .build();
+      try {
+        manager.start();
+        wireMockServer.stubFor(
+            post(urlPathEqualTo("/lool/convert-to/txt"))
+                .willReturn(aResponse().withBody("Test Document")));
+
+        // Try to converter the input document
+        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+
+        // Check that the output file was created with the expected content.
+        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        assertThat(content).contains("Test Document");
+      } finally {
+        manager.stop();
+      }
+    } finally {
+      FileUtils.deleteQuietly(outputFile);
+      wireMockServer.stop();
+    }
+  }
+
+  @Test
+  public void execute_WithSelfSignedCertificateAndTrustAll_ShouldSucceed() throws Exception {
+
+    final File inputFile = new File(SOURCE_FILE_PATH);
+    final File outputFile = new File(testFolder.getRoot(), "out.txt");
+
+    assertThat(outputFile).doesNotExist();
+
+    final WireMockServer wireMockServer =
+        new WireMockServer(
+            options()
+                .port(8000)
+                .httpsPort(8001)
+                .keystorePath(SERVER_KEYSTORE_PATH)
+                .keystorePassword(SERVER_KEYSTORE_PWD));
+    wireMockServer.start();
+    try {
+      final SslConfig sslConfig = new SslConfig();
+      sslConfig.setEnabled(true);
+      sslConfig.setTrustAll(true);
+      sslConfig.setVerifyHostname(false);
+      final OfficeManager manager =
+          OnlineOfficeManager.builder()
+              .urlConnection("https://localhost:8001/lool/") // try all accepted URL paths...
               .sslConfig(sslConfig)
               .build();
       try {
