@@ -75,7 +75,8 @@ public class AutoConfigurationPropertiesTest {
             "processRetryInterval",
             "taskExecutionTimeout",
             "maxTasksPerProcess",
-            "taskQueueTimeout")
+            "taskQueueTimeout",
+            "documentFormatRegistry")
         .containsExactly(
             true,
             "office-home",
@@ -87,7 +88,8 @@ public class AutoConfigurationPropertiesTest {
             1000L,
             60000L,
             20,
-            60000L);
+            60000L,
+            "classpath:document-formats.json");
   }
 
   @Test
@@ -115,6 +117,7 @@ public class AutoConfigurationPropertiesTest {
             "ssl.trustStoreType",
             "ssl.trustStoreProvider",
             "ssl.protocol",
+            "ssl.trustAll",
             "ssl.verifyHostname")
         .containsExactly(
             true,
@@ -137,6 +140,7 @@ public class AutoConfigurationPropertiesTest {
             "jks",
             "SUN",
             "TLS",
+            true,
             false);
   }
 }

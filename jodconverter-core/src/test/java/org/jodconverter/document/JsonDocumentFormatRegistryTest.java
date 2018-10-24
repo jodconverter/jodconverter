@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -48,6 +50,55 @@ public class JsonDocumentFormatRegistryTest {
       assertThat(outputFormats).hasSize(8);
       outputFormats = registry.getOutputFormats(DocumentFamily.DRAWING);
       assertThat(outputFormats).hasSize(5);
+    }
+  }
+
+  /** Test custom properties. */
+  @Test
+  public void create_WithCustomLoadProperties_CustomPropertiesAppliedSuccessfully()
+      throws IOException {
+
+    try (final InputStream input =
+        JsonDocumentFormatRegistry.class.getResourceAsStream("/document-formats.json")) {
+
+      // Custom html props.
+      final Map<String, Object> customFromTextToHtmlStoreProps = new HashMap<>();
+      customFromTextToHtmlStoreProps.put("FilterOptions", "EmbedImages");
+      final DocumentFormatProperties customHtmlProps = new DocumentFormatProperties();
+      customHtmlProps.getStore().put(DocumentFamily.TEXT, customFromTextToHtmlStoreProps);
+
+      // Custom text props.
+      final Map<String, Object> customFromTextToTextStoreProps = new HashMap<>();
+      customFromTextToTextStoreProps.put("FilterOptions", "utf16");
+      final DocumentFormatProperties customTextProps = new DocumentFormatProperties();
+      customTextProps.getLoad().put("FilterOptions", "utf16");
+      customTextProps.getStore().put(DocumentFamily.TEXT, customFromTextToTextStoreProps);
+
+      final Map<String, DocumentFormatProperties> customPropsPerExtension = new HashMap<>();
+      customPropsPerExtension.put("html", customHtmlProps);
+      customPropsPerExtension.put("txt", customTextProps);
+
+      final JsonDocumentFormatRegistry registry =
+          JsonDocumentFormatRegistry.create(input, customPropsPerExtension);
+
+      assertThat(
+              registry
+                  .getFormatByExtension("html")
+                  .getStoreProperties()
+                  .get(DocumentFamily.TEXT)
+                  .get("FilterOptions"))
+          .isEqualTo("EmbedImages");
+
+      assertThat(registry.getFormatByExtension("txt").getLoadProperties().get("FilterOptions"))
+          .isEqualTo("utf16");
+
+      assertThat(
+              registry
+                  .getFormatByExtension("txt")
+                  .getStoreProperties()
+                  .get(DocumentFamily.TEXT)
+                  .get("FilterOptions"))
+          .isEqualTo("utf16");
     }
   }
 }

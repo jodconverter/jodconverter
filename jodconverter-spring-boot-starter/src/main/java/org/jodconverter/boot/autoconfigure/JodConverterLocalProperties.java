@@ -19,7 +19,11 @@
 
 package org.jodconverter.boot.autoconfigure;
 
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import org.jodconverter.document.DocumentFormatProperties;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter.local")
@@ -85,6 +89,12 @@ public class JodConverterLocalProperties {
    * if the waiting time is longer than this timeout.
    */
   private long taskQueueTimeout = 30000L;
+
+  /** Path to the registry which contains the document formats that will be supported by default. */
+  private String documentFormatRegistry;
+
+  /** Custom properties required to load(open) and store(save) documents. */
+  private Map<String, DocumentFormatProperties> formatOptions;
 
   public boolean isEnabled() {
     return enabled;
@@ -172,5 +182,21 @@ public class JodConverterLocalProperties {
 
   public void setTaskQueueTimeout(final long taskQueueTimeout) {
     this.taskQueueTimeout = taskQueueTimeout;
+  }
+
+  public String getDocumentFormatRegistry() {
+    return documentFormatRegistry;
+  }
+
+  public void setDocumentFormatRegistry(String documentFormatRegistry) {
+    this.documentFormatRegistry = documentFormatRegistry;
+  }
+
+  public Map<String, DocumentFormatProperties> getFormatOptions() {
+    return formatOptions;
+  }
+
+  public void setFormatOptions(Map<String, DocumentFormatProperties> formatOptions) {
+    this.formatOptions = formatOptions;
   }
 }
