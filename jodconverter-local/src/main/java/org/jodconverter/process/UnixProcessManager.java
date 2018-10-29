@@ -73,7 +73,7 @@ public class UnixProcessManager extends AbstractProcessManager {
   protected String[] getRunningProcessesCommand(final String process) {
 
     return new String[] {
-      "/bin/bash", "-c", "/bin/ps -e -o pid,args | /bin/grep " + process + " | /bin/grep -v grep"
+      "/bin/sh", "-c", "/bin/ps -e -o pid,args | /bin/grep " + process + " | /bin/grep -v grep"
     };
   }
 
