@@ -86,6 +86,8 @@ public class JodConverterLocalProperties {
    */
   private long taskQueueTimeout = 30000L;
 
+  private String processManagerClass;
+
   public boolean isEnabled() {
     return enabled;
   }
@@ -172,5 +174,14 @@ public class JodConverterLocalProperties {
 
   public void setTaskQueueTimeout(final long taskQueueTimeout) {
     this.taskQueueTimeout = taskQueueTimeout;
+  }
+
+  public String getProcessManagerClass() {
+    return processManagerClass;
+  }
+
+  public JodConverterLocalProperties setProcessManagerClass(String processManagerClass) {
+    this.processManagerClass = processManagerClass;
+    return this;
   }
 }
