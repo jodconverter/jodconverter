@@ -115,6 +115,7 @@ public final class LocalOfficeUtils {
                 "/usr/lib/openoffice",
                 "/usr/lib/openoffice.org3",
                 "/usr/lib/openoffice.org",
+                "/opt/openoffice4",
                 "/opt/openoffice.org3");
       }
     }

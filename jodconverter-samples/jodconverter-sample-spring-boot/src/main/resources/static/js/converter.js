@@ -36,7 +36,7 @@ function onInputFileChange() {
 	var $inputFile = $('#inputFile');
 	
 	// Extract the filename from the jQuery object
-	var filename = $inputFile.val();
+	var filename = $inputFile.val().split('\\').pop();
 
 	// Update the read-only input field showing the selected file
 	$('#inputFileText').val(filename);

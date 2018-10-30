@@ -64,6 +64,7 @@ public class LocalConversionTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
   private static final String TARGET_FILENAME = "test.pdf";
+  private static final String ZIP_TARGET_FILENAME = "test.zip";
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
@@ -106,6 +107,20 @@ public class LocalConversionTaskTest {
     }
   }
 
+  private static class FooTargetSpecsWithoutFilterFormat extends FooTargetSpecs {
+
+    public FooTargetSpecsWithoutFilterFormat(final File target) {
+      super(target);
+    }
+
+    @Override
+    public DocumentFormat getFormat() {
+      final DocumentFormat fmt = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
+      fmt.getStoreProperties().clear();
+      return fmt;
+    }
+  }
+
   /**
    * Creates the test folder.
    *
@@ -130,6 +145,27 @@ public class LocalConversionTaskTest {
   public static void tearDownClass() {
 
     testFolder.delete();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void storeDocument_WithUnsupportedFormat_ThrowIllegalArgumentException() throws Exception {
+
+    final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+    given(serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")).willReturn(true);
+
+    final XComponent document = mock(XComponent.class);
+    mockStatic(UnoRuntime.class);
+    given(UnoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+
+    final File targetFile = new File(testFolder.getRoot(), ZIP_TARGET_FILENAME);
+    final LocalConversionTask task =
+        new LocalConversionTask(
+            new FooSourceSpecs(SOURCE_FILE),
+            new FooTargetSpecsWithoutFilterFormat(targetFile),
+            null,
+            null,
+            null);
+    task.storeDocument(document, targetFile);
   }
 
   @Test

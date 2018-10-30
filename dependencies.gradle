@@ -3,27 +3,25 @@
 // to <dependencyManagement> in Maven
 
 ext {
-  useOpenOffice = project.hasProperty('useOpenOffice')
-
   versions = [
   
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Gradle plugins version
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Latest version -> https://sourceforge.net/projects/checkstyle/files/checkstyle
-    checkstyle_version : '8.10.1',
+    checkstyle_version : '8.14',
     // Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
     coveralls_version : '2.8.2',
     // Latest version -> http://www.eclemma.org/jacoco
     jacoco_version : '0.8.2',
     // Latest version -> https://plugins.gradle.org/plugin/nebula.integtest
-    nebula_project_version : '5.1.1',
+    nebula_project_version : '5.1.2',
     // Latest version -> https://plugins.gradle.org/plugin/io.codearte.nexus-staging
-    nexus_staging_version : '0.11.0',
+    nexus_staging_version : '0.12.0',
     // Latest version -> https://pmd.github.io
-    pmd_version : '6.7.0',
+    pmd_version : '6.9.0',
     // Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-    spotless_version : '3.14.0',
+    spotless_version : '3.15.0',
     // Latest version -> https://plugins.gradle.org/plugin/io.spring.dependency-management
     dependency_management_version : '1.0.6.RELEASE',
     
@@ -44,12 +42,12 @@ ext {
     // Latest version -> https://mvnrepository.com/artifact/org.openoffice
     open_office_version : '4.1.2',
     // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    spring_boot_version : '2.0.5.RELEASE',
+    spring_boot_version : '2.0.6.RELEASE',
     
     // Test
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Latest version -> https://mvnrepository.com/artifact/nl.jqno.equalsverifier/equalsverifier
-    equalsverifier_version : '2.5.2',
+    equalsverifier_version : '3.0',
     // Latest version -> https://mvnrepository.com/artifact/com.google.code.findbugs/findbugs
     findbugs_version : '3.0.1',
     // Latest version -> https://mvnrepository.com/artifact/org.mockito/mockito-core
@@ -61,7 +59,7 @@ ext {
     // Latest version -> https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito
     powermock_version : '1.7.4',
     // Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
-    wiremock_version : '2.18.0'
+    wiremock_version : '2.19.0'
   ]
 
   gradlePlugins = [
@@ -80,12 +78,6 @@ ext {
     commons_fileupload                 : "commons-fileupload:commons-fileupload:$versions.commons_fileupload_version",
     commons_io                         : "commons-io:commons-io:$versions.commons_io_version",
     commons_lang3                      : "org.apache.commons:commons-lang3",
-
-    // Office Libraries (OpenOffice and LibreOffice)
-    office_juh                         : (useOpenOffice ? "org.openoffice:juh:$versions.open_office_version"   : "org.libreoffice:juh:$versions.libre_office_version"),
-    office_jurt                        : (useOpenOffice ? "org.openoffice:jurt:$versions.open_office_version"  : "org.libreoffice:jurt:$versions.libre_office_version"),
-    office_ridl                        : (useOpenOffice ? "org.openoffice:ridl:$versions.open_office_version"  : "org.libreoffice:ridl:$versions.libre_office_version"),
-    office_unoil                       : (useOpenOffice ? "org.openoffice:unoil:$versions.open_office_version" : "org.libreoffice:unoil:$versions.libre_office_version"),
 
     // Spring Boot libraries
     spring_boot_dependencies           : "org.springframework.boot:spring-boot-dependencies:$versions.spring_boot_version",

@@ -156,6 +156,9 @@ public class JodConverterOnlineProperties {
     /** SSL protocol to use. */
     private String protocol = "TLS";
 
+    /** Indicates if all certificates are trusted (certificate validation becomes disabled). */
+    private boolean trustAll = true;
+
     /** Enable hostname verification during SSL handshake. */
     private boolean verifyHostname = true;
 
@@ -269,6 +272,14 @@ public class JodConverterOnlineProperties {
 
     public void setProtocol(final String protocol) {
       this.protocol = protocol;
+    }
+
+    public boolean isTrustAll() {
+      return this.trustAll;
+    }
+
+    public void setTrustAll(final boolean trustAll) {
+      this.trustAll = trustAll;
     }
 
     public boolean isVerifyHostname() {

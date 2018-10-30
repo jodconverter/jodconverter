@@ -37,6 +37,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
@@ -45,6 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.PrivateKeyDetails;
@@ -85,6 +87,16 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     public SelectByAlias(final String keyAlias) {
       this.keyAlias = keyAlias;
+    }
+  }
+
+  private static final class TrustAllStrategy implements TrustStrategy {
+
+    private static final TrustAllStrategy INSTANCE = new TrustAllStrategy();
+
+    @Override
+    public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+      return true;
     }
   }
 
@@ -239,14 +251,18 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException,
           NoSuchProviderException {
 
-    final KeyStore truststore =
-        loadStore(
-            sslConfig.getTrustStore(),
-            sslConfig.getTrustStorePassword(),
-            sslConfig.getTrustStoreType(),
-            sslConfig.getTrustStoreProvider());
-    if (truststore != null) {
-      sslBuilder.loadTrustMaterial(truststore, null);
+    if (sslConfig.isTrustAll()) {
+      sslBuilder.loadTrustMaterial(null, TrustAllStrategy.INSTANCE);
+    } else {
+      final KeyStore truststore =
+          loadStore(
+              sslConfig.getTrustStore(),
+              sslConfig.getTrustStorePassword(),
+              sslConfig.getTrustStoreType(),
+              sslConfig.getTrustStoreProvider());
+      if (truststore != null) {
+        sslBuilder.loadTrustMaterial(truststore, null);
+      }
     }
   }
 

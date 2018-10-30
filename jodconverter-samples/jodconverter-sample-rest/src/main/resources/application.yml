@@ -13,6 +13,11 @@ jodconverter:
   local:
     enabled: true
     port-numbers: 2002,2003
+    format-options:
+      html:
+        store:
+          TEXT:
+            FilterOptions: EmbedImages
   
 logging:
   level:
