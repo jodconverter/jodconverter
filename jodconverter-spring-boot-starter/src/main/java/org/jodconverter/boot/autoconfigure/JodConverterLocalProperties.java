@@ -194,7 +194,7 @@ public class JodConverterLocalProperties {
   public void setProcessManagerClass(String processManagerClass) {
     this.processManagerClass = processManagerClass;
   }
-  
+
   public String getDocumentFormatRegistry() {
     return documentFormatRegistry;
   }
