@@ -29,10 +29,10 @@ import java.util.Map;
 public class DocumentFormatProperties {
 
   /** Properties applied when loading(opening) a document. */
-  private Map<String, Object> load = new HashMap<>();
+  private final Map<String, Object> load = new HashMap<>();
 
   /** Properties applied when storing(saving) a document for each supported families. */
-  private Map<DocumentFamily, Map<String, Object>> store = new HashMap<>();
+  private final Map<DocumentFamily, Map<String, Object>> store = new HashMap<>();
 
   public Map<String, Object> getLoad() {
     return load;

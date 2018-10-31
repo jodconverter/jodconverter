@@ -361,7 +361,7 @@ public final class Convert {
     }
   }
 
-  private static final Map<String, Object> toMap(final String[] options) {
+  private static Map<String, Object> toMap(final String[] options) {
 
     if (options == null || options.length == 0 || options.length % 2 != 0) {
       return null;

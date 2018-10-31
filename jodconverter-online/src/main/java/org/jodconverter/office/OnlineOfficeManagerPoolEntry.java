@@ -95,7 +95,8 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     private static final TrustAllStrategy INSTANCE = new TrustAllStrategy();
 
     @Override
-    public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+    public boolean isTrusted(final X509Certificate[] chain, final String authType)
+        throws CertificateException {
       return true;
     }
   }

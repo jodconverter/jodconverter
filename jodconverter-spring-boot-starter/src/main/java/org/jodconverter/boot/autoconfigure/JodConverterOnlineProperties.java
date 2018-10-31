@@ -107,7 +107,7 @@ public class JodConverterOnlineProperties {
     return this.ssl;
   }
 
-  public void setSsl(SslProperties ssl) {
+  public void setSsl(final SslProperties ssl) {
     this.ssl = ssl;
   }
 

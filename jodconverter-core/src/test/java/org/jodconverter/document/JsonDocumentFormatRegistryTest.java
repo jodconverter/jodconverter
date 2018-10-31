@@ -39,7 +39,7 @@ public class JsonDocumentFormatRegistryTest {
   @Test
   public void create_UsingOldJsonFormat_AllOutputFormatsLoadedSuccessfully() throws IOException {
 
-    try (final InputStream input =
+    try (InputStream input =
         JsonDocumentFormatRegistry.class.getResourceAsStream("/former-document-formats.json")) {
       final JsonDocumentFormatRegistry registry = JsonDocumentFormatRegistry.create(input);
       Set<DocumentFormat> outputFormats = registry.getOutputFormats(DocumentFamily.TEXT);
@@ -58,7 +58,7 @@ public class JsonDocumentFormatRegistryTest {
   public void create_WithCustomLoadProperties_CustomPropertiesAppliedSuccessfully()
       throws IOException {
 
-    try (final InputStream input =
+    try (InputStream input =
         JsonDocumentFormatRegistry.class.getResourceAsStream("/document-formats.json")) {
 
       // Custom html props.

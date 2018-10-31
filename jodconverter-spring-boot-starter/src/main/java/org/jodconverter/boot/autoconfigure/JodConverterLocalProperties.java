@@ -188,7 +188,7 @@ public class JodConverterLocalProperties {
     return documentFormatRegistry;
   }
 
-  public void setDocumentFormatRegistry(String documentFormatRegistry) {
+  public void setDocumentFormatRegistry(final String documentFormatRegistry) {
     this.documentFormatRegistry = documentFormatRegistry;
   }
 
@@ -196,7 +196,7 @@ public class JodConverterLocalProperties {
     return formatOptions;
   }
 
-  public void setFormatOptions(Map<String, DocumentFormatProperties> formatOptions) {
+  public void setFormatOptions(final Map<String, DocumentFormatProperties> formatOptions) {
     this.formatOptions = formatOptions;
   }
 }
