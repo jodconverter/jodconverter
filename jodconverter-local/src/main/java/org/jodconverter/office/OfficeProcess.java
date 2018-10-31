@@ -42,7 +42,7 @@ class OfficeProcess {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcess.class);
 
-  private Process process;
+  private VerboseProcess process;
   private long pid = PID_UNKNOWN;
   private final OfficeUrl officeUrl;
   private final OfficeProcessConfig config;
@@ -157,7 +157,7 @@ class OfficeProcess {
 
     try {
       // No need to terminate anything if the process has never been started
-      config.getProcessManager().kill(process, pid);
+      config.getProcessManager().kill(process.getProcess(), pid);
       return getExitCode(retryInterval, retryTimeout);
     } catch (IOException ioEx) {
       throw new OfficeException("Unable to kill the process with pid: " + pid, ioEx);
@@ -167,17 +167,17 @@ class OfficeProcess {
   /**
    * Gets the exit code of the office process.
    *
-   * @return The exit value of the process. The value 0 indicates normal termination.
+   * @return The exit value of the process. The value 0 indicates normal termination. If the process
+   *     is not yet terminated, {@code null} is returned.
    */
   public Integer getExitCode() {
 
-    try {
-      // If the process has never been started, just return a success exit code
-      return process == null ? 0 : process.exitValue();
-    } catch (IllegalThreadStateException illegalThreadStateEx) {
-      LOGGER.trace("IllegalThreadStateException catch in getExitCode", illegalThreadStateEx);
-      return null;
+    // If the process has never been started, just return a success exit code
+    if (process == null) {
+      return 0; // success
     }
+
+    return process.getExitCode();
   }
 
   /**
@@ -339,7 +339,7 @@ class OfficeProcess {
         acceptString,
         instanceProfileDir);
     try {
-      process = processBuilder.start();
+      process = new VerboseProcess(processBuilder.start());
       pid = config.getProcessManager().findPid(processQuery);
       LOGGER.info("Started process{}", pid == PID_UNKNOWN ? "" : "; pid = " + pid);
     } catch (IOException ioEx) {

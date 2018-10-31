@@ -210,8 +210,9 @@ public class OfficeProcessManagerPoolEntryITest {
         Thread.sleep(500); // NOSONAR
 
         // Simulate crash
-        final Process underlyingProcess =
-            (Process) FieldUtils.readField(getOfficeProcess(officeManager), "process", true);
+        final VerboseProcess verboseProcess =
+            (VerboseProcess) FieldUtils.readField(getOfficeProcess(officeManager), "process", true);
+        final Process underlyingProcess = verboseProcess.getProcess();
         assertThat(underlyingProcess).isNotNull();
         LOGGER.debug("Simulating the crash");
         underlyingProcess.destroy();

@@ -157,9 +157,9 @@ public class OfficeProcessTest {
         });
     final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
 
-    final Process proc = mock(Process.class);
+    final VerboseProcess verboseProcess = mock(VerboseProcess.class);
     try {
-      Whitebox.setInternalState(process, "process", proc);
+      Whitebox.setInternalState(process, "process", verboseProcess);
       process.forciblyTerminate(0L, 0L);
       fail("Exception expected");
     } catch (Exception ex) {

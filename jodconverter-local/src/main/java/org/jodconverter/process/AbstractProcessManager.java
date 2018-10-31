@@ -22,7 +22,7 @@ package org.jodconverter.process;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -70,8 +70,8 @@ public abstract class AbstractProcessManager implements ProcessManager {
     @Override
     public void run() {
 
-      try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-          BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+      try (BufferedReader bufferedReader =
+          new BufferedReader(Channels.newReader(Channels.newChannel(inputStream), "UTF-8"))) {
         String line;
         while ((line = bufferedReader.readLine()) != null) {
           outputLines.add(line);

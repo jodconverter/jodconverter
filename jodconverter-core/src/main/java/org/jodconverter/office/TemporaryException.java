@@ -26,6 +26,11 @@ package org.jodconverter.office;
 class TemporaryException extends Exception {
   private static final long serialVersionUID = 7237380113208327295L;
 
+  /** Constructs a new exception. */
+  public TemporaryException() {
+    super();
+  }
+
   /**
    * Constructs a new exception with the specified cause.
    *

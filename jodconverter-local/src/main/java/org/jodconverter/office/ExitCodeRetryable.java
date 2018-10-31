@@ -22,7 +22,7 @@ package org.jodconverter.office;
 /** Gets the exit code value of an office process. */
 public class ExitCodeRetryable extends AbstractRetryable {
 
-  private final Process process;
+  private final VerboseProcess process;
   private int exitCode;
 
   /**
@@ -30,7 +30,7 @@ public class ExitCodeRetryable extends AbstractRetryable {
    *
    * @param process The process whose exit code is to be retrieved.
    */
-  public ExitCodeRetryable(final Process process) {
+  public ExitCodeRetryable(final VerboseProcess process) {
     super();
 
     this.process = process;
@@ -39,11 +39,11 @@ public class ExitCodeRetryable extends AbstractRetryable {
   @Override
   protected void attempt() throws TemporaryException {
 
-    try {
-      exitCode = process.exitValue();
-    } catch (IllegalThreadStateException illegalThreadStateEx) {
-      throw new TemporaryException(illegalThreadStateEx);
+    final Integer code = process.getExitCode();
+    if (code == null) {
+      throw new TemporaryException();
     }
+    exitCode = code.intValue();
   }
 
   /**
