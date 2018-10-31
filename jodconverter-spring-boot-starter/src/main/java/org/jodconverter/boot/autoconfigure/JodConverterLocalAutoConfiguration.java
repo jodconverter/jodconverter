@@ -83,7 +83,7 @@ public class JodConverterLocalAutoConfiguration {
     builder.taskExecutionTimeout(properties.getTaskExecutionTimeout());
     builder.maxTasksPerProcess(properties.getMaxTasksPerProcess());
     builder.taskQueueTimeout(properties.getTaskQueueTimeout());
-    String processManagerClass = properties.getProcessManagerClass();
+    final String processManagerClass = properties.getProcessManagerClass();
     if (StringUtils.isNotEmpty(processManagerClass)) {
       builder.processManager(processManagerClass);
     } else {

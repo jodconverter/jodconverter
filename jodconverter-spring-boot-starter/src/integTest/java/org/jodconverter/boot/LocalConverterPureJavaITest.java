@@ -33,6 +33,8 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -40,6 +42,7 @@ import org.jodconverter.DocumentConverter;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @TestPropertySource(locations = "classpath:config/application-local-purejava.properties")
 public class LocalConverterPureJavaITest {
 
