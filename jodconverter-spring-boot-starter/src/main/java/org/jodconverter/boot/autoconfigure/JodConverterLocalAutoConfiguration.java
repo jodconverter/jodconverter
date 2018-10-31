@@ -40,7 +40,9 @@ import org.jodconverter.document.DefaultDocumentFormatRegistryInstanceHolder;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.document.JsonDocumentFormatRegistry;
 import org.jodconverter.office.LocalOfficeManager;
+import org.jodconverter.office.LocalOfficeUtils;
 import org.jodconverter.office.OfficeManager;
+import org.jodconverter.process.ProcessManager;
 
 @Configuration
 @ConditionalOnClass(LocalConverter.class)
@@ -60,7 +62,7 @@ public class JodConverterLocalAutoConfiguration {
   }
 
   // Creates the OfficeManager bean.
-  private OfficeManager createOfficeManager() {
+  private OfficeManager createOfficeManager(final ProcessManager processManager) {
 
     final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
 
@@ -81,9 +83,21 @@ public class JodConverterLocalAutoConfiguration {
     builder.taskExecutionTimeout(properties.getTaskExecutionTimeout());
     builder.maxTasksPerProcess(properties.getMaxTasksPerProcess());
     builder.taskQueueTimeout(properties.getTaskQueueTimeout());
+    String processManagerClass = properties.getProcessManagerClass();
+    if (StringUtils.isNotEmpty(processManagerClass)) {
+      builder.processManager(processManagerClass);
+    } else {
+      builder.processManager(processManager);
+    }
 
     // Starts the manager
     return builder.build();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(name = "processManager")
+  public ProcessManager processManager() {
+    return LocalOfficeUtils.findBestProcessManager();
   }
 
   @Bean
@@ -113,9 +127,9 @@ public class JodConverterLocalAutoConfiguration {
 
   @Bean(name = "localOfficeManager", initMethod = "start", destroyMethod = "stop")
   @ConditionalOnMissingBean(name = "localOfficeManager")
-  public OfficeManager localOfficeManager() {
+  public OfficeManager localOfficeManager(final ProcessManager processManager) {
 
-    return createOfficeManager();
+    return createOfficeManager(processManager);
   }
 
   // Must appear after the localOfficeManager bean creation. Do not reorder this class by name.

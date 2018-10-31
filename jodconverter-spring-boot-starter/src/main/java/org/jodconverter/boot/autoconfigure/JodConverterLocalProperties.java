@@ -90,6 +90,9 @@ public class JodConverterLocalProperties {
    */
   private long taskQueueTimeout = 30000L;
 
+  /** Class name for explicit office process manager. */
+  private String processManagerClass;
+
   /** Path to the registry which contains the document formats that will be supported by default. */
   private String documentFormatRegistry;
 
@@ -182,6 +185,14 @@ public class JodConverterLocalProperties {
 
   public void setTaskQueueTimeout(final long taskQueueTimeout) {
     this.taskQueueTimeout = taskQueueTimeout;
+  }
+
+  public String getProcessManagerClass() {
+    return processManagerClass;
+  }
+
+  public void setProcessManagerClass(String processManagerClass) {
+    this.processManagerClass = processManagerClass;
   }
 
   public String getDocumentFormatRegistry() {
