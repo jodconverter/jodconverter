@@ -19,12 +19,9 @@
 
 package org.jodconverter.process;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.Channels;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -41,57 +38,13 @@ public abstract class AbstractProcessManager implements ProcessManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessManager.class);
 
-  private static class StreamPumper extends Thread {
-
-    private final InputStream inputStream;
-    private final List<String> outputLines;
-
-    /**
-     * Creates a new pumper for the specified input stream.
-     *
-     * @param inputStream The input stream to read from.
-     */
-    public StreamPumper(final InputStream inputStream) {
-      super();
-
-      this.inputStream = inputStream;
-      this.outputLines = new ArrayList<>();
-    }
-
-    /**
-     * Gets the output lines from this input stream pumper.
-     *
-     * @return The command output lines.
-     */
-    public List<String> getOutputLines() {
-      return outputLines;
-    }
-
-    @Override
-    public void run() {
-
-      try (BufferedReader bufferedReader =
-          new BufferedReader(Channels.newReader(Channels.newChannel(inputStream), "UTF-8"))) {
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-          outputLines.add(line);
-        }
-      } catch (IOException ex) {
-        LOGGER.error("Unable to read from command input stream.", ex);
-      }
-    }
-  }
-
   /** Initializes a new instance of the class. */
   protected AbstractProcessManager() {
     super();
   }
 
   private String buildOutput(final List<String> lines) {
-
-    if (lines == null) {
-      return "";
-    }
+    Objects.requireNonNull(lines, "lines must not be null");
 
     // Ignore empty lines
     return lines.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("\n"));
@@ -108,15 +61,13 @@ public abstract class AbstractProcessManager implements ProcessManager {
 
     final Process process = Runtime.getRuntime().exec(cmdarray);
 
-    final StreamPumper outPumper = new StreamPumper(process.getInputStream());
-    final StreamPumper errPumper = new StreamPumper(process.getErrorStream());
+    final LinesPumpStreamHandler streamsHandler =
+        new LinesPumpStreamHandler(process.getInputStream(), process.getErrorStream());
 
-    outPumper.start();
-    errPumper.start();
+    streamsHandler.start();
     try {
       process.waitFor();
-      outPumper.join();
-      errPumper.join();
+      streamsHandler.stop();
     } catch (InterruptedException ex) {
 
       // Log the interruption
@@ -126,11 +77,11 @@ public abstract class AbstractProcessManager implements ProcessManager {
       Thread.currentThread().interrupt();
     }
 
-    final List<String> outLines = outPumper.getOutputLines();
+    final List<String> outLines = streamsHandler.getOutputPumper().getLines();
 
     if (LOGGER.isDebugEnabled()) {
       final String out = buildOutput(outLines);
-      final String err = buildOutput(errPumper.getOutputLines());
+      final String err = buildOutput(streamsHandler.getErrorPumper().getLines());
 
       if (!StringUtils.isBlank(out)) {
         LOGGER.trace("Command Output: {}", out);

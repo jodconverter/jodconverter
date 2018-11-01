@@ -32,6 +32,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.jodconverter.process.LinesPumpStreamHandler;
 import org.jodconverter.process.ProcessManager;
 import org.jodconverter.process.ProcessQuery;
 
@@ -43,6 +44,7 @@ class OfficeProcess {
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcess.class);
 
   private VerboseProcess process;
+  private OfficeDescriptor descriptor;
   private long pid = PID_UNKNOWN;
   private final OfficeUrl officeUrl;
   private final OfficeProcessConfig config;
@@ -131,6 +133,49 @@ class OfficeProcess {
       } else {
         LOGGER.error("Could not delete profileDir: {}", ioEx.getMessage());
       }
+    }
+  }
+
+  private void detectOfficeVersion() {
+
+    // Create the command used to launch the office process
+    final List<String> command = new ArrayList<>();
+    final File executable = LocalOfficeUtils.getOfficeExecutable(config.getOfficeHome());
+    if (config.getRunAsArgs() != null) {
+      command.addAll(Arrays.asList(config.getRunAsArgs()));
+    }
+
+    final String execPath = executable.getAbsolutePath();
+
+    descriptor = OfficeDescriptor.fromExecutablePath(execPath);
+    final String prefix = descriptor.useLongOptionNameGnuStyle() ? "--" : "-";
+
+    command.add(execPath);
+    command.add(prefix + "invisible");
+    command.add(prefix + "help");
+    command.add(prefix + "headless");
+    command.add(prefix + "nocrashreport");
+    command.add(prefix + "nodefault");
+    command.add(prefix + "nofirststartwizard");
+    command.add(prefix + "nolockcheck");
+    command.add(prefix + "nologo");
+    command.add(prefix + "norestore");
+    command.add("-env:UserInstallation=" + LocalOfficeUtils.toUrl(instanceProfileDir));
+    final ProcessBuilder processBuilder = new ProcessBuilder(command);
+    try {
+      final Process process = processBuilder.start();
+      final LinesPumpStreamHandler handler =
+          new LinesPumpStreamHandler(process.getInputStream(), process.getErrorStream());
+      handler.start();
+      try {
+        process.waitFor();
+        handler.stop();
+      } catch (InterruptedException ex) {
+        // Ignore
+      }
+      descriptor = OfficeDescriptor.fromHelpOutput(handler.getOutputPumper().getLines());
+    } catch (IOException ioEx) {
+      LOGGER.warn("An I/O error prevents us to determine office version", ioEx);
     }
   }
 
@@ -274,17 +319,21 @@ class OfficeProcess {
     // Apache OpenOffice:
     // https://wiki.openoffice.org/wiki/Framework/Article/Command_Line_Arguments
 
-    command.add(executable.getAbsolutePath());
-    command.add("-accept=" + acceptString);
+    // TODO: Maybe we could find a better way to
+
+    final String execPath = executable.getAbsolutePath();
+    final String prefix = descriptor.useLongOptionNameGnuStyle() ? "--" : "-";
+    command.add(execPath);
+    command.add(prefix + "accept=" + acceptString);
+    command.add(prefix + "headless");
+    command.add(prefix + "invisible");
+    command.add(prefix + "nocrashreport");
+    command.add(prefix + "nodefault");
+    command.add(prefix + "nofirststartwizard");
+    command.add(prefix + "nolockcheck");
+    command.add(prefix + "nologo");
+    command.add(prefix + "norestore");
     command.add("-env:UserInstallation=" + LocalOfficeUtils.toUrl(instanceProfileDir));
-    command.add("-invisible");
-    command.add("-norestore");
-    command.add("-nofirststartwizard");
-    command.add("-nologo");
-    command.add("-nodefault");
-    command.add("-nolockcheck");
-    command.add("-headless");
-    command.add("-nocrashreport");
 
     // It could be interesting to use the LibreOffice pidfile switch
     // to retrieve the LibreOffice pid. But is it reliable ? And it would
@@ -329,6 +378,9 @@ class OfficeProcess {
     if (!restart) {
       prepareInstanceProfileDir();
     }
+
+    // Determiner office version
+    detectOfficeVersion();
 
     // Create the builder used to launch the office process
     final ProcessBuilder processBuilder = prepareProcessBuilder(acceptString);

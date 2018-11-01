@@ -19,81 +19,60 @@
 
 package org.jodconverter.office;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.Channels;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.jodconverter.process.PumpStreamHandler;
+import org.jodconverter.process.StreamPumper;
+
+/** Wrapper class for a process we want to redirect the output and error stream. */
 class VerboseProcess {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(VerboseProcess.class);
 
   private final Process process;
-  private final Monitor errorMonitor;
-  private final Monitor outputMonitor;
+  private final PumpStreamHandler streamHandler;
 
-  @FunctionalInterface
-  private interface LineLogger {
-    void log(String line);
-  }
-
-  private static class Monitor extends Thread {
-
-    private final InputStream input;
-    private final LineLogger logger;
-
-    Monitor(final InputStream input, final LineLogger logger) {
-      super();
-
-      this.input = input;
-      this.logger = logger;
-    }
-
-    @Override
-    public void run() {
-
-      try (BufferedReader bufferedReader =
-          new BufferedReader(Channels.newReader(Channels.newChannel(input), "UTF-8"))) {
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-          logger.log(line);
-        }
-      } catch (IOException ex) {
-        LOGGER.error("Unable to read from command input stream.", ex);
-      }
-    }
-  }
-
+  /**
+   * Creates a new wrapper for the given process.
+   *
+   * @param process The process for which the wrapper is created.
+   */
   VerboseProcess(final Process process) {
     super();
 
+    Objects.requireNonNull(process, "process must not be null");
+
     this.process = process;
 
-    outputMonitor = new Monitor(process.getInputStream(), (line) -> LOGGER.info(line));
-    errorMonitor = new Monitor(process.getErrorStream(), (line) -> LOGGER.error(line));
-    outputMonitor.start();
-    errorMonitor.start();
+    streamHandler =
+        new PumpStreamHandler(
+            new StreamPumper(process.getInputStream(), (line) -> LOGGER.info(line)),
+            new StreamPumper(process.getErrorStream(), (line) -> LOGGER.error(line)));
+    streamHandler.start();
   }
 
+  /**
+   * Gets the process for this wrapper.
+   *
+   * @return The process.
+   */
   Process getProcess() {
     return process;
   }
 
+  /**
+   * Gets the exit code for the process.
+   *
+   * @return The exit code of the process, or null if not terminated yet.
+   */
   Integer getExitCode() {
 
     try {
       final int exitValue = process.exitValue();
-      try {
-        outputMonitor.join();
-        errorMonitor.join();
-      } catch (InterruptedException ex) {
-        // Log the interruption
-        LOGGER.warn(
-            "The current thread was interrupted while waiting for command execution output.", ex);
-      }
+      streamHandler.stop();
       return exitValue;
 
     } catch (IllegalThreadStateException ex) {

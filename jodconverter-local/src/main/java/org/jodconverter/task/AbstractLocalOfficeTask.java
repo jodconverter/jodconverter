@@ -109,14 +109,12 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       Validate.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
       return document;
 
-    } catch (IllegalArgumentException illegalArgumentEx) {
-      throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), illegalArgumentEx);
-    } catch (ErrorCodeIOException errorCodeIoEx) {
+    } catch (ErrorCodeIOException exception) {
       throw new OfficeException(
-          ERROR_MESSAGE_LOAD + sourceFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
-          errorCodeIoEx);
-    } catch (IOException ioEx) {
-      throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), ioEx);
+          ERROR_MESSAGE_LOAD + sourceFile.getName() + "; errorCode: " + exception.ErrCode,
+          exception);
+    } catch (IllegalArgumentException | IOException exception) {
+      throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
     }
   }
 
