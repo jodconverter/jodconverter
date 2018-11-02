@@ -39,6 +39,7 @@ import org.jodconverter.process.PureJavaProcessManager;
 import org.jodconverter.process.UnixProcessManager;
 import org.jodconverter.process.WindowsProcessManager;
 
+/** Provides helper functions for local office. */
 public final class LocalOfficeUtils {
 
   private static final String EXECUTABLE_DEFAULT = "program/soffice.bin";
@@ -51,7 +52,7 @@ public final class LocalOfficeUtils {
   // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
   private static class DefaultOfficeHomeHolder { // NOSONAR
 
-    static final File INSTANCE;
+    /* default */ static final File INSTANCE;
 
     static {
       if (StringUtils.isNotBlank(System.getProperty("office.home"))) {

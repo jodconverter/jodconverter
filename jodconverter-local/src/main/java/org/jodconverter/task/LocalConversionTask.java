@@ -144,14 +144,15 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
 
   // Modifies the document after it has been loaded and before
   // it gets saved in the new format.
-  void modifyDocument(final OfficeContext context, final XComponent document)
+  protected void modifyDocument(final OfficeContext context, final XComponent document)
       throws OfficeException {
 
     filterChain.doFilter(context, document);
   }
 
   // Stores the converted document as the output file.
-  void storeDocument(final XComponent document, final File targetFile) throws OfficeException {
+  protected void storeDocument(final XComponent document, final File targetFile)
+      throws OfficeException {
 
     final Map<String, Object> storeProps = getStoreProperties(document);
 

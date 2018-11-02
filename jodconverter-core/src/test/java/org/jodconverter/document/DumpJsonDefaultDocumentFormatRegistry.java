@@ -35,6 +35,12 @@ final class DumpJsonDefaultDocumentFormatRegistry {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(DumpJsonDefaultDocumentFormatRegistry.class);
 
+  /**
+   * Main entry point.
+   *
+   * @param args Program arguments.
+   * @throws Exception If an error occurs.
+   */
   public static void main(final String[] args) throws Exception {
 
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();

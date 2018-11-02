@@ -117,11 +117,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
       super();
     }
 
-    /**
-     * Creates the converter that is specified by this builder.
-     *
-     * @return The converter that is specified by this builder.
-     */
+    @Override
     public LocalOfficeManager build() {
 
       // Assign default values for properties that are not set yet.

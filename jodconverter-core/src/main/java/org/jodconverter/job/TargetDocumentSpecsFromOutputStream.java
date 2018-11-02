@@ -36,7 +36,7 @@ class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
   private final boolean closeStream;
   private final TemporaryFileMaker fileMaker;
 
-  public TargetDocumentSpecsFromOutputStream(
+  /* default */ TargetDocumentSpecsFromOutputStream(
       final OutputStream outputStream,
       final TemporaryFileMaker fileMaker,
       final boolean closeStream) {

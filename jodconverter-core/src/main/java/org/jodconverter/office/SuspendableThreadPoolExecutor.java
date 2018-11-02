@@ -33,7 +33,7 @@ class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
   private final ReentrantLock suspendLock = new ReentrantLock();
   private final Condition availableCondition = suspendLock.newCondition();
 
-  public SuspendableThreadPoolExecutor(final ThreadFactory threadFactory) {
+  /* default */ SuspendableThreadPoolExecutor(final ThreadFactory threadFactory) {
     super(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), threadFactory);
   }
 

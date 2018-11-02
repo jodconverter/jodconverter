@@ -34,7 +34,7 @@ public class SimpleOfficeManagerTest {
     private final long sleep;
     public OfficeException exception;
 
-    SleepyOfficeTaskRunner(final OfficeManager manager, final long sleep) {
+    /* default */ SleepyOfficeTaskRunner(final OfficeManager manager, final long sleep) {
       this.manager = manager;
       this.sleep = sleep;
     }

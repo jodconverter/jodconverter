@@ -19,6 +19,7 @@
 
 package org.jodconverter.office;
 
+/** Provides helper functions for office. */
 public final class OfficeUtils {
 
   /**

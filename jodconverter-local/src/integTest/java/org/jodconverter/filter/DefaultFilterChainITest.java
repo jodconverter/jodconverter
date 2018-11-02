@@ -150,7 +150,7 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
         .doFilter(isA(OfficeContext.class), isA(XComponent.class), isA(FilterChain.class));
   }
 
-  static void setFinalStatic(final Field field, final Object newValue) throws Exception {
+  private static void setFinalStatic(final Field field, final Object newValue) throws Exception {
 
     field.setAccessible(true);
     final Field modifiersField = Field.class.getDeclaredField("modifiers");

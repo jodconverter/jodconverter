@@ -38,7 +38,7 @@ class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
   private final boolean closeStream;
   private final TemporaryFileMaker fileMaker;
 
-  public SourceDocumentSpecsFromInputStream(
+  /* default */ SourceDocumentSpecsFromInputStream(
       final InputStream inputStream,
       final TemporaryFileMaker fileMaker,
       final boolean closeStream) {

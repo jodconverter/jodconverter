@@ -100,7 +100,7 @@ public class AbstractLocalOfficeTaskITest extends AbstractOfficeITest {
       closeDocument(document);
     }
 
-    void closeForGood() {
+    /* default */ void closeForGood() {
 
       if (closeable != null) {
         closeable.removeCloseListener(closeListener);

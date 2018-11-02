@@ -33,6 +33,7 @@
 	<rule ref="category/java/codestyle.xml">
 		<exclude name="AtLeastOneConstructor" />
 		<exclude name="DefaultPackage" />
+		<exclude name="LinguisticNaming" />
 		<exclude name="OnlyOneReturn" />
 		<exclude name="ShortVariable" />
 		<exclude name="TooManyStaticImports" />
@@ -118,6 +119,7 @@
 	<rule ref="category/java/documentation.xml/CommentRequired">
 		<properties>
 			<property name="fieldCommentRequirement" value="Ignored" />
+			<property name="protectedMethodCommentRequirement" value="Ignored" />
 			<!-- Ignore the rule for test classes -->
 			<property name="violationSuppressXPath"
 				value="
@@ -128,8 +130,11 @@
 
 	<!-- Use the 'errorprone' category -->
 	<rule ref="category/java/errorprone.xml">
-		<exclude name="BeanMembersShouldSerialize" />
 		<exclude name="AvoidFieldNameMatchingMethodName" />
+		<exclude name="BeanMembersShouldSerialize" />
+		<exclude name="DataflowAnomalyAnalysis" />
+		<exclude name="DoNotCallSystemExit" />
+		<exclude name="NullAssignment" />
 	</rule>
 	<rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
 		<properties>
@@ -140,14 +145,10 @@
 	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
 		</properties>
 	</rule>
-	<rule ref="category/java/errorprone.xml/DataflowAnomalyAnalysis">
-		<properties>
-			<property name="violationSuppressRegex" value="^Found 'UR'-anomaly.*" />
-		</properties>
-	</rule>
 
 	<!-- Use the 'multithreading' category -->
 	<rule ref="category/java/multithreading.xml">
+		<exclude name="DoNotUseThreads" />
 		<exclude name="UseConcurrentHashMap" />
 	</rule>
 	<!-- Use the 'performance' category -->

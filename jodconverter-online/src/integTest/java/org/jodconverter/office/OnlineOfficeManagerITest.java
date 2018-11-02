@@ -27,10 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
@@ -295,8 +295,8 @@ public class OnlineOfficeManagerITest {
               .willReturn(aResponse().withStatus(200).withBody("Test Document")));
 
       // Try to converter the input document
-      try (FileInputStream inputStream = new FileInputStream(inputFile);
-          OutputStream outputStream = new FileOutputStream(outputFile)) {
+      try (InputStream inputStream = Files.newInputStream(inputFile.toPath());
+          OutputStream outputStream = Files.newOutputStream(outputFile.toPath())) {
         OnlineConverter.make(manager)
             .convert(inputStream)
             .as(DefaultDocumentFormatRegistry.DOC)

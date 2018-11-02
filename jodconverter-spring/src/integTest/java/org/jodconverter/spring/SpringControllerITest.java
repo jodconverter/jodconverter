@@ -22,9 +22,9 @@ package org.jodconverter.spring;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -50,7 +50,7 @@ public class SpringControllerITest {
   @Autowired private JodConverterBean bean;
 
   @Configuration("SpringControllerTestConfiguration")
-  static class ContextConfiguration {
+  /* default */ static class ContextConfiguration {
 
     // this bean will be injected into the SpringControllerTest class
     @Bean
@@ -81,7 +81,7 @@ public class SpringControllerITest {
   public static void setUpClass() throws IOException {
 
     inputFileTxt = testFolder.newFile("inputFile.txt");
-    try (final PrintWriter writer = new PrintWriter(new FileWriter(inputFileTxt))) {
+    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
     }

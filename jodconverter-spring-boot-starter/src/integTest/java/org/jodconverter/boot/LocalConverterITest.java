@@ -22,9 +22,9 @@ package org.jodconverter.boot;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -62,7 +62,7 @@ public class LocalConverterITest {
   public static void setUpClass() throws IOException {
 
     inputFileTxt = testFolder.newFile("inputFile.txt");
-    try (final PrintWriter writer = new PrintWriter(new FileWriter(inputFileTxt))) {
+    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
     }

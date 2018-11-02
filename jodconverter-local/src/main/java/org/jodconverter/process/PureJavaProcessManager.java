@@ -25,7 +25,7 @@ public class PureJavaProcessManager implements ProcessManager {
   // only on demand, as explained by the Initialization-on-demand holder idiom:
   // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
   private static class DefaultHolder { // NOSONAR
-    static final PureJavaProcessManager INSTANCE = new PureJavaProcessManager();
+    /* default */ static final PureJavaProcessManager INSTANCE = new PureJavaProcessManager();
   }
 
   /**

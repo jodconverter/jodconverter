@@ -40,7 +40,7 @@ class VerboseProcess {
    *
    * @param process The process for which the wrapper is created.
    */
-  VerboseProcess(final Process process) {
+  /* default */ VerboseProcess(final Process process) {
     super();
 
     Objects.requireNonNull(process, "process must not be null");
@@ -59,7 +59,7 @@ class VerboseProcess {
    *
    * @return The process.
    */
-  Process getProcess() {
+  /* default */ Process getProcess() {
     return process;
   }
 
@@ -68,7 +68,7 @@ class VerboseProcess {
    *
    * @return The exit code of the process, or null if not terminated yet.
    */
-  Integer getExitCode() {
+  /* default */ Integer getExitCode() {
 
     try {
       final int exitValue = process.exitValue();

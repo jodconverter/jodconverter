@@ -113,11 +113,7 @@ public final class OnlineOfficeManager extends AbstractOfficeManagerPool {
       super();
     }
 
-    /**
-     * Creates the converter that is specified by this builder.
-     *
-     * @return The converter that is specified by this builder.
-     */
+    @Override
     public OnlineOfficeManager build() {
 
       Validate.notEmpty(urlConnection, "The URL connection is missing");

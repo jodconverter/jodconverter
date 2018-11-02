@@ -79,6 +79,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
         new File("src/integTest/resources/documents")
             .listFiles(
                 new FilenameFilter() {
+                  @Override
                   public boolean accept(final File dir, final String name) {
                     return name.startsWith("test.");
                   }

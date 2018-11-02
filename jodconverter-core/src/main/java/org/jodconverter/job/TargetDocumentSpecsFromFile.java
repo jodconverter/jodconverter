@@ -26,7 +26,7 @@ import org.apache.commons.io.FileUtils;
 class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs
     implements TargetDocumentSpecs {
 
-  TargetDocumentSpecsFromFile(final File file) {
+  /* default */ TargetDocumentSpecsFromFile(final File file) {
     super(file);
   }
 

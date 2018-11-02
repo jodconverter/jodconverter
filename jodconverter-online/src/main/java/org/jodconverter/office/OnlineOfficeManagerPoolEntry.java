@@ -271,7 +271,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   protected void doExecute(final OfficeTask task) throws OfficeException {
 
     final SSLConnectionSocketFactory sslFactory = configureSsl();
-    try (final CloseableHttpClient httpClient =
+    try (CloseableHttpClient httpClient =
         HttpClients.custom().setSSLSocketFactory(sslFactory).build()) {
 
       // Use the task execution timeout as connection and socket timeout.

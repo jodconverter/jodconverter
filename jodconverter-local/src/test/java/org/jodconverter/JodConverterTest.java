@@ -27,8 +27,8 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -76,29 +76,27 @@ public class JodConverterTest {
   @Test
   public void convert_FromStream_CallForwardToLocalConverter() throws Exception {
 
-    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
 
-      JodConverter.convert(inputStream);
+      JodConverter.convert(stream);
 
       final ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
       verify(localConverter, times(1)).convert(argument.capture());
-      final InputStream stream = argument.getValue();
-      assertThat(stream).isEqualTo(inputStream);
+      assertThat(argument.getValue()).isEqualTo(stream);
     }
   }
 
   @Test
   public void convert_FromStreamWithCloseArgument_CallForwardToLocalConverter() throws Exception {
 
-    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
 
-      JodConverter.convert(inputStream, false);
+      JodConverter.convert(stream, false);
 
       final ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
       final ArgumentCaptor<Boolean> booleanArgument = ArgumentCaptor.forClass(Boolean.class);
       verify(localConverter, times(1)).convert(argument.capture(), booleanArgument.capture());
-      final InputStream stream = argument.getValue();
-      assertThat(stream).isEqualTo(inputStream);
+      assertThat(argument.getValue()).isEqualTo(stream);
     }
   }
 }

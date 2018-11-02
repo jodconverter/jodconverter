@@ -97,11 +97,7 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
       super();
     }
 
-    /**
-     * Creates the converter that is specified by this builder.
-     *
-     * @return The converter that is specified by this builder.
-     */
+    @Override
     public SimpleOfficeManager build() {
 
       if (workingDir == null) {
@@ -117,22 +113,6 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
       return manager;
-    }
-
-    /**
-     * Specifies whether the office manager that will be created by this builder will then set the
-     * unique instance of the {@link InstalledOfficeManagerHolder} class. Note that if the {@code
-     * InstalledOfficeManagerHolder} class already holds an {@code OfficeManager} instance, the
-     * owner of this existing manager is responsible to stopped it.
-     *
-     * <p>&nbsp; <b><i>Default</i></b>: false
-     *
-     * @return This builder instance.
-     */
-    public Builder install() {
-
-      this.install = true;
-      return this;
     }
 
     /**

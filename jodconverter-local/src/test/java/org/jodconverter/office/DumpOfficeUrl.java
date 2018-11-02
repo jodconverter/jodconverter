@@ -40,17 +40,18 @@ public final class DumpOfficeUrl {
       OfficeUrl url = new OfficeUrl(2002);
 
       LOGGER.info("WITH PORT");
-      LOGGER.info("url.getConnection():" + url.getConnection());
+      LOGGER.info("url.getConnection(): {}", url.getConnection());
       LOGGER.info(
-          "url.getConnectionAndParametersAsString():" + url.getConnectionAndParametersAsString());
-      LOGGER.info("url.getConnectionParametersAsString():" + url.getConnectionParametersAsString());
-      LOGGER.info("url.getConnectionParameters():" + url.getConnectionParameters());
-      LOGGER.info("url.getProtocol():" + url.getProtocol());
+          "url.getConnectionAndParametersAsString(): {}", url.getConnectionAndParametersAsString());
       LOGGER.info(
-          "url.getProtocolAndParametersAsString():" + url.getProtocolAndParametersAsString());
-      LOGGER.info("url.getProtocolParametersAsString():" + url.getProtocolParametersAsString());
-      LOGGER.info("url.getProtocolParameters():" + url.getProtocolParameters());
-      LOGGER.info("url.getRootOid():" + url.getRootOid());
+          "url.getConnectionParametersAsString(): {}", url.getConnectionParametersAsString());
+      LOGGER.info("url.getConnectionParameters(): {}", url.getConnectionParameters());
+      LOGGER.info("url.getProtocol(): {}", url.getProtocol());
+      LOGGER.info(
+          "url.getProtocolAndParametersAsString(): {}", url.getProtocolAndParametersAsString());
+      LOGGER.info("url.getProtocolParametersAsString(): {}", url.getProtocolParametersAsString());
+      LOGGER.info("url.getProtocolParameters(): {}", url.getProtocolParameters());
+      LOGGER.info("url.getRootOid(): {}", url.getRootOid());
 
       LOGGER.info("");
       LOGGER.info("");
@@ -58,17 +59,18 @@ public final class DumpOfficeUrl {
       url = new OfficeUrl("office");
 
       LOGGER.info("WITH PIPE");
-      LOGGER.info("url.getConnection():" + url.getConnection());
+      LOGGER.info("url.getConnection(): {}", url.getConnection());
       LOGGER.info(
-          "url.getConnectionAndParametersAsString():" + url.getConnectionAndParametersAsString());
-      LOGGER.info("url.getConnectionParametersAsString():" + url.getConnectionParametersAsString());
-      LOGGER.info("url.getConnectionParameters():" + url.getConnectionParameters());
-      LOGGER.info("url.getProtocol():" + url.getProtocol());
+          "url.getConnectionAndParametersAsString(): {}", url.getConnectionAndParametersAsString());
       LOGGER.info(
-          "url.getProtocolAndParametersAsString():" + url.getProtocolAndParametersAsString());
-      LOGGER.info("url.getProtocolParametersAsString():" + url.getProtocolParametersAsString());
-      LOGGER.info("url.getProtocolParameters():" + url.getProtocolParameters());
-      LOGGER.info("url.getRootOid():" + url.getRootOid());
+          "url.getConnectionParametersAsString(): {}", url.getConnectionParametersAsString());
+      LOGGER.info("url.getConnectionParameters(): {}", url.getConnectionParameters());
+      LOGGER.info("url.getProtocol(): {}", url.getProtocol());
+      LOGGER.info(
+          "url.getProtocolAndParametersAsString(): {}", url.getProtocolAndParametersAsString());
+      LOGGER.info("url.getProtocolParametersAsString(): {}", url.getProtocolParametersAsString());
+      LOGGER.info("url.getProtocolParameters(): {}", url.getProtocolParameters());
+      LOGGER.info("url.getRootOid(): {}", url.getRootOid());
     } catch (Exception ex) { // NOSONAR
       throw new IllegalArgumentException(ex);
     }

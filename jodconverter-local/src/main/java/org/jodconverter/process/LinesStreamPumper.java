@@ -31,7 +31,7 @@ public class LinesStreamPumper extends StreamPumper {
     private final List<String> lines = new ArrayList<>();
 
     @Override
-    public void consume(String line) {
+    public void consume(final String line) {
       lines.add(line);
     }
   }

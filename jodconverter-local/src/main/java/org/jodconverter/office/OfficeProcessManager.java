@@ -103,9 +103,10 @@ class OfficeProcessManager {
       new ConnectRetryable(process, connection)
           .execute(config.getProcessRetryInterval(), config.getProcessTimeout());
 
-    } catch (OfficeException ex) {
-      throw ex;
     } catch (Exception ex) {
+      if (ex instanceof OfficeException) {
+        throw (OfficeException) ex;
+      }
       throw new OfficeException("Could not establish connection", ex);
     }
   }
@@ -166,7 +167,7 @@ class OfficeProcessManager {
    *
    * @return The {@link OfficeConnection} of this manager.
    */
-  OfficeConnection getConnection() {
+  /* default */ OfficeConnection getConnection() {
     return connection;
   }
 

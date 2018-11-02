@@ -28,6 +28,7 @@ import com.sun.star.uno.UnoRuntime;
 import org.jodconverter.document.DocumentFamily;
 import org.jodconverter.office.OfficeException;
 
+/** Provides helper functions for local office tasks. */
 final class LocalOfficeTaskUtils {
 
   /**

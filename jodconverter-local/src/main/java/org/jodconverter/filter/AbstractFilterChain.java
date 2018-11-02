@@ -71,11 +71,7 @@ public abstract class AbstractFilterChain implements FilterChain {
     }
   }
 
-  /**
-   * Adds a filter to the chain.
-   *
-   * @param filter The filter to add at the end of the chain.
-   */
+  @Override
   public void addFilter(final Filter filter) {
 
     if (readOnly) {

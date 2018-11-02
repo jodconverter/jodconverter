@@ -104,14 +104,16 @@ public abstract class AbstractProcessManager implements ProcessManager {
     final Pattern processLinePattern = getRunningProcessLinePattern();
     final String[] currentProcessesCommand = getRunningProcessesCommand(query.getCommand());
 
-    LOGGER.trace(
-        "Finding PID using\n"
-            + "Command to get current running processes: {}\n"
-            + "Regex used to match current running process lines: {}\n"
-            + "Regex used to match running office process we are looking for: {}",
-        currentProcessesCommand,
-        processLinePattern.pattern(), // NOSONAR
-        commandPattern.pattern());
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace(
+          "Finding PID using\n"
+              + "Command to get current running processes: {}\n"
+              + "Regex used to match current running process lines: {}\n"
+              + "Regex used to match running office process we are looking for: {}",
+          currentProcessesCommand,
+          processLinePattern.pattern(), // NOSONAR
+          commandPattern.pattern());
+    }
 
     final List<String> lines = execute(currentProcessesCommand);
     for (final String line : lines) {
@@ -125,12 +127,14 @@ public abstract class AbstractProcessManager implements ProcessManager {
       if (lineMatcher.matches()) {
         final String pid = lineMatcher.group("Pid");
         final String commandLine = lineMatcher.group("CommanLine");
-        LOGGER.trace(
-            "Line matches!\n"
-                + "pid: {}; Command line: {}\n"
-                + "Checking if this command line matches the office command line regex",
-            pid,
-            commandLine);
+        if (LOGGER.isTraceEnabled()) {
+          LOGGER.trace(
+              "Line matches!\n"
+                  + "pid: {}; Command line: {}\n"
+                  + "Checking if this command line matches the office command line regex",
+              pid,
+              commandLine);
+        }
         final Matcher commandMatcher = commandPattern.matcher(commandLine);
         if (commandMatcher.find()) {
           LOGGER.debug("Command line matches! Returning pid: {}", pid);

@@ -125,11 +125,7 @@ public class OnlineConverter extends AbstractConverter {
       super();
     }
 
-    /**
-     * Creates the converter that is specified by this builder.
-     *
-     * @return The converter that is specified by this builder.
-     */
+    @Override
     public OnlineConverter build() {
 
       // Create the converter

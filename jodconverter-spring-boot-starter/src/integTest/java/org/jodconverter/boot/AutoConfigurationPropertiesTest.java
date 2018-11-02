@@ -41,9 +41,12 @@ import org.jodconverter.office.OnlineOfficeManager;
 @TestPropertySource(locations = "classpath:config/application-props.properties")
 public class AutoConfigurationPropertiesTest {
 
+  @Autowired private JodConverterLocalProperties localProps;
+  @Autowired private JodConverterOnlineProperties onlineProps;
+
   // Provided valid OfficeManager beans so we will be able to test the Autowired properties.
   @TestConfiguration
-  static class TestConfig {
+  /* default */ static class TestConfig {
 
     @Bean
     public OfficeManager localOfficeManager() {
@@ -55,10 +58,6 @@ public class AutoConfigurationPropertiesTest {
       return OnlineOfficeManager.make("some url");
     }
   }
-
-  @Autowired private JodConverterLocalProperties localProps;
-
-  @Autowired private JodConverterOnlineProperties onlineProps;
 
   @Test
   public void testLocalProperties() {

@@ -128,7 +128,7 @@ public class LocalConverter extends AbstractConverter {
    * @param loadProperties The default properties to apply when loading a document.
    * @return This converter instance.
    */
-  LocalConverter setLoadProperties(final Map<String, Object> loadProperties) {
+  /* default */ LocalConverter setLoadProperties(final Map<String, Object> loadProperties) {
 
     if (this.loadProperties == null) {
       this.loadProperties = new HashMap<>();
@@ -151,7 +151,7 @@ public class LocalConverter extends AbstractConverter {
    *     stored (converted) in the new document format.
    * @return This converter instance.
    */
-  LocalConverter setFilterChain(final FilterChain filterChain) {
+  /* default */ LocalConverter setFilterChain(final FilterChain filterChain) {
 
     this.filterChain = filterChain;
 
@@ -206,11 +206,7 @@ public class LocalConverter extends AbstractConverter {
       super();
     }
 
-    /**
-     * Creates the converter that is specified by this builder.
-     *
-     * @return The converter that is specified by this builder.
-     */
+    @Override
     public LocalConverter build() {
 
       // Create the converter

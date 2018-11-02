@@ -40,7 +40,7 @@ public final class OfficeManagerResource extends ExternalResource {
   public static final TestRule INSTANCE = new OfficeManagerResource();
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeManagerResource.class);
 
-  OfficeManager officeManager;
+  /* default */ OfficeManager officeManager;
   private final AtomicBoolean started = new AtomicBoolean();
   private final AtomicInteger counter = new AtomicInteger(0);
 

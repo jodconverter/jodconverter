@@ -23,9 +23,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -78,9 +79,9 @@ public class OnlineConverterTest {
 
     final File targetFile = new File(outputDir, "test.pdf");
 
-    try (final FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
       OnlineConverter.make(officeManager)
-          .convert(inputStream)
+          .convert(stream)
           .as(DefaultDocumentFormatRegistry.TXT)
           .to(targetFile)
           .execute();
@@ -95,11 +96,10 @@ public class OnlineConverterTest {
   public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream()
       throws Exception {
 
-    try (final FileOutputStream outputStream =
-        new FileOutputStream(new File(outputDir, "test.pdf"))) {
+    try (OutputStream stream = Files.newOutputStream(new File(outputDir, "test.pdf").toPath())) {
       OnlineConverter.make(officeManager)
           .convert(SOURCE_FILE)
-          .to(outputStream)
+          .to(stream)
           .as(DefaultDocumentFormatRegistry.PDF)
           .execute();
     } catch (Exception ex) {

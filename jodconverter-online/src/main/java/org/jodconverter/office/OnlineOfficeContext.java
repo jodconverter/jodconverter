@@ -29,12 +29,12 @@ public interface OnlineOfficeContext extends OfficeContext {
    *
    * @return The client that will send the conversion request.
    */
-  public HttpClient getHttpClient();
+  HttpClient getHttpClient();
 
   /**
    * Gets the request configuration.
    *
    * @return The request configuration.
    */
-  public RequestConfig getRequestConfig();
+  RequestConfig getRequestConfig();
 }

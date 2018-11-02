@@ -26,7 +26,7 @@ import org.apache.commons.lang3.Validate;
 class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs
     implements SourceDocumentSpecs {
 
-  SourceDocumentSpecsFromFile(final File file) {
+  /* default */ SourceDocumentSpecsFromFile(final File file) {
     super(file);
 
     Validate.isTrue(file.exists(), "File not found: %s", file);

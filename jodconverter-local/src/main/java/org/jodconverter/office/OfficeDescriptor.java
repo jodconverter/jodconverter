@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Contains basic information about the office installation being used. */
-public class OfficeDescriptor {
+public final class OfficeDescriptor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeDescriptor.class);
 
@@ -48,7 +48,7 @@ public class OfficeDescriptor {
     LOGGER.debug("Building {} from help output lines", OfficeDescriptor.class.getName());
 
     String productLine = null;
-    for (String line : lines) {
+    for (final String line : lines) {
       if (line.contains("--help")) {
         desc.useLongOptionNameGnuStyle = true;
       } else {

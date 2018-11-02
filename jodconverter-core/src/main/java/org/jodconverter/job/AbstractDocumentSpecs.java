@@ -58,7 +58,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
    *
    * @param documentFormat The document format to set.
    */
-  void setDocumentFormat(final DocumentFormat documentFormat) {
+  /* default */ void setDocumentFormat(final DocumentFormat documentFormat) {
 
     Validate.notNull(documentFormat, "The document format is null or unsupported");
     this.documentFormat = documentFormat;

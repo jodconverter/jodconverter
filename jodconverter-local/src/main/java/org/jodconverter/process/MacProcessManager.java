@@ -25,7 +25,7 @@ public class MacProcessManager extends UnixProcessManager {
   // only on demand, as explained by the Initialization-on-demand holder idiom:
   // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
   private static class DefaultHolder { // NOSONAR
-    static final MacProcessManager INSTANCE = new MacProcessManager();
+    /* default */ static final MacProcessManager INSTANCE = new MacProcessManager();
   }
 
   /**

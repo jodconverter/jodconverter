@@ -46,7 +46,7 @@ public abstract class AbstractOfficeITest {
   protected static final String TEST_OUTPUT_DIR = "build/integTest-results/";
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOfficeITest.class);
 
-  void convertFileToAllSupportedFormats(
+  protected void convertFileToAllSupportedFormats(
       final File sourceFile, final File outputDir, final Filter... filters) {
 
     // Detect input format

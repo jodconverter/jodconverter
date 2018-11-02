@@ -25,9 +25,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -142,9 +143,9 @@ public class LocalConverterTest {
 
     final File targetFile = new File(outputDir, "test.pdf");
 
-    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (InputStream stream = Files.newInputStream(targetFile.toPath())) {
       LocalConverter.make(officeManager)
-          .convert(inputStream)
+          .convert(stream)
           .as(DefaultDocumentFormatRegistry.TXT)
           .to(targetFile)
           .execute();
@@ -159,10 +160,10 @@ public class LocalConverterTest {
   public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream()
       throws Exception {
 
-    try (FileOutputStream outputStream = new FileOutputStream(new File(outputDir, "test.pdf"))) {
+    try (OutputStream stream = Files.newOutputStream(new File(outputDir, "test.pdf").toPath())) {
       LocalConverter.make(officeManager)
           .convert(SOURCE_FILE)
-          .to(outputStream)
+          .to(stream)
           .as(DefaultDocumentFormatRegistry.PDF)
           .execute();
     } catch (Exception ex) {

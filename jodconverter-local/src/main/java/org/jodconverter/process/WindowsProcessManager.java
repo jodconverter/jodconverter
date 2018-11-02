@@ -37,7 +37,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
   // only on demand, as explained by the Initialization-on-demand holder idiom:
   // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
   private static class DefaultHolder { // NOSONAR
-    static final WindowsProcessManager INSTANCE = new WindowsProcessManager();
+    /* default */ static final WindowsProcessManager INSTANCE = new WindowsProcessManager();
   }
 
   /**

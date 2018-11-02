@@ -50,7 +50,7 @@ public class OfficeUrl {
    * @param pipeName The pipe name.
    * @return The created UnoUrl.
    */
-  static UnoUrl pipe(final String pipeName) {
+  /* default */ static UnoUrl pipe(final String pipeName) {
 
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
@@ -67,7 +67,7 @@ public class OfficeUrl {
    * @param port The port.
    * @return The created UnoUrl.
    */
-  static UnoUrl socket(final int port) {
+  /* default */ static UnoUrl socket(final int port) {
 
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature

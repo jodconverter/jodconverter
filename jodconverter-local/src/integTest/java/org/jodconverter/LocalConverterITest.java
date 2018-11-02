@@ -22,11 +22,10 @@ package org.jodconverter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
@@ -61,8 +60,8 @@ public class LocalConverterITest extends AbstractOfficeITest {
         new File(testFolder.getRoot(), "convert_FromStreamToFileWithMissingInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    try (InputStream inputStream = new FileInputStream(SOURCE_FILE)) {
-      LocalConverter.make().convert(inputStream).as(null).to(outputFile).execute();
+    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      LocalConverter.make().convert(stream).as(null).to(outputFile).execute();
     }
   }
 
@@ -73,9 +72,9 @@ public class LocalConverterITest extends AbstractOfficeITest {
         new File(testFolder.getRoot(), "convert_FromStreamToFileWithSupportedInputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    final InputStream inputStream = new FileInputStream(SOURCE_FILE);
+    final InputStream stream = Files.newInputStream(SOURCE_FILE.toPath());
     LocalConverter.make()
-        .convert(inputStream)
+        .convert(stream)
         .as(DefaultDocumentFormatRegistry.getFormatByExtension("doc"))
         .to(outputFile)
         .execute();
@@ -92,8 +91,8 @@ public class LocalConverterITest extends AbstractOfficeITest {
         new File(testFolder.getRoot(), "convert_FromFileToStreamWithMissingOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    try (OutputStream outputStream = new FileOutputStream(outputFile)) {
-      LocalConverter.make().convert(SOURCE_FILE).to(outputStream).as(null).execute();
+    try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+      LocalConverter.make().convert(SOURCE_FILE).to(stream).as(null).execute();
     }
   }
 
@@ -104,10 +103,10 @@ public class LocalConverterITest extends AbstractOfficeITest {
         new File(testFolder.getRoot(), "convert_FromFileToStreamWithSupportedOutputFormat.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    final OutputStream outputStream = new FileOutputStream(outputFile);
+    final OutputStream stream = Files.newOutputStream(outputFile.toPath());
     LocalConverter.make()
         .convert(SOURCE_FILE)
-        .to(outputStream)
+        .to(stream)
         .as(DefaultDocumentFormatRegistry.getFormatByExtension("pdf"))
         .execute();
 
@@ -122,10 +121,10 @@ public class LocalConverterITest extends AbstractOfficeITest {
         new File(testFolder.getRoot(), "convert_FromFileFileWithoutExtension.pdf");
     FileUtils.deleteQuietly(outputFile);
 
-    final OutputStream outputStream = new FileOutputStream(outputFile);
+    final OutputStream stream = Files.newOutputStream(outputFile.toPath());
     LocalConverter.make()
         .convert(new File(DOCUMENTS_DIR + "test"))
-        .to(outputStream)
+        .to(stream)
         .as(DefaultDocumentFormatRegistry.getFormatByExtension("txt"))
         .execute();
 
