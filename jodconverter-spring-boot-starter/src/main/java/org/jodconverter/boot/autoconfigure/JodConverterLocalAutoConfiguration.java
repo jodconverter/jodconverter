@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,6 +45,7 @@ import org.jodconverter.office.LocalOfficeUtils;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.process.ProcessManager;
 
+/** {@link EnableAutoConfiguration Auto-configuration} for JodConverter local module. */
 @Configuration
 @ConditionalOnClass(LocalConverter.class)
 @ConditionalOnProperty(

@@ -38,6 +38,7 @@ import org.jodconverter.office.OfficeManager;
  * <p>This class is maintained for backward compatibility, but {@link LocalConverter} should be used
  * instead.
  */
+@Deprecated
 public class OfficeDocumentConverter {
 
   private final LocalConverter delegate;

@@ -18,7 +18,7 @@
  */
 
 /**
- * This package provides the main converter of the JodConverter local module and a useful static
- * converter for one-liner conversion tasks.
+ * This package contains interfaces/classes related to local office management, such as the
+ * start/stop of an office instance, office instances pool management, etc.
  */
-package org.jodconverter;
+package org.jodconverter.office;

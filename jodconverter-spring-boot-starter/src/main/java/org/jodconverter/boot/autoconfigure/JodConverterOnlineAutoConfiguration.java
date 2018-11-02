@@ -21,6 +21,7 @@ package org.jodconverter.boot.autoconfigure;
 
 import java.util.Optional;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -35,6 +36,7 @@ import org.jodconverter.office.OfficeManager;
 import org.jodconverter.office.OnlineOfficeManager;
 import org.jodconverter.ssl.SslConfig;
 
+/** {@link EnableAutoConfiguration Auto-configuration} for JodConverter online module. */
 @Configuration
 @ConditionalOnClass(OnlineConverter.class)
 @ConditionalOnProperty(

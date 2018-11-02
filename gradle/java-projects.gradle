@@ -161,6 +161,24 @@ spotless {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Documentation setup
+javadoc {
+  classpath = configurations.runtime
+  source = sourceSets.main.allJava
+  
+  options.with {
+    charSet 'UTF-8'
+    docEncoding 'UTF-8'
+    encoding 'UTF-8'
+    memberLevel = JavadocMemberLevel.PROTECTED
+    links 'https://api.libreoffice.org/docs/java/ref/'
+    links 'https://docs.oracle.com/javase/8/docs/api/'
+    links "https://docs.spring.io/spring-boot/docs/${versions.spring_boot_version}/api/"
+  }
+}
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Artifact setup
 
 // Customizes the manifest of output jar files.
