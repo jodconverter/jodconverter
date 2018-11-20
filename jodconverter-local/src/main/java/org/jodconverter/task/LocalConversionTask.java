@@ -41,6 +41,7 @@ import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.job.SourceDocumentSpecs;
 import org.jodconverter.job.TargetDocumentSpecs;
 import org.jodconverter.office.LocalOfficeContext;
+import org.jodconverter.office.LocalOfficeUtils;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
@@ -136,7 +137,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     final Map<String, Object> storeProps = new HashMap<>();
     appendProperties(
         storeProps,
-        target.getFormat().getStoreProperties(LocalOfficeTaskUtils.getDocumentFamily(document)));
+        target.getFormat().getStoreProperties(LocalOfficeUtils.getDocumentFamily(document)));
     appendProperties(storeProps, storeProperties);
 
     return storeProps;
