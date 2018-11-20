@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
+import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.filter.Filter;
@@ -50,7 +51,7 @@ public class PageCounterFilter implements Filter {
         UnoRuntime.queryInterface(
             XPropertySet.class,
             UnoRuntime.queryInterface(XModel.class, document).getCurrentController());
-    pageCount = (int) propertySet.getPropertyValue("PageCount");
+    pageCount = AnyConverter.toInt(propertySet.getPropertyValue("PageCount"));
 
     // Invoke the next filter in the chain
     chain.doFilter(context, document);

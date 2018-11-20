@@ -319,8 +319,6 @@ class OfficeProcess {
     // Apache OpenOffice:
     // https://wiki.openoffice.org/wiki/Framework/Article/Command_Line_Arguments
 
-    // TODO: Maybe we could find a better way to
-
     final String execPath = executable.getAbsolutePath();
     final String prefix = descriptor.useLongOptionNameGnuStyle() ? "--" : "-";
     command.add(execPath);
