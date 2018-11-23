@@ -84,7 +84,12 @@ public abstract class AbstractOfficeITest {
               "fodg",
               "fodp",
               "fods",
-              "fodt")) {
+              "fodt",
+              // AOO Cannot save following extension.
+              // See https://forum.openoffice.org/en/forum/viewtopic.php?f=15&t=92508
+              "docx",
+              "xlsx",
+              "pptx")) {
         LOGGER.info(
             "-- skipping {} to {} test... ",
             inputFormat.getExtension(),

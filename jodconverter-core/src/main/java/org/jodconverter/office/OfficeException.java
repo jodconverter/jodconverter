@@ -19,7 +19,7 @@
 
 package org.jodconverter.office;
 
-/** An exception that provides information on a office operation error. */
+/** An exception that provides information on an office operation error. */
 public class OfficeException extends Exception {
   private static final long serialVersionUID = -1360754252407765922L;
 

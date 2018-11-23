@@ -35,6 +35,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
@@ -42,6 +47,9 @@ import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.test.util.AssertUtil;
 
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(JUnit4.class)
+@PrepareForTest(UnoRuntime.class)
 public class LocalOfficeUtilsTest {
 
   @Test

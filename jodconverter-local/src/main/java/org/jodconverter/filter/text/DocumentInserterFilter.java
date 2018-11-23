@@ -31,11 +31,12 @@ import com.sun.star.document.XDocumentInsertable;
 import com.sun.star.lang.XComponent;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.utils.Lo;
+import org.jodconverter.office.utils.Write;
 
 /** This filter is used to insert a document at the end of the document being converted. */
 public class DocumentInserterFilter implements Filter {
@@ -62,8 +63,19 @@ public class DocumentInserterFilter implements Filter {
 
     LOGGER.debug("Applying the DocumentInserterFilter");
 
+    // This filter can be used only with text document
+    if (Write.isText(document)) {
+      insertDocument(document);
+    }
+
+    // Invoke the next filter in the chain
+    chain.doFilter(context, document);
+  }
+
+  private void insertDocument(final XComponent document) throws Exception {
+
     // Querying for the interface XTextDocument (text interface) on the XComponent.
-    final XTextDocument docText = UnoRuntime.queryInterface(XTextDocument.class, document);
+    final XTextDocument docText = Write.getTextDoc(document);
 
     // We need the text cursor in order to go to the end of the document.
     final XTextCursor textCursor = docText.getText().createTextCursor();
@@ -73,11 +85,7 @@ public class DocumentInserterFilter implements Filter {
 
     // Insert the document to merge at the end of the current document.
     // TODO: Should we allow custom load properties ?
-    final XDocumentInsertable insertable =
-        UnoRuntime.queryInterface(XDocumentInsertable.class, textCursor);
+    final XDocumentInsertable insertable = Lo.qi(XDocumentInsertable.class, textCursor);
     insertable.insertDocumentFromURL(toUrl(documentToInsert), new PropertyValue[0]);
-
-    // Invoke the next filter in the chain
-    chain.doFilter(context, document);
   }
 }

@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.star.lang.XComponent;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XReplaceDescriptor;
 import com.sun.star.util.XReplaceable;
 
@@ -33,6 +32,8 @@ import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
+import org.jodconverter.office.utils.Lo;
+import org.jodconverter.office.utils.Write;
 
 /** This filter is used to replace text in a document. */
 public class TextReplacerFilter implements Filter {
@@ -79,7 +80,18 @@ public class TextReplacerFilter implements Filter {
 
     LOGGER.debug("Applying the TextReplacerFilter");
 
-    final XReplaceable replaceable = UnoRuntime.queryInterface(XReplaceable.class, document);
+    // This filter can be used only with text document
+    if (Write.isText(document)) {
+      replaceText(document);
+    }
+
+    // Invoke the next filter in the chain
+    chain.doFilter(context, document);
+  }
+
+  private void replaceText(final XComponent document) {
+
+    final XReplaceable replaceable = Lo.qi(XReplaceable.class, document);
 
     // We need a descriptor to set properties for Replace
     final XReplaceDescriptor replaceDescr = replaceable.createReplaceDescriptor();
@@ -94,7 +106,5 @@ public class TextReplacerFilter implements Filter {
       // Replace all words
       replaceable.replaceAll(replaceDescr);
     }
-
-    chain.doFilter(context, document);
   }
 }

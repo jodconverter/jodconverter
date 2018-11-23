@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -92,7 +93,7 @@ public class OfficeDocumentConverterTest {
 
   @Test
   public void convert_WithSourceFileAndTargetFileAndFilterChain_TaskExecutedWithExpectedProperties()
-      throws OfficeException {
+      throws Exception {
 
     final OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
 
@@ -113,13 +114,13 @@ public class OfficeDocumentConverterTest {
             "source.documentFormat",
             "target.file",
             "target.documentFormat",
-            "filterChain")
+            "filterChain.filters")
         .containsExactly(
             SOURCE_FILE,
             DefaultDocumentFormatRegistry.DOC,
             targetFile,
             DefaultDocumentFormatRegistry.PDF,
-            chain);
+            FieldUtils.readField(chain, "filters", true));
   }
 
   @Test

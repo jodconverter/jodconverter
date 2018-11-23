@@ -29,15 +29,15 @@ import org.slf4j.LoggerFactory;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.drawing.XShape;
 import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.text.XText;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextFrame;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.utils.Lo;
+import org.jodconverter.office.utils.Write;
 
 /** This filter is used to insert text into a document. */
 public class TextInserterFilter extends AbstractTextContentInserterFilter {
@@ -107,32 +107,38 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
 
     LOGGER.debug("Applying the TextInserterFilter");
 
-    // Querying for the interface XTextDocument (text interface) on the XComponent
-    final XTextDocument docText = UnoRuntime.queryInterface(XTextDocument.class, document);
+    // This filter can be used only with text document
+    if (Write.isText(document)) {
+      insertText(document);
+    }
 
-    // Querying for the interface XMultiServiceFactory (text service factory) on the XTextDocument
-    final XMultiServiceFactory docServiceFactory =
-        UnoRuntime.queryInterface(XMultiServiceFactory.class, docText);
+    // Invoke the next filter in the chain
+    chain.doFilter(context, document);
+  }
+
+  private void insertText(final XComponent document) throws Exception {
 
     // Use the document's factory to create a new text frame and
     // immediately access its XTextFrame interface
     final XTextFrame textFrame =
-        UnoRuntime.queryInterface(
-            XTextFrame.class, docServiceFactory.createInstance("com.sun.star.text.TextFrame"));
+        Lo.createInstanceMSF(document, XTextFrame.class, "com.sun.star.text.TextFrame");
 
     // Access the XShape interface of the TextFrame
-    final XShape shape = UnoRuntime.queryInterface(XShape.class, textFrame);
+    final XShape shape = Lo.qi(XShape.class, textFrame);
 
     // Set the size of the new Text Frame using the XShape's 'setSize'
     shape.setSize(toOfficeSize(getRectSize()));
 
     // Access the XPropertySet interface of the TextFrame
-    final XPropertySet propSet = UnoRuntime.queryInterface(XPropertySet.class, textFrame);
+    final XPropertySet propSet = Lo.qi(XPropertySet.class, textFrame);
 
     // Assign all the other properties
     for (final Map.Entry<String, Object> entry : getShapeProperties().entrySet()) {
       propSet.setPropertyValue(entry.getKey(), entry.getValue());
     }
+
+    // Querying for the interface XTextDocument (text interface) on the XComponent
+    final XTextDocument docText = Write.getTextDoc(document);
 
     // Access the XText interface of the text contained within the frame
     XText text = docText.getText();
@@ -154,8 +160,5 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
     // Insert text into the frame
     LOGGER.debug("Writing text to the inserted frame");
     text.insertString(textCursor, insertedText, false);
-
-    // Invoke the next filter in the chain
-    chain.doFilter(context, document);
   }
 }

@@ -35,9 +35,9 @@ import org.apache.commons.lang3.Validate;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.document.DocumentFamily;
+import org.jodconverter.office.utils.Lo;
 import org.jodconverter.process.MacProcessManager;
 import org.jodconverter.process.ProcessManager;
 import org.jodconverter.process.PureJavaProcessManager;
@@ -209,7 +209,7 @@ public final class LocalOfficeUtils {
 
     Validate.notNull(document, "The document is null");
 
-    final XServiceInfo serviceInfo = UnoRuntime.queryInterface(XServiceInfo.class, document);
+    final XServiceInfo serviceInfo = Lo.qi(XServiceInfo.class, document);
     if (serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")) {
       // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
       // but this further distinction doesn't seem to matter for conversions

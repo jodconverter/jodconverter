@@ -39,8 +39,9 @@ import com.sun.star.lang.EventObject;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XEventListener;
 import com.sun.star.lang.XMultiComponentFactory;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
+
+import org.jodconverter.office.utils.Lo;
 
 /**
  * An OfficeConnection is responsible to manage the connection to an office process using a given
@@ -96,7 +97,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
 
         // Instantiate a connector service.
         final XConnector connector =
-            UnoRuntime.queryInterface(
+            Lo.qi(
                 XConnector.class,
                 localServiceManager.createInstanceWithContext(
                     "com.sun.star.connection.Connector", localContext));
@@ -106,7 +107,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
 
         // Instantiate a bridge factory service.
         final XBridgeFactory bridgeFactory =
-            UnoRuntime.queryInterface(
+            Lo.qi(
                 XBridgeFactory.class,
                 localServiceManager.createInstanceWithContext(
                     "com.sun.star.bridge.BridgeFactory", localContext));
@@ -118,7 +119,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
                 bridgeName, officeUrl.getProtocolAndParametersAsString(), connection, null);
 
         // Query for the XComponent interface and add this as event listener.
-        bridgeComponent = UnoRuntime.queryInterface(XComponent.class, bridge);
+        bridgeComponent = Lo.qi(XComponent.class, bridge);
         bridgeComponent.addEventListener(this);
 
         // Get the remote instance
@@ -132,28 +133,25 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
 
         // Query the initial object for its main factory interface.
         final XMultiComponentFactory officeMultiComponentFactory =
-            UnoRuntime.queryInterface(XMultiComponentFactory.class, bridgeInstance);
+            Lo.qi(XMultiComponentFactory.class, bridgeInstance);
 
         // Retrieve the component context (it's not yet exported from the office)
         // Query for the XPropertySet interface.
-        final XPropertySet properties =
-            UnoRuntime.queryInterface(XPropertySet.class, officeMultiComponentFactory);
+        final XPropertySet properties = Lo.qi(XPropertySet.class, officeMultiComponentFactory);
 
         // Query for the interface XComponentContext using the default
         // context from the office server.
         componentContext =
-            UnoRuntime.queryInterface(
-                XComponentContext.class, properties.getPropertyValue("DefaultContext"));
+            Lo.qi(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
 
-        // Now create the desktop service
+        // Now create the desktop service that handles application windows and documents.
         // NOTE: use the office component context here !
         desktopService =
             officeMultiComponentFactory.createInstanceWithContext(
                 "com.sun.star.frame.Desktop", componentContext);
-        componentLoader = UnoRuntime.queryInterface(XComponentLoader.class, desktopService);
+        componentLoader = Lo.qi(XComponentLoader.class, desktopService);
         if (componentLoader == null) {
-          throw new OfficeConnectionException(
-              "Couldn't instantiate com.sun.star.frame.Desktop", connectPart);
+          throw new OfficeConnectionException("Could not create a desktop service", connectPart);
         }
 
         // We are now connected
@@ -224,7 +222,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
   public XDesktop getDesktop() {
 
     // Needed only when stopping a process for now, so no need to keep an instance of it.
-    return UnoRuntime.queryInterface(XDesktop.class, desktopService);
+    return Lo.qi(XDesktop.class, desktopService);
   }
 
   /**

@@ -23,10 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.star.lang.XComponent;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XRefreshable;
 
 import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.utils.Lo;
 
 /** This filter is used to refresh a document. */
 public class RefreshFilter implements Filter {
@@ -83,12 +83,7 @@ public class RefreshFilter implements Filter {
       throws Exception {
 
     LOGGER.debug("Applying the RefreshFilter");
-
-    final XRefreshable refreshable = UnoRuntime.queryInterface(XRefreshable.class, document);
-    if (refreshable != null) {
-      LOGGER.debug("Refreshing...");
-      refreshable.refresh();
-    }
+    Lo.qiOptional(XRefreshable.class, document).ifPresent(XRefreshable::refresh);
 
     if (!lastFilter) {
       chain.doFilter(context, document);

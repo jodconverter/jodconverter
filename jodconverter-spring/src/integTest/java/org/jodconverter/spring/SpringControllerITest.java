@@ -112,18 +112,6 @@ public class SpringControllerITest {
   }
 
   @Test
-  public void testTxtToDocx() throws Exception {
-
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.docx");
-    bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
-
-    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
-    assertThat(outputFile.length())
-        .as("Check %s file length", outputFile.getName())
-        .isGreaterThan(0L);
-  }
-
-  @Test
   public void testTxtToPdf() throws Exception {
 
     final File outputFile = new File(testFolder.getRoot(), "outputFile.pdf");

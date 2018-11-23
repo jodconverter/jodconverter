@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import com.sun.star.lang.EventObject;
 import com.sun.star.lang.XComponent;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseListener;
 import com.sun.star.util.XCloseable;
@@ -38,6 +37,7 @@ import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.LocalOfficeContext;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
+import org.jodconverter.office.utils.Lo;
 
 public class AbstractLocalOfficeTaskITest extends AbstractOfficeITest {
 
@@ -67,8 +67,8 @@ public class AbstractLocalOfficeTaskITest extends AbstractOfficeITest {
   private static class VetoCloseOfficeTask extends AbstractLocalOfficeTask {
 
     private final FooSourceSpecs source;
-    private XCloseable closeable;
     private final VetoCloseListener closeListener = new VetoCloseListener();
+    private XComponent document;
 
     public VetoCloseOfficeTask(final FooSourceSpecs source) {
       super(source);
@@ -80,11 +80,9 @@ public class AbstractLocalOfficeTaskITest extends AbstractOfficeITest {
     protected XComponent loadDocument(final LocalOfficeContext context, final File sourceFile)
         throws OfficeException {
 
-      final XComponent document = super.loadDocument(context, sourceFile);
-      closeable = UnoRuntime.queryInterface(XCloseable.class, document);
-      if (closeable != null) {
-        closeable.addCloseListener(closeListener);
-      }
+      document = super.loadDocument(context, sourceFile);
+      Lo.qiOptional(XCloseable.class, document)
+          .ifPresent(closeable -> closeable.addCloseListener(closeListener));
       return document;
     }
 
@@ -92,24 +90,22 @@ public class AbstractLocalOfficeTaskITest extends AbstractOfficeITest {
     public void execute(final OfficeContext context) throws OfficeException {
 
       final LocalOfficeContext localContext = (LocalOfficeContext) context;
-      final XComponent document = super.loadDocument(localContext, source.getFile());
-      closeable = UnoRuntime.queryInterface(XCloseable.class, document);
-      if (closeable != null) {
-        closeable.addCloseListener(closeListener);
-      }
+      final XComponent document = loadDocument(localContext, source.getFile());
       closeDocument(document);
     }
 
     /* default */ void closeForGood() {
 
-      if (closeable != null) {
-        closeable.removeCloseListener(closeListener);
-        try {
-          closeable.close(true);
-        } catch (CloseVetoException e) {
-          // Swallow
-        }
-      }
+      Lo.qiOptional(XCloseable.class, document)
+          .ifPresent(
+              closeable -> {
+                closeable.removeCloseListener(closeListener);
+                try {
+                  closeable.close(true);
+                } catch (CloseVetoException e) {
+                  // Swallow
+                }
+              });
     }
   }
 
