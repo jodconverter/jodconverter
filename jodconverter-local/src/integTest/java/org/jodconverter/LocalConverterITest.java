@@ -28,10 +28,11 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
-import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
 public class LocalConverterITest extends AbstractOfficeITest {
 

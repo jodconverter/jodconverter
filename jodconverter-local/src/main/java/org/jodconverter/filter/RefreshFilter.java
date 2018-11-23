@@ -41,9 +41,7 @@ public class RefreshFilter implements Filter {
    */
   public static final RefreshFilter LAST_REFRESH = new RefreshFilter(true);
 
-  /**
-   * @deprecated Use {@link RefreshFilter#LAST_REFRESH}.
-   */
+  /** @deprecated Use {@link RefreshFilter#LAST_REFRESH}. */
   @Deprecated public static final RefreshFilter INSTANCE = LAST_REFRESH;
 
   /**
