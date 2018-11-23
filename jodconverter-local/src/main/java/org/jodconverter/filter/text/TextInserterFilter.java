@@ -107,7 +107,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
 
     LOGGER.debug("Applying the TextInserterFilter");
 
-    // This filter can be used only with text document
+    // This filter can only be used with text document
     if (Write.isText(document)) {
       insertText(document);
     }

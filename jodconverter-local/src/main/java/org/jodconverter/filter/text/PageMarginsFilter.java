@@ -83,7 +83,7 @@ public class PageMarginsFilter implements Filter {
 
     LOGGER.debug("Applying the PageSelectorFilter");
 
-    // This filter can be used only with text document
+    // This filter can only be used with text document
     if (Write.isText(document)) {
       setMargins(document);
     }

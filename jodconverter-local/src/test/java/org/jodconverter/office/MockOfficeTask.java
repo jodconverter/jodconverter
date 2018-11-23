@@ -73,7 +73,7 @@ public class MockOfficeTask implements OfficeTask {
   /**
    * Gets whether the task is completed or not.
    *
-   * @return true if the task is completed, false otherwise.
+   * @return {@code true} if the task is completed, {@code false} otherwise.
    */
   public boolean isCompleted() {
     return completed;

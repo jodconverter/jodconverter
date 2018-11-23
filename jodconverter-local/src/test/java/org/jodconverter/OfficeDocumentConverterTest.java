@@ -54,7 +54,6 @@ public class OfficeDocumentConverterTest {
 
   private OfficeManager officeManager;
 
-  /** Setup the office manager before each test. */
   @Before
   public void setUp() {
 

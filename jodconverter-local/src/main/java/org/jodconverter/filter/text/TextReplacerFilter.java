@@ -80,7 +80,7 @@ public class TextReplacerFilter implements Filter {
 
     LOGGER.debug("Applying the TextReplacerFilter");
 
-    // This filter can be used only with text document
+    // This filter can only be used with text document
     if (Write.isText(document)) {
       replaceText(document);
     }

@@ -52,11 +52,6 @@ public class LocalConverterPureJavaITest {
 
   @Autowired private DocumentConverter converter;
 
-  /**
-   * Creates an input file to convert and an output test directory just once.
-   *
-   * @throws IOException if an IO error occurs.
-   */
   @BeforeClass
   public static void setUpClass() throws IOException {
 

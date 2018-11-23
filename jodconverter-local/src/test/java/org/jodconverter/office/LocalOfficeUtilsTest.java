@@ -54,14 +54,12 @@ public class LocalOfficeUtilsTest {
 
   @Test
   public void ctor_ClassWellDefined() throws Exception {
-
     AssertUtil.assertUtilityClassWellDefined(LocalOfficeUtils.class);
   }
 
   @Test(expected = NullPointerException.class)
   public void getDocumentFamily_WithNullDocument_ThrowNullPointerException()
       throws OfficeException {
-
     LocalOfficeUtils.getDocumentFamily(null);
   }
 

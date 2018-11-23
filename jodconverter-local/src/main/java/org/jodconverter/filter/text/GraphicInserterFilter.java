@@ -192,7 +192,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
     LOGGER.debug("Applying the GraphicInserterFilter");
 
-    // This filter can be used only with text document
+    // This filter can only be used with text document
     if (Write.isText(document)) {
       insertGraphic(((LocalOfficeContext) context).getComponentContext(), document);
     }

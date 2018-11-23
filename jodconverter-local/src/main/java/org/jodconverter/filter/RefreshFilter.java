@@ -42,9 +42,7 @@ public class RefreshFilter implements Filter {
   public static final RefreshFilter LAST_REFRESH = new RefreshFilter(true);
 
   /**
-   * Singleton instance of refresh filter. Please use the identical {@link
-   * RefreshFilter#LAST_REFRESH} constant. The new name is more friendly as it doesn't clash with
-   * other values when using static imports.
+   * @deprecated Use {@link RefreshFilter#LAST_REFRESH}.
    */
   @Deprecated public static final RefreshFilter INSTANCE = LAST_REFRESH;
 

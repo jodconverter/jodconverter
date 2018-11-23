@@ -28,11 +28,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
+import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
 public class LocalConverterITest extends AbstractOfficeITest {
 
@@ -128,7 +127,7 @@ public class LocalConverterITest extends AbstractOfficeITest {
         .as(DefaultDocumentFormatRegistry.getFormatByExtension("txt"))
         .execute();
 
-    final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
-    assertThat(content).contains("Test document");
+    assertThat(FileUtils.readFileToString(outputFile, Charset.forName("UTF-8")))
+        .contains("Test document");
   }
 }

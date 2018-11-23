@@ -68,7 +68,7 @@ public class TableOfContentUpdaterFilter implements Filter {
 
     LOGGER.debug("Applying the TableOfContentUpdaterFilter");
 
-    // This filter can be used only with text document
+    // This filter can only be used with text document
     if (Write.isText(document)) {
       updateToc(document);
     }

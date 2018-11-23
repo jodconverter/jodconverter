@@ -72,6 +72,7 @@ public abstract class AbstractOfficeITest {
               inputFormat.getExtension(), "odg", "svg", "fodg", "fodp", "fods", "fodt")
           || StringUtils.equalsAny(
               outputFormat.getExtension(),
+              // Not supported by all office installations
               "png",
               "jpg",
               "jpeg",

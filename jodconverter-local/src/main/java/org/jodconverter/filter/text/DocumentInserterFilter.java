@@ -63,7 +63,7 @@ public class DocumentInserterFilter implements Filter {
 
     LOGGER.debug("Applying the DocumentInserterFilter");
 
-    // This filter can be used only with text document
+    // This filter can only be used with text document
     if (Write.isText(document)) {
       insertDocument(document);
     }
