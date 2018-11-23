@@ -30,4 +30,9 @@ public class UnmodifiableFilterChain extends AbstractFilterChain {
   public UnmodifiableFilterChain(final Filter... filters) {
     super(true, filters);
   }
+
+  @Override
+  public FilterChain copy() {
+    return new UnmodifiableFilterChain(filters.toArray(new Filter[0]));
+  }
 }

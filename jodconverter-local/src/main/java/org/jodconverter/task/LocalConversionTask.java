@@ -25,6 +25,7 @@ import static org.jodconverter.office.LocalOfficeUtils.toUrl;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -34,7 +35,6 @@ import com.sun.star.frame.XStorable;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.filter.RefreshFilter;
@@ -44,6 +44,7 @@ import org.jodconverter.office.LocalOfficeContext;
 import org.jodconverter.office.LocalOfficeUtils;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
+import org.jodconverter.office.utils.Lo;
 
 /** Represents the default behavior for a local conversion task. */
 public class LocalConversionTask extends AbstractLocalOfficeTask {
@@ -78,7 +79,8 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     super(source, loadProperties);
 
     this.target = target;
-    this.filterChain = filterChain == null ? RefreshFilter.CHAIN : filterChain;
+    this.filterChain =
+        Optional.ofNullable(filterChain).map(FilterChain::copy).orElse(RefreshFilter.CHAIN);
     this.storeProperties = storeProperties;
   }
 
@@ -161,8 +163,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     Validate.isTrue(storeProps.containsKey("FilterName"), "Unsupported conversion");
 
     try {
-      UnoRuntime.queryInterface(XStorable.class, document)
-          .storeToURL(toUrl(targetFile), toUnoProperties(storeProps));
+      Lo.qi(XStorable.class, document).storeToURL(toUrl(targetFile), toUnoProperties(storeProps));
     } catch (ErrorCodeIOException errorCodeIoEx) {
       throw new OfficeException(
           ERROR_MESSAGE_STORE + targetFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
