@@ -47,4 +47,12 @@ public interface FilterChain {
    * @throws OfficeException If an error occurs processing the filter.
    */
   void doFilter(final OfficeContext context, final XComponent document) throws OfficeException;
+
+  /**
+   * Creates and returns a copy of this object. The precise meaning of "copy" may depend on the
+   * class of the chain.
+   *
+   * @return The copy of this chain.
+   */
+  FilterChain copy();
 }

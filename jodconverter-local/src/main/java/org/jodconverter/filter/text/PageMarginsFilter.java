@@ -30,11 +30,12 @@ import com.sun.star.style.XStyle;
 import com.sun.star.style.XStyleFamiliesSupplier;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.utils.Lo;
+import org.jodconverter.office.utils.Write;
 
 /** This filter is used to set the margins of the document being converted. */
 public class PageMarginsFilter implements Filter {
@@ -82,34 +83,41 @@ public class PageMarginsFilter implements Filter {
 
     LOGGER.debug("Applying the PageSelectorFilter");
 
+    // This filter can only be used with text document
+    if (Write.isText(document)) {
+      setMargins(document);
+    }
+
+    // Invoke the next filter in the chain
+    chain.doFilter(context, document);
+  }
+
+  private void setMargins(final XComponent document) throws Exception {
+
     // Querying for the interface XTextDocument (text interface) on the XComponent
-    final XTextDocument docText = UnoRuntime.queryInterface(XTextDocument.class, document);
+    final XTextDocument docText = Write.getTextDoc(document);
 
     // Create a text cursor from the cells XText interface
     final XTextCursor xTextCursor = docText.getText().createTextCursor();
 
     // Get the property set of the cell's TextCursor
-    final XPropertySet xTextCursorProps =
-        UnoRuntime.queryInterface(XPropertySet.class, xTextCursor);
+    final XPropertySet xTextCursorProps = Lo.qi(XPropertySet.class, xTextCursor);
 
     // Get the Page Style name at the cursor position
     final String pageStyleName = xTextCursorProps.getPropertyValue("PageStyleName").toString();
 
     // Get the StyleFamiliesSupplier interface of the document
-    final XStyleFamiliesSupplier xSupplier =
-        UnoRuntime.queryInterface(XStyleFamiliesSupplier.class, docText);
+    final XStyleFamiliesSupplier xSupplier = Lo.qi(XStyleFamiliesSupplier.class, docText);
 
     // Use the StyleFamiliesSupplier interface to get the XNameAccess interface of the
     // actual style families
-    final XNameAccess xFamilies =
-        UnoRuntime.queryInterface(XNameAccess.class, xSupplier.getStyleFamilies());
+    final XNameAccess xFamilies = Lo.qi(XNameAccess.class, xSupplier.getStyleFamilies());
 
     // Access the 'PageStyles' Family
-    final XNameContainer xFamily =
-        UnoRuntime.queryInterface(XNameContainer.class, xFamilies.getByName("PageStyles"));
+    final XNameContainer xFamily = Lo.qi(XNameContainer.class, xFamilies.getByName("PageStyles"));
 
     // Get the style of the current page from the PageStyles family
-    final XStyle xStyle = UnoRuntime.queryInterface(XStyle.class, xFamily.getByName(pageStyleName));
+    final XStyle xStyle = Lo.qi(XStyle.class, xFamily.getByName(pageStyleName));
 
     //
     // We could also just bet that the Standard style is used. If this is what we want,
@@ -118,7 +126,7 @@ public class PageMarginsFilter implements Filter {
     //
 
     // Get the "Standard" style from the PageStyles family
-    // XStyle xStyle = UnoRuntime.queryInterface(XStyle.class, xFamily.getByName("Standard"));
+    // XStyle xStyle = Lo.qi(XStyle.class, xFamily.getByName("Standard"));
 
     LOGGER.debug(
         "Changing margins using: [left={}, top={}, right={}, bottom={}]",
@@ -128,7 +136,7 @@ public class PageMarginsFilter implements Filter {
         bottomMargin);
 
     // Get the property set of the style
-    final XPropertySet xStyleProps = UnoRuntime.queryInterface(XPropertySet.class, xStyle);
+    final XPropertySet xStyleProps = Lo.qi(XPropertySet.class, xStyle);
 
     // Change the margins (1 = 0.01 mm)
     if (leftMargin != null) {
@@ -143,8 +151,5 @@ public class PageMarginsFilter implements Filter {
     if (bottomMargin != null) {
       xStyleProps.setPropertyValue("BottomMargin", bottomMargin * 100);
     }
-
-    // Invoke the next filter in the chain
-    chain.doFilter(context, document);
   }
 }

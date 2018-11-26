@@ -27,11 +27,12 @@ import com.sun.star.container.XIndexAccess;
 import com.sun.star.lang.XComponent;
 import com.sun.star.text.XDocumentIndex;
 import com.sun.star.text.XDocumentIndexesSupplier;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.utils.Lo;
+import org.jodconverter.office.utils.Write;
 
 /** This filter update all indexes in a document. */
 public class TableOfContentUpdaterFilter implements Filter {
@@ -67,19 +68,29 @@ public class TableOfContentUpdaterFilter implements Filter {
 
     LOGGER.debug("Applying the TableOfContentUpdaterFilter");
 
+    // This filter can only be used with text document
+    if (Write.isText(document)) {
+      updateToc(document);
+    }
+
+    // Invoke the next filter in the chain
+    chain.doFilter(context, document);
+  }
+
+  private void updateToc(final XComponent document) throws Exception {
+
     // Get the DocumentIndexesSupplier interface of the document
     final XDocumentIndexesSupplier documentIndexesSupplier =
-        UnoRuntime.queryInterface(XDocumentIndexesSupplier.class, document);
+        Lo.qi(XDocumentIndexesSupplier.class, document);
 
     // Get an XIndexAccess of DocumentIndexes
     final XIndexAccess documentIndexes =
-        UnoRuntime.queryInterface(XIndexAccess.class, documentIndexesSupplier.getDocumentIndexes());
+        Lo.qi(XIndexAccess.class, documentIndexesSupplier.getDocumentIndexes());
 
     for (int i = 0; i < documentIndexes.getCount(); i++) {
 
       // Update each index
-      final XDocumentIndex docIndex =
-          UnoRuntime.queryInterface(XDocumentIndex.class, documentIndexes.getByIndex(i));
+      final XDocumentIndex docIndex = Lo.qi(XDocumentIndex.class, documentIndexes.getByIndex(i));
 
       // Update the level if required
       if (level > 0) {
@@ -89,7 +100,7 @@ public class TableOfContentUpdaterFilter implements Filter {
 
         if (indexType.contains("com.sun.star.text.ContentIndex")) {
 
-          final XPropertySet index = UnoRuntime.queryInterface(XPropertySet.class, docIndex);
+          final XPropertySet index = Lo.qi(XPropertySet.class, docIndex);
 
           // Set TOC levels
           index.setPropertyValue("Level", (short) level);
@@ -98,8 +109,5 @@ public class TableOfContentUpdaterFilter implements Filter {
 
       docIndex.update();
     }
-
-    // Invoke the next filter in the chain
-    chain.doFilter(context, document);
   }
 }

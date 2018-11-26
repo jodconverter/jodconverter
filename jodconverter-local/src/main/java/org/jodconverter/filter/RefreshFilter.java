@@ -23,10 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.star.lang.XComponent;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XRefreshable;
 
 import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.utils.Lo;
 
 /** This filter is used to refresh a document. */
 public class RefreshFilter implements Filter {
@@ -41,11 +41,7 @@ public class RefreshFilter implements Filter {
    */
   public static final RefreshFilter LAST_REFRESH = new RefreshFilter(true);
 
-  /**
-   * Singleton instance of refresh filter. Please use the identical {@link
-   * RefreshFilter#LAST_REFRESH} constant. The new name is more friendly as it doesn't clash with
-   * other values when using static imports.
-   */
+  /** @deprecated Use {@link RefreshFilter#LAST_REFRESH}. */
   @Deprecated public static final RefreshFilter INSTANCE = LAST_REFRESH;
 
   /**
@@ -83,12 +79,7 @@ public class RefreshFilter implements Filter {
       throws Exception {
 
     LOGGER.debug("Applying the RefreshFilter");
-
-    final XRefreshable refreshable = UnoRuntime.queryInterface(XRefreshable.class, document);
-    if (refreshable != null) {
-      LOGGER.debug("Refreshing...");
-      refreshable.refresh();
-    }
+    Lo.qiOptional(XRefreshable.class, document).ifPresent(XRefreshable::refresh);
 
     if (!lastFilter) {
       chain.doFilter(context, document);

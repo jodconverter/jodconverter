@@ -74,6 +74,11 @@ public class DefaultFilterChain extends AbstractFilterChain {
   }
 
   @Override
+  public FilterChain copy() {
+    return new DefaultFilterChain(endsWithRefreshFilter, filters.toArray(new Filter[0]));
+  }
+
+  @Override
   public void doFilter(final OfficeContext context, final XComponent document)
       throws OfficeException {
 

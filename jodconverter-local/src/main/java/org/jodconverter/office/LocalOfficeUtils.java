@@ -30,9 +30,14 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.Validate;
 
 import com.sun.star.beans.PropertyValue;
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
 
+import org.jodconverter.document.DocumentFamily;
+import org.jodconverter.office.utils.Lo;
 import org.jodconverter.process.MacProcessManager;
 import org.jodconverter.process.ProcessManager;
 import org.jodconverter.process.PureJavaProcessManager;
@@ -191,6 +196,33 @@ public final class LocalOfficeUtils {
    */
   public static File getDefaultOfficeHome() {
     return DefaultOfficeHomeHolder.INSTANCE;
+  }
+
+  /**
+   * Gets the {@link DocumentFamily} of the specified document.
+   *
+   * @param document The document whose family will be returned.
+   * @return The {@link DocumentFamily} for the specified document.
+   * @throws OfficeException If the document family cannot be retrieved.
+   */
+  public static DocumentFamily getDocumentFamily(final XComponent document) throws OfficeException {
+
+    Validate.notNull(document, "The document is null");
+
+    final XServiceInfo serviceInfo = Lo.qi(XServiceInfo.class, document);
+    if (serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")) {
+      // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
+      // but this further distinction doesn't seem to matter for conversions
+      return DocumentFamily.TEXT;
+    } else if (serviceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
+      return DocumentFamily.SPREADSHEET;
+    } else if (serviceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
+      return DocumentFamily.PRESENTATION;
+    } else if (serviceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
+      return DocumentFamily.DRAWING;
+    }
+
+    throw new OfficeException("Document of unknown family: " + serviceInfo.getImplementationName());
   }
 
   /**

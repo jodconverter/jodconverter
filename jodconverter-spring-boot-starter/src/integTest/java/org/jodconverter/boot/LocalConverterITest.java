@@ -93,18 +93,6 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testTxtToDocx() throws Exception {
-
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.docx");
-    converter.convert(inputFileTxt).to(outputFile).execute();
-
-    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
-    assertThat(outputFile.length())
-        .as("Check %s file length", outputFile.getName())
-        .isGreaterThan(0L);
-  }
-
-  @Test
   public void testTxtToPdf() throws Exception {
 
     final File outputFile = new File(testFolder.getRoot(), "outputFile.pdf");
@@ -122,7 +110,7 @@ public class LocalConverterITest {
     final File outputDir = new File(testFolder.getRoot(), "html");
     outputDir.mkdirs();
     final File outputFile = new File(outputDir, "outputFile.html");
-    final File inputFile = new File("src/integTest/resources/documents/test_img.docx");
+    final File inputFile = new File("src/integTest/resources/documents/test1.doc");
 
     converter.convert(inputFile).to(outputFile).execute();
 

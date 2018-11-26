@@ -19,16 +19,19 @@
 
 package org.jodconverter.task;
 
-import org.apache.commons.lang3.Validate;
-
 import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XServiceInfo;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.document.DocumentFamily;
+import org.jodconverter.office.LocalOfficeUtils;
 import org.jodconverter.office.OfficeException;
 
-/** Provides helper functions for local office tasks. */
+/**
+ * Provides helper functions for local office tasks.
+ *
+ * @deprecated
+ * @see LocalOfficeUtils#getDocumentFamily(XComponent)
+ */
+@Deprecated
 final class LocalOfficeTaskUtils {
 
   /**
@@ -36,26 +39,13 @@ final class LocalOfficeTaskUtils {
    *
    * @param document The document whose family will be returned.
    * @return The {@link DocumentFamily} for the specified document.
-   * @throws OfficeException If the document family cannot be retrived.
+   * @throws OfficeException If the document family cannot be retrieved.
+   * @deprecated
+   * @see LocalOfficeUtils#getDocumentFamily(XComponent)
    */
+  @Deprecated
   public static DocumentFamily getDocumentFamily(final XComponent document) throws OfficeException {
-
-    Validate.notNull(document, "The document is null");
-
-    final XServiceInfo serviceInfo = UnoRuntime.queryInterface(XServiceInfo.class, document);
-    if (serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")) {
-      // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
-      // but this further distinction doesn't seem to matter for conversions
-      return DocumentFamily.TEXT;
-    } else if (serviceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
-      return DocumentFamily.SPREADSHEET;
-    } else if (serviceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
-      return DocumentFamily.PRESENTATION;
-    } else if (serviceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
-      return DocumentFamily.DRAWING;
-    }
-
-    throw new OfficeException("Document of unknown family: " + serviceInfo.getImplementationName());
+    return LocalOfficeUtils.getDocumentFamily(document);
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

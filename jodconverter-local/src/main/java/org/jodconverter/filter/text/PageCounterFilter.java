@@ -25,11 +25,12 @@ import org.slf4j.LoggerFactory;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
-import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.AnyConverter;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.utils.Lo;
 
 /** This filter is used to count the number of pages of a document. */
 public class PageCounterFilter implements Filter {
@@ -47,10 +48,8 @@ public class PageCounterFilter implements Filter {
 
     // Save the PageCount property of the document.
     final XPropertySet propertySet =
-        UnoRuntime.queryInterface(
-            XPropertySet.class,
-            UnoRuntime.queryInterface(XModel.class, document).getCurrentController());
-    pageCount = (int) propertySet.getPropertyValue("PageCount");
+        Lo.qi(XPropertySet.class, Lo.qi(XModel.class, document).getCurrentController());
+    pageCount = AnyConverter.toInt(propertySet.getPropertyValue("PageCount"));
 
     // Invoke the next filter in the chain
     chain.doFilter(context, document);

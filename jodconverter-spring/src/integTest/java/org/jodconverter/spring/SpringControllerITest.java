@@ -72,11 +72,6 @@ public class SpringControllerITest {
     }
   }
 
-  /**
-   * Creates an input file to convert and an output test directory just once.
-   *
-   * @throws IOException if an IO error occurs.
-   */
   @BeforeClass
   public static void setUpClass() throws IOException {
 
@@ -103,18 +98,6 @@ public class SpringControllerITest {
   public void testTxtToDoc() throws Exception {
 
     final File outputFile = new File(testFolder.getRoot(), "outputFile.doc");
-    bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
-
-    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
-    assertThat(outputFile.length())
-        .as("Check %s file length", outputFile.getName())
-        .isGreaterThan(0L);
-  }
-
-  @Test
-  public void testTxtToDocx() throws Exception {
-
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.docx");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();

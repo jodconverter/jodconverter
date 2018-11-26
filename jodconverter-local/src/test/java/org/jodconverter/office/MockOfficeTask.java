@@ -24,9 +24,9 @@ import static org.jodconverter.office.LocalOfficeUtils.property;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.lang.XComponent;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XCloseable;
 
+import org.jodconverter.office.utils.Lo;
 import org.jodconverter.task.OfficeTask;
 
 public class MockOfficeTask implements OfficeTask {
@@ -63,7 +63,7 @@ public class MockOfficeTask implements OfficeTask {
       if (delayTime > 0) {
         Thread.sleep(delayTime); // NOSONAR
       }
-      UnoRuntime.queryInterface(XCloseable.class, document).close(true);
+      Lo.qi(XCloseable.class, document).close(true);
       completed = true;
     } catch (Exception exception) {
       throw new OfficeException("failed to create document", exception);
@@ -73,7 +73,7 @@ public class MockOfficeTask implements OfficeTask {
   /**
    * Gets whether the task is completed or not.
    *
-   * @return true if the task is completed, false otherwise.
+   * @return {@code true} if the task is completed, {@code false} otherwise.
    */
   public boolean isCompleted() {
     return completed;

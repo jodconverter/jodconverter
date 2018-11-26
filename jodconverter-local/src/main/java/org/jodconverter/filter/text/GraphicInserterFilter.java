@@ -36,18 +36,24 @@ import org.slf4j.LoggerFactory;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameContainer;
 import com.sun.star.drawing.XShape;
+import com.sun.star.graphic.XGraphicProvider;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.text.XText;
 import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
-import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
 
 import org.jodconverter.filter.FilterChain;
+import org.jodconverter.office.LocalOfficeContext;
 import org.jodconverter.office.LocalOfficeUtils;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
+import org.jodconverter.office.utils.Info;
+import org.jodconverter.office.utils.Lo;
+import org.jodconverter.office.utils.Props;
+import org.jodconverter.office.utils.Write;
 
 /** This filter is used to insert a graphics into a document. */
 public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
@@ -186,48 +192,72 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
     LOGGER.debug("Applying the GraphicInserterFilter");
 
-    // Querying for the interface XTextDocument (text interface) on the XComponent
-    final XTextDocument docText = UnoRuntime.queryInterface(XTextDocument.class, document);
+    // This filter can only be used with text document
+    if (Write.isText(document)) {
+      insertGraphic(((LocalOfficeContext) context).getComponentContext(), document);
+    }
+
+    // Invoke the next filter in the chain
+    chain.doFilter(context, document);
+  }
+
+  private void insertGraphic(final XComponentContext context, final XComponent document)
+      throws Exception {
 
     // Querying for the interface XMultiServiceFactory (text service factory) on the XTextDocument
-    final XMultiServiceFactory docServiceFactory =
-        UnoRuntime.queryInterface(XMultiServiceFactory.class, docText);
+    final XMultiServiceFactory serviceFactory = Lo.getServiceFactory(document);
 
     // Creating graphic shape service
     final Object graphicShape =
-        docServiceFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
+        serviceFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
 
     // Access the XShape interface of the GraphicObjectShape
-    final XShape shape = UnoRuntime.queryInterface(XShape.class, graphicShape);
+    final XShape shape = Lo.qi(XShape.class, graphicShape);
 
     // Set the size of the new Text Frame using the XShape's 'setSize'
     shape.setSize(toOfficeSize(getRectSize()));
 
-    // Generate a new unique name
-    final String uuid = UUID.randomUUID().toString();
-
-    // Creating bitmap container service
-    final XNameContainer bitmapContainer =
-        UnoRuntime.queryInterface(
-            XNameContainer.class,
-            docServiceFactory.createInstance("com.sun.star.drawing.BitmapTable"));
-
-    // Inserting test image to the container
+    // Inserting image to the document
     final File sourceFile = new File(imagePath);
     final String strUrl = LocalOfficeUtils.toUrl(sourceFile);
-    LOGGER.debug("Embedding image to the bitmap container '{}'", strUrl);
-    bitmapContainer.insertByName(uuid, strUrl);
 
     // Querying property interface for the graphic shape service
-    final XPropertySet propSet = UnoRuntime.queryInterface(XPropertySet.class, graphicShape);
+    final XPropertySet propSet = Lo.qi(XPropertySet.class, graphicShape);
 
-    // Assign image internal URL to the graphic shape property
-    propSet.setPropertyValue("GraphicURL", bitmapContainer.getByName(uuid));
+    if (Info.isLibreOffice(context)
+        && Info.compareVersions("6.1", Info.getOfficeVersionShort(context), 2) >= 0) {
+
+      // Create a GraphicProvider at the global service manager.
+      final XGraphicProvider graphicProvider =
+          Lo.createInstanceMCF(
+              context, XGraphicProvider.class, "com.sun.star.graphic.GraphicProvider");
+
+      // Since 6.1, we must use "Graphic" instead of "GraphicURL"
+      propSet.setPropertyValue(
+          "Graphic",
+          graphicProvider.queryGraphic(Props.makeProperties("URL", strUrl, "LoadAsLink", false)));
+
+    } else {
+      // Creating bitmap container service
+      final XNameContainer bitmapContainer =
+          Lo.createInstanceMSF(
+              serviceFactory, XNameContainer.class, "com.sun.star.drawing.BitmapTable");
+
+      LOGGER.debug("Embedding image to the bitmap container '{}'", strUrl);
+      final String uuid = UUID.randomUUID().toString();
+      bitmapContainer.insertByName(uuid, strUrl);
+
+      // Assign image internal URL to the graphic shape property
+      propSet.setPropertyValue("GraphicURL", bitmapContainer.getByName(uuid));
+    }
 
     // Assign all the other properties
     for (final Map.Entry<String, Object> entry : getShapeProperties().entrySet()) {
       propSet.setPropertyValue(entry.getKey(), entry.getValue());
     }
+
+    // Querying for the interface XTextDocument (text interface) on the XComponent
+    final XTextDocument docText = Write.getTextDoc(document);
 
     // Getting text field interface
     final XText text = docText.getText();
@@ -239,13 +269,10 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
     applyAnchorPageNoFix(docText, textCursor);
 
     // Convert graphic shape to the text content item
-    final XTextContent textContent = UnoRuntime.queryInterface(XTextContent.class, graphicShape);
+    final XTextContent textContent = Lo.qi(XTextContent.class, graphicShape);
 
     // Embed image into the document text with replacement
     LOGGER.debug("Inserting image into the document");
     text.insertTextContent(textCursor, textContent, false);
-
-    // Invoke the next filter in the chain
-    chain.doFilter(context, document);
   }
 }

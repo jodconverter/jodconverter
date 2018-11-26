@@ -2,17 +2,17 @@ description = 'JODConverter - Local'
 
 dependencies {
   compile project(':jodconverter-core')
-  
-  if (project.hasProperty("useOpenOffice")) {
-    compile "org.openoffice:juh:$versions.open_office_version"
-    compile "org.openoffice:jurt:$versions.open_office_version"
-    compile "org.openoffice:ridl:$versions.open_office_version"
-    compile "org.openoffice:unoil:$versions.open_office_version"
-  } else {
+
+  if (project.hasProperty("useLibreOffice")) {
     compile "org.libreoffice:juh:$versions.libre_office_version"
     compile "org.libreoffice:jurt:$versions.libre_office_version"
     compile "org.libreoffice:ridl:$versions.libre_office_version"
     compile "org.libreoffice:unoil:$versions.libre_office_version"  
+  } else {
+    compile "org.openoffice:juh:$versions.open_office_version"
+    compile "org.openoffice:jurt:$versions.open_office_version"
+    compile "org.openoffice:ridl:$versions.open_office_version"
+    compile "org.openoffice:unoil:$versions.open_office_version"
   }
 
   compile libraries.slf4j_api

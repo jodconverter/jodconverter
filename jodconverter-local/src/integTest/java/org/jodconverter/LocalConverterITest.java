@@ -128,7 +128,7 @@ public class LocalConverterITest extends AbstractOfficeITest {
         .as(DefaultDocumentFormatRegistry.getFormatByExtension("txt"))
         .execute();
 
-    final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
-    assertThat(content).contains("Test document");
+    assertThat(FileUtils.readFileToString(outputFile, Charset.forName("UTF-8")))
+        .contains("Test document");
   }
 }

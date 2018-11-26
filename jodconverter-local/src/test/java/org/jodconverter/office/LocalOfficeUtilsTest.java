@@ -22,6 +22,10 @@ package org.jodconverter.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.office.LocalOfficeUtils.toUrl;
 import static org.junit.Assume.assumeTrue;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,15 +35,45 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
+import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.test.util.AssertUtil;
 
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(JUnit4.class)
+@PrepareForTest(UnoRuntime.class)
 public class LocalOfficeUtilsTest {
 
   @Test
   public void ctor_ClassWellDefined() throws Exception {
-
     AssertUtil.assertUtilityClassWellDefined(LocalOfficeUtils.class);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void getDocumentFamily_WithNullDocument_ThrowNullPointerException()
+      throws OfficeException {
+    LocalOfficeUtils.getDocumentFamily(null);
+  }
+
+  @Test(expected = OfficeException.class)
+  public void getDocumentFamily_WithoutValidDocument_ThrowOfficeException() throws OfficeException {
+
+    final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+    given(serviceInfo.supportsService(isA(String.class))).willReturn(false);
+
+    final XComponent document = mock(XComponent.class);
+    mockStatic(UnoRuntime.class);
+    given(UnoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+
+    LocalOfficeUtils.getDocumentFamily(document);
   }
 
   /** Tests the LocalOfficeUtils.toUrl function on unix OS. */

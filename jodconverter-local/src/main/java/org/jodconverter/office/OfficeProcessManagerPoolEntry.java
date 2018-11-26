@@ -31,10 +31,10 @@ import com.sun.star.beans.XHierarchicalPropertySet;
 import com.sun.star.beans.XHierarchicalPropertySetInfo;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XChangesBatch;
 
+import org.jodconverter.office.utils.Lo;
 import org.jodconverter.task.OfficeTask;
 
 /**
@@ -229,18 +229,15 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       // Create the view to the root element where UseOpenGL option lives
       final Object viewRoot =
           createConfigurationView(
-              UnoRuntime.queryInterface(
+              Lo.createInstanceMCF(
+                  officeContext,
                   XMultiServiceFactory.class,
-                  officeContext
-                      .getServiceManager()
-                      .createInstanceWithContext(
-                          "com.sun.star.configuration.ConfigurationProvider", officeContext)),
+                  "com.sun.star.configuration.ConfigurationProvider"),
               "/org.openoffice.Office.Common");
       try {
 
         // Check if the OpenGL option is on
-        final XHierarchicalPropertySet properties =
-            UnoRuntime.queryInterface(XHierarchicalPropertySet.class, viewRoot);
+        final XHierarchicalPropertySet properties = Lo.qi(XHierarchicalPropertySet.class, viewRoot);
 
         final XHierarchicalPropertySetInfo propsInfo = properties.getHierarchicalPropertySetInfo();
         if (propsInfo.hasPropertyByHierarchicalName(PROPPATH_USE_OPENGL)) {
@@ -250,8 +247,7 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
           if (useOpengl) {
             properties.setHierarchicalPropertyValue(PROPPATH_USE_OPENGL, false);
             // Changes have been applied to the view here
-            final XChangesBatch updateControl =
-                UnoRuntime.queryInterface(XChangesBatch.class, viewRoot);
+            final XChangesBatch updateControl = Lo.qi(XChangesBatch.class, viewRoot);
             updateControl.commitChanges();
 
             // A restart is required.
@@ -260,7 +256,7 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
         }
       } finally {
         // We are done with the view - dispose it
-        UnoRuntime.queryInterface(XComponent.class, viewRoot).dispose();
+        Lo.qi(XComponent.class, viewRoot).dispose();
       }
       return false; // No restart needed
 

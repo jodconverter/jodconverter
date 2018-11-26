@@ -37,9 +37,9 @@ import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.filter.Filter;
+import org.jodconverter.office.utils.Lo;
 
 /** Base class for all filter used to insert a TextContent into a document. */
 public abstract class AbstractTextContentInserterFilter implements Filter {
@@ -150,8 +150,8 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
       LOGGER.debug("Applying AnchorPageNo fix");
       final XController controller = docText.getCurrentController();
       final XTextViewCursor viewCursor =
-          UnoRuntime.queryInterface(XTextViewCursorSupplier.class, controller).getViewCursor();
-      final XPageCursor pageCursor = UnoRuntime.queryInterface(XPageCursor.class, viewCursor);
+          Lo.qi(XTextViewCursorSupplier.class, controller).getViewCursor();
+      final XPageCursor pageCursor = Lo.qi(XPageCursor.class, viewCursor);
       pageCursor.jumpToPage(Short.parseShort(anchorPageNo.toString()));
       textCursor.gotoRange(viewCursor, false);
     }

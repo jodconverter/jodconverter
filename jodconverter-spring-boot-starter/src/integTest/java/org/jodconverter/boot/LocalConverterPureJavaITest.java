@@ -52,11 +52,6 @@ public class LocalConverterPureJavaITest {
 
   @Autowired private DocumentConverter converter;
 
-  /**
-   * Creates an input file to convert and an output test directory just once.
-   *
-   * @throws IOException if an IO error occurs.
-   */
   @BeforeClass
   public static void setUpClass() throws IOException {
 
@@ -83,18 +78,6 @@ public class LocalConverterPureJavaITest {
   public void testTxtToDoc() throws Exception {
 
     final File outputFile = new File(testFolder.getRoot(), "outputFile.doc");
-    converter.convert(inputFileTxt).to(outputFile).execute();
-
-    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
-    assertThat(outputFile.length())
-        .as("Check %s file length", outputFile.getName())
-        .isGreaterThan(0L);
-  }
-
-  @Test
-  public void testTxtToDocx() throws Exception {
-
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.docx");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
