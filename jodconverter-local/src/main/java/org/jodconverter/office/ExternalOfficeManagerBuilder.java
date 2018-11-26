@@ -27,6 +27,7 @@ public class ExternalOfficeManagerBuilder {
   private String pipeName = "office";
   private boolean connectOnStart = true;
   private long connectTimeout = 30000L;
+  private boolean install;
 
   /**
    * Builds a new {@link ExternalOfficeManager}.
@@ -39,7 +40,11 @@ public class ExternalOfficeManagerBuilder {
         connectionProtocol == OfficeConnectionProtocol.SOCKET
             ? new OfficeUrl(portNumber)
             : new OfficeUrl(pipeName);
-    return new ExternalOfficeManager(officeUrl, connectOnStart, connectTimeout);
+    ExternalOfficeManager manager = new ExternalOfficeManager(officeUrl, connectOnStart, connectTimeout);
+    if (install) {//if set to true(via install() invocation), set this manager as the default manager instance
+      InstalledOfficeManagerHolder.setInstance(manager);
+    }
+    return manager;
   }
 
   /**
@@ -101,6 +106,22 @@ public class ExternalOfficeManagerBuilder {
   public ExternalOfficeManagerBuilder setPortNumber(final int portNumber) {
 
     this.portNumber = portNumber;
+    return this;
+  }
+
+  /**
+   * Sets the install property to true so when build() is invoked the resulting
+   * {@link ExternalOfficeManager} will also be set as the default instance for
+   * task handling. The created manager will then be the unique instance of the
+   * {@link InstalledOfficeManagerHolder} class. Note that if the
+   * {@code InstalledOfficeManagerHolder} class already holds an
+   * {@code OfficeManager} instance, the owner of the existing manager is
+   * responsible for stopping it.
+   *
+   * @return The updated configuration for the builder.
+   */
+  public ExternalOfficeManagerBuilder install() {
+    this.install = true;
     return this;
   }
 }
