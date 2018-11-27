@@ -60,16 +60,16 @@ public class LinkedImagesEmbedderFilter implements Filter {
 
     LOGGER.debug("Applying the LinkedImagesEmbedderFilter");
 
-    // This filter can only be used with text document
+    // This filter can be used only with text document
     if (Write.isText(document)) {
-      convertLinkedImagesToEmbeded(((LocalOfficeContext) context).getComponentContext(), document);
+      convertLinkedImagesToEmbedded(((LocalOfficeContext) context).getComponentContext(), document);
     }
 
     // Invoke the next filter in the chain
     chain.doFilter(context, document);
   }
 
-  private static void convertLinkedImagesToEmbeded(
+  private static void convertLinkedImagesToEmbedded(
       final XComponentContext context, final XComponent document) throws Exception {
 
     // Create a GraphicProvider.

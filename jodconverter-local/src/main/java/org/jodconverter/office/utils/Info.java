@@ -41,7 +41,7 @@ import com.sun.star.uno.XComponentContext;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public class Info {
+public final class Info {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Info.class);
 
@@ -63,7 +63,7 @@ public class Info {
   }
 
   /**
-   * Gets whether the specified context is for an OpenOffice installation.
+   * Gets whether the specified context is for a LibreOffice installation.
    *
    * @param context The context.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
@@ -122,14 +122,10 @@ public class Info {
 
     if (version1 == null && version2 == null) {
       return 0;
-    }
-
-    if (version1 != null && version2 == null) {
-      return 1;
-    }
-
-    if (version1 == null && version2 != null) {
+    } else if (version1 == null) {
       return -1;
+    } else if (version2 == null) {
+      return 1;
     }
 
     final String[] numbers1 = normalizeVersion(version1, length).split("\\.");
@@ -150,9 +146,6 @@ public class Info {
    * Normalizes a version string so that it has 'length' number of version numbers separated by '.'
    */
   private static String normalizeVersion(final String version, final int length) {
-    if (version == null) {
-      return null;
-    }
 
     final List<String> numbers = new ArrayList<>(Arrays.asList(version.split("\\.")));
     while (numbers.size() < length) {
@@ -246,5 +239,10 @@ public class Info {
    */
   public static boolean isDocumentType(final XComponent document, final String documentType) {
     return Lo.qi(XServiceInfo.class, document).supportsService(documentType);
+  }
+
+  // Suppresses default constructor, ensuring non-instantiability.
+  private Info() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }

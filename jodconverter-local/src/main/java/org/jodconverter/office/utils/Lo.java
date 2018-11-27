@@ -33,7 +33,7 @@ import com.sun.star.uno.XComponentContext;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public class Lo {
+public final class Lo {
 
   // Document types service names
   public static final String UNKNOWN_SERVICE = "com.sun.frame.XModel";
@@ -161,5 +161,10 @@ public class Lo {
     } catch (Exception ex) {
       throw new WrappedUnoException(ex);
     }
+  }
+
+  // Suppresses default constructor, ensuring non-instantiability.
+  private Lo() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }

@@ -28,7 +28,7 @@ import com.sun.star.text.XTextDocument;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public class Write {
+public final class Write {
 
   /**
    * Gets whether the given document is a Text document.
@@ -53,5 +53,10 @@ public class Write {
     }
 
     return Lo.qi(XTextDocument.class, document);
+  }
+
+  // Suppresses default constructor, ensuring non-instantiability.
+  private Write() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }

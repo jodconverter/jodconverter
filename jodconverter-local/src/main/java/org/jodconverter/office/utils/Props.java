@@ -32,7 +32,7 @@ import com.sun.star.lang.WrappedTargetException;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public class Props {
+public final class Props {
 
   // private static final Logger LOGGER = LoggerFactory.getLogger(Props.class);
 
@@ -128,5 +128,10 @@ public class Props {
       props[i].Value = values[i];
     }
     return props;
+  }
+
+  // Suppresses default constructor, ensuring non-instantiability.
+  private Props() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }
