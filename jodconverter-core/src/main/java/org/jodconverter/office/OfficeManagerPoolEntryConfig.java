@@ -24,7 +24,7 @@ package org.jodconverter.office;
  *
  * @see OfficeProcessManagerPoolEntry
  */
-interface OfficeManagerPoolEntryConfig { // NOSONAR
+interface OfficeManagerPoolEntryConfig {
 
   /** The default timeout when processing a task. */
   long DEFAULT_TASK_EXECUTION_TIMEOUT = 120000L; // 2 minutes

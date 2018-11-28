@@ -19,14 +19,12 @@
 
 package org.jodconverter.office;
 
-import java.io.File;
-
 /**
  * This class provides the configuration of an {@link AbstractOfficeManagerPool}.
  *
  * @see AbstractOfficeManagerPool
  */
-interface OfficeManagerPoolConfig { // NOSONAR
+interface OfficeManagerPoolConfig extends OfficeManagerConfig { // NOSONAR
 
   /** The default maximum living time of a task in the conversion queue. */
   long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds
@@ -42,16 +40,6 @@ interface OfficeManagerPoolConfig { // NOSONAR
   long getTaskQueueTimeout();
 
   /**
-   * Gets the directory where temporary files will be created when working with streams.
-   *
-   * <p>&nbsp; <b><i>Default</i></b>: The system temporary directory as specified by the <code>
-   * java.io.tmpdir</code> system property.
-   *
-   * @return The working directory.
-   */
-  File getWorkingDir();
-
-  /**
    * Sets the maximum living time of a task in the conversion queue. The task will be removed from
    * the queue if the waiting time is longer than this timeout.
    *
@@ -60,11 +48,4 @@ interface OfficeManagerPoolConfig { // NOSONAR
    * @param taskQueueTimeout The task queue timeout, in milliseconds.
    */
   void setTaskQueueTimeout(final long taskQueueTimeout);
-
-  /**
-   * Sets the directory where temporary files will be created when working with streams.
-   *
-   * @param workingDir The new working directory.
-   */
-  void setWorkingDir(final File workingDir);
 }

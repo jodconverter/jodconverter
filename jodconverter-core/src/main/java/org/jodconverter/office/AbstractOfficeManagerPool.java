@@ -19,17 +19,11 @@
 
 package org.jodconverter.office;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +36,7 @@ import org.jodconverter.task.OfficeTask;
  * OfficeProcessManagerPoolEntry} to execute a given task when the {@link #execute(OfficeTask)}
  * function is called.
  */
-abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFileMaker {
+abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOfficeManagerPool.class);
 
@@ -54,31 +48,16 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
 
   protected final OfficeManagerPoolConfig config;
   private final BlockingQueue<OfficeManager> pool;
-  private final AtomicLong tempFileCounter;
   private OfficeManager[] entries;
-  private File tempDir;
-
-  private static File makeTempDir(final File workingDir) {
-
-    final File tempDir = new File(workingDir, "jodconverter_" + UUID.randomUUID().toString());
-    tempDir.mkdir();
-    if (!tempDir.isDirectory()) {
-      throw new IllegalStateException(String.format("Cannot create temp directory: %s", tempDir));
-    }
-    return tempDir;
-  }
 
   /** Constructs a new instance of the class with the specified settings. */
   protected AbstractOfficeManagerPool(final int poolSize, final OfficeManagerPoolConfig config) {
-    super();
+    super(config);
 
     this.config = config;
 
     // Create the pool
     pool = new ArrayBlockingQueue<>(poolSize);
-
-    // Initialize the temp file counter
-    tempFileCounter = new AtomicLong(0);
   }
 
   /**
@@ -133,8 +112,8 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
       // then start them.
       doStart();
 
-      // Create the temporary dir is the pool has successfully started
-      tempDir = makeTempDir(config.getWorkingDir());
+      // Create the temporary dir if the pool has successfully started
+      makeTempDir();
 
       poolState.set(POOL_STARTED);
     }
@@ -157,16 +136,6 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
         deleteTempDir();
       }
     }
-  }
-
-  @Override
-  public File makeTemporaryFile() {
-    return new File(tempDir, "tempfile_" + tempFileCounter.getAndIncrement());
-  }
-
-  @Override
-  public File makeTemporaryFile(final String extension) {
-    return new File(tempDir, "tempfile_" + tempFileCounter.getAndIncrement() + "." + extension);
   }
 
   /**
@@ -244,18 +213,6 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
     LOGGER.info("Office manager stopped");
   }
 
-  private void deleteTempDir() {
-
-    if (tempDir != null) {
-      LOGGER.debug("Deleting temporary directory '{}'", tempDir);
-      try {
-        FileUtils.deleteDirectory(tempDir);
-      } catch (IOException ioEx) { // NOSONAR
-        LOGGER.error("Could not temporary profileDir: {}", ioEx.getMessage());
-      }
-    }
-  }
-
   /**
    * A builder for constructing an {@link AbstractOfficeManagerPool}.
    *
@@ -263,10 +220,9 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
    */
   @SuppressWarnings("unchecked")
   public abstract static class AbstractOfficeManagerPoolBuilder<
-      B extends AbstractOfficeManagerPoolBuilder<B>> {
+          B extends AbstractOfficeManagerPoolBuilder<B>>
+      extends AbstractOfficeManagerBuilder<B> {
 
-    protected boolean install;
-    protected File workingDir;
     protected long taskExecutionTimeout =
         OfficeManagerPoolEntryConfig.DEFAULT_TASK_EXECUTION_TIMEOUT;
     protected long taskQueueTimeout = OfficeManagerPoolConfig.DEFAULT_TASK_QUEUE_TIMEOUT;
@@ -274,51 +230,6 @@ abstract class AbstractOfficeManagerPool implements OfficeManager, TemporaryFile
     // Protected ctor so only subclasses can initialize an instance of this builder.
     protected AbstractOfficeManagerPoolBuilder() {
       super();
-    }
-
-    /**
-     * Specifies whether the office manager that will be created by this builder will then set the
-     * unique instance of the {@link InstalledOfficeManagerHolder} class. Note that if the {@code
-     * InstalledOfficeManagerHolder} class already holds an {@code OfficeManager} instance, the
-     * owner of this existing manager is responsible to stopped it.
-     *
-     * <p>&nbsp; <b><i>Default</i></b>: false
-     *
-     * @return This builder instance.
-     */
-    public B install() {
-
-      this.install = true;
-      return (B) this;
-    }
-
-    /**
-     * Specifies the directory where temporary files and directories are created.
-     *
-     * <p>&nbsp; <b><i>Default</i></b>: The system temporary directory as specified by the <code>
-     * java.io.tmpdir</code> system property.
-     *
-     * @param workingDir The new working directory to set.
-     * @return This builder instance.
-     */
-    public B workingDir(final File workingDir) {
-
-      this.workingDir = workingDir;
-      return (B) this;
-    }
-
-    /**
-     * Specifies the directory where temporary files and directories are created.
-     *
-     * <p>&nbsp; <b><i>Default</i></b>: The system temporary directory as specified by the <code>
-     * java.io.tmpdir</code> system property.
-     *
-     * @param workingDir The new working directory to set.
-     * @return This builder instance.
-     */
-    public B workingDir(final String workingDir) {
-
-      return StringUtils.isBlank(workingDir) ? (B) this : workingDir(new File(workingDir));
     }
 
     /**

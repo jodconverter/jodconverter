@@ -33,6 +33,7 @@ import org.jodconverter.process.ProcessManager;
  *
  * @deprecated Use {@link LocalOfficeManager#builder()} instead.
  */
+@Deprecated
 public class DefaultOfficeManagerBuilder {
 
   private static final OfficeConnectionProtocol DEFAULT_PROTOCOL = OfficeConnectionProtocol.SOCKET;

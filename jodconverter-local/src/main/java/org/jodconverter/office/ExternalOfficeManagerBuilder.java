@@ -19,14 +19,19 @@
 
 package org.jodconverter.office;
 
-/** Helper class used to creates ExternalOfficeManager instances. */
+/**
+ * Helper class used to creates ExternalOfficeManager instances.
+ *
+ * @deprecated Use {@link ExternalOfficeManager#builder()} instead.
+ */
+@Deprecated
 public class ExternalOfficeManagerBuilder {
 
   private OfficeConnectionProtocol connectionProtocol = OfficeConnectionProtocol.SOCKET;
   private int portNumber = 2002;
   private String pipeName = "office";
   private boolean connectOnStart = true;
-  private long connectTimeout = 30000L;
+  private long connectTimeout = 120000L;
 
   /**
    * Builds a new {@link ExternalOfficeManager}.
@@ -35,11 +40,13 @@ public class ExternalOfficeManagerBuilder {
    */
   public OfficeManager build() {
 
-    final OfficeUrl officeUrl =
-        connectionProtocol == OfficeConnectionProtocol.SOCKET
-            ? new OfficeUrl(portNumber)
-            : new OfficeUrl(pipeName);
-    return new ExternalOfficeManager(officeUrl, connectOnStart, connectTimeout);
+    return ExternalOfficeManager.builder()
+        .connectionProtocol(connectionProtocol)
+        .portNumber(portNumber)
+        .pipeName(pipeName)
+        .connectOnStart(connectOnStart)
+        .connectTimeout(connectTimeout)
+        .build();
   }
 
   /**
