@@ -12,7 +12,7 @@ matrix:
        - chmod +x ./gradlew
        - sudo apt-get install libreoffice
       script:
-       - ./gradlew build
+       - ./gradlew build --info --stacktrace
       after_success:
        - ./gradlew coveralls
     - os: osx
