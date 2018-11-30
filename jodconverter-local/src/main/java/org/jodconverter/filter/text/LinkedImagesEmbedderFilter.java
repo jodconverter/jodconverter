@@ -88,7 +88,7 @@ public class LinkedImagesEmbedderFilter implements Filter {
       if (xInfo.supportsService("com.sun.star.text.TextGraphicObject")) {
         final XPropertySet xPropSet = Lo.qi(XPropertySet.class, xImage);
         if (Info.isLibreOffice(context)
-            && Info.compareVersions("6.1", Info.getOfficeVersionShort(context), 2) >= 0) {
+            && Info.compareVersions(Info.getOfficeVersionShort(context), "6.1", 2) >= 0) {
           final XGraphic xGraphic =
               (XGraphic)
                   AnyConverter.toObject(XGraphic.class, xPropSet.getPropertyValue("Graphic"));

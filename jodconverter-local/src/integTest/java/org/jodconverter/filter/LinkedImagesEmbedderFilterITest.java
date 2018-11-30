@@ -37,7 +37,7 @@ public class LinkedImagesEmbedderFilterITest extends AbstractOfficeITest {
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
-  public void doFilter_() throws OfficeException {
+  public void doFilter_DoesNotThrowAnyException() throws OfficeException {
 
     assertThatCode(
             () -> {
