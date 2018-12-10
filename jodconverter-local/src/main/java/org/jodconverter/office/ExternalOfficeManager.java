@@ -42,7 +42,7 @@ import org.jodconverter.task.OfficeTask;
  * <p>This {@link OfficeManager} implementation basically provides the same behavior as JODConverter
  * 2.x, including using <em>synchronized</em> blocks for serializing office operations.
  */
-class ExternalOfficeManager extends AbstractOfficeManager {
+public final class ExternalOfficeManager extends AbstractOfficeManager {
 
   /** The default port number to connect to office. */
   public static final int DEFAULT_PORT_NUMBER = 2002;
