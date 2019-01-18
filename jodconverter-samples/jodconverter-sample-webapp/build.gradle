@@ -3,7 +3,7 @@ description = 'JODConverter - Sample Web Application'
 buildscript {
   ext {
     // Latest version https://plugins.gradle.org/plugin/com.bmuschko.tomcat
-    gradleTomcatVersion = '2.4.1'
+    gradleTomcatVersion = '2.5'
   }
   repositories {
     mavenCentral()
@@ -26,7 +26,7 @@ repositories {
 
 ext {
   // Latets version: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
-  tomcatVersion = '9.0.1'
+  tomcatVersion = '9.0.14'
 }
 
 dependencies {

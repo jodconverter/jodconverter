@@ -9,19 +9,19 @@ ext {
     // Gradle plugins version
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Latest version -> https://sourceforge.net/projects/checkstyle/files/checkstyle
-    checkstyle_version : '8.14',
+    checkstyle_version : '8.16',
     // Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
     coveralls_version : '2.8.2',
     // Latest version -> http://www.eclemma.org/jacoco
     jacoco_version : '0.8.2',
     // Latest version -> https://plugins.gradle.org/plugin/nebula.integtest
-    nebula_project_version : '5.1.2',
+    nebula_project_version : '5.2.1',
     // Latest version -> https://plugins.gradle.org/plugin/io.codearte.nexus-staging
-    nexus_staging_version : '0.12.0',
+    nexus_staging_version : '0.20.0',
     // Latest version -> https://pmd.github.io
-    pmd_version : '6.9.0',
+    pmd_version : '6.10.0',
     // Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-    spotless_version : '3.15.0',
+    spotless_version : '3.16.0',
     // Latest version -> https://plugins.gradle.org/plugin/io.spring.dependency-management
     dependency_management_version : '1.0.6.RELEASE',
     
@@ -34,7 +34,7 @@ ext {
     // Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
     commons_cli_version : '1.4',
     // Latest version -> https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
-    commons_fileupload_version : '1.3.3',
+    commons_fileupload_version : '1.4',
     // Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
     commons_io_version : '2.6',
     // Latest version -> https://mvnrepository.com/artifact/org.libreoffice
@@ -42,16 +42,16 @@ ext {
     // Latest version -> https://mvnrepository.com/artifact/org.openoffice
     open_office_version : '4.1.2',
     // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    spring_boot_version : '2.0.6.RELEASE',
+    spring_boot_version : '2.1.2.RELEASE',
     
     // Test
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Latest version -> https://mvnrepository.com/artifact/nl.jqno.equalsverifier/equalsverifier
-    equalsverifier_version : '3.0',
+    equalsverifier_version : '3.1.4',
     // Latest version -> https://mvnrepository.com/artifact/com.google.code.findbugs/findbugs
     findbugs_version : '3.0.1',
     // Latest version -> https://mvnrepository.com/artifact/org.mockito/mockito-core
-    // 2.9.0 is the latest version compatible powermock version 1.7.3 so we must
+    // 2.9.0 is the latest version compatible powermock version 1.7.4 so we must
     // override the version provided by spring boot (see gradle/java-projects.gradle).
     // See https://stackoverflow.com/questions/47240116/mockito-and-powermockito-error
     mockito_version : '2.9.0',
@@ -59,7 +59,7 @@ ext {
     // Latest version -> https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito
     powermock_version : '1.7.4',
     // Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
-    wiremock_version : '2.19.0'
+    wiremock_version : '2.20.0'
   ]
 
   gradlePlugins = [

@@ -3,8 +3,8 @@ description = 'JODConverter - Sample Rest Web Api'
 buildscript {
   ext {
     // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    springBootVersion = '2.0.5.RELEASE'
-    swaggerVersion = '2.8.0'
+    springBootVersion = '2.1.2.RELEASE'
+    swaggerVersion = '2.9.2'
   }
   repositories {
     mavenCentral()
