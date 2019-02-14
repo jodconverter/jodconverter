@@ -4,10 +4,6 @@ sudo: required
 
 dist: trusty
 
-jdk:
-  - oraclejdk8
-  - openjdk11
-
 matrix:
   include:
     - os: linux
