@@ -7,7 +7,7 @@ dist: trusty
 matrix:
   include:
     - os: linux
-      jdk: oraclejdk8
+      jdk: openjdk11
       before_install:
        - chmod +x ./gradlew
        - sudo apt-get install libreoffice
