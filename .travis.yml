@@ -4,12 +4,14 @@ sudo: required
 
 dist: trusty
 
+jdk:
+  - oraclejdk8
+  - openjdk11
+
 matrix:
   include:
     - os: linux
-      jdk: 
-        - oraclejdk8
-        - openjdk11
+      jdk: oraclejd8
       before_install:
        - chmod +x ./gradlew
        - sudo apt-get install libreoffice
@@ -17,8 +19,25 @@ matrix:
        - ./gradlew build
       after_success:
        - ./gradlew coveralls
+    - os: linux
+      jdk: openjdk11
+      before_install:
+       - chmod +x ./gradlew
+       - sudo apt-get install libreoffice
+      script:
+       - ./gradlew build
+      after_success:
+       - ./gradlew coveralls
+    #macos Java8 - see https://docs.travis-ci.com/user/reference/osx/#jdk-and-macos
     - os: osx
       osx_image: xcode8
+      before_install:
+       - chmod +x ./gradlew
+      script:
+       - ./gradlew build -x check
+    #macosJava11
+    - os: osx
+      osx_image: xcode10.1
       before_install:
        - chmod +x ./gradlew
       script:
