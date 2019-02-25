@@ -29,7 +29,7 @@ public class WrappedUnoException extends RuntimeException {
    * @param message The detail message (which is saved for later retrieval by the {@link
    *     #getMessage()} method).
    * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <tt>null</tt> value is permitted, and indicates that the cause is nonexistent or
+   *     (A {@code null} value is permitted, and indicates that the cause is nonexistent or
    *     unknown.)
    */
   public WrappedUnoException(final String message, final com.sun.star.uno.Exception cause) {
@@ -40,7 +40,7 @@ public class WrappedUnoException extends RuntimeException {
    * Constructs a new exception with the specified wrapped exception.
    *
    * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <tt>null</tt> value is permitted, and indicates that the cause is nonexistent or
+   *     (A {@code null} value is permitted, and indicates that the cause is nonexistent or
    *     unknown.)
    */
   public WrappedUnoException(final com.sun.star.uno.Exception cause) {

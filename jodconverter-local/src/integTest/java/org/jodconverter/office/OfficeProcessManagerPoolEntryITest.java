@@ -47,7 +47,7 @@ public class OfficeProcessManagerPoolEntryITest {
       LoggerFactory.getLogger(OfficeProcessManagerPoolEntryITest.class);
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
-  private static final long RESTART_INITIAL_WAIT = 1000; // 1 Second.
+  private static final long RESTART_INITIAL_WAIT = 5000; // 5 Seconds.
   private static final long RESTART_WAIT_TIMEOUT = 10000; // 10 Seconds.
 
   private static class VetoTerminateListener implements XTerminateListener {

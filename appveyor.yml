@@ -6,11 +6,11 @@ init:
 
 # build artifacts
 build_script:
-  - gradlew.bat assemble --info --no-daemon
+  - gradlew.bat assemble --no-daemon
 
 # verify artifacts
 test_script:
-  - gradlew.bat check -x integTest --info --no-daemon
+  - gradlew.bat check -x integTest --no-daemon
 
 # branches to build
 branches:
@@ -24,8 +24,10 @@ cache:
 # enviroment settings
 environment:
   matrix:
-  # don't let this fool you, we still build to target java7
+  # Build target is java8
   - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+  # Not sure this is openjdk11 or oraclejdk11
+  - JAVA_HOME: C:\Program Files\Java\jdk11  
 
 # failing jobs settings
 matrix:

@@ -11,11 +11,7 @@ apply plugin: 'io.spring.dependency-management'
 // See https://github.com/spring-gradle-plugins/dependency-management-plugin
 dependencyManagement {
   imports {
-    mavenBom (libraries.spring_boot_dependencies) {
-      bomProperties([
-        'mockito.version' : versions.mockito_version
-      ])
-    }
+    mavenBom libraries.spring_boot_dependencies
   }
 }
 
@@ -163,7 +159,7 @@ spotless {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Documentation setup
 javadoc {
-  classpath = configurations.runtime
+  classpath = configurations.compileOnly + configurations.runtime
   source = sourceSets.main.allJava
   
   options.with {
@@ -172,8 +168,13 @@ javadoc {
     encoding 'UTF-8'
     memberLevel = JavadocMemberLevel.PROTECTED
     links 'https://api.libreoffice.org/docs/java/ref/'
-    links 'https://docs.oracle.com/javase/8/docs/api/'
+    if(JavaVersion.current() == JavaVersion.VERSION_1_8) {
+      links 'https://docs.oracle.com/javase/8/docs/api/'
+    } else if(JavaVersion.current() == JavaVersion.VERSION_11) {
+      links 'https://docs.oracle.com/en/java/javase/11/docs/api'
+    }
     links "https://docs.spring.io/spring-boot/docs/${versions.spring_boot_version}/api/"
+    links "https://commons.apache.org/proper/commons-lang/javadocs/api-3.4/"
   }
 }
 

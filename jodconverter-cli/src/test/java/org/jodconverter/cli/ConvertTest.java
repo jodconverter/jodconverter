@@ -151,7 +151,7 @@ public class ConvertTest {
     final CommandLine commandLine =
         new DefaultParser()
             .parse(
-                (Options) Whitebox.getFieldValue(Whitebox.getField(Convert.class, "OPTIONS"), null),
+                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
                 new String[] {"-lPassword=myPassword", "output1.pdf", "input2.txt"});
 
     final CliConverter cliConverter =
@@ -160,9 +160,7 @@ public class ConvertTest {
                 Convert.class, "createCliConverter", commandLine, null, officeManager, null);
     final LocalConverter localConverter =
         (LocalConverter)
-            (LocalConverter)
-                Whitebox.getFieldValue(
-                    Whitebox.getField(CliConverter.class, "converter"), cliConverter);
+            (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
 
     final Map<String, Object> expectedLoadProperties =
         new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
@@ -178,7 +176,7 @@ public class ConvertTest {
     final CommandLine commandLine =
         new DefaultParser()
             .parse(
-                (Options) Whitebox.getFieldValue(Whitebox.getField(Convert.class, "OPTIONS"), null),
+                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
                 new String[] {"-sFDPageRange=2-2", "output1.pdf", "input2.txt"});
 
     final CliConverter cliConverter =
@@ -187,9 +185,7 @@ public class ConvertTest {
                 Convert.class, "createCliConverter", commandLine, null, officeManager, null);
     final LocalConverter localConverter =
         (LocalConverter)
-            (LocalConverter)
-                Whitebox.getFieldValue(
-                    Whitebox.getField(CliConverter.class, "converter"), cliConverter);
+            (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
 
     final Map<String, Object> expectedFilterData = new HashMap<>();
     expectedFilterData.put("PageRange", "2-2");
@@ -207,7 +203,7 @@ public class ConvertTest {
     final CommandLine commandLine =
         new DefaultParser()
             .parse(
-                (Options) Whitebox.getFieldValue(Whitebox.getField(Convert.class, "OPTIONS"), null),
+                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
                 new String[] {"-sOverwrite=true", "output1.pdf", "input2.txt"});
 
     final CliConverter cliConverter =
@@ -216,9 +212,7 @@ public class ConvertTest {
                 Convert.class, "createCliConverter", commandLine, null, officeManager, null);
     final LocalConverter localConverter =
         (LocalConverter)
-            (LocalConverter)
-                Whitebox.getFieldValue(
-                    Whitebox.getField(CliConverter.class, "converter"), cliConverter);
+            (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
 
     final Map<String, Object> expectedStoreProperties = new HashMap<>();
     expectedStoreProperties.put("Overwrite", true);
@@ -235,7 +229,7 @@ public class ConvertTest {
     final CommandLine commandLine =
         new DefaultParser()
             .parse(
-                (Options) Whitebox.getFieldValue(Whitebox.getField(Convert.class, "OPTIONS"), null),
+                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
                 new String[] {
                   "-sOverwrite=true",
                   "-sFDPageRange=2-4",
@@ -250,9 +244,7 @@ public class ConvertTest {
                 Convert.class, "createCliConverter", commandLine, null, officeManager, null);
     final LocalConverter localConverter =
         (LocalConverter)
-            (LocalConverter)
-                Whitebox.getFieldValue(
-                    Whitebox.getField(CliConverter.class, "converter"), cliConverter);
+            (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
 
     final Map<String, Object> expectedFilterData = new HashMap<>();
     expectedFilterData.put("PageRange", "2-4");
