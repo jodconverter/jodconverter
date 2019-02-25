@@ -50,14 +50,8 @@ ext {
     equalsverifier_version : '3.1.4',
     // Latest version -> https://mvnrepository.com/artifact/com.google.code.findbugs/findbugs
     findbugs_version : '3.0.1',
-    // Latest version -> https://mvnrepository.com/artifact/org.mockito/mockito-core
-    // 2.9.0 is the latest version compatible powermock version 1.7.4 so we must
-    // override the version provided by spring boot (see gradle/java-projects.gradle).
-    // See https://stackoverflow.com/questions/47240116/mockito-and-powermockito-error
-    mockito_version : '2.9.0',
-    // mockito_version : '2.13.1',
-    // Latest version -> https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito
-    powermock_version : '1.7.4',
+    // Latest version -> https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2/2.0.0
+    powermock_version : '2.0.0',
     // Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
     wiremock_version : '2.20.0'
   ]
