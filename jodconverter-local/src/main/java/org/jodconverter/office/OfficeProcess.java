@@ -209,7 +209,6 @@ class OfficeProcess {
         pid == PID_UNKNOWN ? "NA" : pid);
 
     try {
-      // No need to terminate anything if the process has never been started
       config.getProcessManager().kill(process.getProcess(), pid);
       return getExitCode(retryInterval, retryTimeout);
     } catch (IOException ioEx) {

@@ -26,11 +26,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * {@link ProcessManager} implementation for *nix systems. Uses the <tt>ps</tt> and <tt>kill</tt>
+ * {@link ProcessManager} implementation for *nix systems. Uses the {@code ps} and {@code kill}
  * commands.
  *
- * <p>Works for Linux. Works for Solaris too, except that the command line string returned by
- * <tt>ps</tt> there is limited to 80 characters and this affects {@link #findPid(ProcessQuery)}.
+ * <p>Works for Linux. Works for Solaris too, except that the command line string returned by {@code
+ * ps} there is limited to 80 characters and this affects {@link #findPid(ProcessQuery)}.
  */
 public class UnixProcessManager extends AbstractProcessManager {
 
@@ -42,7 +42,8 @@ public class UnixProcessManager extends AbstractProcessManager {
   // This class is required in order to create the default UnixProcessManager
   // only on demand, as explained by the Initialization-on-demand holder idiom:
   // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
-  private static class DefaultHolder { // NOSONAR
+  private static class DefaultHolder {
+    // NOSONAR
     /* default */ static final UnixProcessManager INSTANCE = new UnixProcessManager();
   }
 

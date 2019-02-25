@@ -49,7 +49,7 @@ public class OfficeConnectionException extends OfficeException {
    *     #getMessage()} method).
    * @param connectString The connection string of the connection.
    * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <tt>null</tt> value is permitted, and indicates that the cause is nonexistent or
+   *     (A {@code null} value is permitted, and indicates that the cause is nonexistent or
    *     unknown.)
    */
   public OfficeConnectionException(

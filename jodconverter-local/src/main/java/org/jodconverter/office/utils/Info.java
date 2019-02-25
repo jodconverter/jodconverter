@@ -55,6 +55,8 @@ public final class Info {
    * Gets whether the specified context is for an OpenOffice installation.
    *
    * @param context The context.
+   * @return {@code true} if the specified context is for an OpenOffice installation, {@code false}
+   *     otherwise.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
@@ -66,6 +68,8 @@ public final class Info {
    * Gets whether the specified context is for a LibreOffice installation.
    *
    * @param context The context.
+   * @return {@code true} if the specified context is for an LibreOffice installation, {@code false}
+   *     otherwise.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
