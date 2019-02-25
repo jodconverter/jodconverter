@@ -134,6 +134,8 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
     if (((ExternalOfficeManagerConfig) config).isConnectOnStart()) {
       synchronized (connection) {
         connect();
+
+        makeTempDir();
       }
     }
   }
@@ -143,7 +145,11 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
 
     synchronized (connection) {
       if (isRunning()) {
-        connection.disconnect();
+        try {
+          connection.disconnect();
+        } finally {
+          deleteTempDir();
+        }
       }
     }
   }
