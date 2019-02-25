@@ -21,7 +21,7 @@ matrix:
        - chmod +x ./gradlew
        - sudo apt-get install libreoffice
       script:
-       - ./gradlew build
+       - ./gradlew build -x javadoc
       after_success:
        - ./gradlew coveralls
     #macos Java8 - see https://docs.travis-ci.com/user/reference/osx/#jdk-and-macos
@@ -30,11 +30,11 @@ matrix:
       before_install:
        - chmod +x ./gradlew
       script:
-       - ./gradlew build -x check
+       - ./gradlew build -x check -x javadoc
     #macosJava11
     - os: osx
       osx_image: xcode10.1
       before_install:
        - chmod +x ./gradlew
       script:
-       - ./gradlew build -x check
+       - ./gradlew build -x check -x javadoc
