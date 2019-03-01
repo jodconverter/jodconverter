@@ -37,6 +37,24 @@
     }
   },
   {
+    "name": "XHTML",
+    "extensions": ["xhtml"],
+    "mediaType": "application/xhtml+xml",
+    "inputFamily": "TEXT",
+    "storeProperties": {
+      "SPREADSHEET": {
+        "FilterName": "XHTML Calc File"
+      },
+      "PRESENTATION": {
+        "FilterName": "XHTML Impress File"
+      },
+      "TEXT": {
+        "FilterName": "XHTML Writer File",
+        "FilterOptions": "EmbedImages"
+      }
+    }
+  },
+  {
     "name": "Microsoft Word 97-2003",
     "extensions": ["doc"],
     "mediaType": "application/msword",
