@@ -5,6 +5,7 @@ var importFormatTable = {
     ott: "Text",
     sxw: "Text",
     html: "Text",
+    xhtml: "Text",
     rtf: "Text",
     txt: "Text",
     doc: "Text",
@@ -27,7 +28,8 @@ var exportFormatTable = {
     __proto__: null,
 
     Text: [
-        new Option("Hyper Text Markup Language (html)", "html"),
+        new Option("Hypertext Markup Language (html)", "html"),
+        new Option("Extensible Hypertext Markup Language (xhtml)", "xhtml"),
         new Option("Portable Document Format (pdf)", "pdf"),
         new Option("OpenDocument Text (odt)", "odt"),
         new Option("OpenOffice.org 1.0 Text Document (sxw)", "sxw"),
