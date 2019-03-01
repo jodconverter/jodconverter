@@ -17,3 +17,8 @@ jodconverter:
         store:
           TEXT:
             FilterOptions: EmbedImages
+
+      xhtml:
+        store:
+          TEXT:
+            FilterOptions: EmbedImages

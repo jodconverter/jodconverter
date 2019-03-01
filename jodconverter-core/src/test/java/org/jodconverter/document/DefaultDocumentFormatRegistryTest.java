@@ -58,6 +58,7 @@ public class DefaultDocumentFormatRegistryTest {
         "doc",
         "docx",
         "html",
+        "xhtml",
         "jpg",
         "odt",
         "ott",
@@ -73,6 +74,7 @@ public class DefaultDocumentFormatRegistryTest {
         outputFormats,
         "csv",
         "html",
+        "xhtml",
         "jpg",
         "ods",
         "ots",
@@ -89,6 +91,7 @@ public class DefaultDocumentFormatRegistryTest {
         outputFormats,
         "gif",
         "html",
+        "xhtml",
         "jpg",
         "odp",
         "otp",
@@ -127,6 +130,8 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.SWF);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("html"))
         .isEqualTo(DefaultDocumentFormatRegistry.HTML);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("xhtml"))
+        .isEqualTo(DefaultDocumentFormatRegistry.XHTML);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("odt"))
         .isEqualTo(DefaultDocumentFormatRegistry.ODT);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("ott"))
@@ -206,6 +211,8 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.SWF);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("text/html"))
         .isEqualTo(DefaultDocumentFormatRegistry.HTML);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/xhtml+xml"))
+        .isEqualTo(DefaultDocumentFormatRegistry.XHTML);
     assertThat(
             DefaultDocumentFormatRegistry.getFormatByMediaType(
                 "application/vnd.oasis.opendocument.text"))

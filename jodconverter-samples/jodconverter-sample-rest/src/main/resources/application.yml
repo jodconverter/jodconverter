@@ -18,7 +18,12 @@ jodconverter:
         store:
           TEXT:
             FilterOptions: EmbedImages
-  
+
+      xhtml:
+        store:
+          TEXT:
+            FilterOptions: EmbedImages
+
 logging:
   level:
     org.jodconverter: debug

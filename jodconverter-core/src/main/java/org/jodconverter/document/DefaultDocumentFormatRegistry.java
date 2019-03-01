@@ -72,6 +72,16 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat HTML = getInstance().getFormatByExtension("html");
 
   /**
+   * XHTML.
+   *
+   * <ul>
+   *   <li>Extension: xhtml
+   *   <li>Media Type: application/xhtml+xml
+   * </ul>
+   */
+  public static final DocumentFormat XHTML = getInstance().getFormatByExtension("xhtml");
+
+  /**
    * OpenDocument Text.
    *
    * <ul>

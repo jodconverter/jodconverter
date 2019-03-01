@@ -105,13 +105,29 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testTxtToHtml() throws Exception {
+  public void testDocToHtml() throws Exception {
 
     final File outputDir = new File(testFolder.getRoot(), "html");
     outputDir.mkdirs();
     final File outputFile = new File(outputDir, "outputFile.html");
     final File inputFile = new File("src/integTest/resources/documents/test1.doc");
 
+    converter.convert(inputFile).to(outputFile).execute();
+
+    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
+    // Check that the EmbedImages option has been applied
+    assertThat(outputDir.list().length)
+        .as("Check %s file EmbedImages", outputFile.getName())
+        .isEqualTo(1);
+  }
+
+  @Test
+  public void testDocToXhtml() throws Exception {
+    final File outputDir = new File(testFolder.getRoot(), "xhtml");
+    outputDir.mkdirs();
+
+    final File outputFile = new File(outputDir, "outputFile.xhtml");
+    final File inputFile = new File("src/integTest/resources/documents/test1.doc");
     converter.convert(inputFile).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();

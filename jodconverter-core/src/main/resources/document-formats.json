@@ -49,6 +49,23 @@
     }
   },
   {
+    "name": "XHTML",
+    "extensions": ["xhtml"],
+    "mediaType": "application/xhtml+xml",
+    "inputFamily": "TEXT",
+    "storeProperties": {
+      "SPREADSHEET": {
+        "FilterName": "XHTML Calc File"
+      },
+      "PRESENTATION": {
+        "FilterName": "XHTML Impress File"
+      },
+      "TEXT": {
+        "FilterName": "XHTML Writer File"
+      }
+    }
+  },
+  {
     "name": "OpenDocument Text",
     "extensions": ["odt"],
     "mediaType": "application/vnd.oasis.opendocument.text",
