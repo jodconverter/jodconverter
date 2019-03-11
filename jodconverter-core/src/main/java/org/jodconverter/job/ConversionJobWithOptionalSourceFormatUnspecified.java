@@ -19,6 +19,17 @@
 
 package org.jodconverter.job;
 
+import org.jodconverter.document.DocumentFormat;
+
 /** A conversion job with optional source format that is not yet applied to the converter. */
 public interface ConversionJobWithOptionalSourceFormatUnspecified
-    extends ConversionJobWithRequiredSourceFormatUnspecified, ConversionJobWithSourceSpecified {}
+    extends ConversionJobWithSourceSpecified {
+
+  /**
+   * Defines the source document format for the given input document.
+   *
+   * @param format The document format of the source document.
+   * @return The current conversion specification.
+   */
+  ConversionJobWithSourceSpecified as(DocumentFormat format);
+}

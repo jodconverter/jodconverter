@@ -25,7 +25,6 @@ import java.io.InputStream;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.job.ConversionJobWithOptionalSourceFormatUnspecified;
-import org.jodconverter.job.ConversionJobWithRequiredSourceFormatUnspecified;
 
 /**
  * A DocumentConverter is responsible to execute the conversion of documents using an office
@@ -47,7 +46,7 @@ public interface DocumentConverter {
    * @param source The conversion input as an input stream.
    * @return The current conversion specification.
    */
-  ConversionJobWithRequiredSourceFormatUnspecified convert(InputStream source);
+  ConversionJobWithOptionalSourceFormatUnspecified convert(InputStream source);
 
   /**
    * Converts a source stream input stream.
@@ -56,7 +55,7 @@ public interface DocumentConverter {
    * @param closeStream Whether the {@link InputStream} is closed after the conversion terminates.
    * @return The current conversion specification.
    */
-  ConversionJobWithRequiredSourceFormatUnspecified convert(InputStream source, boolean closeStream);
+  ConversionJobWithOptionalSourceFormatUnspecified convert(InputStream source, boolean closeStream);
 
   /**
    * Gets all the {@link DocumentFormat} supported by the converter.

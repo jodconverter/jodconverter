@@ -34,7 +34,6 @@ import org.jodconverter.office.TemporaryFileMaker;
  * the converter.
  *
  * @see ConversionJobWithOptionalSourceFormatUnspecified
- * @see ConversionJobWithRequiredSourceFormatUnspecified
  */
 public abstract class AbstractConversionJobWithSourceFormatUnspecified
     implements ConversionJobWithOptionalSourceFormatUnspecified {

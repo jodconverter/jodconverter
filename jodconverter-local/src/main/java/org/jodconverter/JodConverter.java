@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.InputStream;
 
 import org.jodconverter.job.ConversionJobWithOptionalSourceFormatUnspecified;
-import org.jodconverter.job.ConversionJobWithRequiredSourceFormatUnspecified;
 import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.OfficeManager;
 
@@ -54,7 +53,7 @@ public final class JodConverter {
    * @param source The conversion input as an input stream.
    * @return The current conversion specification.
    */
-  public static ConversionJobWithRequiredSourceFormatUnspecified convert(final InputStream source) {
+  public static ConversionJobWithOptionalSourceFormatUnspecified convert(final InputStream source) {
 
     return LocalConverter.make().convert(source);
   }
@@ -66,7 +65,7 @@ public final class JodConverter {
    * @param closeStream Whether the {@link InputStream} is closed after the conversion terminates.
    * @return The current conversion specification.
    */
-  public static ConversionJobWithRequiredSourceFormatUnspecified convert(
+  public static ConversionJobWithOptionalSourceFormatUnspecified convert(
       final InputStream source, final boolean closeStream) {
 
     return LocalConverter.make().convert(source, closeStream);

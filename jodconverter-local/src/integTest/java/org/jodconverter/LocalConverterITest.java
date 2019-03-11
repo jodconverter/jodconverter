@@ -53,7 +53,7 @@ public class LocalConverterITest extends AbstractOfficeITest {
   }
 
   @Test(expected = NullPointerException.class)
-  public void convert_FromStreamToFileWithMissingInputFormat_ShouldThrowNullPointerException()
+  public void convert_FromStreamToFileWithNullInputFormat_ShouldThrowNullPointerException()
       throws Exception {
 
     final File outputFile =
@@ -62,6 +62,18 @@ public class LocalConverterITest extends AbstractOfficeITest {
 
     try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
       LocalConverter.make().convert(stream).as(null).to(outputFile).execute();
+    }
+  }
+
+  @Test
+  public void convert_FromStreamToFileWithoutInputFormat_ShouldSucceeded() throws Exception {
+
+    final File outputFile =
+        new File(testFolder.getRoot(), "convert_FromStreamToFileWithoutInputFormat.pdf");
+    FileUtils.deleteQuietly(outputFile);
+
+    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      LocalConverter.make().convert(stream).to(outputFile).execute();
     }
   }
 

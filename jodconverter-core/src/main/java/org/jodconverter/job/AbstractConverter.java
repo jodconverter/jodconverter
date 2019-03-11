@@ -78,13 +78,13 @@ public abstract class AbstractConverter implements DocumentConverter {
   }
 
   @Override
-  public ConversionJobWithRequiredSourceFormatUnspecified convert(final InputStream source) {
+  public ConversionJobWithOptionalSourceFormatUnspecified convert(final InputStream source) {
 
     return convert(source, DEFAULT_CLOSE_STREAM);
   }
 
   @Override
-  public ConversionJobWithRequiredSourceFormatUnspecified convert(
+  public ConversionJobWithOptionalSourceFormatUnspecified convert(
       final InputStream source, final boolean closeStream) {
 
     if (officeManager instanceof TemporaryFileMaker) {
