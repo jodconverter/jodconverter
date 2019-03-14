@@ -114,6 +114,8 @@ public final class LocalOfficeUtils {
                 EXECUTABLE_DEFAULT,
                 "/usr/lib64/libreoffice",
                 "/usr/lib/libreoffice",
+                "/usr/local/lib64/libreoffice",
+                "/usr/local/lib/libreoffice",
                 "/opt/libreoffice",
                 "/usr/lib64/openoffice",
                 "/usr/lib64/openoffice.org3",
