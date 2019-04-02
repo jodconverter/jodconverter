@@ -7,7 +7,8 @@ container:
 build_task:
   gradle_cache:
     folder: ~/.gradle/caches
-  build_script: gradle build -x check
+  build_script:
+    - ./gradlew build -x check
   cleanup_before_cache_script:
     - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
     - find ~/.gradle/caches/ -name "*.lock" -type f -delete
