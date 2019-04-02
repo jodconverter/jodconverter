@@ -1,14 +1,17 @@
 # global default
-container:
-  image: gradle:jdk8
+#container:
+#  image: gradle:jdk8
 
 build_task:
   freebsd_instance:
     image: freebsd-10-4-release-amd64
+    additional_containers:
+      - name: gradle
+        image: gradle:jdk8
   gradle_cache:
     folder: ~/.gradle/caches
   build_script:
-    - ./gradlew build -x check
+    - ./gradlew build
   cleanup_before_cache_script:
     - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
     - find ~/.gradle/caches/ -name "*.lock" -type f -delete
