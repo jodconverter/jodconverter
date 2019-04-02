@@ -7,6 +7,9 @@ build_task:
     image: freebsd-10-4-release-amd64
   gradle_cache:
     folder: ~/.gradle/caches
+  install_zip_script:
+    - cd /usr/ports/archivers/zip
+    - make install clean
   install_sdkman_script:
     - curl -s "https://get.sdkman.io" | bash
     - source "/home/user/.sdkman/bin/sdkman-init.sh"
