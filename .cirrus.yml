@@ -8,7 +8,7 @@ build_task:
   gradle_cache:
     folder: ~/.gradle/caches
   install_zip_script:
-    - pkg install zip
+    - pkg install -y zip
     #- cd /usr/ports/archivers/zip
     #- make install clean
   install_sdkman_script:
