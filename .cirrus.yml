@@ -1,0 +1,11 @@
+# global default
+container:
+  image: gradle:jdk8
+
+check_task:
+  gradle_cache:
+    folder: ~/.gradle/caches
+  check_script: gradle check
+  cleanup_before_cache_script:
+    - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
+    - find ~/.gradle/caches/ -name "*.lock" -type f -delete
