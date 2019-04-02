@@ -11,11 +11,12 @@ build_task:
     - pkg install -y zip
     #- cd /usr/ports/archivers/zip
     #- make install clean
-  install_sdkman_script:
-    - curl -s "https://get.sdkman.io" | bash
-    - source "/home/user/.sdkman/bin/sdkman-init.sh"
+  #install_sdkman_script:
+  #  - curl -s "https://get.sdkman.io" | bash
+  #  - source "/home/user/.sdkman/bin/sdkman-init.sh"
   install_gradle_script:
-    - sdk install gradle
+    #- sdk install gradle
+    - pkg install -y gradle
   build_script:
     - gradle build
   cleanup_before_cache_script:
