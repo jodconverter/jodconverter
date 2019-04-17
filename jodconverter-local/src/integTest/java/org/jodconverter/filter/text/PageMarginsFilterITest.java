@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jodconverter.filter;
+package org.jodconverter.filter.text;
 
 import static org.junit.Assert.fail;
 
@@ -29,7 +29,6 @@ import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.filter.text.PageMarginsFilter;
 import org.jodconverter.office.OfficeException;
 
 public class PageMarginsFilterITest extends AbstractOfficeITest {

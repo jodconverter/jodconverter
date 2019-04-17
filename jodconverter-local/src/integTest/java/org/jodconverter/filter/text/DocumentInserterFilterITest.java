@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jodconverter.filter;
+package org.jodconverter.filter.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,32 +31,33 @@ import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.filter.text.PageSelectorFilter;
 
-public class PageSelectorFilterITest extends AbstractOfficeITest {
+public class DocumentInserterFilterITest extends AbstractOfficeITest {
 
-  private static final String SOURCE_FILENAME = "test_multi_page.doc";
-  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
+  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, "test.doc");
+  private static final File MERGED_FILE_1 = new File(DOCUMENTS_DIR, "test_multi_page.doc");
+  private static final File MERGED_FILE_2 = new File(DOCUMENTS_DIR, "test_replace.doc");
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   /**
-   * Test the conversion of a document replacing text along the way.
+   * Test the conversion of a document inserting documents along the way.
    *
    * @throws Exception if an error occurs.
    */
   @Test
-  public void doFilter_SelectPage2_ShouldConvertOnlyPage2() throws Exception {
+  public void doFilter_With2Filter_TargetShouldContainAllDocuments() throws Exception {
 
-    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page2.txt");
+    final File targetFile = new File(testFolder.getRoot(), "target.txt");
 
-    // Create the PageSelectorFilter to test.
-    final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
+    // Create the DocumentInserterFilter to test.
+    final DocumentInserterFilter filter1 = new DocumentInserterFilter(MERGED_FILE_1);
+    final DocumentInserterFilter filter2 = new DocumentInserterFilter(MERGED_FILE_2);
 
     // Test the filter
 
     LocalConverter.builder()
-        .filterChain(selectorFilter)
+        .filterChain(filter1, filter2)
         .build()
         .convert(SOURCE_FILE)
         .to(targetFile)
@@ -64,8 +65,10 @@ public class PageSelectorFilterITest extends AbstractOfficeITest {
 
     final String content = FileUtils.readFileToString(targetFile, Charset.forName("UTF-8"));
     assertThat(content)
+        .contains("Test document")
+        .contains("Test document Page 1")
         .contains("Test document Page 2")
-        .doesNotContain("Test document Page 1")
-        .doesNotContain("Test document Page 3");
+        .contains("Test document Page 3")
+        .contains("Getting up early all the time");
   }
 }

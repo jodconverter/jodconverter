@@ -31,7 +31,6 @@ import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.filter.text.PageCounterFilter;
 import org.jodconverter.filter.text.PageSelectorFilter;
 
 public class PageCounterFilterITest extends AbstractOfficeITest {
@@ -47,13 +46,49 @@ public class PageCounterFilterITest extends AbstractOfficeITest {
    * @throws Exception if an error occurs.
    */
   @Test
+  public void doFilterWithDeprecated_SelectPage2BetweenCounter_ShouldCount3Then1()
+      throws Exception {
+
+    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page2.txt");
+
+    final org.jodconverter.filter.text.PageCounterFilter countFilter1 =
+        new org.jodconverter.filter.text.PageCounterFilter();
+    final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
+    final org.jodconverter.filter.text.PageCounterFilter countFilter2 =
+        new org.jodconverter.filter.text.PageCounterFilter();
+
+    // Test the filter
+    LocalConverter.builder()
+        .filterChain(countFilter1, selectorFilter, countFilter2)
+        .build()
+        .convert(SOURCE_FILE)
+        .to(targetFile)
+        .execute();
+
+    final String content = FileUtils.readFileToString(targetFile, Charset.forName("UTF-8"));
+    assertThat(content)
+        .contains("Test document Page 2")
+        .doesNotContain("Test document Page 1")
+        .doesNotContain("Test document Page 3");
+    assertThat(countFilter1.getPageCount()).isEqualTo(3);
+    assertThat(countFilter2.getPageCount()).isEqualTo(1);
+  }
+
+  /**
+   * Test the conversion of a document, choosing a specific page.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
   public void doFilter_SelectPage2BetweenCounter_ShouldCount3Then1() throws Exception {
 
     final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page2.txt");
 
-    final PageCounterFilter countFilter1 = new PageCounterFilter();
+    final org.jodconverter.filter.PageCounterFilter countFilter1 =
+        new org.jodconverter.filter.PageCounterFilter();
     final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
-    final PageCounterFilter countFilter2 = new PageCounterFilter();
+    final org.jodconverter.filter.PageCounterFilter countFilter2 =
+        new org.jodconverter.filter.PageCounterFilter();
 
     // Test the filter
     LocalConverter.builder()

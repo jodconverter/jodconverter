@@ -17,9 +17,9 @@
  * limitations under the License.
  */
 
-package org.jodconverter.filter;
+package org.jodconverter.filter.draw;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 
@@ -29,27 +29,33 @@ import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.filter.text.LinkedImagesEmbedderFilter;
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.filter.PageCounterFilter;
 
-public class LinkedImagesEmbedderFilterITest extends AbstractOfficeITest {
+public class PageSelectorFilterITest extends AbstractOfficeITest {
+
+  private static final String SOURCE_FILENAME = "test_multi_page.odg";
+  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
-  public void doFilter_DoesNotThrowAnyException() throws OfficeException {
+  public void doFilter_SelectPage2_ShouldConvertOnlyPage2() throws Exception {
 
-    assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(new LinkedImagesEmbedderFilter())
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR, "test_with_linked_images.odt"))
-                  .to(new File(testFolder.getRoot(), "test_with_linked_images.odt"))
-                  .execute();
-            })
-        .doesNotThrowAnyException();
+    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page2.odg");
 
-    // TODO: Check if all images are now embedded.
+    // Create the PageSelectorFilter to test.
+    final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
+    final PageCounterFilter countFilter = new PageCounterFilter();
+
+    // Test the filter
+
+    LocalConverter.builder()
+        .filterChain(selectorFilter, countFilter)
+        .build()
+        .convert(SOURCE_FILE)
+        .to(targetFile)
+        .execute();
+
+    assertThat(countFilter.getPageCount()).isEqualTo(1);
   }
 }

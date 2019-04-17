@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jodconverter.filter;
+package org.jodconverter.filter.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +31,6 @@ import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.filter.text.TableOfContentUpdaterFilter;
 
 public class TableOfContentUpdaterFilterITest extends AbstractOfficeITest {
 

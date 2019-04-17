@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jodconverter.filter;
+package org.jodconverter.filter.text;
 
 import java.io.File;
 import java.util.Map;
@@ -28,8 +28,6 @@ import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.filter.text.GraphicInserterFilter;
-import org.jodconverter.filter.text.TextInserterFilter;
 
 public class TextInserterFilterITest extends AbstractOfficeITest {
 

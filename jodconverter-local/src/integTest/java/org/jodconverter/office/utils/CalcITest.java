@@ -37,12 +37,12 @@ import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;
 
-public class WriteITest extends AbstractOfficeITest {
+public class CalcITest extends AbstractOfficeITest {
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
-  public void isTextAndGetTextDoc_WithTextDocument_NoExceptionThrown() {
+  public void isCalcAndGetCalcDoc_WithCalcDocument_NoExceptionThrown() {
 
     final Filter filter =
         new Filter() {
@@ -51,40 +51,9 @@ public class WriteITest extends AbstractOfficeITest {
               final OfficeContext context, final XComponent document, final FilterChain chain)
               throws Exception {
 
-            assertThat(Write.isText(document)).isTrue();
-            assertThat(Write.getTextDoc(null)).isNull();
-            assertThat(Write.getTextDoc(document)).isNotNull();
-          }
-        };
-
-    final File outputFile = new File(testFolder.getRoot(), "out.pdf");
-    FileUtils.deleteQuietly(outputFile);
-
-    assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(filter)
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR + "test.odt"))
-                  .to(outputFile)
-                  .execute();
-            })
-        .doesNotThrowAnyException();
-  }
-
-  @Test
-  public void isNotTextAndGetTextDoc_WithCalcDocument_NoExceptionThrown() {
-
-    final Filter filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
-
-            assertThat(Write.isText(document)).isFalse();
-            assertThat(Write.getTextDoc(null)).isNull();
-            assertThat(Write.getTextDoc(document)).isNull();
+            assertThat(Calc.isCalc(document)).isTrue();
+            assertThat(Calc.getCalcDoc(null)).isNull();
+            assertThat(Calc.getCalcDoc(document)).isNotNull();
           }
         };
 
@@ -97,6 +66,37 @@ public class WriteITest extends AbstractOfficeITest {
                   .filterChain(filter)
                   .build()
                   .convert(new File(DOCUMENTS_DIR + "test.ods"))
+                  .to(outputFile)
+                  .execute();
+            })
+        .doesNotThrowAnyException();
+  }
+
+  @Test
+  public void isNotCalcAndGetCalcDoc_WithTextDocument_NoExceptionThrown() {
+
+    final Filter filter =
+        new Filter() {
+          @Override
+          public void doFilter(
+              final OfficeContext context, final XComponent document, final FilterChain chain)
+              throws Exception {
+
+            assertThat(Calc.isCalc(document)).isFalse();
+            assertThat(Calc.getCalcDoc(null)).isNull();
+            assertThat(Calc.getCalcDoc(document)).isNull();
+          }
+        };
+
+    final File outputFile = new File(testFolder.getRoot(), "out.pdf");
+    FileUtils.deleteQuietly(outputFile);
+
+    assertThatCode(
+            () -> {
+              LocalConverter.builder()
+                  .filterChain(filter)
+                  .build()
+                  .convert(new File(DOCUMENTS_DIR + "test.odt"))
                   .to(outputFile)
                   .execute();
             })
