@@ -14,6 +14,8 @@ importFormatTable["odp"] = "Presentation";
 importFormatTable["sxi"] = "Presentation";
 importFormatTable["ppt"] = "Presentation";
 importFormatTable["pptx"] = "Presentation";
+importFormatTable["vsd"] = "Drawing";
+importFormatTable["vsdx"] = "Drawing";
 
 exportFormatTable = new Array();
 exportFormatTable["Text"] = Array();
@@ -38,4 +40,6 @@ exportFormatTable["Presentation"][2] = new Option("OpenDocument Presentation (od
 exportFormatTable["Presentation"][3] = new Option("OpenOffice.org 1.0 Presentation (sxi)", "sxi");
 exportFormatTable["Presentation"][4] = new Option("Microsoft PowerPoint 97-2003 (ppt)", "ppt");
 exportFormatTable["Presentation"][5] = new Option("Microsoft PowerPoint 2007-2013 (pptx)", "pptx");
+exportFormatTable["Drawing"] = Array();
+exportFormatTable["Drawing"][0] = new Option("Portable Document Format (pdf)", "pdf");
 

@@ -22,6 +22,8 @@ var importFormatTable = {
     sxi: "Presentation",
     ppt: "Presentation",
     pptx: "Presentation",
+    vsd: "Drawing",
+    vsdx: "Drawing"
 };
 
 var exportFormatTable = {
@@ -59,4 +61,8 @@ var exportFormatTable = {
         new Option("Microsoft PowerPoint 2007-2013 (pptx)", "pptx"),
         new Option("Portable Network Graphics (png)", "png"),
     ],
+
+    Drawing: [
+        new Option("Portable Document Format (pdf)", "pdf")
+	]
 };

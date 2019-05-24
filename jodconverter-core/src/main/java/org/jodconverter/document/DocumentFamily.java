@@ -32,5 +32,5 @@ public enum DocumentFamily {
   PRESENTATION,
 
   /** Drawing documents (odg, png, svg, etc.) */
-  DRAWING
+  DRAWING,
 }
