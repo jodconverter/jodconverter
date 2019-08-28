@@ -32,6 +32,7 @@ ext {
 dependencies {
   compile project(':jodconverter-local')
   compile libraries.commons_fileupload
+  runtime libraries.slf4j_log4j
 
   providedCompile libraries.servlet_api
   
