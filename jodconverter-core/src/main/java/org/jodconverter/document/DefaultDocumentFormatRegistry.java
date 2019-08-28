@@ -352,6 +352,26 @@ public final class DefaultDocumentFormatRegistry {
   public static final DocumentFormat SVG = getInstance().getFormatByExtension("svg");
 
   /**
+   * Visio format.
+   *
+   * <ul>
+   *   <li>Extension: vsd
+   *   <li>Media Type: application/x-visio
+   * </ul>
+   */
+  public static final DocumentFormat VSD = getInstance().getFormatByExtension("vsd");
+
+  /**
+   * New Visio format.
+   *
+   * <ul>
+   *   <li>Extension: vsdx
+   *   <li>Media Type: application/vnd-ms-visio.drawing
+   * </ul>
+   */
+  public static final DocumentFormat VSDX = getInstance().getFormatByExtension("vsdx");
+
+  /**
    * Portable Network Graphics.
    *
    * <ul>

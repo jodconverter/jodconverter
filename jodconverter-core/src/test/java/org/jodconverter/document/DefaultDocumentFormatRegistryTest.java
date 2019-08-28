@@ -118,6 +118,8 @@ public class DefaultDocumentFormatRegistryTest {
         "svg",
         "swf",
         "tif",
+        "vsd",
+        "vsdx",
         "bmp");
   }
 
@@ -200,6 +202,10 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.GIF);
     assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("bmp"))
         .isEqualTo(DefaultDocumentFormatRegistry.BMP);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("vsd"))
+        .isEqualTo(DefaultDocumentFormatRegistry.VSD);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("vsdx"))
+        .isEqualTo(DefaultDocumentFormatRegistry.VSDX);
   }
 
   @Test
@@ -308,6 +314,11 @@ public class DefaultDocumentFormatRegistryTest {
         .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
     assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/bmp"))
         .isEqualTo(DefaultDocumentFormatRegistry.BMP);
+    assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd-visio"))
+        .isEqualTo(DefaultDocumentFormatRegistry.VSD);
+    assertThat(
+            DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd-ms-visio.drawing"))
+        .isEqualTo(DefaultDocumentFormatRegistry.VSDX);
   }
 
   @Test

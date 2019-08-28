@@ -32,6 +32,28 @@
     }
   },
   {
+    "name": "Visio",
+    "extensions": ["vsd"],
+    "mediaType": "application/vnd-visio",
+    "inputFamily": "DRAWING",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_pdf_Export"
+      }
+    }
+  },
+  {
+    "name": "Visio XML",
+    "extensions": ["vsdx"],
+    "mediaType": "application/vnd-ms-visio.drawing",
+    "inputFamily": "DRAWING",
+    "storeProperties": {
+      "DRAWING": {
+        "FilterName": "draw_pdf_Export"
+      }
+    }
+  },
+  {
     "name": "HTML",
     "extensions": ["html"],
     "mediaType": "text/html",
