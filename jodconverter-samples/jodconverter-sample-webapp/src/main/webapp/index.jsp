@@ -15,17 +15,23 @@ td.label { text-align: right; right-padding: 10px; }
     <script type="text/javascript" src="documentFormats.js"></script>
     <script type="text/javascript">
 
-function updateOutputFormats(inputDocument) {
+function updateOutputFormats() {
+
+	var btnConvert = document.getElementById("btnConvert")
+	var inputDocument = document.getElementById("inputDocument")
+
     var dot = inputDocument.value.lastIndexOf('.');
     if (dot != -1) {
         var extension = inputDocument.value.substr(dot + 1);
 		var family = importFormatTable[extension];
 		if (family == undefined) {
 	    	alert('Sorry, but conversion from the document type "'+ extension +'" is not supported');
+    		inputDocument.value = "";
+			btnConvert.disabled = true;
 	    	return false;
 		}
 		var formats = exportFormatTable[family];
-		var options = inputDocument.form.outputFormat.options;
+		var options = document.getElementById("outputFormat").options;
 		options.length = 0;
 		for (var i = 0; i < formats.length; i++) {
 	    	var option = formats[i];
@@ -33,7 +39,15 @@ function updateOutputFormats(inputDocument) {
 	        	options[options.length] = option;
 	    	}
 		}
+		btnConvert.disabled = false;
+		return true;
     }
+	if (inputDocument.value != '') {
+		alert('Sorry, but conversion from unknown document type is not supported');
+	}
+    inputDocument.value = "";
+	btnConvert.disabled = true;
+    return false;
 }
 
 function doSubmit(form) {
@@ -43,7 +57,7 @@ function doSubmit(form) {
 
     </script>
   </head>
-  <body onload="updateOutputFormats(document.forms[0].inputDocument)">
+  <body onload="updateOutputFormats()">
 
       <h1>JODConverter Sample - Web Application</h1>
       <h2>Convert office documents</h2>
@@ -53,16 +67,16 @@ function doSubmit(form) {
           <tr>
             <td class="label">Document:</td>
             <td>
-              <input type="file" name="inputDocument" size="40" onchange="updateOutputFormats(this)"/>
+              <input type="file" id="inputDocument" name="inputDocument" size="40" onchange="updateOutputFormats()"/>
             </td>
           </tr>
           <tr>
             <td class="label">Convert To:</td>
             <td>
-              <select name="outputFormat" style="width: 38ex;">
+              <select id="outputFormat" name="outputFormat" style="width: 38ex;">
                 <option value="pdf">Portable Document Format (pdf)</option>
               </select>
-              <input type="submit" value="Convert!"/>
+              <input id="btnConvert" type="submit" value="Convert!"/>
             </td>
           </tr>
         </table>
