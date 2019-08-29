@@ -79,10 +79,12 @@ public class ConverterServlet extends HttpServlet {
 
     final String baseName = FilenameUtils.getBaseName(uploadedFile.getName());
     final File inputFile = File.createTempFile(baseName, "." + inputExtension);
+    FileUtils.deleteQuietly(inputFile);
     writeUploadedFile(uploadedFile, inputFile);
 
     final String outputExtension = FilenameUtils.getExtension(request.getRequestURI());
     final File outputFile = File.createTempFile(baseName, "." + outputExtension);
+    FileUtils.deleteQuietly(outputFile);
     try {
       final DocumentConverter converter = webappContext.getDocumentConverter();
       final long startTime = System.currentTimeMillis();
