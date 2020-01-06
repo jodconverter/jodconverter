@@ -1,17 +1,17 @@
 description = 'JODConverter - Sample Rest Web Api'
 
 buildscript {
-  ext {
-    // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    springBootVersion = '2.1.2.RELEASE'
-    swaggerVersion = '2.9.2'
-  }
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-  }
+    ext {
+        // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
+        springBootVersion = '2.1.2.RELEASE'
+        swaggerVersion = '2.9.2'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
 }
 
 apply plugin: 'java'
@@ -23,14 +23,18 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-  compile project(':jodconverter-local')
-  compile project(':jodconverter-spring-boot-starter')
-  compile 'org.springframework.boot:spring-boot-starter-web'
-  compile 'org.glassfish.jaxb:jaxb-runtime:2.3.0.1'
-  compile "io.springfox:springfox-swagger2:$swaggerVersion"
-  compile "io.springfox:springfox-swagger-ui:$swaggerVersion"
+    implementation project(':jodconverter-local')
+    implementation project(':jodconverter-spring-boot-starter')
+
+    implementation libraries.commons_io
+    implementation libraries.commons_lang3
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.0.1'
+    implementation "io.springfox:springfox-swagger2:$swaggerVersion"
+    implementation "io.springfox:springfox-swagger-ui:$swaggerVersion"
 }

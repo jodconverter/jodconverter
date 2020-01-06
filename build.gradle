@@ -5,36 +5,36 @@ description = 'JODConverter'
 
 // External dependencies for the build script
 buildscript {
-  
-  // Gradle will not find vars defined in an external file when referring to them
-  // in the buildscript block, unless you link it from the buildscript block, too.
-  apply from: "dependencies.gradle"
 
-  repositories {
-    mavenCentral()
+    // Gradle will not find vars defined in an external file when referring to them
+    // in the buildscript block, unless you link it from the buildscript block, too.
+    apply from: "dependencies.gradle"
 
-    //Needed only for SNAPSHOT versions
-    //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-    maven { url "https://plugins.gradle.org/m2" }
-  }
+    repositories {
+        mavenCentral()
 
-  dependencies {
-    classpath gradlePlugins.coveralls
-    classpath gradlePlugins.dependency_management
-    classpath gradlePlugins.nebula_project
-    classpath gradlePlugins.nexus_staging
-    classpath gradlePlugins.spotless
-  }
+        //Needed only for SNAPSHOT versions
+        //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://plugins.gradle.org/m2" }
+    }
+
+    dependencies {
+        classpath gradlePlugins.coveralls
+        classpath gradlePlugins.dependency_management
+        classpath gradlePlugins.nebula_project
+        classpath gradlePlugins.nexus_staging
+        classpath gradlePlugins.spotless
+    }
 }
 
 ext {
-  baselineJavaVersion = JavaVersion.VERSION_1_8
-  sourceEncoding = "UTF-8"
+    baselineJavaVersion = JavaVersion.VERSION_1_8
+    sourceEncoding = "UTF-8"
 
-  // Set up different subproject lists for individual configuration
-  ext.javaprojects = subprojects.findAll { new File(it.projectDir, 'src/main/java').directory }
-  ext.releasedprojects = javaprojects.findAll { !it.name.contains('sample') }
-  ext.publishedprojects = releasedprojects.findAll { !it.name.contains('jodconverter-cli') }
+    // Set up different subproject lists for individual configuration
+    ext.javaprojects = subprojects.findAll { new File(it.projectDir, 'src/main/java').directory }
+    ext.releasedprojects = javaprojects.findAll { !it.name.contains('sample') }
+    ext.publishedprojects = releasedprojects.findAll { !it.name.contains('jodconverter-cli') }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -42,65 +42,65 @@ ext {
 
 allprojects {
 
-  // Add the clean task to all the project
-  apply plugin: 'base'
-  // Generates files for Intellij IDEA
-  apply plugin: 'idea'
-  // Generates files for Eclipse
-  apply plugin: 'eclipse'
-  // Generate reports containing useful information about the build (tasks, dependencies, properties)
-  apply plugin: 'project-report'
+    // Add the clean task to all the project
+    apply plugin: 'base'
+    // Generates files for Intellij IDEA
+    apply plugin: 'idea'
+    // Generates files for Eclipse
+    apply plugin: 'eclipse'
+    // Generate reports containing useful information about the build (tasks, dependencies, properties)
+    apply plugin: 'project-report'
 
-  // Set the group and current version
-  group = groupId
-  version = currentVersion
-  
-  // Set the maven repository that looks for plugin dependencies.
-  repositories {
-    mavenCentral()
-  }
+    // Set the group and current version
+    group = groupId
+    version = currentVersion
 
-  // Eclipse setup
+    // Set the maven repository that looks for plugin dependencies.
+    repositories {
+        mavenCentral()
+    }
 
-  // Workaround until https://github.com/gradle/gradle/issues/898
-  // is resolved.
+    // Eclipse setup
 
-  // Several files have UTF-8 encoding and Eclipse running on Windows
-  // will have trouble unless we tell it to use UTF-8 encoding. This
-  // setting needs to go into the org.eclipse.core.resources.prefs file,
-  // which the project script isn't set up to configure.
-  eclipse {
+    // Workaround until https://github.com/gradle/gradle/issues/898
+    // is resolved.
 
-    ext.corePrefsPath = '.settings/org.eclipse.core.resources.prefs'
+    // Several files have UTF-8 encoding and Eclipse running on Windows
+    // will have trouble unless we tell it to use UTF-8 encoding. This
+    // setting needs to go into the org.eclipse.core.resources.prefs file,
+    // which the project script isn't set up to configure.
+    eclipse {
 
-    ext.genCorePrefs = {
-      File corePrefs = file(corePrefsPath)
-      corePrefs.parentFile.mkdirs()
-      corePrefs.text = """\
+        ext.corePrefsPath = '.settings/org.eclipse.core.resources.prefs'
+
+        ext.genCorePrefs = {
+            File corePrefs = file(corePrefsPath)
+            corePrefs.parentFile.mkdirs()
+            corePrefs.text = """\
       eclipse.preferences.version=1
       encoding/<project>=UTF-8
       """.stripIndent()
+        }
+
+        project {
+            file {
+                // Will be applied when the project is imported into Eclipse
+                genCorePrefs()
+            }
+        }
+
+        // Will be applied after the eclipseProject task
+        eclipseProject.doLast {
+            genCorePrefs()
+        }
+
+        // Will be applied after the cleanEclipse task
+        cleanEclipse.doLast {
+            delete corePrefsPath
+        }
     }
 
-    project {
-      file {
-        // Will be applied when the project is imported into Eclipse
-        genCorePrefs()
-      }
-    }
-
-    // Will be applied after the eclipseProject task
-    eclipseProject.doLast {
-      genCorePrefs()
-    }
-
-    // Will be applied after the cleanEclipse task
-    cleanEclipse.doLast {
-      delete corePrefsPath
-    }
-  }
-
-  tasks.eclipse.dependsOn(cleanEclipse)
+    tasks.eclipse.dependsOn(cleanEclipse)
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -109,15 +109,15 @@ allprojects {
 // Apply the configuration for the java projects only
 configure(javaprojects) {
 
-  // Spotless needs a buildscript repository for all java project
-  buildscript {
-    repositories {
-      maven { url "https://plugins.gradle.org/m2" }
+    // Spotless needs a buildscript repository for all java project
+    buildscript {
+        repositories {
+            maven { url "https://plugins.gradle.org/m2" }
+        }
     }
-  }
 
-  // Apply the gradle file specific to all java projects
-  apply from: "$rootDir/gradle/java-projects.gradle"
+    // Apply the gradle file specific to all java projects
+    apply from: "$rootDir/gradle/java-projects.gradle"
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,52 +132,52 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 // Configures the JaCoCo plugin
 jacoco {
-  toolVersion = versions.jacoco_version
+    toolVersion = versions.jacoco_version
 }
 
 // Creates an aggregated JaCoCo executionData for all
 // the tests (unit tests and integration tests) found
 // in sub Java projects 
 task jacocoMerge(type: JacocoMerge) {
-  description = 'Aggregates JaCoCo test and integration test coverage reports of all projects.'
-  group = "Reporting"
-    
-  // Gather execution data from all subprojects
-  releasedprojects.each { subproject ->
-    executionData subproject.tasks.withType(Test)
-  }
-  doFirst {
-    executionData = files(executionData.findAll { it.exists() })
-  }
+    description = 'Aggregates JaCoCo test and integration test coverage reports of all projects.'
+    group = "Reporting"
+
+    // Gather execution data from all subprojects
+    releasedprojects.each { subproject ->
+        executionData subproject.tasks.withType(Test)
+    }
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
 }
 
 // Code coverage report for all the sub (java) projects
 task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
-  description = 'Generates an aggregate report from all subprojects'
-  dependsOn releasedprojects.test, releasedprojects.integrationTest, jacocoMerge
+    description = 'Generates an aggregate report from all subprojects'
+    dependsOn releasedprojects.test, releasedprojects.integrationTest, jacocoMerge
 
-  additionalSourceDirs = files(releasedprojects.sourceSets.main.allSource.srcDirs)
-  sourceDirectories = files(releasedprojects.sourceSets.main.allSource.srcDirs)
-  classDirectories = files(releasedprojects.sourceSets.main.output)
-  executionData jacocoMerge.destinationFile
+    additionalSourceDirs.setFrom(files(releasedprojects.sourceSets.main.allSource.srcDirs))
+    sourceDirectories.setFrom(files(releasedprojects.sourceSets.main.allSource.srcDirs))
+    classDirectories.setFrom(files(releasedprojects.sourceSets.main.output))
+    executionData jacocoMerge.destinationFile
 
-  reports {
-    html.enabled = true // human readable
-    xml.enabled = true // required by coveralls
-  }
+    reports {
+        html.enabled = true // human readable
+        xml.enabled = true // required by coveralls
+    }
 }
 
 coveralls {
-  sourceDirs = releasedprojects.sourceSets.main.allSource.srcDirs.flatten()
-  jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+    sourceDirs = releasedprojects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 }
 
 tasks.coveralls {
-  group = 'Coverage reports'
-  description = 'Uploads the aggregated coverage report to Coveralls'
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
 
-  dependsOn jacocoRootReport
-  onlyIf { System.env.'CI' }
+    dependsOn jacocoRootReport
+    onlyIf { System.env.'CI' }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -187,29 +187,29 @@ tasks.coveralls {
 
 configure(releasedprojects) {
 
-  apply plugin: 'distribution'
-  
-  // exclude jodconverter-cli since it has its own distribution configuration
-  if (!project.name.contains('jodconverter-cli')) {
-    distributions {
-      main {
-        baseName = project.name
-        contents {
-          from jar, sourcesJar, javadocJar
+    apply plugin: 'distribution'
+
+    // exclude jodconverter-cli since it has its own distribution configuration
+    if (!project.name.contains('jodconverter-cli')) {
+        distributions {
+            main {
+                baseName = project.name
+                contents {
+                    from jar, sourcesJar, javadocJar
+                }
+            }
         }
-      }
     }
-  }
 }
 
 // Copy all the distributions of the subprojects to the root project
 task distZip(type: Zip) {
-  description "Create full distribution zip"
-  baseName project.name
-  group "Distribution"
-   
-  //from releasedprojects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
-  from releasedprojects.collect { it.distZip }
+    description "Create full distribution zip"
+    group "Distribution"
+    archiveBaseName.set(project.name)
+
+    //from releasedprojects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
+    from releasedprojects.collect { it.distZip }
 }
 project.tasks["distZip"].dependsOn releasedprojects*.distZip
 //project.tasks["distZip"].dependsOn releasedprojects*.assembleDist
@@ -223,31 +223,31 @@ project.tasks["distZip"].dependsOn releasedprojects*.distZip
 apply plugin: "io.codearte.nexus-staging"
 
 nexusStaging {
-  username = findProperty('ossrhUsername')
-  password = findProperty('ossrhPassword')
+    username = findProperty('ossrhUsername')
+    password = findProperty('ossrhPassword')
 }
 
 // Apply the configuration for the published projects only
 configure(publishedprojects) {
 
-  // Apply the gradle file specific to all published projects
-  apply from: "$rootDir/gradle/published-projects.gradle"
+    // Apply the gradle file specific to all published projects
+    apply from: "$rootDir/gradle/published-projects.gradle"
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Utilities
 task printConfigurations {
-  group "Help"
-  doLast {
-  
-    subprojects.findAll().each { p ->
-      println "${p}"
-      p.configurations.each { println "  | " + it.name }
-      println ""
+    group "Help"
+    doLast {
+
+        subprojects.findAll().each { p ->
+            println "${p}"
+            p.configurations.each { println "  | " + it.name }
+            println ""
+        }
     }
-  }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 

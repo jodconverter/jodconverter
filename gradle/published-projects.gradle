@@ -8,55 +8,55 @@ apply plugin: 'maven'
 
 // Signature of artifacts
 signing {
-  required { gradle.taskGraph.hasTask("uploadArchives") }
-  sign configurations.archives
+    required { gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
 }
 
 // OSSRH publication
 uploadArchives {
-  repositories {
-    mavenDeployer {
-      // POM signature
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            
-      // Target repository
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
-      }
-            
-      // Snapshot repository
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
-      }
-            
-      pom.project {
-        name project.name
-        description project.description
-        packaging 'jar'
-        url 'https://github.com/sbraconnier/jodconverter'
-        scm {
-          connection 'scm:git:https://github.com/sbraconnier/jodconverter.git'
-          developerConnection 'scm:git:git@https://github.com/sbraconnier/jodconverter.git'
-          url 'https://github.com/sbraconnier/jodconverter.git'
-        }
+    repositories {
+        mavenDeployer {
+            // POM signature
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        licenses {
-          license {
-            name 'The Apache License, Version 2.0'
-            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-          }
-        }
+            // Target repository
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
+            }
 
-        developers {
-          developer {
-            id = 'sbraconnier'
-            name = 'Simon Braconnier'
-            email = 'simonbraconnier@gmail.com'
-          }
+            // Snapshot repository
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
+            }
+
+            pom.project {
+                name project.name
+                description project.description
+                packaging 'jar'
+                url 'https://github.com/sbraconnier/jodconverter'
+                scm {
+                    connection 'scm:git:https://github.com/sbraconnier/jodconverter.git'
+                    developerConnection 'scm:git:git@https://github.com/sbraconnier/jodconverter.git'
+                    url 'https://github.com/sbraconnier/jodconverter.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'sbraconnier'
+                        name = 'Simon Braconnier'
+                        email = 'simonbraconnier@gmail.com'
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

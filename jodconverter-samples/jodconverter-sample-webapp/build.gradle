@@ -1,17 +1,17 @@
 description = 'JODConverter - Sample Web Application'
 
 buildscript {
-  ext {
-    // Latest version https://plugins.gradle.org/plugin/com.bmuschko.tomcat
-    gradleTomcatVersion = '2.5'
-  }
-  repositories {
-    mavenCentral()
-  }
+    ext {
+        // Latest version https://plugins.gradle.org/plugin/com.bmuschko.tomcat
+        gradleTomcatVersion = '2.5'
+    }
+    repositories {
+        mavenCentral()
+    }
 
-  dependencies {
-    classpath "com.bmuschko:gradle-tomcat-plugin:${gradleTomcatVersion}"
-  }
+    dependencies {
+        classpath "com.bmuschko:gradle-tomcat-plugin:${gradleTomcatVersion}"
+    }
 }
 
 apply plugin: 'war'
@@ -21,26 +21,29 @@ apply plugin: 'com.bmuschko.tomcat'
 sourceCompatibility = 1.8
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 ext {
-  // Latets version: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
-  tomcatVersion = '9.0.14'
+    // Latets version: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
+    tomcatVersion = '9.0.14'
 }
 
 dependencies {
-  compile project(':jodconverter-local')
-  compile libraries.commons_fileupload
-  runtime libraries.slf4j_log4j
+    implementation project(':jodconverter-local')
 
-  providedCompile libraries.servlet_api
-  
-  tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
-  tomcat "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+    implementation libraries.commons_fileupload
+    implementation libraries.slf4j_api
+
+    runtimeOnly libraries.slf4j_log4j
+
+    providedCompile libraries.servlet_api
+
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
+    tomcat "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 }
 
 tomcat {
-  httpProtocol = 'org.apache.coyote.http11.Http11Nio2Protocol'
-  ajpProtocol  = 'org.apache.coyote.ajp.AjpNio2Protocol'
+    httpProtocol = 'org.apache.coyote.http11.Http11Nio2Protocol'
+    ajpProtocol = 'org.apache.coyote.ajp.AjpNio2Protocol'
 }

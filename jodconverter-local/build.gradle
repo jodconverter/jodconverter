@@ -1,28 +1,32 @@
 description = 'JODConverter - Local'
 
+apply plugin: 'java-library'
+
 dependencies {
-  compile project(':jodconverter-core')
+    api project(':jodconverter-core')
 
-  if (project.hasProperty("useLibreOffice")) {
-    compile "org.libreoffice:juh:$versions.libre_office_version"
-    compile "org.libreoffice:jurt:$versions.libre_office_version"
-    compile "org.libreoffice:ridl:$versions.libre_office_version"
-    compile "org.libreoffice:unoil:$versions.libre_office_version"  
-  } else {
-    compile "org.openoffice:juh:$versions.open_office_version"
-    compile "org.openoffice:jurt:$versions.open_office_version"
-    compile "org.openoffice:ridl:$versions.open_office_version"
-    compile "org.openoffice:unoil:$versions.open_office_version"
-  }
+    if (project.hasProperty("useLibreOffice")) {
+        implementation "org.libreoffice:juh:$versions.libre_office_version"
+        implementation "org.libreoffice:jurt:$versions.libre_office_version"
+        implementation "org.libreoffice:ridl:$versions.libre_office_version"
+        implementation "org.libreoffice:unoil:$versions.libre_office_version"
+    } else {
+        implementation "org.openoffice:juh:$versions.open_office_version"
+        implementation "org.openoffice:jurt:$versions.open_office_version"
+        implementation "org.openoffice:ridl:$versions.open_office_version"
+        implementation "org.openoffice:unoil:$versions.open_office_version"
+    }
 
-  compile libraries.slf4j_api
+    implementation libraries.commons_io
+    implementation libraries.commons_lang3
+    implementation libraries.slf4j_api
 
-  testCompile libraries.slf4j_log4j
-  testCompile project(path: ':jodconverter-core', configuration: 'tests')
+    testImplementation libraries.slf4j_log4j
+    testImplementation project(path: ':jodconverter-core', configuration: 'tests')
 }
 
 integrationTest {
-  // Run the stress and performance tests manually only
-  exclude 'org/jodconverter/StressITest.class'
-  exclude 'org/jodconverter/PerformanceITest.class'
+    // Run the stress and performance tests manually only
+    exclude 'org/jodconverter/StressITest.class'
+    exclude 'org/jodconverter/PerformanceITest.class'
 }

@@ -1,16 +1,16 @@
 description = 'JODConverter - Sample Spring Boot Web Application'
 
 buildscript {
-  ext {
-    // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-    springBootVersion = '2.1.2.RELEASE'
-  }
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-  }
+    ext {
+        // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
+        springBootVersion = '2.1.2.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
 }
 
 apply plugin: 'war'
@@ -20,15 +20,19 @@ apply plugin: 'org.springframework.boot'
 sourceCompatibility = 1.8
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-  compile project(':jodconverter-local')
-  compile project(':jodconverter-spring-boot-starter')
-  compile 'org.springframework.boot:spring-boot-starter-web'
-  compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
-  compile 'org.springframework.boot:spring-boot-devtools'
-  
-  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    implementation project(':jodconverter-local')
+    implementation project(':jodconverter-spring-boot-starter')
+
+    implementation libraries.commons_io
+    implementation libraries.commons_lang3
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }

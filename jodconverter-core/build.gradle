@@ -1,12 +1,12 @@
 description = 'JODConverter - Core'
 
 dependencies {
-  compile libraries.commons_io
-  compile libraries.commons_lang3
-  compile libraries.gson
-  compile libraries.slf4j_api
-  
-  testCompile libraries.slf4j_log4j
+    implementation libraries.commons_io
+    implementation libraries.commons_lang3
+    implementation libraries.gson
+    implementation libraries.slf4j_api
+
+    testImplementation libraries.slf4j_log4j
 }
 
 
@@ -20,9 +20,9 @@ configurations {
     tests
 }
 
-task testJar (type: Jar) {
+task testJar(type: Jar) {
     from sourceSets.test.output
-    classifier = 'test'
+    archiveClassifier.set('test')
 }
 
 artifacts {

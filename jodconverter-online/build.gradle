@@ -1,14 +1,20 @@
 description = 'JODConverter - Online'
 
+apply plugin: 'java-library'
+
 dependencies {
-  compile project(':jodconverter-core')
-  
-  compile libraries.httpcomponents_httpmime
-  compile libraries.httpcomponents_httpcore
-  compile libraries.httpcomponents_httpclient
-  compile libraries.httpcomponents_fluenthc
-  
-  testCompile libraries.slf4j_log4j
-  testCompile libraries.wiremock
-  testCompile project(path: ':jodconverter-core', configuration: 'tests')
+    api project(':jodconverter-core')
+
+    implementation libraries.slf4j_api
+    implementation libraries.commons_io
+    implementation libraries.commons_lang3
+
+    implementation libraries.httpcomponents_httpmime
+    implementation libraries.httpcomponents_httpcore
+    implementation libraries.httpcomponents_httpclient
+    implementation libraries.httpcomponents_fluenthc
+
+    testImplementation libraries.slf4j_log4j
+    testImplementation libraries.wiremock
+    testImplementation project(path: ':jodconverter-core', configuration: 'tests')
 }
