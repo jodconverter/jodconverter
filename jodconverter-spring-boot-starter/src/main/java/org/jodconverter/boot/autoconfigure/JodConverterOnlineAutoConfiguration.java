@@ -40,11 +40,10 @@ import org.jodconverter.ssl.SslConfig;
 @Configuration
 @ConditionalOnClass(OnlineConverter.class)
 @ConditionalOnProperty(
-  prefix = "jodconverter.online",
-  name = "enabled",
-  havingValue = "true",
-  matchIfMissing = false
-)
+    prefix = "jodconverter.online",
+    name = "enabled",
+    havingValue = "true",
+    matchIfMissing = false)
 @EnableConfigurationProperties(JodConverterOnlineProperties.class)
 public class JodConverterOnlineAutoConfiguration {
 

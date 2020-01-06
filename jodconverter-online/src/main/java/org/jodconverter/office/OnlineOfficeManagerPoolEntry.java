@@ -77,9 +77,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     @Override
     public String chooseAlias(final Map<String, PrivateKeyDetails> aliases, final Socket socket) {
 
-      return aliases
-          .keySet()
-          .stream()
+      return aliases.keySet().stream()
           .filter(key -> StringUtils.equalsIgnoreCase(key, keyAlias))
           .findFirst()
           .orElse(null);

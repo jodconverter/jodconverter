@@ -136,9 +136,7 @@ public class ConverterServlet extends HttpServlet {
       final ServletFileUpload fileUpload, final HttpServletRequest request)
       throws FileUploadException {
 
-    return fileUpload
-        .parseRequest(request)
-        .stream()
+    return fileUpload.parseRequest(request).stream()
         .filter(fileItem -> !fileItem.isFormField())
         .findFirst()
         .orElse(null);

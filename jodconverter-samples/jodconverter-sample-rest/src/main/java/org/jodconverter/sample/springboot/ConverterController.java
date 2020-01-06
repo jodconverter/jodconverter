@@ -91,12 +91,11 @@ public class ConverterController {
   @ApiOperation(
       "Convert the incoming document to the specified format (provided as request param) and returns the converted document.")
   @ApiResponses(
-    value = {
-      @ApiResponse(code = 200, message = "Document converted successfully."),
-      @ApiResponse(code = 400, message = "The input document or output format is missing."),
-      @ApiResponse(code = 500, message = "An unexpected error occured.")
-    }
-  )
+      value = {
+        @ApiResponse(code = 200, message = "Document converted successfully."),
+        @ApiResponse(code = 400, message = "The input document or output format is missing."),
+        @ApiResponse(code = 500, message = "An unexpected error occured.")
+      })
   @PostMapping(produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   public Object convertToUsingParam(
       @ApiParam(value = "The input document to convert.", required = true) @RequestParam("data")
@@ -115,12 +114,11 @@ public class ConverterController {
   @ApiOperation(
       "Convert the incoming document to the specified format (provided as path param) and returns the converted document.")
   @ApiResponses(
-    value = {
-      @ApiResponse(code = 200, message = "Document converted successfully."),
-      @ApiResponse(code = 400, message = "The input document or output format is missing."),
-      @ApiResponse(code = 500, message = "An unexpected error occured.")
-    }
-  )
+      value = {
+        @ApiResponse(code = 200, message = "Document converted successfully."),
+        @ApiResponse(code = 400, message = "The input document or output format is missing."),
+        @ApiResponse(code = 500, message = "An unexpected error occured.")
+      })
   @PostMapping(value = "/{format}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   public Object convertToUsingPath(
       @ApiParam(value = "The input document to convert.", required = true) @RequestParam("data")

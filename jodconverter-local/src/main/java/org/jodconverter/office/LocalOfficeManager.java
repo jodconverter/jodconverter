@@ -142,7 +142,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
         } catch (IllegalStateException ex) {
           // Use default
           templateProfileDir = null;
-          LOGGER.warn("Falling back to default templateProfileDir. Cause: ", ex.getMessage());
+          LOGGER.warn("Falling back to default templateProfileDir. Cause: {}", ex.getMessage());
         }
       } else {
         LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);

@@ -108,8 +108,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
     // Fill the registry with loaded formats. Note that we have to use
     // the constructor in order top create read only formats.
-    formats
-        .stream()
+    formats.stream()
         .map(
             fmt -> {
               if (customProperties == null || !customProperties.containsKey(fmt.getExtension())) {

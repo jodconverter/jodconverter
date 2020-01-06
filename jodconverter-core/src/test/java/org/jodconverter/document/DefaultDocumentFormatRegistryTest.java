@@ -40,8 +40,7 @@ public class DefaultDocumentFormatRegistryTest {
       final Set<DocumentFormat> formats, final String... extensions) {
 
     assertThat(formats).hasSize(extensions.length);
-    formats
-        .stream()
+    formats.stream()
         .forEach(format -> assertThat(format.getExtension()).isIn((Object[]) extensions));
   }
 

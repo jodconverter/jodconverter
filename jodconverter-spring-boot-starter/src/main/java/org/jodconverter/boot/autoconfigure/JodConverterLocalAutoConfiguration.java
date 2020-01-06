@@ -49,11 +49,10 @@ import org.jodconverter.process.ProcessManager;
 @Configuration
 @ConditionalOnClass(LocalConverter.class)
 @ConditionalOnProperty(
-  prefix = "jodconverter.local",
-  name = "enabled",
-  havingValue = "true",
-  matchIfMissing = false
-)
+    prefix = "jodconverter.local",
+    name = "enabled",
+    havingValue = "true",
+    matchIfMissing = false)
 @EnableConfigurationProperties(JodConverterLocalProperties.class)
 public class JodConverterLocalAutoConfiguration {
 

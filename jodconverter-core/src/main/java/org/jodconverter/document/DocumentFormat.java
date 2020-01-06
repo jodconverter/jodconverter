@@ -50,9 +50,8 @@ public class DocumentFormat {
   // Be backward compatible. Former json file doesn't
   // support multiple document format extensions.
   @SerializedName(
-    value = "extensions",
-    alternate = {"extension"}
-  )
+      value = "extensions",
+      alternate = {"extension"})
   @JsonAdapter(ExtensionsAdapter.class)
   private final List<String> extensions;
 
@@ -62,9 +61,8 @@ public class DocumentFormat {
   // Be backward compatible. storePropertiesByFamily
   // has been renamed storeProperties
   @SerializedName(
-    value = "storeProperties",
-    alternate = {"storePropertiesByFamily"}
-  )
+      value = "storeProperties",
+      alternate = {"storePropertiesByFamily"})
   private final Map<DocumentFamily, Map<String, Object>> storeProperties;
 
   /**
@@ -303,8 +301,7 @@ public class DocumentFormat {
           Optional.ofNullable(sourceFormat.getLoadProperties())
               .map(
                   map ->
-                      map.entrySet()
-                          .stream()
+                      map.entrySet().stream()
                           .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
               .orElse(null);
       this.storeProperties =
