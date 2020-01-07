@@ -3,15 +3,16 @@ description = 'JODConverter - Spring Boot Starter'
 dependencies {
     compileOnly project(':jodconverter-local')
     compileOnly project(':jodconverter-online')
+
     compileOnly libraries.spring_boot_configuration_processor
 
     implementation libraries.spring_boot_starter
     implementation libraries.commons_lang3
 
+    testImplementation project(':jodconverter-local')
+    testImplementation project(':jodconverter-online')
+
     testImplementation libraries.commons_io
     testImplementation libraries.wiremock
     testImplementation libraries.spring_boot_starter_test
-
-    testCompileOnly project(':jodconverter-local')
-    testCompileOnly project(':jodconverter-online')
 }

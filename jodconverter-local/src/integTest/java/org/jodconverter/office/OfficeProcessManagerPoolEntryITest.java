@@ -325,13 +325,13 @@ public class OfficeProcessManagerPoolEntryITest {
         final MockOfficeTask task = new MockOfficeTask();
         officeManager.execute(task);
         assertThat(task.isCompleted()).isTrue();
-        assertThat(officeManager).extracting("taskCount.value").containsExactly(i + 1);
+        assertThat(officeManager).extracting("taskCount.value").isEqualTo(i + 1);
       }
 
       final MockOfficeTask task = new MockOfficeTask();
       officeManager.execute(task);
       assertThat(task.isCompleted()).isTrue();
-      assertThat(officeManager).extracting("taskCount.value").containsExactly(1);
+      assertThat(officeManager).extracting("taskCount.value").isEqualTo(1);
 
     } finally {
 

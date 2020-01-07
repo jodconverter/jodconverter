@@ -176,7 +176,7 @@ public class OfficeDocumentConverterTest {
         ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(1)).execute(taskArgument.capture());
     final LocalConversionTask task = taskArgument.getValue();
-    assertThat(task).extracting("loadProperties").containsExactly(loadProperties);
+    assertThat(task).extracting("loadProperties").isEqualTo(loadProperties);
   }
 
   @Test
@@ -206,6 +206,6 @@ public class OfficeDocumentConverterTest {
         ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(1)).execute(taskArgument.capture());
     final LocalConversionTask task = taskArgument.getValue();
-    assertThat(task).extracting("loadProperties").containsExactly(loadProperties2);
+    assertThat(task).extracting("loadProperties").isEqualTo(loadProperties2);
   }
 }

@@ -155,17 +155,15 @@ public class ConvertTest {
                 new String[] {"-lPassword=myPassword", "output1.pdf", "input2.txt"});
 
     final CliConverter cliConverter =
-        (CliConverter)
-            Whitebox.invokeMethod(
-                Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+        Whitebox.invokeMethod(
+            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
     final LocalConverter localConverter =
-        (LocalConverter)
-            (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
+        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
 
     final Map<String, Object> expectedLoadProperties =
         new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
     expectedLoadProperties.put("Password", "myPassword");
-    assertThat(localConverter).extracting("loadProperties").containsExactly(expectedLoadProperties);
+    assertThat(localConverter).extracting("loadProperties").isEqualTo(expectedLoadProperties);
   }
 
   @Test
@@ -191,9 +189,7 @@ public class ConvertTest {
     expectedFilterData.put("PageRange", "2-2");
     final Map<String, Object> expectedStoreProperties = new HashMap<>();
     expectedStoreProperties.put("FilterData", expectedFilterData);
-    assertThat(localConverter)
-        .extracting("storeProperties")
-        .containsExactly(expectedStoreProperties);
+    assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
   }
 
   @Test
@@ -216,9 +212,7 @@ public class ConvertTest {
 
     final Map<String, Object> expectedStoreProperties = new HashMap<>();
     expectedStoreProperties.put("Overwrite", true);
-    assertThat(localConverter)
-        .extracting("storeProperties")
-        .containsExactly(expectedStoreProperties);
+    assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
   }
 
   @Test
@@ -252,8 +246,6 @@ public class ConvertTest {
     final Map<String, Object> expectedStoreProperties = new HashMap<>();
     expectedStoreProperties.put("Overwrite", true);
     expectedStoreProperties.put("FilterData", expectedFilterData);
-    assertThat(localConverter)
-        .extracting("storeProperties")
-        .containsExactly(expectedStoreProperties);
+    assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
   }
 }

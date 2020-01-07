@@ -9,21 +9,21 @@ ext {
             // Gradle plugins version
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Latest version -> https://sourceforge.net/projects/checkstyle/files/checkstyle
-            checkstyle_version           : '8.16',
+            checkstyle_version           : '8.28',
             // Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
-            coveralls_version            : '2.8.2',
+            coveralls_version            : '2.9.0',
             // Latest version -> http://www.eclemma.org/jacoco
-            jacoco_version               : '0.8.2',
+            jacoco_version               : '0.8.5',
             // Latest version -> https://plugins.gradle.org/plugin/nebula.integtest
-            nebula_project_version       : '5.2.1',
+            nebula_project_version       : '7.0.4',
             // Latest version -> https://plugins.gradle.org/plugin/io.codearte.nexus-staging
             nexus_staging_version        : '0.21.2',
             // Latest version -> https://pmd.github.io
-            pmd_version                  : '6.10.0',
+            pmd_version                  : '6.20.0',
             // Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
             spotless_version             : '3.27.0',
             // Latest version -> https://plugins.gradle.org/plugin/io.spring.dependency-management
-            dependency_management_version: '1.0.6.RELEASE',
+            dependency_management_version: '1.0.8.RELEASE',
 
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Java libraries version
@@ -38,27 +38,27 @@ ext {
             // Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
             commons_io_version           : '2.6',
             // Latest version -> https://mvnrepository.com/artifact/org.libreoffice
-            libre_office_version         : '5.4.2',
+            libre_office_version         : '6.3.2',
             // Latest version -> https://mvnrepository.com/artifact/org.openoffice
             open_office_version          : '4.1.2',
             // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-            spring_boot_version          : '2.1.2.RELEASE',
+            spring_boot_version          : '2.2.2.RELEASE',
 
             // Test
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Latest version -> https://mvnrepository.com/artifact/nl.jqno.equalsverifier/equalsverifier
-            equalsverifier_version       : '3.1.4',
+            equalsverifier_version       : '3.1.11',
             // Latest version -> https://mvnrepository.com/artifact/com.google.code.findbugs/findbugs
             findbugs_version             : '3.0.1',
-            // Latest version -> https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2/2.0.0
-            powermock_version            : '2.0.0',
+            // Latest version -> https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2
+            powermock_version            : '2.0.4',
             // Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
-            wiremock_version             : '2.20.0'
+            wiremock_version             : '2.25.1'
     ]
 
     gradlePlugins = [
 
-            coveralls            : "org.kt3k.gradle.plugin:coveralls-gradle-plugin:$versions.coveralls_version",
+            coveralls            : "gradle.plugin.org.kt3k.gradle.plugin:coveralls-gradle-plugin:$versions.coveralls_version",
             dependency_management: "io.spring.gradle:dependency-management-plugin:$versions.dependency_management_version",
             nebula_project       : "com.netflix.nebula:nebula-project-plugin:$versions.nebula_project_version",
             nexus_staging        : "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$versions.nexus_staging_version",

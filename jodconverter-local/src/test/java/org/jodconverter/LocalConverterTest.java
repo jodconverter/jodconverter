@@ -106,7 +106,7 @@ public class LocalConverterTest {
         ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(1)).execute(taskArgument.capture());
     final LocalConversionTask task = taskArgument.getValue();
-    assertThat(task).extracting("loadProperties").containsExactly(loadProperties);
+    assertThat(task).extracting("loadProperties").isEqualTo(loadProperties);
   }
 
   @Test
@@ -134,7 +134,7 @@ public class LocalConverterTest {
         ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(1)).execute(taskArgument.capture());
     final LocalConversionTask task = taskArgument.getValue();
-    assertThat(task).extracting("storeProperties").containsExactly(storeProperties);
+    assertThat(task).extracting("storeProperties").isEqualTo(storeProperties);
   }
 
   @Test
