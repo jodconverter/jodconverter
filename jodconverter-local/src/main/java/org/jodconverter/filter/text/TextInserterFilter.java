@@ -22,10 +22,6 @@ package org.jodconverter.filter.text;
 import java.awt.Dimension;
 import java.util.Map;
 
-import org.apache.commons.lang3.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.drawing.XShape;
 import com.sun.star.lang.XComponent;
@@ -33,6 +29,9 @@ import com.sun.star.text.XText;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextFrame;
+import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.OfficeContext;

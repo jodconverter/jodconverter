@@ -19,13 +19,12 @@
 
 package org.jodconverter.filter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.drawing.XDrawPages;
 import com.sun.star.drawing.XDrawPagesSupplier;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.utils.Calc;

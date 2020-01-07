@@ -23,9 +23,6 @@ import java.awt.Dimension;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.awt.Size;
 import com.sun.star.frame.XController;
 import com.sun.star.text.RelOrientation;
@@ -37,6 +34,8 @@ import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.office.utils.Lo;

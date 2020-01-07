@@ -29,13 +29,12 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.github.tomakehurst.wiremock.WireMockServer;
 
 import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitResource;

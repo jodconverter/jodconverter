@@ -23,12 +23,11 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 
+import com.sun.star.uno.XComponentContext;
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.sun.star.uno.XComponentContext;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;

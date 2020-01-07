@@ -31,6 +31,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
+import com.sun.star.uno.UnoRuntime;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -40,10 +43,6 @@ import org.junit.runners.JUnit4;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-
-import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XServiceInfo;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.test.util.AssertUtil;
 

@@ -22,12 +22,11 @@ package org.jodconverter.document;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /** Executable class that dumps a JSON version of the DefaultDocumentFormatRegistry. */
 final class DumpJsonDefaultDocumentFormatRegistry {

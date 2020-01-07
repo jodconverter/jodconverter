@@ -30,16 +30,14 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
-
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.github.tomakehurst.wiremock.WireMockServer;
 
 import org.jodconverter.OnlineConverter;
 import org.jodconverter.ssl.SslConfig;

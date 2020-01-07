@@ -1,8 +1,3 @@
 0=java
-1=javax
-2=io
-3=net
-4=org
-5=com
-6=org.jodconverter
-7=
+2=
+3=org.jodconverter

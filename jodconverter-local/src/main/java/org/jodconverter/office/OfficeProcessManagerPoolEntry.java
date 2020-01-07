@@ -23,9 +23,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.beans.XHierarchicalPropertySet;
 import com.sun.star.beans.XHierarchicalPropertySetInfo;
@@ -33,6 +30,8 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XChangesBatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.office.utils.Lo;
 import org.jodconverter.task.OfficeTask;

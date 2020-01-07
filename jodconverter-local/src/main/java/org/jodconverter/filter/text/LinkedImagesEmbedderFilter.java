@@ -19,9 +19,6 @@
 
 package org.jodconverter.filter.text;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XIndexAccess;
 import com.sun.star.container.XNameContainer;
@@ -34,6 +31,8 @@ import com.sun.star.text.XTextGraphicObjectsSupplier;
 import com.sun.star.uno.Any;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.XComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;
@@ -108,15 +107,15 @@ public class LinkedImagesEmbedderFilter implements Filter {
           }
         } else {
           final String name = xPropSet.getPropertyValue("LinkDisplayName").toString();
-          final String graphicURL = xPropSet.getPropertyValue("GraphicURL").toString();
+          final String graphicUrl = xPropSet.getPropertyValue("GraphicURL").toString();
           // Only ones that are not embedded
-          if (!graphicURL.contains("vnd.sun.")) {
+          if (!graphicUrl.contains("vnd.sun.")) {
             // Creating bitmap container service
             final XNameContainer bitmapContainer =
                 Lo.createInstanceMSF(
                     document, XNameContainer.class, "com.sun.star.drawing.BitmapTable");
             if (!bitmapContainer.hasByName(name)) {
-              bitmapContainer.insertByName(name, graphicURL);
+              bitmapContainer.insertByName(name, graphicUrl);
               xPropSet.setPropertyValue("GraphicURL", bitmapContainer.getByName(name).toString());
             }
           }

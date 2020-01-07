@@ -30,12 +30,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 
+import com.sun.star.lang.XComponent;
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.sun.star.lang.XComponent;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;

@@ -28,14 +28,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.star.document.UpdateDocMode;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
-
-import com.sun.star.document.UpdateDocMode;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.filter.DefaultFilterChain;

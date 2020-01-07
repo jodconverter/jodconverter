@@ -23,14 +23,13 @@ import static org.jodconverter.office.LocalOfficeUtils.toUrl;
 
 import java.io.File;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.document.XDocumentInsertable;
 import com.sun.star.lang.XComponent;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;

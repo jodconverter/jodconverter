@@ -32,14 +32,13 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import org.jodconverter.OnlineConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;

@@ -24,14 +24,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
+import com.sun.star.uno.UnoRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XServiceInfo;
-import com.sun.star.uno.UnoRuntime;
 
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.test.util.AssertUtil;

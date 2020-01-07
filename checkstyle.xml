@@ -215,14 +215,17 @@
             <message key="ws.notPreceded"
                      value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
         </module>
-        <module name="Indentation">
-            <property name="basicOffset" value="2"/>
-            <property name="braceAdjustment" value="0"/>
-            <property name="caseIndent" value="2"/>
-            <property name="throwsIndent" value="4"/>
-            <property name="lineWrappingIndentation" value="4"/>
-            <property name="arrayInitIndent" value="2"/>
-        </module>
+
+        <!-- Disable Indentation Check, there's too much bug in it -->
+        <!-- See https://github.com/checkstyle/checkstyle/issues?q=is%3Aopen+is%3Aissue+label%3Aindentaion -->
+        <!--<module name="Indentation">-->
+        <!--<property name="basicOffset" value="2"/>-->
+        <!--<property name="braceAdjustment" value="0"/>-->
+        <!--<property name="caseIndent" value="2"/>-->
+        <!--<property name="throwsIndent" value="4"/>-->
+        <!--<property name="lineWrappingIndentation" value="4"/>-->
+        <!--<property name="arrayInitIndent" value="2"/>-->
+        <!--</module>-->
         <module name="AbbreviationAsWordInName">
             <property name="ignoreFinal" value="false"/>
             <property name="allowedAbbreviationLength" value="1"/>
@@ -237,9 +240,7 @@
             <property name="separateLineBetweenGroups" value="true"/>
             <!--<property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>-->
             <property name="customImportOrderRules"
-                      value="STATIC###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE" />
-            <property name="specialImportsRegExp" value="^org\.(?!jodconverter)" />
-            <property name="thirdPartyPackageRegExp" value="^(com|org\.jodconverter)\." />
+                      value="STATIC###STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE###SAME_PACKAGE(2)" />
             <property name="tokens" value="IMPORT, STATIC_IMPORT, PACKAGE_DEF"/>
         </module>
         <module name="MethodParamPad">

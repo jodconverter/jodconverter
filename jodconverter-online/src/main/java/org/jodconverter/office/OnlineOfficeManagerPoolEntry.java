@@ -39,7 +39,6 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
-
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.StringUtils;

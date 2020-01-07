@@ -105,7 +105,7 @@ checkstyle {
 }
 
 // Disable checkstyle for test code
-//[checkstyleTest, checkstyleIntegTest]*.enabled = false
+[checkstyleTest, checkstyleIntegTest]*.enabled = false
 
 // Configures the checkstyle tasks
 tasks.withType(Checkstyle) {

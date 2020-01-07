@@ -19,9 +19,6 @@
 
 package org.jodconverter.filter.text;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameAccess;
 import com.sun.star.container.XNameContainer;
@@ -30,6 +27,8 @@ import com.sun.star.style.XStyle;
 import com.sun.star.style.XStyleFamiliesSupplier;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;

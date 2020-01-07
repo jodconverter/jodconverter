@@ -21,9 +21,8 @@ package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
 import com.sun.star.lib.uno.helper.UnoUrl;
+import org.junit.Test;
 
 public class OfficeUrlTest {
 

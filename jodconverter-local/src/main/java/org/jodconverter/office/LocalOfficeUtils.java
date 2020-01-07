@@ -27,14 +27,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.sun.star.beans.PropertyValue;
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.Validate;
-
-import com.sun.star.beans.PropertyValue;
-import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XServiceInfo;
 
 import org.jodconverter.document.DocumentFamily;
 import org.jodconverter.office.utils.Lo;

@@ -22,18 +22,17 @@ package org.jodconverter.office.utils;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+import com.sun.star.lang.XMultiComponentFactory;
+import com.sun.star.lang.XMultiServiceFactory;
+import com.sun.star.uno.Exception;
+import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-
-import com.sun.star.lang.XMultiComponentFactory;
-import com.sun.star.lang.XMultiServiceFactory;
-import com.sun.star.uno.Exception;
-import com.sun.star.uno.UnoRuntime;
-import com.sun.star.uno.XComponentContext;
 
 import org.jodconverter.test.util.AssertUtil;
 

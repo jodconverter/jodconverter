@@ -19,9 +19,6 @@
 
 package org.jodconverter.filter.text;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.datatransfer.XTransferable;
 import com.sun.star.datatransfer.XTransferableSupplier;
 import com.sun.star.frame.XController;
@@ -32,6 +29,8 @@ import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.view.XSelectionSupplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;

@@ -26,13 +26,12 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 
-import org.junit.Test;
-
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.task.ErrorCodeIOException;
+import org.junit.Test;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;

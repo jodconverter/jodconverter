@@ -19,11 +19,10 @@
 
 package org.jodconverter.filter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.lang.XComponent;
 import com.sun.star.util.XRefreshable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.utils.Lo;

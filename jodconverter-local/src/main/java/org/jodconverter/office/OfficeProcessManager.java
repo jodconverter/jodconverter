@@ -25,10 +25,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.sun.star.lang.DisposedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.star.lang.DisposedException;
 
 /**
  * A OfficeProcessManager is responsible to manage an office process and the connection (bridge) to

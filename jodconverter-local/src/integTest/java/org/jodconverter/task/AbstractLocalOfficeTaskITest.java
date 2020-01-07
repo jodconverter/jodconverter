@@ -21,13 +21,12 @@ package org.jodconverter.task;
 
 import java.io.File;
 
-import org.junit.Test;
-
 import com.sun.star.lang.EventObject;
 import com.sun.star.lang.XComponent;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseListener;
 import com.sun.star.util.XCloseable;
+import org.junit.Test;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;

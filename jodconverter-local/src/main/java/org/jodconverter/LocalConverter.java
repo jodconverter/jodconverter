@@ -23,9 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.Validate;
-
 import com.sun.star.document.UpdateDocMode;
+import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.document.DocumentFormatRegistry;
 import org.jodconverter.filter.DefaultFilterChain;

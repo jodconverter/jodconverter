@@ -32,13 +32,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Test;
-import org.slf4j.LoggerFactory;
-
 import com.sun.star.frame.TerminationVetoException;
 import com.sun.star.frame.XTerminateListener;
 import com.sun.star.lang.EventObject;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.process.PureJavaProcessManager;
 

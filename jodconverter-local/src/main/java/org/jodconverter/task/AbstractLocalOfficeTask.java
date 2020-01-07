@@ -27,14 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.Validate;
-
 import com.sun.star.io.IOException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
+import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.LocalConverter;
 import org.jodconverter.job.SourceDocumentSpecs;

@@ -26,10 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.io.IOUtils;
 
 import org.jodconverter.document.DocumentFormat.Builder;
 

@@ -29,9 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-
 import javax.annotation.Resource;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -41,8 +41,6 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import org.jodconverter.DocumentConverter;
 

@@ -19,14 +19,13 @@
 
 package org.jodconverter.filter.text;
 
+import com.sun.star.lang.XComponent;
+import com.sun.star.util.XReplaceDescriptor;
+import com.sun.star.util.XReplaceable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.star.lang.XComponent;
-import com.sun.star.util.XReplaceDescriptor;
-import com.sun.star.util.XReplaceable;
 
 import org.jodconverter.filter.Filter;
 import org.jodconverter.filter.FilterChain;

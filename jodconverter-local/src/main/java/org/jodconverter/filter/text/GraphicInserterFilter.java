@@ -25,13 +25,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
-
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameContainer;
@@ -44,6 +40,8 @@ import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.uno.XComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.LocalOfficeContext;
