@@ -24,10 +24,14 @@ cache:
 # enviroment settings
 environment:
   matrix:
-  # Build target is java8
+  # jdk 1.8
   - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-  # Not sure this is openjdk11 or oraclejdk11
-  - JAVA_HOME: C:\Program Files\Java\jdk11  
+  # jdk 11
+  - JAVA_HOME: C:\Program Files\Java\jdk11
+  # jdk 12
+  - JAVA_HOME: C:\Program Files\Java\jdk12
+  # jdk 13
+  - JAVA_HOME: C:\Program Files\Java\jdk13
 
 # failing jobs settings
 matrix:
