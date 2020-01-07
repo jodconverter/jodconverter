@@ -49,8 +49,8 @@ class VerboseProcess {
 
     streamHandler =
         new PumpStreamHandler(
-            new StreamPumper(process.getInputStream(), (line) -> LOGGER.info(line)),
-            new StreamPumper(process.getErrorStream(), (line) -> LOGGER.error(line)));
+            new StreamPumper(process.getInputStream(), LOGGER::info),
+            new StreamPumper(process.getErrorStream(), LOGGER::error));
     streamHandler.start();
   }
 

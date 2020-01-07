@@ -29,13 +29,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.sun.star.lang.XComponent;
-
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
 import org.jodconverter.filter.Filter;
-import org.jodconverter.filter.FilterChain;
-import org.jodconverter.office.OfficeContext;
 
 public class DrawITest extends AbstractOfficeITest {
 
@@ -44,58 +40,38 @@ public class DrawITest extends AbstractOfficeITest {
   @Test
   public void isDraw_WithDrawDocument_ReturnsTrue() {
 
-    final Filter filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
-
-            assertThat(Draw.isDraw(document)).isTrue();
-          }
-        };
+    final Filter filter = (context, document, chain) -> assertThat(Draw.isDraw(document)).isTrue();
 
     final File outputFile = new File(testFolder.getRoot(), "out.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(filter)
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR + "test.odg"))
-                  .to(outputFile)
-                  .execute();
-            })
+            () ->
+                LocalConverter.builder()
+                    .filterChain(filter)
+                    .build()
+                    .convert(new File(DOCUMENTS_DIR + "test.odg"))
+                    .to(outputFile)
+                    .execute())
         .doesNotThrowAnyException();
   }
 
   @Test
   public void isDraw_WithTextDocument_ReturnsFalse() {
 
-    final Filter filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
-
-            assertThat(Draw.isDraw(document)).isFalse();
-          }
-        };
+    final Filter filter = (context, document, chain) -> assertThat(Draw.isDraw(document)).isFalse();
 
     final File outputFile = new File(testFolder.getRoot(), "out.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(filter)
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR + "test.odt"))
-                  .to(outputFile)
-                  .execute();
-            })
+            () ->
+                LocalConverter.builder()
+                    .filterChain(filter)
+                    .build()
+                    .convert(new File(DOCUMENTS_DIR + "test.odt"))
+                    .to(outputFile)
+                    .execute())
         .doesNotThrowAnyException();
   }
 
@@ -103,28 +79,19 @@ public class DrawITest extends AbstractOfficeITest {
   public void isImpress_WithImpressDocument_ReturnsTrue() {
 
     final Filter filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
-
-            assertThat(Draw.isImpress(document)).isTrue();
-          }
-        };
+        (context, document, chain) -> assertThat(Draw.isImpress(document)).isTrue();
 
     final File outputFile = new File(testFolder.getRoot(), "out.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(filter)
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR + "test.odp"))
-                  .to(outputFile)
-                  .execute();
-            })
+            () ->
+                LocalConverter.builder()
+                    .filterChain(filter)
+                    .build()
+                    .convert(new File(DOCUMENTS_DIR + "test.odp"))
+                    .to(outputFile)
+                    .execute())
         .doesNotThrowAnyException();
   }
 
@@ -132,28 +99,19 @@ public class DrawITest extends AbstractOfficeITest {
   public void isImpress_WithTextDocument_ReturnsFalse() {
 
     final Filter filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
-
-            assertThat(Draw.isImpress(document)).isFalse();
-          }
-        };
+        (context, document, chain) -> assertThat(Draw.isImpress(document)).isFalse();
 
     final File outputFile = new File(testFolder.getRoot(), "out.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(filter)
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR + "test.odt"))
-                  .to(outputFile)
-                  .execute();
-            })
+            () ->
+                LocalConverter.builder()
+                    .filterChain(filter)
+                    .build()
+                    .convert(new File(DOCUMENTS_DIR + "test.odt"))
+                    .to(outputFile)
+                    .execute())
         .doesNotThrowAnyException();
   }
 }

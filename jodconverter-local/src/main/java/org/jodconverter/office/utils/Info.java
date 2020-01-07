@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,9 +135,9 @@ public final class Info {
     final String[] numbers2 = normalizeVersion(version2, length).split("\\.");
 
     for (int i = 0; i < numbers1.length; i++) {
-      if (Integer.valueOf(numbers1[i]) < Integer.valueOf(numbers2[i])) {
+      if (Integer.parseInt(numbers1[i]) < Integer.parseInt(numbers2[i])) {
         return -1;
-      } else if (Integer.valueOf(numbers1[i]) > Integer.valueOf(numbers2[i])) {
+      } else if (Integer.parseInt(numbers1[i]) > Integer.parseInt(numbers2[i])) {
         return 1;
       }
     }
@@ -156,7 +155,7 @@ public final class Info {
       numbers.add("0");
     }
 
-    return numbers.stream().collect(Collectors.joining("."));
+    return String.join(".", numbers);
   }
 
   /**
@@ -193,8 +192,7 @@ public final class Info {
       final XComponentContext context, final String nodePath, final String propName) {
 
     return getConfigProperties(context, nodePath)
-        .map(props -> Props.getProperty(props, propName))
-        .orElse(Optional.empty());
+        .flatMap(props -> Props.getProperty(props, propName));
   }
 
   /**

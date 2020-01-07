@@ -46,7 +46,7 @@ public class ConverterServlet extends HttpServlet {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConverterServlet.class);
 
   @Override
-  public void init() throws ServletException {
+  public void init() {
     LOGGER.info("Servlet {} has started", this.getServletName());
   }
 

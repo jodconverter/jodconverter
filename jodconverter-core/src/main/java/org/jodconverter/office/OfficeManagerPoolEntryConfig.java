@@ -19,11 +19,7 @@
 
 package org.jodconverter.office;
 
-/**
- * This interface provides the configuration of an {@link OfficeProcessManagerPoolEntry}.
- *
- * @see OfficeProcessManagerPoolEntry
- */
+/** This interface provides the configuration of an {@code OfficeProcessManagerPoolEntry}. */
 interface OfficeManagerPoolEntryConfig {
 
   /** The default timeout when processing a task. */

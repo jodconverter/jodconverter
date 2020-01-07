@@ -181,18 +181,12 @@ class OfficeProcessManager {
     // Submit a restart task to the executor and wait
     submitAndWait(
         "Restart",
-        new Callable<Void>() {
-
-          @Override
-          public Void call() throws Exception {
-
-            // On clean restart, we won't delete the instance profile directory,
-            // causing a faster start of an office process.
-            doStopProcess(false);
-            doStartProcessAndConnect(true);
-
-            return null;
-          }
+        () -> {
+          // On clean restart, we won't delete the instance profile directory,
+          // causing a faster start of an office process.
+          doStopProcess(false);
+          doStartProcessAndConnect(true);
+          return null;
         });
   }
 
@@ -202,21 +196,15 @@ class OfficeProcessManager {
     // Execute the task
     LOGGER.info("Executing task 'Restart After Lost Connection'...");
     executor.execute(
-        new Runnable() {
-
-          @Override
-          public void run() {
-
-            try {
-              // Since we have lost the connection, it could mean that
-              // the office process has crashed. Thus, we want a clean
-              // instance profile directory on restart.
-              doEnsureProcessExited(true);
-              doStartProcessAndConnect(false);
-
-            } catch (OfficeException officeEx) {
-              LOGGER.error("Could not restart process after connection lost.", officeEx);
-            }
+        () -> {
+          try {
+            // Since we have lost the connection, it could mean that
+            // the office process has crashed. Thus, we want a clean
+            // instance profile directory on restart.
+            doEnsureProcessExited(true);
+            doStartProcessAndConnect(false);
+          } catch (OfficeException officeEx) {
+            LOGGER.error("Could not restart process after connection lost.", officeEx);
           }
         });
   }
@@ -227,18 +215,12 @@ class OfficeProcessManager {
     // Execute the restart task
     LOGGER.info("Executing task 'Restart After Timeout'...");
     executor.execute(
-        new Runnable() {
-
-          @Override
-          public void run() {
-
-            try {
-              // This will cause unexpected disconnection and subsequent restart.
-              doTerminateProcess();
-
-            } catch (OfficeException officeException) {
-              LOGGER.error("Could not terminate process after task timeout.", officeException);
-            }
+        () -> {
+          try {
+            // This will cause unexpected disconnection and subsequent restart.
+            doTerminateProcess();
+          } catch (OfficeException officeException) {
+            LOGGER.error("Could not terminate process after task timeout.", officeException);
           }
         });
   }
@@ -253,15 +235,9 @@ class OfficeProcessManager {
     // Submit a start task to the executor and wait
     submitAndWait(
         "Start",
-        new Callable<Void>() {
-
-          @Override
-          public Void call() throws Exception {
-
-            doStartProcessAndConnect(false);
-
-            return null;
-          }
+        () -> {
+          doStartProcessAndConnect(false);
+          return null;
         });
   }
 
@@ -275,15 +251,9 @@ class OfficeProcessManager {
     // Submit a stop task to the executor and wait
     submitAndWait(
         "Stop",
-        new Callable<Void>() {
-
-          @Override
-          public Void call() throws Exception {
-
-            doStopProcess(true);
-
-            return null;
-          }
+        () -> {
+          doStopProcess(true);
+          return null;
         });
   }
 

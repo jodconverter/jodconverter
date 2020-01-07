@@ -94,7 +94,7 @@ public class ConverterController {
       value = {
         @ApiResponse(code = 200, message = "Document converted successfully."),
         @ApiResponse(code = 400, message = "The input document or output format is missing."),
-        @ApiResponse(code = 500, message = "An unexpected error occured.")
+        @ApiResponse(code = 500, message = "An unexpected error occurred.")
       })
   @PostMapping(produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   public Object convertToUsingParam(
@@ -117,7 +117,7 @@ public class ConverterController {
       value = {
         @ApiResponse(code = 200, message = "Document converted successfully."),
         @ApiResponse(code = 400, message = "The input document or output format is missing."),
-        @ApiResponse(code = 500, message = "An unexpected error occured.")
+        @ApiResponse(code = 500, message = "An unexpected error occurred.")
       })
   @PostMapping(value = "/{format}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   public Object convertToUsingPath(

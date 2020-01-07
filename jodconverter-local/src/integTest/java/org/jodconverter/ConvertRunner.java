@@ -105,7 +105,7 @@ public class ConvertRunner implements Runnable {
         LOGGER.error(message + " " + ex.getMessage(), ex);
       }
 
-      throw new RuntimeException(ex); // NOSONAR
+      throw new RuntimeException(ex);
     }
   }
 }

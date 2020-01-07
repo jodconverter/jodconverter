@@ -63,7 +63,7 @@ public class JodConverterTest {
   }
 
   @Test
-  public void convert_FromFile_CallForwardToLocalConverter() throws Exception {
+  public void convert_FromFile_CallForwardToLocalConverter() {
 
     JodConverter.convert(SOURCE_FILE);
 

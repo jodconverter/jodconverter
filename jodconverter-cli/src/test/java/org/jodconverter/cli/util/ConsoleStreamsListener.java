@@ -28,7 +28,7 @@ import org.junit.rules.ExternalResource;
 public final class ConsoleStreamsListener extends ExternalResource {
 
   @Override
-  protected void before() throws Throwable {
+  protected void before() {
 
     // Redirect console streams.
     System.setOut(new SystemLogHandler(System.out));

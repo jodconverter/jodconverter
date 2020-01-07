@@ -43,7 +43,7 @@ public class ExitCodeRetryable extends AbstractRetryable {
     if (code == null) {
       throw new TemporaryException();
     }
-    exitCode = code.intValue();
+    exitCode = code;
   }
 
   /**

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /** Performs a connection to an office process. */
 public class ConnectRetryable extends AbstractRetryable {
 
-  private static final Integer EXIT_CODE_81 = Integer.valueOf(81);
+  private static final Integer EXIT_CODE_81 = 81;
   private static final Logger LOGGER = LoggerFactory.getLogger(ConnectRetryable.class);
 
   private final OfficeProcess process;

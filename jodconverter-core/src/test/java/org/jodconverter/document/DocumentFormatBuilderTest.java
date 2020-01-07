@@ -40,9 +40,8 @@ public class DocumentFormatBuilderTest {
     DefaultDocumentFormatRegistry.CSV
         .getStoreProperties()
         .forEach(
-            (family, map) -> {
-              map.forEach((name, value) -> builder.storeProperty(family, name, value));
-            });
+            (family, map) ->
+                map.forEach((name, value) -> builder.storeProperty(family, name, value)));
 
     assertThat(builder.build())
         .isEqualToComparingFieldByFieldRecursively(DefaultDocumentFormatRegistry.CSV);

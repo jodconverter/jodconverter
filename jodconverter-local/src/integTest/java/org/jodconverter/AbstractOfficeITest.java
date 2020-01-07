@@ -43,7 +43,6 @@ public abstract class AbstractOfficeITest {
 
   protected static final String RESOURCES_DIR = "src/integTest/resources/";
   protected static final String DOCUMENTS_DIR = RESOURCES_DIR + "documents/";
-  protected static final String TEST_OUTPUT_DIR = "build/integTest-results/";
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOfficeITest.class);
 
   protected void convertFileToAllSupportedFormats(

@@ -326,12 +326,14 @@ public class DefaultOfficeManagerBuilder {
   public DefaultOfficeManagerBuilder setRetryInterval(final long retryInterval) {
 
     Validate.inclusiveBetween(
-        0,
+        OfficeProcessManagerConfig.MIN_PROCESS_RETRY_INTERVAL,
         OfficeProcessManagerConfig.MAX_PROCESS_RETRY_INTERVAL,
         retryInterval,
         String.format(
             "The processRetryInterval %s must be in the inclusive range of %s to %s",
-            retryInterval, 0, OfficeProcessManagerConfig.MAX_PROCESS_RETRY_INTERVAL));
+            retryInterval,
+            OfficeProcessManagerConfig.MIN_PROCESS_RETRY_INTERVAL,
+            OfficeProcessManagerConfig.MAX_PROCESS_RETRY_INTERVAL));
     this.processRetryInterval = retryInterval;
     return this;
   }

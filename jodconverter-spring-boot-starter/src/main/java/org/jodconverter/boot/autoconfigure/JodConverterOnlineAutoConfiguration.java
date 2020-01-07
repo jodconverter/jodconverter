@@ -39,11 +39,7 @@ import org.jodconverter.ssl.SslConfig;
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter online module. */
 @Configuration
 @ConditionalOnClass(OnlineConverter.class)
-@ConditionalOnProperty(
-    prefix = "jodconverter.online",
-    name = "enabled",
-    havingValue = "true",
-    matchIfMissing = false)
+@ConditionalOnProperty(prefix = "jodconverter.online", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(JodConverterOnlineProperties.class)
 public class JodConverterOnlineAutoConfiguration {
 

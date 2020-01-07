@@ -59,7 +59,7 @@ class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
             .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
             .orElse(super.getFile());
     try {
-      final FileOutputStream outputStream = new FileOutputStream(tempFile); // NOSONAR
+      final FileOutputStream outputStream = new FileOutputStream(tempFile);
       outputStream.getChannel().lock();
       try {
         IOUtils.copy(inputStream, outputStream);

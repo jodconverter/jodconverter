@@ -20,8 +20,8 @@
 package org.jodconverter.office;
 
 /**
- * A {@code RetryTimeoutException} is thrown by a {@code Retryable} when it is unable to execute its
- * task within a specified amount of time.
+ * A {@code RetryTimeoutException} is thrown by an {@code AbstractRetryable} when it is unable to
+ * execute its task within a specified amount of time.
  */
 class RetryTimeoutException extends Exception {
   private static final long serialVersionUID = -3704437769955257514L;

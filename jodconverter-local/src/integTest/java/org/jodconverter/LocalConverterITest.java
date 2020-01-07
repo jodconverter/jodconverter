@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
@@ -140,7 +140,7 @@ public class LocalConverterITest extends AbstractOfficeITest {
         .as(DefaultDocumentFormatRegistry.getFormatByExtension("txt"))
         .execute();
 
-    assertThat(FileUtils.readFileToString(outputFile, Charset.forName("UTF-8")))
+    assertThat(FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8))
         .contains("Test document");
   }
 }

@@ -19,7 +19,7 @@
 
 package org.jodconverter.task;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -58,7 +58,7 @@ public class AbstractLocalOfficeTaskTest {
     }
 
     @Override
-    public void execute(final OfficeContext context) throws OfficeException {
+    public void execute(final OfficeContext context) {
       // Do nothing here
     }
   }
@@ -92,13 +92,9 @@ public class AbstractLocalOfficeTaskTest {
     given(context.getComponentLoader()).willReturn(loader);
 
     final FooOfficeTask task = new FooOfficeTask(new FooSourceSpecs(SOURCE_FILE));
-    try {
-      task.loadDocument(context, SOURCE_FILE);
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseExactlyInstanceOf(IllegalArgumentException.class);
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+        .withCauseExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -113,13 +109,9 @@ public class AbstractLocalOfficeTaskTest {
     given(context.getComponentLoader()).willReturn(loader);
 
     final FooOfficeTask task = new FooOfficeTask(new FooSourceSpecs(SOURCE_FILE));
-    try {
-      task.loadDocument(context, SOURCE_FILE);
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseExactlyInstanceOf(ErrorCodeIOException.class);
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+        .withCauseExactlyInstanceOf(ErrorCodeIOException.class);
   }
 
   @Test
@@ -134,13 +126,9 @@ public class AbstractLocalOfficeTaskTest {
     given(context.getComponentLoader()).willReturn(loader);
 
     final FooOfficeTask task = new FooOfficeTask(new FooSourceSpecs(SOURCE_FILE));
-    try {
-      task.loadDocument(context, SOURCE_FILE);
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseExactlyInstanceOf(IOException.class);
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+        .withCauseExactlyInstanceOf(IOException.class);
   }
 
   @Test

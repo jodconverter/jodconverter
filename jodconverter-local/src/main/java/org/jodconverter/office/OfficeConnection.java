@@ -49,7 +49,7 @@ import org.jodconverter.office.utils.Lo;
  */
 class OfficeConnection implements LocalOfficeContext, XEventListener {
 
-  private static AtomicInteger bridgeIndex = new AtomicInteger();
+  private static final AtomicInteger bridgeIndex = new AtomicInteger();
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeConnection.class);
 
   private final OfficeUrl officeUrl;
@@ -160,7 +160,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
 
         // Inform all the listener that we are connected
         final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
-        connectionEventListeners.stream().forEach(listener -> listener.connected(connectionEvent));
+        connectionEventListeners.forEach(listener -> listener.connected(connectionEvent));
 
       } catch (OfficeConnectionException connectionEx) {
         throw connectionEx;
@@ -201,7 +201,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
 
       // Inform listeners. Must be done at the end since a listener may recreated the bridge
       final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
-      connectionEventListeners.stream().forEach(listener -> listener.disconnected(connectionEvent));
+      connectionEventListeners.forEach(listener -> listener.disconnected(connectionEvent));
     }
     // else we tried to connect to a server that doesn't speak URP
   }

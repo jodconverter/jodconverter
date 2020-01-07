@@ -70,7 +70,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   private DocumentConverter documentConverter;
 
   @Override
-  public void afterPropertiesSet() throws OfficeException { // NOSONAR
+  public void afterPropertiesSet() throws OfficeException {
 
     final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
 

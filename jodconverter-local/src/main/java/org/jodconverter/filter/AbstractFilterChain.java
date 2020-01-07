@@ -33,7 +33,7 @@ import org.jodconverter.office.OfficeException;
 /** Base class of a FilterChain. */
 public abstract class AbstractFilterChain implements FilterChain {
 
-  private boolean readOnly;
+  private final boolean readOnly;
   protected List<Filter> filters;
   protected int pos; // to maintain the current position in the filter chain.
 

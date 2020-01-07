@@ -28,7 +28,7 @@ import org.junit.rules.ExternalResource;
 public final class NoExitResource extends ExternalResource {
 
   @Override
-  protected void before() throws Throwable {
+  protected void before() {
 
     // Don't allow the program to exit the VM
     System.setSecurityManager(new NoExitSecurityManager());

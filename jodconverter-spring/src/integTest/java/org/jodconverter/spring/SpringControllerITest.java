@@ -54,7 +54,7 @@ public class SpringControllerITest {
 
     // this bean will be injected into the SpringControllerTest class
     @Bean
-    public JodConverterBean springJodConverter() {
+    JodConverterBean springJodConverter() {
 
       final JodConverterBean bean = new JodConverterBean();
       bean.setPortNumbers("2005");
@@ -119,7 +119,7 @@ public class SpringControllerITest {
   }
 
   @Test
-  public void testLogAvailableFormats() throws Exception {
+  public void testLogAvailableFormats() {
 
     bean.logAvailableFormats();
   }

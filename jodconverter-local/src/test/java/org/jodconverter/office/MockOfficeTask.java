@@ -61,7 +61,7 @@ public class MockOfficeTask implements OfficeTask {
       final XComponent document =
           loader.loadComponentFromURL("private:factory/swriter", "_blank", 0, arguments);
       if (delayTime > 0) {
-        Thread.sleep(delayTime); // NOSONAR
+        Thread.sleep(delayTime);
       }
       Lo.qi(XCloseable.class, document).close(true);
       completed = true;

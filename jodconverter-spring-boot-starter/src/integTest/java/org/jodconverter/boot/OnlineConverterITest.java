@@ -29,7 +29,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
@@ -93,7 +93,7 @@ public class OnlineConverterITest {
     converter.convert(inputFile).to(outputFile).execute();
 
     // Check that the output file was created with the expected content.
-    final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+    final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
     assertThat(content).contains("Test document");
 
     // Verify that a it is actually the online converter that did the conversion.

@@ -162,8 +162,7 @@ public class LocalOfficeManagerBuilderITest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithProcessManagerClassNotFound_ThrowIllegalArgumentException()
-      throws Exception {
+  public void build_WithProcessManagerClassNotFound_ThrowIllegalArgumentException() {
 
     new DefaultOfficeManagerBuilder()
         .setProcessManager("org.jodconverter.notfound.ClassName")
@@ -171,38 +170,38 @@ public class LocalOfficeManagerBuilderITest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithNullPipeNames_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithNullPipeNames_ThrowIllegalArgumentException() {
 
     new DefaultOfficeManagerBuilder().setPipeNames((String[]) null).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithEmptyPipeNames_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithEmptyPipeNames_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder().setPipeNames(new String[0]).build();
+    new DefaultOfficeManagerBuilder().setPipeNames().build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithNullPortNumbers_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithNullPortNumbers_ThrowIllegalArgumentException() {
 
     new DefaultOfficeManagerBuilder().setPortNumbers((int[]) null).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithEmptyPortNumbers_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithEmptyPortNumbers_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder().setPortNumbers(new int[0]).build();
+    new DefaultOfficeManagerBuilder().setPortNumbers().build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithNullRunAsArgs_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithNullRunAsArgs_ThrowIllegalArgumentException() {
 
     new DefaultOfficeManagerBuilder().setRunAsArgs((String[]) null).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithEmptyRunAsArgs_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithEmptyRunAsArgs_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder().setRunAsArgs(new String[0]).build();
+    new DefaultOfficeManagerBuilder().setRunAsArgs().build();
   }
 }

@@ -43,7 +43,6 @@ public class UnixProcessManager extends AbstractProcessManager {
   // only on demand, as explained by the Initialization-on-demand holder idiom:
   // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
   private static class DefaultHolder {
-    // NOSONAR
     /* default */ static final UnixProcessManager INSTANCE = new UnixProcessManager();
   }
 

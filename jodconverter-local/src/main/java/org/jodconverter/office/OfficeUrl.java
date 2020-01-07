@@ -56,7 +56,7 @@ public class OfficeUrl {
     // have the same UnoUrl.parseUnoUrl signature
     try {
       return UnoUrl.parseUnoUrl("pipe,name=" + pipeName + ";urp;StarOffice.ServiceManager");
-    } catch (Exception ex) { // NOSONAR
+    } catch (Exception ex) {
       throw new IllegalArgumentException(ex);
     }
   }
@@ -73,10 +73,8 @@ public class OfficeUrl {
     // have the same UnoUrl.parseUnoUrl signature
     try {
       return UnoUrl.parseUnoUrl(
-          "socket,host=127.0.0.1,port=" // NOSONAR
-              + port
-              + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
-    } catch (Exception ex) { // NOSONAR
+          "socket,host=127.0.0.1,port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+    } catch (Exception ex) {
       throw new IllegalArgumentException(ex);
     }
   }

@@ -56,7 +56,7 @@ public final class LocalOfficeUtils {
   // This class is required in order to create a default office home
   // only on demand, as explained by the Initialization-on-demand holder idiom:
   // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
-  private static class DefaultOfficeHomeHolder { // NOSONAR
+  private static class DefaultOfficeHomeHolder {
 
     /* default */ static final File INSTANCE;
 
@@ -267,7 +267,7 @@ public final class LocalOfficeUtils {
    */
   public static PropertyValue property(final String name, final Object value) {
 
-    final PropertyValue prop = new PropertyValue(); // NOSONAR
+    final PropertyValue prop = new PropertyValue();
     prop.Name = name;
     prop.Value = value;
     return prop;
@@ -321,7 +321,7 @@ public final class LocalOfficeUtils {
         final Map<String, Object> subProperties = (Map<String, Object>) value;
         value = toUnoProperties(subProperties);
       }
-      propertyValues.add(property((String) entry.getKey(), value));
+      propertyValues.add(property(entry.getKey(), value));
     }
     return propertyValues.toArray(new PropertyValue[0]);
   }

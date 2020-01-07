@@ -123,7 +123,7 @@ class OfficeProcess {
     LOGGER.debug("Deleting instance profile directory '{}'", instanceProfileDir);
     try {
       FileUtils.deleteDirectory(instanceProfileDir);
-    } catch (IOException ioEx) { // NOSONAR
+    } catch (IOException ioEx) {
       final File oldProfileDir =
           new File(
               instanceProfileDir.getParentFile(),
@@ -195,7 +195,7 @@ class OfficeProcess {
    * @throws OfficeException If we are unable to kill the process due to an I/O error occurs.
    * @throws RetryTimeoutException If we are unable to get the exit code of the process.
    */
-  public int forciblyTerminate(final long retryInterval, final long retryTimeout) // NOSONAR
+  public int forciblyTerminate(final long retryInterval, final long retryTimeout)
       throws OfficeException, RetryTimeoutException {
 
     // No need to terminate anything if the process has never been started
@@ -242,7 +242,7 @@ class OfficeProcess {
    * @throws OfficeException If we are unable to kill the process.
    * @throws RetryTimeoutException If we are unable to get the exit code of the process.
    */
-  public int getExitCode(final long retryInterval, final long retryTimeout) // NOSONAR
+  public int getExitCode(final long retryInterval, final long retryTimeout)
       throws OfficeException, RetryTimeoutException {
 
     // If the process has never been started, just return a success exit code
@@ -363,7 +363,6 @@ class OfficeProcess {
    * @param restart Indicates whether it is a fresh start or a restart. A restart will assume that
    *     the instance profile directory is already created. To recreate the instance profile
    *     directory, {@code restart} should be set to {@code false}.
-   * @return The PID of the started office process, or -1 of the PID is unknown.
    * @throws OfficeException If the office process cannot be started.
    */
   public void start(final boolean restart) throws OfficeException {

@@ -20,7 +20,7 @@
 package org.jodconverter.test.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -35,8 +35,7 @@ public final class AssertUtil {
    * @param clazz Utility class to verify.
    */
   public static void assertUtilityClassWellDefined(final Class<?> clazz)
-      throws NoSuchMethodException, InvocationTargetException, InstantiationException,
-          IllegalAccessException {
+      throws NoSuchMethodException {
 
     // Check final identifier
     assertThat(clazz).as("Check class final identifier").isFinal();
@@ -50,16 +49,11 @@ public final class AssertUtil {
         .as("Check class constructor modifier")
         .isFalse();
     constructor.setAccessible(true);
-    try {
-      constructor.newInstance();
-      fail("Private constructor should throw AssertionError");
-    } catch (Exception ex) {
-      assertThat(ex).isExactlyInstanceOf(InvocationTargetException.class);
-      assertThat(((InvocationTargetException) ex).getTargetException())
-          .isExactlyInstanceOf(AssertionError.class);
-    } finally {
-      constructor.setAccessible(false);
-    }
+
+    assertThatExceptionOfType(InvocationTargetException.class)
+        .isThrownBy(constructor::newInstance)
+        .satisfies(
+            e -> assertThat(e.getTargetException()).isExactlyInstanceOf(AssertionError.class));
 
     // Check for static method only
     Arrays.stream(clazz.getMethods())

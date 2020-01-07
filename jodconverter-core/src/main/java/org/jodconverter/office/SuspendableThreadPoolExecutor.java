@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-/** A thread pool executor that can be suspended. Only 1 thread is allowed in the pool and */
+/** A thread pool executor that can be suspended. Only 1 thread is allowed in the pool. */
 class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
 
   private boolean available;
@@ -34,7 +34,7 @@ class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
   private final Condition availableCondition = suspendLock.newCondition();
 
   /* default */ SuspendableThreadPoolExecutor(final ThreadFactory threadFactory) {
-    super(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), threadFactory);
+    super(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), threadFactory);
   }
 
   @Override

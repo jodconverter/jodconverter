@@ -200,44 +200,43 @@ public class LocalOfficeManagerITest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithProcessManagerClassNotFound_ThrowIllegalArgumentException()
-      throws Exception {
+  public void build_WithProcessManagerClassNotFound_ThrowIllegalArgumentException() {
 
     LocalOfficeManager.builder().processManager("org.jodconverter.notfound.ClassName").build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithNullPipeNames_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithNullPipeNames_ThrowIllegalArgumentException() {
 
     LocalOfficeManager.builder().pipeNames((String[]) null).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithEmptyPipeNames_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithEmptyPipeNames_ThrowIllegalArgumentException() {
 
     LocalOfficeManager.builder().pipeNames(new String[0]).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithNullPortNumbers_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithNullPortNumbers_ThrowIllegalArgumentException() {
 
     LocalOfficeManager.builder().portNumbers((int[]) null).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithEmptyPortNumbers_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithEmptyPortNumbers_ThrowIllegalArgumentException() {
 
     LocalOfficeManager.builder().portNumbers(new int[0]).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithNullRunAsArgs_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithNullRunAsArgs_ThrowIllegalArgumentException() {
 
     LocalOfficeManager.builder().runAsArgs((String[]) null).build();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void build_WithEmptyRunAsArgs_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithEmptyRunAsArgs_ThrowIllegalArgumentException() {
 
     LocalOfficeManager.builder().runAsArgs(new String[0]).build();
   }
@@ -306,7 +305,7 @@ public class LocalOfficeManagerITest {
 
       // Start the threads.
       thread1.start();
-      Thread.sleep(250L); // NOSONAR
+      Thread.sleep(250L);
       thread2.start();
 
       // Wait for thread to complete

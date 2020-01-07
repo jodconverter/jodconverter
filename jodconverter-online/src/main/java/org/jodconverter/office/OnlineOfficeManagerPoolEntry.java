@@ -93,8 +93,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     private static final TrustAllStrategy INSTANCE = new TrustAllStrategy();
 
     @Override
-    public boolean isTrusted(final X509Certificate[] chain, final String authType)
-        throws CertificateException {
+    public boolean isTrusted(final X509Certificate[] chain, final String authType) {
       return true;
     }
   }
@@ -115,7 +114,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
         // getClassLoader() returning null indicates the bootstrap ClassLoader
         try {
           cl = ClassLoader.getSystemClassLoader();
-        } catch (Throwable ex) { // NOSONAR
+        } catch (Throwable ex) {
           // Cannot access system ClassLoader - oh well, maybe the caller can live with null...
         }
       }
@@ -287,13 +286,13 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   @Override
-  protected void doStart() throws OfficeException {
+  protected void doStart() {
 
     taskExecutor.setAvailable(true);
   }
 
   @Override
-  protected void doStop() throws OfficeException {
+  protected void doStop() {
     // Nothing to stop here.
   }
 

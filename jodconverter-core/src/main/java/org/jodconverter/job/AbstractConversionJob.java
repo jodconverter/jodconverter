@@ -32,8 +32,8 @@ import org.jodconverter.office.OfficeException;
 public abstract class AbstractConversionJob
     implements ConversionJobWithOptionalTargetFormatUnspecified {
 
-  protected AbstractSourceDocumentSpecs source;
-  protected AbstractTargetDocumentSpecs target;
+  protected final AbstractSourceDocumentSpecs source;
+  protected final AbstractTargetDocumentSpecs target;
 
   protected AbstractConversionJob(
       final AbstractSourceDocumentSpecs source, final AbstractTargetDocumentSpecs target) {

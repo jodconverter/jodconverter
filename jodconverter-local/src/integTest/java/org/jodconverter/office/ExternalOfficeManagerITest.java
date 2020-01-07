@@ -40,11 +40,11 @@ public class ExternalOfficeManagerITest {
     final OfficeUrl officeUrl = new OfficeUrl(2002);
     officeProcess = new OfficeProcess(officeUrl);
     officeProcess.start();
-    Thread.sleep(2000); // NOSONAR
+    Thread.sleep(2000);
     final Integer exitCode = officeProcess.getExitCode();
-    if (exitCode != null && exitCode.equals(Integer.valueOf(81))) {
+    if (exitCode != null && exitCode.equals(81)) {
       officeProcess.start(true);
-      Thread.sleep(2000); // NOSONAR
+      Thread.sleep(2000);
     }
   }
 

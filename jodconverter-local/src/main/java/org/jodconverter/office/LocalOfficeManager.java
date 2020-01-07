@@ -389,12 +389,14 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
     public Builder processRetryInterval(final long processRetryInterval) {
 
       Validate.inclusiveBetween(
-          0,
+          OfficeProcessManagerConfig.MIN_PROCESS_RETRY_INTERVAL,
           OfficeProcessManagerConfig.MAX_PROCESS_RETRY_INTERVAL,
           processRetryInterval,
           String.format(
               "The processRetryInterval %s must be in the inclusive range of %s to %s",
-              processRetryInterval, 0, OfficeProcessManagerConfig.MAX_PROCESS_RETRY_INTERVAL));
+              processRetryInterval,
+              OfficeProcessManagerConfig.MIN_PROCESS_RETRY_INTERVAL,
+              OfficeProcessManagerConfig.MAX_PROCESS_RETRY_INTERVAL));
       this.processRetryInterval = processRetryInterval;
       return this;
     }

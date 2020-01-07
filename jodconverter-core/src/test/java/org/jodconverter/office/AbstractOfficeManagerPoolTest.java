@@ -30,8 +30,6 @@ import org.junit.rules.TemporaryFolder;
 
 public class AbstractOfficeManagerPoolTest {
 
-  protected static final String TEST_OUTPUT_DIR = "build/test-results/";
-
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test

@@ -53,7 +53,7 @@ public final class OfficeUtils {
       if (manager != null) {
         manager.stop();
       }
-    } catch (final OfficeException ex) { // NOSONAR
+    } catch (final OfficeException ex) {
       // ignore
     }
   }

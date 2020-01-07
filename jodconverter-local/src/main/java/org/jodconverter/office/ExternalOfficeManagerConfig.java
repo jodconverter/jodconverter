@@ -39,8 +39,8 @@ class ExternalOfficeManagerConfig implements OfficeManagerConfig {
    * Creates configuration with the specified values.
    *
    * @param workingDir The working directory.
-   * @param connectOnStart Should a connection be attempted on {@link #start()}? If <em>false</em>,
-   *     a connection will only be attempted the first time an {@link OfficeTask} is executed.
+   * @param connectOnStart Should a connection be attempted on start? If <em>false</em>, a
+   *     connection will only be attempted the first time an {@link OfficeTask} is executed.
    * @param connectTimeout Timeout after which a connection attempt will fail.
    * @param retryInterval Timeout between each try to connect.
    */

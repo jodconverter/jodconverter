@@ -19,7 +19,7 @@
 
 package org.jodconverter.task;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -136,11 +136,7 @@ public class LocalConversionTaskTest {
     testFolder.create();
   }
 
-  /**
-   * Deletes the test folder.
-   *
-   * @throws IOException If an IO error occurs.
-   */
+  /** Deletes the test folder. */
   @AfterClass
   public static void tearDownClass() {
 
@@ -188,13 +184,9 @@ public class LocalConversionTaskTest {
     final LocalConversionTask task =
         new LocalConversionTask(
             new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null, null);
-    try {
-      task.storeDocument(document, targetFile);
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseExactlyInstanceOf(ErrorCodeIOException.class);
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(() -> task.storeDocument(document, targetFile))
+        .withCauseExactlyInstanceOf(ErrorCodeIOException.class);
   }
 
   @Test
@@ -217,13 +209,9 @@ public class LocalConversionTaskTest {
     final LocalConversionTask task =
         new LocalConversionTask(
             new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null, null);
-    try {
-      task.storeDocument(document, targetFile);
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseExactlyInstanceOf(IOException.class);
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(() -> task.storeDocument(document, targetFile))
+        .withCauseExactlyInstanceOf(IOException.class);
   }
 
   @Test
@@ -254,14 +242,9 @@ public class LocalConversionTaskTest {
     final LocalConversionTask task =
         new LocalConversionTask(
             new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null, null);
-
-    try {
-      task.execute(context);
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseExactlyInstanceOf(IOException.class);
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(() -> task.execute(context))
+        .withCauseExactlyInstanceOf(IOException.class);
   }
 
   @Test
@@ -292,13 +275,8 @@ public class LocalConversionTaskTest {
     final LocalConversionTask task =
         new LocalConversionTask(
             new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null, null);
-
-    try {
-      task.execute(context);
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseExactlyInstanceOf(RuntimeException.class);
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(() -> task.execute(context))
+        .withCauseExactlyInstanceOf(RuntimeException.class);
   }
 }

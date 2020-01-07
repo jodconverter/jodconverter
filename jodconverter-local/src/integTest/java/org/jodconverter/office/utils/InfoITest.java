@@ -28,15 +28,12 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.sun.star.lang.XComponent;
 import com.sun.star.uno.XComponentContext;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
 import org.jodconverter.filter.Filter;
-import org.jodconverter.filter.FilterChain;
 import org.jodconverter.office.LocalOfficeContext;
-import org.jodconverter.office.OfficeContext;
 
 public class InfoITest extends AbstractOfficeITest {
 
@@ -46,36 +43,30 @@ public class InfoITest extends AbstractOfficeITest {
   public void getInfos_NoExceptionThrown() {
 
     final Filter filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
+        (context, document, chain) -> {
 
-            // We can't predict the office product and version is installed, but we can
-            // call everything to ensure no exceptions are thrown.
-            final LocalOfficeContext lcontext = (LocalOfficeContext) context;
-            final XComponentContext ccontext = lcontext.getComponentContext();
-            Info.getOfficeName(ccontext);
-            Info.getOfficeVersionLong(ccontext);
-            Info.getOfficeVersionShort(ccontext);
-            Info.isOpenOffice(ccontext);
-            Info.isLibreOffice(ccontext);
-          }
+          // We can't predict the office product and version is installed, but we can
+          // call everything to ensure no exceptions are thrown.
+          final LocalOfficeContext lcontext = (LocalOfficeContext) context;
+          final XComponentContext ccontext = lcontext.getComponentContext();
+          Info.getOfficeName(ccontext);
+          Info.getOfficeVersionLong(ccontext);
+          Info.getOfficeVersionShort(ccontext);
+          Info.isOpenOffice(ccontext);
+          Info.isLibreOffice(ccontext);
         };
 
     final File outputFile = new File(testFolder.getRoot(), "out.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(filter)
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR + "test.odt"))
-                  .to(outputFile)
-                  .execute();
-            })
+            () ->
+                LocalConverter.builder()
+                    .filterChain(filter)
+                    .build()
+                    .convert(new File(DOCUMENTS_DIR + "test.odt"))
+                    .to(outputFile)
+                    .execute())
         .doesNotThrowAnyException();
   }
 }

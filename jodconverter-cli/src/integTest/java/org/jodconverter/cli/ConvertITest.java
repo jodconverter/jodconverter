@@ -20,10 +20,11 @@
 package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -56,7 +57,7 @@ public class ConvertITest {
   @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
 
   @Test
-  public void convert_WithCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf() throws Exception {
+  public void convert_WithCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf() {
 
     final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
     final File inputFile = new File(SOURCE_FILE);
@@ -85,7 +86,7 @@ public class ConvertITest {
   }
 
   @Test
-  public void convert_WithFilenames_ShouldSucceed() throws Exception {
+  public void convert_WithFilenames_ShouldSucceed() {
 
     final File inputFile = new File(SOURCE_FILE);
     final File outputFile = new File(testFolder.getRoot(), "convert_WithFilenames.pdf");
@@ -140,7 +141,7 @@ public class ConvertITest {
   }
 
   @Test
-  public void convert_WithMultipleFilters_ShouldSucceed() throws Exception {
+  public void convert_WithMultipleFilters_ShouldSucceed() {
 
     final File filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
     final File inputFile = new File(SOURCE_FILE);
@@ -190,7 +191,7 @@ public class ConvertITest {
           .isExactlyInstanceOf(ExitException.class)
           .hasFieldOrPropertyWithValue("status", 0);
 
-      final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content)
           .contains("Test document Page 2")
           .doesNotContain("Test document Page 1")
@@ -199,7 +200,7 @@ public class ConvertITest {
   }
 
   @Test
-  public void convert_WithCustomStoreProperties_ShouldSucceed() throws Exception {
+  public void convert_WithCustomStoreProperties_ShouldSucceed() {
 
     final File inputFile = new File(SOURCE_MULTI_FILE);
     final File outputFile = new File(testFolder.getRoot(), "convert_WithCustomStoreProperties.pdf");
@@ -226,32 +227,26 @@ public class ConvertITest {
   }
 
   @Test
-  public void main_WithAllCustomizableOption_ExecuteAndExitWithCod0() throws Exception {
+  public void main_WithAllCustomizableOption_ExecuteAndExitWithCod0() {
 
-    try {
-      Convert.main(
-          new String[] {
-            "-g",
-            "-k",
-            "-i",
-            LocalOfficeUtils.getDefaultOfficeHome().getPath(),
-            "-m",
-            LocalOfficeUtils.findBestProcessManager().getClass().getName(),
-            "-t",
-            "30000",
-            "-p",
-            "2002",
-            "input1.txt",
-            "output1.pdf"
-          });
-
-      // Be sure an exception is thrown.
-      fail();
-
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 0);
-    }
+    assertThatExceptionOfType(ExitException.class)
+        .isThrownBy(
+            () ->
+                Convert.main(
+                    new String[] {
+                      "-g",
+                      "-k",
+                      "-i",
+                      LocalOfficeUtils.getDefaultOfficeHome().getPath(),
+                      "-m",
+                      LocalOfficeUtils.findBestProcessManager().getClass().getName(),
+                      "-t",
+                      "30000",
+                      "-p",
+                      "2002",
+                      "input1.txt",
+                      "output1.pdf"
+                    }))
+        .satisfies(e -> assertThat(e.getStatus()).isEqualTo(0));
   }
 }

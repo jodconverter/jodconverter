@@ -29,13 +29,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.sun.star.lang.XComponent;
-
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
 import org.jodconverter.filter.Filter;
-import org.jodconverter.filter.FilterChain;
-import org.jodconverter.office.OfficeContext;
 
 public class WriteITest extends AbstractOfficeITest {
 
@@ -45,30 +41,23 @@ public class WriteITest extends AbstractOfficeITest {
   public void isTextAndGetTextDoc_WithTextDocument_NoExceptionThrown() {
 
     final Filter filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
-
-            assertThat(Write.isText(document)).isTrue();
-            assertThat(Write.getTextDoc(null)).isNull();
-            assertThat(Write.getTextDoc(document)).isNotNull();
-          }
+        (context, document, chain) -> {
+          assertThat(Write.isText(document)).isTrue();
+          assertThat(Write.getTextDoc(null)).isNull();
+          assertThat(Write.getTextDoc(document)).isNotNull();
         };
 
     final File outputFile = new File(testFolder.getRoot(), "out.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(filter)
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR + "test.odt"))
-                  .to(outputFile)
-                  .execute();
-            })
+            () ->
+                LocalConverter.builder()
+                    .filterChain(filter)
+                    .build()
+                    .convert(new File(DOCUMENTS_DIR + "test.odt"))
+                    .to(outputFile)
+                    .execute())
         .doesNotThrowAnyException();
   }
 
@@ -76,30 +65,23 @@ public class WriteITest extends AbstractOfficeITest {
   public void isNotTextAndGetTextDoc_WithCalcDocument_NoExceptionThrown() {
 
     final Filter filter =
-        new Filter() {
-          @Override
-          public void doFilter(
-              final OfficeContext context, final XComponent document, final FilterChain chain)
-              throws Exception {
-
-            assertThat(Write.isText(document)).isFalse();
-            assertThat(Write.getTextDoc(null)).isNull();
-            assertThat(Write.getTextDoc(document)).isNull();
-          }
+        (context, document, chain) -> {
+          assertThat(Write.isText(document)).isFalse();
+          assertThat(Write.getTextDoc(null)).isNull();
+          assertThat(Write.getTextDoc(document)).isNull();
         };
 
     final File outputFile = new File(testFolder.getRoot(), "out.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(filter)
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR + "test.ods"))
-                  .to(outputFile)
-                  .execute();
-            })
+            () ->
+                LocalConverter.builder()
+                    .filterChain(filter)
+                    .build()
+                    .convert(new File(DOCUMENTS_DIR + "test.ods"))
+                    .to(outputFile)
+                    .execute())
         .doesNotThrowAnyException();
   }
 }

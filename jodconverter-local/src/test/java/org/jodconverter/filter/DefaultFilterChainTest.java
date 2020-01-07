@@ -20,15 +20,13 @@
 package org.jodconverter.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.List;
 
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 
-import com.sun.star.lang.XComponent;
-
-import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
 /**
@@ -65,37 +63,25 @@ public class DefaultFilterChainTest {
   @Test
   public void doFilter_WithFilterThrowingException_ThrowsOfficeException() {
 
-    try {
-      new DefaultFilterChain(
-              new Filter() {
-                @Override
-                public void doFilter(
-                    final OfficeContext context, final XComponent document, final FilterChain chain)
-                    throws Exception {
-                  throw new OfficeException("Unsupported Filter");
-                }
-              })
-          .doFilter(null, null);
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(OfficeException.class);
-      assertThat(e).hasNoCause();
-      assertThat(e).hasMessage("Unsupported Filter");
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(
+            () ->
+                new DefaultFilterChain(
+                        (context, document, chain) -> {
+                          throw new OfficeException("Unsupported Filter");
+                        })
+                    .doFilter(null, null))
+        .withNoCause()
+        .withMessage("Unsupported Filter");
 
-    try {
-      new DefaultFilterChain(
-              new Filter() {
-                @Override
-                public void doFilter(
-                    final OfficeContext context, final XComponent document, final FilterChain chain)
-                    throws Exception {
-                  throw new IndexOutOfBoundsException();
-                }
-              })
-          .doFilter(null, null);
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(OfficeException.class);
-      assertThat(e).hasCauseExactlyInstanceOf(IndexOutOfBoundsException.class);
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(
+            () ->
+                new DefaultFilterChain(
+                        (context, document, chain) -> {
+                          throw new IndexOutOfBoundsException();
+                        })
+                    .doFilter(null, null))
+        .withCauseExactlyInstanceOf(IndexOutOfBoundsException.class);
   }
 }

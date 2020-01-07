@@ -70,14 +70,11 @@ abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     // Submit the task to the executor
     currentFuture =
         taskExecutor.submit(
-            new Callable<Void>() {
-
-              @Override
-              public Void call() throws Exception {
-                doExecute(task);
-                return null;
-              }
-            });
+            (Callable<Void>)
+                () -> {
+                  doExecute(task);
+                  return null;
+                });
 
     // Wait for completion of the task, (maximum wait time is the
     // configured task execution timeout)
@@ -92,7 +89,7 @@ abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
       handleExecuteTimeoutException(timeoutEx);
       throw new OfficeException("Task did not complete within timeout", timeoutEx);
 
-    } catch (ExecutionException executionEx) { // NOSONAR
+    } catch (ExecutionException executionEx) {
 
       // Rethrow the original (cause) exception
       if (executionEx.getCause() instanceof OfficeException) {
@@ -115,14 +112,14 @@ abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
    *
    * @throws Exception If any errors occurs during the conversion.
    */
-  protected abstract void doExecute(final OfficeTask task) throws Exception; // NOSONAR
+  protected abstract void doExecute(final OfficeTask task) throws Exception;
 
   /**
    * Handles a timeout exception raised while executing a task.
    *
    * @param timeoutEx the exception thrown.
    */
-  protected void handleExecuteTimeoutException(final TimeoutException timeoutEx) { // NOSONAR
+  protected void handleExecuteTimeoutException(final TimeoutException timeoutEx) {
 
     // The default behavior is to do nothing
     LOGGER.debug("Handleling task execution timeout...");

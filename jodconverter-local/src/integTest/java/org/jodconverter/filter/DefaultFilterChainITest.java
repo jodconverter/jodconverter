@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
@@ -73,7 +73,7 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
     final LocalConverter converter = LocalConverter.builder().filterChain(chain).build();
     converter.convert(SOURCE_FILE).to(targetFile1).execute();
 
-    final String content = FileUtils.readFileToString(targetFile1, Charset.forName("UTF-8"));
+    final String content = FileUtils.readFileToString(targetFile1, StandardCharsets.UTF_8);
     assertThat(content)
         .contains("Test document Page 1")
         .doesNotContain("Test document Page 2")

@@ -20,7 +20,7 @@
 package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.concurrent.TimeoutException;
 
@@ -65,13 +65,9 @@ public class OnlineOfficeManagerPoolEntryTest {
       assertThat(officeManager.isRunning()).isTrue();
 
       final SimpleOfficeTask task = new SimpleOfficeTask(1000);
-      try {
-        officeManager.execute(task);
-        fail("task should be timed out");
-      } catch (Exception ex) {
-        assertThat(ex).isExactlyInstanceOf(OfficeException.class);
-        assertThat(ex.getCause()).isExactlyInstanceOf(TimeoutException.class);
-      }
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> officeManager.execute(task))
+          .withCauseExactlyInstanceOf(TimeoutException.class);
 
     } finally {
 
@@ -92,15 +88,10 @@ public class OnlineOfficeManagerPoolEntryTest {
       assertThat(officeManager.isRunning()).isTrue();
 
       final SimpleOfficeTask task = new SimpleOfficeTask(exception);
-      try {
-        officeManager.execute(task);
-        fail("task should have failed");
-      } catch (Exception ex) {
-        assertThat(ex).isExactlyInstanceOf(OfficeException.class);
-        assertThat(ex.getCause())
-            .isExactlyInstanceOf(IllegalStateException.class)
-            .hasMessage("this is a test");
-      }
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> officeManager.execute(task))
+          .withCauseExactlyInstanceOf(IllegalStateException.class)
+          .satisfies(e -> assertThat(e.getCause()).hasMessage("this is a test"));
 
     } finally {
       officeManager.stop();
@@ -120,15 +111,10 @@ public class OnlineOfficeManagerPoolEntryTest {
       assertThat(officeManager.isRunning()).isTrue();
 
       final SimpleOfficeTask task = new SimpleOfficeTask(exception);
-      try {
-        officeManager.execute(task);
-        fail("task should have failed");
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasNoCause()
-            .hasMessage("this is a test");
-      }
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> officeManager.execute(task))
+          .withNoCause()
+          .withMessage("this is a test");
 
     } finally {
       officeManager.stop();
@@ -146,12 +132,10 @@ public class OnlineOfficeManagerPoolEntryTest {
 
     try {
       final SimpleOfficeTask task = new SimpleOfficeTask(1000);
-      try {
-        officeManager.execute(task);
-        fail("task should be timed out");
-      } catch (OfficeException officeEx) {
-        assertThat(officeEx.getCause()).isInstanceOf(TimeoutException.class);
-      }
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> officeManager.execute(task))
+          .withCauseExactlyInstanceOf(TimeoutException.class);
 
     } finally {
       officeManager.stop();

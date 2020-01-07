@@ -21,6 +21,7 @@ package org.jodconverter.office.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -115,7 +116,7 @@ public class PropsTest {
   public void makeProperties_WithOneValue_ReturnArrayWithExpectedValues() {
 
     final String name = "name";
-    final Object value = new Integer(100);
+    final Object value = 100;
 
     final PropertyValue[] props = Props.makeProperties(name, value);
     assertThat(props).hasSize(1);
@@ -126,9 +127,9 @@ public class PropsTest {
   public void makeProperties_WithTwoValue_ReturnArrayWithExpectedValues() {
 
     final String name1 = "name1";
-    final Object value1 = new Integer(100);
+    final Object value1 = 100;
     final String name2 = "name2";
-    final Object value2 = new Integer(200);
+    final Object value2 = 200;
 
     final PropertyValue[] props = Props.makeProperties(name1, value1, name2, value2);
     assertThat(props).hasSize(2);
@@ -140,21 +141,16 @@ public class PropsTest {
   public void makeProperties_ArrayNotSameLength_ThrowIllegalArgumentException() {
 
     final String[] names = new String[] {"name1", "name2", "name3"};
-    final Object[] values =
-        new Object[] {new Integer(100), new Integer(200), new Integer(300), new Integer(400)};
-    try {
-      Props.makeProperties(names, values);
-    } catch (Exception ex) {
-      assertThat(ex).isExactlyInstanceOf(IllegalArgumentException.class);
-    }
+    final Object[] values = new Object[] {100, 200, 300, 400};
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(() -> Props.makeProperties(names, values));
   }
 
   @Test
   public void makeProperties_ArraySameLength_ReturnArrayWithExpectedValues() {
 
     final String[] names = new String[] {"name1", "name2", "name3", "name4"};
-    final Object[] values =
-        new Object[] {new Integer(100), new Integer(200), new Integer(300), new Integer(400)};
+    final Object[] values = new Object[] {100, 200, 300, 400};
 
     final PropertyValue[] props = Props.makeProperties(names, values);
     assertThat(props).hasSize(4);

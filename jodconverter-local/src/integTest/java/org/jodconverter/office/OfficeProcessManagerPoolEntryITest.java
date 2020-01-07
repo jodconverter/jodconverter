@@ -20,6 +20,7 @@
 package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
 
 import java.io.File;
@@ -75,11 +76,11 @@ public class OfficeProcessManagerPoolEntryITest {
     // Starts an office process
     final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
     officeProcess.start();
-    Thread.sleep(1000); // NOSONAR
+    Thread.sleep(1000);
     final Integer exitCode = officeProcess.getExitCode();
-    if (exitCode != null && exitCode.equals(Integer.valueOf(81))) {
+    if (exitCode != null && exitCode.equals(81)) {
       officeProcess.start(true);
-      Thread.sleep(1000); // NOSONAR
+      Thread.sleep(1000);
     }
     return officeProcess;
   }
@@ -91,7 +92,7 @@ public class OfficeProcessManagerPoolEntryITest {
     final long start = System.currentTimeMillis();
 
     if (initialWait > 0) {
-      Thread.sleep(initialWait); // NOSONAR
+      Thread.sleep(initialWait);
     }
 
     final long limit = start + timeout;
@@ -102,7 +103,7 @@ public class OfficeProcessManagerPoolEntryITest {
       }
 
       // Wait a sec
-      Thread.sleep(1000); // NOSONAR
+      Thread.sleep(1000);
     }
 
     // Times out...
@@ -163,7 +164,7 @@ public class OfficeProcessManagerPoolEntryITest {
     }
   }
 
-  private class RestartAfterCrashTask implements Callable<Boolean> {
+  private static class RestartAfterCrashTask implements Callable<Boolean> {
 
     private final OfficeProcessManagerPoolEntry officeManager;
 
@@ -207,7 +208,7 @@ public class OfficeProcessManagerPoolEntryITest {
         final Callable<Boolean> task = new RestartAfterCrashTask(officeManager);
         final Future<Boolean> future = pool.submit(task);
 
-        Thread.sleep(500); // NOSONAR
+        Thread.sleep(500);
 
         // Simulate crash
         final VerboseProcess verboseProcess =
@@ -389,15 +390,10 @@ public class OfficeProcessManagerPoolEntryITest {
     final OfficeProcessManagerPoolEntry officeManager =
         new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
     try {
-      officeManager.start();
-      fail("Exception expected");
 
-    } catch (Exception ex) {
-
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasMessageContaining("A process with acceptString")
-          .hasMessageContaining("is already running");
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(officeManager::start)
+          .withMessageMatching("A process with acceptString.*is already running.*");
 
     } finally {
 
@@ -462,7 +458,7 @@ public class OfficeProcessManagerPoolEntryITest {
             if (firstAttempt) {
               firstAttempt = false;
               try {
-                Thread.sleep(500); // NOSONAR
+                Thread.sleep(500);
               } catch (InterruptedException e) {
                 // Swallow
               }
@@ -491,15 +487,9 @@ public class OfficeProcessManagerPoolEntryITest {
     } finally {
 
       try {
-        officeManager.stop();
-        fail("Exception expected");
-
-      } catch (Exception ex) {
-
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(RetryTimeoutException.class);
-
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(officeManager::stop)
+            .withCauseExactlyInstanceOf(RetryTimeoutException.class);
       } finally {
 
         // Ensure that after the test, the office instance is terminated.
@@ -518,7 +508,7 @@ public class OfficeProcessManagerPoolEntryITest {
   }
 
   @Test
-  public void isRunning_WhenNotStarted_ReturnsFalse() throws Exception {
+  public void isRunning_WhenNotStarted_ReturnsFalse() {
 
     final OfficeProcessManagerPoolEntry officeManager =
         new OfficeProcessManagerPoolEntry(CONNECT_URL);

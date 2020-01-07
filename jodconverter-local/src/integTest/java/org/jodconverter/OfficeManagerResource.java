@@ -65,15 +65,13 @@ public final class OfficeManagerResource extends ExternalResource {
     // Ensure we stop the manager when the VM shutdown
     Runtime.getRuntime()
         .addShutdownHook(
-            new Thread() {
-              @Override
-              public void run() {
-                try {
-                  officeManager.stop();
-                } catch (OfficeException ex) {
-                  LOGGER.error("Unable to stop the office manager.", ex);
-                }
-              }
-            });
+            new Thread(
+                () -> {
+                  try {
+                    officeManager.stop();
+                  } catch (OfficeException ex) {
+                    LOGGER.error("Unable to stop the office manager.", ex);
+                  }
+                }));
   }
 }

@@ -74,7 +74,7 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
         final Object value = entry.getValue();
 
         // First, check if we are dealing with the FilterData property
-        if (FILTER_DATA.equalsIgnoreCase(key) && Map.class.isInstance(value)) {
+        if (FILTER_DATA.equalsIgnoreCase(key) && value instanceof Map) {
           // Add all the FilterData properties
           for (final Map.Entry<String, Object> fdentry : ((Map<String, Object>) value).entrySet()) {
             uriBuilder.addParameter(

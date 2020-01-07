@@ -20,6 +20,7 @@
 package org.jodconverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -138,38 +139,39 @@ public class LocalConverterTest {
   }
 
   @Test
-  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream()
-      throws Exception {
+  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream() {
 
     final File targetFile = new File(outputDir, "test.pdf");
 
-    try (InputStream stream = Files.newInputStream(targetFile.toPath())) {
-      LocalConverter.make(officeManager)
-          .convert(stream)
-          .as(DefaultDocumentFormatRegistry.TXT)
-          .to(targetFile)
-          .execute();
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(IllegalStateException.class)
-          .hasMessageMatching(".*TemporaryFileMaker.*InputStream.*");
-    }
+    assertThatExceptionOfType(IllegalStateException.class)
+        .isThrownBy(
+            () -> {
+              try (InputStream stream = Files.newInputStream(targetFile.toPath())) {
+                LocalConverter.make(officeManager)
+                    .convert(stream)
+                    .as(DefaultDocumentFormatRegistry.TXT)
+                    .to(targetFile)
+                    .execute();
+              }
+            })
+        .withMessageMatching(".*TemporaryFileMaker.*InputStream.*");
   }
 
   @Test
-  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream()
-      throws Exception {
+  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream() {
 
-    try (OutputStream stream = Files.newOutputStream(new File(outputDir, "test.pdf").toPath())) {
-      LocalConverter.make(officeManager)
-          .convert(SOURCE_FILE)
-          .to(stream)
-          .as(DefaultDocumentFormatRegistry.PDF)
-          .execute();
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(IllegalStateException.class)
-          .hasMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
-    }
+    assertThatExceptionOfType(IllegalStateException.class)
+        .isThrownBy(
+            () -> {
+              try (OutputStream stream =
+                  Files.newOutputStream(new File(outputDir, "test.pdf").toPath())) {
+                LocalConverter.make(officeManager)
+                    .convert(SOURCE_FILE)
+                    .to(stream)
+                    .as(DefaultDocumentFormatRegistry.PDF)
+                    .execute();
+              }
+            })
+        .withMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
   }
 }

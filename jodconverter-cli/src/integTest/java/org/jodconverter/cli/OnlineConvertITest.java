@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
@@ -89,7 +89,7 @@ public class OnlineConvertITest {
             .isExactlyInstanceOf(ExitException.class)
             .hasFieldOrPropertyWithValue("status", 0);
 
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
@@ -141,7 +141,7 @@ public class OnlineConvertITest {
             .isExactlyInstanceOf(ExitException.class)
             .hasFieldOrPropertyWithValue("status", 0);
 
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         FileUtils.deleteQuietly(outputFile); // Prevent further test failure.

@@ -20,7 +20,7 @@
 package org.jodconverter.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -46,20 +46,16 @@ public class SourceDocumentSpecsFromInputStreamTest {
 
   private TemporaryFileMaker fileMaker;
 
-  /**
-   * Setup the file maker before each test.
-   *
-   * @throws IOException If an IO error occurs.
-   */
+  /** Setup the file maker before each test. */
   @Before
-  public void setUp() throws IOException {
+  public void setUp() {
 
     fileMaker = mock(TemporaryFileMaker.class);
     given(fileMaker.makeTemporaryFile()).willReturn(new File(testFolder.getRoot(), "temp"));
   }
 
   @Test(expected = NullPointerException.class)
-  public void ctor_WithNullInputStream_ThrowsNullPointerException() throws IOException {
+  public void ctor_WithNullInputStream_ThrowsNullPointerException() {
 
     new SourceDocumentSpecsFromInputStream(null, fileMaker, true);
   }
@@ -74,13 +70,9 @@ public class SourceDocumentSpecsFromInputStreamTest {
       final SourceDocumentSpecsFromInputStream specs =
           new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
 
-      try {
-        specs.getFile();
-        fail("getFile should throw DocumentSpecsIOException");
-      } catch (Exception e) {
-        assertThat(e).isInstanceOf(DocumentSpecsIOException.class);
-        assertThat(e).hasCauseInstanceOf(IOException.class);
-      }
+      assertThatExceptionOfType(DocumentSpecsIOException.class)
+          .isThrownBy(specs::getFile)
+          .withCauseInstanceOf(IOException.class);
     }
   }
 
@@ -97,13 +89,9 @@ public class SourceDocumentSpecsFromInputStreamTest {
     final SourceDocumentSpecsFromInputStream specs =
         new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, true);
 
-    try {
-      specs.onConsumed(tempFile);
-      fail("onConsumed should throw DocumentSpecsIOException");
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(DocumentSpecsIOException.class);
-      assertThat(e).hasCauseInstanceOf(IOException.class);
-    }
+    assertThatExceptionOfType(DocumentSpecsIOException.class)
+        .isThrownBy(() -> specs.onConsumed(tempFile))
+        .withCauseInstanceOf(IOException.class);
   }
 
   @Test

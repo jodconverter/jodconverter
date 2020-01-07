@@ -59,7 +59,7 @@ public class ConvertTest {
   }
 
   @Test
-  public void main_WithOptionHelp_PrintHelpAndExitWithCode0() throws Exception {
+  public void main_WithOptionHelp_PrintHelpAndExitWithCode0() {
 
     try {
       SystemLogHandler.startCapture();
@@ -76,7 +76,7 @@ public class ConvertTest {
   }
 
   @Test
-  public void main_WithOptionHelp_PrintVersionAndExitWithCode0() throws Exception {
+  public void main_WithOptionHelp_PrintVersionAndExitWithCode0() {
 
     try {
       SystemLogHandler.startCapture();
@@ -92,7 +92,7 @@ public class ConvertTest {
   }
 
   @Test
-  public void main_WithUnknownArgument_PrintErrorHelpAndExitWithCode2() throws Exception {
+  public void main_WithUnknownArgument_PrintErrorHelpAndExitWithCode2() {
 
     try {
       SystemLogHandler.startCapture();
@@ -111,7 +111,7 @@ public class ConvertTest {
   }
 
   @Test
-  public void main_WithMissingsFilenames_PrintErrorHelpAndExitWithCode255() throws Exception {
+  public void main_WithMissingsFilenames_PrintErrorHelpAndExitWithCode255() {
 
     try {
       SystemLogHandler.startCapture();
@@ -128,7 +128,7 @@ public class ConvertTest {
   }
 
   @Test
-  public void main_WithWrongFilenamesLength_PrintErrorHelpAndExitWithCode255() throws Exception {
+  public void main_WithWrongFilenamesLength_PrintErrorHelpAndExitWithCode255() {
 
     try {
       SystemLogHandler.startCapture();
@@ -178,12 +178,10 @@ public class ConvertTest {
                 new String[] {"-sFDPageRange=2-2", "output1.pdf", "input2.txt"});
 
     final CliConverter cliConverter =
-        (CliConverter)
-            Whitebox.invokeMethod(
-                Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+        Whitebox.invokeMethod(
+            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
     final LocalConverter localConverter =
-        (LocalConverter)
-            (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
+        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
 
     final Map<String, Object> expectedFilterData = new HashMap<>();
     expectedFilterData.put("PageRange", "2-2");
@@ -203,12 +201,10 @@ public class ConvertTest {
                 new String[] {"-sOverwrite=true", "output1.pdf", "input2.txt"});
 
     final CliConverter cliConverter =
-        (CliConverter)
-            Whitebox.invokeMethod(
-                Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+        Whitebox.invokeMethod(
+            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
     final LocalConverter localConverter =
-        (LocalConverter)
-            (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
+        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
 
     final Map<String, Object> expectedStoreProperties = new HashMap<>();
     expectedStoreProperties.put("Overwrite", true);
@@ -233,12 +229,10 @@ public class ConvertTest {
                 });
 
     final CliConverter cliConverter =
-        (CliConverter)
-            Whitebox.invokeMethod(
-                Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+        Whitebox.invokeMethod(
+            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
     final LocalConverter localConverter =
-        (LocalConverter)
-            (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
+        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
 
     final Map<String, Object> expectedFilterData = new HashMap<>();
     expectedFilterData.put("PageRange", "2-4");

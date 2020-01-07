@@ -46,7 +46,7 @@ class SimpleOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   @Override
-  protected void doStart() throws OfficeException {
+  protected void doStart() {
 
     taskExecutor.setAvailable(true);
   }
@@ -59,7 +59,7 @@ class SimpleOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   @Override
-  protected void doStop() throws OfficeException {
+  protected void doStop() {
     // Nothing to stop here.
   }
 }

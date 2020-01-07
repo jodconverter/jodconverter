@@ -111,7 +111,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
               + "Regex used to match current running process lines: {}\n"
               + "Regex used to match running office process we are looking for: {}",
           currentProcessesCommand,
-          processLinePattern.pattern(), // NOSONAR
+          processLinePattern.pattern(),
           commandPattern.pattern());
     }
 

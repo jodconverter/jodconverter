@@ -29,24 +29,22 @@ import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.office.OfficeException;
 
 public class LinkedImagesEmbedderFilterITest extends AbstractOfficeITest {
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
-  public void doFilter_DoesNotThrowAnyException() throws OfficeException {
+  public void doFilter_DoesNotThrowAnyException() {
 
     assertThatCode(
-            () -> {
-              LocalConverter.builder()
-                  .filterChain(new LinkedImagesEmbedderFilter())
-                  .build()
-                  .convert(new File(DOCUMENTS_DIR, "test_with_linked_images.odt"))
-                  .to(new File(testFolder.getRoot(), "test_with_linked_images.odt"))
-                  .execute();
-            })
+            () ->
+                LocalConverter.builder()
+                    .filterChain(new LinkedImagesEmbedderFilter())
+                    .build()
+                    .convert(new File(DOCUMENTS_DIR, "test_with_linked_images.odt"))
+                    .to(new File(testFolder.getRoot(), "test_with_linked_images.odt"))
+                    .execute())
         .doesNotThrowAnyException();
 
     // TODO: Check if all images are now embedded.

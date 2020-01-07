@@ -42,5 +42,5 @@ public interface Filter {
    * @throws Exception If an error occurs processing the filter.
    */
   void doFilter(final OfficeContext context, final XComponent document, final FilterChain chain)
-      throws Exception; // NOSONAR
+      throws Exception;
 }

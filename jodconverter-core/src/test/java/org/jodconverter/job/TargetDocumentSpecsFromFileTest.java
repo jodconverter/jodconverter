@@ -23,8 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
@@ -61,9 +59,6 @@ public class TargetDocumentSpecsFromFileTest {
     final File targetFile = new File(testFolder.getRoot(), TARGET_FILENAME);
     FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
     assertThat(targetFile).exists();
-
-    final Map<String, Object> storeProperties = new HashMap<>();
-    storeProperties.put("Overwrite", true);
 
     final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(targetFile);
     specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);

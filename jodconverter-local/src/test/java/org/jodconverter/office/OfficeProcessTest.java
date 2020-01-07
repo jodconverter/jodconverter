@@ -20,14 +20,13 @@
 package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
@@ -66,11 +65,7 @@ public class OfficeProcessTest {
     testFolder.create();
   }
 
-  /**
-   * Deletes the test folder.
-   *
-   * @throws IOException If an IO error occurs.
-   */
+  /** Deletes the test folder. */
   @AfterClass
   public static void tearDownClass() {
 
@@ -96,15 +91,10 @@ public class OfficeProcessTest {
 
     assertThat(
             workingDir.listFiles(
-                new FileFilter() {
-
-                  @Override
-                  public boolean accept(final File pathname) {
-                    return pathname.isDirectory()
+                pathname ->
+                    pathname.isDirectory()
                         && StringUtils.startsWith(
-                            pathname.getName(), instanceProfileDir.getName() + ".old.");
-                  }
-                }))
+                            pathname.getName(), instanceProfileDir.getName() + ".old.")))
         .hasSize(1);
 
     FileUtils.deleteQuietly(workingDir);
@@ -127,20 +117,15 @@ public class OfficeProcessTest {
 
     assertThat(
             workingDir.listFiles(
-                new FileFilter() {
-
-                  @Override
-                  public boolean accept(final File pathname) {
-                    return pathname.isDirectory()
+                pathname ->
+                    pathname.isDirectory()
                         && StringUtils.startsWith(
-                            pathname.getName(), instanceProfileDir.getName() + ".old.");
-                  }
-                }))
+                            pathname.getName(), instanceProfileDir.getName() + ".old.")))
         .isNullOrEmpty();
   }
 
   @Test
-  public void forciblyTerminate_WhenIoExceptionCatched_TrowsOfficeException() throws Exception {
+  public void forciblyTerminate_WhenIoExceptionCatched_TrowsOfficeException() {
 
     final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
     config.setProcessManager(
@@ -151,22 +136,20 @@ public class OfficeProcessTest {
           }
 
           @Override
-          public long findPid(final ProcessQuery query) throws IOException {
+          public long findPid(final ProcessQuery query) {
             return PID_NOT_FOUND;
           }
         });
     final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
 
     final VerboseProcess verboseProcess = mock(VerboseProcess.class);
-    try {
-      Whitebox.setInternalState(process, "process", verboseProcess);
-      process.forciblyTerminate(0L, 0L);
-      fail("Exception expected");
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseExactlyInstanceOf(IOException.class);
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(
+            () -> {
+              Whitebox.setInternalState(process, "process", verboseProcess);
+              process.forciblyTerminate(0L, 0L);
+            })
+        .withCauseExactlyInstanceOf(IOException.class);
   }
 
   @Test

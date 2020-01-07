@@ -88,7 +88,7 @@ abstract class AbstractOfficeManager implements OfficeManager, TemporaryFileMake
       LOGGER.debug("Deleting temporary directory '{}'", tempDir);
       try {
         FileUtils.deleteDirectory(tempDir);
-      } catch (IOException ioEx) { // NOSONAR
+      } catch (IOException ioEx) {
         LOGGER.error("Could not temporary profileDir: {}", ioEx.getMessage());
       }
     }

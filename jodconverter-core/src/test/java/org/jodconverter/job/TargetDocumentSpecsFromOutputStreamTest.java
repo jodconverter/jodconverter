@@ -20,7 +20,7 @@
 package org.jodconverter.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -29,8 +29,6 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -50,20 +48,16 @@ public class TargetDocumentSpecsFromOutputStreamTest {
 
   private TemporaryFileMaker fileMaker;
 
-  /**
-   * Setup the file maker before each test.
-   *
-   * @throws IOException If an IO error occurs.
-   */
+  /** Setup the file maker before each test. */
   @Before
-  public void setUp() throws IOException {
+  public void setUp() {
 
     fileMaker = mock(TemporaryFileMaker.class);
     given(fileMaker.makeTemporaryFile()).willReturn(new File(testFolder.getRoot(), "temp"));
   }
 
   @Test(expected = NullPointerException.class)
-  public void ctor_WithNullOutputStream_ThrowsNullPointerException() throws IOException {
+  public void ctor_WithNullOutputStream_ThrowsNullPointerException() {
 
     new TargetDocumentSpecsFromOutputStream(null, fileMaker, true);
   }
@@ -84,13 +78,9 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     final TargetDocumentSpecsFromOutputStream specs =
         new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
 
-    try {
-      specs.onComplete(tempFile);
-      fail("onComplete should throw DocumentSpecsIOException");
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(DocumentSpecsIOException.class);
-      assertThat(e).hasCauseInstanceOf(IOException.class);
-    }
+    assertThatExceptionOfType(DocumentSpecsIOException.class)
+        .isThrownBy(() -> specs.onComplete(tempFile))
+        .withCauseInstanceOf(IOException.class);
   }
 
   @Test
@@ -200,8 +190,6 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     try (FileOutputStream outputStream =
         new FileOutputStream(new File(testFolder.getRoot(), TARGET_FILENAME))) {
 
-      final Map<String, Object> storeProperties = new HashMap<>();
-      storeProperties.put("Overwrite", true);
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
       specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);

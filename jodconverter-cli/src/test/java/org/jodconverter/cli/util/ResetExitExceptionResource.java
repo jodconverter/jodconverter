@@ -28,7 +28,7 @@ import org.junit.rules.ExternalResource;
 public final class ResetExitExceptionResource extends ExternalResource {
 
   @Override
-  protected void before() throws Throwable {
+  protected void before() {
 
     ExitException.INSTANCE.reset();
   }

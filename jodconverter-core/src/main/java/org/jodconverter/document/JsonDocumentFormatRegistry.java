@@ -22,6 +22,7 @@ package org.jodconverter.document;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
       final InputStream source, final Map<String, DocumentFormatProperties> customProperties)
       throws IOException {
 
-    return create(IOUtils.toString(source, "UTF-8"), customProperties);
+    return create(IOUtils.toString(source, StandardCharsets.UTF_8), customProperties);
   }
 
   /**
@@ -92,7 +93,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
   }
 
   // Force static function call
-  protected JsonDocumentFormatRegistry() { // NOSONAR
+  protected JsonDocumentFormatRegistry() {
     super();
   }
 
@@ -121,12 +122,9 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
               props
                   .getStore()
                   .forEach(
-                      (family, storeProps) -> {
-                        storeProps.forEach(
-                            (name, value) -> {
-                              builder.storeProperty(family, name, value);
-                            });
-                      });
+                      (family, storeProps) ->
+                          storeProps.forEach(
+                              (name, value) -> builder.storeProperty(family, name, value)));
               // Build the format.
               return builder.build();
             })

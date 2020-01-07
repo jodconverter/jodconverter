@@ -30,7 +30,6 @@ public final class DumpOfficeUrl {
    * Main entry point of the program used to test this class.
    *
    * @param args program arguments.
-   * @throws Exception if an error occurs.
    */
   public static void main(final String[] args) {
 
@@ -71,7 +70,7 @@ public final class DumpOfficeUrl {
       LOGGER.info("url.getProtocolParametersAsString(): {}", url.getProtocolParametersAsString());
       LOGGER.info("url.getProtocolParameters(): {}", url.getProtocolParameters());
       LOGGER.info("url.getRootOid(): {}", url.getRootOid());
-    } catch (Exception ex) { // NOSONAR
+    } catch (Exception ex) {
       throw new IllegalArgumentException(ex);
     }
   }

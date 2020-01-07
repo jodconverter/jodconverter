@@ -24,7 +24,7 @@ package org.jodconverter.office;
  *
  * @see AbstractOfficeManagerPool
  */
-interface OfficeManagerPoolConfig extends OfficeManagerConfig { // NOSONAR
+interface OfficeManagerPoolConfig extends OfficeManagerConfig {
 
   /** The default maximum living time of a task in the conversion queue. */
   long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds

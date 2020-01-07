@@ -33,7 +33,7 @@ public final class InstalledOfficeManagerHolder {
    *
    * @return The main default office manager.
    */
-  public static OfficeManager getInstance() { // NOSONAR
+  public static OfficeManager getInstance() {
 
     synchronized (InstalledOfficeManagerHolder.class) {
       return instance;
@@ -47,7 +47,7 @@ public final class InstalledOfficeManagerHolder {
    * @return the previous installed office manager, or {@code null} if there was no installed office
    *     manager.
    */
-  public static OfficeManager setInstance(final OfficeManager manager) { // NOSONAR
+  public static OfficeManager setInstance(final OfficeManager manager) {
 
     synchronized (InstalledOfficeManagerHolder.class) {
       final OfficeManager oldManager = instance;

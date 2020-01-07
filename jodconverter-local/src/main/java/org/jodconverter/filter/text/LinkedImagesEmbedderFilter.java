@@ -110,7 +110,7 @@ public class LinkedImagesEmbedderFilter implements Filter {
           final String name = xPropSet.getPropertyValue("LinkDisplayName").toString();
           final String graphicURL = xPropSet.getPropertyValue("GraphicURL").toString();
           // Only ones that are not embedded
-          if (graphicURL.indexOf("vnd.sun.") == -1) {
+          if (!graphicURL.contains("vnd.sun.")) {
             // Creating bitmap container service
             final XNameContainer bitmapContainer =
                 Lo.createInstanceMSF(

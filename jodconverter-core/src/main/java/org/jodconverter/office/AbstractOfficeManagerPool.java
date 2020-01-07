@@ -31,8 +31,8 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.task.OfficeTask;
 
 /**
- * A OfficeManagerPool is responsible to maintain a pool of {@link OfficeProcessManagerPoolEntry}
- * that will be used to execute {@link OfficeTask}. The pool will use the first {@link
+ * A OfficeManagerPool is responsible to maintain a pool of {@code OfficeProcessManagerPoolEntry}
+ * that will be used to execute {@link OfficeTask}. The pool will use the first {@code
  * OfficeProcessManagerPoolEntry} to execute a given task when the {@link #execute(OfficeTask)}
  * function is called.
  */
@@ -153,7 +153,7 @@ abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
             "No office manager available after " + config.getTaskQueueTimeout() + " millisec.");
       }
       return manager;
-    } catch (InterruptedException interruptedEx) { // NOSONAR
+    } catch (InterruptedException interruptedEx) {
       throw new OfficeException(
           "Thread has been interrupted while waiting for a manager to become available.",
           interruptedEx);
@@ -170,7 +170,7 @@ abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
 
     try {
       pool.put(manager);
-    } catch (InterruptedException interruptedEx) { // NOSONAR
+    } catch (InterruptedException interruptedEx) {
       // Not supposed to happened
       throw new OfficeException("interrupted", interruptedEx);
     }

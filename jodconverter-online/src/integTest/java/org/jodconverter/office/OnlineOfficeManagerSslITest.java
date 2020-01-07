@@ -24,10 +24,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 
@@ -69,7 +69,8 @@ public class OnlineOfficeManagerSslITest {
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
-  public void execute_WithKeyPasswordAndPasswordNotProvided_ShouldThrowUnrecoverableKeyException() {
+  public void execute_WithKeyPasswordAndPasswordNotProvided_ShouldThrowUnrecoverableKeyException()
+      throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -104,16 +105,11 @@ public class OnlineOfficeManagerSslITest {
             post(urlPathEqualTo("/lool/convert-to/txt"))
                 .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(
+                () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute())
+            .withCauseExactlyInstanceOf(UnrecoverableKeyException.class);
 
-        // Be sure the an exception is thrown.
-        fail();
-
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(UnrecoverableKeyException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -173,7 +169,7 @@ public class OnlineOfficeManagerSslITest {
         OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
         // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         manager.stop();
@@ -229,7 +225,7 @@ public class OnlineOfficeManagerSslITest {
         OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
         // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         manager.stop();
@@ -241,7 +237,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithNeedClientAuthAndMissingClientAuth_ShouldThrowSSLException() {
+  public void execute_WithNeedClientAuthAndMissingClientAuth_ShouldThrowSSLException()
+      throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -273,14 +270,10 @@ public class OnlineOfficeManagerSslITest {
             post(urlPathEqualTo("/lool/convert-to/txt"))
                 .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(
+                () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute());
 
-        // Be sure the an exception is thrown.
-        fail();
-
-      } catch (Exception ex) {
-        assertThat(ex).isExactlyInstanceOf(OfficeException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -291,7 +284,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithSpecifiedPrivateKeyAndBadPrivateKeySpecified_ShouldThrowSSLException() {
+  public void execute_WithSpecifiedPrivateKeyAndBadPrivateKeySpecified_ShouldThrowSSLException()
+      throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -329,14 +323,10 @@ public class OnlineOfficeManagerSslITest {
             post(urlPathEqualTo("/lool/convert-to/txt"))
                 .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(
+                () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute());
 
-        // Be sure the an exception is thrown.
-        fail();
-
-      } catch (Exception ex) {
-        assertThat(ex).isExactlyInstanceOf(OfficeException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -394,7 +384,7 @@ public class OnlineOfficeManagerSslITest {
         OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
         // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         manager.stop();
@@ -406,7 +396,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithSelfSignedCertificateAndNoSslConfiguration_ShouldThrowSSLException() {
+  public void execute_WithSelfSignedCertificateAndNoSslConfiguration_ShouldThrowSSLException()
+      throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -432,16 +423,11 @@ public class OnlineOfficeManagerSslITest {
             post(urlPathEqualTo("/lool/convert-to/txt"))
                 .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(
+                () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute())
+            .withCauseExactlyInstanceOf(SSLHandshakeException.class);
 
-        // Be sure the an exception is thrown.
-        fail();
-
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(SSLHandshakeException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -489,7 +475,7 @@ public class OnlineOfficeManagerSslITest {
         OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
         // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         manager.stop();
@@ -536,7 +522,7 @@ public class OnlineOfficeManagerSslITest {
         OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
         // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         manager.stop();
@@ -548,7 +534,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithSelfSignedCertificateAndHostnameVerification_ShouldThrowSslException() {
+  public void execute_WithSelfSignedCertificateAndHostnameVerification_ShouldThrowSslException()
+      throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -579,16 +566,11 @@ public class OnlineOfficeManagerSslITest {
             post(urlPathEqualTo("/lool/convert-to/txt"))
                 .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(
+                () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute())
+            .withCauseExactlyInstanceOf(SSLPeerUnverifiedException.class);
 
-        // Be sure the an exception is thrown.
-        fail();
-
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(SSLPeerUnverifiedException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -599,7 +581,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithSelfSignedCertificateAndSslDisabled_ShouldThrowSSLException() {
+  public void execute_WithSelfSignedCertificateAndSslDisabled_ShouldThrowSSLException()
+      throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -628,16 +611,11 @@ public class OnlineOfficeManagerSslITest {
             post(urlPathEqualTo("/lool/convert-to/txt"))
                 .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(
+                () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute())
+            .withCauseExactlyInstanceOf(SSLHandshakeException.class);
 
-        // Be sure the an exception is thrown.
-        fail();
-
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(SSLHandshakeException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -648,7 +626,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithUnknownSslProtocol_ShouldThrowNoSuchAlgorithmException() {
+  public void execute_WithUnknownSslProtocol_ShouldThrowNoSuchAlgorithmException()
+      throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -681,16 +660,11 @@ public class OnlineOfficeManagerSslITest {
             post(urlPathEqualTo("/lool/convert-to/txt"))
                 .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(
+                () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute())
+            .withCauseExactlyInstanceOf(NoSuchAlgorithmException.class);
 
-        // Be sure the an exception is thrown.
-        fail();
-
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(NoSuchAlgorithmException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -739,7 +713,7 @@ public class OnlineOfficeManagerSslITest {
         OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
         // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         manager.stop();
@@ -751,7 +725,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithUnknownEnabledlProtocol_ShouldThrowNoSuchAlgorithmException() {
+  public void execute_WithUnknownEnabledlProtocol_ShouldThrowNoSuchAlgorithmException()
+      throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -784,16 +759,11 @@ public class OnlineOfficeManagerSslITest {
             post(urlPathEqualTo("/lool/convert-to/txt"))
                 .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(
+                () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute())
+            .withCauseExactlyInstanceOf(IllegalArgumentException.class);
 
-        // Be sure the an exception is thrown.
-        fail();
-
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(IllegalArgumentException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -842,7 +812,7 @@ public class OnlineOfficeManagerSslITest {
         OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
         // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         manager.stop();
@@ -854,7 +824,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithUnknownCipher_ShouldThrowNoSuchAlgorithmException() {
+  public void execute_WithUnknownCipher_ShouldThrowNoSuchAlgorithmException()
+      throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -887,16 +858,11 @@ public class OnlineOfficeManagerSslITest {
             post(urlPathEqualTo("/lool/convert-to/txt"))
                 .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(
+                () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute())
+            .withCauseExactlyInstanceOf(IllegalArgumentException.class);
 
-        // Be sure the an exception is thrown.
-        fail();
-
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(IllegalArgumentException.class);
       } finally {
         OfficeUtils.stopQuietly(manager);
       }
@@ -945,7 +911,7 @@ public class OnlineOfficeManagerSslITest {
         OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
         // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
         assertThat(content).contains("Test Document");
       } finally {
         manager.stop();

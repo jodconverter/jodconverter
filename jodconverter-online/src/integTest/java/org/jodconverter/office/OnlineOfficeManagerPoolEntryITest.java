@@ -20,7 +20,7 @@
 package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,16 +41,11 @@ public class OnlineOfficeManagerPoolEntryITest {
         new OnlineOfficeManagerPoolEntry("localhost", null, config);
     try {
       officeManager.start();
-      assertThat(officeManager.isRunning()).isTrue();
 
-      try {
-        officeManager.execute(new SimpleOfficeTask());
-        fail("OfficeException should have been thrown");
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(MalformedURLException.class);
-      }
+      assertThat(officeManager.isRunning()).isTrue();
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> officeManager.execute(new SimpleOfficeTask()))
+          .withCauseExactlyInstanceOf(MalformedURLException.class);
     } finally {
 
       officeManager.stop();
@@ -68,16 +63,11 @@ public class OnlineOfficeManagerPoolEntryITest {
         new OnlineOfficeManagerPoolEntry("http://localhost/", null, config);
     try {
       officeManager.start();
-      assertThat(officeManager.isRunning()).isTrue();
 
-      try {
-        officeManager.execute(new SimpleOfficeTask(new IOException()));
-        fail("OfficeException should have been thrown");
-      } catch (Exception ex) {
-        assertThat(ex)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasCauseExactlyInstanceOf(IOException.class);
-      }
+      assertThat(officeManager.isRunning()).isTrue();
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> officeManager.execute(new SimpleOfficeTask(new IOException())))
+          .withCauseExactlyInstanceOf(IOException.class);
     } finally {
 
       officeManager.stop();

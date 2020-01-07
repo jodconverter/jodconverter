@@ -36,7 +36,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
   // This class is required in order to create the default WindowsProcessManager
   // only on demand, as explained by the Initialization-on-demand holder idiom:
   // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
-  private static class DefaultHolder { // NOSONAR
+  private static class DefaultHolder {
     /* default */ static final WindowsProcessManager INSTANCE = new WindowsProcessManager();
   }
 
@@ -74,7 +74,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
       execute(new String[] {"wmic", "quit"});
       execute(new String[] {"taskkill", "/?"});
       return true;
-    } catch (IOException ioEx) { // NOSONAR
+    } catch (IOException ioEx) {
       return false;
     }
   }

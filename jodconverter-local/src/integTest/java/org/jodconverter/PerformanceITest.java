@@ -114,6 +114,7 @@ public class PerformanceITest extends AbstractOfficeITest {
     final File[] files =
         dir.listFiles((FileFilter) new WildcardFileFilter("*.odt", IOCase.INSENSITIVE));
 
+    assert files != null;
     for (final File inputFile : files) {
 
       convertFileXTimes(inputFile, INPUT_FORMAT, OUTPUT_FORMAT);

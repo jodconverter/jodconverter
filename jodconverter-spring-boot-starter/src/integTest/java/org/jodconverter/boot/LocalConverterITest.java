@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.util.Objects;
 
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -116,7 +117,7 @@ public class LocalConverterITest {
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
     // Check that the EmbedImages option has been applied
-    assertThat(outputDir.list().length)
+    assertThat(Objects.requireNonNull(outputDir.list()).length)
         .as("Check %s file EmbedImages", outputFile.getName())
         .isEqualTo(1);
   }
@@ -132,14 +133,14 @@ public class LocalConverterITest {
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
     // Check that the EmbedImages option has been applied
-    assertThat(outputDir.list().length)
+    assertThat(Objects.requireNonNull(outputDir.list()).length)
         .as("Check %s file EmbedImages", outputFile.getName())
         .isEqualTo(1);
   }
 
   /** Test custom properties. */
   @Test
-  public void testCustomProperties() throws IOException {
+  public void testCustomProperties() {
 
     assertThat(
             converter

@@ -20,7 +20,7 @@
 package org.jodconverter.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -43,14 +43,13 @@ public class DocumentFormatRegistryExceptionTest {
 
     mockStatic(JsonDocumentFormatRegistry.class);
     when(JsonDocumentFormatRegistry.create(isA(InputStream.class))).thenThrow(IOException.class);
-    try {
-      DefaultDocumentFormatRegistry.getInstance();
-      fail("ExceptionInInitializerError should be thrown");
-    } catch (Throwable err) {
-      assertThat(err).isExactlyInstanceOf(ExceptionInInitializerError.class);
-      assertThat(((ExceptionInInitializerError) err).getException())
-          .isExactlyInstanceOf(DocumentFormatRegistryException.class)
-          .hasCauseExactlyInstanceOf(IOException.class);
-    }
+
+    assertThatExceptionOfType(ExceptionInInitializerError.class)
+        .isThrownBy(DefaultDocumentFormatRegistry::getInstance)
+        .satisfies(
+            e ->
+                assertThat(e.getException())
+                    .isExactlyInstanceOf(DocumentFormatRegistryException.class)
+                    .hasCauseExactlyInstanceOf(IOException.class));
   }
 }

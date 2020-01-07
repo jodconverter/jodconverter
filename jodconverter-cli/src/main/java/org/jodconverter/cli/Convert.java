@@ -56,6 +56,7 @@ public final class Convert {
 
   public static final int STATUS_OK = 0;
   public static final int STATUS_MISSING_INPUT_FILE = 1;
+  public static final int STATUS_ERROR = 2;
   public static final int STATUS_INVALID_ARGUMENTS = 255;
 
   private static final Option OPT_APPLICATION_CONTEXT =
@@ -162,13 +163,13 @@ public final class Convert {
 
     if (commandLine.hasOption(OPT_HELP.getOpt())) {
       printHelp();
-      System.exit(0);
+      System.exit(STATUS_OK);
     }
 
     if (commandLine.hasOption(OPT_VERSION.getOpt())) {
       final Package pack = Convert.class.getPackage();
       printInfo("jodconverter-cli version %s", pack.getImplementationVersion());
-      System.exit(0);
+      System.exit(STATUS_OK);
     }
   }
 
@@ -348,16 +349,16 @@ public final class Convert {
         }
       }
 
-      System.exit(0);
+      System.exit(STATUS_OK);
 
     } catch (ParseException e) {
       printErr("jodconverter-cli: %s", e.getMessage());
       printHelp();
-      System.exit(2);
-    } catch (Exception e) { // NOSONAR
+      System.exit(STATUS_ERROR);
+    } catch (Exception e) {
       printErr("jodconverter-cli: %s", e.getMessage());
-      e.printStackTrace(System.err); // NOSONAR
-      System.exit(2);
+      e.printStackTrace(System.err);
+      System.exit(STATUS_ERROR);
     }
   }
 
@@ -377,7 +378,7 @@ public final class Convert {
                   final String val = options[i + 1];
                   final Boolean bool = BooleanUtils.toBooleanObject(val);
                   if (bool != null) {
-                    return bool.booleanValue();
+                    return bool;
                   }
                   try {
                     return Integer.parseInt(val);
@@ -462,14 +463,14 @@ public final class Convert {
 
   private static void printErr(final String message, final Object... values) {
 
-    final PrintWriter writer = new PrintWriter(System.err); // NOSONAR
+    final PrintWriter writer = new PrintWriter(System.err);
     writer.println(String.format(message, values));
     writer.flush();
   }
 
   private static void printInfo(final String message, final Object... values) {
 
-    final PrintWriter writer = new PrintWriter(System.out); // NOSONAR
+    final PrintWriter writer = new PrintWriter(System.out);
     writer.println(String.format(message, values));
     writer.flush();
   }

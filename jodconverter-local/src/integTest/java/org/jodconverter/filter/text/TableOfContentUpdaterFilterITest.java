@@ -22,7 +22,7 @@ package org.jodconverter.filter.text;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
@@ -57,7 +57,7 @@ public class TableOfContentUpdaterFilterITest extends AbstractOfficeITest {
         .to(targetFile)
         .execute();
 
-    final String content = FileUtils.readFileToString(targetFile, Charset.forName("UTF-8"));
+    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
         .containsPattern(
             "(?s)Contents.*"
@@ -107,7 +107,7 @@ public class TableOfContentUpdaterFilterITest extends AbstractOfficeITest {
         .to(targetFile)
         .execute();
 
-    final String content = FileUtils.readFileToString(targetFile, Charset.forName("UTF-8"));
+    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
         .containsPattern(
             "(?s)Contents.*"

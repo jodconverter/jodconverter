@@ -20,7 +20,7 @@
 package org.jodconverter;
 
 import java.io.File;
-import java.io.FilenameFilter;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.ClassRule;
@@ -33,13 +33,9 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
-  /**
-   * Test the conversion of an HTML file that contains an image.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Test the conversion of an HTML file that contains an image. */
   @Test
-  public void htmlWithImageConversion() throws Exception {
+  public void htmlWithImageConversion() {
 
     final File source = new File(DOCUMENTS_DIR, "index.html");
     final File target = new File(testFolder.getRoot(), "index.pdf");
@@ -48,13 +44,9 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
     LocalConverter.make().convert(source).to(target);
   }
 
-  /**
-   * Test the conversion of an HTML file that contains an image.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Test the conversion of an HTML file that contains an image. */
   @Test
-  public void testHtmlConversion() throws Exception {
+  public void testHtmlConversion() {
 
     final File source = new File(DOCUMENTS_DIR, "test.html");
     final File target = new File(testFolder.getRoot(), "test.pdf");
@@ -74,27 +66,19 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
     final Thread[] threads = new Thread[MAX_THREADS];
     int threadCount = 0;
 
-    final AtomicReference<Exception> exception = new AtomicReference<Exception>();
+    final AtomicReference<Exception> exception = new AtomicReference<>();
     for (final File sourceFile :
-        new File("src/integTest/resources/documents")
-            .listFiles(
-                new FilenameFilter() {
-                  @Override
-                  public boolean accept(final File dir, final String name) {
-                    return name.startsWith("test.");
-                  }
-                })) {
+        Objects.requireNonNull(
+            new File("src/integTest/resources/documents")
+                .listFiles((dir, name) -> name.startsWith("test.")))) {
 
       // Convert the file to all supported formats in a separated thread
       final Runnable runnable =
-          new Runnable() {
-            @Override
-            public void run() {
-              try {
-                convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
-              } catch (Exception ex) {
-                exception.set(ex);
-              }
+          () -> {
+            try {
+              convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
+            } catch (Exception ex) {
+              exception.set(ex);
             }
           };
 

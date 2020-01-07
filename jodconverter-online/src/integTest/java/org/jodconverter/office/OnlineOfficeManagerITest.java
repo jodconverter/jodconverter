@@ -24,12 +24,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
@@ -139,7 +139,7 @@ public class OnlineOfficeManagerITest {
   }
 
   @Test(expected = NullPointerException.class)
-  public void build_WithMissingUrlConnection_ThrowIllegalArgumentException() throws Exception {
+  public void build_WithMissingUrlConnection_ThrowIllegalArgumentException() {
 
     OnlineOfficeManager.builder().build();
   }
@@ -194,19 +194,15 @@ public class OnlineOfficeManagerITest {
   }
 
   @Test
-  public void execute_WithBadUrl_ThrowOfficeException() throws Exception {
+  public void execute_WithBadUrl_ThrowOfficeException() throws OfficeException {
 
     final OnlineOfficeManager manager =
         OnlineOfficeManager.builder().urlConnection("url_that_could_not_work").build();
     try {
       manager.start();
 
-      try {
-        manager.execute(new SimpleOfficeTask());
-        fail("OfficeException should have been thrown");
-      } catch (Exception ex) {
-        assertThat(ex).isExactlyInstanceOf(OfficeException.class);
-      }
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> manager.execute(new SimpleOfficeTask()));
 
     } finally {
       manager.stop();
@@ -214,7 +210,7 @@ public class OnlineOfficeManagerITest {
   }
 
   @Test
-  public void execute_WhenReturnNot200OK_ShouldThrowOfficeException() {
+  public void execute_WhenReturnNot200OK_ShouldThrowOfficeException() throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder.getRoot(), "out.txt");
@@ -229,14 +225,10 @@ public class OnlineOfficeManagerITest {
       manager.start();
       stubFor(post(urlPathEqualTo("/lool/convert-to/txt")).willReturn(aResponse().withStatus(400)));
 
-      // Try to converter the input document
-      OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(
+              () -> OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute());
 
-      // Be sure the an exception is thrown.
-      fail();
-
-    } catch (Exception ex) {
-      assertThat(ex).isExactlyInstanceOf(OfficeException.class);
     } finally {
       FileUtils.deleteQuietly(outputFile);
       OfficeUtils.stopQuietly(manager);
@@ -266,7 +258,7 @@ public class OnlineOfficeManagerITest {
       OnlineConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
       // Check that the output file was created with the expected content.
-      final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content).contains("Test Document");
     } finally {
       FileUtils.deleteQuietly(outputFile);
@@ -306,7 +298,7 @@ public class OnlineOfficeManagerITest {
       }
 
       // Check that the output file was created with the expected content.
-      final String content = FileUtils.readFileToString(outputFile, Charset.forName("UTF-8"));
+      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content).contains("Test Document");
     } finally {
       FileUtils.deleteQuietly(outputFile);

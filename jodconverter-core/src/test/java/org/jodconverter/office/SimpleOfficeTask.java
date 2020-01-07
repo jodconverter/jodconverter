@@ -23,9 +23,9 @@ import org.jodconverter.task.OfficeTask;
 
 public class SimpleOfficeTask implements OfficeTask {
 
-  private long delayTime;
+  private final long delayTime;
   private boolean completed;
-  private Exception thrownException;
+  private final Exception thrownException;
 
   /** Create a new task with default values. */
   public SimpleOfficeTask() {
@@ -68,7 +68,7 @@ public class SimpleOfficeTask implements OfficeTask {
 
     try {
       if (delayTime > 0L) {
-        Thread.sleep(delayTime); // NOSONAR
+        Thread.sleep(delayTime);
       }
 
       if (thrownException != null) {

@@ -20,6 +20,7 @@
 package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -87,21 +88,19 @@ public class CliConverterTest {
   @Test
   public void main_WithWrongInputOutputFilenamesLengthMismatch_ThrowsIllegalArgumentException() {
 
-    try {
-      final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-      final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
-      converter.convert(
-          new String[] {SOURCE_FILE_1.getPath()},
-          new String[] {targetFile1.getPath(), targetFile2.getPath()},
-          null,
-          false);
+    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
 
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(IllegalArgumentException.class)
-          .hasMessageMatching(
-              "input filenames array length.*and output filenames array length.*don't match");
-    }
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(
+            () ->
+                converter.convert(
+                    new String[] {SOURCE_FILE_1.getPath()},
+                    new String[] {targetFile1.getPath(), targetFile2.getPath()},
+                    null,
+                    false))
+        .withMessageMatching(
+            "input filenames array length.*and output filenames array length.*don't match");
   }
 
   @Test
@@ -399,7 +398,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_UnexistingDirWithWildcard_TasksNotExecutedWithExpectedLog() throws Exception {
+  public void convert_UnexistingDirWithWildcard_TasksNotExecutedWithExpectedLog() {
 
     try {
       SystemLogHandler.startCapture();
@@ -414,17 +413,16 @@ public class CliConverterTest {
   @Test
   public void convert_WithOutputDirAlreadyExistingAsFile_ThrowsOfficeException() {
 
-    try {
-      converter.convert(
-          new String[] {SOURCE_FILE_1.getPath()}, "pdf", SOURCE_FILE_2.getPath(), false);
-
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseInstanceOf(IOException.class);
-      assertThat(ex.getCause())
-          .hasMessageMatching("Invalid output directory.*that exists but is a file");
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(
+            () ->
+                converter.convert(
+                    new String[] {SOURCE_FILE_1.getPath()}, "pdf", SOURCE_FILE_2.getPath(), false))
+        .withCauseInstanceOf(IOException.class)
+        .satisfies(
+            e ->
+                assertThat(e.getCause())
+                    .hasMessageMatching("Invalid output directory.*that exists but is a file"));
   }
 
   @Test
@@ -435,15 +433,13 @@ public class CliConverterTest {
     given(dir.isFile()).willReturn(false);
     given(dir.canWrite()).willReturn(false);
 
-    try {
-      Whitebox.invokeMethod(converter, "prepareOutputDir", dir);
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasCauseExactlyInstanceOf(IOException.class);
-      assertThat(ex.getCause())
-          .hasMessageMatching("Invalid output directory.*that cannot be written to");
-    }
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(() -> Whitebox.invokeMethod(converter, "prepareOutputDir", dir))
+        .withCauseExactlyInstanceOf(IOException.class)
+        .satisfies(
+            e ->
+                assertThat(e.getCause())
+                    .hasMessageMatching("Invalid output directory.*that cannot be written to"));
   }
 
   @Test

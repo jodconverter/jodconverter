@@ -145,7 +145,7 @@ public class DocumentFormat {
     this.loadProperties =
         Optional.ofNullable(loadProperties)
             // Create a copy of the map.
-            .map(HashMap<String, Object>::new)
+            .map(HashMap::new)
             // Make the map read only if required.
             .map(mapCopy -> unmodifiable ? Collections.unmodifiableMap(mapCopy) : mapCopy)
             .orElse(null);

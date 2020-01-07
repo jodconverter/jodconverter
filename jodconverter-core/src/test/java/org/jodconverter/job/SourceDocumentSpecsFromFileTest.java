@@ -22,7 +22,6 @@ package org.jodconverter.job;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.junit.Test;
 
@@ -46,7 +45,7 @@ public class SourceDocumentSpecsFromFileTest {
   }
 
   @Test
-  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
+  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() {
 
     final File sourceFile = new File(SOURCE_FILE);
 

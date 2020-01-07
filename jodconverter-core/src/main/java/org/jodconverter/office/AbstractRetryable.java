@@ -37,7 +37,7 @@ abstract class AbstractRetryable {
    *     could be successful.
    * @throws Exception If an error occurs.
    */
-  protected abstract void attempt() throws Exception; // NOSONAR
+  protected abstract void attempt() throws Exception;
 
   /**
    * Executes the task without a starting delay.
@@ -56,7 +56,7 @@ abstract class AbstractRetryable {
       try {
         attempt();
         return;
-      } catch (TemporaryException temporaryEx) { // NOSONAR
+      } catch (TemporaryException temporaryEx) {
         if (System.currentTimeMillis() - start < timeout) {
           Thread.sleep(interval);
           // retryConfig

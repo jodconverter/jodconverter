@@ -49,7 +49,7 @@ public final class CliConverter {
    */
   public CliConverter(final DocumentConverter converter) {
 
-    this.out = new PrintWriter(System.out); // NOSONAR
+    this.out = new PrintWriter(System.out);
     this.converter = converter;
   }
 
@@ -103,14 +103,16 @@ public final class CliConverter {
           final String wildcard = FilenameUtils.getBaseName(filename);
           final File[] files =
               inputFileParent.listFiles((FileFilter) new WildcardFileFilter(wildcard));
-          for (final File file : files) {
+          if (files != null) {
+            for (final File file : files) {
 
-            // Convert the file
-            convertFile(
-                file,
-                outputDir == null ? inputFile.getParentFile() : outputDir,
-                FilenameUtils.getBaseName(file.getName()) + "." + outputFormat,
-                overwrite);
+              // Convert the file
+              convertFile(
+                  file,
+                  outputDir == null ? inputFile.getParentFile() : outputDir,
+                  FilenameUtils.getBaseName(file.getName()) + "." + outputFormat,
+                  overwrite);
+            }
           }
         } else {
           printInfo("Skipping filename '%s' since it doesn't match an existing file...", inputFile);
@@ -164,10 +166,8 @@ public final class CliConverter {
       final String outputFullPath = FilenameUtils.getFullPath(outputFilename);
       final File outputDirectory =
           StringUtils.isBlank(outputFullPath)
-              ? outputDir == null // NOSONAR
-                  ? StringUtils.isBlank(inputFullPath) // NOSONAR
-                      ? new File(".")
-                      : new File(inputFullPath)
+              ? outputDir == null
+                  ? StringUtils.isBlank(inputFullPath) ? new File(".") : new File(inputFullPath)
                   : outputDir
               : new File(outputFullPath);
 

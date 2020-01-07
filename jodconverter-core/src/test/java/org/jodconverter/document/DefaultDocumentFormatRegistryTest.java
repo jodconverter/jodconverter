@@ -20,6 +20,7 @@
 package org.jodconverter.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -40,8 +41,7 @@ public class DefaultDocumentFormatRegistryTest {
       final Set<DocumentFormat> formats, final String... extensions) {
 
     assertThat(formats).hasSize(extensions.length);
-    formats.stream()
-        .forEach(format -> assertThat(format.getExtension()).isIn((Object[]) extensions));
+    formats.forEach(format -> assertThat(format.getExtension()).isIn((Object[]) extensions));
   }
 
   /** Tests all the default output formats are load successfully. */
@@ -325,22 +325,14 @@ public class DefaultDocumentFormatRegistryTest {
 
     final DocumentFormat format = DefaultDocumentFormatRegistry.CSV;
 
-    try {
-      format.getLoadProperties().put("newKey", "newValue");
-    } catch (Exception ex) {
-      assertThat(ex).isExactlyInstanceOf(UnsupportedOperationException.class);
-    }
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> format.getLoadProperties().put("newKey", "newValue"));
 
-    try {
-      format.getStoreProperties().put(DocumentFamily.DRAWING, new HashMap<String, Object>());
-    } catch (Exception ex) {
-      assertThat(ex).isExactlyInstanceOf(UnsupportedOperationException.class);
-    }
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> format.getStoreProperties().put(DocumentFamily.DRAWING, new HashMap<>()));
 
-    try {
-      format.getStoreProperties(DocumentFamily.SPREADSHEET).put("newKey", "newValue");
-    } catch (Exception ex) {
-      assertThat(ex).isExactlyInstanceOf(UnsupportedOperationException.class);
-    }
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(
+            () -> format.getStoreProperties(DocumentFamily.SPREADSHEET).put("newKey", "newValue"));
   }
 }

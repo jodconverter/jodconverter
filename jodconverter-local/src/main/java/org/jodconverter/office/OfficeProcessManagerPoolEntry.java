@@ -59,47 +59,6 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   private final AtomicBoolean disconnectExpected = new AtomicBoolean(false);
 
   /**
-   * This connection event listener will be notified when a connection is established or closed/lost
-   * to/from an office instance.
-   */
-  private final OfficeConnectionEventListener connectionEventListener =
-      new OfficeConnectionEventListener() { // NOSONAR
-
-        // A connection is established.
-        @Override
-        public void connected(final OfficeConnectionEvent event) {
-
-          // Reset the task count and make the task executor available.
-          taskCount.set(0);
-          taskExecutor.setAvailable(true);
-        }
-
-        // A connection is closed/lost.
-        @Override
-        public void disconnected(final OfficeConnectionEvent event) {
-
-          // Make the task executor unavailable.
-          taskExecutor.setAvailable(false);
-
-          // When it comes from an expected behavior (we have put
-          // the field to true before calling a function), just reset
-          // the disconnectExpected value to false. When we didn't expect
-          // the disconnection, we must restart the office process, which
-          // will cancel any task that may be running.
-          if (!disconnectExpected.compareAndSet(true, false)) {
-
-            // Here, we didn't expect this disconnection. We must restart
-            // the office process, canceling any task that may be running.
-            LOGGER.warn("Connection lost unexpectedly; attempting restart");
-            if (currentFuture != null) {
-              currentFuture.cancel(true);
-            }
-            officeProcessManager.restartDueToLostConnection();
-          }
-        }
-      };
-
-  /**
    * Creates a new pool entry for the specified office URL with default configuration.
    *
    * @param officeUrl The URL for which the entry is created.
@@ -120,6 +79,45 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     // Create the process manager that will deal with the office instance
     officeProcessManager = new OfficeProcessManager(officeUrl, config);
+
+    // This connection event listener will be notified when a connection is established or
+    // closed/lost to/from an office instance.
+    final OfficeConnectionEventListener connectionEventListener =
+        new OfficeConnectionEventListener() {
+
+          // A connection is established.
+          @Override
+          public void connected(final OfficeConnectionEvent event) {
+
+            // Reset the task count and make the task executor available.
+            taskCount.set(0);
+            taskExecutor.setAvailable(true);
+          }
+
+          // A connection is closed/lost.
+          @Override
+          public void disconnected(final OfficeConnectionEvent event) {
+
+            // Make the task executor unavailable.
+            taskExecutor.setAvailable(false);
+
+            // When it comes from an expected behavior (we have put
+            // the field to true before calling a function), just reset
+            // the disconnectExpected value to false. When we didn't expect
+            // the disconnection, we must restart the office process, which
+            // will cancel any task that may be running.
+            if (!disconnectExpected.compareAndSet(true, false)) {
+
+              // Here, we didn't expect this disconnection. We must restart
+              // the office process, canceling any task that may be running.
+              LOGGER.warn("Connection lost unexpectedly; attempting restart");
+              if (currentFuture != null) {
+                currentFuture.cancel(true);
+              }
+              officeProcessManager.restartDueToLostConnection();
+            }
+          }
+        };
 
     // Listen to any connection events to the office instance.
     officeProcessManager.getConnection().addConnectionEventListener(connectionEventListener);

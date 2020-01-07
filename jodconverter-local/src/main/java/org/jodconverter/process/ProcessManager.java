@@ -22,7 +22,7 @@ package org.jodconverter.process;
 import java.io.IOException;
 
 /** Provides services required to manage a running process. */
-public interface ProcessManager { // NOSONAR
+public interface ProcessManager {
 
   long PID_NOT_FOUND = -2;
   long PID_UNKNOWN = -1;

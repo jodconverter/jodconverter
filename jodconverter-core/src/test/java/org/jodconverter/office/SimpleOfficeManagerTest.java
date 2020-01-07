@@ -212,7 +212,7 @@ public class SimpleOfficeManagerTest {
 
       // Start the threads.
       thread1.start();
-      Thread.sleep(250L); // NOSONAR
+      Thread.sleep(250L);
       thread2.start();
 
       // Wait for thread to complete

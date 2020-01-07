@@ -182,8 +182,7 @@ public class LocalOfficeUtilsTest {
 
   /** Tests the validateOfficeWorkingDirectory with an unexisting directory as argument. */
   @Test(expected = IllegalStateException.class)
-  public void validateOfficeWorkingDirectory_WithUnexistingDirectory_ThrowsIllegalStateException()
-      throws IOException {
+  public void validateOfficeWorkingDirectory_WithUnexistingDirectory_ThrowsIllegalStateException() {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
     final File workingDir = new File(tempDir, UUID.randomUUID().toString());
@@ -193,8 +192,7 @@ public class LocalOfficeUtilsTest {
 
   /** Tests the validateOfficeWorkingDirectory with a read only dicrectory as argument fails. */
   @Test(expected = IllegalStateException.class)
-  public void validateOfficeWorkingDirectory_WithReadOnlyDirectory_ThrowsIllegalStateException()
-      throws IOException {
+  public void validateOfficeWorkingDirectory_WithReadOnlyDirectory_ThrowsIllegalStateException() {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
     final File workingDir = new File(tempDir, UUID.randomUUID().toString());
