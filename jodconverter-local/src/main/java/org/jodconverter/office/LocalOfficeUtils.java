@@ -34,6 +34,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.document.DocumentFamily;
 import org.jodconverter.office.utils.Lo;
@@ -51,6 +53,7 @@ public final class LocalOfficeUtils {
   private static final String EXECUTABLE_MAC = "program/soffice";
   private static final String EXECUTABLE_MAC_41 = "MacOS/soffice";
   private static final String EXECUTABLE_WINDOWS = "program/soffice.exe";
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeUtils.class);
 
   // This class is required in order to create a default office home
   // only on demand, as explained by the Initialization-on-demand holder idiom:
@@ -126,6 +129,8 @@ public final class LocalOfficeUtils {
                 "/opt/openoffice4",
                 "/opt/openoffice.org3");
       }
+
+      LOGGER.debug("Default office home set to " + INSTANCE);
     }
 
     private static File findOfficeHome(final String executablePath, final String... homePaths) {

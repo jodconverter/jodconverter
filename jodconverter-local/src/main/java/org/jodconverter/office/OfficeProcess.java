@@ -395,6 +395,10 @@ class OfficeProcess {
         acceptString,
         instanceProfileDir);
     try {
+      try {
+        Thread.sleep(5000L);
+      } catch (InterruptedException ignore) {
+      }
       process = new VerboseProcess(processBuilder.start());
       pid = config.getProcessManager().findPid(processQuery);
       LOGGER.info("Started process{}", pid == PID_UNKNOWN ? "" : "; pid = " + pid);

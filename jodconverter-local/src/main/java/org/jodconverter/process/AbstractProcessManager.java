@@ -79,7 +79,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
 
     final List<String> outLines = streamsHandler.getOutputPumper().getLines();
 
-    if (LOGGER.isDebugEnabled()) {
+    if (LOGGER.isTraceEnabled()) {
       final String out = buildOutput(outLines);
       final String err = buildOutput(streamsHandler.getErrorPumper().getLines());
 
