@@ -390,18 +390,16 @@ class OfficeProcess {
     final ProcessBuilder processBuilder = prepareProcessBuilder(acceptString);
 
     // Launch the process.
+    LOGGER.info("OFFICE HOME: {}", config.getOfficeHome());
     LOGGER.info(
         "Starting process with acceptString '{}' and profileDir '{}'",
         acceptString,
         instanceProfileDir);
     try {
-      try {
-        Thread.sleep(5000L);
-      } catch (InterruptedException ignore) {
-      }
       process = new VerboseProcess(processBuilder.start());
-      pid = config.getProcessManager().findPid(processQuery);
-      LOGGER.info("Started process{}", pid == PID_UNKNOWN ? "" : "; pid = " + pid);
+      // Try to retrieve the PID.
+      pid = tryFindPid(processQuery);
+      LOGGER.info("Started process{}", pid <= PID_UNKNOWN ? "" : "; pid = " + pid);
     } catch (IOException ioEx) {
       throw new OfficeException(
           String.format(
@@ -415,6 +413,37 @@ class OfficeProcess {
               "A process with acceptString '%s' started but its pid could not be found",
               acceptString));
     }
+  }
+
+  private long tryFindPid(final ProcessQuery processQuery) throws IOException {
+
+    long processId = PID_UNKNOWN;
+
+    // Try to retrieve the PID.
+    for (int i = 0; i < 20; i++) { // TODO: Let the try count be configurable.
+
+      // Wait for process to start
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException ignore) {
+      }
+
+      // Check if the process is already dead.
+      try {
+        process.getProcess().exitValue();
+        // Process is already dead, no need to wait longer...
+        break;
+      } catch (IllegalThreadStateException ignore) {
+        // Process is still up.
+      }
+
+      processId = config.getProcessManager().findPid(processQuery);
+      if (processId > PID_UNKNOWN) {
+        break;
+      }
+    }
+
+    return processId;
   }
 
   private void waitForProcessToDie() {
