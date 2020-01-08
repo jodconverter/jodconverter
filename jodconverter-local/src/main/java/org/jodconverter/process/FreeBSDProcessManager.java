@@ -40,11 +40,6 @@ public class FreeBSDProcessManager extends UnixProcessManager {
   @Override
   protected String[] getRunningProcessesCommand(final String process) {
 
-    return new String[] {
-      "/bin/bash",
-      // "/bin/sh",
-      "-c",
-      "/bin/ps -e -o pid,args | /usr/bin/grep " + process + " | /usr/bin/grep -v grep"
-    };
+    return new String[] {"/bin/ps", "-e", "-o", "pid,args"};
   }
 }
