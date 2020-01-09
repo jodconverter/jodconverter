@@ -203,17 +203,24 @@ class OfficeProcess {
       return 0; // success
     }
 
-    LOGGER.info(
-        "Trying to forcibly terminate process: '{}'; pid: {}",
-        officeUrl.getConnectionParametersAsString(),
-        pid == PID_UNKNOWN ? "NA" : pid);
-
-    try {
-      config.getProcessManager().kill(process.getProcess(), pid);
-      return getExitCode(retryInterval, retryTimeout);
-    } catch (IOException ioEx) {
-      throw new OfficeException("Unable to kill the process with pid: " + pid, ioEx);
+    if (pid > PID_UNKNOWN) {
+      LOGGER.info(
+          "Trying to forcibly terminate process: '{}'; pid: {}",
+          officeUrl.getConnectionParametersAsString(),
+          pid);
+      try {
+        config.getProcessManager().kill(process.getProcess(), pid);
+      } catch (IOException ioEx) {
+        throw new OfficeException("Unable to kill the process with pid: " + pid, ioEx);
+      }
+    } else {
+      LOGGER.info(
+          "Could not try to forcibly terminate process: '{}' since PID {}",
+          officeUrl.getConnectionParametersAsString(),
+          pid == PID_UNKNOWN ? " is unknown" : " was not found");
     }
+
+    return getExitCode(retryInterval, retryTimeout);
   }
 
   /**
@@ -402,7 +409,7 @@ class OfficeProcess {
       process = new VerboseProcess(processBuilder.start());
       // Try to retrieve the PID.
       pid = tryFindPid(processQuery);
-      LOGGER.info("Started process{}", pid <= PID_UNKNOWN ? "" : "; pid = " + pid);
+      LOGGER.info("Started process{}; pid ", pid <= PID_UNKNOWN ? "NOT FOUND" : "= " + pid);
     } catch (IOException ioEx) {
       throw new OfficeException(
           String.format(
@@ -426,25 +433,26 @@ class OfficeProcess {
     for (int i = 0; i < 20; i++) { // TODO: Let the try count be configurable.
       LOGGER.debug("Trying to find the office PID for query {}", processQuery);
 
-      // Wait for process to start
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException ignore) {
+      processId = config.getProcessManager().findPid(processQuery);
+      if (processId > PID_UNKNOWN) {
+        LOGGER.debug("Office PID found (" + processId + ") for query {}", processQuery);
+        break;
       }
 
       // Check if the process is already dead.
       try {
         process.getProcess().exitValue();
         // Process is already dead, no need to wait longer...
+        LOGGER.debug("Office process is already dead, the office PID will not be retrieve");
         break;
       } catch (IllegalThreadStateException ignore) {
         // Process is still up.
       }
 
-      processId = config.getProcessManager().findPid(processQuery);
-      if (processId > PID_UNKNOWN) {
-        LOGGER.debug("Office PID found (" + processId + ") for query {}", processQuery);
-        break;
+      // Wait for process to start
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException ignore) {
       }
     }
 

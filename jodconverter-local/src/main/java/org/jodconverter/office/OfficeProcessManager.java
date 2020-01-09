@@ -120,14 +120,16 @@ class OfficeProcessManager {
   private void doStopProcess(final boolean deleteInstanceProfileDir) throws OfficeException {
 
     try {
-      final boolean terminated = connection.getDesktop().terminate();
+      if (connection != null) {
+        final boolean terminated = connection.getDesktop().terminate();
 
-      // Once more: try to terminate
-      LOGGER.debug(
-          "The Office Process {}",
-          terminated
-              ? "has been terminated"
-              : "is still running. Someone else prevents termination, e.g. the quickstarter");
+        // Once more: try to terminate
+        LOGGER.debug(
+            "The Office Process {}",
+            terminated
+                ? "has been terminated"
+                : "is still running. Someone else prevents termination, e.g. the quickstarter");
+      }
 
     } catch (DisposedException disposedEx) {
       // expected so ignore it
