@@ -5,8 +5,8 @@
 build_task:
   freebsd_instance:
     image: freebsd-12-0-release-amd64
-  gradle_cache:
-    folder: ~/.gradle/caches
+#  gradle_cache:
+#    folder: ~/.gradle/caches
 #   install_zip_script:
 #      pkg install -y zip
 #      cd /usr/ports/archivers/zip
@@ -14,14 +14,14 @@ build_task:
 #   install_sdkman_script:
 #    - curl -s "https://get.sdkman.io" | bash
 #    - source "/home/user/.sdkman/bin/sdkman-init.sh"
-  install_gradle_script:
-    #- sdk install gradle
-    - pkg install -y gradle
+#  install_gradle_script:
+#    #- sdk install gradle
+#    - pkg install -y gradle
   install_libreoffice_script:
     - pkg install -y libreoffice
   build_script:
     #- gradle build -i
-    - gradle build --stacktrace
-  cleanup_before_cache_script:
-    - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
-    - find ~/.gradle/caches/ -name "*.lock" -type f -delete
+    - ./gradlew build --stacktrace
+#  cleanup_before_cache_script:
+#    - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
+#    - find ~/.gradle/caches/ -name "*.lock" -type f -delete
