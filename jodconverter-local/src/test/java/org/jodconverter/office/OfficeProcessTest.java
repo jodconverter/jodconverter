@@ -141,6 +141,7 @@ public class OfficeProcessTest {
           }
         });
     final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
+    Whitebox.setInternalState(process, "pid", 0L);
 
     final VerboseProcess verboseProcess = mock(VerboseProcess.class);
     assertThatExceptionOfType(OfficeException.class)

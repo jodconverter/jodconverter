@@ -431,11 +431,15 @@ class OfficeProcess {
 
     // Try to retrieve the PID.
     for (int i = 0; i < 20; i++) { // TODO: Let the try count be configurable.
-      LOGGER.debug("Trying to find the office PID for query {}", processQuery);
+      LOGGER.debug(
+          "tryFindPid #{}. Trying to find the office PID for query {}", (i + 1), processQuery);
 
       processId = config.getProcessManager().findPid(processQuery);
       if (processId > PID_UNKNOWN) {
-        LOGGER.debug("Office PID found (" + processId + ") for query {}", processQuery);
+        LOGGER.debug(
+            "tryFindPid #{}. Office PID found (" + processId + ") for query {}",
+            (i + 1),
+            processQuery);
         break;
       }
 
@@ -443,7 +447,9 @@ class OfficeProcess {
       try {
         process.getProcess().exitValue();
         // Process is already dead, no need to wait longer...
-        LOGGER.debug("Office process is already dead, the office PID will not be retrieve");
+        LOGGER.debug(
+            "tryFindPid #{}. Office process is already dead, the office PID will not be retrieve",
+            (i + 1));
         break;
       } catch (IllegalThreadStateException ignore) {
         // Process is still up.
@@ -456,7 +462,7 @@ class OfficeProcess {
       }
     }
 
-    LOGGER.debug("Unable to find the office PID for query {}", processQuery);
+    LOGGER.debug("tryFindPid. Unable to find the office PID for query {}", processQuery);
     return processId;
   }
 
