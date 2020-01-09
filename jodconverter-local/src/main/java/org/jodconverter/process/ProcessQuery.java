@@ -55,4 +55,9 @@ public class ProcessQuery {
   public String getCommand() {
     return command;
   }
+
+  @Override
+  public String toString() {
+    return "ProcessQuery{" + "command='" + command + '\'' + ", argument='" + argument + '\'' + '}';
+  }
 }

@@ -344,6 +344,9 @@ class OfficeProcess {
     // to retrieve the LibreOffice pid. But is it reliable ? And it would
     // not work with Apache OpenOffice.
 
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("ProcessBuilder command: {}", String.join(" ", command));
+    }
     return new ProcessBuilder(command);
   }
 
@@ -421,6 +424,7 @@ class OfficeProcess {
 
     // Try to retrieve the PID.
     for (int i = 0; i < 20; i++) { // TODO: Let the try count be configurable.
+      LOGGER.debug("Trying to find the office PID for query {}", processQuery);
 
       // Wait for process to start
       try {
@@ -439,10 +443,12 @@ class OfficeProcess {
 
       processId = config.getProcessManager().findPid(processQuery);
       if (processId > PID_UNKNOWN) {
+        LOGGER.debug("Office PID found (" + processId + ") for query {}", processQuery);
         break;
       }
     }
 
+    LOGGER.debug("Unable to find the office PID for query {}", processQuery);
     return processId;
   }
 
