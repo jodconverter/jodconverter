@@ -1,0 +1,241 @@
+/*
+ * Copyright 2004 - 2012 Mirko Nasato and contributors
+ *           2016 - 2020 Simon Braconnier and contributors
+ *
+ * This file is part of JODConverter - Java OpenDocument Converter.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.jodconverter.filter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.sun.star.datatransfer.XTransferable;
+import com.sun.star.datatransfer.XTransferableSupplier;
+import com.sun.star.drawing.XDrawPage;
+import com.sun.star.drawing.XDrawPages;
+import com.sun.star.drawing.XDrawPagesSupplier;
+import com.sun.star.frame.XController;
+import com.sun.star.lang.XComponent;
+import com.sun.star.text.XPageCursor;
+import com.sun.star.text.XTextCursor;
+import com.sun.star.text.XTextDocument;
+import com.sun.star.text.XTextViewCursor;
+import com.sun.star.text.XTextViewCursorSupplier;
+import com.sun.star.view.XSelectionSupplier;
+import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.jodconverter.office.OfficeContext;
+import org.jodconverter.office.utils.Calc;
+import org.jodconverter.office.utils.Draw;
+import org.jodconverter.office.utils.Lo;
+import org.jodconverter.office.utils.Props;
+import org.jodconverter.office.utils.Write;
+
+/**
+ * This filter is used to select specific pages from a document in order to convert only the
+ * selected pages.
+ */
+public class PagesSelectorFilter implements Filter {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(PagesSelectorFilter.class);
+
+  // This class has been inspired by these examples:
+  // https://wiki.openoffice.org/wiki/API/Tutorials/PDF_export
+  // https://blog.oio.de/2010/10/27/copy-and-paste-without-clipboard-using-openoffice-org-api
+
+  private final List<Integer> pages;
+
+  /**
+   * Creates a new filter that will select the specified pages while converting a document (only the
+   * given pages will be converted).
+   *
+   * @param pages The page numbers of the page to convert. First page is index 1.
+   */
+  public PagesSelectorFilter(final Integer... pages) {
+    this(Stream.of(pages).collect(Collectors.toSet()));
+  }
+
+  /**
+   * Creates a new filter that will select the specified pages while converting a document (only the
+   * given pages will be converted).
+   *
+   * @param pages The page numbers of the page to convert. First page is index 1.
+   */
+  public PagesSelectorFilter(final Set<Integer> pages) {
+    super();
+
+    Validate.notEmpty(pages);
+
+    this.pages = new ArrayList<>(pages);
+  }
+
+  @Override
+  public void doFilter(
+      final OfficeContext context, final XComponent document, final FilterChain chain)
+      throws Exception {
+
+    if (Write.isText(document)) {
+      LOGGER.debug("Applying the PagesSelectorFilter for a Text document");
+      // We must process from the start to the end.
+      Collections.sort(pages);
+      selectTextPages(document);
+    } else if (Calc.isCalc(document)) {
+      // Not supported
+      throw new UnsupportedOperationException("SpreadsheetDocument not supported yet");
+    } else if (Draw.isImpress(document)) {
+      // Not Supported
+      throw new UnsupportedOperationException("PresentationDocument not supported yet");
+    } else if (Draw.isDraw(document)) {
+      LOGGER.debug("Applying the PagesSelectorFilter for a Draw document");
+      // We must process from the end to the start.
+      pages.sort(Collections.reverseOrder());
+      selectDrawPages(document);
+    }
+
+    // Invoke the next filter in the chain
+    chain.doFilter(context, document);
+  }
+
+  private void copyPage(final XTextDocument docText, final int source, final int target)
+      throws Exception {
+
+    if (source == target) {
+      return;
+    }
+
+    final XController ctrl = docText.getCurrentController();
+
+    // Get the text cursor for the document.
+    final XTextCursor tc = docText.getText().createTextCursor();
+
+    // Get the view cursor for the document. We also need a page cursor
+    // on the view cursor to navigate through the document pages.
+    final XTextViewCursor vc = Lo.qi(XTextViewCursorSupplier.class, ctrl).getViewCursor();
+    final XPageCursor pc = Lo.qi(XPageCursor.class, vc);
+
+    // Reset both cursors to the beginning of the document
+    tc.gotoStart(false);
+    vc.gotoStart(false);
+
+    // Jump to the source page to select (first page is 1) and move the
+    // text cursor to the beginning of this page.
+    pc.jumpToPage((short) source);
+    tc.gotoRange(vc.getStart(), false);
+
+    // Jump to the end of the source page and expand the text cursor
+    // to the end of this page, while selecting text in between.
+    pc.jumpToEndOfPage();
+    tc.gotoRange(vc.getStart(), true);
+
+    // Select the source page.
+    final XSelectionSupplier selectionSupplier = Lo.qi(XSelectionSupplier.class, ctrl);
+    selectionSupplier.select(tc);
+
+    // Copy the selection (whole source page).
+    final XTransferableSupplier transferableSupplier = Lo.qi(XTransferableSupplier.class, ctrl);
+    final XTransferable xTransferable = transferableSupplier.getTransferable();
+
+    // Now select the target page.
+    tc.gotoStart(false);
+    vc.gotoStart(false);
+    pc.jumpToPage((short) target);
+    tc.gotoRange(vc.getStart(), false);
+    pc.jumpToEndOfPage();
+    tc.gotoRange(vc.getStart(), true);
+    selectionSupplier.select(tc);
+
+    // Paste the source page into the target page. This will replace the
+    // target page with the source page.
+    transferableSupplier.insertTransferable(xTransferable);
+  }
+
+  private void selectTextPages(final XComponent document) throws Exception {
+
+    // Querying for the interface XTextDocument (text interface) on the XComponent.
+    final XTextDocument docText = Write.getTextDoc(document);
+    final XController ctrl = docText.getCurrentController();
+
+    // Save the PageCount property of the document.
+    int pageCount = (Integer) Props.getProperty(ctrl, "PageCount").orElse(0);
+
+    // Delete all the pages except the ones to select.
+    int nextTargetPage = 1;
+    for (int page : pages) {
+      // Ignore invalid page
+      if (page > 0 && page <= pageCount) {
+        copyPage(docText, page, nextTargetPage++);
+      }
+    }
+
+    // Once done, we must delete the pages after that last copied page.
+    int lastPage = nextTargetPage - 1;
+    // int lastPage = 1;
+
+    // Get the text cursor for the document.
+    final XTextCursor tc = docText.getText().createTextCursor();
+
+    // Get the view cursor for the document. We also need a page cursor
+    // on the view cursor to navigate through the document pages.
+    final XTextViewCursor vc = Lo.qi(XTextViewCursorSupplier.class, ctrl).getViewCursor();
+    final XPageCursor pc = Lo.qi(XPageCursor.class, vc);
+
+    // Reset both cursors to the beginning of the document
+    tc.gotoStart(false);
+    vc.gotoStart(false);
+
+    // Jump to the and of the last copied page and move the text cursor to
+    // the beginning of this page, while selecting text in between.
+    pc.jumpToPage((short) lastPage);
+    // tc.gotoRange(vc.getStart(), true);
+    pc.jumpToEndOfPage();
+    tc.gotoRange(vc.getEnd(), true);
+    // Select the pages.
+    final XSelectionSupplier selectionSupplier = Lo.qi(XSelectionSupplier.class, ctrl);
+    selectionSupplier.select(tc);
+
+    // Copy the selection (pages).
+    final XTransferableSupplier transSupplier = Lo.qi(XTransferableSupplier.class, ctrl);
+    final XTransferable trans = transSupplier.getTransferable();
+
+    // Now select the whole document.
+    tc.gotoStart(false); // Go to the start
+    tc.gotoEnd(true); // Go to the end, expanding the cursor's text range
+    selectionSupplier.select(tc);
+
+    // Paste the previously copied pages. This will replace the current selection,
+    // which is the whole document, by the previously selected pages.
+    transSupplier.insertTransferable(trans);
+  }
+
+  private void selectDrawPages(final XComponent document) throws Exception {
+
+    final XDrawPages drawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
+    final int pageCount = drawPages.getCount();
+
+    // Delete all the pages except the ones to select.
+    for (int i = pageCount; i > 0; i--) {
+      if (!pages.contains(i)) {
+        drawPages.remove(Lo.qi(XDrawPage.class, drawPages.getByIndex(i - 1)));
+      }
+    }
+  }
+}
