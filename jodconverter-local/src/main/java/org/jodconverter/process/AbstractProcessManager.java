@@ -142,6 +142,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
         }
       }
     }
+    LOGGER.debug("No matching command line found! Returning pid: NOT_FOUND");
     return PID_NOT_FOUND;
   }
 
