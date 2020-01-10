@@ -379,7 +379,7 @@ public class OfficeProcessManagerPoolEntryITest {
 
   @Test
   public void start_WhenProcessAlreadyExistsAndKillExistingProcessOff_ShouldThrowOfficeException()
-          throws Exception {
+      throws Exception {
 
     // Starts an office process
     final OfficeProcess officeProcess = startOfficeProcess(CONNECT_URL);
@@ -387,7 +387,7 @@ public class OfficeProcessManagerPoolEntryITest {
     final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
     config.setKillExistingProcess(false);
     final OfficeProcessManagerPoolEntry officeManager =
-            new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
+        new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
     try {
 
       assertThatExceptionOfType(OfficeException.class)

@@ -68,11 +68,11 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
   @Override
   public String toString() {
     return getClass().getSimpleName()
-            + "{"
-            + "file="
-            + Optional.ofNullable(file).map(File::getName).orElse("null")
-            + ", format="
-            + Optional.ofNullable(documentFormat).map(DocumentFormat::getExtension).orElse("null")
-            + '}';
+        + "{"
+        + "file="
+        + Optional.ofNullable(file).map(File::getName).orElse("null")
+        + ", format="
+        + Optional.ofNullable(documentFormat).map(DocumentFormat::getExtension).orElse("null")
+        + '}';
   }
 }

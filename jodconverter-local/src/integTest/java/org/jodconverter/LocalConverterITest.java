@@ -130,14 +130,14 @@ public class LocalConverterITest extends AbstractOfficeITest {
   public void convert_FromFileWithoutExtensionToFile_ShouldSucceeded() throws Exception {
 
     final File outputFile =
-            new File(testFolder.getRoot(), "convert_FromFileWithoutExtensionToFile.pdf");
+        new File(testFolder.getRoot(), "convert_FromFileWithoutExtensionToFile.pdf");
     FileUtils.deleteQuietly(outputFile);
 
     final OutputStream stream = Files.newOutputStream(outputFile.toPath());
     LocalConverter.make()
-            .convert(new File(DOCUMENTS_DIR + "test"))
-            .to(stream)
-            .as(DefaultDocumentFormatRegistry.getFormatByExtension("txt"))
+        .convert(new File(DOCUMENTS_DIR + "test"))
+        .to(stream)
+        .as(DefaultDocumentFormatRegistry.getFormatByExtension("txt"))
         .execute();
 
     assertThat(FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8))

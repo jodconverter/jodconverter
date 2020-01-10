@@ -89,15 +89,15 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   public void execute(final OfficeContext context) throws OfficeException {
 
     LOGGER.info(
-            "Executing local conversion task [{} -> {}]...",
-            Optional.of(source)
-                    .map(DocumentSpecs::getFormat)
-                    .map(DocumentFormat::getExtension)
-                    .orElse("?"),
-            Optional.of(target)
-                    .map(DocumentSpecs::getFormat)
-                    .map(DocumentFormat::getExtension)
-                    .orElse("?"));
+        "Executing local conversion task [{} -> {}]...",
+        Optional.of(source)
+            .map(DocumentSpecs::getFormat)
+            .map(DocumentFormat::getExtension)
+            .orElse("?"),
+        Optional.of(target)
+            .map(DocumentSpecs::getFormat)
+            .map(DocumentFormat::getExtension)
+            .orElse("?"));
     final LocalOfficeContext localContext = (LocalOfficeContext) context;
 
     // Obtain a source file that can be loaded by office. If the source
@@ -176,8 +176,8 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       Lo.qi(XStorable.class, document).storeToURL(toUrl(targetFile), toUnoProperties(storeProps));
     } catch (ErrorCodeIOException errorCodeIoEx) {
       throw new OfficeException(
-              ERROR_MESSAGE_STORE + targetFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
-              errorCodeIoEx);
+          ERROR_MESSAGE_STORE + targetFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
+          errorCodeIoEx);
     } catch (IOException ioEx) {
       throw new OfficeException(ERROR_MESSAGE_STORE + targetFile.getName(), ioEx);
     }
@@ -186,15 +186,15 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   @Override
   public String toString() {
     return getClass().getSimpleName()
-            + "{"
-            + "source="
-            + source
-            + ", loadProperties="
-            + loadProperties
-            + ", target="
-            + target
-            + ", storeProperties="
-            + storeProperties
-            + '}';
+        + "{"
+        + "source="
+        + source
+        + ", loadProperties="
+        + loadProperties
+        + ", target="
+        + target
+        + ", storeProperties="
+        + storeProperties
+        + '}';
   }
 }

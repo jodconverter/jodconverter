@@ -48,9 +48,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExternalOfficeManager.class);
 
-  /**
-   * The default port number to connect to office.
-   */
+  /** The default port number to connect to office. */
   public static final int DEFAULT_PORT_NUMBER = 2002;
   /** The default pipe name to connect to office. */
   public static final String DEFAULT_PIPE_NAME = "office";
@@ -112,7 +110,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
     try {
       final ExternalOfficeManagerConfig mconfig = (ExternalOfficeManagerConfig) config;
       new ConnectRetryable(connection)
-              .execute(mconfig.getRetryInterval(), mconfig.getConnectTimeout());
+          .execute(mconfig.getRetryInterval(), mconfig.getConnectTimeout());
 
     } catch (Exception ex) {
       throw new OfficeException("Could not establish connection to external office process", ex);

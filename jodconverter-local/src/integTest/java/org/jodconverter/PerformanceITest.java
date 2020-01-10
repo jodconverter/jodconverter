@@ -62,7 +62,7 @@ public class PerformanceITest extends AbstractOfficeITest {
   }
 
   private void convertFileXTimes(final File inputFile, final DocumentFormat outputFormat)
-          throws IOException, OfficeException {
+      throws IOException, OfficeException {
 
     final String baseName = FilenameUtils.getBaseName(inputFile.getName());
 
@@ -74,16 +74,16 @@ public class PerformanceITest extends AbstractOfficeITest {
       outputFile.deleteOnExit();
 
       LOGGER.info(
-              "{} -- Converting {} to {}",
-              baseName,
-              PerformanceITest.INPUT_FORMAT.getExtension(),
-              outputFormat.getExtension());
+          "{} -- Converting {} to {}",
+          baseName,
+          PerformanceITest.INPUT_FORMAT.getExtension(),
+          outputFormat.getExtension());
       LocalConverter.make()
-              .convert(inputFile)
-              .as(PerformanceITest.INPUT_FORMAT)
-              .to(outputFile)
-              .as(outputFormat)
-              .execute();
+          .convert(inputFile)
+          .as(PerformanceITest.INPUT_FORMAT)
+          .to(outputFile)
+          .as(outputFormat)
+          .execute();
 
       stopWatch.split();
       final long splitTime = stopWatch.getSplitTime();
@@ -94,11 +94,11 @@ public class PerformanceITest extends AbstractOfficeITest {
     final long conversionTime = stopWatch.getTime();
 
     LOGGER.info(
-            "{} -- All {} conversions done in {}. The average per document is {} ms.",
-            baseName,
-            MAX_CONVERSIONS,
-            getDurationBreakdown(conversionTime),
-            conversionTime / MAX_CONVERSIONS);
+        "{} -- All {} conversions done in {}. The average per document is {} ms.",
+        baseName,
+        MAX_CONVERSIONS,
+        getDurationBreakdown(conversionTime),
+        conversionTime / MAX_CONVERSIONS);
   }
 
   @Test

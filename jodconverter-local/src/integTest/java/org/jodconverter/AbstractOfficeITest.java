@@ -59,7 +59,7 @@ public abstract class AbstractOfficeITest {
 
     // Get all supported output formats
     final Set<DocumentFormat> outputFormats =
-            DefaultDocumentFormatRegistry.getOutputFormats(inputFormat.getInputFamily());
+        DefaultDocumentFormatRegistry.getOutputFormats(inputFormat.getInputFamily());
 
     // Convert the input file into all the supported output formats.
     // This will create 1 output file per output format.
@@ -90,7 +90,7 @@ public abstract class AbstractOfficeITest {
               "xlsx",
               "pptx")) {
         LOGGER.info(
-                "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+            "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
         continue;
       }
 

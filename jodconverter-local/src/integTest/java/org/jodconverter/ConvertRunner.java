@@ -63,15 +63,15 @@ public class ConvertRunner implements Runnable {
     final LocalConverter converter = LocalConverter.make();
 
     final DocumentFormat sourceFmt =
-            converter
-                    .getFormatRegistry()
-                    .getFormatByExtension(FilenameUtils.getExtension(source.getName()));
+        converter
+            .getFormatRegistry()
+            .getFormatByExtension(FilenameUtils.getExtension(source.getName()));
     final String sourceExt = sourceFmt.getExtension();
 
     final DocumentFormat targetFmt =
-            converter
-                    .getFormatRegistry()
-                    .getFormatByExtension(FilenameUtils.getExtension(target.getName()));
+        converter
+            .getFormatRegistry()
+            .getFormatByExtension(FilenameUtils.getExtension(target.getName()));
     final String targetExt = targetFmt.getExtension();
 
     try {
