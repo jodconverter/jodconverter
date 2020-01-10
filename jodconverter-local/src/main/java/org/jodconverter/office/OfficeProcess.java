@@ -409,8 +409,6 @@ class OfficeProcess {
 
     try {
       // Try to start the process.
-      // process = new VerboseProcess(processBuilder.start());
-      // pid = config.getProcessManager().findPid(processQuery);
       tryStartProcess(processBuilder, processQuery);
       LOGGER.info(
           "Started process; pid {}",
@@ -423,12 +421,12 @@ class OfficeProcess {
           ioEx);
     }
 
-    //    if (pid == PID_NOT_FOUND) {
-    //      throw new OfficeException(
-    //          String.format(
-    //              "A process with acceptString '%s' started but its pid could not be found",
-    //              acceptString));
-    //    }
+    if (pid == PID_NOT_FOUND) {
+      throw new OfficeException(
+          String.format(
+              "A process with acceptString '%s' started but its pid could not be found",
+              acceptString));
+    }
   }
 
   private void tryStartProcess(final ProcessBuilder processBuilder, final ProcessQuery processQuery)
@@ -478,7 +476,7 @@ class OfficeProcess {
 
       // Wait a bit before retrying.
       try {
-        Thread.sleep(500L);
+        Thread.sleep(250L);
       } catch (InterruptedException ignore) {
       }
 
@@ -525,7 +523,7 @@ class OfficeProcess {
 
       // Wait a bit before retrying.
       try {
-        Thread.sleep(500L);
+        Thread.sleep(250L);
       } catch (InterruptedException ignore) {
       }
 

@@ -4,80 +4,80 @@ sudo: required
 
 dist: trusty
 
-#matrix:
-#  include:
-#    #linux Java8
-#    - os: linux
-#      jdk: oraclejdk8
-#      before_install:
-#       - chmod +x ./gradlew
-#       - sudo apt-get install libreoffice
-#      script:
-#       - ./gradlew build
-#      after_success:
-#       - ./gradlew coveralls
-#    #linux Java11
-#    - os: linux
-#      jdk: openjdk11
-#      before_install:
-#       - chmod +x ./gradlew
-#       - sudo apt-get install libreoffice
-#      script:
-#       - ./gradlew build -x javadoc
-#      after_success:
-#       - ./gradlew coveralls
-#    #linux Java12
-#    - os: linux
-#      jdk: openjdk12
-#      before_install:
-#       - chmod +x ./gradlew
-#       - sudo apt-get install libreoffice
-#      script:
-#       - ./gradlew build -x javadoc
-#      after_success:
-#       - ./gradlew coveralls
-#    #linux Java13
-#    - os: linux
-#      jdk: openjdk13
-#      before_install:
-#       - chmod +x ./gradlew
-#       - sudo apt-get install libreoffice
-#      script:
-#       - ./gradlew build -x javadoc
-#      after_success:
-#       - ./gradlew coveralls
-#
-#    #macos - see https://docs.travis-ci.com/user/reference/osx/#jdk-and-macos
-#
-#    #macos Java8
-#    - os: osx
-#      osx_image: xcode8
-#      jdk: oraclejdk8
-#      before_install:
-#       - chmod +x ./gradlew
-#      script:
-#       - ./gradlew build -x integTest -x javadoc
-#    #macos Java11
-#    - os: osx
-#      osx_image: xcode10.1
-#      jdk: openjdk11
-#      before_install:
-#       - chmod +x ./gradlew
-#      script:
-#       - ./gradlew build -x integTest -x javadoc
-#    #macos Java12
-#    - os: osx
-#      osx_image: xcode11
-#      jdk: openjdk12
-#      before_install:
-#       - chmod +x ./gradlew
-#      script:
-#       - ./gradlew build -x integTest -x javadoc
-#    #macos Java13
-#    - os: osx
-#      osx_image: xcode11.3
-#      jdk: openjdk13
-#      before_install:
-#       - chmod +x ./gradlew
-#      script:
-#       - ./gradlew build -x integTest -x javadoc
+matrix:
+  include:
+    #linux Java8
+    - os: linux
+      jdk: oraclejdk8
+      before_install:
+       - chmod +x ./gradlew
+       - sudo apt-get install libreoffice
+      script:
+       - ./gradlew build
+      after_success:
+       - ./gradlew coveralls
+    #linux Java11
+    - os: linux
+      jdk: openjdk11
+      before_install:
+       - chmod +x ./gradlew
+       - sudo apt-get install libreoffice
+      script:
+       - ./gradlew build -x javadoc
+      after_success:
+       - ./gradlew coveralls
+    #linux Java12
+    - os: linux
+      jdk: openjdk12
+      before_install:
+       - chmod +x ./gradlew
+       - sudo apt-get install libreoffice
+      script:
+       - ./gradlew build -x javadoc
+      after_success:
+       - ./gradlew coveralls
+    #linux Java13
+    - os: linux
+      jdk: openjdk13
+      before_install:
+       - chmod +x ./gradlew
+       - sudo apt-get install libreoffice
+      script:
+       - ./gradlew build -x javadoc
+      after_success:
+       - ./gradlew coveralls
+
+    #macos - see https://docs.travis-ci.com/user/reference/osx/#jdk-and-macos
+
+    #macos Java8
+    - os: osx
+      osx_image: xcode8
+      jdk: oraclejdk8
+      before_install:
+       - chmod +x ./gradlew
+      script:
+       - ./gradlew build -x integTest -x javadoc
+    #macos Java11
+    - os: osx
+      osx_image: xcode10.1
+      jdk: openjdk11
+      before_install:
+       - chmod +x ./gradlew
+      script:
+       - ./gradlew build -x integTest -x javadoc
+    #macos Java12
+    - os: osx
+      osx_image: xcode11
+      jdk: openjdk12
+      before_install:
+       - chmod +x ./gradlew
+      script:
+       - ./gradlew build -x integTest -x javadoc
+    #macos Java13
+    - os: osx
+      osx_image: xcode11.3
+      jdk: openjdk13
+      before_install:
+       - chmod +x ./gradlew
+      script:
+       - ./gradlew build -x integTest -x javadoc
