@@ -28,6 +28,15 @@ public interface ProcessManager {
   long PID_UNKNOWN = -1;
 
   /**
+   * Indicates whether the pid of the process can be found using a command line.
+   *
+   * @return {@code true} if the pid can be found using a command line, {@code false} otherwise.
+   */
+  default boolean canFindPid() {
+    return true;
+  }
+
+  /**
    * Finds a PID of a running process that has the specified command line.
    *
    * @param query A query used to find the process with the pid we are looking for.

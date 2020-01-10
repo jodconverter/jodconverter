@@ -92,8 +92,7 @@ class OfficeProcess {
       long existingPid = processManager.findPid(processQuery);
 
       // Kill the any running process with the same connection string if the kill switch is on
-      if (!(existingPid == PID_NOT_FOUND || existingPid == PID_UNKNOWN)
-          && config.isKillExistingProcess()) {
+      if (existingPid > PID_UNKNOWN && config.isKillExistingProcess()) {
         LOGGER.warn(
             "A process with acceptString '{}' is already running; pid {}",
             processQuery.getArgument(),
@@ -103,7 +102,7 @@ class OfficeProcess {
         existingPid = processManager.findPid(processQuery);
       }
 
-      if (existingPid != PID_NOT_FOUND && existingPid != PID_UNKNOWN) {
+      if (existingPid > PID_UNKNOWN) {
         throw new OfficeException(
             String.format(
                 "A process with acceptString '%s' is already running; pid %d",
@@ -437,8 +436,8 @@ class OfficeProcess {
 
     int tryCount = 0;
     do {
-      LOGGER.debug("Trying to start office process, attempt #{}", tryCount);
       tryCount++;
+      LOGGER.debug("Trying to start office process, attempt #{}", tryCount);
 
       // Try to start the process.
       process = new VerboseProcess(processBuilder.start());
@@ -447,25 +446,39 @@ class OfficeProcess {
       final Pair<Long, Integer> pidSearch = tryFindPid(processQuery);
       pid = pidSearch.getLeft(); // Keep the PID, found or not.
 
-      // Exit if the PID was found or we have reach the maximum try count or
-      // we don't have an exit code to work with (we do not want to retry to start
-      // a process without the confirmation that the process has died).
+      // Exit if the pid was found or we have reach the maximum try count
       final Integer exitCode = pidSearch.getRight();
-      if (pid > PID_UNKNOWN
-          || tryCount == 5
-          || exitCode == null) { // TODO: Let the max try count be configurable.
+      if (pid > PID_UNKNOWN || tryCount == 5) { // TODO: Let the max try count be configurable.
         break;
       }
 
-      // Here, the process has died. Warn the user on exit code 81.
-      // see http://code.google.com/p/jodconverter/issues/detail?id=84
-      if (exitCode.equals(EXIT_CODE_81)) {
+      // If we don't have an exit code (which means that the process is still alive) and
+      // that we are suppose to be able to find the pid using the manager, we will try again
+      // by restarting the process.
+      if (exitCode == null) {
+        if (config.getProcessManager().canFindPid()) {
+          try {
+            LOGGER.debug(
+                "Unable to retrieve the pid even if the process is still alive; restarting it");
+            process.getProcess().destroyForcibly();
+          } catch (Exception e) {
+            LOGGER.warn("Unable to destroy the process.", e);
+          }
+        } else {
+          // We do not want to restart the process since we will never be able to retrieve the pid.
+          break;
+        }
+      } else if (exitCode.equals(EXIT_CODE_81)) {
+
+        // Here, the process has died. Warn the user on exit code 81.
+        // see http://code.google.com/p/jodconverter/issues/detail?id=84
+
         LOGGER.warn("Office process died with exit code 81; restarting it");
       }
 
       // Wait a bit before retrying.
       try {
-        Thread.sleep(250L);
+        Thread.sleep(500L);
       } catch (InterruptedException ignore) {
       }
 
@@ -476,34 +489,43 @@ class OfficeProcess {
 
     int tryCount = 0;
     do {
-      LOGGER.debug("Trying to find PID, attempt #{}", tryCount);
       tryCount++;
-
-      // Try to find the PID.
-      final long processId = config.getProcessManager().findPid(processQuery);
-
-      // Return if the PID was found.
-      if (processId > PID_UNKNOWN) {
-        return Pair.of(processId, null);
-      }
+      LOGGER.debug("Trying to find pid, attempt #{}", tryCount);
 
       // Return if the process is already dead.
+      Integer exitCode = null;
       try {
-        final int exitCode = process.getProcess().exitValue();
+        exitCode = process.getProcess().exitValue();
         // Process is already dead, no need to wait longer...
-        return Pair.of(processId, exitCode);
+        return Pair.of(PID_UNKNOWN, exitCode);
       } catch (IllegalThreadStateException ignore) {
         // Process is still up.
       }
 
+      final ProcessManager processManager = config.getProcessManager();
+      if (!processManager.canFindPid()) {
+        LOGGER.debug(
+            "The current process manager does not support finding the pid: {}",
+            processManager.getClass().getName());
+        return Pair.of(PID_UNKNOWN, exitCode);
+      }
+
+      // Try to find the PID.
+      final long processId = processManager.findPid(processQuery);
+
+      // Return if the PID was found.
+      if (processId > PID_UNKNOWN) {
+        return Pair.of(processId, exitCode);
+      }
+
       // Also return if we have reached the maximum try count.
-      if (tryCount == 10) {
-        return Pair.of(processId, null);
+      if (tryCount == 30) {
+        return Pair.of(processId, exitCode);
       }
 
       // Wait a bit before retrying.
       try {
-        Thread.sleep(250L);
+        Thread.sleep(500L);
       } catch (InterruptedException ignore) {
       }
 

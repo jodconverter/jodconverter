@@ -44,6 +44,12 @@ public class CustomProcessManager implements ProcessManager {
   }
 
   @Override
+  public boolean canFindPid() {
+    LOGGER.info("Checking PID findable from {}", getClass().getName());
+    return delegate.canFindPid();
+  }
+
+  @Override
   public long findPid(final ProcessQuery query) throws IOException {
     LOGGER.info("Finding PID from {}", getClass().getName());
     return delegate.findPid(query);

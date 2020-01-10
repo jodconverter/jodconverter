@@ -28,6 +28,11 @@ public class PureJavaProcessManager implements ProcessManager {
     /* default */ static final PureJavaProcessManager INSTANCE = new PureJavaProcessManager();
   }
 
+  @Override
+  public boolean canFindPid() {
+    return false;
+  }
+
   /**
    * Gets the default instance of {@code PureJavaProcessManager}.
    *
