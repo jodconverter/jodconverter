@@ -448,7 +448,7 @@ class OfficeProcess {
 
       // Exit if the pid was found or we have reach the maximum try count
       final Integer exitCode = pidSearch.getRight();
-      if (pid > PID_UNKNOWN || tryCount == 5) { // TODO: Let the max try count be configurable.
+      if (pid > PID_UNKNOWN || tryCount == 3) { // TODO: Let the max try count be configurable.
         break;
       }
 
@@ -519,7 +519,7 @@ class OfficeProcess {
       }
 
       // Also return if we have reached the maximum try count.
-      if (tryCount == 30) {
+      if (tryCount == 5) { // TODO: Let the max try count be configurable.
         return Pair.of(processId, exitCode);
       }
 
