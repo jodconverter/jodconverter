@@ -22,6 +22,8 @@ package org.jodconverter.office;
 import java.io.File;
 
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.task.OfficeTask;
 
@@ -44,15 +46,27 @@ import org.jodconverter.task.OfficeTask;
  */
 public final class ExternalOfficeManager extends AbstractOfficeManager {
 
-  /** The default port number to connect to office. */
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExternalOfficeManager.class);
+
+  /**
+   * The default port number to connect to office.
+   */
   public static final int DEFAULT_PORT_NUMBER = 2002;
-  /** The default pipe name to connect to office. */
+  /**
+   * The default pipe name to connect to office.
+   */
   public static final String DEFAULT_PIPE_NAME = "office";
-  /** The default timeout when connecting to office. */
+  /**
+   * The default timeout when connecting to office.
+   */
   public static final long DEFAULT_CONNECT_TIMEOUT = 120000L; // 2 minutes
-  /** The default delay between each try to connect. */
+  /**
+   * The default delay between each try to connect.
+   */
   public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.
-  /** The maximum value for the delay between each try to connect. */
+  /**
+   * The maximum value for the delay between each try to connect.
+   */
   public static final long MAX_RETRY_INTERVAL = 10000L; // 10 sec.
 
   private final OfficeConnection connection;
@@ -102,10 +116,11 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
 
   private void connect() throws OfficeException {
 
+    LOGGER.debug("Connecting to external office process...");
     try {
       final ExternalOfficeManagerConfig mconfig = (ExternalOfficeManagerConfig) config;
       new ConnectRetryable(connection)
-          .execute(mconfig.getRetryInterval(), mconfig.getConnectTimeout());
+              .execute(mconfig.getRetryInterval(), mconfig.getConnectTimeout());
 
     } catch (Exception ex) {
       throw new OfficeException("Could not establish connection to external office process", ex);
@@ -119,6 +134,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
       if (!isRunning()) {
         connect();
       }
+      LOGGER.debug("Executing task: {}", task);
       task.execute(connection);
     }
   }

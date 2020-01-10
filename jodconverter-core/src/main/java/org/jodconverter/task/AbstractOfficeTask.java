@@ -40,4 +40,9 @@ public abstract class AbstractOfficeTask implements OfficeTask {
 
     this.source = source;
   }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "{" + "source=" + source + '}';
+  }
 }

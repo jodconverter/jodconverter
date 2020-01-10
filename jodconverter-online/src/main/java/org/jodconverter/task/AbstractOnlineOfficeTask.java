@@ -36,4 +36,9 @@ public abstract class AbstractOnlineOfficeTask extends AbstractOfficeTask {
   public AbstractOnlineOfficeTask(final SourceDocumentSpecs source) {
     super(source);
   }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "{" + "source=" + source + '}';
+  }
 }

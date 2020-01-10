@@ -166,4 +166,9 @@ public class OnlineConversionTask extends AbstractOnlineOfficeTask {
 
     return StringUtils.appendIfMissing(connectionUrl, "/") + target.getFormat().getExtension();
   }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "{" + "source=" + source + ", target=" + target + '}';
+  }
 }

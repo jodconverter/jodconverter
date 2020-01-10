@@ -141,4 +141,15 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       }
     }
   }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName()
+            + "{"
+            + "source="
+            + source
+            + ", loadProperties="
+            + loadProperties
+            + '}';
+  }
 }

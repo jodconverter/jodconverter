@@ -35,8 +35,10 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.filter.FilterChain;
 import org.jodconverter.filter.RefreshFilter;
+import org.jodconverter.job.DocumentSpecs;
 import org.jodconverter.job.SourceDocumentSpecs;
 import org.jodconverter.job.TargetDocumentSpecs;
 import org.jodconverter.office.LocalOfficeContext;
@@ -86,7 +88,16 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   @Override
   public void execute(final OfficeContext context) throws OfficeException {
 
-    LOGGER.info("Executing local conversion task...");
+    LOGGER.info(
+            "Executing local conversion task [{} -> {}]...",
+            Optional.of(source)
+                    .map(DocumentSpecs::getFormat)
+                    .map(DocumentFormat::getExtension)
+                    .orElse("?"),
+            Optional.of(target)
+                    .map(DocumentSpecs::getFormat)
+                    .map(DocumentFormat::getExtension)
+                    .orElse("?"));
     final LocalOfficeContext localContext = (LocalOfficeContext) context;
 
     // Obtain a source file that can be loaded by office. If the source
@@ -165,10 +176,25 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       Lo.qi(XStorable.class, document).storeToURL(toUrl(targetFile), toUnoProperties(storeProps));
     } catch (ErrorCodeIOException errorCodeIoEx) {
       throw new OfficeException(
-          ERROR_MESSAGE_STORE + targetFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
-          errorCodeIoEx);
+              ERROR_MESSAGE_STORE + targetFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
+              errorCodeIoEx);
     } catch (IOException ioEx) {
       throw new OfficeException(ERROR_MESSAGE_STORE + targetFile.getName(), ioEx);
     }
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName()
+            + "{"
+            + "source="
+            + source
+            + ", loadProperties="
+            + loadProperties
+            + ", target="
+            + target
+            + ", storeProperties="
+            + storeProperties
+            + '}';
   }
 }

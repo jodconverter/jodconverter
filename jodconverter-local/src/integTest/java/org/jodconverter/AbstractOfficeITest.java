@@ -49,18 +49,17 @@ public abstract class AbstractOfficeITest {
       final File sourceFile, final File outputDir, final Filter... filters) {
 
     // Detect input format
-    final String inputExtension = FilenameUtils.getExtension(sourceFile.getName());
-    final DocumentFormat inputFormat =
-        DefaultDocumentFormatRegistry.getFormatByExtension(inputExtension);
+    final String inputExt = FilenameUtils.getExtension(sourceFile.getName());
+    final DocumentFormat inputFormat = DefaultDocumentFormatRegistry.getFormatByExtension(inputExt);
     if (inputFormat == null) {
-      LOGGER.info("-- skipping unsupported input format {}... ", inputExtension);
+      LOGGER.info("Skipping unsupported input format {}", inputExt);
       return;
     }
-    assertThat(inputFormat).as("check %s's input format", inputExtension).isNotNull();
+    assertThat(inputFormat).as("check %s's input format", inputExt).isNotNull();
 
     // Get all supported output formats
     final Set<DocumentFormat> outputFormats =
-        DefaultDocumentFormatRegistry.getOutputFormats(inputFormat.getInputFamily());
+            DefaultDocumentFormatRegistry.getOutputFormats(inputFormat.getInputFamily());
 
     // Convert the input file into all the supported output formats.
     // This will create 1 output file per output format.
@@ -91,9 +90,7 @@ public abstract class AbstractOfficeITest {
               "xlsx",
               "pptx")) {
         LOGGER.info(
-            "-- skipping {} to {} test... ",
-            inputFormat.getExtension(),
-            outputFormat.getExtension());
+                "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
         continue;
       }
 

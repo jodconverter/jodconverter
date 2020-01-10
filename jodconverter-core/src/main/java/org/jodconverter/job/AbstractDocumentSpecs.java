@@ -20,6 +20,7 @@
 package org.jodconverter.job;
 
 import java.io.File;
+import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
 
@@ -62,5 +63,16 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
 
     Validate.notNull(documentFormat, "The document format is null or unsupported");
     this.documentFormat = documentFormat;
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName()
+            + "{"
+            + "file="
+            + Optional.ofNullable(file).map(File::getName).orElse("null")
+            + ", format="
+            + Optional.ofNullable(documentFormat).map(DocumentFormat::getExtension).orElse("null")
+            + '}';
   }
 }

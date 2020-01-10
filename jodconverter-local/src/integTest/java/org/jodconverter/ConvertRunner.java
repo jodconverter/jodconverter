@@ -62,26 +62,23 @@ public class ConvertRunner implements Runnable {
 
     final LocalConverter converter = LocalConverter.make();
 
-    final DocumentFormat sourceFormat =
-        converter
-            .getFormatRegistry()
-            .getFormatByExtension(FilenameUtils.getExtension(source.getName()));
+    final DocumentFormat sourceFmt =
+            converter
+                    .getFormatRegistry()
+                    .getFormatByExtension(FilenameUtils.getExtension(source.getName()));
+    final String sourceExt = sourceFmt.getExtension();
 
-    final DocumentFormat targetFormat =
-        converter
-            .getFormatRegistry()
-            .getFormatByExtension(FilenameUtils.getExtension(target.getName()));
+    final DocumentFormat targetFmt =
+            converter
+                    .getFormatRegistry()
+                    .getFormatByExtension(FilenameUtils.getExtension(target.getName()));
+    final String targetExt = targetFmt.getExtension();
 
     try {
 
-      LOGGER.info(
-          "-- converting "
-              + sourceFormat.getExtension()
-              + " to "
-              + targetFormat.getExtension()
-              + "... ");
+      LOGGER.info("Converting [{} -> {}]...", sourceExt, targetExt);
       converter.setFilterChain(filterChain).convert(source).to(target).execute();
-      LOGGER.info("done.\n");
+      LOGGER.info("Conversion done [{} -> {}]...", sourceExt, targetExt);
 
       // Check that the created file is not empty. The programmer still have to
       // manually if the content of the output file looks good.
@@ -91,12 +88,7 @@ public class ConvertRunner implements Runnable {
     } catch (Exception ex) {
 
       // Log the error.
-      final String message =
-          "Unable to convert from "
-              + sourceFormat.getExtension()
-              + " to "
-              + targetFormat.getExtension()
-              + ".";
+      final String message = "Unable to convert from " + sourceExt + " to " + targetExt + ".";
       if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
         final com.sun.star.task.ErrorCodeIOException ioEx =
             (com.sun.star.task.ErrorCodeIOException) ex.getCause();

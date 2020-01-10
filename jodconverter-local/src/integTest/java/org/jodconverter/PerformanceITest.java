@@ -61,9 +61,8 @@ public class PerformanceITest extends AbstractOfficeITest {
     return String.format("%d min, %d sec, %d millisec", minutes, seconds, localMillis);
   }
 
-  private void convertFileXTimes(
-      final File inputFile, final DocumentFormat inputFormat, final DocumentFormat outputFormat)
-      throws IOException, OfficeException {
+  private void convertFileXTimes(final File inputFile, final DocumentFormat outputFormat)
+          throws IOException, OfficeException {
 
     final String baseName = FilenameUtils.getBaseName(inputFile.getName());
 
@@ -75,36 +74,31 @@ public class PerformanceITest extends AbstractOfficeITest {
       outputFile.deleteOnExit();
 
       LOGGER.info(
-          baseName
-              + " -- converting "
-              + inputFormat.getExtension()
-              + " to "
-              + outputFormat.getExtension()
-              + "... ");
+              "{} -- Converting {} to {}",
+              baseName,
+              PerformanceITest.INPUT_FORMAT.getExtension(),
+              outputFormat.getExtension());
       LocalConverter.make()
-          .convert(inputFile)
-          .as(inputFormat)
-          .to(outputFile)
-          .as(outputFormat)
-          .execute();
+              .convert(inputFile)
+              .as(PerformanceITest.INPUT_FORMAT)
+              .to(outputFile)
+              .as(outputFormat)
+              .execute();
 
       stopWatch.split();
       final long splitTime = stopWatch.getSplitTime();
-      LOGGER.info(baseName + "-- conversion done in " + (splitTime - lastSplitTime) + " millisec.");
+      LOGGER.info("{} -- Conversion done in {} millisec.", baseName, splitTime - lastSplitTime);
       lastSplitTime = splitTime;
     }
     stopWatch.stop();
     final long conversionTime = stopWatch.getTime();
 
     LOGGER.info(
-        baseName
-            + "-- all "
-            + MAX_CONVERSIONS
-            + " conversions done in "
-            + getDurationBreakdown(conversionTime)
-            + ". The average per document is "
-            + (conversionTime / MAX_CONVERSIONS)
-            + " ms.");
+            "{} -- All {} conversions done in {}. The average per document is {} ms.",
+            baseName,
+            MAX_CONVERSIONS,
+            getDurationBreakdown(conversionTime),
+            conversionTime / MAX_CONVERSIONS);
   }
 
   @Test
@@ -117,7 +111,7 @@ public class PerformanceITest extends AbstractOfficeITest {
     assert files != null;
     for (final File inputFile : files) {
 
-      convertFileXTimes(inputFile, INPUT_FORMAT, OUTPUT_FORMAT);
+      convertFileXTimes(inputFile, OUTPUT_FORMAT);
     }
   }
 }

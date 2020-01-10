@@ -79,15 +79,15 @@ abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     // Wait for completion of the task, (maximum wait time is the
     // configured task execution timeout)
     try {
-      LOGGER.debug("Waiting for task to complete...");
+      LOGGER.debug("Waiting for task to complete: {}", task);
       currentFuture.get(config.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
-      LOGGER.debug("Task executed successfully");
+      LOGGER.debug("Task executed successfully: {}", task);
 
     } catch (TimeoutException timeoutEx) {
 
       // The task did not complete within the configured timeout...
       handleExecuteTimeoutException(timeoutEx);
-      throw new OfficeException("Task did not complete within timeout", timeoutEx);
+      throw new OfficeException("Task did not complete within timeout: " + task, timeoutEx);
 
     } catch (ExecutionException executionEx) {
 
@@ -95,12 +95,12 @@ abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
       if (executionEx.getCause() instanceof OfficeException) {
         throw (OfficeException) executionEx.getCause();
       }
-      throw new OfficeException("Task failed", executionEx.getCause());
+      throw new OfficeException("Task failed: " + task, executionEx.getCause());
 
     } catch (Exception ex) {
 
       // Unexpected exception
-      throw new OfficeException("Task failed", ex);
+      throw new OfficeException("Task failed: " + task, ex);
 
     } finally {
       currentFuture = null;
@@ -122,7 +122,7 @@ abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   protected void handleExecuteTimeoutException(final TimeoutException timeoutEx) {
 
     // The default behavior is to do nothing
-    LOGGER.debug("Handleling task execution timeout...");
+    LOGGER.debug("Handling task execution timeout...");
   }
 
   @Override

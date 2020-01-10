@@ -27,7 +27,7 @@ import org.jodconverter.document.DocumentFormat;
  * An interface that provides, for a document, the physical file and format required by a conversion
  * process.
  */
-interface DocumentSpecs {
+public interface DocumentSpecs {
 
   /**
    * Gets the file where is located the document.
