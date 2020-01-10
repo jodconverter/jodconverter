@@ -52,21 +52,13 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
    * The default port number to connect to office.
    */
   public static final int DEFAULT_PORT_NUMBER = 2002;
-  /**
-   * The default pipe name to connect to office.
-   */
+  /** The default pipe name to connect to office. */
   public static final String DEFAULT_PIPE_NAME = "office";
-  /**
-   * The default timeout when connecting to office.
-   */
+  /** The default timeout when connecting to office. */
   public static final long DEFAULT_CONNECT_TIMEOUT = 120000L; // 2 minutes
-  /**
-   * The default delay between each try to connect.
-   */
+  /** The default delay between each try to connect. */
   public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.
-  /**
-   * The maximum value for the delay between each try to connect.
-   */
+  /** The maximum value for the delay between each try to connect. */
   public static final long MAX_RETRY_INTERVAL = 10000L; // 10 sec.
 
   private final OfficeConnection connection;
