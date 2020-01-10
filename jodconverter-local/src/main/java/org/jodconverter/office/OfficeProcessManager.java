@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.DisposedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +74,7 @@ class OfficeProcessManager {
     try {
       final int exitCode =
           process.getExitCode(config.getProcessRetryInterval(), config.getProcessTimeout());
-      LOGGER.info("process exited with code {}", exitCode);
+      LOGGER.info("Process exited with code {}", exitCode);
 
     } catch (RetryTimeoutException retryTimeoutEx) {
 
@@ -120,8 +121,9 @@ class OfficeProcessManager {
   private void doStopProcess(final boolean deleteInstanceProfileDir) throws OfficeException {
 
     try {
-      if (connection != null) {
-        final boolean terminated = connection.getDesktop().terminate();
+      final XDesktop desktop = connection.getDesktop();
+      if (desktop != null) {
+        final boolean terminated = desktop.terminate();
 
         // Once more: try to terminate
         LOGGER.debug(
@@ -156,7 +158,7 @@ class OfficeProcessManager {
     try {
       final int exitCode =
           process.forciblyTerminate(config.getProcessRetryInterval(), config.getProcessTimeout());
-      LOGGER.info("process forcibly terminated with code {}", exitCode);
+      LOGGER.info("Process terminated with code {}", exitCode);
 
     } catch (Exception ex) {
       throw new OfficeException("Could not terminate process", ex);

@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ import org.jodconverter.process.ProcessQuery;
  */
 class OfficeProcess {
 
+  private static final Integer EXIT_CODE_81 = 81;
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcess.class);
 
   private VerboseProcess process;
@@ -405,15 +407,20 @@ class OfficeProcess {
         "Starting process with acceptString '{}' and profileDir '{}'",
         acceptString,
         instanceProfileDir);
+
     try {
-      process = new VerboseProcess(processBuilder.start());
-      // Try to retrieve the PID.
-      pid = tryFindPid(processQuery);
-      LOGGER.info("Started process{}; pid ", pid <= PID_UNKNOWN ? "NOT FOUND" : "= " + pid);
+      // Try to start the process.
+      // process = new VerboseProcess(processBuilder.start());
+      // pid = config.getProcessManager().findPid(processQuery);
+      tryStartProcess(processBuilder, processQuery);
+      LOGGER.info(
+          "Started process; pid {}",
+          pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : "= " + pid);
     } catch (IOException ioEx) {
       throw new OfficeException(
           String.format(
-              "An I/O error prevents us to start a process with acceptString '%s'", acceptString),
+              "An I/O error prevents us to start a process with acceptString '%s'",
+              processQuery.getArgument()),
           ioEx);
     }
 
@@ -425,45 +432,82 @@ class OfficeProcess {
     }
   }
 
-  private long tryFindPid(final ProcessQuery processQuery) throws IOException {
+  private void tryStartProcess(final ProcessBuilder processBuilder, final ProcessQuery processQuery)
+      throws IOException {
 
-    long processId = PID_UNKNOWN;
+    int tryCount = 0;
+    do {
+      LOGGER.debug("Trying to start office process, attempt #{}", tryCount);
+      tryCount++;
 
-    // Try to retrieve the PID.
-    for (int i = 0; i < 20; i++) { // TODO: Let the try count be configurable.
-      LOGGER.debug(
-          "tryFindPid #{}. Trying to find the office PID for query {}", (i + 1), processQuery);
+      // Try to start the process.
+      process = new VerboseProcess(processBuilder.start());
 
-      processId = config.getProcessManager().findPid(processQuery);
-      if (processId > PID_UNKNOWN) {
-        LOGGER.debug(
-            "tryFindPid #{}. Office PID found (" + processId + ") for query {}",
-            (i + 1),
-            processQuery);
+      // Try to retrieve the PID.
+      final Pair<Long, Integer> pidSearch = tryFindPid(processQuery);
+      pid = pidSearch.getLeft(); // Keep the PID, found or not.
+
+      // Exit if the PID was found or we have reach the maximum try count or
+      // we don't have an exit code to work with (we do not want to retry to start
+      // a process without the confirmation that the process has died).
+      final Integer exitCode = pidSearch.getRight();
+      if (pid > PID_UNKNOWN
+          || tryCount == 5
+          || exitCode == null) { // TODO: Let the max try count be configurable.
         break;
       }
 
-      // Check if the process is already dead.
+      // Here, the process has died. Warn the user on exit code 81.
+      // see http://code.google.com/p/jodconverter/issues/detail?id=84
+      if (exitCode.equals(EXIT_CODE_81)) {
+        LOGGER.warn("Office process died with exit code 81; restarting it");
+      }
+
+      // Wait a bit before retrying.
       try {
-        process.getProcess().exitValue();
+        Thread.sleep(250L);
+      } catch (InterruptedException ignore) {
+      }
+
+    } while (true);
+  }
+
+  private Pair<Long, Integer> tryFindPid(final ProcessQuery processQuery) throws IOException {
+
+    int tryCount = 0;
+    do {
+      LOGGER.debug("Trying to find PID, attempt #{}", tryCount);
+      tryCount++;
+
+      // Try to find the PID.
+      final long processId = config.getProcessManager().findPid(processQuery);
+
+      // Return if the PID was found.
+      if (processId > PID_UNKNOWN) {
+        return Pair.of(processId, null);
+      }
+
+      // Return if the process is already dead.
+      try {
+        final int exitCode = process.getProcess().exitValue();
         // Process is already dead, no need to wait longer...
-        LOGGER.debug(
-            "tryFindPid #{}. Office process is already dead, the office PID will not be retrieve",
-            (i + 1));
-        break;
+        return Pair.of(processId, exitCode);
       } catch (IllegalThreadStateException ignore) {
         // Process is still up.
       }
 
-      // Wait for process to start
+      // Also return if we have reached the maximum try count.
+      if (tryCount == 10) {
+        return Pair.of(processId, null);
+      }
+
+      // Wait a bit before retrying.
       try {
-        Thread.sleep(500);
+        Thread.sleep(250L);
       } catch (InterruptedException ignore) {
       }
-    }
 
-    LOGGER.debug("tryFindPid. Unable to find the office PID for query {}", processQuery);
-    return processId;
+    } while (true);
   }
 
   private void waitForProcessToDie() {
