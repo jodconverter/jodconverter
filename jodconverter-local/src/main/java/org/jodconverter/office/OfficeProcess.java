@@ -423,12 +423,12 @@ class OfficeProcess {
           ioEx);
     }
 
-    if (pid == PID_NOT_FOUND) {
-      throw new OfficeException(
-          String.format(
-              "A process with acceptString '%s' started but its pid could not be found",
-              acceptString));
-    }
+    //    if (pid == PID_NOT_FOUND) {
+    //      throw new OfficeException(
+    //          String.format(
+    //              "A process with acceptString '%s' started but its pid could not be found",
+    //              acceptString));
+    //    }
   }
 
   private void tryStartProcess(final ProcessBuilder processBuilder, final ProcessQuery processQuery)
