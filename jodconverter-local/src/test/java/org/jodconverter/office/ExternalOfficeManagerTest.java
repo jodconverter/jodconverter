@@ -60,7 +60,8 @@ public class ExternalOfficeManagerTest {
         (OfficeConnection) FieldUtils.readField(manager, "connection", true);
     final OfficeUrl officeUrl = (OfficeUrl) FieldUtils.readField(connection, "officeUrl", true);
     assertThat(officeUrl.getConnectionAndParametersAsString())
-        .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
+        .isEqualTo("socket,host=localhost,port=2002");
+    // .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
   }
 
   @Test
