@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.DisposedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,26 +120,24 @@ class OfficeProcessManager {
   private void doStopProcess(final boolean deleteInstanceProfileDir) throws OfficeException {
 
     try {
-      final XDesktop desktop = connection.getDesktop();
-      if (desktop != null) {
-        final boolean terminated = desktop.terminate();
+      // Once more: try to terminate
+      final boolean terminated = connection.getDesktop().terminate();
 
-        // Once more: try to terminate
-        LOGGER.debug(
-            "The Office Process {}",
-            terminated
-                ? "has been terminated"
-                : "is still running. Someone else prevents termination, e.g. the quickstarter");
-      }
+      LOGGER.debug(
+          "The Office Process {}",
+          terminated
+              ? "has been terminated"
+              : "is still running. Someone else prevents termination, e.g. the quickstarter");
 
     } catch (DisposedException disposedEx) {
-      // expected so ignore it
+      // Expected so ignore it
       LOGGER.debug("Expected DisposedException catched and ignored in doStopProcess", disposedEx);
 
     } catch (Exception ex) {
       LOGGER.debug("Exception catched in doStopProcess", ex);
 
-      // in case we can't get hold of the desktop
+      // In case we can't get hold of the desktop, it could be a NullPointerException
+      // if the desktop was null (no connection established).
       doTerminateProcess();
 
     } finally {
