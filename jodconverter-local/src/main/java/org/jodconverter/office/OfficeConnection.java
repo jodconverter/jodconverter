@@ -102,9 +102,11 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
                     "com.sun.star.connection.Connector", localContext));
 
         // Connect using the connection string part of the uno-url only.
+        LOGGER.trace("Connector created successfully, trying to connect...");
         final XConnection connection = connector.connect(connectPart);
 
         // Instantiate a bridge factory service.
+        LOGGER.trace("Connection done successfully, creating bridge...");
         final XBridgeFactory bridgeFactory =
             Lo.qi(
                 XBridgeFactory.class,
@@ -118,6 +120,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
                 bridgeName, officeUrl.getProtocolAndParametersAsString(), connection, null);
 
         // Query for the XComponent interface and add this as event listener.
+        LOGGER.trace("Bridge created successfully, creating desktop...");
         bridgeComponent = Lo.qi(XComponent.class, bridge);
         bridgeComponent.addEventListener(this);
 
