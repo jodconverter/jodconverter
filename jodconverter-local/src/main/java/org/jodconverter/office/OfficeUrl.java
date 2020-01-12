@@ -72,8 +72,11 @@ public class OfficeUrl {
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
     try {
+      //      return UnoUrl.parseUnoUrl(
+      //          "socket,host=127.0.0.1,port=" + port +
+      // ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
       return UnoUrl.parseUnoUrl(
-          "socket,host=127.0.0.1,port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+          "socket,host=localhost,port=" + port + ";urp;StarOffice.ServiceManager");
     } catch (Exception ex) {
       throw new IllegalArgumentException(ex);
     }
