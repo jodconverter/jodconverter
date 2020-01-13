@@ -22,7 +22,7 @@ package org.jodconverter.process;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assume.assumeTrue;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 
@@ -31,14 +31,42 @@ import org.jodconverter.office.LocalOfficeUtils;
 
 public class ProcessManagerTest {
 
-  /**
-   * Tests the UnixProcessManager class.
-   *
-   * @throws Exception if an error occurs.
-   */
+  @Test
+  public void freeBsdProcessManager() throws Exception {
+    assumeTrue(SystemUtils.IS_OS_FREE_BSD);
+
+    final ProcessManager processManager = FreeBSDProcessManager.getDefault();
+    final Process process = Runtime.getRuntime().exec("ping -c 5 127.0.0.1");
+    final ProcessQuery query = new ProcessQuery("ping", "-c 5 127.0.0.1");
+
+    final long pid = processManager.findPid(query);
+    assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
+    final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
+    assertThat(pid).isEqualTo(javaPid.longValue());
+
+    processManager.kill(process, pid);
+    assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+  }
+
+  @Test
+  public void freeBsdPureJavaProcessManager() throws Exception {
+    assumeTrue(SystemUtils.IS_OS_FREE_BSD);
+
+    final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
+    final ProcessManager processManager = PureJavaProcessManager.getDefault();
+    final Process process = Runtime.getRuntime().exec("ping -c 5 127.0.0.1");
+    final ProcessQuery query = new ProcessQuery("ping", "-c 5 127.0.0.1");
+
+    final long pid = processManager.findPid(query);
+    assertThat(pid).isEqualTo(ProcessManager.PID_UNKNOWN);
+
+    processManager.kill(process, pid);
+    assertThat(defaultManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+  }
+
   @Test
   public void unixProcessManager() throws Exception {
-    assumeTrue(SystemUtils.IS_OS_UNIX && !SystemUtils.IS_OS_MAC);
+    assumeTrue(SystemUtils.IS_OS_UNIX && !SystemUtils.IS_OS_MAC && !SystemUtils.IS_OS_FREE_BSD);
 
     final ProcessManager processManager = UnixProcessManager.getDefault();
     final Process process = Runtime.getRuntime().exec("sleep 5s");
@@ -53,11 +81,22 @@ public class ProcessManagerTest {
     assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
-  /**
-   * Tests the MacProcessManager class.
-   *
-   * @throws Exception if an error occurs.
-   */
+  @Test
+  public void unixPureJavaProcessManager() throws Exception {
+    assumeTrue(SystemUtils.IS_OS_UNIX && !SystemUtils.IS_OS_MAC && !SystemUtils.IS_OS_FREE_BSD);
+
+    final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
+    final ProcessManager processManager = PureJavaProcessManager.getDefault();
+    final Process process = Runtime.getRuntime().exec("sleep 5s");
+    final ProcessQuery query = new ProcessQuery("sleep", "5s");
+
+    final long pid = processManager.findPid(query);
+    assertThat(pid).isEqualTo(ProcessManager.PID_UNKNOWN);
+
+    processManager.kill(process, pid);
+    assertThat(defaultManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+  }
+
   @Test
   public void macProcessManager() throws Exception {
     assumeTrue(SystemUtils.IS_OS_MAC);
@@ -76,11 +115,22 @@ public class ProcessManagerTest {
     assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
-  /**
-   * Tests the WindowsProcessManager class.
-   *
-   * @throws Exception if an error occurs.
-   */
+  @Test
+  public void macPureJavaProcessManager() throws Exception {
+    assumeTrue(SystemUtils.IS_OS_MAC);
+
+    final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
+    final ProcessManager processManager = PureJavaProcessManager.getDefault();
+    final Process process = Runtime.getRuntime().exec("sleep 5s");
+    final ProcessQuery query = new ProcessQuery("sleep", "5s");
+
+    final long pid = processManager.findPid(query);
+    assertThat(pid).isEqualTo(ProcessManager.PID_UNKNOWN);
+
+    processManager.kill(process, pid);
+    assertThat(defaultManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+  }
+
   @Test
   public void windowsProcessManager() throws Exception {
     assumeTrue(SystemUtils.IS_OS_WINDOWS);
@@ -99,13 +149,9 @@ public class ProcessManagerTest {
     assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
-  /**
-   * Tests the PureJavaProcessManager class.
-   *
-   * @throws Exception if an error occurs.
-   */
   @Test
-  public void pureJavaProcessManager() throws Exception {
+  public void windowsPureJavaProcessManager() throws Exception {
+    assumeTrue(SystemUtils.IS_OS_WINDOWS);
 
     final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
     final ProcessManager processManager = PureJavaProcessManager.getDefault();
