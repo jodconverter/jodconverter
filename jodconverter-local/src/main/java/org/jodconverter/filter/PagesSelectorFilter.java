@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.sun.star.container.XIndexAccess;
+import com.sun.star.container.XNamed;
 import com.sun.star.datatransfer.XTransferable;
 import com.sun.star.datatransfer.XTransferableSupplier;
 import com.sun.star.drawing.XDrawPage;
@@ -33,6 +35,9 @@ import com.sun.star.drawing.XDrawPages;
 import com.sun.star.drawing.XDrawPagesSupplier;
 import com.sun.star.frame.XController;
 import com.sun.star.lang.XComponent;
+import com.sun.star.sheet.XSpreadsheet;
+import com.sun.star.sheet.XSpreadsheetDocument;
+import com.sun.star.sheet.XSpreadsheets;
 import com.sun.star.text.XPageCursor;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
@@ -95,17 +100,27 @@ public class PagesSelectorFilter implements Filter {
 
     if (Write.isText(document)) {
       LOGGER.debug("Applying the PagesSelectorFilter for a Text document");
+
       // We must process from the start to the end.
       Collections.sort(pages);
       selectTextPages(document);
+
     } else if (Calc.isCalc(document)) {
-      // Not supported
-      throw new UnsupportedOperationException("SpreadsheetDocument not supported yet");
+      LOGGER.debug("Applying the PagesSelectorFilter for a Calc document");
+
+      // We must process from the end to the start.
+      selectSheets(document);
+
     } else if (Draw.isImpress(document)) {
-      // Not Supported
-      throw new UnsupportedOperationException("PresentationDocument not supported yet");
+      LOGGER.debug("Applying the PagesSelectorFilter for an Impress document");
+
+      // We must process from the end to the start.
+      pages.sort(Collections.reverseOrder());
+      selectDrawPages(document);
+
     } else if (Draw.isDraw(document)) {
       LOGGER.debug("Applying the PagesSelectorFilter for a Draw document");
+
       // We must process from the end to the start.
       pages.sort(Collections.reverseOrder());
       selectDrawPages(document);
@@ -171,8 +186,8 @@ public class PagesSelectorFilter implements Filter {
   private void selectTextPages(final XComponent document) throws Exception {
 
     // Querying for the interface XTextDocument (text interface) on the XComponent.
-    final XTextDocument docText = Write.getTextDoc(document);
-    final XController ctrl = docText.getCurrentController();
+    final XTextDocument doc = Write.getTextDoc(document);
+    final XController ctrl = doc.getCurrentController();
 
     // Save the PageCount property of the document.
     int pageCount = (Integer) Props.getProperty(ctrl, "PageCount").orElse(0);
@@ -182,16 +197,15 @@ public class PagesSelectorFilter implements Filter {
     for (int page : pages) {
       // Ignore invalid page
       if (page > 0 && page <= pageCount) {
-        copyPage(docText, page, nextTargetPage++);
+        copyPage(doc, page, nextTargetPage++);
       }
     }
 
     // Once done, we must delete the pages after that last copied page.
     int lastPage = nextTargetPage - 1;
-    // int lastPage = 1;
 
     // Get the text cursor for the document.
-    final XTextCursor tc = docText.getText().createTextCursor();
+    final XTextCursor tc = doc.getText().createTextCursor();
 
     // Get the view cursor for the document. We also need a page cursor
     // on the view cursor to navigate through the document pages.
@@ -224,6 +238,23 @@ public class PagesSelectorFilter implements Filter {
     // Paste the previously copied pages. This will replace the current selection,
     // which is the whole document, by the previously selected pages.
     transSupplier.insertTransferable(trans);
+  }
+
+  private void selectSheets(XComponent document) throws Exception {
+
+    final XSpreadsheetDocument doc = Calc.getCalcDoc(document);
+    final XSpreadsheets sheets = doc.getSheets();
+    final XIndexAccess indexedSheets = Lo.qi(XIndexAccess.class, sheets);
+
+    // Delete all the sheets except the ones to select.
+    int count = indexedSheets.getCount();
+    for (int i = (count - 1); i >= 0; i--) {
+      XSpreadsheet sheet = Lo.qi(XSpreadsheet.class, indexedSheets.getByIndex(i));
+      XNamed namedSheet = Lo.qi(XNamed.class, sheet);
+      if (!pages.contains(i + 1)) {
+        sheets.removeByName(namedSheet.getName());
+      }
+    }
   }
 
   private void selectDrawPages(final XComponent document) throws Exception {

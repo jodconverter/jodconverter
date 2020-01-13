@@ -22,88 +22,105 @@ package org.jodconverter.filter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.filter.text.PageSelectorFilter;
 
 public class PageCounterFilterITest extends AbstractOfficeITest {
 
-  private static final String SOURCE_FILENAME = "test_multi_page.doc";
-  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
+  private static final String CALC_FILENAME = "test_multi_page.xls";
+  private static final String DRAW_FILENAME = "test_multi_page.odg";
+  private static final String IMPRESS_FILENAME = "test_multi_page.ppt";
+  private static final String TEXT_FILENAME = "test_multi_page.doc";
+
+  private static final File CALC_FILE = new File(DOCUMENTS_DIR, CALC_FILENAME);
+  private static final File DRAW_FILE = new File(DOCUMENTS_DIR, DRAW_FILENAME);
+  private static final File IMPRESS_FILE = new File(DOCUMENTS_DIR, IMPRESS_FILENAME);
+  private static final File TEXT_FILE = new File(DOCUMENTS_DIR, TEXT_FILENAME);
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
-  /**
-   * Test the conversion of a document, choosing a specific page.
-   *
-   * @throws Exception if an error occurs.
-   */
   @Test
-  public void doFilterWithDeprecated_SelectPage2BetweenCounter_ShouldCount3Then1()
-      throws Exception {
+  public void Calc_doFilter_SelectPage2_ShouldCount3Then1() throws Exception {
 
-    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page2.txt");
+    final File targetFile = new File(testFolder.getRoot(), CALC_FILENAME + ".sheet2.xls");
 
-    final org.jodconverter.filter.text.PageCounterFilter countFilter1 =
-        new org.jodconverter.filter.text.PageCounterFilter();
-    final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
-    final org.jodconverter.filter.text.PageCounterFilter countFilter2 =
-        new org.jodconverter.filter.text.PageCounterFilter();
+    final PageCounterFilter count1 = new PageCounterFilter();
+    final PageCounterFilter count2 = new PageCounterFilter();
 
     // Test the filter
     LocalConverter.builder()
-        .filterChain(countFilter1, selectorFilter, countFilter2)
+        .filterChain(count1, new PagesSelectorFilter(2), count2)
         .build()
-        .convert(SOURCE_FILE)
+        .convert(CALC_FILE)
         .to(targetFile)
         .execute();
 
-    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
-    assertThat(content)
-        .contains("Test document Page 2")
-        .doesNotContain("Test document Page 1")
-        .doesNotContain("Test document Page 3");
-    assertThat(countFilter1.getPageCount()).isEqualTo(3);
-    assertThat(countFilter2.getPageCount()).isEqualTo(1);
+    assertThat(count1.getPageCount()).isEqualTo(3);
+    assertThat(count2.getPageCount()).isEqualTo(1);
   }
 
-  /**
-   * Test the conversion of a document, choosing a specific page.
-   *
-   * @throws Exception if an error occurs.
-   */
   @Test
-  public void doFilter_SelectPage2BetweenCounter_ShouldCount3Then1() throws Exception {
+  public void Draw_doFilter_SelectPage2_ShouldCount3Then1() throws Exception {
 
-    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page2.txt");
+    final File targetFile = new File(testFolder.getRoot(), DRAW_FILENAME + ".page2.pdf");
 
-    final org.jodconverter.filter.PageCounterFilter countFilter1 =
-        new org.jodconverter.filter.PageCounterFilter();
-    final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
-    final org.jodconverter.filter.PageCounterFilter countFilter2 =
-        new org.jodconverter.filter.PageCounterFilter();
+    final PageCounterFilter count1 = new PageCounterFilter();
+    final PageCounterFilter count2 = new PageCounterFilter();
 
     // Test the filter
     LocalConverter.builder()
-        .filterChain(countFilter1, selectorFilter, countFilter2)
+        .filterChain(count1, new PagesSelectorFilter(2), count2)
         .build()
-        .convert(SOURCE_FILE)
+        .convert(DRAW_FILE)
         .to(targetFile)
         .execute();
 
-    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
-    assertThat(content)
-        .contains("Test document Page 2")
-        .doesNotContain("Test document Page 1")
-        .doesNotContain("Test document Page 3");
-    assertThat(countFilter1.getPageCount()).isEqualTo(3);
-    assertThat(countFilter2.getPageCount()).isEqualTo(1);
+    assertThat(count1.getPageCount()).isEqualTo(3);
+    assertThat(count2.getPageCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void Impress_doFilter_SelectPage2_ShouldCount4Then1() throws Exception {
+
+    final File targetFile = new File(testFolder.getRoot(), IMPRESS_FILENAME + ".page2.pdf");
+
+    final PageCounterFilter count1 = new PageCounterFilter();
+    final PageCounterFilter count2 = new PageCounterFilter();
+
+    // Test the filter
+    LocalConverter.builder()
+        .filterChain(count1, new PagesSelectorFilter(2), count2)
+        .build()
+        .convert(IMPRESS_FILE)
+        .to(targetFile)
+        .execute();
+
+    assertThat(count1.getPageCount()).isEqualTo(4);
+    assertThat(count2.getPageCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void Text_doFilter_SelectPage2_ShouldCount3Then1() throws Exception {
+
+    final File targetFile = new File(testFolder.getRoot(), TEXT_FILENAME + ".page2.pdf");
+
+    final PageCounterFilter count1 = new PageCounterFilter();
+    final PageCounterFilter count2 = new PageCounterFilter();
+
+    // Test the filter
+    LocalConverter.builder()
+        .filterChain(count1, new PagesSelectorFilter(2), count2)
+        .build()
+        .convert(TEXT_FILE)
+        .to(targetFile)
+        .execute();
+
+    assertThat(count1.getPageCount()).isEqualTo(3);
+    assertThat(count2.getPageCount()).isEqualTo(1);
   }
 }

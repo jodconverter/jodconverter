@@ -22,7 +22,9 @@ package org.jodconverter.filter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -32,166 +34,180 @@ import org.jodconverter.LocalConverter;
 
 public class PagesSelectorFilterITest extends AbstractOfficeITest {
 
-  private static final String TEXT_FILENAME = "test_multi_page.doc";
-  private static final File TEXT_FILE = new File(DOCUMENTS_DIR, TEXT_FILENAME);
+  private static final String CALC_FILENAME = "test_multi_page.xls";
   private static final String DRAW_FILENAME = "test_multi_page.odg";
+  private static final String IMPRESS_FILENAME = "test_multi_page.ppt";
+  private static final String TEXT_FILENAME = "test_multi_page.doc";
+
+  private static final File CALC_FILE = new File(DOCUMENTS_DIR, CALC_FILENAME);
   private static final File DRAW_FILE = new File(DOCUMENTS_DIR, DRAW_FILENAME);
+  private static final File IMPRESS_FILE = new File(DOCUMENTS_DIR, IMPRESS_FILENAME);
+  private static final File TEXT_FILE = new File(DOCUMENTS_DIR, TEXT_FILENAME);
 
   @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
-  /**
-   * Test the conversion of a text document, choosing a specific page.
-   *
-   * @throws Exception if an error occurs.
-   */
   @Test
-  public void doFilter_TextSelectPage2_ShouldCount3Then1() throws Exception {
+  public void Calc_doFilter_SelectPage2_ShouldOnlyHaveTextFromPage2() throws Exception {
 
-    final File targetFile = new File(testFolder.getRoot(), TEXT_FILENAME + ".page2.pdf");
+    final File targetFile = new File(testFolder.getRoot(), CALC_FILENAME + ".sheet2.pdf");
 
     final PageCounterFilter count1 = new PageCounterFilter();
-    final PagesSelectorFilter selector = new PagesSelectorFilter(2);
     final PageCounterFilter count2 = new PageCounterFilter();
 
     // Test the filter
     LocalConverter.builder()
-        .filterChain(count1, selector, count2)
+        .filterChain(count1, new PagesSelectorFilter(2), count2)
         .build()
-        .convert(TEXT_FILE)
+        .convert(CALC_FILE)
         .to(targetFile)
         .execute();
 
+    // TODO: Validate text from resulting PDF if possible.
     assertThat(count1.getPageCount()).isEqualTo(3);
     assertThat(count2.getPageCount()).isEqualTo(1);
   }
 
-  /**
-   * Test the conversion of a text document, choosing the first and last page.
-   *
-   * @throws Exception if an error occurs.
-   */
   @Test
-  public void doFilter_TextSelectPage1And3_ShouldCount3Then2() throws Exception {
+  public void Calc_doFilter_SelectPage1And3_ShouldOnlyHaveTextFromPage1And3() throws Exception {
 
-    final File targetFile = new File(testFolder.getRoot(), TEXT_FILENAME + ".page1And3.pdf");
+    // final File targetFile = new File(testFolder.getRoot(), CALC_FILENAME + ".sheet1And3.xls");
+    final File targetFile = new File(new File("C:\\temp"), CALC_FILENAME + ".sheet1And3.xls");
 
     final PageCounterFilter count1 = new PageCounterFilter();
-    final PagesSelectorFilter selector = new PagesSelectorFilter(1, 3);
     final PageCounterFilter count2 = new PageCounterFilter();
 
     // Test the filter
     LocalConverter.builder()
-        .filterChain(count1, selector, count2)
+        .filterChain(count1, new PagesSelectorFilter(1, 3), count2)
         .build()
-        .convert(TEXT_FILE)
+        .convert(CALC_FILE)
         .to(targetFile)
         .execute();
 
+    // TODO: Validate text from resulting PDF if possible.
     assertThat(count1.getPageCount()).isEqualTo(3);
     assertThat(count2.getPageCount()).isEqualTo(2);
   }
 
-  /**
-   * Test the conversion of a text document, choosing the last two pages.
-   *
-   * @throws Exception if an error occurs.
-   */
   @Test
-  public void doFilter_TextSelectPage2And3_ShouldCount3Then2() throws Exception {
-
-    final File targetFile = new File(testFolder.getRoot(), TEXT_FILENAME + ".page2And3.docx");
-
-    final PageCounterFilter count1 = new PageCounterFilter();
-    final PagesSelectorFilter selector = new PagesSelectorFilter(2, 3);
-    final PageCounterFilter count2 = new PageCounterFilter();
-
-    // Test the filter
-    LocalConverter.builder()
-        .filterChain(count1, selector, count2)
-        .build()
-        .convert(TEXT_FILE)
-        .to(targetFile)
-        .execute();
-
-    assertThat(count1.getPageCount()).isEqualTo(3);
-    assertThat(count2.getPageCount()).isEqualTo(2);
-  }
-
-  /**
-   * Test the conversion of a draw document, choosing a specific page.
-   *
-   * @throws Exception if an error occurs.
-   */
-  @Test
-  public void doFilter_DrawSelectPage2_ShouldCount3Then1() throws Exception {
+  public void Draw_doFilter_SelectPage2_ShouldOnlyHaveTextFromPage2() throws Exception {
 
     final File targetFile = new File(testFolder.getRoot(), DRAW_FILENAME + ".page2.pdf");
 
     final PageCounterFilter count1 = new PageCounterFilter();
-    final PagesSelectorFilter selector = new PagesSelectorFilter(2);
     final PageCounterFilter count2 = new PageCounterFilter();
 
     // Test the filter
     LocalConverter.builder()
-        .filterChain(count1, selector, count2)
+        .filterChain(count1, new PagesSelectorFilter(2), count2)
         .build()
         .convert(DRAW_FILE)
         .to(targetFile)
         .execute();
 
+    // TODO: Validate text from resulting PDF if possible.
     assertThat(count1.getPageCount()).isEqualTo(3);
     assertThat(count2.getPageCount()).isEqualTo(1);
   }
 
-  /**
-   * Test the conversion of a draw document, choosing the first and last page.
-   *
-   * @throws Exception if an error occurs.
-   */
   @Test
-  public void doFilter_DrawSelectPage1And3_ShouldCount3Then2() throws Exception {
+  public void Draw_doFilter_SelectPage1And3_ShouldOnlyHaveTextFromPage1And3() throws Exception {
 
     final File targetFile = new File(testFolder.getRoot(), DRAW_FILENAME + ".page1And3.pdf");
 
     final PageCounterFilter count1 = new PageCounterFilter();
-    final PagesSelectorFilter selector = new PagesSelectorFilter(1, 3);
     final PageCounterFilter count2 = new PageCounterFilter();
 
     // Test the filter
     LocalConverter.builder()
-        .filterChain(count1, selector, count2)
+        .filterChain(count1, new PagesSelectorFilter(1, 3), count2)
         .build()
         .convert(DRAW_FILE)
         .to(targetFile)
         .execute();
 
+    // TODO: Validate text from resulting PDF if possible.
     assertThat(count1.getPageCount()).isEqualTo(3);
     assertThat(count2.getPageCount()).isEqualTo(2);
   }
 
-  /**
-   * Test the conversion of a draw document, choosing the last 2 pages.
-   *
-   * @throws Exception if an error occurs.
-   */
   @Test
-  public void doFilter_DrawSelectPage2And3_ShouldCount3Then2() throws Exception {
+  public void Impress_doFilter_SelectPage2_ShouldOnlyHaveTextFromPage2() throws Exception {
 
-    final File targetFile = new File(testFolder.getRoot(), DRAW_FILENAME + ".page2And3.pdf");
+    final File targetFile = new File(testFolder.getRoot(), IMPRESS_FILENAME + ".page2.pdf");
 
     final PageCounterFilter count1 = new PageCounterFilter();
-    final PagesSelectorFilter selector = new PagesSelectorFilter(1, 3);
     final PageCounterFilter count2 = new PageCounterFilter();
 
     // Test the filter
     LocalConverter.builder()
-        .filterChain(count1, selector, count2)
+        .filterChain(count1, new PagesSelectorFilter(2), count2)
         .build()
-        .convert(DRAW_FILE)
+        .convert(IMPRESS_FILE)
         .to(targetFile)
         .execute();
 
-    assertThat(count1.getPageCount()).isEqualTo(3);
+    // TODO: Validate text from resulting PDF if possible.
+    assertThat(count1.getPageCount()).isEqualTo(4);
+    assertThat(count2.getPageCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void Impress_doFilter_SelectPage1And3_ShouldOnlyHaveTextFromPage1And3() throws Exception {
+
+    final File targetFile = new File(testFolder.getRoot(), IMPRESS_FILENAME + ".page1And3.pdf");
+
+    final PageCounterFilter count1 = new PageCounterFilter();
+    final PageCounterFilter count2 = new PageCounterFilter();
+
+    // Test the filter
+    LocalConverter.builder()
+        .filterChain(count1, new PagesSelectorFilter(1, 3), count2)
+        .build()
+        .convert(IMPRESS_FILE)
+        .to(targetFile)
+        .execute();
+
+    // TODO: Validate text from resulting PDF if possible.
+    assertThat(count1.getPageCount()).isEqualTo(4);
     assertThat(count2.getPageCount()).isEqualTo(2);
+  }
+
+  @Test
+  public void Text_doFilter_SelectPage2_ShouldOnlyHaveTextFromPage2() throws Exception {
+
+    final File targetFile = new File(testFolder.getRoot(), TEXT_FILENAME + ".page2.txt");
+
+    // Test the filter
+    LocalConverter.builder()
+        .filterChain(new PagesSelectorFilter(2))
+        .build()
+        .convert(TEXT_FILE)
+        .to(targetFile)
+        .execute();
+
+    assertThat(FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8))
+        .doesNotContain("Test document Page 1")
+        .contains("Test document Page 2")
+        .doesNotContain("Test document Page 3");
+  }
+
+  @Test
+  public void Text_doFilter_SelectPage1And3_ShouldOnlyHaveTextFromPage1And3() throws Exception {
+
+    final File targetFile = new File(testFolder.getRoot(), TEXT_FILENAME + ".page1And3.txt");
+
+    // Test the filter
+    LocalConverter.builder()
+        .filterChain(new PagesSelectorFilter(1, 3))
+        .build()
+        .convert(TEXT_FILE)
+        .to(targetFile)
+        .execute();
+
+    assertThat(FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8))
+        .contains("Test document Page 1")
+        .doesNotContain("Test document Page 2")
+        .contains("Test document Page 3");
   }
 }

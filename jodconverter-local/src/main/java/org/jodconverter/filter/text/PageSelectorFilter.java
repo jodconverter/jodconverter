@@ -41,7 +41,10 @@ import org.jodconverter.office.utils.Write;
 /**
  * This filter is used to select a specific page from a document in order to convert only the
  * selected page.
+ *
+ * @deprecated Use {@link org.jodconverter.filter.PagesSelectorFilter} instead.
  */
+@Deprecated
 public class PageSelectorFilter implements Filter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PageSelectorFilter.class);

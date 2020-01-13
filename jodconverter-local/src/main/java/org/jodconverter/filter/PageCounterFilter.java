@@ -23,6 +23,7 @@ import com.sun.star.drawing.XDrawPages;
 import com.sun.star.drawing.XDrawPagesSupplier;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
+import com.sun.star.sheet.XSpreadsheetDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,23 +47,27 @@ public class PageCounterFilter implements Filter {
       throws Exception {
 
     if (Write.isText(document)) {
+      LOGGER.debug("Applying the PageCounterFilter for a Text document");
 
-      // Save the PageCount property of the document.
       pageCount =
           (Integer)
               Props.getProperty(Lo.qi(XModel.class, document).getCurrentController(), "PageCount")
                   .orElse(0);
-    } else if (Calc.isCalc(document)) {
 
-      // Not supported
-      throw new UnsupportedOperationException("SpreadsheetDocument not supported yet");
+    } else if (Calc.isCalc(document)) {
+      LOGGER.debug("Applying the PageCounterFilter for a Calc document");
+
+      final XSpreadsheetDocument doc = Calc.getCalcDoc(document);
+      pageCount = doc.getSheets().getElementNames().length;
 
     } else if (Draw.isImpress(document)) {
+      LOGGER.debug("Applying the PageCounterFilter for an Impress document");
 
-      // Not Supported
-      throw new UnsupportedOperationException("PresentationDocument not supported yet");
+      final XDrawPages xDrawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
+      pageCount = xDrawPages.getCount();
 
     } else if (Draw.isDraw(document)) {
+      LOGGER.debug("Applying the PageCounterFilter for a Draw document");
 
       final XDrawPages xDrawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
       pageCount = xDrawPages.getCount();
