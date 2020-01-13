@@ -440,6 +440,11 @@ class OfficeProcess {
       // Try to start the process.
       process = new VerboseProcess(processBuilder.start());
 
+      try {
+        Thread.sleep(2000L);
+      } catch (InterruptedException ignore) {
+      }
+
       // Try to retrieve the PID.
       final Pair<Long, Integer> pidSearch = tryFindPid(processQuery);
       pid = pidSearch.getLeft(); // Keep the PID, found or not.
