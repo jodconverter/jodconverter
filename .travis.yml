@@ -13,7 +13,7 @@ matrix:
        - chmod +x ./gradlew
        - sudo apt-get install libreoffice
       script:
-       - ./gradlew build
+       - ./gradlew build --stacktrace
       after_success:
        - ./gradlew coveralls
     #linux Java11
@@ -23,7 +23,7 @@ matrix:
        - chmod +x ./gradlew
        - sudo apt-get install libreoffice
       script:
-       - ./gradlew build -x javadoc
+       - ./gradlew build -x javadoc --stacktrace
       after_success:
        - ./gradlew coveralls
     #linux Java12
@@ -33,7 +33,7 @@ matrix:
        - chmod +x ./gradlew
        - sudo apt-get install libreoffice
       script:
-       - ./gradlew build -x javadoc
+       - ./gradlew build -x javadoc --stacktrace
       after_success:
        - ./gradlew coveralls
     #linux Java13
@@ -43,7 +43,7 @@ matrix:
        - chmod +x ./gradlew
        - sudo apt-get install libreoffice
       script:
-       - ./gradlew build -x javadoc
+       - ./gradlew build -x javadoc --stacktrace
       after_success:
        - ./gradlew coveralls
 
@@ -56,7 +56,7 @@ matrix:
       before_install:
        - chmod +x ./gradlew
       script:
-       - ./gradlew build -x integTest -x javadoc
+       - ./gradlew build -x integTest -x javadoc --stacktrace
     #macos Java11
     - os: osx
       osx_image: xcode10.1
@@ -64,7 +64,7 @@ matrix:
       before_install:
        - chmod +x ./gradlew
       script:
-       - ./gradlew build -x integTest -x javadoc
+       - ./gradlew build -x integTest -x javadoc --stacktrace
     #macos Java12
     - os: osx
       osx_image: xcode11
@@ -72,7 +72,7 @@ matrix:
       before_install:
        - chmod +x ./gradlew
       script:
-       - ./gradlew build -x integTest -x javadoc
+       - ./gradlew build -x integTest -x javadoc --stacktrace
     #macos Java13
     - os: osx
       osx_image: xcode11.3
@@ -80,4 +80,4 @@ matrix:
       before_install:
        - chmod +x ./gradlew
       script:
-       - ./gradlew build -x integTest -x javadoc
+       - ./gradlew build -x integTest -x javadoc --stacktrace
