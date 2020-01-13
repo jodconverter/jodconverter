@@ -257,6 +257,8 @@ public class OfficeProcessManagerPoolEntryITest {
   public void execute_WhenTimeoutExceptionOccured_ShouldRestartAfterTaskTimeout() throws Exception {
 
     final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
+    // config.setProcessTimeout(1000L);
+    // config.setProcessRetryInterval(250L);
     config.setTaskExecutionTimeout(1500L);
     final OfficeProcessManagerPoolEntry officeManager =
         new OfficeProcessManagerPoolEntry(CONNECT_URL, config);

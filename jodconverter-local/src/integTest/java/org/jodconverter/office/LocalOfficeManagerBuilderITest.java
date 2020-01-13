@@ -54,8 +54,8 @@ public class LocalOfficeManagerBuilderITest {
     final OfficeUrl[] officeUrls = (OfficeUrl[]) FieldUtils.readField(manager, "officeUrls", true);
     assertThat(officeUrls).hasSize(1);
     assertThat(officeUrls[0].getConnectionAndParametersAsString())
-        .isEqualTo("socket,host=localhost,port=2002");
-    // .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
+        //    .isEqualTo("socket,host=localhost,port=2002");
+        .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
   }
 
   @Test
