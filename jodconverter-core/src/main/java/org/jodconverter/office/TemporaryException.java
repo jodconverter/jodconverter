@@ -32,6 +32,15 @@ class TemporaryException extends Exception {
   }
 
   /**
+   * Constructs a new exception with the specified message.
+   *
+   * @param message The message.
+   */
+  public TemporaryException(final String message) {
+    super(message);
+  }
+
+  /**
    * Constructs a new exception with the specified cause.
    *
    * @param cause The cause.

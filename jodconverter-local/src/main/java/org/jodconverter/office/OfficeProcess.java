@@ -30,7 +30,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,9 @@ import org.jodconverter.process.ProcessQuery;
  */
 class OfficeProcess {
 
-  private static final Integer EXIT_CODE_81 = 81;
+  private static final long FIND_PID_DELAY = 1000L;
+  private static final long FIND_PID_RETRY = 500L;
+  private static final long FIND_PID_TIMEOUT = 5000L;
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcess.class);
 
   private VerboseProcess process;
@@ -204,21 +205,17 @@ class OfficeProcess {
       return 0; // success
     }
 
-    if (pid > PID_UNKNOWN) {
-      LOGGER.info(
-          "Trying to forcibly terminate process: '{}'; pid: {}",
-          officeUrl.getConnectionParametersAsString(),
-          pid);
-      try {
-        config.getProcessManager().kill(process.getProcess(), pid);
-      } catch (IOException ioEx) {
-        throw new OfficeException("Unable to kill the process with pid: " + pid, ioEx);
-      }
-    } else {
-      LOGGER.info(
-          "Could not try to forcibly terminate process: '{}' since PID {}",
-          officeUrl.getConnectionParametersAsString(),
-          pid == PID_UNKNOWN ? " is unknown" : " was not found");
+    LOGGER.info(
+        "Trying to forcibly terminate process: '{}'; pid: {}",
+        officeUrl.getConnectionParametersAsString(),
+        pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
+    try {
+      config.getProcessManager().kill(process.getProcess(), pid);
+    } catch (IOException ioEx) {
+      throw new OfficeException(
+          "Unable to kill the process with pid: "
+              + (pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid),
+          ioEx);
     }
 
     return getExitCode(retryInterval, retryTimeout);
@@ -262,8 +259,8 @@ class OfficeProcess {
       final ExitCodeRetryable retryable = new ExitCodeRetryable(process);
       retryable.execute(retryInterval, retryTimeout);
       return retryable.getExitCode();
-    } catch (RetryTimeoutException retryTimeoutEx) {
-      throw retryTimeoutEx;
+    } catch (RetryTimeoutException timeoutEx) {
+      throw timeoutEx;
     } catch (Exception ex) {
       throw new OfficeException("Could not get the process exit code", ex);
     }
@@ -408,11 +405,27 @@ class OfficeProcess {
         instanceProfileDir);
 
     try {
-      // Try to start the process.
-      tryStartProcess(processBuilder, processQuery);
+      // Start the process.
+      process = new VerboseProcess(processBuilder.start());
+
+      // Try to retrieve the PID.
+      final ProcessManager processManager = config.getProcessManager();
+      try {
+        // Add an initial delay for FreeBSD. Without this delay, on FreeBSD only, the
+        // OfficeConnection.connect() will hang for more than 5 minutes before throwing
+        // a timeout exception, we do not know why.
+        // TODO: Investigate FreeBSD.
+        final FindPidRetryable findPid = new FindPidRetryable(processQuery, processManager);
+        findPid.execute(FIND_PID_DELAY, FIND_PID_RETRY, FIND_PID_TIMEOUT);
+        pid = findPid.getPid();
+      } catch (RetryTimeoutException ex) {
+        pid = processManager.canFindPid() ? PID_NOT_FOUND : PID_UNKNOWN;
+      }
+
       LOGGER.info(
-          "Started process; pid {}",
-          pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : "= " + pid);
+          "Started process; pid: {}",
+          pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
+
     } catch (IOException ioEx) {
       throw new OfficeException(
           String.format(
@@ -427,112 +440,6 @@ class OfficeProcess {
               "A process with acceptString '%s' started but its pid could not be found",
               acceptString));
     }
-  }
-
-  private void tryStartProcess(final ProcessBuilder processBuilder, final ProcessQuery processQuery)
-      throws IOException {
-
-    int tryCount = 0;
-    do {
-      tryCount++;
-      LOGGER.debug("Trying to start office process, attempt #{}", tryCount);
-
-      // Try to start the process.
-      process = new VerboseProcess(processBuilder.start());
-
-      try {
-        Thread.sleep(2000L);
-      } catch (InterruptedException ignore) {
-      }
-
-      // Try to retrieve the PID.
-      final Pair<Long, Integer> pidSearch = tryFindPid(processQuery);
-      pid = pidSearch.getLeft(); // Keep the PID, found or not.
-
-      // Exit if the pid was found or we have reach the maximum try count
-      final Integer exitCode = pidSearch.getRight();
-      if (pid > PID_UNKNOWN || tryCount == 3) { // TODO: Let the max try count be configurable.
-        break;
-      }
-
-      // If we don't have an exit code (which means that the process is still alive) and
-      // that we are suppose to be able to find the pid using the manager, we will try again
-      // by restarting the process.
-      if (exitCode == null) {
-        if (config.getProcessManager().canFindPid()) {
-          try {
-            LOGGER.debug(
-                "Unable to retrieve the pid even if the process is still alive; restarting it");
-            process.getProcess().destroyForcibly();
-          } catch (Exception e) {
-            LOGGER.warn("Unable to destroy the process.", e);
-          }
-        } else {
-          // We do not want to restart the process since we will never be able to retrieve the pid.
-          break;
-        }
-      } else if (exitCode.equals(EXIT_CODE_81)) {
-
-        // Here, the process has died. Warn the user on exit code 81.
-        // see http://code.google.com/p/jodconverter/issues/detail?id=84
-
-        LOGGER.warn("Office process died with exit code 81; restarting it");
-      }
-
-      // Wait a bit before retrying.
-      try {
-        Thread.sleep(250L);
-      } catch (InterruptedException ignore) {
-      }
-
-    } while (true);
-  }
-
-  private Pair<Long, Integer> tryFindPid(final ProcessQuery processQuery) throws IOException {
-
-    int tryCount = 0;
-    do {
-      tryCount++;
-      LOGGER.debug("Trying to find pid, attempt #{}", tryCount);
-
-      // Return if the process is already dead.
-      Integer exitCode = null;
-      try {
-        exitCode = process.getProcess().exitValue();
-        // Process is already dead, no need to wait longer...
-        return Pair.of(PID_UNKNOWN, exitCode);
-      } catch (IllegalThreadStateException ignore) {
-        // Process is still up.
-      }
-
-      final ProcessManager processManager = config.getProcessManager();
-      if (!processManager.canFindPid()) {
-        LOGGER.debug(
-            "The current process manager does not support finding the pid: {}",
-            processManager.getClass().getName());
-        return Pair.of(PID_UNKNOWN, exitCode);
-      }
-
-      // Try to find the PID.
-      final long processId = processManager.findPid(processQuery);
-
-      // Return if the PID was found.
-      if (processId > PID_UNKNOWN) {
-        return Pair.of(processId, exitCode);
-      }
-
-      // Also return if we have reached the maximum try count.
-      if (tryCount == 5) { // TODO: Let the max try count be configurable.
-        return Pair.of(processId, exitCode);
-      }
-
-      // Wait a bit before retrying.
-      try {
-        Thread.sleep(250L);
-      } catch (InterruptedException ignore) {
-      }
-
-    } while (true);
   }
 
   private void waitForProcessToDie() {

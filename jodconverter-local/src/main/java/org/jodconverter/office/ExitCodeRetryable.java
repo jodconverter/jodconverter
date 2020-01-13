@@ -20,10 +20,10 @@
 package org.jodconverter.office;
 
 /** Gets the exit code value of an office process. */
-public class ExitCodeRetryable extends AbstractRetryable {
+public class ExitCodeRetryable extends AbstractRetryable<RuntimeException> {
 
-  private final VerboseProcess process;
   private int exitCode;
+  private final VerboseProcess process;
 
   /**
    * Creates a new instance of the class for the specified process.
@@ -41,7 +41,7 @@ public class ExitCodeRetryable extends AbstractRetryable {
 
     final Integer code = process.getExitCode();
     if (code == null) {
-      throw new TemporaryException();
+      throw new TemporaryException("The process has not yet terminated");
     }
     exitCode = code;
   }

@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Performs a connection to an office process. */
-public class ConnectRetryable extends AbstractRetryable {
+public class ConnectRetryable extends AbstractRetryable<OfficeException> {
 
   private static final Integer EXIT_CODE_81 = 81;
   private static final Logger LOGGER = LoggerFactory.getLogger(ConnectRetryable.class);
@@ -60,12 +60,12 @@ public class ConnectRetryable extends AbstractRetryable {
       // Try to connect
       connection.connect();
 
-    } catch (OfficeConnectionException connectionEx) {
+    } catch (OfficeConnectionException ex) {
 
       // If we cannot get the exit code of a process, just
       // throw a TemporaryException
       if (process == null) {
-        throw new TemporaryException(connectionEx);
+        throw new TemporaryException(ex);
       }
 
       // Here, we can get the exit code of the process
@@ -73,7 +73,7 @@ public class ConnectRetryable extends AbstractRetryable {
       if (exitCode == null) {
 
         // Process is running; retry later
-        throw new TemporaryException(connectionEx);
+        throw new TemporaryException(ex);
 
       } else if (exitCode.equals(EXIT_CODE_81)) {
 
@@ -81,10 +81,10 @@ public class ConnectRetryable extends AbstractRetryable {
         // see http://code.google.com/p/jodconverter/issues/detail?id=84
         LOGGER.warn("Office process died with exit code 81; restarting it");
         process.start(true);
-        throw new TemporaryException(connectionEx);
+        throw new TemporaryException(ex);
 
       } else {
-        throw new OfficeException("Office process died with exit code " + exitCode, connectionEx);
+        throw new OfficeException("Office process died with exit code " + exitCode, ex);
       }
     }
   }

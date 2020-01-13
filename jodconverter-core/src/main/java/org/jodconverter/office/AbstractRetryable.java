@@ -23,7 +23,7 @@ package org.jodconverter.office;
  * Object that will attempt to execute a task until it succeeds or that a specific timeout is
  * reached.
  */
-abstract class AbstractRetryable {
+abstract class AbstractRetryable<T extends Throwable> {
 
   /** Initializes a new instance of the class. */
   protected AbstractRetryable() {
@@ -34,36 +34,62 @@ abstract class AbstractRetryable {
    * Attempt to execute the task, once.
    *
    * @throws TemporaryException For an error condition that can be temporary - i.e. retrying later
-   *     could be successful.
-   * @throws Exception If an error occurs.
+   *     could be successful
+   * @throws RetryTimeoutException If this Retryable fails to complete its task in the given time.
+   * @throws T For all other error conditions
    */
-  protected abstract void attempt() throws Exception;
+  protected abstract void attempt() throws TemporaryException, RetryTimeoutException, T;
 
   /**
    * Executes the task without a starting delay.
    *
    * @param interval The interval between each task execution attempt.
    * @param timeout The timeout after which we won't try again to execute the task.
-   * @throws RetryTimeoutException If we have reached the timeout.
-   * @throws InterruptedException If any thread has interrupted the current thread. The interrupted
-   *     status of the current thread is cleared when this exception is thrown.
-   * @throws Exception For all other error conditions.
+   * @throws RetryTimeoutException If this Retryable fails to complete its task in the given time.
+   * @throws T For all other error conditions.
    */
-  public void execute(final long interval, final long timeout) throws Exception {
+  public void execute(final long interval, final long timeout) throws RetryTimeoutException, T {
+
+    execute(0L, interval, timeout);
+  }
+
+  /**
+   * Executes the task without a starting delay.
+   *
+   * @param delay An initial delay to wait for before the first attempt.
+   * @param interval The interval between each task execution attempt.
+   * @param timeout The timeout after which we won't try again to execute the task.
+   * @throws RetryTimeoutException If this Retryable fails to complete its task in the given time.
+   * @throws T For all other error conditions.
+   */
+  public void execute(final long delay, final long interval, final long timeout)
+      throws RetryTimeoutException, T {
 
     final long start = System.currentTimeMillis();
+
+    if (delay > 0L) {
+      sleep(delay);
+    }
+
     while (true) {
       try {
         attempt();
         return;
-      } catch (TemporaryException temporaryEx) {
+      } catch (TemporaryException temporaryException) {
         if (System.currentTimeMillis() - start < timeout) {
-          Thread.sleep(interval);
-          // retryConfig
+          sleep(interval);
         } else {
-          throw new RetryTimeoutException(temporaryEx.getCause());
+          throw new RetryTimeoutException(temporaryException.getCause());
         }
       }
+    }
+  }
+
+  private void sleep(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException ignore) {
+      // ignore
     }
   }
 }
