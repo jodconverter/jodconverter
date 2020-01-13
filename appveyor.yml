@@ -1,39 +1,39 @@
 version: "{build}"
 
-## Avoid build failure caused by the spotless plugin
-#init:
-#  - git config --global core.autocrlf true
-#
-## build artifacts
-#build_script:
-#  - gradlew.bat assemble --no-daemon
-#
-## verify artifacts
-#test_script:
-#  - gradlew.bat check -x integTest --no-daemon
-#
-## branches to build
-#branches:
-#  only:
-#    - master
-#
-## preserve dependencies between builds
-#cache:
-#  - C:\Users\appveyor\.gradle
-#
-## enviroment settings
-#environment:
-#  matrix:
-#  # jdk 1.8
-#  - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-#  # jdk 11
-#  - JAVA_HOME: C:\Program Files\Java\jdk11
-#  # jdk 12
-#  - JAVA_HOME: C:\Program Files\Java\jdk12
-#  # jdk 13
-#  - JAVA_HOME: C:\Program Files\Java\jdk13
-#
-## failing jobs settings
-#matrix:
-#  # immediately finish build once one of the jobs fails
-#  fast_finish: true
+# Avoid build failure caused by the spotless plugin
+init:
+  - git config --global core.autocrlf true
+
+# build artifacts
+build_script:
+  - gradlew.bat assemble --no-daemon
+
+# verify artifacts
+test_script:
+  - gradlew.bat check -x integTest --no-daemon
+
+# branches to build
+branches:
+  only:
+    - master
+
+# preserve dependencies between builds
+cache:
+  - C:\Users\appveyor\.gradle
+
+# enviroment settings
+environment:
+  matrix:
+  # jdk 1.8
+  - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+  # jdk 11
+  - JAVA_HOME: C:\Program Files\Java\jdk11
+  # jdk 12
+  - JAVA_HOME: C:\Program Files\Java\jdk12
+  # jdk 13
+  - JAVA_HOME: C:\Program Files\Java\jdk13
+
+# failing jobs settings
+matrix:
+  # immediately finish build once one of the jobs fails
+  fast_finish: true

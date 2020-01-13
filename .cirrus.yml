@@ -20,7 +20,7 @@ build_task:
   install_libreoffice_script:
     - pkg install -y libreoffice
   build_script:
-    - gradle :jodconverter-local:build
+    - gradle :jodconverter-local:build --stacktrace
     #- ./gradlew build --stacktrace
 #  cleanup_before_cache_script:
 #    - rm -rf ~/.gradle/caches/$GRADLE_VERSION/

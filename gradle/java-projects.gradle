@@ -83,12 +83,12 @@ eclipse {
 // Test setup
 
 // Uncomment when we want to see the logs while testing
-test {
-    testLogging.showStandardStreams = true
-}
-integrationTest {
-    testLogging.showStandardStreams = true
-}
+//test {
+//    testLogging.showStandardStreams = true
+//}
+//integrationTest {
+//    testLogging.showStandardStreams = true
+//}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
