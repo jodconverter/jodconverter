@@ -27,7 +27,6 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.ClassRule;
 import org.junit.rules.TestRule;
 import org.slf4j.Logger;
@@ -66,31 +65,41 @@ public abstract class AbstractOfficeITest {
     // This will create 1 output file per output format.
     for (final DocumentFormat outputFormat : outputFormats) {
 
-      if (SystemUtils.IS_OS_WINDOWS) {
-        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
-          LOGGER.info(
-              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
-          continue;
-        }
-      } else if (SystemUtils.IS_OS_FREE_BSD) {
-        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxw")) {
-          LOGGER.info(
-              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
-          continue;
-        }
-      } else if (SystemUtils.IS_OS_MAC) {
-        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxw")) {
-          LOGGER.info(
-              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
-          continue;
-        }
-      } else if (SystemUtils.IS_OS_UNIX) {
-        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxw")) {
-          LOGGER.info(
-              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
-          continue;
-        }
+      if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
+        LOGGER.info(
+            "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+        continue;
       }
+
+      //      if (SystemUtils.IS_OS_WINDOWS) {
+      //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
+      //          LOGGER.info(
+      //              "Skipping {} to {} test", inputFormat.getExtension(),
+      // outputFormat.getExtension());
+      //          continue;
+      //        }
+      //      } else if (SystemUtils.IS_OS_FREE_BSD) {
+      //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxw")) {
+      //          LOGGER.info(
+      //              "Skipping {} to {} test", inputFormat.getExtension(),
+      // outputFormat.getExtension());
+      //          continue;
+      //        }
+      //      } else if (SystemUtils.IS_OS_MAC) {
+      //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
+      //          LOGGER.info(
+      //              "Skipping {} to {} test", inputFormat.getExtension(),
+      // outputFormat.getExtension());
+      //          continue;
+      //        }
+      //      } else if (SystemUtils.IS_OS_UNIX) {
+      //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
+      //          LOGGER.info(
+      //              "Skipping {} to {} test", inputFormat.getExtension(),
+      // outputFormat.getExtension());
+      //          continue;
+      //        }
+      //      }
 
       //      // Skip conversions that are not supported on all OS.
       //      if (StringUtils.equalsAny(

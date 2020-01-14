@@ -107,13 +107,9 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
   //    }
   //  }
 
-  /**
-   * Test the conversion of all the supported documents format.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Test the conversion of all the supported documents format. */
   @Test
-  public void runAllPossibleConversionsSingleThread() throws Exception {
+  public void runAllPossibleConversionsSingleThread() {
 
     for (final File sourceFile :
         Objects.requireNonNull(
