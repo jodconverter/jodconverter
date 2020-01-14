@@ -67,12 +67,14 @@ jobs:
 
 before_install:
   - |
-    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       # The following uses latest LO version. Without this, the tests would
       # be executed using an older LO version (4.2.8.2 as of 2020-01-14)
       sudo add-apt-repository -y ppa:libreoffice/ppa
       sudo apt-get -q update
-    else
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew cask install libreoffice
     fi
 
