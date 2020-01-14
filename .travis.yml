@@ -1,5 +1,4 @@
 language: java
-sudo: required
 
 jobs:
   include:
@@ -7,8 +6,6 @@ jobs:
     - os: linux
       dist: trusty
       jdk: oraclejdk8
-      install:
-        - sudo apt-get -y install libreoffice
       script:
         - ./gradlew build
       after_success:
@@ -17,24 +14,18 @@ jobs:
     - os: linux
       dist: trusty
       jdk: openjdk11
-      install:
-        - sudo apt-get -y install libreoffice
       script:
         - ./gradlew build -x javadoc
     #linux Java12
     - os: linux
       dist: trusty
       jdk: openjdk12
-      install:
-        - sudo apt-get -y install libreoffice
       script:
         - ./gradlew build -x javadoc
     #linux Java13
     - os: linux
       dist: trusty
       jdk: openjdk13
-      install:
-        - sudo apt-get -y install libreoffice
       script:
         - ./gradlew build -x javadoc
 
@@ -76,6 +67,17 @@ before_install:
   - |
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew update
+      # brew update && brew upgrade brew-cask
+      # brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup
+    fi
+
+install:
+  - |
+    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      sudo apt-get -y install libreoffice
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew cask install libreoffice
     fi
 
