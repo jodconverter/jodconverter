@@ -21,7 +21,6 @@ package org.jodconverter;
 
 import java.io.File;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -55,56 +54,72 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
     LocalConverter.make().convert(source).to(target);
   }
 
+  //  /**
+  //   * Test the conversion of all the supported documents format.
+  //   *
+  //   * @throws Exception if an error occurs.
+  //   */
+  //  @Test
+  //  public void runAllPossibleConversions() throws Exception {
+  //
+  //    final Thread[] threads = new Thread[MAX_THREADS];
+  //    int threadCount = 0;
+  //
+  //    final AtomicReference<Exception> exception = new AtomicReference<>();
+  //    for (final File sourceFile :
+  //        Objects.requireNonNull(
+  //            new File("src/integTest/resources/documents")
+  //                .listFiles((dir, name) -> name.startsWith("test.")))) {
+  //
+  //      // Convert the file to all supported formats in a separated thread
+  //      final Runnable runnable =
+  //          () -> {
+  //            try {
+  //              convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
+  //            } catch (Exception ex) {
+  //              exception.set(ex);
+  //            }
+  //          };
+  //
+  //      // final Runner r = new Runner (source, target, RefreshFilter.CHAIN, converter);
+  //      threads[threadCount] = new Thread(runnable);
+  //      threads[threadCount++].start();
+  //
+  //      if (threadCount == MAX_THREADS) {
+  //        for (int j = 0; j < threadCount; j++) {
+  //          threads[j].join();
+  //        }
+  //        threadCount = 0;
+  //        if (exception.get() != null) {
+  //          throw exception.get();
+  //        }
+  //      }
+  //
+  //      // convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
+  //    }
+  //
+  //    // Wait for remaining threads.
+  //    for (int j = 0; j < threadCount; j++) {
+  //      threads[j].join();
+  //    }
+  //    if (exception.get() != null) {
+  //      throw exception.get();
+  //    }
+  //  }
+
   /**
    * Test the conversion of all the supported documents format.
    *
    * @throws Exception if an error occurs.
    */
   @Test
-  public void runAllPossibleConversions() throws Exception {
+  public void runAllPossibleConversionsSingleThread() throws Exception {
 
-    final Thread[] threads = new Thread[MAX_THREADS];
-    int threadCount = 0;
-
-    final AtomicReference<Exception> exception = new AtomicReference<>();
     for (final File sourceFile :
         Objects.requireNonNull(
             new File("src/integTest/resources/documents")
                 .listFiles((dir, name) -> name.startsWith("test.")))) {
-
-      // Convert the file to all supported formats in a separated thread
-      final Runnable runnable =
-          () -> {
-            try {
-              convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
-            } catch (Exception ex) {
-              exception.set(ex);
-            }
-          };
-
-      // final Runner r = new Runner (source, target, RefreshFilter.CHAIN, converter);
-      threads[threadCount] = new Thread(runnable);
-      threads[threadCount++].start();
-
-      if (threadCount == MAX_THREADS) {
-        for (int j = 0; j < threadCount; j++) {
-          threads[j].join();
-        }
-        threadCount = 0;
-        if (exception.get() != null) {
-          throw exception.get();
-        }
-      }
-
-      // convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
-    }
-
-    // Wait for remaining threads.
-    for (int j = 0; j < threadCount; j++) {
-      threads[j].join();
-    }
-    if (exception.get() != null) {
-      throw exception.get();
+      convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
     }
   }
 }

@@ -96,7 +96,7 @@ class OfficeProcess {
       // Kill the any running process with the same connection string if the kill switch is on
       if (existingPid > PID_UNKNOWN && config.isKillExistingProcess()) {
         LOGGER.warn(
-            "A process with acceptString '{}' is already running; pid {}",
+            "A process with acceptString '{}' is already running; pid {}; trying to kill it...",
             processQuery.getArgument(),
             existingPid);
         processManager.kill(null, existingPid);
@@ -110,6 +110,10 @@ class OfficeProcess {
                 "A process with acceptString '%s' is already running; pid %d",
                 processQuery.getArgument(), existingPid));
       }
+
+      LOGGER.debug(
+          "Checking existing process done successfully. No process running with acceptString '{}'",
+          processQuery.getArgument());
 
     } catch (IOException ioEx) {
       throw new OfficeException(
@@ -132,10 +136,9 @@ class OfficeProcess {
               instanceProfileDir.getParentFile(),
               instanceProfileDir.getName() + ".old." + System.currentTimeMillis());
       if (instanceProfileDir.renameTo(oldProfileDir)) {
-        LOGGER.warn(
-            "Could not delete profileDir: {}; renamed it to {}", ioEx.getMessage(), oldProfileDir);
+        LOGGER.warn("Could not delete profileDir; renamed it to '" + oldProfileDir + "'", ioEx);
       } else {
-        LOGGER.error("Could not delete profileDir: {}", ioEx.getMessage());
+        LOGGER.error("Could not delete profileDir", ioEx);
       }
     }
   }
