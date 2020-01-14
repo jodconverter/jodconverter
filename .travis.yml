@@ -10,8 +10,12 @@ matrix:
     - os: linux
       jdk: oraclejdk8
       before_install:
+       - sudo add-apt-repository ppa:libreoffice/ppa
+       - sudo apt update
+       - sudo apt install libreoffice
+#       - sudo apt-get install libreoffice
+      before_script:
        - chmod +x ./gradlew
-       - sudo apt-get install libreoffice
       script:
        - ./gradlew build :jodconverter-local:build
       after_success:
