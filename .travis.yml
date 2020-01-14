@@ -10,9 +10,9 @@ matrix:
     - os: linux
       jdk: oraclejdk8
       before_install:
-       - sudo add-apt-repository ppa:libreoffice/ppa
-       - sudo apt update
-       - sudo apt install libreoffice
+       - sudo add-apt-repository -y ppa:libreoffice/ppa
+       - sudo apt-get -q update
+       - sudo apt-get -y install libreoffice
 #       - sudo apt-get install libreoffice
       before_script:
        - chmod +x ./gradlew
