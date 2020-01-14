@@ -42,9 +42,11 @@ import org.jodconverter.process.ProcessQuery;
  */
 class OfficeProcess {
 
-  private static final long FIND_PID_DELAY = 1000L;
-  private static final long FIND_PID_RETRY = 500L;
-  private static final long FIND_PID_TIMEOUT = 5000L;
+  // TODO: Make process constants configurable
+  private static final long START_PROCESS_DELAY = 0L;
+  private static final long START_PROCESS_RETRY = 500L;
+  private static final long START_PROCESS_TIMEOUT = 5000L;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcess.class);
 
   private VerboseProcess process;
@@ -406,32 +408,24 @@ class OfficeProcess {
 
     try {
       // Start the process.
-      process = new VerboseProcess(processBuilder.start());
-
-      // Try to retrieve the PID.
-      final ProcessManager processManager = config.getProcessManager();
-      try {
-        // Add an initial delay for FreeBSD. Without this delay, on FreeBSD only, the
-        // OfficeConnection.connect() will hang for more than 5 minutes before throwing
-        // a timeout exception, we do not know why.
-        // TODO: Investigate FreeBSD.
-        final FindPidRetryable findPid = new FindPidRetryable(processQuery, processManager);
-        findPid.execute(FIND_PID_DELAY, FIND_PID_RETRY, FIND_PID_TIMEOUT);
-        pid = findPid.getPid();
-      } catch (RetryTimeoutException ex) {
-        pid = processManager.canFindPid() ? PID_NOT_FOUND : PID_UNKNOWN;
-      }
+      final StartProcessRetryable retryable =
+          new StartProcessRetryable(config, processBuilder, processQuery);
+      retryable.execute(START_PROCESS_DELAY, START_PROCESS_RETRY, START_PROCESS_TIMEOUT);
+      process = retryable.getProcess();
+      pid = retryable.getProcessId();
 
       LOGGER.info(
           "Started process; pid: {}",
           pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
 
-    } catch (IOException ioEx) {
+    } catch (OfficeException officeEx) {
+      throw officeEx;
+    } catch (Exception ex) {
       throw new OfficeException(
           String.format(
-              "An I/O error prevents us to start a process with acceptString '%s'",
+              "An error prevents us to start a process with acceptString '%s'",
               processQuery.getArgument()),
-          ioEx);
+          ex);
     }
 
     if (pid == PID_NOT_FOUND) {
