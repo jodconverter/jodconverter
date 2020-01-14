@@ -30,6 +30,8 @@ import org.jodconverter.process.ProcessManager;
  */
 class OfficeProcessManagerConfig extends OfficeProcessConfig {
 
+  /** The default initial delay a process call (start/terminate). */
+  public static final long DEFAULT_PROCESS_INITIAL_DELAY = 0L; // No delay
   /** The default timeout when executing a process call (start/terminate). */
   public static final long DEFAULT_PROCESS_TIMEOUT = 120000L; // 2 minutes
   /** The default delay between each try when executing a process call (start/terminate). */

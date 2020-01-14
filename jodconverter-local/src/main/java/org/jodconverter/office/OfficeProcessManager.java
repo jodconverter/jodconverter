@@ -99,8 +99,12 @@ class OfficeProcessManager {
     process.start(restart);
 
     try {
+      // TODO: Add configuration field for initial delay
       new ConnectRetryable(process, connection)
-          .execute(config.getProcessRetryInterval(), config.getProcessTimeout());
+          .execute(
+              OfficeProcessManagerConfig.DEFAULT_PROCESS_INITIAL_DELAY,
+              config.getProcessRetryInterval(),
+              config.getProcessTimeout());
 
     } catch (Exception ex) {
       if (ex instanceof OfficeException) {

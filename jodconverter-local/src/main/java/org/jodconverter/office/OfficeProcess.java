@@ -43,7 +43,6 @@ import org.jodconverter.process.ProcessQuery;
 class OfficeProcess {
 
   // TODO: Make process constants configurable
-  private static final long START_PROCESS_DELAY = 0L;
   private static final long START_PROCESS_RETRY = 500L;
   private static final long START_PROCESS_TIMEOUT = 5000L;
 
@@ -410,7 +409,7 @@ class OfficeProcess {
       // Start the process.
       final StartProcessRetryable retryable =
           new StartProcessRetryable(config, processBuilder, processQuery);
-      retryable.execute(START_PROCESS_DELAY, START_PROCESS_RETRY, START_PROCESS_TIMEOUT);
+      retryable.execute(START_PROCESS_RETRY, START_PROCESS_TIMEOUT);
       process = retryable.getProcess();
       pid = retryable.getProcessId();
 

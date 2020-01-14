@@ -30,11 +30,11 @@ import org.jodconverter.process.FreeBSDProcessManager;
 import org.jodconverter.process.ProcessManager;
 import org.jodconverter.process.ProcessQuery;
 
-/** Performs a connection to an office process. */
+/** Performs a starts of an office process. */
 public class StartProcessRetryable extends AbstractRetryable<Exception> {
 
   private static final int FIND_PID_RETRIES = 10;
-  private static final long FIND_PID_DELAY = 1000L;
+  private static final long FIND_PID_DELAY = 2000L;
   private static final long FIND_PID_INTERVAL = 250L;
   private static final Integer EXIT_CODE_81 = 81;
   private static final Logger LOGGER = LoggerFactory.getLogger(StartProcessRetryable.class);
@@ -67,6 +67,10 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
   @Override
   protected void attempt() throws Exception {
 
+    // Reset exitCode and processId
+    exitCode = null;
+    processId = PID_UNKNOWN;
+
     // Start the process.
     process = new VerboseProcess(processBuilder.start());
 
@@ -78,6 +82,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
     // a timeout exception, we do not know why.
     // TODO: Investigate FreeBSD.
     if (processManager instanceof FreeBSDProcessManager) {
+      LOGGER.debug("Waiting for process to start on FreeBSD...");
       sleep(FIND_PID_DELAY);
     }
 
@@ -94,13 +99,18 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
         throw new TemporaryException("Office process died with exit code 81");
       }
 
-      throw new OfficeException("Office process died with exit code " + exitCode);
+      throw new OfficeException("Office process died with exit code: " + exitCode);
     }
 
     if (processManager.canFindPid() && processId <= PID_UNKNOWN) {
+      try {
+        process.getProcess().destroy();
+      } catch (Exception ex) {
+        LOGGER.warn("Unable to destroy the process", ex);
+      }
       throw new TemporaryException(
           String.format(
-              "A process with acceptString '%s' started but its pid could not be found",
+              "A process with acceptString '%s' started but its pid could not be found; restarting it",
               processQuery.getArgument()));
     }
   }
@@ -124,9 +134,6 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
   }
 
   private void tryFindPid(final ProcessManager processManager) throws IOException {
-
-    exitCode = null;
-    processId = PID_UNKNOWN;
 
     int tryCount = 0;
     do {

@@ -52,6 +52,8 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
   public static final int DEFAULT_PORT_NUMBER = 2002;
   /** The default pipe name to connect to office. */
   public static final String DEFAULT_PIPE_NAME = "office";
+  /** The default initial delay when connecting to office. */
+  public static final long DEFAULT_INITIAL_DELAY = 0L; // No delay
   /** The default timeout when connecting to office. */
   public static final long DEFAULT_CONNECT_TIMEOUT = 120000L; // 2 minutes
   /** The default delay between each try to connect. */
@@ -108,9 +110,10 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
 
     LOGGER.debug("Connecting to external office process...");
     try {
+      // TODO: Add configuration field for initial delay
       final ExternalOfficeManagerConfig mconfig = (ExternalOfficeManagerConfig) config;
       new ConnectRetryable(connection)
-          .execute(mconfig.getRetryInterval(), mconfig.getConnectTimeout());
+          .execute(DEFAULT_INITIAL_DELAY, mconfig.getRetryInterval(), mconfig.getConnectTimeout());
 
     } catch (Exception ex) {
       throw new OfficeException("Could not establish connection to external office process", ex);
