@@ -48,7 +48,7 @@ public class PageCounterFilter implements Filter {
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws Exception {
 
-    LOGGER.debug("Applying the PageSelectorFilter");
+    LOGGER.debug("Applying the PageCounterFilter");
 
     // Save the PageCount property of the document.
     final XPropertySet propertySet =
