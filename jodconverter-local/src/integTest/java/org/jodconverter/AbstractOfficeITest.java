@@ -72,10 +72,20 @@ public abstract class AbstractOfficeITest {
               "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
           continue;
         }
-      }
-
-      if (SystemUtils.IS_OS_FREE_BSD) {
-        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
+      } else if (SystemUtils.IS_OS_FREE_BSD) {
+        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxw")) {
+          LOGGER.info(
+              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+          continue;
+        }
+      } else if (SystemUtils.IS_OS_MAC) {
+        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxw")) {
+          LOGGER.info(
+              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+          continue;
+        }
+      } else if (SystemUtils.IS_OS_UNIX) {
+        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxw")) {
           LOGGER.info(
               "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
           continue;
@@ -124,8 +134,11 @@ public abstract class AbstractOfficeITest {
       FileUtils.deleteQuietly(targetFile);
 
       // Convert the file to the desired format
-      final ConvertRunner runner = new ConvertRunner(sourceFile, targetFile, chain);
-      runner.run();
+      try {
+        new ConvertRunner(sourceFile, targetFile, chain).run();
+      } catch (Exception ignore) {
+        // Ignore.
+      }
     }
   }
 }
