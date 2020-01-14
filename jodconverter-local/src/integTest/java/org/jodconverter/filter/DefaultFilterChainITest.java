@@ -20,6 +20,7 @@
 package org.jodconverter.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeNoException;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -38,8 +39,6 @@ import org.junit.rules.TemporaryFolder;
 
 import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.filter.text.PageCounterFilter;
-import org.jodconverter.filter.text.PageSelectorFilter;
 import org.jodconverter.office.OfficeContext;
 
 public class DefaultFilterChainITest extends AbstractOfficeITest {
@@ -61,14 +60,13 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
     final File targetFile1 = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page1.txt");
     final File targetFile2 = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page1again.txt");
 
-    final PageCounterFilter countFilter1 = new PageCounterFilter();
-    final PageSelectorFilter selectorFilter = new PageSelectorFilter(1);
-    final PageCounterFilter countFilter2 = new PageCounterFilter();
+    final PageCounterFilter count1 = new PageCounterFilter();
+    final PageCounterFilter count2 = new PageCounterFilter();
 
     // Test the filters
     final DefaultFilterChain chain =
         new DefaultFilterChain(
-            countFilter1, selectorFilter, new RefreshFilter(false), countFilter2);
+            count1, new PagesSelectorFilter(1), new RefreshFilter(false), count2);
     final LocalConverter converter = LocalConverter.builder().filterChain(chain).build();
     converter.convert(SOURCE_FILE).to(targetFile1).execute();
 
@@ -77,14 +75,14 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
         .contains("Test document Page 1")
         .doesNotContain("Test document Page 2")
         .doesNotContain("Test document Page 3");
-    assertThat(countFilter1.getPageCount()).isEqualTo(3);
-    assertThat(countFilter2.getPageCount()).isEqualTo(1);
+    assertThat(count1.getPageCount()).isEqualTo(3);
+    assertThat(count2.getPageCount()).isEqualTo(1);
 
     // Reset the chain and test the filters again
     chain.reset();
     converter.convert(targetFile1).to(targetFile2).execute();
-    assertThat(countFilter1.getPageCount()).isEqualTo(1);
-    assertThat(countFilter2.getPageCount()).isEqualTo(1);
+    assertThat(count1.getPageCount()).isEqualTo(1);
+    assertThat(count2.getPageCount()).isEqualTo(1);
   }
 
   /**
@@ -110,12 +108,9 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
     // Then execute the test
     final File targetFile1 = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page1.txt");
 
-    final PageCounterFilter countFilter = new PageCounterFilter();
-    final PageSelectorFilter selectorFilter = new PageSelectorFilter(1);
-
-    final DefaultFilterChain chain = new DefaultFilterChain(false, countFilter, selectorFilter);
     LocalConverter.builder()
-        .filterChain(chain)
+        .filterChain(
+            new DefaultFilterChain(false, new PageCounterFilter(), new PagesSelectorFilter(1)))
         .build()
         .convert(SOURCE_FILE)
         .to(targetFile1)
@@ -142,19 +137,14 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
       // https://bugs.openjdk.java.net/browse/JDK-8217225
       setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), refreshFilter);
     } catch (Exception e) {
-      // skip the test
-      return;
+      assumeNoException(e);
     }
 
     // Then execute the test
     final File targetFile1 = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page1.txt");
 
-    final PageCounterFilter countFilter = new PageCounterFilter();
-    final PageSelectorFilter selectorFilter = new PageSelectorFilter(1);
-
-    final DefaultFilterChain chain = new DefaultFilterChain(countFilter, selectorFilter);
     LocalConverter.builder()
-        .filterChain(chain)
+        .filterChain(new DefaultFilterChain(new PageCounterFilter(), new PagesSelectorFilter(1)))
         .build()
         .convert(SOURCE_FILE)
         .to(targetFile1)
