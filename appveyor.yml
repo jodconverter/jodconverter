@@ -37,3 +37,6 @@ environment:
 matrix:
   # Immediately finish build once one of the jobs fails
   fast_finish: true
+
+on_failure:
+  - cmd: type "%APPVEYOR_BUILD_FOLDER%\tmp\javadoc\javadoc.options"
