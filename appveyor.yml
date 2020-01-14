@@ -4,24 +4,24 @@ version: "{build}"
 init:
   - git config --global core.autocrlf true
 
-# build artifacts
+# Build artifacts
 build_script:
-  - gradlew.bat assemble --no-daemon
+  - gradlew.bat assemble --stacktrace
 
-# verify artifacts
+# Verify artifacts
 test_script:
-  - gradlew.bat check -x integTest --no-daemon
+  - gradlew.bat check -x integTest --stacktrace
 
-# branches to build
+# Branches to build
 branches:
   only:
     - master
 
-# preserve dependencies between builds
+# Preserve dependencies between builds
 cache:
   - C:\Users\appveyor\.gradle
 
-# enviroment settings
+# Environment settings
 environment:
   matrix:
   # jdk 1.8
@@ -33,7 +33,7 @@ environment:
   # jdk 13
   - JAVA_HOME: C:\Program Files\Java\jdk13
 
-# failing jobs settings
+# Failing jobs settings
 matrix:
-  # immediately finish build once one of the jobs fails
+  # Immediately finish build once one of the jobs fails
   fast_finish: true
