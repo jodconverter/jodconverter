@@ -1,81 +1,80 @@
 language: java
-
 sudo: required
 
-dist: trusty
-
-matrix:
+jobs:
   include:
     #linux Java8
     - os: linux
+      dist: trusty
       jdk: oraclejdk8
-      before_install:
-       - sudo add-apt-repository -y ppa:libreoffice/ppa
-       - sudo apt-get -q update
-       - sudo apt-get -y install libreoffice
-#       - sudo apt-get install libreoffice
-      before_script:
-       - chmod +x ./gradlew
+      install:
+        - sudo apt-get -y install libreoffice
       script:
-       - ./gradlew build :jodconverter-local:build
+        - ./gradlew build
       after_success:
-       - ./gradlew coveralls
-#    #linux Java11
-#    - os: linux
-#      jdk: openjdk11
-#      before_install:
-#       - chmod +x ./gradlew
-#       - sudo apt-get install libreoffice
-#      script:
-#       - ./gradlew build -x javadoc
-#    #linux Java12
-#    - os: linux
-#      jdk: openjdk12
-#      before_install:
-#       - chmod +x ./gradlew
-#       - sudo apt-get install libreoffice
-#      script:
-#       - ./gradlew build -x javadoc
-#    #linux Java13
-#    - os: linux
-#      jdk: openjdk13
-#      before_install:
-#       - chmod +x ./gradlew
-#       - sudo apt-get install libreoffice
-#      script:
-#       - ./gradlew build -x javadoc
-#
-#    #macos - see https://docs.travis-ci.com/user/reference/osx/#jdk-and-macos
-#
-#    #macos Java8
-#    - os: osx
-#      osx_image: xcode8
-#      jdk: oraclejdk8
-#      before_install:
-#       - chmod +x ./gradlew
-#      script:
-#       - ./gradlew build -x integTest -x javadoc
-#    #macos Java11
-#    - os: osx
-#      osx_image: xcode10.1
-#      jdk: openjdk11
-#      before_install:
-#       - chmod +x ./gradlew
-#      script:
-#       - ./gradlew build -x integTest -x javadoc
-#    #macos Java12
-#    - os: osx
-#      osx_image: xcode11
-#      jdk: openjdk12
-#      before_install:
-#       - chmod +x ./gradlew
-#      script:
-#       - ./gradlew build -x integTest -x javadoc
-#    #macos Java13
-#    - os: osx
-#      osx_image: xcode11.3
-#      jdk: openjdk13
-#      before_install:
-#       - chmod +x ./gradlew
-#      script:
-#       - ./gradlew build -x integTest -x javadoc
+        - ./gradlew coveralls
+    #linux Java11
+    - os: linux
+      dist: trusty
+      jdk: openjdk11
+      install:
+        - sudo apt-get -y install libreoffice
+      script:
+        - ./gradlew build -x javadoc
+    #linux Java12
+    - os: linux
+      dist: trusty
+      jdk: openjdk12
+      install:
+        - sudo apt-get -y install libreoffice
+      script:
+        - ./gradlew build -x javadoc
+    #linux Java13
+    - os: linux
+      dist: trusty
+      jdk: openjdk13
+      install:
+        - sudo apt-get -y install libreoffice
+      script:
+        - ./gradlew build -x javadoc
+
+    #macos - see https://docs.travis-ci.com/user/reference/osx/#jdk-and-macos
+
+    #macos Java8
+    - os: osx
+      osx_image: xcode8
+      jdk: oraclejdk8
+      script:
+       - ./gradlew build -x javadoc
+    #macos Java11
+    - os: osx
+      osx_image: xcode10.1
+      jdk: openjdk11
+      script:
+       - ./gradlew build -x javadoc
+    #macos Java12
+    - os: osx
+      osx_image: xcode11
+      jdk: openjdk12
+      script:
+       - ./gradlew build -x javadoc
+    #macos Java13
+    - os: osx
+      osx_image: xcode11.3
+      jdk: openjdk13
+      script:
+       - ./gradlew build -x javadoc
+
+before_install:
+  - |
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+      # The following uses latest LO version. Without this, the tests would
+      # be executed using an older LO version (4.2.8.2 as of 2020-01-14)
+      sudo add-apt-repository -y ppa:libreoffice/ppa
+      sudo apt-get -q update
+    else
+      brew cask install libreoffice
+    fi
+
+before_script:
+  - chmod +x ./gradlew
