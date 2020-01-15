@@ -83,7 +83,7 @@ public class OnlineConvertITest {
                 try {
                   final String content =
                       FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-                  assertThat(content).contains("Test Document");
+                  assertThat(content).as("Check content: %s", content).contains("Test Document");
                 } catch (IOException ex) {
                   assertThat(ex).isNull();
                 }
@@ -133,7 +133,7 @@ public class OnlineConvertITest {
                 try {
                   final String content =
                       FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-                  assertThat(content).contains("Test Document");
+                  assertThat(content).as("Check content: %s", content).contains("Test Document");
                 } catch (IOException ex) {
                   assertThat(ex).isNull();
                 }

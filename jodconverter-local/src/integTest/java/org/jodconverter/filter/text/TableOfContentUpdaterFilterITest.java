@@ -63,6 +63,7 @@ public class TableOfContentUpdaterFilterITest {
 
     final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
+        .as("Check content: %s", content)
         .containsPattern(
             "(?s)Contents.*"
                 + "Copyright\\s+2.{1,2}"
@@ -116,6 +117,7 @@ public class TableOfContentUpdaterFilterITest {
 
     final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
+        .as("Check content: %s", content)
         .containsPattern(
             "(?s)Contents.*"
                 + "Copyright\\s+2.{1,2}"

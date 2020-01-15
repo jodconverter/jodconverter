@@ -136,6 +136,7 @@ public class TextReplacerFilterITest {
 
     final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
+        .as("Check content: %s", content)
         .contains("REPLACEMENT_STRING")
         .doesNotContain("SEARCH_WORD")
         .contains("REPLACEMENT_THAT")

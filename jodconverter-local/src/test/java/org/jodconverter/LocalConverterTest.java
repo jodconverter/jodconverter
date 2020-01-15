@@ -57,7 +57,22 @@ public class LocalConverterTest {
   }
 
   @Test
-  public void convert_WithoutOfficeManagerInstalled_ThrowsIllegalStateException(
+  public void make_WithOfficeManagerInstalled_Success(@TempDir File testFolder) {
+
+    final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
+    InstalledOfficeManagerHolder.setInstance(officeManager);
+
+    final File targetFile = new File(testFolder, "test.pdf");
+    try {
+      assertThatCode(() -> LocalConverter.make().convert(SOURCE_FILE).to(targetFile).execute())
+          .doesNotThrowAnyException();
+    } finally {
+      InstalledOfficeManagerHolder.setInstance(manager);
+    }
+  }
+
+  @Test
+  public void make_WithoutOfficeManagerInstalled_ThrowsIllegalStateException(
       @TempDir File testFolder) {
 
     final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();

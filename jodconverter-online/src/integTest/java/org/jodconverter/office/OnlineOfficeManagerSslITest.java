@@ -162,7 +162,7 @@ public class OnlineOfficeManagerSslITest {
 
         // Check that the output file was created with the expected content.
         final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         manager.stop();
       }
@@ -216,7 +216,7 @@ public class OnlineOfficeManagerSslITest {
 
         // Check that the output file was created with the expected content.
         final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         manager.stop();
       }
@@ -366,7 +366,7 @@ public class OnlineOfficeManagerSslITest {
 
         // Check that the output file was created with the expected content.
         final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         manager.stop();
       }
@@ -453,7 +453,7 @@ public class OnlineOfficeManagerSslITest {
 
         // Check that the output file was created with the expected content.
         final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         manager.stop();
       }
@@ -499,7 +499,7 @@ public class OnlineOfficeManagerSslITest {
 
         // Check that the output file was created with the expected content.
         final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         manager.stop();
       }
@@ -683,7 +683,7 @@ public class OnlineOfficeManagerSslITest {
 
         // Check that the output file was created with the expected content.
         final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         manager.stop();
       }
@@ -779,7 +779,7 @@ public class OnlineOfficeManagerSslITest {
 
         // Check that the output file was created with the expected content.
         final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         manager.stop();
       }
@@ -874,7 +874,7 @@ public class OnlineOfficeManagerSslITest {
 
         // Check that the output file was created with the expected content.
         final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         manager.stop();
       }

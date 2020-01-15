@@ -31,6 +31,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
 import org.jodconverter.cli.util.ExitException;
@@ -49,6 +51,7 @@ import org.jodconverter.office.LocalOfficeUtils;
 })
 public class ConvertITest {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConvertITest.class);
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
   private static final String SOURCE_FILE = "src/integTest/resources/documents/test1.doc";
   private static final String SOURCE_MULTI_FILE =
@@ -170,6 +173,7 @@ public class ConvertITest {
                 final String content =
                     FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
                 assertThat(content)
+                    .as("Check content: %s", content)
                     .contains("Test document Page 2")
                     .doesNotContain("Test document Page 1")
                     .doesNotContain("Test document Page 3");

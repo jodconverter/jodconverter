@@ -87,7 +87,7 @@ public class OnlineConverterITest {
 
       // Check that the output file was created with the expected content.
       final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-      assertThat(content).contains("Test document");
+      assertThat(content).as("Check content: %s", content).contains("Test document");
 
       // Verify that a it is actually the online converter that did the conversion.
       configureFor(wireMockServer.port());

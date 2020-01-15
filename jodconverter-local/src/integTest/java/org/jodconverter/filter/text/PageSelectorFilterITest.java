@@ -31,6 +31,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.LocalConverter;
 import org.jodconverter.LocalOfficeManagerExtension;
@@ -39,6 +41,7 @@ import org.jodconverter.office.OfficeManager;
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class PageSelectorFilterITest {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PageSelectorFilterITest.class);
   private static final String SOURCE_FILENAME = "test_multi_page.doc";
   private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
 
@@ -62,6 +65,7 @@ public class PageSelectorFilterITest {
 
     final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
+        .as("Check content: %s", content)
         .contains("Test document Page 2")
         .doesNotContain("Test document Page 1")
         .doesNotContain("Test document Page 3");

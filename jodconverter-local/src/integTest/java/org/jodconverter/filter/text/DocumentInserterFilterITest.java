@@ -66,6 +66,7 @@ public class DocumentInserterFilterITest {
 
     final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
+        .as("Check content: %s", content)
         .contains("Test document")
         .contains("Test document Page 1")
         .contains("Test document Page 2")

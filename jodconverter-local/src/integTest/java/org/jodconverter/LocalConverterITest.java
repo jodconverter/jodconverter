@@ -151,7 +151,7 @@ public class LocalConverterITest {
                     .execute())
         .doesNotThrowAnyException();
 
-    assertThat(FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8))
-        .contains("Test document");
+    final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+    assertThat(content).as("Check content: %s", content).contains("Test document");
   }
 }

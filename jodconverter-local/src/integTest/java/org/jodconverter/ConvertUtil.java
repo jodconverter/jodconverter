@@ -200,11 +200,7 @@ public final class ConvertUtil {
       FileUtils.deleteQuietly(targetFile);
 
       // Convert the file to the desired format
-      try {
-        new ConvertRunner(sourceFile, targetFile, converter).run();
-      } catch (Exception ignore) {
-        // Ignore.
-      }
+      new ConvertRunner(sourceFile, targetFile, converter).run();
     }
   }
 

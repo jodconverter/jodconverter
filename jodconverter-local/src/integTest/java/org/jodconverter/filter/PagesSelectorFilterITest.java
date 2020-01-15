@@ -225,7 +225,9 @@ public class PagesSelectorFilterITest {
                     .execute())
         .doesNotThrowAnyException();
 
-    assertThat(FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8))
+    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    assertThat(content)
+        .as("Check content: %s", content)
         .doesNotContain("Test document Page 1")
         .contains("Test document Page 2")
         .doesNotContain("Test document Page 3");
@@ -249,7 +251,9 @@ public class PagesSelectorFilterITest {
                     .execute())
         .doesNotThrowAnyException();
 
-    assertThat(FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8))
+    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    assertThat(content)
+        .as("Check content: %s", content)
         .contains("Test document Page 1")
         .doesNotContain("Test document Page 2")
         .contains("Test document Page 3");

@@ -73,6 +73,7 @@ public class DefaultFilterChainITest {
 
     final String content = FileUtils.readFileToString(targetFile1, StandardCharsets.UTF_8);
     assertThat(content)
+        .as("Check content: %s", content)
         .contains("Test document Page 1")
         .doesNotContain("Test document Page 2")
         .doesNotContain("Test document Page 3");
