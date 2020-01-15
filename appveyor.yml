@@ -39,4 +39,5 @@ matrix:
   fast_finish: true
 
 on_failure:
+  - cmd: set
   - cmd: type "%APPVEYOR_BUILD_FOLDER%\tmp\javadoc\javadoc.options"
