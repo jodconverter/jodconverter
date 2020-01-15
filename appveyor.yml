@@ -40,4 +40,9 @@ matrix:
 
 on_failure:
   - cmd: set
-  - cmd: type "%APPVEYOR_BUILD_FOLDER%\tmp\javadoc\javadoc.options"
+  - cmd: type "%APPVEYOR_BUILD_FOLDER%\jodconverter-cli\build\tmp\javadoc\javadoc.options"
+  - cmd: type "%APPVEYOR_BUILD_FOLDER%\jodconverter-core\build\tmp\javadoc\javadoc.options"
+  - cmd: type "%APPVEYOR_BUILD_FOLDER%\jodconverter-local\build\tmp\javadoc\javadoc.options"
+  - cmd: type "%APPVEYOR_BUILD_FOLDER%\jodconverter-online\build\tmp\javadoc\javadoc.options"
+  - cmd: type "%APPVEYOR_BUILD_FOLDER%\jodconverter-spring\build\tmp\javadoc\javadoc.options"
+  - cmd: type "%APPVEYOR_BUILD_FOLDER%\jodconverter-spring-boot-starter\build\tmp\javadoc\javadoc.options"
