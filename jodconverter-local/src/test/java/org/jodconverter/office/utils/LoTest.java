@@ -19,6 +19,7 @@
 
 package org.jodconverter.office.utils;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -42,20 +43,21 @@ import org.jodconverter.test.util.AssertUtil;
 public class LoTest {
 
   @Test
-  public void ctor_ClassWellDefined() throws java.lang.Exception {
+  public void ctor_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Lo.class);
   }
 
-  @Test(expected = WrappedUnoException.class)
+  @Test
   public void createInstanceMSF_WithUnoException_ThrowWrappedUnoException() throws Exception {
 
     final XMultiServiceFactory sfactory = mock(XMultiServiceFactory.class);
 
     given(sfactory.createInstance("Whatever")).willThrow(Exception.class);
-    Lo.createInstanceMSF(sfactory, Object.class, "Whatever");
+    assertThatExceptionOfType(WrappedUnoException.class)
+        .isThrownBy(() -> Lo.createInstanceMSF(sfactory, Object.class, "Whatever"));
   }
 
-  @Test(expected = WrappedUnoException.class)
+  @Test
   public void createInstanceMCF_WithUnoException_ThrowWrappedUnoException() throws Exception {
 
     final XComponentContext context = mock(XComponentContext.class);
@@ -63,6 +65,7 @@ public class LoTest {
     given(context.getServiceManager()).willReturn(cfactory);
     given(cfactory.createInstanceWithContext("Whatever", context)).willThrow(Exception.class);
 
-    Lo.createInstanceMCF(context, Object.class, "Whatever");
+    assertThatExceptionOfType(WrappedUnoException.class)
+        .isThrownBy(() -> Lo.createInstanceMCF(context, Object.class, "Whatever"));
   }
 }

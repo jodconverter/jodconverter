@@ -19,14 +19,14 @@
 
 package org.jodconverter.office.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.jodconverter.test.util.AssertUtil;
 
 public class WriteTest {
 
   @Test
-  public void ctor_ClassWellDefined() throws Exception {
+  public void ctor_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Write.class);
   }
 }

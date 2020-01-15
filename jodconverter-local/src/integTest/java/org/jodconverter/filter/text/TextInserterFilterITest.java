@@ -19,34 +19,33 @@
 
 package org.jodconverter.filter.text;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.jodconverter.ResourceUtil.documentFile;
+
 import java.io.File;
 import java.util.Map;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
+import org.jodconverter.LocalOfficeManagerExtension;
+import org.jodconverter.office.OfficeManager;
 
-public class TextInserterFilterITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class TextInserterFilterITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
-  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
+  private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
   private static final String MULTI_PAGE_FILENAME = "test_multi_page.doc";
-  private static final File SOURCE_MULTI_PAGE_FILE = new File(DOCUMENTS_DIR, MULTI_PAGE_FILENAME);
+  private static final File SOURCE_MULTI_PAGE_FILE = documentFile(SOURCE_FILENAME);
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
-  /**
-   * Test the conversion of a document inserting text along the way.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Test the conversion of a document inserting text along the way. */
   @Test
-  public void doFilter_WithCustomizedProperties() throws Exception {
+  public void doFilter_WithCustomizedProperties(@TempDir File testFolder, OfficeManager manager) {
 
-    final File targetFile = new File(testFolder.getRoot(), MULTI_PAGE_FILENAME + ".pdf");
+    final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
 
     // Create the properties of the filter
     final Map<String, Object> props =
@@ -63,24 +62,23 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
         new TextInserterFilter("This is a test of text insertion", 2, 10, props);
 
     // Convert to PDF
-
-    LocalConverter.builder()
-        .filterChain(filter)
-        .build()
-        .convert(SOURCE_MULTI_PAGE_FILE)
-        .to(targetFile)
-        .execute();
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(manager)
+                    .filterChain(filter)
+                    .build()
+                    .convert(SOURCE_MULTI_PAGE_FILE)
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
   }
 
-  /**
-   * Test the conversion of a document inserting text along the way.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Test the conversion of a document inserting text along the way. */
   @Test
-  public void doFilter_WithDefaultProperties() throws Exception {
+  public void doFilter_WithDefaultProperties(@TempDir File testFolder, OfficeManager manager) {
 
-    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".pdf");
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".pdf");
 
     // Create the TextInserterFilter to test.
     final TextInserterFilter filter =
@@ -92,12 +90,15 @@ public class TextInserterFilterITest extends AbstractOfficeITest {
             100); // Vertical Position , 10 CM
 
     // Convert to PDF
-
-    LocalConverter.builder()
-        .filterChain(filter)
-        .build()
-        .convert(SOURCE_FILE)
-        .to(targetFile)
-        .execute();
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(manager)
+                    .filterChain(filter)
+                    .build()
+                    .convert(SOURCE_FILE)
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
   }
 }

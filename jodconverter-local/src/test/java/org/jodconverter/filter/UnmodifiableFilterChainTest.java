@@ -19,7 +19,9 @@
 
 package org.jodconverter.filter;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Contains tests for the {@link org.jodconverter.filter.UnmodifiableFilterChain} class.
@@ -29,10 +31,11 @@ import org.junit.Test;
 public class UnmodifiableFilterChainTest {
 
   /** Tests that a UnmodifiableFilterChain.addFilter throws an exception after creation. */
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void create_ShouldBeReadOnly() {
 
     final UnmodifiableFilterChain chain = new UnmodifiableFilterChain(RefreshFilter.LAST_REFRESH);
-    chain.addFilter(NoopFilter.NOOP);
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> chain.addFilter(NoopFilter.NOOP));
   }
 }

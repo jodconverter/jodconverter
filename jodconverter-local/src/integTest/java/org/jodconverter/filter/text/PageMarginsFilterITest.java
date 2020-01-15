@@ -19,47 +19,46 @@
 
 package org.jodconverter.filter.text;
 
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.jodconverter.ResourceUtil.documentFile;
 
 import java.io.File;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.LocalOfficeManagerExtension;
+import org.jodconverter.office.OfficeManager;
 
-public class PageMarginsFilterITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class PageMarginsFilterITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
-  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
-
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
+  private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
 
   /**
    * Test the conversion of a document, settings specifics margins. We can't really test the result,
    * but at least we will test the the conversion doesn't fail.
    */
   @Test
-  public void doFilter_WithMargins_ShouldConvertDocument() {
+  public void doFilter_WithMargins_ShouldConvertDocument(
+      @TempDir File testFolder, OfficeManager manager) {
 
-    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".margins.pdf");
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".margins.pdf");
 
     // Test the filter
-    try {
-      LocalConverter.builder()
-          .filterChain(new PageMarginsFilter(50, 50, 50, 50))
-          .build()
-          .convert(SOURCE_FILE)
-          .to(targetFile)
-          .execute();
-    } catch (OfficeException e) {
-
-      // The test should fail if an Exception occurs.
-      fail();
-    }
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(manager)
+                    .filterChain(new PageMarginsFilter(50, 50, 50, 50))
+                    .build()
+                    .convert(SOURCE_FILE)
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
   }
 
   /**
@@ -67,22 +66,21 @@ public class PageMarginsFilterITest extends AbstractOfficeITest {
    * the result, but at least we will test the the conversion doesn't fail.
    */
   @Test
-  public void doFilter_WithNullMargins_ShouldConvertDocument() {
+  public void doFilter_WithNullMargins_ShouldConvertDocument(
+      @TempDir File testFolder, OfficeManager manager) {
 
-    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".nullmargins.pdf");
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".nullmargins.pdf");
 
     // Test the filter
-    try {
-      LocalConverter.builder()
-          .filterChain(new PageMarginsFilter(null, null, null, null))
-          .build()
-          .convert(SOURCE_FILE)
-          .to(targetFile)
-          .execute();
-    } catch (OfficeException e) {
-
-      // The test should fail if an Exception occurs.
-      fail();
-    }
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(manager)
+                    .filterChain(new PageMarginsFilter(null, null, null, null))
+                    .build()
+                    .convert(SOURCE_FILE)
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
   }
 }

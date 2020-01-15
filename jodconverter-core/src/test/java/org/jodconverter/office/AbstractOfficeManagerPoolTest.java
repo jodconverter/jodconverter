@@ -23,21 +23,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.powermock.reflect.Whitebox;
 
 public class AbstractOfficeManagerPoolTest {
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
   @Test
-  public void create_WithCustomConfig_ShouldUseCustomConfig() throws Exception {
+  public void create_WithCustomConfig_ShouldUseCustomConfig(@TempDir File testFolder) {
 
     final SimpleOfficeManagerPoolConfig config =
         new SimpleOfficeManagerPoolConfig(new File(System.getProperty("java.io.tmpdir")));
-    config.setWorkingDir(testFolder.getRoot());
+    config.setWorkingDir(testFolder);
     config.setTaskExecutionTimeout(5000L);
     config.setTaskQueueTimeout(9000L);
 
@@ -49,9 +46,8 @@ public class AbstractOfficeManagerPoolTest {
           }
         };
 
-    final SimpleOfficeManagerPoolConfig setupConfig =
-        (SimpleOfficeManagerPoolConfig) FieldUtils.readField(pool, "config", true);
-    assertThat(setupConfig.getWorkingDir().getPath()).isEqualTo(testFolder.getRoot().getPath());
+    final SimpleOfficeManagerPoolConfig setupConfig = Whitebox.getInternalState(pool, "config");
+    assertThat(setupConfig.getWorkingDir().getPath()).isEqualTo(testFolder.getPath());
     assertThat(setupConfig.getTaskExecutionTimeout()).isEqualTo(5000L);
     assertThat(setupConfig.getTaskQueueTimeout()).isEqualTo(9000L);
   }

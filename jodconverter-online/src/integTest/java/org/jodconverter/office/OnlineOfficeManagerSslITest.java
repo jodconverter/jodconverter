@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
@@ -35,9 +36,8 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.io.FileUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.OnlineConverter;
 import org.jodconverter.ssl.SslConfig;
@@ -64,16 +64,12 @@ public class OnlineOfficeManagerSslITest {
   private static final String SERVER_TRUSTSTORE_PATH = RESOURCES_PATH + "servertruststore.jks";
   private static final String SERVER_TRUSTSTORE_PWD = "servertruststore";
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
   @Test
-  public void execute_WithKeyPasswordAndPasswordNotProvided_ShouldThrowUnrecoverableKeyException()
-      throws OfficeException {
+  public void execute_WithKeyPasswordAndPasswordNotProvided_ShouldThrowUnrecoverableKeyException(
+      @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -112,18 +108,16 @@ public class OnlineOfficeManagerSslITest {
         OfficeUtils.stopQuietly(manager);
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithKeyPasswordAndPasswordProvided_ShouldSucceed() throws Exception {
+  public void execute_WithKeyPasswordAndPasswordProvided_ShouldSucceed(@TempDir File testFolder)
+      throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -173,18 +167,16 @@ public class OnlineOfficeManagerSslITest {
         manager.stop();
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithNeedClientAuthAndConfiguredClientAuth_ShouldSucceed() throws Exception {
+  public void execute_WithNeedClientAuthAndConfiguredClientAuth_ShouldSucceed(
+      @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -229,19 +221,16 @@ public class OnlineOfficeManagerSslITest {
         manager.stop();
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithNeedClientAuthAndMissingClientAuth_ShouldThrowSSLException()
-      throws OfficeException {
+  public void execute_WithNeedClientAuthAndMissingClientAuth_ShouldThrowSSLException(
+      @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -276,19 +265,16 @@ public class OnlineOfficeManagerSslITest {
         OfficeUtils.stopQuietly(manager);
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithSpecifiedPrivateKeyAndBadPrivateKeySpecified_ShouldThrowSSLException()
-      throws OfficeException {
+  public void execute_WithSpecifiedPrivateKeyAndBadPrivateKeySpecified_ShouldThrowSSLException(
+      @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -329,19 +315,16 @@ public class OnlineOfficeManagerSslITest {
         OfficeUtils.stopQuietly(manager);
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithSpecifiedPrivateKeyAndGoodPrivateKeySpecified_ShouldSucceed()
-      throws Exception {
+  public void execute_WithSpecifiedPrivateKeyAndGoodPrivateKeySpecified_ShouldSucceed(
+      @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -388,19 +371,17 @@ public class OnlineOfficeManagerSslITest {
         manager.stop();
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithSelfSignedCertificateAndNoSslConfiguration_ShouldThrowSSLException()
-      throws OfficeException {
+  public void execute_WithSelfSignedCertificateAndNoSslConfiguration_ShouldThrowSSLException(
+      @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -430,19 +411,17 @@ public class OnlineOfficeManagerSslITest {
         OfficeUtils.stopQuietly(manager);
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithSelfSignedCertificateAndSslConfiguration_ShouldSucceed()
-      throws Exception {
+  public void execute_WithSelfSignedCertificateAndSslConfiguration_ShouldSucceed(
+      @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -479,18 +458,17 @@ public class OnlineOfficeManagerSslITest {
         manager.stop();
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithSelfSignedCertificateAndTrustAll_ShouldSucceed() throws Exception {
+  public void execute_WithSelfSignedCertificateAndTrustAll_ShouldSucceed(@TempDir File testFolder)
+      throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -526,19 +504,17 @@ public class OnlineOfficeManagerSslITest {
         manager.stop();
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithSelfSignedCertificateAndHostnameVerification_ShouldThrowSslException()
-      throws OfficeException {
+  public void execute_WithSelfSignedCertificateAndHostnameVerification_ShouldThrowSslException(
+      @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -573,19 +549,17 @@ public class OnlineOfficeManagerSslITest {
         OfficeUtils.stopQuietly(manager);
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithSelfSignedCertificateAndSslDisabled_ShouldThrowSSLException()
-      throws OfficeException {
+  public void execute_WithSelfSignedCertificateAndSslDisabled_ShouldThrowSSLException(
+      @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -618,19 +592,17 @@ public class OnlineOfficeManagerSslITest {
         OfficeUtils.stopQuietly(manager);
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithUnknownSslProtocol_ShouldThrowNoSuchAlgorithmException()
-      throws OfficeException {
+  public void execute_WithUnknownSslProtocol_ShouldThrowNoSuchAlgorithmException(
+      @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -667,18 +639,17 @@ public class OnlineOfficeManagerSslITest {
         OfficeUtils.stopQuietly(manager);
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithKnownSslProtocol_ShouldSucceed() throws Exception {
+  public void execute_WithKnownSslProtocol_ShouldSucceed(@TempDir File testFolder)
+      throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -717,19 +688,17 @@ public class OnlineOfficeManagerSslITest {
         manager.stop();
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithUnknownEnabledlProtocol_ShouldThrowNoSuchAlgorithmException()
-      throws OfficeException {
+  public void execute_WithUnknownEnabledlProtocol_ShouldThrowNoSuchAlgorithmException(
+      @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -766,18 +735,17 @@ public class OnlineOfficeManagerSslITest {
         OfficeUtils.stopQuietly(manager);
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithKnownEnabledProtocol_ShouldSucceed() throws Exception {
+  public void execute_WithKnownEnabledProtocol_ShouldSucceed(@TempDir File testFolder)
+      throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -816,19 +784,17 @@ public class OnlineOfficeManagerSslITest {
         manager.stop();
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
+
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithUnknownCipher_ShouldThrowNoSuchAlgorithmException()
-      throws OfficeException {
+  public void execute_WithUnknownCipher_ShouldThrowNoSuchAlgorithmException(
+      @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -865,18 +831,16 @@ public class OnlineOfficeManagerSslITest {
         OfficeUtils.stopQuietly(manager);
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void execute_WithKnownEnabledCipher_ShouldSucceed() throws Exception {
+  public void execute_WithKnownEnabledCipher_ShouldSucceed(@TempDir File testFolder)
+      throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -915,7 +879,6 @@ public class OnlineOfficeManagerSslITest {
         manager.stop();
       }
     } finally {
-      FileUtils.deleteQuietly(outputFile);
       wireMockServer.stop();
     }
   }

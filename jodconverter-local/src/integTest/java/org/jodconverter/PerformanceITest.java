@@ -19,6 +19,8 @@
 
 package org.jodconverter;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -28,7 +30,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +39,8 @@ import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.OfficeException;
 
-public class PerformanceITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class PerformanceITest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceITest.class);
 
@@ -61,7 +65,8 @@ public class PerformanceITest extends AbstractOfficeITest {
     return String.format("%d min, %d sec, %d millisec", minutes, seconds, localMillis);
   }
 
-  private void convertFileXTimes(final File inputFile, final DocumentFormat outputFormat)
+  private void convertFileXTimes(
+      final DocumentConverter converter, final File inputFile, final DocumentFormat outputFormat)
       throws IOException, OfficeException {
 
     final String baseName = FilenameUtils.getBaseName(inputFile.getName());
@@ -78,7 +83,7 @@ public class PerformanceITest extends AbstractOfficeITest {
           baseName,
           PerformanceITest.INPUT_FORMAT.getExtension(),
           outputFormat.getExtension());
-      LocalConverter.make()
+      converter
           .convert(inputFile)
           .as(PerformanceITest.INPUT_FORMAT)
           .to(outputFile)
@@ -102,16 +107,19 @@ public class PerformanceITest extends AbstractOfficeITest {
   }
 
   @Test
-  public void runTest() throws Exception {
+  public void runTest(DocumentConverter converter) {
 
     final File dir = new File("src/integTest/resources/performance");
     final File[] files =
         dir.listFiles((FileFilter) new WildcardFileFilter("*.odt", IOCase.INSENSITIVE));
 
     assert files != null;
-    for (final File inputFile : files) {
-
-      convertFileXTimes(inputFile, OUTPUT_FORMAT);
-    }
+    assertThatCode(
+            () -> {
+              for (final File inputFile : files) {
+                convertFileXTimes(converter, inputFile, OUTPUT_FORMAT);
+              }
+            })
+        .doesNotThrowAnyException();
   }
 }

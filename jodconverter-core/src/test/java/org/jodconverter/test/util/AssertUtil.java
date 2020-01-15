@@ -34,8 +34,7 @@ public final class AssertUtil {
    *
    * @param clazz Utility class to verify.
    */
-  public static void assertUtilityClassWellDefined(final Class<?> clazz)
-      throws NoSuchMethodException {
+  public static void assertUtilityClassWellDefined(final Class<?> clazz) {
 
     // Check final identifier
     assertThat(clazz).as("Check class final identifier").isFinal();
@@ -44,7 +43,14 @@ public final class AssertUtil {
     assertThat(clazz.getDeclaredConstructors().length)
         .as("Check class single constructor")
         .isEqualTo(1);
-    final Constructor<?> constructor = clazz.getDeclaredConstructor();
+
+    Constructor<?> constructor = null;
+    try {
+      constructor = clazz.getDeclaredConstructor();
+    } catch (NoSuchMethodException e) {
+      assertThat(e).isNull();
+    }
+    assertThat(constructor).isNotNull();
     assertThat(constructor.isAccessible() || !Modifier.isPrivate(constructor.getModifiers()))
         .as("Check class constructor modifier")
         .isFalse();

@@ -19,39 +19,38 @@
 
 package org.jodconverter;
 
+import static org.jodconverter.ResourceUtil.documentFile;
+
 import java.io.File;
 import java.util.Objects;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class DocumentConverterFunctionalITest {
 
   private static final int MAX_THREADS = 10;
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
-  /** Test the conversion of an HTML file that contains an image. */
   @Test
-  public void htmlWithImageConversion() {
+  public void htmlWithImageConversion(@TempDir File testFolder, DocumentConverter converter) {
 
-    final File source = new File(DOCUMENTS_DIR, "index.html");
-    final File target = new File(testFolder.getRoot(), "index.pdf");
+    final File source = documentFile("index.html");
+    final File target = new File(testFolder, "index.pdf");
 
     // Convert the file to PDF
-    LocalConverter.make().convert(source).to(target);
+    converter.convert(source).to(target);
   }
 
-  /** Test the conversion of an HTML file that contains an image. */
   @Test
-  public void testHtmlConversion() {
+  public void testHtmlConversion(@TempDir File testFolder, DocumentConverter converter) {
 
-    final File source = new File(DOCUMENTS_DIR, "test.html");
-    final File target = new File(testFolder.getRoot(), "test.pdf");
+    final File source = documentFile("test.html");
+    final File target = new File(testFolder, "test.pdf");
 
     // Convert the file to PDF
-    LocalConverter.make().convert(source).to(target);
+    converter.convert(source).to(target);
   }
 
   //  /**
@@ -75,7 +74,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
   //      final Runnable runnable =
   //          () -> {
   //            try {
-  //              convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
+  //              convertFileToAllSupportedFormats(sourceFile, testFolder);
   //            } catch (Exception ex) {
   //              exception.set(ex);
   //            }
@@ -95,7 +94,7 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
   //        }
   //      }
   //
-  //      // convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
+  //      // convertFileToAllSupportedFormats(sourceFile, testFolder);
   //    }
   //
   //    // Wait for remaining threads.
@@ -109,13 +108,14 @@ public class DocumentConverterFunctionalITest extends AbstractOfficeITest {
 
   /** Test the conversion of all the supported documents format. */
   @Test
-  public void runAllPossibleConversionsSingleThread() {
+  public void runAllPossibleConversionsSingleThread(
+      @TempDir File testFolder, DocumentConverter converter) {
 
     for (final File sourceFile :
         Objects.requireNonNull(
             new File("src/integTest/resources/documents")
                 .listFiles((dir, name) -> name.startsWith("test.")))) {
-      convertFileToAllSupportedFormats(sourceFile, testFolder.getRoot());
+      ConvertUtil.convertFileToAllSupportedFormats(sourceFile, testFolder, converter);
     }
   }
 }

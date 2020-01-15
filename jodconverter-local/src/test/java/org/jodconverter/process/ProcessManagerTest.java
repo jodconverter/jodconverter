@@ -20,11 +20,14 @@
 package org.jodconverter.process;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assume.assumeTrue;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import java.io.IOException;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.office.LocalOfficeManager;
 import org.jodconverter.office.LocalOfficeUtils;
@@ -32,7 +35,7 @@ import org.jodconverter.office.LocalOfficeUtils;
 public class ProcessManagerTest {
 
   @Test
-  public void freeBsdProcessManager() throws Exception {
+  public void freeBsdProcessManager() throws IOException {
     assumeTrue(SystemUtils.IS_OS_FREE_BSD);
 
     final ProcessManager processManager = FreeBSDProcessManager.getDefault();
@@ -41,7 +44,7 @@ public class ProcessManagerTest {
 
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-    final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
+    final Number javaPid = Whitebox.getInternalState(process, "pid");
     assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
@@ -49,7 +52,7 @@ public class ProcessManagerTest {
   }
 
   @Test
-  public void freeBsdPureJavaProcessManager() throws Exception {
+  public void freeBsdPureJavaProcessManager() throws IOException {
     assumeTrue(SystemUtils.IS_OS_FREE_BSD);
 
     final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
@@ -65,7 +68,7 @@ public class ProcessManagerTest {
   }
 
   @Test
-  public void unixProcessManager() throws Exception {
+  public void unixProcessManager() throws IOException {
     assumeTrue(SystemUtils.IS_OS_UNIX && !SystemUtils.IS_OS_MAC && !SystemUtils.IS_OS_FREE_BSD);
 
     final ProcessManager processManager = UnixProcessManager.getDefault();
@@ -74,7 +77,7 @@ public class ProcessManagerTest {
 
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-    final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
+    final Number javaPid = Whitebox.getInternalState(process, "pid");
     assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
@@ -82,7 +85,7 @@ public class ProcessManagerTest {
   }
 
   @Test
-  public void unixPureJavaProcessManager() throws Exception {
+  public void unixPureJavaProcessManager() throws IOException {
     assumeTrue(SystemUtils.IS_OS_UNIX && !SystemUtils.IS_OS_MAC && !SystemUtils.IS_OS_FREE_BSD);
 
     final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
@@ -98,7 +101,7 @@ public class ProcessManagerTest {
   }
 
   @Test
-  public void macProcessManager() throws Exception {
+  public void macProcessManager() throws IOException {
     assumeTrue(SystemUtils.IS_OS_MAC);
 
     final ProcessManager processManager = MacProcessManager.getDefault();
@@ -107,7 +110,7 @@ public class ProcessManagerTest {
 
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-    final Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
+    final Number javaPid = Whitebox.getInternalState(process, "pid");
 
     assertThat(pid).isEqualTo(javaPid.longValue());
 
@@ -116,7 +119,7 @@ public class ProcessManagerTest {
   }
 
   @Test
-  public void macPureJavaProcessManager() throws Exception {
+  public void macPureJavaProcessManager() throws IOException {
     assumeTrue(SystemUtils.IS_OS_MAC);
 
     final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
@@ -132,7 +135,7 @@ public class ProcessManagerTest {
   }
 
   @Test
-  public void windowsProcessManager() throws Exception {
+  public void windowsProcessManager() throws IOException {
     assumeTrue(SystemUtils.IS_OS_WINDOWS);
 
     final ProcessManager processManager = WindowsProcessManager.getDefault();
@@ -142,7 +145,7 @@ public class ProcessManagerTest {
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     // Won't work on Windows, skip this assertion
-    // Number javaPid = (Number) FieldUtils.readDeclaredField(process, "pid", true);
+    // Number javaPid = Whitebox.getInternalState(process, "pid");
     // assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
@@ -150,7 +153,7 @@ public class ProcessManagerTest {
   }
 
   @Test
-  public void windowsPureJavaProcessManager() throws Exception {
+  public void windowsPureJavaProcessManager() throws IOException {
     assumeTrue(SystemUtils.IS_OS_WINDOWS);
 
     final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
@@ -169,9 +172,14 @@ public class ProcessManagerTest {
    * Tests that using an custom process manager that does not appear in the classpath will fail with
    * an IllegalArgumentException.
    */
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void customProcessManagerNotFound() {
 
-    LocalOfficeManager.builder().processManager("org.foo.fallback.ProcessManager").build();
+    assertThatIllegalArgumentException()
+        .isThrownBy(
+            () ->
+                LocalOfficeManager.builder()
+                    .processManager("org.foo.fallback.ProcessManager")
+                    .build());
   }
 }

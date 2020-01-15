@@ -24,25 +24,26 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.io.FileUtils;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.cli.util.ExitException;
-import org.jodconverter.cli.util.NoExitResource;
-import org.jodconverter.cli.util.ResetExitExceptionResource;
+import org.jodconverter.cli.util.NoExitExtension;
+import org.jodconverter.cli.util.ResetExitExceptionExtension;
 
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
  */
+@ExtendWith({NoExitExtension.class, ResetExitExceptionExtension.class})
 public class OnlineConvertITest {
 
   private static final String RESOURCES_PATH = "src/integTest/resources/";
@@ -51,62 +52,53 @@ public class OnlineConvertITest {
   private static final String SERVER_KEYSTORE_PATH = RESOURCES_PATH + "serverkeystore.jks";
   private static final String SERVER_KEYSTORE_PWD = "serverkeystore";
 
-  @ClassRule public static NoExitResource noExit = new NoExitResource();
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
-  @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
-
   @Test
-  public void convert_WithConnectionOption_ShouldSucceed() throws Exception {
+  public void convert_WithConnectionOption_ShouldSucceed(@TempDir File testFolder) {
 
     final File inputFile = new File(SOURCE_FILE_DOC);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
-
-    assertThat(outputFile).doesNotExist();
+    final File outputFile = new File(testFolder, "out.txt");
 
     final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
     wireMockServer.start();
     try {
-      wireMockServer.stubFor(
-          post(urlPathEqualTo("/lool/convert-to/txt"))
-              .willReturn(aResponse().withBody("Test Document")));
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () -> {
+                wireMockServer.stubFor(
+                    post(urlPathEqualTo("/lool/convert-to/txt"))
+                        .willReturn(aResponse().withBody("Test Document")));
 
-      Convert.main(
-          new String[] {
-            inputFile.getPath(),
-            outputFile.getPath(),
-            "-c",
-            "http://localhost:8000/lool/convert-to/"
-          });
+                Convert.main(
+                    new String[] {
+                      inputFile.getPath(),
+                      outputFile.getPath(),
+                      "-c",
+                      "http://localhost:8000/lool/convert-to/"
+                    });
+              })
+          .satisfies(
+              e -> {
+                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
 
-      // Be sure the ExitException exception is thrown.
-      fail();
-
-    } catch (Exception ex) {
-      try {
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 0);
-
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
-      } finally {
-        FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
-      }
+                try {
+                  final String content =
+                      FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+                  assertThat(content).contains("Test Document");
+                } catch (IOException ex) {
+                  assertThat(ex).isNull();
+                }
+              });
     } finally {
-      FileUtils.deleteQuietly(outputFile);
       wireMockServer.stop();
     }
   }
 
   @Test
-  public void convert_WithConnectionOptionAndSslConfig_ShouldSucceed() throws Exception {
+  public void convert_WithConnectionOptionAndSslConfig_ShouldSucceed(@TempDir File testFolder) {
 
     final File inputFile = new File(SOURCE_FILE_DOC);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
+    final File outputFile = new File(testFolder, "out.txt");
     final File contextFile = new File(CONFIG_DIR + "applicationContext_sslConfig.xml");
-
-    assertThat(outputFile).doesNotExist();
 
     final WireMockServer wireMockServer =
         new WireMockServer(
@@ -117,36 +109,36 @@ public class OnlineConvertITest {
                 .keystorePassword(SERVER_KEYSTORE_PWD));
     wireMockServer.start();
     try {
-      wireMockServer.stubFor(
-          post(urlPathEqualTo("/lool/convert-to/txt"))
-              .willReturn(aResponse().withBody("Test Document")));
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () -> {
+                wireMockServer.stubFor(
+                    post(urlPathEqualTo("/lool/convert-to/txt"))
+                        .willReturn(aResponse().withBody("Test Document")));
 
-      Convert.main(
-          new String[] {
-            inputFile.getPath(),
-            outputFile.getPath(),
-            "-c",
-            "https://localhost:8001/lool/convert-to/",
-            "-a",
-            contextFile.getPath()
-          });
+                Convert.main(
+                    new String[] {
+                      inputFile.getPath(),
+                      outputFile.getPath(),
+                      "-c",
+                      "https://localhost:8001/lool/convert-to/",
+                      "-a",
+                      contextFile.getPath()
+                    });
+              })
+          .satisfies(
+              e -> {
+                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
 
-      // Be sure the ExitException exception is thrown.
-      fail();
-
-    } catch (Exception ex) {
-      try {
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 0);
-
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).contains("Test Document");
-      } finally {
-        FileUtils.deleteQuietly(outputFile); // Prevent further test failure.
-      }
+                try {
+                  final String content =
+                      FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+                  assertThat(content).contains("Test Document");
+                } catch (IOException ex) {
+                  assertThat(ex).isNull();
+                }
+              });
     } finally {
-      FileUtils.deleteQuietly(outputFile);
       wireMockServer.stop();
     }
   }

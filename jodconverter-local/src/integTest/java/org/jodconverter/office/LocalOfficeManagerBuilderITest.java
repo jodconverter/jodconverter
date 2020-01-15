@@ -20,23 +20,22 @@
 package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.io.File;
 
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.powermock.reflect.Whitebox;
 
 public class LocalOfficeManagerBuilderITest {
 
   @Test
-  public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues()
-      throws Exception {
+  public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues() {
 
     final OfficeManager manager = new DefaultOfficeManagerBuilder().build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final OfficeProcessManagerPoolConfig config =
-        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -51,16 +50,14 @@ public class LocalOfficeManagerBuilderITest {
     assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(30000L);
 
-    final OfficeUrl[] officeUrls = (OfficeUrl[]) FieldUtils.readField(manager, "officeUrls", true);
+    final OfficeUrl[] officeUrls = Whitebox.getInternalState(manager, "officeUrls");
     assertThat(officeUrls).hasSize(1);
     assertThat(officeUrls[0].getConnectionAndParametersAsString())
-        //    .isEqualTo("socket,host=localhost,port=2002");
         .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
   }
 
   @Test
-  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues()
-      throws Exception {
+  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues() {
 
     final OfficeManager manager =
         new DefaultOfficeManagerBuilder()
@@ -81,8 +78,7 @@ public class LocalOfficeManagerBuilderITest {
             .build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final OfficeProcessManagerPoolConfig config =
-        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -98,14 +94,13 @@ public class LocalOfficeManagerBuilderITest {
     assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
     assertThat(config.getTaskQueueTimeout()).isEqualTo(1000L);
 
-    final OfficeUrl[] officeUrls = (OfficeUrl[]) FieldUtils.readField(manager, "officeUrls", true);
+    final OfficeUrl[] officeUrls = Whitebox.getInternalState(manager, "officeUrls");
     assertThat(officeUrls).hasSize(1);
     assertThat(officeUrls[0].getConnectionAndParametersAsString()).isEqualTo("pipe,name=test");
   }
 
   @Test
-  public void build_WithValuesAsString_ShouldInitializedOfficeManagerWithCustomValues()
-      throws Exception {
+  public void build_WithValuesAsString_ShouldInitializedOfficeManagerWithCustomValues() {
 
     final OfficeManager manager =
         new DefaultOfficeManagerBuilder()
@@ -115,8 +110,7 @@ public class LocalOfficeManagerBuilderITest {
             .build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final OfficeProcessManagerPoolConfig config =
-        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -126,8 +120,7 @@ public class LocalOfficeManagerBuilderITest {
   }
 
   @Test
-  public void build_WithEmptyValuesAsString_ShouldInitializedOfficeManagerWithDefaultValues()
-      throws Exception {
+  public void build_WithEmptyValuesAsString_ShouldInitializedOfficeManagerWithDefaultValues() {
 
     final OfficeManager manager =
         new DefaultOfficeManagerBuilder()
@@ -138,8 +131,7 @@ public class LocalOfficeManagerBuilderITest {
             .build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final OfficeProcessManagerPoolConfig config =
-        (OfficeProcessManagerPoolConfig) FieldUtils.readField(manager, "config", true);
+    final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getOfficeHome().getPath())
         .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
     assertThat(config.getWorkingDir().getPath())
@@ -148,61 +140,69 @@ public class LocalOfficeManagerBuilderITest {
   }
 
   @Test
-  public void build_WithPipeDefaultConfiguration_ShouldInitializedOfficeManagerWithDefaultPipe()
-      throws Exception {
+  public void build_WithPipeDefaultConfiguration_ShouldInitializedOfficeManagerWithDefaultPipe() {
 
     final OfficeManager manager =
         new DefaultOfficeManagerBuilder()
             .setConnectionProtocol(OfficeConnectionProtocol.PIPE)
             .build();
 
-    final OfficeUrl[] officeUrls = (OfficeUrl[]) FieldUtils.readField(manager, "officeUrls", true);
+    final OfficeUrl[] officeUrls = Whitebox.getInternalState(manager, "officeUrls");
     assertThat(officeUrls).hasSize(1);
     assertThat(officeUrls[0]).isInstanceOf(OfficeUrl.class);
     assertThat(officeUrls[0].getConnectionAndParametersAsString()).isEqualTo("pipe,name=office");
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void build_WithProcessManagerClassNotFound_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder()
-        .setProcessManager("org.jodconverter.notfound.ClassName")
-        .build();
+    assertThatIllegalArgumentException()
+        .isThrownBy(
+            () ->
+                new DefaultOfficeManagerBuilder()
+                    .setProcessManager("org.jodconverter.notfound.ClassName")
+                    .build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void build_WithNullPipeNames_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder().setPipeNames((String[]) null).build();
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> new DefaultOfficeManagerBuilder().setPipeNames((String[]) null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void build_WithEmptyPipeNames_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder().setPipeNames().build();
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> new DefaultOfficeManagerBuilder().setPipeNames().build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void build_WithNullPortNumbers_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder().setPortNumbers((int[]) null).build();
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> new DefaultOfficeManagerBuilder().setPortNumbers((int[]) null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void build_WithEmptyPortNumbers_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder().setPortNumbers().build();
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> new DefaultOfficeManagerBuilder().setPortNumbers().build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void build_WithNullRunAsArgs_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder().setRunAsArgs((String[]) null).build();
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> new DefaultOfficeManagerBuilder().setRunAsArgs((String[]) null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void build_WithEmptyRunAsArgs_ThrowIllegalArgumentException() {
 
-    new DefaultOfficeManagerBuilder().setRunAsArgs().build();
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> new DefaultOfficeManagerBuilder().setRunAsArgs().build());
   }
 }

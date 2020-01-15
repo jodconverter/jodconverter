@@ -25,15 +25,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.jodconverter.test.util.AssertUtil;
 
 public class DefaultDocumentFormatRegistryTest {
 
   @Test
-  public void ctor_ClassWellDefined() throws Exception {
-
+  public void ctor_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(DefaultDocumentFormatRegistry.class);
   }
 

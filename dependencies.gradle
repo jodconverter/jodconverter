@@ -101,8 +101,11 @@ ext {
             // Tests
             assertj                            : "org.assertj:assertj-core",
             equalsverifier                     : "nl.jqno.equalsverifier:equalsverifier:$versions.equalsverifier_version",
-            junit                              : "junit:junit",
-            jsr305                             : "com.google.code.findbugs:jsr305:$versions.findbugs_version",
+            junit                            : "junit:junit",
+            junit_jupiter_api                  : "org.junit.jupiter:junit-jupiter-api",
+            junit_jupiter_engine               : "org.junit.jupiter:junit-jupiter-engine",
+            junit_vintage_engine               : "org.junit.vintage:junit-vintage-engine",
+            //jsr305                             : "com.google.code.findbugs:jsr305:$versions.findbugs_version",
             findbugs                           : "com.google.code.findbugs:findbugs:$versions.findbugs_version",
             mockito                            : "org.mockito:mockito-core",
             powermock_junit                    : "org.powermock:powermock-module-junit4:$versions.powermock_version",

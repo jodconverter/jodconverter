@@ -27,26 +27,86 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.ClassRule;
-import org.junit.rules.TestRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
-import org.jodconverter.filter.DefaultFilterChain;
-import org.jodconverter.filter.Filter;
 
-public abstract class AbstractOfficeITest {
+public final class ConvertUtil {
 
-  @ClassRule public static TestRule managerResource = OfficeManagerResource.INSTANCE;
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConvertUtil.class);
 
-  protected static final String RESOURCES_DIR = "src/integTest/resources/";
-  protected static final String DOCUMENTS_DIR = RESOURCES_DIR + "documents/";
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOfficeITest.class);
+  /**
+   * Runnable used to convert a document. This kind of runner is useful when a conversion must be
+   * done in his own thread.
+   */
+  public static class ConvertRunner implements Runnable {
 
-  protected void convertFileToAllSupportedFormats(
-      final File sourceFile, final File outputDir, final Filter... filters) {
+    private final File source;
+    private final File target;
+    private final DocumentConverter converter;
+
+    /**
+     * Constructs a new runner with the specified arguments.
+     *
+     * @param source The source file.
+     * @param target The target file.
+     * @param converter The converter.
+     */
+    public ConvertRunner(final File source, final File target, final DocumentConverter converter) {
+      super();
+
+      this.source = source;
+      this.target = target;
+      this.converter = converter;
+    }
+
+    @Override
+    public void run() {
+
+      final DocumentFormat sourceFmt =
+          converter
+              .getFormatRegistry()
+              .getFormatByExtension(FilenameUtils.getExtension(source.getName()));
+      final String sourceExt = sourceFmt.getExtension();
+
+      final DocumentFormat targetFmt =
+          converter
+              .getFormatRegistry()
+              .getFormatByExtension(FilenameUtils.getExtension(target.getName()));
+      final String targetExt = targetFmt.getExtension();
+
+      try {
+
+        LOGGER.info("Converting [{} -> {}]...", sourceExt, targetExt);
+        converter.convert(source).to(target).execute();
+        LOGGER.info("Conversion done [{} -> {}]...", sourceExt, targetExt);
+
+        // Check that the created file is not empty. The programmer still have to
+        // manually if the content of the output file looks good.
+        assertThat(source).isFile();
+        assertThat(source.length()).isGreaterThan(0L);
+
+      } catch (Exception ex) {
+
+        // Log the error.
+        final String message = "Unable to convert from " + sourceExt + " to " + targetExt + ".";
+        if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
+          final com.sun.star.task.ErrorCodeIOException ioEx =
+              (com.sun.star.task.ErrorCodeIOException) ex.getCause();
+          LOGGER.error(message + " " + ioEx.getMessage(), ioEx);
+        } else {
+          LOGGER.error(message + " " + ex.getMessage(), ex);
+        }
+
+        throw new RuntimeException(ex);
+      }
+    }
+  }
+
+  public static void convertFileToAllSupportedFormats(
+      final File sourceFile, final File outputDir, final DocumentConverter converter) {
 
     // Detect input format
     final String inputExt = FilenameUtils.getExtension(sourceFile.getName());
@@ -131,9 +191,6 @@ public abstract class AbstractOfficeITest {
       //        continue;
       //      }
 
-      // Create the filter chain to use
-      final DefaultFilterChain chain = new DefaultFilterChain(filters);
-
       // Create an output file
       final File targetFile =
           new File(outputDir, sourceFile.getName() + "." + outputFormat.getExtension());
@@ -144,10 +201,15 @@ public abstract class AbstractOfficeITest {
 
       // Convert the file to the desired format
       try {
-        new ConvertRunner(sourceFile, targetFile, chain).run();
+        new ConvertRunner(sourceFile, targetFile, converter).run();
       } catch (Exception ignore) {
         // Ignore.
       }
     }
+  }
+
+  // Suppresses default constructor, ensuring non-instantiability.
+  private ConvertUtil() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }

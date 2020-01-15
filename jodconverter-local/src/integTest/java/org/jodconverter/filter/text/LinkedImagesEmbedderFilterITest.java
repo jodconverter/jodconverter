@@ -20,30 +20,35 @@
 package org.jodconverter.filter.text;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.jodconverter.ResourceUtil.documentFile;
 
 import java.io.File;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
+import org.jodconverter.LocalOfficeManagerExtension;
+import org.jodconverter.office.OfficeManager;
 
-public class LinkedImagesEmbedderFilterITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class LinkedImagesEmbedderFilterITest {
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
+  private static final File SOURCE_FILE = documentFile("test_with_linked_images.odt");
 
   @Test
-  public void doFilter_DoesNotThrowAnyException() {
+  public void doFilter_DoesNotThrowAnyException(@TempDir File testFolder, OfficeManager manager) {
 
+    final File targetFile = new File(testFolder, "test_with_linked_images.odt");
     assertThatCode(
             () ->
                 LocalConverter.builder()
+                    .officeManager(manager)
                     .filterChain(new LinkedImagesEmbedderFilter())
                     .build()
-                    .convert(new File(DOCUMENTS_DIR, "test_with_linked_images.odt"))
-                    .to(new File(testFolder.getRoot(), "test_with_linked_images.odt"))
+                    .convert(SOURCE_FILE)
+                    .to(targetFile)
                     .execute())
         .doesNotThrowAnyException();
 

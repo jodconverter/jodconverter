@@ -22,7 +22,7 @@ package org.jodconverter.office;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OfficeUrlTest {
 

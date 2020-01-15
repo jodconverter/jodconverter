@@ -22,6 +22,7 @@ package org.jodconverter.office.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -47,7 +48,7 @@ import org.jodconverter.test.util.AssertUtil;
 public class PropsTest {
 
   @Test
-  public void ctor_ClassWellDefined() throws Exception {
+  public void ctor_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Props.class);
   }
 
@@ -84,31 +85,27 @@ public class PropsTest {
   }
 
   @Test
-  public void getProperty_WithUnknownPropertyException_ThrowWrappedUnoException() {
+  public void getProperty_WithUnknownPropertyException_ThrowWrappedUnoException()
+      throws WrappedTargetException, UnknownPropertyException {
 
     final XPropertySet props = mock(XPropertySet.class);
-    try {
-      given(props.getPropertyValue(isA(String.class))).willThrow(UnknownPropertyException.class);
-      Props.getProperty(props, "test");
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(WrappedUnoException.class)
-          .hasCauseExactlyInstanceOf(UnknownPropertyException.class);
-    }
+    given(props.getPropertyValue(isA(String.class))).willThrow(UnknownPropertyException.class);
+
+    assertThatExceptionOfType(WrappedUnoException.class)
+        .isThrownBy(() -> Props.getProperty(props, "test"))
+        .withCauseExactlyInstanceOf(UnknownPropertyException.class);
   }
 
   @Test
-  public void getProperty_WrappedTargetException_ThrowWrappedUnoException() {
+  public void getProperty_WrappedTargetException_ThrowWrappedUnoException()
+      throws WrappedTargetException, UnknownPropertyException {
 
     final XPropertySet props = mock(XPropertySet.class);
-    try {
-      given(props.getPropertyValue(isA(String.class))).willThrow(WrappedTargetException.class);
-      Props.getProperty(props, "test");
-    } catch (Exception ex) {
-      assertThat(ex)
-          .isExactlyInstanceOf(WrappedUnoException.class)
-          .hasCauseExactlyInstanceOf(WrappedTargetException.class);
-    }
+    given(props.getPropertyValue(isA(String.class))).willThrow(WrappedTargetException.class);
+
+    assertThatExceptionOfType(WrappedUnoException.class)
+        .isThrownBy(() -> Props.getProperty(props, "test"))
+        .withCauseExactlyInstanceOf(WrappedTargetException.class);
   }
 
   @Test
@@ -141,8 +138,7 @@ public class PropsTest {
 
     final String[] names = new String[] {"name1", "name2", "name3"};
     final Object[] values = new Object[] {100, 200, 300, 400};
-    assertThatExceptionOfType(IllegalArgumentException.class)
-        .isThrownBy(() -> Props.makeProperties(names, values));
+    assertThatIllegalArgumentException().isThrownBy(() -> Props.makeProperties(names, values));
   }
 
   @Test

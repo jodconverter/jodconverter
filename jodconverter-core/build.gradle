@@ -7,6 +7,13 @@ dependencies {
     implementation libraries.slf4j_api
 
     testImplementation libraries.slf4j_log4j
+
+    // We still need junit 4 for powermock until the following issue is resolved.
+    // https://github.com/powermock/powermock/issues/830
+    //testImplementation libraries.junit
+    testRuntimeOnly libraries.junit_vintage_engine
+    testImplementation libraries.powermock_junit
+    testImplementation libraries.powermock_mockito
 }
 
 

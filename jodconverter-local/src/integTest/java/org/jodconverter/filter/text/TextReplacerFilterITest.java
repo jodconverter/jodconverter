@@ -20,88 +20,96 @@
 package org.jodconverter.filter.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.jodconverter.ResourceUtil.documentFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
+import org.jodconverter.LocalOfficeManagerExtension;
+import org.jodconverter.office.OfficeManager;
 
-public class TextReplacerFilterITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class TextReplacerFilterITest {
 
   private static final String SOURCE_FILENAME = "test_replace.doc";
-  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
-
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
+  private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
 
   /**
    * Test that the creation of a TextReplacerFilter with a search list and replacement list of
    * different size throws a IllegalArgumentException.
    */
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void create_WithArgumentsSizeNotEqual_ThrowsIllegalArgumentException() {
 
-    new TextReplacerFilter(
-        new String[] {"SEARCH_STRING", "ANOTHER_SEARCH_STRING"},
-        new String[] {"REPLACEMENT_STRING"});
+    assertThatIllegalArgumentException()
+        .isThrownBy(
+            () ->
+                new TextReplacerFilter(
+                    new String[] {"SEARCH_STRING", "ANOTHER_SEARCH_STRING"},
+                    new String[] {"REPLACEMENT_STRING"}));
   }
 
   /**
    * Test that the creation of a TextReplacerFilter with an empty replacement list throws a
    * IllegalArgumentException.
    */
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void create_WithEmptyReplacementList_ThrowsIllegalArgumentException() {
 
-    new TextReplacerFilter(new String[] {"SEARCH_STRING"}, new String[0]);
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> new TextReplacerFilter(new String[] {"SEARCH_STRING"}, new String[0]));
   }
 
   /**
    * Test that the creation of a TextReplacerFilter with an empty search list throws a
    * IllegalArgumentException.
    */
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void create_WithEmptySearchList_ThrowsIllegalArgumentException() {
 
-    new TextReplacerFilter(new String[0], new String[] {"REPLACEMENT_STRING"});
+    assertThatIllegalArgumentException()
+        .isThrownBy(
+            () -> new TextReplacerFilter(new String[0], new String[] {"REPLACEMENT_STRING"}));
   }
 
   /**
    * Test that the creation of a TextReplacerFilter with a null replacement list throws a
    * NullPointerException.
    */
-  @Test(expected = NullPointerException.class)
+  @Test
   public void create_WithNullReplacementList_ThrowsNullPointerException() {
 
-    new TextReplacerFilter(new String[] {"SEARCH_STRING"}, null);
+    assertThatNullPointerException()
+        .isThrownBy(() -> new TextReplacerFilter(new String[] {"SEARCH_STRING"}, null));
   }
 
   /**
    * Test that the creation of a TextReplacerFilter with a null search list throws a
    * NullPointerException.
    */
-  @Test(expected = NullPointerException.class)
+  @Test
   public void create_WithNullSearchList_ThrowsNullPointerException() {
 
-    new TextReplacerFilter(null, new String[] {"REPLACEMENT_STRING"});
+    assertThatNullPointerException()
+        .isThrownBy(() -> new TextReplacerFilter(null, new String[] {"REPLACEMENT_STRING"}));
   }
 
-  /**
-   * Test the conversion of a document replacing text along the way.
-   *
-   * @throws IOException If an IO error occurs.
-   * @throws Exception If an error occurs.
-   */
+  /** Test the conversion of a document replacing text along the way. */
   @Test
-  public void doFilter_WithDefaultProperties() throws Exception {
+  public void doFilter_WithDefaultProperties(@TempDir File testFolder, OfficeManager manager)
+      throws IOException {
 
-    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".txt");
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".txt");
 
     // Create the GraphicInserterFilter to test.
     final TextReplacerFilter filter =
@@ -115,13 +123,16 @@ public class TextReplacerFilterITest extends AbstractOfficeITest {
             });
 
     // Convert to PDF
-
-    LocalConverter.builder()
-        .filterChain(filter)
-        .build()
-        .convert(SOURCE_FILE)
-        .to(targetFile)
-        .execute();
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(manager)
+                    .filterChain(filter)
+                    .build()
+                    .convert(SOURCE_FILE)
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
 
     final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)

@@ -21,6 +21,7 @@ package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -32,18 +33,17 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.LocalConverter;
-import org.jodconverter.cli.util.ConsoleStreamsListener;
-import org.jodconverter.cli.util.NoExitResource;
-import org.jodconverter.cli.util.ResetExitExceptionResource;
+import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
+import org.jodconverter.cli.util.NoExitExtension;
+import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormatRegistry;
@@ -52,6 +52,11 @@ import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.task.LocalConversionTask;
 
+@ExtendWith({
+  ConsoleStreamsListenerExtension.class,
+  NoExitExtension.class,
+  ResetExitExceptionExtension.class
+})
 public class CliConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
@@ -66,16 +71,11 @@ public class CliConverterTest {
   private static final File SOURCE_TARGET_FILE_1 = new File(SOURCE_DIR, TARGET_FILENAME_1);
   private static final File SOURCE_TARGET_FILE_2 = new File(SOURCE_DIR, TARGET_FILENAME_2);
 
-  @ClassRule public static NoExitResource noExit = new NoExitResource();
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-  @ClassRule public static ConsoleStreamsListener consoleListener = new ConsoleStreamsListener();
-
   private OfficeManager officeManager;
   private CliConverter converter;
-  @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
 
   /** Setup the office manager once before each tests. */
-  @Before
+  @BeforeEach
   public void setUp() {
 
     officeManager = mock(OfficeManager.class);
@@ -86,12 +86,13 @@ public class CliConverterTest {
   }
 
   @Test
-  public void main_WithWrongInputOutputFilenamesLengthMismatch_ThrowsIllegalArgumentException() {
+  public void main_WithWrongInputOutputFilenamesLengthMismatch_ThrowsIllegalArgumentException(
+      @TempDir File testFolder) {
 
-    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
-    assertThatExceptionOfType(IllegalArgumentException.class)
+    assertThatIllegalArgumentException()
         .isThrownBy(
             () ->
                 converter.convert(
@@ -109,10 +110,10 @@ public class CliConverterTest {
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()}, "pdf", null, false);
 
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<LocalConversionTask> tasks = taskArgument.getAllValues();
+    verify(officeManager, times(2)).execute(arg.capture());
+    final List<LocalConversionTask> tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -131,21 +132,23 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToDirnames_NoTaskExecuted() throws Exception {
+  public void convert_FilenamesToDirnames_NoTaskExecuted(@TempDir File testFolder)
+      throws Exception {
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
-        new String[] {testFolder.getRoot().getPath(), testFolder.getRoot().getPath()},
+        new String[] {testFolder.getPath(), testFolder.getPath()},
         null,
         false);
     verify(officeManager, times(0)).execute(isA(LocalConversionTask.class));
   }
 
   @Test
-  public void convert_FilenamesToFilenames_TasksExecuted() throws Exception {
+  public void convert_FilenamesToFilenames_TasksExecuted(@TempDir File testFolder)
+      throws Exception {
 
-    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
@@ -153,10 +156,10 @@ public class CliConverterTest {
         null,
         false);
 
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<LocalConversionTask> tasks = taskArgument.getAllValues();
+    verify(officeManager, times(2)).execute(arg.capture());
+    final List<LocalConversionTask> tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -168,21 +171,22 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFilenamesAllowingOverwrite_TasksExecuted() throws Exception {
+  public void convert_FilenamesToFilenamesAllowingOverwrite_TasksExecuted(@TempDir File testFolder)
+      throws Exception {
 
-    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
-        testFolder.getRoot().getPath(),
+        testFolder.getPath(),
         true);
 
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<LocalConversionTask> tasks = taskArgument.getAllValues();
+    verify(officeManager, times(2)).execute(arg.capture());
+    final List<LocalConversionTask> tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -194,10 +198,11 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted() throws Exception {
+  public void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted(@TempDir File testFolder)
+      throws Exception {
 
-    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     FileUtils.touch(targetFile1);
     FileUtils.touch(targetFile2);
@@ -205,31 +210,29 @@ public class CliConverterTest {
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
-        testFolder.getRoot().getPath(),
+        testFolder.getPath(),
         false);
 
     verify(officeManager, times(0)).execute(isA(LocalConversionTask.class));
-
-    FileUtils.deleteQuietly(targetFile1);
-    FileUtils.deleteQuietly(targetFile2);
   }
 
   @Test
-  public void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted() throws Exception {
+  public void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted(@TempDir File testFolder)
+      throws Exception {
 
-    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         new String[] {TARGET_FILENAME_1, TARGET_FILENAME_2},
-        testFolder.getRoot().getPath(),
+        testFolder.getPath(),
         false);
 
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<LocalConversionTask> tasks = taskArgument.getAllValues();
+    verify(officeManager, times(2)).execute(arg.capture());
+    final List<LocalConversionTask> tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -249,10 +252,10 @@ public class CliConverterTest {
         null,
         false);
 
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<LocalConversionTask> tasks = taskArgument.getAllValues();
+    verify(officeManager, times(2)).execute(arg.capture());
+    final List<LocalConversionTask> tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -264,21 +267,22 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFormatWithOutputDir_TasksExecuted() throws Exception {
+  public void convert_FilenamesToFormatWithOutputDir_TasksExecuted(@TempDir File testFolder)
+      throws Exception {
 
-    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         TARGET_FORMAT,
-        testFolder.getRoot().getPath(),
+        testFolder.getPath(),
         false);
 
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<LocalConversionTask> tasks = taskArgument.getAllValues();
+    verify(officeManager, times(2)).execute(arg.capture());
+    final List<LocalConversionTask> tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -290,10 +294,11 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted() throws Exception {
+  public void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted(@TempDir File testFolder)
+      throws Exception {
 
-    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     targetFile1.createNewFile();
     targetFile2.createNewFile();
@@ -301,13 +306,13 @@ public class CliConverterTest {
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         TARGET_FORMAT,
-        testFolder.getRoot().getPath(),
+        testFolder.getPath(),
         true);
 
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<LocalConversionTask> tasks = taskArgument.getAllValues();
+    verify(officeManager, times(2)).execute(arg.capture());
+    final List<LocalConversionTask> tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -319,10 +324,11 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted() throws Exception {
+  public void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted(@TempDir File testFolder)
+      throws Exception {
 
-    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     targetFile1.createNewFile();
     targetFile2.createNewFile();
@@ -330,13 +336,10 @@ public class CliConverterTest {
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
         TARGET_FORMAT,
-        testFolder.getRoot().getPath(),
+        testFolder.getPath(),
         false);
 
     verify(officeManager, times(0)).execute(isA(LocalConversionTask.class));
-
-    FileUtils.deleteQuietly(targetFile1);
-    FileUtils.deleteQuietly(targetFile2);
   }
 
   @Test
@@ -344,10 +347,10 @@ public class CliConverterTest {
 
     converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", null, false);
 
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<LocalConversionTask> tasks = taskArgument.getAllValues();
+    verify(officeManager, times(2)).execute(arg.capture());
+    final List<LocalConversionTask> tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file.name", "target.file.name")
@@ -367,18 +370,18 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_DirWithWildcardAndOutputDir_TasksExecuted() throws Exception {
+  public void convert_DirWithWildcardAndOutputDir_TasksExecuted(@TempDir File testFolder)
+      throws Exception {
 
-    converter.convert(
-        new String[] {SOURCE_DIR + "*"}, "pdf", testFolder.getRoot().getPath(), false);
+    converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", testFolder.getPath(), false);
 
-    final File targetFile1 = new File(testFolder.getRoot(), TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder.getRoot(), TARGET_FILENAME_2);
+    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(2)).execute(taskArgument.capture());
-    final List<LocalConversionTask> tasks = taskArgument.getAllValues();
+    verify(officeManager, times(2)).execute(arg.capture());
+    final List<LocalConversionTask> tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file.name", "target.file.name")

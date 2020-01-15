@@ -21,7 +21,6 @@ package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -35,8 +34,8 @@ import java.util.concurrent.TimeoutException;
 import com.sun.star.frame.TerminationVetoException;
 import com.sun.star.frame.XTerminateListener;
 import com.sun.star.lang.EventObject;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.process.PureJavaProcessManager;
@@ -49,6 +48,13 @@ public class OfficeProcessManagerPoolEntryITest {
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long RESTART_INITIAL_WAIT = 5000; // 5 Seconds.
   private static final long RESTART_WAIT_TIMEOUT = 10000; // 10 Seconds.
+
+  private static void sleep(long millisec) {
+    try {
+      Thread.sleep(millisec);
+    } catch (InterruptedException ignore) {
+    }
+  }
 
   private static class VetoTerminateListener implements XTerminateListener {
 
@@ -70,28 +76,30 @@ public class OfficeProcessManagerPoolEntryITest {
     }
   }
 
-  private static OfficeProcess startOfficeProcess(final OfficeUrl officeUrl) throws Exception {
+  private static OfficeProcess startOfficeProcess(final OfficeUrl officeUrl)
+      throws OfficeException {
 
     // Starts an office process
     final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
     officeProcess.start();
-    Thread.sleep(1000);
+    sleep(2000L);
     final Integer exitCode = officeProcess.getExitCode();
     if (exitCode != null && exitCode.equals(81)) {
       officeProcess.start(true);
-      Thread.sleep(1000);
+      sleep(2000L);
     }
     return officeProcess;
   }
 
   private static void assertRestartedAndReconnected(
-      final OfficeProcessManagerPoolEntry officeManager, final long initialWait, final long timeout)
-      throws Exception {
+      final OfficeProcessManagerPoolEntry officeManager,
+      final long initialWait,
+      final long timeout) {
 
     final long start = System.currentTimeMillis();
 
     if (initialWait > 0) {
-      Thread.sleep(initialWait);
+      sleep(initialWait);
     }
 
     final long limit = start + timeout;
@@ -102,7 +110,7 @@ public class OfficeProcessManagerPoolEntryITest {
       }
 
       // Wait a sec
-      Thread.sleep(1000);
+      sleep(1000L);
     }
 
     // Times out...
@@ -112,54 +120,43 @@ public class OfficeProcessManagerPoolEntryITest {
         .containsExactly(true, true);
   }
 
-  private static OfficeProcess getOfficeProcess(final OfficeProcessManagerPoolEntry manager)
-      throws IllegalAccessException {
-
-    final OfficeProcessManager processManager =
-        (OfficeProcessManager) FieldUtils.readField(manager, "officeProcessManager", true);
-    return (OfficeProcess) FieldUtils.readField(processManager, "process", true);
+  private static OfficeProcess getOfficeProcess(final OfficeProcessManagerPoolEntry manager) {
+    return Whitebox.getInternalState(
+        Whitebox.getInternalState(manager, "officeProcessManager"), "process");
   }
 
-  private static OfficeConnection getConnection(final OfficeProcessManagerPoolEntry manager)
-      throws IllegalAccessException {
-
-    final OfficeProcessManager processManager =
-        (OfficeProcessManager) FieldUtils.readField(manager, "officeProcessManager", true);
-    return (OfficeConnection) FieldUtils.readField(processManager, "connection", true);
+  private static OfficeConnection getConnection(final OfficeProcessManagerPoolEntry manager) {
+    return Whitebox.getInternalState(
+        Whitebox.getInternalState(manager, "officeProcessManager"), "connection");
   }
 
-  /**
-   * Tests the execution of a task.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Tests the execution of a task. */
   @Test
-  public void executeTask() throws Exception {
+  public void executeTask() throws OfficeException, RetryTimeoutException {
 
-    final OfficeProcessManagerPoolEntry officeManager =
-        new OfficeProcessManagerPoolEntry(CONNECT_URL);
+    final OfficeProcessManagerPoolEntry manager = new OfficeProcessManagerPoolEntry(CONNECT_URL);
 
     try {
-      officeManager.start();
-      assertThat(officeManager.isRunning()).isTrue();
-      assertThat(officeManager)
+      manager.start();
+      assertThat(manager.isRunning()).isTrue();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(true, true);
 
       final MockOfficeTask task = new MockOfficeTask();
-      officeManager.execute(task);
+      manager.execute(task);
       assertThat(task.isCompleted()).isTrue();
 
     } finally {
 
-      officeManager.stop();
-      assertThat(officeManager.isRunning()).isFalse();
-      assertThat(officeManager)
+      manager.stop();
+      assertThat(manager.isRunning()).isFalse();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(false, false);
-      assertThat(getOfficeProcess(officeManager).getExitCode(0, 0)).isEqualTo(0);
+      assertThat(getOfficeProcess(manager).getExitCode(0, 0)).isEqualTo(0);
     }
   }
 
@@ -182,21 +179,17 @@ public class OfficeProcessManagerPoolEntryITest {
     }
   }
 
-  /**
-   * Tests that an office process is restarted successfully after a crash.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Tests that an office process is restarted successfully after a crash. */
   @Test
-  public void execute_WhenOfficeProcessCrash_ShouldRestartAfterCrash() throws Exception {
+  public void execute_WhenOfficeProcessCrash_ShouldRestartAfterCrash()
+      throws OfficeException, RetryTimeoutException {
 
-    final OfficeProcessManagerPoolEntry officeManager =
-        new OfficeProcessManagerPoolEntry(CONNECT_URL);
+    final OfficeProcessManagerPoolEntry manager = new OfficeProcessManagerPoolEntry(CONNECT_URL);
 
     try {
-      officeManager.start();
-      assertThat(officeManager.isRunning()).isTrue();
-      assertThat(officeManager)
+      manager.start();
+      assertThat(manager.isRunning()).isTrue();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(true, true);
@@ -204,211 +197,205 @@ public class OfficeProcessManagerPoolEntryITest {
       // Submit the task to an executor
       final ExecutorService pool = Executors.newFixedThreadPool(1);
       try {
-        final Callable<Boolean> task = new RestartAfterCrashTask(officeManager);
+        final Callable<Boolean> task = new RestartAfterCrashTask(manager);
         final Future<Boolean> future = pool.submit(task);
 
-        Thread.sleep(500);
+        sleep(500L);
 
         // Simulate crash
         final VerboseProcess verboseProcess =
-            (VerboseProcess) FieldUtils.readField(getOfficeProcess(officeManager), "process", true);
+            Whitebox.getInternalState(getOfficeProcess(manager), "process");
         final Process underlyingProcess = verboseProcess.getProcess();
         assertThat(underlyingProcess).isNotNull();
         LOGGER.debug("Simulating the crash");
         underlyingProcess.destroy();
 
         // Wait until the task is completed
-        try {
-          future.get();
-          fail("Exception expected");
-        } catch (ExecutionException ex) {
-          assertThat(ex.getCause()).isInstanceOf(OfficeException.class);
-          assertThat(ex.getCause().getCause()).isInstanceOf(CancellationException.class);
-        }
+        assertThatExceptionOfType(ExecutionException.class)
+            .isThrownBy(future::get)
+            .satisfies(
+                e -> {
+                  assertThat(e.getCause()).isInstanceOf(OfficeException.class);
+                  assertThat(e.getCause().getCause()).isInstanceOf(CancellationException.class);
+                });
 
       } finally {
         pool.shutdownNow();
       }
 
-      assertRestartedAndReconnected(officeManager, RESTART_INITIAL_WAIT, RESTART_WAIT_TIMEOUT);
+      assertRestartedAndReconnected(manager, RESTART_INITIAL_WAIT, RESTART_WAIT_TIMEOUT);
 
       final MockOfficeTask goodTask = new MockOfficeTask();
-      officeManager.execute(goodTask);
+      manager.execute(goodTask);
       assertThat(goodTask.isCompleted()).isTrue();
 
     } finally {
 
-      officeManager.stop();
-      assertThat(officeManager.isRunning()).isFalse();
-      assertThat(officeManager)
+      manager.stop();
+      assertThat(manager.isRunning()).isFalse();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(false, false);
-      assertThat(getOfficeProcess(officeManager).getExitCode(0, 0)).isEqualTo(0);
+      assertThat(getOfficeProcess(manager).getExitCode(0, 0)).isEqualTo(0);
     }
   }
 
-  /**
-   * Tests that an office process is restarted when the execution of a task times out.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Tests that an office process is restarted when the execution of a task times out. */
   @Test
-  public void execute_WhenTimeoutExceptionOccured_ShouldRestartAfterTaskTimeout() throws Exception {
+  public void execute_WhenTimeoutExceptionOccured_ShouldRestartAfterTaskTimeout()
+      throws OfficeException, RetryTimeoutException {
 
     final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
     config.setTaskExecutionTimeout(1500L);
-    final OfficeProcessManagerPoolEntry officeManager =
+    final OfficeProcessManagerPoolEntry manager =
         new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
 
     try {
-      officeManager.start();
-      assertThat(officeManager.isRunning()).isTrue();
-      assertThat(officeManager)
+      manager.start();
+      assertThat(manager.isRunning()).isTrue();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(true, true);
 
       final MockOfficeTask task = new MockOfficeTask(2000);
-      try {
-        officeManager.execute(task);
-        fail("Exception expected");
-      } catch (OfficeException officeEx) {
-        assertThat(officeEx.getCause()).isInstanceOf(TimeoutException.class);
-      }
 
-      assertRestartedAndReconnected(officeManager, RESTART_INITIAL_WAIT, RESTART_WAIT_TIMEOUT);
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> manager.execute(task))
+          .withCauseExactlyInstanceOf(TimeoutException.class);
 
-      assertThat(officeManager)
+      assertRestartedAndReconnected(manager, RESTART_INITIAL_WAIT, RESTART_WAIT_TIMEOUT);
+
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(true, true);
 
       final MockOfficeTask goodTask = new MockOfficeTask();
-      officeManager.execute(goodTask);
+      manager.execute(goodTask);
       assertThat(goodTask.isCompleted()).isTrue();
 
     } finally {
 
-      officeManager.stop();
-      assertThat(officeManager.isRunning()).isFalse();
-      assertThat(officeManager)
+      manager.stop();
+      assertThat(manager.isRunning()).isFalse();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(false, false);
-      assertThat(getOfficeProcess(officeManager).getExitCode(0, 0)).isEqualTo(0);
+      assertThat(getOfficeProcess(manager).getExitCode(0, 0)).isEqualTo(0);
     }
   }
 
   /**
    * Tests that an office process is restarted when it reached the maximum number of executed tasks.
-   *
-   * @throws Exception if an error occurs.
    */
   @Test
-  public void execute_WhenMaxTasksPerProcessReached_ShouldRestart() throws Exception {
+  public void execute_WhenMaxTasksPerProcessReached_ShouldRestart()
+      throws OfficeException, RetryTimeoutException {
 
     final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
     config.setMaxTasksPerProcess(3);
-    final OfficeProcessManagerPoolEntry officeManager =
+    final OfficeProcessManagerPoolEntry manager =
         new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
 
     try {
-      officeManager.start();
-      assertThat(officeManager.isRunning()).isTrue();
-      assertThat(officeManager)
+      manager.start();
+      assertThat(manager.isRunning()).isTrue();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(true, true);
 
       for (int i = 0; i < 3; i++) {
         final MockOfficeTask task = new MockOfficeTask();
-        officeManager.execute(task);
+        manager.execute(task);
         assertThat(task.isCompleted()).isTrue();
-        assertThat(officeManager).extracting("taskCount.value").isEqualTo(i + 1);
+        assertThat(manager).extracting("taskCount.value").isEqualTo(i + 1);
       }
 
       final MockOfficeTask task = new MockOfficeTask();
-      officeManager.execute(task);
+      manager.execute(task);
       assertThat(task.isCompleted()).isTrue();
-      assertThat(officeManager).extracting("taskCount.value").isEqualTo(1);
+      assertThat(manager).extracting("taskCount.value").isEqualTo(1);
 
     } finally {
 
-      officeManager.stop();
-      assertThat(officeManager.isRunning()).isFalse();
-      assertThat(officeManager)
+      manager.stop();
+      assertThat(manager.isRunning()).isFalse();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(false, false);
-      assertThat(getOfficeProcess(officeManager).getExitCode(0, 0)).isEqualTo(0);
+      assertThat(getOfficeProcess(manager).getExitCode(0, 0)).isEqualTo(0);
     }
   }
 
   @Test
   public void start_WhenProcessAlreadyExistsAndKillExistingProcessOn_ShouldKillExistingProcess()
-      throws Exception {
+      throws OfficeException, RetryTimeoutException {
 
     // Starts an office process
-    final OfficeProcess officeProcess = startOfficeProcess(CONNECT_URL);
+    final OfficeProcess process = startOfficeProcess(CONNECT_URL);
 
-    final OfficeProcessManagerPoolEntry officeManager =
-        new OfficeProcessManagerPoolEntry(CONNECT_URL);
+    final OfficeProcessManagerPoolEntry manager = new OfficeProcessManagerPoolEntry(CONNECT_URL);
     try {
-      officeManager.start();
-      assertThat(officeManager.isRunning()).isTrue();
-      assertThat(officeManager)
+      manager.start();
+      assertThat(manager.isRunning()).isTrue();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(true, true);
 
     } finally {
 
-      officeManager.stop();
-      assertThat(officeManager.isRunning()).isFalse();
-      assertThat(officeManager)
+      manager.stop();
+      assertThat(manager.isRunning()).isFalse();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(false, false);
-      assertThat(getOfficeProcess(officeManager).getExitCode(0, 0)).isEqualTo(0);
+      assertThat(getOfficeProcess(manager).getExitCode(0, 0)).isEqualTo(0);
 
-      officeProcess.forciblyTerminate(1000L, 5000L);
-      officeProcess.deleteInstanceProfileDir();
+      process.forciblyTerminate(1000L, 5000L);
+      process.deleteInstanceProfileDir();
     }
   }
 
   @Test
   public void start_WhenProcessAlreadyExistsAndKillExistingProcessOff_ShouldThrowOfficeException()
-      throws Exception {
+      throws OfficeException, RetryTimeoutException {
 
     // Starts an office process
-    final OfficeProcess officeProcess = startOfficeProcess(CONNECT_URL);
+    final OfficeProcess process = startOfficeProcess(CONNECT_URL);
 
     final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
     config.setKillExistingProcess(false);
-    final OfficeProcessManagerPoolEntry officeManager =
+    final OfficeProcessManagerPoolEntry manager =
         new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
     try {
 
       assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(officeManager::start)
+          .isThrownBy(manager::start)
           .withMessageMatching("A process with acceptString.*is already running.*");
 
     } finally {
 
-      assertThat(officeManager.isRunning()).isFalse();
-      assertThat(officeManager)
+      assertThat(manager.isRunning()).isFalse();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(false, false);
 
-      officeProcess.forciblyTerminate(1000L, 5000L);
-      officeProcess.deleteInstanceProfileDir();
+      process.forciblyTerminate(1000L, 5000L);
+      process.deleteInstanceProfileDir();
     }
   }
 
   @Test
-  public void start_WithCustomProfileDir_ShouldCopyProfileDirToWorkingDir() throws Exception {
+  public void start_WithCustomProfileDir_ShouldCopyProfileDirToWorkingDir()
+      throws OfficeException, RetryTimeoutException {
 
     final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
     config.setOfficeHome(LocalOfficeUtils.getDefaultOfficeHome());
@@ -416,30 +403,30 @@ public class OfficeProcessManagerPoolEntryITest {
     config.setOfficeHome(LocalOfficeUtils.getDefaultOfficeHome());
     config.setTemplateProfileDir(new File("src/integTest/resources/templateProfileDir"));
 
-    final OfficeProcessManagerPoolEntry officeManager =
+    final OfficeProcessManagerPoolEntry manager =
         new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
     try {
-      officeManager.start();
-      assertThat(officeManager.isRunning()).isTrue();
-      assertThat(officeManager)
+      manager.start();
+      assertThat(manager.isRunning()).isTrue();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(true, true);
 
       // Check the profile dir existence
       final File instanceProfileDir =
-          (File) FieldUtils.readField(getOfficeProcess(officeManager), "instanceProfileDir", true);
+          Whitebox.getInternalState(getOfficeProcess(manager), "instanceProfileDir");
       assertThat(new File(instanceProfileDir, "user/customFile")).isFile();
 
     } finally {
 
-      officeManager.stop();
-      assertThat(officeManager.isRunning()).isFalse();
-      assertThat(officeManager)
+      manager.stop();
+      assertThat(manager.isRunning()).isFalse();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(false, false);
-      assertThat(getOfficeProcess(officeManager).getExitCode(0, 0)).isEqualTo(0);
+      assertThat(getOfficeProcess(manager).getExitCode(0, 0)).isEqualTo(0);
     }
   }
 
@@ -456,11 +443,7 @@ public class OfficeProcessManagerPoolEntryITest {
           public void kill(final Process process, final long pid) {
             if (firstAttempt) {
               firstAttempt = false;
-              try {
-                Thread.sleep(500);
-              } catch (InterruptedException e) {
-                // Swallow
-              }
+              sleep(500L);
             } else {
               super.kill(process, pid);
             }
@@ -469,39 +452,39 @@ public class OfficeProcessManagerPoolEntryITest {
 
     final VetoTerminateListener terminateListener = new VetoTerminateListener();
 
-    final OfficeProcessManagerPoolEntry officeManager =
+    final OfficeProcessManagerPoolEntry manager =
         new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
     try {
-      officeManager.start();
-      assertThat(officeManager.isRunning()).isTrue();
-      assertThat(officeManager)
+      manager.start();
+      assertThat(manager.isRunning()).isTrue();
+      assertThat(manager)
           .extracting(
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(true, true);
 
       // Listen to termination and change the timeout
       config.setProcessTimeout(1L);
-      getConnection(officeManager).getDesktop().addTerminateListener(terminateListener);
+      getConnection(manager).getDesktop().addTerminateListener(terminateListener);
 
     } finally {
 
       try {
         assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(officeManager::stop)
+            .isThrownBy(manager::stop)
             .withCauseExactlyInstanceOf(RetryTimeoutException.class);
       } finally {
 
         // Ensure that after the test, the office instance is terminated.
         config.setProcessTimeout(30000L);
-        getConnection(officeManager).getDesktop().removeTerminateListener(terminateListener);
+        getConnection(manager).getDesktop().removeTerminateListener(terminateListener);
 
-        officeManager.stop();
-        assertThat(officeManager.isRunning()).isFalse();
-        assertThat(officeManager)
+        manager.stop();
+        assertThat(manager.isRunning()).isFalse();
+        assertThat(manager)
             .extracting(
                 "officeProcessManager.process.running", "officeProcessManager.connection.connected")
             .containsExactly(false, false);
-        assertThat(getOfficeProcess(officeManager).getExitCode(0, 0)).isEqualTo(0);
+        assertThat(getOfficeProcess(manager).getExitCode(0, 0)).isEqualTo(0);
       }
     }
   }
@@ -509,9 +492,7 @@ public class OfficeProcessManagerPoolEntryITest {
   @Test
   public void isRunning_WhenNotStarted_ReturnsFalse() {
 
-    final OfficeProcessManagerPoolEntry officeManager =
-        new OfficeProcessManagerPoolEntry(CONNECT_URL);
-
-    assertThat(officeManager.isRunning()).isFalse();
+    final OfficeProcessManagerPoolEntry manager = new OfficeProcessManagerPoolEntry(CONNECT_URL);
+    assertThat(manager.isRunning()).isFalse();
   }
 }

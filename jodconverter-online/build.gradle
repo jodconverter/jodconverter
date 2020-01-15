@@ -15,6 +15,7 @@ dependencies {
     implementation libraries.httpcomponents_fluenthc
 
     testImplementation libraries.slf4j_log4j
+    testImplementation libraries.powermock_mockito
     testImplementation libraries.wiremock
     testImplementation project(path: ':jodconverter-core', configuration: 'tests')
 }

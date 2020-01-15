@@ -20,26 +20,26 @@
 package org.jodconverter.office.utils;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.jodconverter.ResourceUtil.documentFile;
 
 import java.io.File;
 
 import com.sun.star.uno.XComponentContext;
-import org.apache.commons.io.FileUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
+import org.jodconverter.LocalOfficeManagerExtension;
 import org.jodconverter.filter.Filter;
 import org.jodconverter.office.LocalOfficeContext;
+import org.jodconverter.office.OfficeManager;
 
-public class InfoITest extends AbstractOfficeITest {
-
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class InfoITest {
 
   @Test
-  public void getInfos_NoExceptionThrown() {
+  public void getInfos_NoExceptionThrown(@TempDir File testFolder, OfficeManager manager) {
 
     final Filter filter =
         (context, document, chain) -> {
@@ -55,15 +55,15 @@ public class InfoITest extends AbstractOfficeITest {
           Info.isLibreOffice(ccontext);
         };
 
-    final File outputFile = new File(testFolder.getRoot(), "out.pdf");
-    FileUtils.deleteQuietly(outputFile);
-
+    final File sourceFile = documentFile("test.odt");
+    final File outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()
+                    .officeManager(manager)
                     .filterChain(filter)
                     .build()
-                    .convert(new File(DOCUMENTS_DIR + "test.odt"))
+                    .convert(sourceFile)
                     .to(outputFile)
                     .execute())
         .doesNotThrowAnyException();

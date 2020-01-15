@@ -31,7 +31,7 @@ import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.task.ErrorCodeIOException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
@@ -42,9 +42,9 @@ import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
 
 /**
- * Contains tests for the {@link AbstractOfficeTask} class.
+ * Contains tests for the {@link AbstractLocalOfficeTask} class.
  *
- * @see AbstractOfficeTask
+ * @see AbstractLocalOfficeTask
  */
 public class AbstractLocalOfficeTaskTest {
 
@@ -80,7 +80,8 @@ public class AbstractLocalOfficeTaskTest {
   }
 
   @Test
-  public void loadDocument_CatchIllegalArgumentException_ThrowOfficeException() throws Exception {
+  public void loadDocument_CatchIllegalArgumentException_ThrowOfficeException()
+      throws IOException, IllegalArgumentException {
 
     final XComponentLoader loader = mock(XComponentLoader.class);
     final LocalOfficeContext context = mock(LocalOfficeContext.class);
@@ -97,7 +98,8 @@ public class AbstractLocalOfficeTaskTest {
   }
 
   @Test
-  public void loadDocument_CatchErrorCodeIoException_ThrowOfficeException() throws Exception {
+  public void loadDocument_CatchErrorCodeIoException_ThrowOfficeException()
+      throws IOException, IllegalArgumentException {
 
     final XComponentLoader loader = mock(XComponentLoader.class);
     final LocalOfficeContext context = mock(LocalOfficeContext.class);
@@ -114,7 +116,8 @@ public class AbstractLocalOfficeTaskTest {
   }
 
   @Test
-  public void loadDocument_CatchIoException_ThrowOfficeException() throws Exception {
+  public void loadDocument_CatchIoException_ThrowOfficeException()
+      throws IOException, IllegalArgumentException {
 
     final XComponentLoader loader = mock(XComponentLoader.class);
     final LocalOfficeContext context = mock(LocalOfficeContext.class);

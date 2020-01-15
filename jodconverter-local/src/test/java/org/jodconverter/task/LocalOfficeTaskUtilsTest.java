@@ -19,6 +19,8 @@
 
 package org.jodconverter.task;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -40,20 +42,18 @@ import org.jodconverter.test.util.AssertUtil;
 public class LocalOfficeTaskUtilsTest {
 
   @Test
-  public void ctor_ClassWellDefined() throws Exception {
-
+  public void ctor_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(LocalOfficeTaskUtils.class);
   }
 
-  @Test(expected = NullPointerException.class)
-  public void getDocumentFamily_WithNullDocument_ThrowNullPointerException()
-      throws OfficeException {
+  @Test
+  public void getDocumentFamily_WithNullDocument_ThrowNullPointerException() {
 
-    LocalOfficeTaskUtils.getDocumentFamily(null);
+    assertThatNullPointerException().isThrownBy(() -> LocalOfficeTaskUtils.getDocumentFamily(null));
   }
 
-  @Test(expected = OfficeException.class)
-  public void getDocumentFamily_WithoutValidDocument_ThrowOfficeException() throws OfficeException {
+  @Test
+  public void getDocumentFamily_WithoutValidDocument_ThrowOfficeException() {
 
     final XServiceInfo serviceInfo = mock(XServiceInfo.class);
     given(serviceInfo.supportsService(isA(String.class))).willReturn(false);
@@ -62,6 +62,7 @@ public class LocalOfficeTaskUtilsTest {
     mockStatic(UnoRuntime.class);
     given(UnoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
 
-    LocalOfficeTaskUtils.getDocumentFamily(document);
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(() -> LocalOfficeTaskUtils.getDocumentFamily(document));
   }
 }

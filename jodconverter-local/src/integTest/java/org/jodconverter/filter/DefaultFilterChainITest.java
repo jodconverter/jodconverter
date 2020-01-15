@@ -20,45 +20,43 @@
 package org.jodconverter.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assume.assumeNoException;
-import static org.mockito.ArgumentMatchers.isA;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.jodconverter.ResourceUtil.documentFile;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 
-import com.sun.star.lang.XComponent;
 import org.apache.commons.io.FileUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.LoggerFactory;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.office.OfficeContext;
+import org.jodconverter.LocalOfficeManagerExtension;
+import org.jodconverter.office.OfficeManager;
 
-public class DefaultFilterChainITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class DefaultFilterChainITest {
 
   private static final String SOURCE_FILENAME = "test_multi_page.doc";
-  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
+  private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
-  /**
-   * Test that reseting a chain will actually allow us to reuse it.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Test that resetting a chain will actually allow us to reuse it. */
   @Test
-  public void reset_WithPageCounterAndSelector_ShoudCountProperSizesForBothUsage()
-      throws Exception {
+  public void reset_WithPageCounterAndSelector_ShoudCountProperSizesForBothUsage(
+      @TempDir File testFolder, OfficeManager manager) throws IOException {
 
-    final File targetFile1 = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page1.txt");
-    final File targetFile2 = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page1again.txt");
+    final File targetFile1 = new File(testFolder, SOURCE_FILENAME + ".page1.txt");
+    final File targetFile2 = new File(testFolder, SOURCE_FILENAME + ".page1again.txt");
 
     final PageCounterFilter count1 = new PageCounterFilter();
     final PageCounterFilter count2 = new PageCounterFilter();
@@ -67,8 +65,11 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
     final DefaultFilterChain chain =
         new DefaultFilterChain(
             count1, new PagesSelectorFilter(1), new RefreshFilter(false), count2);
-    final LocalConverter converter = LocalConverter.builder().filterChain(chain).build();
-    converter.convert(SOURCE_FILE).to(targetFile1).execute();
+    final LocalConverter converter =
+        LocalConverter.builder().officeManager(manager).filterChain(chain).build();
+
+    assertThatCode(() -> converter.convert(SOURCE_FILE).to(targetFile1).execute())
+        .doesNotThrowAnyException();
 
     final String content = FileUtils.readFileToString(targetFile1, StandardCharsets.UTF_8);
     assertThat(content)
@@ -80,89 +81,108 @@ public class DefaultFilterChainITest extends AbstractOfficeITest {
 
     // Reset the chain and test the filters again
     chain.reset();
-    converter.convert(targetFile1).to(targetFile2).execute();
+    assertThatCode(() -> converter.convert(targetFile1).to(targetFile2).execute())
+        .doesNotThrowAnyException();
     assertThat(count1.getPageCount()).isEqualTo(1);
     assertThat(count2.getPageCount()).isEqualTo(1);
   }
 
-  /**
-   * Test that putting off the automatic insertion of refresh filter won't execute any refresh.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Test that setting off the automatic insertion of refresh filter won't execute any refresh. */
   @Test
-  public void reset_WithEndsWithRefreshFilterOff_ShoudNotApplyRefreshFilter() throws Exception {
+  public void reset_WithEndsWithRefreshFilterOff_ShoudNotApplyRefreshFilter(
+      @TempDir File testFolder, OfficeManager manager) throws Exception {
 
     // Replace the LAST_REFRESH singleton
-    final RefreshFilter refreshFilter = mock(RefreshFilter.class);
-    try {
-      // TODO: Find a way to test under jdk12/13
-      // This is not supported with jdk 12/13
-      // https://bugs.openjdk.java.net/browse/JDK-8217225
-      setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), refreshFilter);
-    } catch (Exception e) {
-      // skip the test
-      return;
-    }
 
-    // Then execute the test
-    final File targetFile1 = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page1.txt");
-
-    LocalConverter.builder()
-        .filterChain(
-            new DefaultFilterChain(false, new PageCounterFilter(), new PagesSelectorFilter(1)))
-        .build()
-        .convert(SOURCE_FILE)
-        .to(targetFile1)
-        .execute();
-
-    // Verify that the
-    verify(refreshFilter, times(0))
-        .doFilter(isA(OfficeContext.class), isA(XComponent.class), isA(FilterChain.class));
-  }
-
-  /**
-   * Test that putting on the automatic insertion of refresh filter will execute it.
-   *
-   * @throws Exception if an error occurs.
-   */
-  @Test
-  public void reset_WithEndsWithRefreshFilterOn_ShoudApplyRefreshFilter() throws Exception {
-
-    // Replace the LAST_REFRESH singleton
-    final RefreshFilter refreshFilter = mock(RefreshFilter.class);
-    try {
-      // TODO: Find a way to test under jdk12/13
-      // This is not supported with jdk 12/13
-      // https://bugs.openjdk.java.net/browse/JDK-8217225
-      setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), refreshFilter);
-    } catch (Exception e) {
-      assumeNoException(e);
-    }
-
-    // Then execute the test
-    final File targetFile1 = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page1.txt");
-
-    LocalConverter.builder()
-        .filterChain(new DefaultFilterChain(new PageCounterFilter(), new PagesSelectorFilter(1)))
-        .build()
-        .convert(SOURCE_FILE)
-        .to(targetFile1)
-        .execute();
-
-    // Verify that the
-    verify(refreshFilter, times(1))
-        .doFilter(isA(OfficeContext.class), isA(XComponent.class), isA(FilterChain.class));
-  }
-
-  private static void setFinalStatic(final Field field, final Object newValue) throws Exception {
-
-    field.setAccessible(true);
+    // TODO: Find a way to test under jdk12/13
     // This is not supported with jdk 12/13
     // https://bugs.openjdk.java.net/browse/JDK-8217225
-    final Field modifiersField = Field.class.getDeclaredField("modifiers");
-    modifiersField.setAccessible(true);
-    modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-    field.set(null, newValue);
+    final RefreshFilter oldFilter = RefreshFilter.LAST_REFRESH;
+    final RefreshFilter newFilter = mock(RefreshFilter.class);
+    final boolean restoreFilter =
+        setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), newFilter);
+    assumeTrue(restoreFilter, () -> "Aborting test: unable to set mock static field");
+
+    // Then execute the test
+    try {
+      final File targetFile1 = new File(testFolder, SOURCE_FILENAME + ".page1.txt");
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(manager)
+                      .filterChain(
+                          new DefaultFilterChain(
+                              false, new PageCounterFilter(), new PagesSelectorFilter(1)))
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile1)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the
+      verify(newFilter, times(0)).doFilter(any(), any(), any());
+    } finally {
+      setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), oldFilter);
+    }
+  }
+
+  /** Test that setting on the automatic insertion of refresh filter will execute it. */
+  @Test
+  public void reset_WithEndsWithRefreshFilterOn_ShoudApplyRefreshFilter(
+      @TempDir File testFolder, OfficeManager manager) throws Exception {
+
+    // Replace the LAST_REFRESH singleton
+
+    // TODO: Find a way to test under jdk12/13
+    // This is not supported with jdk 12/13
+    // https://bugs.openjdk.java.net/browse/JDK-8217225
+    final RefreshFilter oldFilter = RefreshFilter.LAST_REFRESH;
+    final RefreshFilter newFilter = mock(RefreshFilter.class);
+    final boolean restoreFilter =
+        setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), newFilter);
+    assumeTrue(restoreFilter, () -> "Aborting test: unable to set mock static field");
+
+    // Then execute the test
+    try {
+      final File targetFile1 = new File(testFolder, SOURCE_FILENAME + ".page1.txt");
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(manager)
+                      .filterChain(
+                          new DefaultFilterChain(
+                              new PageCounterFilter(), new PagesSelectorFilter(1)))
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile1)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the
+      verify(newFilter, times(1)).doFilter(any(), any(), any());
+    } finally {
+      setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), oldFilter);
+    }
+  }
+
+  private static boolean setFinalStatic(final Field field, final Object newValue) {
+
+    try {
+      field.setAccessible(true);
+      // This is not supported with jdk 12/13
+      // https://bugs.openjdk.java.net/browse/JDK-8217225
+      final Field modifiersField = Field.class.getDeclaredField("modifiers");
+      modifiersField.setAccessible(true);
+      modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+      field.set(null, newValue);
+      return true;
+    } catch (Exception ex) {
+      LoggerFactory.getLogger(DefaultFilterChainITest.class)
+          .warn(
+              "Enable to set final static field: {}.{}",
+              field.getDeclaringClass().getSimpleName(),
+              field.getName());
+    }
+    return false;
   }
 }

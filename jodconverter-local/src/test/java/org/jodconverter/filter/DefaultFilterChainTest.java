@@ -24,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.List;
 
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.office.OfficeException;
 
@@ -39,23 +39,22 @@ public class DefaultFilterChainTest {
 
   /** Tests that a DefaultFilterChain is created empty by default. */
   @Test
-  public void create_WithoutFilters_ShouldBeEmpty() throws IllegalAccessException {
+  public void create_WithoutFilters_ShouldBeEmpty() {
 
     final DefaultFilterChain chain = new DefaultFilterChain();
-
-    final List<Filter> filters = (List<Filter>) FieldUtils.readField(chain, "filters", true);
+    final List<Filter> filters = Whitebox.getInternalState(chain, "filters");
     assertThat(filters).hasSize(0);
   }
 
   /** Tests that a DefaultFilterChain.addFilter works as expected. */
   @Test
-  public void create_ShouldBeEditable() throws IllegalAccessException {
+  public void create_ShouldBeEditable() {
 
     final Filter filter = new RefreshFilter();
     final DefaultFilterChain chain = new DefaultFilterChain();
     chain.addFilter(filter);
 
-    final List<Filter> filters = (List<Filter>) FieldUtils.readField(chain, "filters", true);
+    final List<Filter> filters = Whitebox.getInternalState(chain, "filters");
     assertThat(filters).hasSize(1);
     assertThat(filters).containsExactly(filter);
   }

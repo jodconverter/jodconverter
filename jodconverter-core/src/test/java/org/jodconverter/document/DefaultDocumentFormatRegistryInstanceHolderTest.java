@@ -19,15 +19,14 @@
 
 package org.jodconverter.document;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.jodconverter.test.util.AssertUtil;
 
 public class DefaultDocumentFormatRegistryInstanceHolderTest {
 
   @Test
-  public void ctor_ClassWellDefined() throws Exception {
-
+  public void ctor_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(DefaultDocumentFormatRegistryInstanceHolder.class);
   }
 }

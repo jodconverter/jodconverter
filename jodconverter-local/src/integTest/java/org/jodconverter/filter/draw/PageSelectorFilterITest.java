@@ -20,41 +20,43 @@
 package org.jodconverter.filter.draw;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.jodconverter.ResourceUtil.documentFile;
 
 import java.io.File;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
+import org.jodconverter.LocalOfficeManagerExtension;
 import org.jodconverter.filter.PageCounterFilter;
+import org.jodconverter.office.OfficeManager;
 
-public class PageSelectorFilterITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class PageSelectorFilterITest {
 
   private static final String SOURCE_FILENAME = "test_multi_page.odg";
-  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
-
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
-  public void doFilter_SelectPage2_ShouldConvertOnlyPage2() throws Exception {
+  public void doFilter_SelectPage2_ShouldConvertOnlyPage2(
+      @TempDir File testFolder, OfficeManager manager) {
 
-    final File targetFile = new File(testFolder.getRoot(), SOURCE_FILENAME + ".page2.odg");
-
-    // Create the PageSelectorFilter to test.
-    final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".page2.odg");
     final PageCounterFilter countFilter = new PageCounterFilter();
 
     // Test the filter
-
-    LocalConverter.builder()
-        .filterChain(selectorFilter, countFilter)
-        .build()
-        .convert(SOURCE_FILE)
-        .to(targetFile)
-        .execute();
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(manager)
+                    .filterChain(new PageSelectorFilter(2), countFilter)
+                    .build()
+                    .convert(documentFile(SOURCE_FILENAME))
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
 
     assertThat(countFilter.getPageCount()).isEqualTo(1);
   }

@@ -19,16 +19,17 @@
 
 package org.jodconverter.cli.util;
 
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * Class rule used providing a way to intercept the console streams in order to validate what is
- * printed to the console.
+ * Extension providing a way to intercept the console streams in order to validate what is printed
+ * to the console.
  */
-public final class ConsoleStreamsListener extends ExternalResource {
+public final class ConsoleStreamsListenerExtension implements BeforeAllCallback {
 
   @Override
-  protected void before() {
+  public void beforeAll(ExtensionContext context) {
 
     // Redirect console streams.
     System.setOut(new SystemLogHandler(System.out));

@@ -27,42 +27,33 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.Objects;
 
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DocumentFamily;
+import org.jodconverter.office.OfficeException;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @TestPropertySource(locations = "classpath:config/application-local.properties")
 public class LocalConverterITest {
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
-  private static File inputFileTxt;
+  @TempDir File testFolder;
+  private File inputFileTxt;
 
   @Autowired private DocumentConverter converter;
 
-  /**
-   * Creates an input file to convert and an output test directory just once.
-   *
-   * @throws IOException if an IO error occurs.
-   */
-  @BeforeClass
-  public static void setUpClass() throws IOException {
+  @BeforeEach
+  public void setUp() throws IOException {
 
-    inputFileTxt = testFolder.newFile("inputFile.txt");
+    inputFileTxt = new File(testFolder, "inputFile.txt");
     try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
@@ -70,9 +61,9 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testTxtToRtf() throws Exception {
+  public void testTxtToRtf() throws OfficeException {
 
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.rtf");
+    final File outputFile = new File(testFolder, "outputFile.rtf");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -82,9 +73,9 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testTxtToDoc() throws Exception {
+  public void testTxtToDoc() throws OfficeException {
 
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.doc");
+    final File outputFile = new File(testFolder, "outputFile.doc");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -94,9 +85,9 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testTxtToPdf() throws Exception {
+  public void testTxtToPdf() throws OfficeException {
 
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.pdf");
+    final File outputFile = new File(testFolder, "outputFile.pdf");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -106,9 +97,9 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testDocToHtml() throws Exception {
+  public void testDocToHtml() throws OfficeException {
 
-    final File outputDir = new File(testFolder.getRoot(), "html");
+    final File outputDir = new File(testFolder, "html");
     outputDir.mkdirs();
     final File outputFile = new File(outputDir, "outputFile.html");
     final File inputFile = new File("src/integTest/resources/documents/test1.doc");
@@ -123,8 +114,8 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testDocToXhtml() throws Exception {
-    final File outputDir = new File(testFolder.getRoot(), "xhtml");
+  public void testDocToXhtml() throws OfficeException {
+    final File outputDir = new File(testFolder, "xhtml");
     outputDir.mkdirs();
 
     final File outputFile = new File(outputDir, "outputFile.xhtml");

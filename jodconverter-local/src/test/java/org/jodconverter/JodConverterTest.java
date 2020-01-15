@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
@@ -57,8 +58,7 @@ public class JodConverterTest {
   }
 
   @Test
-  public void ctor_ClassWellDefined() throws Exception {
-
+  public void ctor_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(JodConverter.class);
   }
 
@@ -67,36 +67,36 @@ public class JodConverterTest {
 
     JodConverter.convert(SOURCE_FILE);
 
-    final ArgumentCaptor<File> argument = ArgumentCaptor.forClass(File.class);
-    verify(localConverter, times(1)).convert(argument.capture());
-    final File file = argument.getValue();
+    final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
+    verify(localConverter, times(1)).convert(arg.capture());
+    final File file = arg.getValue();
     assertThat(file).isEqualTo(SOURCE_FILE);
   }
 
   @Test
-  public void convert_FromStream_CallForwardToLocalConverter() throws Exception {
+  public void convert_FromStream_CallForwardToLocalConverter() throws IOException {
 
     try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
 
       JodConverter.convert(stream);
 
-      final ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
-      verify(localConverter, times(1)).convert(argument.capture());
-      assertThat(argument.getValue()).isEqualTo(stream);
+      final ArgumentCaptor<InputStream> arg = ArgumentCaptor.forClass(InputStream.class);
+      verify(localConverter, times(1)).convert(arg.capture());
+      assertThat(arg.getValue()).isEqualTo(stream);
     }
   }
 
   @Test
-  public void convert_FromStreamWithCloseArgument_CallForwardToLocalConverter() throws Exception {
+  public void convert_FromStreamWithCloseArgument_CallForwardToLocalConverter() throws IOException {
 
     try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
 
       JodConverter.convert(stream, false);
 
-      final ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
-      final ArgumentCaptor<Boolean> booleanArgument = ArgumentCaptor.forClass(Boolean.class);
-      verify(localConverter, times(1)).convert(argument.capture(), booleanArgument.capture());
-      assertThat(argument.getValue()).isEqualTo(stream);
+      final ArgumentCaptor<InputStream> arg = ArgumentCaptor.forClass(InputStream.class);
+      final ArgumentCaptor<Boolean> boolArg = ArgumentCaptor.forClass(Boolean.class);
+      verify(localConverter, times(1)).convert(arg.capture(), boolArg.capture());
+      assertThat(arg.getValue()).isEqualTo(stream);
     }
   }
 }

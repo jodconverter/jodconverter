@@ -154,7 +154,8 @@ public class OfficeProcessTest {
   }
 
   @Test
-  public void getExitCode_WhenNotStarted_ShouldReturn0() throws Exception {
+  public void getExitCode_WhenNotStarted_ShouldReturn0()
+      throws RetryTimeoutException, OfficeException {
 
     final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
     final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);

@@ -20,6 +20,9 @@
 package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.jodconverter.office.LocalOfficeUtils.toUrl;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.isA;
@@ -34,9 +37,8 @@ import java.util.UUID;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.uno.UnoRuntime;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -47,19 +49,18 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.jodconverter.test.util.AssertUtil;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(JUnit4.class)
 @PrepareForTest(UnoRuntime.class)
+@PowerMockRunnerDelegate(JUnit4.class)
 public class LocalOfficeUtilsTest {
 
   @Test
-  public void ctor_ClassWellDefined() throws Exception {
+  public void ctor_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(LocalOfficeUtils.class);
   }
 
-  @Test(expected = NullPointerException.class)
-  public void getDocumentFamily_WithNullDocument_ThrowNullPointerException()
-      throws OfficeException {
-    LocalOfficeUtils.getDocumentFamily(null);
+  @Test
+  public void getDocumentFamily_WithNullDocument_ThrowNullPointerException() {
+    assertThatNullPointerException().isThrownBy(() -> LocalOfficeUtils.getDocumentFamily(null));
   }
 
   @Test(expected = OfficeException.class)
@@ -78,7 +79,6 @@ public class LocalOfficeUtilsTest {
   /** Tests the LocalOfficeUtils.toUrl function on unix OS. */
   @Test
   public void unixToUrl() {
-
     assumeTrue(SystemUtils.IS_OS_UNIX);
 
     assertThat(toUrl(new File("/tmp/document.odt"))).isEqualTo("file:///tmp/document.odt");
@@ -89,7 +89,6 @@ public class LocalOfficeUtilsTest {
   /** Tests the LocalOfficeUtils.toUrl function on Windows OS. */
   @Test
   public void windowsToUrl() {
-
     assumeTrue(SystemUtils.IS_OS_WINDOWS);
 
     String tempDir = System.getProperty("java.io.tmpdir");
@@ -103,41 +102,38 @@ public class LocalOfficeUtilsTest {
   }
 
   /** Tests the validateOfficeHome with null as argument. */
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void validateOfficeHome_WithNullOfficeHome_ThrowsIllegalStateException() {
-
-    LocalOfficeUtils.validateOfficeHome(null);
+    assertThatIllegalStateException().isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(null));
   }
 
   /** Tests the validateOfficeHome with non directory file as argument. */
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void validateOfficeHome_WithNonDirectoryOfficeHome_ThrowsIllegalStateException()
       throws IOException {
 
     final File tempFile = File.createTempFile("LocalOfficeUtilsTest", "tmp");
     tempFile.deleteOnExit();
-
-    LocalOfficeUtils.validateOfficeHome(tempFile);
+    assertThatIllegalStateException()
+        .isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(tempFile));
   }
 
   /** Tests the validateOfficeHome when office bin is not found. */
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void validateOfficeHome_WithOfficeBinNotFound_ThrowsIllegalStateException() {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
     final File officeHome = new File(tempDir, UUID.randomUUID().toString());
-    try {
-      officeHome.mkdirs();
-      LocalOfficeUtils.validateOfficeHome(officeHome);
-    } finally {
-      FileUtils.deleteQuietly(officeHome);
-    }
+    officeHome.mkdirs();
+    assertThatIllegalStateException()
+        .isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(officeHome));
   }
 
   /** Tests the validateOfficeTemplateProfileDirectory with null as argument. */
   public void validateOfficeTemplateProfileDir_WithNullDir_ValidateSuccessfully() {
 
-    LocalOfficeUtils.validateOfficeTemplateProfileDirectory(null);
+    assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(null))
+        .doesNotThrowAnyException();
   }
 
   /** Tests the validateOfficeTemplateProfileDirectory when user sub directory is found. */
@@ -145,58 +141,51 @@ public class LocalOfficeUtilsTest {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
     final File profileDir = new File(tempDir, UUID.randomUUID().toString());
-    final File userDir = new File(profileDir, "user");
-    try {
-      userDir.mkdirs();
-      LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir);
-    } finally {
-      FileUtils.deleteQuietly(profileDir);
-    }
+    new File(profileDir, "user").mkdirs();
+    assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir))
+        .doesNotThrowAnyException();
   }
 
   /** Tests the validateOfficeTemplateProfileDirectory when user sub directory is not found. */
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void validateOfficeTemplateProfileDir_WithUserDirNotFound_ThrowsIllegalStateException() {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
     final File profileDir = new File(tempDir, UUID.randomUUID().toString());
-    try {
-      profileDir.mkdirs();
-      LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir);
-    } finally {
-      FileUtils.deleteQuietly(profileDir);
-    }
+    profileDir.mkdirs();
+    assertThatIllegalStateException()
+        .isThrownBy(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir));
   }
 
   /** Tests the validateOfficeWorkingDirectory with a file as argument. */
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void validateOfficeWorkingDirectory_WithFile_ThrowsIllegalStateException()
       throws IOException {
 
     final File tempFile = File.createTempFile("LocalOfficeUtilsTest", "tmp");
     tempFile.deleteOnExit();
-
-    LocalOfficeUtils.validateOfficeWorkingDirectory(tempFile);
+    assertThatIllegalStateException()
+        .isThrownBy(() -> LocalOfficeUtils.validateOfficeWorkingDirectory(tempFile));
   }
 
   /** Tests the validateOfficeWorkingDirectory with an unexisting directory as argument. */
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void validateOfficeWorkingDirectory_WithUnexistingDirectory_ThrowsIllegalStateException() {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
     final File workingDir = new File(tempDir, UUID.randomUUID().toString());
-
-    LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir);
+    assertThatIllegalStateException()
+        .isThrownBy(() -> LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir));
   }
 
-  /** Tests the validateOfficeWorkingDirectory with a read only dicrectory as argument fails. */
-  @Test(expected = IllegalStateException.class)
+  /** Tests the validateOfficeWorkingDirectory with a read only directory as argument fails. */
+  @Test
   public void validateOfficeWorkingDirectory_WithReadOnlyDirectory_ThrowsIllegalStateException() {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));
     final File workingDir = new File(tempDir, UUID.randomUUID().toString());
     workingDir.setWritable(false);
-
-    LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir);
+    assertThatIllegalStateException()
+        .isThrownBy(() -> LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir));
   }
 }

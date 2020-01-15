@@ -17,19 +17,27 @@
  * limitations under the License.
  */
 
-package org.jodconverter.cli.util;
+package org.jodconverter;
 
-import org.junit.rules.ExternalResource;
+import java.io.File;
 
-/**
- * Test rule that must be used with the {@link NoExitResource} in order to reset the {@link
- * ExitException#INSTANCE} status between each test.
- */
-public final class ResetExitExceptionResource extends ExternalResource {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-  @Override
-  protected void before() {
+public final class ResourceUtil {
 
-    ExitException.INSTANCE.reset();
+  private static final Logger LOGGER = LoggerFactory.getLogger(ResourceUtil.class);
+
+  public static File documentFile(String filename) {
+    return new File("src/integTest/resources/documents", filename);
+  }
+
+  public static File imageFile(String filename) {
+    return new File("src/integTest/resources/images", filename);
+  }
+
+  // Suppresses default constructor, ensuring non-instantiability.
+  private ResourceUtil() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }

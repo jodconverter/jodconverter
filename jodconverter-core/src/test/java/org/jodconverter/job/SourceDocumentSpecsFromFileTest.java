@@ -20,10 +20,12 @@
 package org.jodconverter.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
@@ -32,23 +34,21 @@ public class SourceDocumentSpecsFromFileTest {
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
   private static final String BAD_SOURCE_FILE = "src/test/resources/documents/unexisting_file.txt";
 
-  @Test(expected = NullPointerException.class)
   public void ctor_WithNullFile_ThrowsNullPointerException() {
 
-    new SourceDocumentSpecsFromFile(null);
+    assertThatNullPointerException().isThrownBy(() -> new SourceDocumentSpecsFromFile(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
   public void ctor_WithUnexistingFile_ThrowsIllegalArgumentsException() {
 
-    new SourceDocumentSpecsFromFile(new File(BAD_SOURCE_FILE));
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> new SourceDocumentSpecsFromFile(new File(BAD_SOURCE_FILE)));
   }
 
   @Test
   public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() {
 
     final File sourceFile = new File(SOURCE_FILE);
-
     final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(sourceFile);
     specs.setDocumentFormat(DefaultDocumentFormatRegistry.ODS);
 

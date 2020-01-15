@@ -20,41 +20,40 @@
 package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class ExternalOfficeManagerITest {
 
   private static OfficeProcess officeProcess;
 
-  /**
-   * Starts an office process just once.
-   *
-   * @throws Exception If an error occurs.
-   */
-  @BeforeClass
-  public static void setUpClass() throws Exception {
+  /** Starts an office process just once. */
+  @BeforeAll
+  public static void setUpClass() throws OfficeException {
 
     final OfficeUrl officeUrl = new OfficeUrl(2002);
     officeProcess = new OfficeProcess(officeUrl);
     officeProcess.start();
-    Thread.sleep(2000);
+    try {
+      Thread.sleep(2000);
+    } catch (InterruptedException ignore) {
+    }
     final Integer exitCode = officeProcess.getExitCode();
     if (exitCode != null && exitCode.equals(81)) {
       officeProcess.start(true);
-      Thread.sleep(2000);
+      try {
+        Thread.sleep(2000);
+      } catch (InterruptedException ignore) {
+      }
     }
   }
 
-  /**
-   * Stops the office process once the tests are all done.
-   *
-   * @throws Exception If an error occurs.
-   */
-  @AfterClass
-  public static void tearDownClass() throws Exception {
+  /** Stops the office process once the tests are all done. */
+  @AfterAll
+  public static void tearDownClass() throws RetryTimeoutException, OfficeException {
 
     officeProcess.forciblyTerminate(1000, 5000);
     officeProcess.deleteInstanceProfileDir();
@@ -88,13 +87,9 @@ public class ExternalOfficeManagerITest {
     }
   }
 
-  /**
-   * Test connection with connect on start off.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Test connection with connect on start off. */
   @Test
-  public void execute_WithoutConnectOnStart_TaskExecutedSuccessfully() throws Exception {
+  public void execute_WithoutConnectOnStart_TaskExecutedSuccessfully() throws OfficeException {
 
     final OfficeManager manager =
         new ExternalOfficeManagerBuilder()
@@ -114,13 +109,9 @@ public class ExternalOfficeManagerITest {
     }
   }
 
-  /**
-   * Test connection without an office process.
-   *
-   * @throws Exception if an error occurs.
-   */
-  @Test(expected = OfficeException.class)
-  public void connect_WithoutOfficeProcess_ThrowOfficeException() throws Exception {
+  /** Test connection without an office process. */
+  @Test
+  public void connect_WithoutOfficeProcess_ThrowOfficeException() {
 
     final OfficeManager manager =
         new ExternalOfficeManagerBuilder()
@@ -129,6 +120,6 @@ public class ExternalOfficeManagerITest {
             .setConnectOnStart(true)
             .setConnectTimeout(2000L)
             .build();
-    manager.start();
+    assertThatExceptionOfType(OfficeException.class).isThrownBy(manager::start);
   }
 }

@@ -41,12 +41,12 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.jodconverter.test.util.AssertUtil;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(JUnit4.class)
 @PrepareForTest(UnoRuntime.class)
+@PowerMockRunnerDelegate(JUnit4.class)
 public class InfoTest {
 
   @Test
-  public void ctor_ClassWellDefined() throws java.lang.Exception {
+  public void ctor_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Info.class);
   }
 
@@ -96,7 +96,7 @@ public class InfoTest {
   }
 
   @Test
-  public void getConfig_WithUnoException_ReturnEmptyOptional() throws com.sun.star.uno.Exception {
+  public void getConfig_WithUnoException_ReturnEmptyOptional() throws Exception {
 
     final XComponentContext context = mock(XComponentContext.class);
     final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);

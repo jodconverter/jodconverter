@@ -19,20 +19,17 @@
 
 package org.jodconverter;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.office.OfficeManager;
@@ -41,51 +38,40 @@ public class OnlineConverterTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-  private static File outputDir;
-
   private OfficeManager officeManager;
 
-  /**
-   * Creates a output directory for our tests.
-   *
-   * @throws IOException If an IO error occurs.
-   */
-  @BeforeClass
-  public static void setUpClass() throws IOException {
-
-    // Creates an output directory for the class
-    outputDir = testFolder.newFolder();
-  }
-
   /** Setup the office manager before each test. */
-  @Before
+  @BeforeEach
   public void setUp() {
 
     officeManager = mock(OfficeManager.class);
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void convert_WithoutOfficeManagerInstalled_ThrowsIllegalStateException() throws Exception {
+  @Test
+  public void convert_WithoutOfficeManagerInstalled_ThrowsIllegalStateException(
+      @TempDir File testFolder) {
 
-    final File targetFile = new File(outputDir, "test.pdf");
-
-    OnlineConverter.make().convert(SOURCE_FILE).to(targetFile).execute();
+    assertThatIllegalStateException()
+        .isThrownBy(
+            () ->
+                OnlineConverter.make()
+                    .convert(SOURCE_FILE)
+                    .to(new File(testFolder, "test.pdf"))
+                    .execute());
   }
 
   @Test
-  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream() {
+  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream(
+      @TempDir File testFolder) {
 
-    final File targetFile = new File(outputDir, "test.pdf");
-
-    assertThatExceptionOfType(IllegalStateException.class)
+    assertThatIllegalStateException()
         .isThrownBy(
             () -> {
               try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
                 OnlineConverter.make(officeManager)
                     .convert(stream)
                     .as(DefaultDocumentFormatRegistry.TXT)
-                    .to(targetFile)
+                    .to(new File(testFolder, "test.pdf"))
                     .execute();
               }
             })
@@ -93,13 +79,14 @@ public class OnlineConverterTest {
   }
 
   @Test
-  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream() {
+  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream(
+      @TempDir File testFolder) {
 
-    assertThatExceptionOfType(IllegalStateException.class)
+    assertThatIllegalStateException()
         .isThrownBy(
             () -> {
               try (OutputStream stream =
-                  Files.newOutputStream(new File(outputDir, "test.pdf").toPath())) {
+                  Files.newOutputStream(new File(testFolder, "test.pdf").toPath())) {
                 OnlineConverter.make(officeManager)
                     .convert(SOURCE_FILE)
                     .to(stream)

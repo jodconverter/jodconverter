@@ -20,6 +20,7 @@
 package org.jodconverter.task;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -142,8 +143,8 @@ public class LocalConversionTaskTest {
     testFolder.delete();
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void storeDocument_WithUnsupportedFormat_ThrowIllegalArgumentException() throws Exception {
+  @Test
+  public void storeDocument_WithUnsupportedFormat_ThrowIllegalArgumentException() {
 
     final XServiceInfo serviceInfo = mock(XServiceInfo.class);
     given(serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")).willReturn(true);
@@ -160,7 +161,8 @@ public class LocalConversionTaskTest {
             null,
             null,
             null);
-    task.storeDocument(document, targetFile);
+
+    assertThatIllegalArgumentException().isThrownBy(() -> task.storeDocument(document, targetFile));
   }
 
   @Test

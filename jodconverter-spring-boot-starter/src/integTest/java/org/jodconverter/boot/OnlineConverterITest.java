@@ -20,32 +20,29 @@
 package org.jodconverter.boot;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.io.FileUtils;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import org.jodconverter.DocumentConverter;
+import org.jodconverter.office.OfficeException;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-online.properties")
 public class OnlineConverterITest {
@@ -59,43 +56,44 @@ public class OnlineConverterITest {
   private static final String SERVER_TRUSTSTORE_PATH = RESOURCES_PATH + "servertruststore.jks";
   private static final String SERVER_TRUSTSTORE_PWD = "servertruststore";
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
   @Autowired private DocumentConverter converter;
 
-  @Rule
-  public WireMockRule wireMockRule =
-      new WireMockRule(
-          options()
-              .port(8000)
-              .httpsPort(8001)
-              .keystorePath(SERVER_KEYSTORE_PATH)
-              .keystorePassword(SERVER_KEYSTORE_PWD)
-              .trustStorePath(SERVER_TRUSTSTORE_PATH)
-              .trustStorePassword(SERVER_TRUSTSTORE_PWD)
-              .needClientAuth(true));
-
   @Test
-  public void execute_FromFileToFileReturning200OK_TargetShouldContaingExpectedResult()
-      throws Exception {
+  public void execute_FromFileToFileReturning200OK_TargetShouldContaingExpectedResult(
+      @TempDir File testFolder) throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder.getRoot(), "out.txt");
+    final File outputFile = new File(testFolder, "out.txt");
 
-    assertThat(outputFile).doesNotExist();
+    final WireMockServer wireMockServer =
+        new WireMockServer(
+            wireMockConfig()
+                .port(8000)
+                .httpsPort(8001)
+                .keystorePath(SERVER_KEYSTORE_PATH)
+                .keystorePassword(SERVER_KEYSTORE_PWD)
+                .trustStorePath(SERVER_TRUSTSTORE_PATH)
+                .trustStorePassword(SERVER_TRUSTSTORE_PWD)
+                .needClientAuth(true));
+    wireMockServer.start();
+    try {
 
-    stubFor(
-        post(urlPathEqualTo("/lool/convert-to/txt"))
-            .willReturn(aResponse().withStatus(200).withBody("Test document")));
+      wireMockServer.stubFor(
+          post(urlPathEqualTo("/lool/convert-to/txt"))
+              .willReturn(aResponse().withStatus(200).withBody("Test document")));
 
-    // Try to converter the input document
-    converter.convert(inputFile).to(outputFile).execute();
+      // Try to converter the input document
+      converter.convert(inputFile).to(outputFile).execute();
 
-    // Check that the output file was created with the expected content.
-    final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-    assertThat(content).contains("Test document");
+      // Check that the output file was created with the expected content.
+      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      assertThat(content).contains("Test document");
 
-    // Verify that a it is actually the online converter that did the conversion.
-    verify(postRequestedFor(urlPathEqualTo("/lool/convert-to/txt")));
+      // Verify that a it is actually the online converter that did the conversion.
+      configureFor(wireMockServer.port());
+      verify(postRequestedFor(urlPathEqualTo("/lool/convert-to/txt")));
+    } finally {
+      wireMockServer.stop();
+    }
   }
 }

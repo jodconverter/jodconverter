@@ -17,13 +17,12 @@ dependencyManagement {
 
 // Appropriately inject the common dependencies into each java projects
 dependencies {
+    // Waiting
     testImplementation libraries.assertj
-    testImplementation libraries.equalsverifier
-    testImplementation libraries.junit
-    testImplementation libraries.findbugs
+    testImplementation libraries.junit_jupiter_api
     testImplementation libraries.mockito
-    testImplementation libraries.powermock_junit
-    testImplementation libraries.powermock_mockito
+
+    testRuntime libraries.junit_jupiter_engine
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -82,11 +81,25 @@ eclipse {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Test setup
 
-// Uncomment when we want to see the logs while testing
 test {
+    useJUnitPlatform {
+        //excludeTags 'slow'
+        includeEngines 'junit-jupiter', 'junit-vintage'
+    }
+    failFast = true
+
+    // Uncomment when we want to see the logs while testing
     testLogging.showStandardStreams = true
 }
+
 integrationTest {
+    useJUnitPlatform {
+        //excludeTags 'slow'
+        includeEngines 'junit-jupiter', 'junit-vintage'
+    }
+    failFast = true
+
+    // Uncomment when we want to see the logs while testing
     testLogging.showStandardStreams = true
 }
 

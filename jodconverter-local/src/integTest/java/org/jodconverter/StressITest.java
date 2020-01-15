@@ -28,12 +28,12 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import org.jodconverter.ConvertUtil.ConvertRunner;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
-import org.jodconverter.filter.RefreshFilter;
 import org.jodconverter.office.LocalOfficeManager;
 import org.jodconverter.office.OfficeManager;
 
@@ -51,19 +51,7 @@ public class StressITest {
   private static final DocumentFormat OUTPUT_FORMAT =
       DefaultDocumentFormatRegistry.getFormatByExtension("pdf");
 
-  private static final String PATTERN = "%d{ISO8601} %-5p [%c{3}] [%t] %m%n";
-  private static final String TEST_OUTPUT_DIR = "build/integTest-results/";
-
-  private static File outputDir;
-
-  /** Creates an output test directory just once. */
-  @BeforeClass
-  public static void setUpClass() {
-
-    outputDir = new File(TEST_OUTPUT_DIR, StressITest.class.getSimpleName());
-    FileUtils.deleteQuietly(outputDir);
-    outputDir.mkdirs();
-  }
+  private static final String PATTERN = "%d %-5p --- [%t] %c{1.} - %m%n";
 
   /**
    * This test will run multiple parallel conversions, using 8 office processes. Just change the
@@ -73,9 +61,9 @@ public class StressITest {
    * @throws Exception if an error occurs.
    */
   @Test
-  public void runParallelConversions() throws Exception {
+  public void runParallelConversions(@TempDir File testFolder) throws Exception {
 
-    final File logFile = new File(outputDir, "/test.log");
+    final File logFile = new File("build/integTest-results/test.log");
     FileUtils.deleteQuietly(logFile);
 
     // Create console appender
@@ -116,7 +104,7 @@ public class StressITest {
       int threadCount = 0;
 
       for (int i = 0; i < MAX_CONVERSIONS; i++) {
-        final File target = new File(outputDir, "test_" + i + "." + OUTPUT_FORMAT.getExtension());
+        final File target = new File(testFolder, "test_" + i + "." + OUTPUT_FORMAT.getExtension());
         target.deleteOnExit();
 
         // Converts the first document without threads to ensure everything is OK.
@@ -126,7 +114,7 @@ public class StressITest {
         }
 
         LOGGER.info("Creating thread " + threadCount);
-        final ConvertRunner runnable = new ConvertRunner(source, target, RefreshFilter.CHAIN);
+        final ConvertRunner runnable = new ConvertRunner(source, target, converter);
         threads[threadCount] = new Thread(runnable);
         threads[threadCount++].start();
 

@@ -23,6 +23,13 @@ dependencies {
 
     testImplementation libraries.slf4j_log4j
     testImplementation project(path: ':jodconverter-core', configuration: 'tests')
+
+    // We still need junit 4 for powermock until the following issue is resolved.
+    // https://github.com/powermock/powermock/issues/830
+    //testImplementation libraries.junit
+    testRuntimeOnly libraries.junit_vintage_engine
+    testImplementation libraries.powermock_junit
+    testImplementation libraries.powermock_mockito
 }
 
 integrationTest {

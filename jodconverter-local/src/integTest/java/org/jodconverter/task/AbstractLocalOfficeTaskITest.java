@@ -19,6 +19,8 @@
 
 package org.jodconverter.task;
 
+import static org.jodconverter.ResourceUtil.documentFile;
+
 import java.io.File;
 
 import com.sun.star.lang.EventObject;
@@ -26,21 +28,23 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseListener;
 import com.sun.star.util.XCloseable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.jodconverter.AbstractOfficeITest;
+import org.jodconverter.LocalOfficeManagerExtension;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.job.AbstractSourceDocumentSpecs;
-import org.jodconverter.office.InstalledOfficeManagerHolder;
 import org.jodconverter.office.LocalOfficeContext;
 import org.jodconverter.office.OfficeContext;
 import org.jodconverter.office.OfficeException;
+import org.jodconverter.office.OfficeManager;
 import org.jodconverter.office.utils.Lo;
 
-public class AbstractLocalOfficeTaskITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class AbstractLocalOfficeTaskITest {
 
-  private static final File SOURCE_FILE = new File("src/integTest/resources/documents/test.txt");
+  private static final File SOURCE_FILE = documentFile("test.txt");
 
   private static class VetoCloseListener implements XCloseListener {
 
@@ -126,12 +130,13 @@ public class AbstractLocalOfficeTaskITest extends AbstractOfficeITest {
   }
 
   @Test
-  public void close_WhenVetoCloseExceptionCatch_DocumentNotClosed() throws Exception {
+  public void close_WhenVetoCloseExceptionCatch_DocumentNotClosed(OfficeManager manager)
+      throws OfficeException {
 
     final VetoCloseOfficeTask task = new VetoCloseOfficeTask(new FooSourceSpecs(SOURCE_FILE));
 
     try {
-      InstalledOfficeManagerHolder.getInstance().execute(task);
+      manager.execute(task);
 
       // TODO: How could we check that the document is not closed ?
 

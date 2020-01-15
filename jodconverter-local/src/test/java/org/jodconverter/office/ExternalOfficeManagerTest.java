@@ -23,8 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.powermock.reflect.Whitebox;
 
 public class ExternalOfficeManagerTest {
 
@@ -42,31 +42,26 @@ public class ExternalOfficeManagerTest {
   }
 
   @Test
-  public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues()
-      throws Exception {
+  public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues() {
 
     final OfficeManager manager = ExternalOfficeManager.make();
 
     assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
-    final ExternalOfficeManagerConfig config =
-        (ExternalOfficeManagerConfig) FieldUtils.readField(manager, "config", true);
+    final ExternalOfficeManagerConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getWorkingDir().getPath())
         .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
     assertThat(config.isConnectOnStart()).isTrue();
     assertThat(config.getConnectTimeout()).isEqualTo(120000L);
     assertThat(config.getRetryInterval()).isEqualTo(250L);
 
-    final OfficeConnection connection =
-        (OfficeConnection) FieldUtils.readField(manager, "connection", true);
-    final OfficeUrl officeUrl = (OfficeUrl) FieldUtils.readField(connection, "officeUrl", true);
+    final OfficeConnection connection = Whitebox.getInternalState(manager, "connection");
+    final OfficeUrl officeUrl = Whitebox.getInternalState(connection, "officeUrl");
     assertThat(officeUrl.getConnectionAndParametersAsString())
-        //    .isEqualTo("socket,host=localhost,port=2002");
         .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
   }
 
   @Test
-  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues()
-      throws Exception {
+  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues() {
 
     final OfficeManager manager =
         ExternalOfficeManager.builder()
@@ -80,17 +75,15 @@ public class ExternalOfficeManagerTest {
             .build();
 
     assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
-    final ExternalOfficeManagerConfig config =
-        (ExternalOfficeManagerConfig) FieldUtils.readField(manager, "config", true);
+    final ExternalOfficeManagerConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getWorkingDir().getPath())
         .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
     assertThat(config.isConnectOnStart()).isFalse();
     assertThat(config.getConnectTimeout()).isEqualTo(5000L);
     assertThat(config.getRetryInterval()).isEqualTo(1000);
 
-    final OfficeConnection connection =
-        (OfficeConnection) FieldUtils.readField(manager, "connection", true);
-    final OfficeUrl officeUrl = (OfficeUrl) FieldUtils.readField(connection, "officeUrl", true);
+    final OfficeConnection connection = Whitebox.getInternalState(manager, "connection");
+    final OfficeUrl officeUrl = Whitebox.getInternalState(connection, "officeUrl");
     assertThat(officeUrl.getConnectionAndParametersAsString()).isEqualTo("pipe,name=test");
   }
 }

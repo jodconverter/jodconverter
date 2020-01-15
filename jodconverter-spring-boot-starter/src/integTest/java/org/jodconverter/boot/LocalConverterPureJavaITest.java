@@ -26,36 +26,32 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import org.jodconverter.DocumentConverter;
+import org.jodconverter.office.OfficeException;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @TestPropertySource(locations = "classpath:config/application-local-purejava.properties")
 public class LocalConverterPureJavaITest {
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
-  private static File inputFileTxt;
+  @TempDir File testFolder;
+  private File inputFileTxt;
 
   @Autowired private DocumentConverter converter;
 
-  @BeforeClass
-  public static void setUpClass() throws IOException {
+  @BeforeEach
+  public void setUp() throws IOException {
 
-    inputFileTxt = testFolder.newFile("inputFile.txt");
+    inputFileTxt = new File(testFolder, "inputFile.txt");
     try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
@@ -63,9 +59,9 @@ public class LocalConverterPureJavaITest {
   }
 
   @Test
-  public void testTxtToRtf() throws Exception {
+  public void testTxtToRtf() throws OfficeException {
 
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.rtf");
+    final File outputFile = new File(testFolder, "outputFile.rtf");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -75,9 +71,9 @@ public class LocalConverterPureJavaITest {
   }
 
   @Test
-  public void testTxtToDoc() throws Exception {
+  public void testTxtToDoc() throws OfficeException {
 
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.doc");
+    final File outputFile = new File(testFolder, "outputFile.doc");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -87,9 +83,9 @@ public class LocalConverterPureJavaITest {
   }
 
   @Test
-  public void testTxtToPdf() throws Exception {
+  public void testTxtToPdf() throws OfficeException {
 
-    final File outputFile = new File(testFolder.getRoot(), "outputFile.pdf");
+    final File outputFile = new File(testFolder, "outputFile.pdf");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();

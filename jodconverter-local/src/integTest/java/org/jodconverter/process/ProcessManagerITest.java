@@ -21,29 +21,24 @@ package org.jodconverter.process;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.office.LocalOfficeManager;
 
 public class ProcessManagerITest {
 
-  /**
-   * Tests that using an custom process manager that appears in the classpath will be used.
-   *
-   * @throws Exception if an error occurs.
-   */
+  /** Tests that using an custom process manager that appears in the classpath will be used. */
   @Test
-  public void customProcessManager() throws Exception {
+  public void customProcessManager() {
 
     final LocalOfficeManager officeManager =
         LocalOfficeManager.builder()
             .processManager("org.jodconverter.process.CustomProcessManager")
             .build();
 
-    final Object config = FieldUtils.readField(officeManager, "config", true);
-    final ProcessManager manager =
-        (ProcessManager) FieldUtils.readField(config, "processManager", true);
+    final Object config = Whitebox.getInternalState(officeManager, "config");
+    final ProcessManager manager = Whitebox.getInternalState(config, "processManager");
     assertThat(manager).isExactlyInstanceOf(CustomProcessManager.class);
   }
 }

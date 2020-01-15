@@ -24,7 +24,7 @@ import java.util.TreeMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,15 +38,14 @@ final class DumpJsonDefaultDocumentFormatRegistry {
    * Main entry point.
    *
    * @param args Program arguments.
-   * @throws Exception If an error occurs.
    */
-  public static void main(final String[] args) throws Exception {
+  public static void main(final String[] args) {
 
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
     @SuppressWarnings("unchecked")
     final TreeMap<String, DocumentFormat> formats =
         new TreeMap<>(
-            (Map<String, DocumentFormat>) FieldUtils.readField(registry, "fmtsByExtension", true));
+            (Map<String, DocumentFormat>) Whitebox.getInternalState(registry, "fmtsByExtension"));
 
     final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     LOGGER.info(gson.toJson(formats.values()));

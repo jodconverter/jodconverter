@@ -12,6 +12,7 @@ dependencies {
 
     runtimeOnly libraries.slf4j_log4j // Runtime so it is included in the distribution
 
+    testImplementation libraries.powermock_mockito
     testImplementation libraries.wiremock
 }
 

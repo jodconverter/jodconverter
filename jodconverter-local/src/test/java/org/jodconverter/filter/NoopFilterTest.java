@@ -19,11 +19,12 @@
 
 package org.jodconverter.filter;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Contains tests for the {@link org.jodconverter.filter.NoopFilter} class.
@@ -33,10 +34,11 @@ import org.junit.Test;
 public class NoopFilterTest {
 
   /** Tests that a NoopFilter.CHAIN is read only. */
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void chain_ShouldBeReadOnly() {
 
-    NoopFilter.CHAIN.addFilter(NoopFilter.NOOP);
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> NoopFilter.CHAIN.addFilter(NoopFilter.NOOP));
   }
 
   /** Tests that a NoopFilter#doFilter execute the next filter in the chain. */
@@ -47,7 +49,7 @@ public class NoopFilterTest {
     final DefaultFilterChain chain = new DefaultFilterChain(NoopFilter.NOOP, filter);
     chain.doFilter(null, null);
 
-    // Verify that the
+    // Verify that the filter is called.
     verify(filter, times(1)).doFilter(null, null, chain);
   }
 }

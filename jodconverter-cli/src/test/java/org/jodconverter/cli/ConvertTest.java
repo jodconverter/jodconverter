@@ -28,33 +28,31 @@ import java.util.Map;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.LocalConverter;
-import org.jodconverter.cli.util.ConsoleStreamsListener;
+import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
 import org.jodconverter.cli.util.ExitException;
-import org.jodconverter.cli.util.NoExitResource;
-import org.jodconverter.cli.util.ResetExitExceptionResource;
+import org.jodconverter.cli.util.NoExitExtension;
+import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.office.OfficeManager;
 
+@ExtendWith({
+  ConsoleStreamsListenerExtension.class,
+  NoExitExtension.class,
+  ResetExitExceptionExtension.class
+})
 public class ConvertTest {
-
-  @ClassRule public static NoExitResource noExit = new NoExitResource();
-  @ClassRule public static ConsoleStreamsListener consoleListener = new ConsoleStreamsListener();
-
-  @Rule public ResetExitExceptionResource resetExitEx = new ResetExitExceptionResource();
 
   private static OfficeManager officeManager;
 
   /** Setup the office manager once before all tests. */
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() {
-
     officeManager = mock(OfficeManager.class);
   }
 

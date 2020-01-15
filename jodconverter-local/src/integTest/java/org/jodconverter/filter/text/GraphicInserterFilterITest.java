@@ -19,34 +19,35 @@
 
 package org.jodconverter.filter.text;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.jodconverter.ResourceUtil.documentFile;
+import static org.jodconverter.ResourceUtil.imageFile;
+
 import java.io.File;
 import java.util.Map;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.LocalOfficeManagerExtension;
+import org.jodconverter.office.OfficeManager;
 
-public class GraphicInserterFilterITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class GraphicInserterFilterITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
+  private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
   private static final String MULTI_PAGE_FILENAME = "test_multi_page.doc";
-  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
-  private static final File SOURCE_MULTI_PAGE_FILE = new File(DOCUMENTS_DIR, MULTI_PAGE_FILENAME);
-  private static final File IMAGE_FILE = new File(RESOURCES_DIR, "images/sample-1.jpg");
+  private static final File MULTI_PAGE_FILE = documentFile(MULTI_PAGE_FILENAME);
+  private static final File IMAGE_FILE = imageFile("sample-1.jpg");
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
-  /**
-   * Test the conversion of a document inserting a graphic along the way on the second page.
-   *
-   * @throws OfficeException If an error occurs.
-   */
+  /** Test the conversion of a document inserting a graphic along the way on the second page. */
   @Test
-  public void doFilter_WithCustomizedProperties() throws OfficeException {
+  public void doFilter_WithCustomizedProperties(@TempDir File testFolder, OfficeManager manager) {
+
+    final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
 
     // Create the properties of the filter
     final Map<String, Object> props =
@@ -58,77 +59,92 @@ public class GraphicInserterFilterITest extends AbstractOfficeITest {
     // Add a special property to add the image on the second page
     props.put("AnchorPageNo", (short) 2);
 
-    // Create the GraphicInserterFilter to test.
-    final GraphicInserterFilter filter = new GraphicInserterFilter(IMAGE_FILE.getPath(), props);
-
-    // Convert to PDF
-    LocalConverter.builder()
-        .filterChain(filter)
-        .build()
-        .convert(SOURCE_MULTI_PAGE_FILE)
-        .to(new File(testFolder.getRoot(), MULTI_PAGE_FILENAME + ".pdf"))
-        .execute();
+    assertThatCode(
+            () -> {
+              // Create the GraphicInserterFilter to test.
+              final GraphicInserterFilter filter =
+                  new GraphicInserterFilter(IMAGE_FILE.getPath(), props);
+              // Convert to PDF
+              LocalConverter.builder()
+                  .officeManager(manager)
+                  .filterChain(filter)
+                  .build()
+                  .convert(MULTI_PAGE_FILE)
+                  .to(targetFile)
+                  .execute();
+            })
+        .doesNotThrowAnyException();
   }
 
-  /**
-   * Test the conversion of a document inserting a graphic along the way.
-   *
-   * @throws OfficeException If an error occurs.
-   */
+  /** Test the conversion of a document inserting a graphic along the way. */
   @Test
-  public void doFilter_WithDefaultProperties() throws OfficeException {
+  public void doFilter_WithDefaultProperties(@TempDir File testFolder, OfficeManager manager) {
 
-    // Create the GraphicInserterFilter to test.
-    final GraphicInserterFilter filter =
-        new GraphicInserterFilter(
-            IMAGE_FILE.getPath(),
-            50, // Horizontal Position // 5 CM
-            100); // Vertical Position // 10 CM
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".originalsize.pdf");
 
-    // Convert to PDF
-    LocalConverter.builder()
-        .filterChain(filter)
-        .build()
-        .convert(SOURCE_FILE)
-        .to(new File(testFolder.getRoot(), SOURCE_FILENAME + ".originalsize.pdf"))
-        .execute();
+    assertThatCode(
+            () -> {
+              // Create the GraphicInserterFilter to test.
+              final GraphicInserterFilter filter =
+                  new GraphicInserterFilter(
+                      IMAGE_FILE.getPath(),
+                      50, // Horizontal Position // 5 CM
+                      100); // Vertical Position // 10 CM
+
+              // Convert to PDF
+              LocalConverter.builder()
+                  .officeManager(manager)
+                  .filterChain(filter)
+                  .build()
+                  .convert(SOURCE_FILE)
+                  .to(targetFile)
+                  .execute();
+            })
+        .doesNotThrowAnyException();
   }
 
   /**
    * Test the conversion of a document inserting a graphic along the way. The image will be resize
    * (smaller).
-   *
-   * @throws OfficeException If an error occurs.
    */
   @Test
-  public void doFilter_WithDefaultPropertiesAndSmallerSize() throws OfficeException {
+  public void doFilter_WithDefaultPropertiesAndSmallerSize(
+      @TempDir File testFolder, OfficeManager manager) {
 
-    // Create the GraphicInserterFilter to test.
-    final GraphicInserterFilter filter =
-        new GraphicInserterFilter(
-            IMAGE_FILE.getPath(),
-            74, // Image Width // 7.4 CM (half the original size)
-            56, // Image Height // 5.6 CM (half the original size)
-            30, // Horizontal Position // 3 CM
-            50); // Vertical Position // 5 CM
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".smallersize.pdf");
 
-    // Convert to PDF
-    LocalConverter.builder()
-        .filterChain(filter)
-        .build()
-        .convert(SOURCE_FILE)
-        .to(new File(testFolder.getRoot(), SOURCE_FILENAME + ".smallersize.pdf"))
-        .execute();
+    assertThatCode(
+            () -> {
+              // Create the GraphicInserterFilter to test.
+              final GraphicInserterFilter filter =
+                  new GraphicInserterFilter(
+                      IMAGE_FILE.getPath(),
+                      74, // Image Width // 7.4 CM (half the original size)
+                      56, // Image Height // 5.6 CM (half the original size)
+                      30, // Horizontal Position // 3 CM
+                      50); // Vertical Position // 5 CM
+
+              // Convert to PDF
+              LocalConverter.builder()
+                  .officeManager(manager)
+                  .filterChain(filter)
+                  .build()
+                  .convert(SOURCE_FILE)
+                  .to(targetFile)
+                  .execute();
+            })
+        .doesNotThrowAnyException();
   }
 
   /**
    * Test the conversion of a document inserting a graphic along the way on the second page. The
    * image will be resize (smaller).
-   *
-   * @throws OfficeException If an error occurs.
    */
   @Test
-  public void doFilter_WithCustomizedPropertiesAndSmallerSize() throws OfficeException {
+  public void doFilter_WithCustomizedPropertiesAndSmallerSize(
+      @TempDir File testFolder, OfficeManager manager) {
+
+    final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".smallersize.pdf");
 
     // Create the properties of the filter
     final Map<String, Object> props =
@@ -140,20 +156,25 @@ public class GraphicInserterFilterITest extends AbstractOfficeITest {
     // Add a special property to add the image on the second page
     props.put("AnchorPageNo", (short) 2);
 
-    // Create the GraphicInserterFilter to test.
-    final GraphicInserterFilter filter =
-        new GraphicInserterFilter(
-            IMAGE_FILE.getPath(),
-            74, // Image Width // 7.4 CM (half the original size)
-            56, // Image Height // 5.6 CM (half the original size)
-            props);
+    assertThatCode(
+            () -> {
+              // Create the GraphicInserterFilter to test.
+              final GraphicInserterFilter filter =
+                  new GraphicInserterFilter(
+                      IMAGE_FILE.getPath(),
+                      74, // Image Width // 7.4 CM (half the original size)
+                      56, // Image Height // 5.6 CM (half the original size)
+                      props);
 
-    // Convert to PDF
-    LocalConverter.builder()
-        .filterChain(filter)
-        .build()
-        .convert(SOURCE_MULTI_PAGE_FILE)
-        .to(new File(testFolder.getRoot(), MULTI_PAGE_FILENAME + ".smallersize.pdf"))
-        .execute();
+              // Convert to PDF
+              LocalConverter.builder()
+                  .officeManager(manager)
+                  .filterChain(filter)
+                  .build()
+                  .convert(MULTI_PAGE_FILE)
+                  .to(targetFile)
+                  .execute();
+            })
+        .doesNotThrowAnyException();
   }
 }

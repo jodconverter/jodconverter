@@ -21,24 +21,27 @@ package org.jodconverter.office.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.jodconverter.ResourceUtil.documentFile;
 
 import java.io.File;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
+import org.jodconverter.LocalOfficeManagerExtension;
 import org.jodconverter.filter.Filter;
+import org.jodconverter.office.OfficeManager;
 
-public class CalcITest extends AbstractOfficeITest {
-
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class CalcITest {
 
   @Test
-  public void isCalcAndGetCalcDoc_WithCalcDocument_NoExceptionThrown() {
+  public void isCalcAndGetCalcDoc_WithCalcDocument_NoExceptionThrown(
+      @TempDir File testFolder, OfficeManager manager) {
+
+    final File sourceFile = documentFile("test.ods");
 
     final Filter filter =
         (context, document, chain) -> {
@@ -47,22 +50,24 @@ public class CalcITest extends AbstractOfficeITest {
           assertThat(Calc.getCalcDoc(document)).isNotNull();
         };
 
-    final File outputFile = new File(testFolder.getRoot(), "out.pdf");
-    FileUtils.deleteQuietly(outputFile);
-
+    final File outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()
+                    .officeManager(manager)
                     .filterChain(filter)
                     .build()
-                    .convert(new File(DOCUMENTS_DIR + "test.ods"))
+                    .convert(sourceFile)
                     .to(outputFile)
                     .execute())
         .doesNotThrowAnyException();
   }
 
   @Test
-  public void isNotCalcAndGetCalcDoc_WithTextDocument_NoExceptionThrown() {
+  public void isNotCalcAndGetCalcDoc_WithTextDocument_NoExceptionThrown(
+      @TempDir File testFolder, OfficeManager manager) {
+
+    final File sourceFile = documentFile("test.odt");
 
     final Filter filter =
         (context, document, chain) -> {
@@ -71,15 +76,14 @@ public class CalcITest extends AbstractOfficeITest {
           assertThat(Calc.getCalcDoc(document)).isNull();
         };
 
-    final File outputFile = new File(testFolder.getRoot(), "out.pdf");
-    FileUtils.deleteQuietly(outputFile);
-
+    final File outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()
+                    .officeManager(manager)
                     .filterChain(filter)
                     .build()
-                    .convert(new File(DOCUMENTS_DIR + "test.odt"))
+                    .convert(sourceFile)
                     .to(outputFile)
                     .execute())
         .doesNotThrowAnyException();

@@ -21,15 +21,14 @@ package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OfficeConnectionExceptionTest {
 
   @Test
   public void ctor_WithConnectString_ExceptionCreatedWithConnectString() {
 
-    final OfficeConnectionException exception =
-        new OfficeConnectionException("message", "host=127.0.0.1");
-    assertThat(exception.getConnectString()).isEqualTo("host=127.0.0.1");
+    final OfficeConnectionException ex = new OfficeConnectionException("message", "host=127.0.0.1");
+    assertThat(ex.getConnectString()).isEqualTo("host=127.0.0.1");
   }
 }

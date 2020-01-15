@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
 public class OnlineOfficeManagerPoolEntryITest {

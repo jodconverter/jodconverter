@@ -17,29 +17,29 @@
  * limitations under the License.
  */
 
-package org.jodconverter.office;
+package org.jodconverter.cli.util;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
-import org.junit.jupiter.api.Test;
+/**
+ * Extension providing a way to prevent a call to System.exit to actually shutdown the VM. Instead,
+ * a ExitException is thrown.
+ */
+public class NoExitExtension implements BeforeAllCallback, AfterAllCallback {
 
-import org.jodconverter.test.util.AssertUtil;
+  @Override
+  public void beforeAll(ExtensionContext context) throws Exception {
 
-public class OfficeUtilsTest {
-
-  @Test
-  public void ctor_ClassWellDefined() {
-    AssertUtil.assertUtilityClassWellDefined(OfficeUtils.class);
+    // Don't allow the program to exit the VM
+    System.setSecurityManager(new NoExitSecurityManager());
   }
 
-  /** Tests that an OfficeException is swallowed by the stopQuietly function. */
-  @Test
-  public void stopQuietly_OfficeExceptionThrown_ExceptionSwallowed() throws OfficeException {
+  @Override
+  public void afterAll(ExtensionContext context) throws Exception {
 
-    final OfficeManager officeManager = mock(OfficeManager.class);
-    doThrow(OfficeException.class).when(officeManager).stop();
-
-    OfficeUtils.stopQuietly(officeManager);
+    // Restore security manager
+    System.setSecurityManager(null);
   }
 }

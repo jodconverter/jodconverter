@@ -20,13 +20,13 @@
 package org.jodconverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -34,14 +34,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.office.InstalledOfficeManagerHolder;
+import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 import org.jodconverter.task.LocalConversionTask;
 
@@ -49,103 +49,95 @@ public class LocalConverterTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-  private static File outputDir;
-
   private OfficeManager officeManager;
 
-  /**
-   * Creates a output directory for our tests.
-   *
-   * @throws IOException If an IO error occurs.
-   */
-  @BeforeClass
-  public static void setUpClass() throws IOException {
-
-    // Creates an output directory for the class
-    outputDir = testFolder.newFolder();
-  }
-
-  /** Setup the office manager before each test. */
-  @Before
+  @BeforeEach
   public void setUp() {
-
     officeManager = mock(OfficeManager.class);
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void convert_WithoutOfficeManagerInstalled_ThrowsIllegalStateException() throws Exception {
+  @Test
+  public void convert_WithoutOfficeManagerInstalled_ThrowsIllegalStateException(
+      @TempDir File testFolder) {
 
-    final File targetFile = new File(outputDir, "test.pdf");
+    final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
+    InstalledOfficeManagerHolder.setInstance(null);
 
-    LocalConverter.make().convert(SOURCE_FILE).to(targetFile).execute();
+    final File targetFile = new File(testFolder, "test.pdf");
+    try {
+      assertThatIllegalStateException()
+          .isThrownBy(() -> LocalConverter.make().convert(SOURCE_FILE).to(targetFile).execute());
+    } finally {
+      InstalledOfficeManagerHolder.setInstance(manager);
+    }
   }
 
   @Test
-  public void convert_WithCustomLoadProperties_CreateConverterWithExpectedLoadProperties()
-      throws Exception {
+  public void convert_WithCustomLoadProperties_CreateConverterWithExpectedLoadProperties(
+      @TempDir File testFolder) throws OfficeException {
 
     final Map<String, Object> loadProperties = new HashMap<>();
     loadProperties.put("Hidden", false);
     loadProperties.put("ReadOnly", true);
     loadProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
 
-    final File targetFile = new File(outputDir, "test.pdf");
+    final File targetFile = new File(testFolder, "test.pdf");
 
-    LocalConverter.builder()
-        .officeManager(officeManager)
-        .loadProperties(loadProperties)
-        .build()
-        .convert(SOURCE_FILE)
-        .to(targetFile)
-        .execute();
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(officeManager)
+                    .loadProperties(loadProperties)
+                    .build()
+                    .convert(SOURCE_FILE)
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
 
-    // Verify that the office manager has executed a task
-    // with the expected properties.
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    // Verify that the office manager has executed a task with the expected properties.
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(1)).execute(taskArgument.capture());
-    final LocalConversionTask task = taskArgument.getValue();
-    assertThat(task).extracting("loadProperties").isEqualTo(loadProperties);
+    verify(officeManager, times(1)).execute(arg.capture());
+    assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(loadProperties);
   }
 
   @Test
-  public void convert_WithCustomStoreProperties_CreateConverterWithExpectedStoreProperties()
-      throws Exception {
+  public void convert_WithCustomStoreProperties_CreateConverterWithExpectedStoreProperties(
+      @TempDir File testFolder) throws OfficeException {
 
     final Map<String, Object> filterData = new HashMap<>();
     filterData.put("PageRange", "1");
     final Map<String, Object> storeProperties = new HashMap<>();
     storeProperties.put("FilterData", filterData);
+    final File targetFile = new File(testFolder, "test.pdf");
 
-    final File targetFile = new File(outputDir, "test.pdf");
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(officeManager)
+                    .storeProperties(storeProperties)
+                    .build()
+                    .convert(SOURCE_FILE)
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
 
-    LocalConverter.builder()
-        .officeManager(officeManager)
-        .storeProperties(storeProperties)
-        .build()
-        .convert(SOURCE_FILE)
-        .to(targetFile)
-        .execute();
-
-    // Verify that the office manager has executed a task
-    // with the expected properties.
-    final ArgumentCaptor<LocalConversionTask> taskArgument =
+    // Verify that the office manager has executed a task with the expected properties.
+    final ArgumentCaptor<LocalConversionTask> arg =
         ArgumentCaptor.forClass(LocalConversionTask.class);
-    verify(officeManager, times(1)).execute(taskArgument.capture());
-    final LocalConversionTask task = taskArgument.getValue();
-    assertThat(task).extracting("storeProperties").isEqualTo(storeProperties);
+    verify(officeManager, times(1)).execute(arg.capture());
+    assertThat(arg.getValue()).extracting("storeProperties").isEqualTo(storeProperties);
   }
 
   @Test
-  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream() {
+  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream(
+      @TempDir File testFolder) {
 
-    final File targetFile = new File(outputDir, "test.pdf");
-
-    assertThatExceptionOfType(IllegalStateException.class)
+    final File targetFile = new File(testFolder, "test.pdf");
+    assertThatIllegalStateException()
         .isThrownBy(
             () -> {
-              try (InputStream stream = Files.newInputStream(targetFile.toPath())) {
+              try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
                 LocalConverter.make(officeManager)
                     .convert(stream)
                     .as(DefaultDocumentFormatRegistry.TXT)
@@ -157,13 +149,14 @@ public class LocalConverterTest {
   }
 
   @Test
-  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream() {
+  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream(
+      @TempDir File testFolder) {
 
-    assertThatExceptionOfType(IllegalStateException.class)
+    assertThatIllegalStateException()
         .isThrownBy(
             () -> {
               try (OutputStream stream =
-                  Files.newOutputStream(new File(outputDir, "test.pdf").toPath())) {
+                  Files.newOutputStream(new File(testFolder, "test.pdf").toPath())) {
                 LocalConverter.make(officeManager)
                     .convert(SOURCE_FILE)
                     .to(stream)

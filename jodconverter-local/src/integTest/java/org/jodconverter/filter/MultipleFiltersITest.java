@@ -19,33 +19,31 @@
 
 package org.jodconverter.filter;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.jodconverter.ResourceUtil.documentFile;
+import static org.jodconverter.ResourceUtil.imageFile;
+
 import java.io.File;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.AbstractOfficeITest;
 import org.jodconverter.LocalConverter;
+import org.jodconverter.LocalOfficeManagerExtension;
 import org.jodconverter.filter.text.GraphicInserterFilter;
 import org.jodconverter.filter.text.TextReplacerFilter;
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.office.OfficeManager;
 
-public class MultipleFiltersITest extends AbstractOfficeITest {
+@ExtendWith(LocalOfficeManagerExtension.class)
+public class MultipleFiltersITest {
 
   private static final String SOURCE_FILENAME = "test_replace.doc";
-  private static final File SOURCE_FILE = new File(DOCUMENTS_DIR, SOURCE_FILENAME);
-  private static final File IMAGE_FILE = new File(RESOURCES_DIR, "images/sample-1.jpg");
+  private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
+  private static final File IMAGE_FILE = imageFile("sample-1.jpg");
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
-  /**
-   * Test the conversion of a document replacing text along the way.
-   *
-   * @throws OfficeException If an office error occurs.
-   */
   @Test
-  public void doFilter_WithDefaultProperties() throws OfficeException {
+  public void doFilter_WithDefaultProperties(@TempDir File testFolder, OfficeManager manager) {
 
     // Create the TextReplacerFilter to test.
     final TextReplacerFilter replacerFilter =
@@ -58,21 +56,27 @@ public class MultipleFiltersITest extends AbstractOfficeITest {
               "most recent common language will be more basic"
             });
 
-    // Create the GraphicInserterFilter to test.
-    final GraphicInserterFilter graphicfilter =
-        new GraphicInserterFilter(
-            IMAGE_FILE.getPath(),
-            74, // Image Width // 7.4 CM (half the original size)
-            56, // Image Height // 5.6 CM (half the original size)
-            60, // Horizontal Position // 6 CM
-            100); // Vertical Position // 10 CM
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".pdf");
+    assertThatCode(
+            () -> {
+              // Create the GraphicInserterFilter to test.
+              final GraphicInserterFilter graphicfilter =
+                  new GraphicInserterFilter(
+                      IMAGE_FILE.getPath(),
+                      74, // Image Width // 7.4 CM (half the original size)
+                      56, // Image Height // 5.6 CM (half the original size)
+                      60, // Horizontal Position // 6 CM
+                      100); // Vertical Position // 10 CM
 
-    // Convert to PDF
-    LocalConverter.builder()
-        .filterChain(replacerFilter, graphicfilter)
-        .build()
-        .convert(SOURCE_FILE)
-        .to(new File(testFolder.getRoot(), SOURCE_FILENAME + ".pdf"))
-        .execute();
+              // Convert to PDF
+              LocalConverter.builder()
+                  .officeManager(manager)
+                  .filterChain(replacerFilter, graphicfilter)
+                  .build()
+                  .convert(SOURCE_FILE)
+                  .to(targetFile)
+                  .execute();
+            })
+        .doesNotThrowAnyException();
   }
 }

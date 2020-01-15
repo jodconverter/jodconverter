@@ -25,9 +25,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 
@@ -36,12 +35,10 @@ public class TargetDocumentSpecsFromFileTest {
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
   private static final String TARGET_FILENAME = "test.pdf";
 
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
   @Test
-  public void onFailure_ShouldDeleteTargetFile() throws IOException {
+  public void onFailure_ShouldDeleteTargetFile(@TempDir File testFolder) throws IOException {
 
-    final File targetFile = new File(testFolder.getRoot(), TARGET_FILENAME);
+    final File targetFile = new File(testFolder, TARGET_FILENAME);
     FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
     assertThat(targetFile).exists();
 
@@ -54,9 +51,10 @@ public class TargetDocumentSpecsFromFileTest {
   }
 
   @Test
-  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
+  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues(@TempDir File testFolder)
+      throws IOException {
 
-    final File targetFile = new File(testFolder.getRoot(), TARGET_FILENAME);
+    final File targetFile = new File(testFolder, TARGET_FILENAME);
     FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
     assertThat(targetFile).exists();
 

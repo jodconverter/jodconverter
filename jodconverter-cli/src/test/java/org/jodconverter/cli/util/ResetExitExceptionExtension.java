@@ -19,26 +19,18 @@
 
 package org.jodconverter.cli.util;
 
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * Class rule used providing a way to prevent a call to System.exit to actually shutdown the VM.
- * Instead, a ExitException is thrown.
+ * Extension that must be used with the {@link NoExitExtension} in order to reset the {@link
+ * ExitException#INSTANCE} status between each test.
  */
-public final class NoExitResource extends ExternalResource {
+public final class ResetExitExceptionExtension implements BeforeEachCallback {
 
   @Override
-  protected void before() {
+  public void beforeEach(ExtensionContext context) {
 
-    // Don't allow the program to exit the VM
-    System.setSecurityManager(new NoExitSecurityManager());
-  }
-
-  @Override
-  protected void after() {
-    super.after();
-
-    // Restore security manager
-    System.setSecurityManager(null);
+    ExitException.INSTANCE.reset();
   }
 }
