@@ -271,17 +271,18 @@ class OfficeProcessManager {
     // Wait for completion of the restart task
     try {
       future.get();
-      LOGGER.debug("Task '{}' executed successfully", taskName);
+      LOGGER.debug("Task executed successfully: {}", taskName);
 
     } catch (ExecutionException executionEx) {
-      LOGGER.debug("ExecutionException catched in submitAndWait", executionEx);
+      LOGGER.debug(
+          "ExecutionException catched in submitAndWait for task: " + taskName, executionEx);
 
       // Rethrow the original (cause) exception
       if (executionEx.getCause() instanceof OfficeException) {
         throw (OfficeException) executionEx.getCause();
       }
       throw new OfficeException(
-          "Failed to execute task '" + taskName + "'", executionEx.getCause());
+          "Failed to execute task: " + taskName, executionEx.getCause());
 
     } catch (InterruptedException interruptedEx) {
       Thread.currentThread().interrupt(); // ignore/reset
