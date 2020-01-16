@@ -1,7 +1,5 @@
 description = 'JODConverter - Local'
 
-apply plugin: 'java-library'
-
 dependencies {
     api project(':jodconverter-core')
 
