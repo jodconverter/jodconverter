@@ -21,76 +21,33 @@ package org.jodconverter.boot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.DocumentConverter;
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.process.PureJavaProcessManager;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @TestPropertySource(locations = "classpath:config/application-local-purejava.properties")
 public class LocalConverterPureJavaITest {
 
-  @TempDir File testFolder;
-  private File inputFileTxt;
-
   @Autowired private DocumentConverter converter;
 
-  @BeforeEach
-  public void setUp() throws IOException {
-
-    inputFileTxt = new File(testFolder, "inputFile.txt");
-    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
-      writer.println("This is the first line of the input file.");
-      writer.println("This is the second line of the input file.");
-    }
-  }
-
   @Test
-  public void testTxtToRtf() throws OfficeException {
+  public void testProcessManagerProperty() {
 
-    final File outputFile = new File(testFolder, "outputFile.rtf");
-    converter.convert(inputFileTxt).to(outputFile).execute();
+    Object officeManager = ReflectionTestUtils.getField(converter, "officeManager");
+    Object poolEntry = ReflectionTestUtils.invokeMethod(officeManager, "acquireManager");
+    Object officeProcessManager = ReflectionTestUtils.getField(poolEntry, "officeProcessManager");
+    Object config = ReflectionTestUtils.getField(officeProcessManager, "config");
+    Object processManager = ReflectionTestUtils.getField(config, "processManager");
 
-    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
-    assertThat(outputFile.length())
-        .as("Check %s file length", outputFile.getName())
-        .isGreaterThan(0L);
-  }
-
-  @Test
-  public void testTxtToDoc() throws OfficeException {
-
-    final File outputFile = new File(testFolder, "outputFile.doc");
-    converter.convert(inputFileTxt).to(outputFile).execute();
-
-    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
-    assertThat(outputFile.length())
-        .as("Check %s file length", outputFile.getName())
-        .isGreaterThan(0L);
-  }
-
-  @Test
-  public void testTxtToPdf() throws OfficeException {
-
-    final File outputFile = new File(testFolder, "outputFile.pdf");
-    converter.convert(inputFileTxt).to(outputFile).execute();
-
-    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
-    assertThat(outputFile.length())
-        .as("Check %s file length", outputFile.getName())
-        .isGreaterThan(0L);
+    assertThat(processManager).isInstanceOf(PureJavaProcessManager.class);
   }
 }

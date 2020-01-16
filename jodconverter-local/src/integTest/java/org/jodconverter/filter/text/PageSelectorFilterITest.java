@@ -24,51 +24,45 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.jodconverter.ResourceUtil.documentFile;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.jodconverter.LocalConverter;
 import org.jodconverter.LocalOfficeManagerExtension;
+import org.jodconverter.filter.PageCounterFilter;
 import org.jodconverter.office.OfficeManager;
 
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class PageSelectorFilterITest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PageSelectorFilterITest.class);
   private static final String SOURCE_FILENAME = "test_multi_page.doc";
   private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
 
   @Test
   public void doFilter_SelectPage2_ShouldConvertOnlyPage2(
-      @TempDir File testFolder, OfficeManager manager) throws IOException {
+      @TempDir File testFolder, OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".page2.txt");
+    final File targetFile = new File(testFolder, "out.pdf");
+
+    final PageCounterFilter count1 = new PageCounterFilter();
+    final PageCounterFilter count2 = new PageCounterFilter();
 
     // Test the filter
     assertThatCode(
             () ->
                 LocalConverter.builder()
                     .officeManager(manager)
-                    .filterChain(new PageSelectorFilter(2))
+                    .filterChain(count1, new PageSelectorFilter(2), count2)
                     .build()
                     .convert(SOURCE_FILE)
                     .to(targetFile)
                     .execute())
         .doesNotThrowAnyException();
 
-    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
-    LOGGER.debug("content: {} ", content);
-    assertThat(content)
-        .as("Check content: %s", content)
-        .contains("Test document Page 2")
-        .doesNotContain("Test document Page 1")
-        .doesNotContain("Test document Page 3");
+    // TODO: Validate text from resulting PDF if possible.
+    assertThat(count1.getPageCount()).isEqualTo(3);
+    assertThat(count2.getPageCount()).isEqualTo(1);
   }
 }
