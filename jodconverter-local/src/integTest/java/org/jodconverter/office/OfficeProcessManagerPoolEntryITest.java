@@ -21,7 +21,6 @@ package org.jodconverter.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -35,7 +34,6 @@ import java.util.concurrent.TimeoutException;
 import com.sun.star.frame.TerminationVetoException;
 import com.sun.star.frame.XTerminateListener;
 import com.sun.star.lang.EventObject;
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
@@ -434,13 +432,6 @@ public class OfficeProcessManagerPoolEntryITest {
 
   @Test
   public void stop_WhenCouldNotTerminateDueToRetryTimeout_ThrowsOfficeException() throws Exception {
-
-    // DON'T RUN THIS TEST ON FREEBSD.
-    // Using a PureJavaProcessManager will cause that we will try to connect
-    // to the using XConnection.connect, and on free BSD, it hangs. We do not
-    // know why.
-    // TODO: Investigate the cause.
-    assumeFalse(SystemUtils.IS_OS_FREE_BSD);
 
     final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
     config.setProcessManager(

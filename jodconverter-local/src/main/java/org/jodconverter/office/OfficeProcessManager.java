@@ -140,7 +140,7 @@ class OfficeProcessManager {
     } catch (Exception ex) {
       LOGGER.debug("Exception catched in doStopProcess", ex);
 
-      // In case we can't get hold of the desktop, it could be a NullPointerException
+      // In case we can't get hold of the desktop, or it could be a NullPointerException
       // if the desktop was null (no connection established).
       doTerminateProcess();
 

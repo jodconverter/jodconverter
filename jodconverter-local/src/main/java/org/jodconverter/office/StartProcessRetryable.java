@@ -23,10 +23,10 @@ import static org.jodconverter.process.ProcessManager.PID_UNKNOWN;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.process.FreeBSDProcessManager;
 import org.jodconverter.process.ProcessManager;
 import org.jodconverter.process.ProcessQuery;
 
@@ -81,7 +81,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
     // OfficeConnection.connect() will hang for more than 5 minutes before throwing
     // a timeout exception, we do not know why.
     // TODO: Investigate FreeBSD.
-    if (processManager instanceof FreeBSDProcessManager) {
+    if (SystemUtils.IS_OS_FREE_BSD) {
       LOGGER.debug("Waiting for process to start on FreeBSD...");
       sleep(FIND_PID_DELAY);
     }
