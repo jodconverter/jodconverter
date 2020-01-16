@@ -22,7 +22,7 @@ I created this fork because I had to do some changes to the original project and
 
 #### Gradle:
 ```Shell
-compile 'org.jodconverter:jodconverter-local:4.2.2'
+compile 'org.jodconverter:jodconverter-local:4.2.3'
 ```
 
 #### Maven:
@@ -30,7 +30,7 @@ compile 'org.jodconverter:jodconverter-local:4.2.2'
 <dependency>
   <groupId>org.jodconverter</groupId>
   <artifactId>jodconverter-local</artifactId>
-  <version>4.2.2</version>
+  <version>4.2.3</version>
 </dependency>
 ```
 
