@@ -36,14 +36,16 @@ compile 'org.jodconverter:jodconverter-local:4.2.3'
 
 ### Building the Project
 
-#### With LibreOffice libraries:
+Build default, JODConverter is built using the OpenOffice libraries. See [here](https://github.com/sbraconnier/jodconverter/issues/113) to know why. Bu you can build the project using the LibreOffice libraries with the `useLibreOffice` argument.
+
+#### With OpenOffice libraries:
 ```Shell
 gradlew clean build -x test
 ```
 
-#### With OpenOffice libraries:
+#### With LibreOffice libraries:
 ```Shell
-gradlew clean build -x test -PuseOpenOffice
+gradlew clean build -x test -PuseLibreOffice
 ```
 
 ### Building Cli Executable

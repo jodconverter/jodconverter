@@ -6,28 +6,28 @@ dependencies {
     // We cannot use LibreOffice libraries by default.
     // See:
     // https://github.com/sbraconnier/jodconverter/issues/113
-    if (project.hasProperty("useOpenOffice")) {
-        implementation "org.openoffice:juh:$versions.open_office_version"
-        implementation "org.openoffice:jurt:$versions.open_office_version"
-        implementation "org.openoffice:ridl:$versions.open_office_version"
-        implementation "org.openoffice:unoil:$versions.open_office_version"
-    } else {
-        implementation "org.libreoffice:juh:$versions.libre_office_version"
-        implementation "org.libreoffice:jurt:$versions.libre_office_version"
-        implementation "org.libreoffice:ridl:$versions.libre_office_version"
-        implementation "org.libreoffice:unoil:$versions.libre_office_version"
-    }
-//    if (project.hasProperty("useLibreOffice")) {
-//        implementation "org.libreoffice:juh:$versions.libre_office_version"
-//        implementation "org.libreoffice:jurt:$versions.libre_office_version"
-//        implementation "org.libreoffice:ridl:$versions.libre_office_version"
-//        implementation "org.libreoffice:unoil:$versions.libre_office_version"
-//    } else {
+//    if (project.hasProperty("useOpenOffice")) {
 //        implementation "org.openoffice:juh:$versions.open_office_version"
 //        implementation "org.openoffice:jurt:$versions.open_office_version"
 //        implementation "org.openoffice:ridl:$versions.open_office_version"
 //        implementation "org.openoffice:unoil:$versions.open_office_version"
+//    } else {
+//        implementation "org.libreoffice:juh:$versions.libre_office_version"
+//        implementation "org.libreoffice:jurt:$versions.libre_office_version"
+//        implementation "org.libreoffice:ridl:$versions.libre_office_version"
+//        implementation "org.libreoffice:unoil:$versions.libre_office_version"
 //    }
+    if (project.hasProperty("useLibreOffice")) {
+        implementation "org.libreoffice:juh:$versions.libre_office_version"
+        implementation "org.libreoffice:jurt:$versions.libre_office_version"
+        implementation "org.libreoffice:ridl:$versions.libre_office_version"
+        implementation "org.libreoffice:unoil:$versions.libre_office_version"
+    } else {
+        implementation "org.openoffice:juh:$versions.open_office_version"
+        implementation "org.openoffice:jurt:$versions.open_office_version"
+        implementation "org.openoffice:ridl:$versions.open_office_version"
+        implementation "org.openoffice:unoil:$versions.open_office_version"
+    }
 
     implementation libraries.commons_io
     implementation libraries.commons_lang3
