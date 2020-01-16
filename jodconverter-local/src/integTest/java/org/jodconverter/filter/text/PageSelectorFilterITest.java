@@ -64,6 +64,7 @@ public class PageSelectorFilterITest {
         .doesNotThrowAnyException();
 
     final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    LOGGER.debug("content: {} ", content);
     assertThat(content)
         .as("Check content: %s", content)
         .contains("Test document Page 2")
