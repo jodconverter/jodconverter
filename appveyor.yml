@@ -6,11 +6,11 @@ init:
 
 # Build artifacts
 build_script:
-  - gradlew.bat assemble --stacktrace
+  - gradlew.bat assemble -x javadoc
 
 # Verify artifacts
 test_script:
-  - gradlew.bat check -x integTest --stacktrace
+  - gradlew.bat check -x integTest
 
 # Branches to build
 branches:

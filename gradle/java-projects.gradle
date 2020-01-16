@@ -89,7 +89,7 @@ test {
     failFast = true
 
     // Uncomment when we want to see the logs while testing
-    testLogging.showStandardStreams = true
+    //testLogging.showStandardStreams = true
 }
 
 integrationTest {
@@ -100,7 +100,7 @@ integrationTest {
     failFast = true
 
     // Uncomment when we want to see the logs while testing
-    testLogging.showStandardStreams = true
+    //testLogging.showStandardStreams = true
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
