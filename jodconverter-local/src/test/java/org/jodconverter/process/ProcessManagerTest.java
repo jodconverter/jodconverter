@@ -34,6 +34,29 @@ import org.jodconverter.office.LocalOfficeUtils;
 
 public class ProcessManagerTest {
 
+  private static void sleep(final long millisec) {
+    try {
+      Thread.sleep(millisec);
+    } catch (InterruptedException ignore) {
+      // ignore
+    }
+  }
+
+  private static long waitForPidNotFound(
+      final ProcessManager processManager, final ProcessQuery query) throws IOException {
+
+    int tryCount = 0;
+    long pid;
+    do {
+      tryCount++;
+      pid = processManager.findPid(query);
+      if (pid != ProcessManager.PID_NOT_FOUND) {
+        sleep(250L);
+      }
+    } while (pid != ProcessManager.PID_NOT_FOUND && tryCount != 10);
+    return pid;
+  }
+
   @Test
   public void freeBsdProcessManager() throws IOException {
     assumeTrue(SystemUtils.IS_OS_FREE_BSD);
@@ -48,7 +71,7 @@ public class ProcessManagerTest {
     assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
-    assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+    assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   @Test
@@ -64,7 +87,7 @@ public class ProcessManagerTest {
     assertThat(pid).isEqualTo(ProcessManager.PID_UNKNOWN);
 
     processManager.kill(process, pid);
-    assertThat(defaultManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+    assertThat(waitForPidNotFound(defaultManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   @Test
@@ -81,7 +104,7 @@ public class ProcessManagerTest {
     assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
-    assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+    assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   @Test
@@ -97,7 +120,7 @@ public class ProcessManagerTest {
     assertThat(pid).isEqualTo(ProcessManager.PID_UNKNOWN);
 
     processManager.kill(process, pid);
-    assertThat(defaultManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+    assertThat(waitForPidNotFound(defaultManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   @Test
@@ -115,7 +138,7 @@ public class ProcessManagerTest {
     assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
-    assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+    assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   @Test
@@ -131,7 +154,7 @@ public class ProcessManagerTest {
     assertThat(pid).isEqualTo(ProcessManager.PID_UNKNOWN);
 
     processManager.kill(process, pid);
-    assertThat(defaultManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+    assertThat(waitForPidNotFound(defaultManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   @Test
@@ -149,7 +172,7 @@ public class ProcessManagerTest {
     // assertThat(pid).isEqualTo(javaPid.longValue());
 
     processManager.kill(process, pid);
-    assertThat(processManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+    assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   @Test
@@ -165,7 +188,7 @@ public class ProcessManagerTest {
     assertThat(pid).isEqualTo(ProcessManager.PID_UNKNOWN);
 
     processManager.kill(process, pid);
-    assertThat(defaultManager.findPid(query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
+    assertThat(waitForPidNotFound(defaultManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
   }
 
   /**
