@@ -281,8 +281,7 @@ class OfficeProcessManager {
       if (executionEx.getCause() instanceof OfficeException) {
         throw (OfficeException) executionEx.getCause();
       }
-      throw new OfficeException(
-          "Failed to execute task: " + taskName, executionEx.getCause());
+      throw new OfficeException("Failed to execute task: " + taskName, executionEx.getCause());
 
     } catch (InterruptedException interruptedEx) {
       Thread.currentThread().interrupt(); // ignore/reset
