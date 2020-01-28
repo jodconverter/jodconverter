@@ -39,7 +39,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import org.jodconverter.DocumentConverter;
+import org.jodconverter.core.DocumentConverter;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-all.properties")

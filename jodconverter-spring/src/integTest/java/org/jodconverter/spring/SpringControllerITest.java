@@ -36,8 +36,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import org.jodconverter.office.LocalOfficeUtils;
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.local.office.LocalOfficeUtils;
 
 @ContextConfiguration
 @ExtendWith(SpringExtension.class)

@@ -33,13 +33,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powermock.reflect.Whitebox;
 
-import org.jodconverter.LocalConverter;
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
 import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitExtension;
 import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
-import org.jodconverter.office.OfficeManager;
+import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.local.LocalConverter;
 
 @ExtendWith({
   ConsoleStreamsListenerExtension.class,

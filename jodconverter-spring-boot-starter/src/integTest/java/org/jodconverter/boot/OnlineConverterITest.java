@@ -40,8 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.office.OfficeException;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-online.properties")

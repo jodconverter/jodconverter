@@ -35,15 +35,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.LocalConverter;
-import org.jodconverter.document.DefaultDocumentFormatRegistryInstanceHolder;
-import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.document.JsonDocumentFormatRegistry;
-import org.jodconverter.office.LocalOfficeManager;
-import org.jodconverter.office.LocalOfficeUtils;
-import org.jodconverter.office.OfficeManager;
-import org.jodconverter.process.ProcessManager;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DefaultDocumentFormatRegistryInstanceHolder;
+import org.jodconverter.core.document.DocumentFormatRegistry;
+import org.jodconverter.core.document.JsonDocumentFormatRegistry;
+import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.office.LocalOfficeUtils;
+import org.jodconverter.local.process.ProcessManager;
 
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter local module. */
 @Configuration

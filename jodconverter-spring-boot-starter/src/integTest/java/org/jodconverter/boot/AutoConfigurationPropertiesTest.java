@@ -30,9 +30,9 @@ import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.boot.autoconfigure.JodConverterLocalProperties;
 import org.jodconverter.boot.autoconfigure.JodConverterOnlineProperties;
-import org.jodconverter.office.LocalOfficeManager;
-import org.jodconverter.office.OfficeManager;
-import org.jodconverter.office.OnlineOfficeManager;
+import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.online.office.OnlineOfficeManager;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-props.properties")

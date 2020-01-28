@@ -30,11 +30,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.OnlineConverter;
-import org.jodconverter.office.OfficeManager;
-import org.jodconverter.office.OnlineOfficeManager;
-import org.jodconverter.ssl.SslConfig;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.online.OnlineConverter;
+import org.jodconverter.online.office.OnlineOfficeManager;
+import org.jodconverter.online.ssl.SslConfig;
 
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter online module. */
 @Configuration

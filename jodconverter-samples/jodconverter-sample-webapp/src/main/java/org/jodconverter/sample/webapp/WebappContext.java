@@ -26,11 +26,11 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.LocalConverter;
-import org.jodconverter.office.LocalOfficeManager;
-import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeManager;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.LocalOfficeManager;
 
 @SuppressWarnings("PMD")
 public class WebappContext {

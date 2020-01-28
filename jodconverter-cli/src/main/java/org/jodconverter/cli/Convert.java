@@ -40,16 +40,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import org.jodconverter.LocalConverter;
-import org.jodconverter.OnlineConverter;
-import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.document.JsonDocumentFormatRegistry;
-import org.jodconverter.filter.FilterChain;
-import org.jodconverter.office.LocalOfficeManager;
-import org.jodconverter.office.OfficeManager;
-import org.jodconverter.office.OfficeUtils;
-import org.jodconverter.office.OnlineOfficeManager;
-import org.jodconverter.ssl.SslConfig;
+import org.jodconverter.core.document.DocumentFormatRegistry;
+import org.jodconverter.core.document.JsonDocumentFormatRegistry;
+import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.filter.FilterChain;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.online.OnlineConverter;
+import org.jodconverter.online.office.OnlineOfficeManager;
+import org.jodconverter.online.ssl.SslConfig;
 
 /** Command line interface executable. */
 public final class Convert {

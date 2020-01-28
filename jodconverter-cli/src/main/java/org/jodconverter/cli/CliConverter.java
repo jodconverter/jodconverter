@@ -29,8 +29,8 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.office.OfficeException;
 
 /**
  * Converts document(s) according to the command line given to the {@link Convert} class.
@@ -61,7 +61,8 @@ public final class CliConverter {
    * @param outputDirPath The directory where to create a converted file. If null, a converted file
    *     will be created into the same directory as the input file.
    * @param overwrite Indicates whether an output file that already exists must be overwritten.
-   * @throws OfficeException If an error occurs while converting the files.
+   * @throws org.jodconverter.core.office.OfficeException If an error occurs while converting the
+   *     files.
    */
   public void convert(
       final String[] filenames,
@@ -130,7 +131,8 @@ public final class CliConverter {
    *     output filename. If null and the directory is not specified in the output filename, a
    *     converted file will be created into the same directory as the input files.
    * @param overwrite Indicates whether an output file that already exists must be overwritten.
-   * @throws OfficeException If an error occurs while converting the files.
+   * @throws org.jodconverter.core.office.OfficeException If an error occurs while converting the
+   *     files.
    */
   public void convert(
       final String[] inputFilenames,

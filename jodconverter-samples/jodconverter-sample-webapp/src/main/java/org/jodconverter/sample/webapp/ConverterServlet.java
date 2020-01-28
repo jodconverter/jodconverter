@@ -37,7 +37,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.DocumentConverter;
+import org.jodconverter.core.DocumentConverter;
 
 public class ConverterServlet extends HttpServlet {
   private static final long serialVersionUID = -591469426224201748L;

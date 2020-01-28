@@ -29,8 +29,8 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.process.PureJavaProcessManager;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.local.process.PureJavaProcessManager;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)

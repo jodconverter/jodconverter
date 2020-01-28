@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import org.jodconverter.document.DocumentFormatProperties;
+import org.jodconverter.core.document.DocumentFormatProperties;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter.local")

@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- Creation of all the required filters we want to add to the filter chain. -->
-    <bean id="pagesSelectorFilter" class="org.jodconverter.filter.PagesSelectorFilter">
+    <bean id="pagesSelectorFilter" class="org.jodconverter.local.filter.PagesSelectorFilter">
         <!-- Page we want to convert -->
         <constructor-arg value="2" />
     </bean>
@@ -12,7 +12,7 @@
 	<!-- Configure the filter chain that will be used while converting a document. 
 		The id of the bean is important here since we search for the filter chain 
 		using this id. -->
-	<bean id="filterChain" class="org.jodconverter.filter.DefaultFilterChain">
+	<bean id="filterChain" class="org.jodconverter.local.filter.DefaultFilterChain">
 		<constructor-arg>
 			<list>
 				<ref bean="pagesSelectorFilter" />

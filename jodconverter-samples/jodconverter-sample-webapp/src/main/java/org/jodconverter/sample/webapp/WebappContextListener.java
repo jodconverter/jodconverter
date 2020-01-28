@@ -22,7 +22,7 @@ package org.jodconverter.sample.webapp;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.core.office.OfficeException;
 
 @SuppressWarnings("PMD")
 public class WebappContextListener implements ServletContextListener {

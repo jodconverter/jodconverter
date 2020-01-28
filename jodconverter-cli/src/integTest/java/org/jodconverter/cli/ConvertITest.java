@@ -39,7 +39,7 @@ import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitExtension;
 import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
-import org.jodconverter.office.LocalOfficeUtils;
+import org.jodconverter.local.office.LocalOfficeUtils;
 
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.

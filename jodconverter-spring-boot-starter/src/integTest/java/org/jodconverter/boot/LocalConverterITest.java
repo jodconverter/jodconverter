@@ -36,9 +36,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.TestPropertySource;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.document.DocumentFamily;
-import org.jodconverter.office.OfficeException;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DocumentFamily;
+import org.jodconverter.core.office.OfficeException;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)

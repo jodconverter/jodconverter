@@ -40,17 +40,17 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.powermock.reflect.Whitebox;
 
-import org.jodconverter.LocalConverter;
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
 import org.jodconverter.cli.util.NoExitExtension;
 import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
-import org.jodconverter.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.office.InstalledOfficeManagerHolder;
-import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeManager;
-import org.jodconverter.task.LocalConversionTask;
+import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.document.DocumentFormatRegistry;
+import org.jodconverter.core.office.InstalledOfficeManagerHolder;
+import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.task.LocalConversionTask;
 
 @ExtendWith({
   ConsoleStreamsListenerExtension.class,

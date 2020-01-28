@@ -30,16 +30,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.LocalConverter;
-import org.jodconverter.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.document.DocumentFamily;
-import org.jodconverter.document.DocumentFormat;
-import org.jodconverter.document.DocumentFormatRegistry;
-import org.jodconverter.office.LocalOfficeManager;
-import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeManager;
-import org.jodconverter.office.OfficeUtils;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.document.DocumentFamily;
+import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.document.DocumentFormatRegistry;
+import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.LocalOfficeManager;
 
 /**
  * The purpose of this class is to provide to the Spring Container a Bean that encapsulates the
