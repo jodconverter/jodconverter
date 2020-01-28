@@ -150,7 +150,8 @@ public class ConvertITest {
   @Test
   public void convert_WithSingleFilter_ShouldSucceed(@TempDir File testFolder) {
 
-    final File filterChainFile = new File(CONFIG_DIR + "applicationContext_pageSelectorFilter.xml");
+    final File filterChainFile =
+        new File(CONFIG_DIR + "applicationContext_pagesSelectorFilter.xml");
     final File inputFile = new File(SOURCE_MULTI_FILE);
     final File outputFile = new File(testFolder, "convert_WithSingleFilter.txt");
 

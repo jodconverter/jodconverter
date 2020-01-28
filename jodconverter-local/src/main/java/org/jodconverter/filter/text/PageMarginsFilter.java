@@ -80,7 +80,7 @@ public class PageMarginsFilter implements Filter {
       final OfficeContext context, final XComponent document, final FilterChain chain)
       throws Exception {
 
-    LOGGER.debug("Applying the PageSelectorFilter");
+    LOGGER.debug("Applying the PageMarginsFilter");
 
     // This filter can only be used with text document
     if (Write.isText(document)) {
