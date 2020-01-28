@@ -44,7 +44,8 @@ public class DocumentFormatBuilderTest {
                 map.forEach((name, value) -> builder.storeProperty(family, name, value)));
 
     assertThat(builder.build())
-        .isEqualToComparingFieldByFieldRecursively(DefaultDocumentFormatRegistry.CSV);
+        .usingRecursiveComparison()
+        .isEqualTo(DefaultDocumentFormatRegistry.CSV);
   }
 
   @Test
