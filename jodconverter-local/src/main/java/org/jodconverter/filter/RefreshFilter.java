@@ -40,9 +40,6 @@ public class RefreshFilter implements Filter {
    */
   public static final RefreshFilter LAST_REFRESH = new RefreshFilter(true);
 
-  /** @deprecated Use {@link RefreshFilter#LAST_REFRESH}. */
-  @Deprecated public static final RefreshFilter INSTANCE = LAST_REFRESH;
-
   /**
    * Singleton instance of a {@link FilterChain} that will always contain a single {@link
    * RefreshFilter} that won't call the next filter in the chain. If a document is just converted
