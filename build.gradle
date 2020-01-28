@@ -1,191 +1,86 @@
-// Import the content of the libraries.gradle file
-apply from: "dependencies.gradle"
-
-description = 'JODConverter'
+import org.jodconverter.Plugins
 
 // External dependencies for the build script
 buildscript {
-
-    // Gradle will not find vars defined in an external file when referring to them
-    // in the buildscript block, unless you link it from the buildscript block, too.
-    apply from: "dependencies.gradle"
-
     repositories {
         mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
 
         //Needed only for SNAPSHOT versions
         //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url "https://plugins.gradle.org/m2" }
     }
 
     dependencies {
-        classpath gradlePlugins.coveralls
-        classpath gradlePlugins.dependency_management
-        classpath gradlePlugins.nebula_project
-        classpath gradlePlugins.nexus_staging
-        classpath gradlePlugins.spotless
+        classpath Plugins.coveralls
+        classpath Plugins.nebulaProject
+        classpath Plugins.spotless
     }
 }
+
+description = '''
+    JODConverter automates conversions between office document formats
+    using LibreOffice or Apache OpenOffice. It automates all conversions
+    supported by the running instance of OpenOffice/LibreOffice.
+'''
+
+group = 'org.jodconverter'
+version = '4.3.0-SNAPSHOT'
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Properties
 
 ext {
     baselineJavaVersion = JavaVersion.VERSION_1_8
     sourceEncoding = "UTF-8"
 
-    // Set up different subproject lists for individual configuration
-    ext.javaprojects = subprojects.findAll { new File(it.projectDir, 'src/main/java').directory }
-    ext.releasedprojects = javaprojects.findAll { !it.name.contains('sample') }
-    ext.publishedprojects = releasedprojects.findAll { !it.name.contains('jodconverter-cli') }
+    // Set up different sub-project lists for individual configuration
+    ext.javaProjects = subprojects.findAll {
+        new File(it.projectDir, 'src/main/java').directory
+    }
+    ext.javaLibraryProjects = javaProjects.findAll {
+        !it.name.contains('jodconverter-sample') &&
+        !it.name.contains('jodconverter-cli')
+    }
+    ext.releasedProjects = javaProjects.findAll {
+        !it.name.contains('jodconverter-sample')
+    }
+    ext.publishedProjects = javaLibraryProjects.findAll { true }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Configuration to apply to all the projects
+// Configuration
 
+// Configuration to apply to all the projects
 allprojects {
 
-    // Add the clean task to all the project
-    apply plugin: 'base'
-    // Generates files for Intellij IDEA
-    apply plugin: 'idea'
-    // Generates files for Eclipse
-    apply plugin: 'eclipse'
-    // Generate reports containing useful information about the build (tasks, dependencies, properties)
-    apply plugin: 'project-report'
+    group = rootProject.group
+    version = rootProject.version
 
-    // Set the group and current version
-    group = groupId
-    version = currentVersion
-
-    // Set the maven repository that looks for plugin dependencies.
     repositories {
         mavenCentral()
     }
-
-    // Eclipse setup
-
-    // Workaround until https://github.com/gradle/gradle/issues/898
-    // is resolved.
-
-    // Several files have UTF-8 encoding and Eclipse running on Windows
-    // will have trouble unless we tell it to use UTF-8 encoding. This
-    // setting needs to go into the org.eclipse.core.resources.prefs file,
-    // which the project script isn't set up to configure.
-    eclipse {
-
-        ext.corePrefsPath = '.settings/org.eclipse.core.resources.prefs'
-
-        ext.genCorePrefs = {
-            File corePrefs = file(corePrefsPath)
-            corePrefs.parentFile.mkdirs()
-            corePrefs.text = """\
-      eclipse.preferences.version=1
-      encoding/<project>=UTF-8
-      """.stripIndent()
-        }
-
-        project {
-            file {
-                // Will be applied when the project is imported into Eclipse
-                genCorePrefs()
-            }
-        }
-
-        // Will be applied after the eclipseProject task
-        eclipseProject.doLast {
-            genCorePrefs()
-        }
-
-        // Will be applied after the cleanEclipse task
-        cleanEclipse.doLast {
-            delete corePrefsPath
-        }
-    }
-
-    tasks.eclipse.dependsOn(cleanEclipse)
 }
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Java projects configuration
-
-// Apply the configuration for the java projects only
-configure(javaprojects) {
-
-    // Spotless needs a buildscript repository for all java project
-    buildscript {
-        repositories {
-            maven { url "https://plugins.gradle.org/m2" }
-        }
-    }
-
-    // Apply the gradle file specific to all java projects
-    apply from: "$rootDir/gradle/java-projects.gradle"
+// Configure Java projects
+configure(javaProjects) {
+    //println("Configuring java for ${project.name}")
+    apply from: "${rootProject.projectDir}/gradle/java-projects.gradle"
 }
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Code quality control coverage (JaCoCo)
-
-// We need JacocoMerge to aggregate sub projects report
-apply plugin: 'jacoco'
-// Send coverage data to coveralls.io
-apply plugin: 'com.github.kt3k.coveralls'
-
-// Configures the JaCoCo plugin
-jacoco {
-    toolVersion = versions.jacoco_version
+// Configure Java libraries projects
+configure(javaLibraryProjects) {
+    //println("Configuring java-library for ${project.name}")
+    apply plugin: 'java-library'
 }
 
-// Creates an aggregated JaCoCo executionData for all
-// the tests (unit tests and integration tests) found
-// in sub Java projects 
-task jacocoMerge(type: JacocoMerge) {
-    description = 'Aggregates JaCoCo test and integration test coverage reports of all projects.'
-    group = "Reporting"
-
-    // Gather execution data from all subprojects
-    releasedprojects.each { subproject ->
-        executionData subproject.tasks.withType(Test)
-    }
-    doFirst {
-        executionData = files(executionData.findAll { it.exists() })
-    }
+configure(publishedProjects) {
+    //println("Configuring publishing for ${project.name}")
+    apply from: "${rootProject.projectDir}/gradle/published-projects.gradle"
 }
 
-// Code coverage report for all the sub (java) projects
-task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
-    description = 'Generates an aggregate report from all subprojects'
-    dependsOn releasedprojects.test, releasedprojects.integrationTest, jacocoMerge
 
-    additionalSourceDirs.setFrom(files(releasedprojects.sourceSets.main.allSource.srcDirs))
-    sourceDirectories.setFrom(files(releasedprojects.sourceSets.main.allSource.srcDirs))
-    classDirectories.setFrom(files(releasedprojects.sourceSets.main.output))
-    executionData jacocoMerge.destinationFile
-
-    reports {
-        html.enabled = true // human readable
-        xml.enabled = true // required by coveralls
-    }
-}
-
-coveralls {
-    sourceDirs = releasedprojects.sourceSets.main.allSource.srcDirs.flatten()
-    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
-}
-
-tasks.coveralls {
-    group = 'Coverage reports'
-    description = 'Uploads the aggregated coverage report to Coveralls'
-
-    dependsOn jacocoRootReport
-    onlyIf { System.env.'CI' }
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Distribution configuration
-
-configure(releasedprojects) {
+configure(releasedProjects) {
 
     apply plugin: 'distribution'
 
@@ -193,7 +88,7 @@ configure(releasedprojects) {
     if (!project.name.contains('jodconverter-cli')) {
         distributions {
             main {
-                baseName = project.name
+                distributionBaseName = project.name
                 contents {
                     from jar, sourcesJar, javadocJar
                 }
@@ -208,33 +103,71 @@ task distZip(type: Zip) {
     group "Distribution"
     archiveBaseName.set(project.name)
 
-    //from releasedprojects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
-    from releasedprojects.collect { it.distZip }
+    //from releasedProjects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
+    from releasedProjects.collect { it.distZip }
 }
-project.tasks["distZip"].dependsOn releasedprojects*.distZip
-//project.tasks["distZip"].dependsOn releasedprojects*.assembleDist
+project.tasks["distZip"].dependsOn releasedProjects*.distZip
+//project.tasks["distZip"].dependsOn releasedProjects*.assembleDist
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Project
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Publishing configuration
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
-// Add the ability to release to Maven Central from Gradle without dealing with Nexus UI
-apply plugin: "io.codearte.nexus-staging"
-
-nexusStaging {
-    username = findProperty('ossrhUsername')
-    password = findProperty('ossrhPassword')
+// Exclude folders from IDEA project
+idea {
+    module {
+        excludeDirs += file('.idea')
+    }
 }
 
-// Apply the configuration for the published projects only
-configure(publishedprojects) {
+// Creates an aggregated JaCoCo executionData for all
+// the tests (unit tests and integration tests) found
+// in sub Java projects 
+task jacocoMerge(type: JacocoMerge) {
+    description = 'Aggregates JaCoCo test and integration test coverage reports of all projects.'
+    group = "Reporting"
 
-    // Apply the gradle file specific to all published projects
-    apply from: "$rootDir/gradle/published-projects.gradle"
+    // Gather execution data from all subprojects
+    releasedProjects.each { subproject ->
+        executionData subproject.tasks.withType(Test)
+    }
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
 }
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Code coverage report for all the sub (java) projects
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+    description = 'Generates an aggregate report from all subprojects'
+    dependsOn releasedProjects.test, releasedProjects.integTest, jacocoMerge
+
+    additionalSourceDirs.setFrom(files(releasedProjects.sourceSets.main.allSource.srcDirs))
+    sourceDirectories.setFrom(files(releasedProjects.sourceSets.main.allSource.srcDirs))
+    classDirectories.setFrom(files(releasedProjects.sourceSets.main.output))
+    executionData jacocoMerge.destinationFile
+
+    reports {
+        html.enabled = true // human readable
+        xml.enabled = true // required by coveralls
+    }
+}
+
+coveralls {
+    sourceDirs = releasedProjects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+
+    dependsOn jacocoRootReport
+    onlyIf { System.env.'CI' }
+}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Utilities
@@ -249,5 +182,3 @@ task printConfigurations {
         }
     }
 }
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 

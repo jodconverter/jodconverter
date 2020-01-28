@@ -1,49 +1,43 @@
-description = 'JODConverter - Sample Web Application'
-
-buildscript {
-    ext {
-        // Latest version https://plugins.gradle.org/plugin/com.bmuschko.tomcat
-        gradleTomcatVersion = '2.5'
-    }
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "com.bmuschko:gradle-tomcat-plugin:${gradleTomcatVersion}"
-    }
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+    id 'war'
+    id 'com.bmuschko.tomcat' version '2.5'
 }
 
-apply plugin: 'war'
-apply plugin: 'eclipse'
-apply plugin: 'com.bmuschko.tomcat'
+group = 'org.jodconverter'
+description = 'JODConverter - Sample Web Application'
 
-sourceCompatibility = 1.8
+ext {
+    commonsFileUploadVersion = '1.4'
+    springBootVersion = '2.2.4.RELEASE'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 repositories {
     mavenCentral()
 }
 
-ext {
-    // Latets version: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
-    tomcatVersion = '9.0.14'
-}
-
 dependencies {
-    implementation project(':jodconverter-local')
+    implementation project(":jodconverter-local")
 
-    implementation libraries.commons_fileupload
-    implementation libraries.slf4j_api
+    implementation "commons-fileupload:commons-fileupload:$commonsFileUploadVersion"
+    implementation "org.slf4j:slf4j-api"
 
-    runtimeOnly libraries.slf4j_log4j
+    compileOnly "javax.servlet:javax.servlet-api"
 
-    providedCompile libraries.servlet_api
+    runtimeOnly "org.slf4j:slf4j-log4j12"
 
-    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
-    tomcat "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core"
+    tomcat "org.apache.tomcat.embed:tomcat-embed-jasper"
 }
 
 tomcat {
-    httpProtocol = 'org.apache.coyote.http11.Http11Nio2Protocol'
-    ajpProtocol = 'org.apache.coyote.ajp.AjpNio2Protocol'
+    httpProtocol = "org.apache.coyote.http11.Http11Nio2Protocol"
+    ajpProtocol = "org.apache.coyote.ajp.AjpNio2Protocol"
 }

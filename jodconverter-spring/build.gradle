@@ -1,11 +1,15 @@
-description = 'JODConverter - Spring'
+import org.jodconverter.Deps
+
+ext.moduleName = 'JODConverter Spring'
+description = 'Spring integration module of the Java OpenDocument Converter (JODConverter) project.'
 
 dependencies {
-    implementation project(':jodconverter-local')
-    implementation libraries.commons_lang3
-    implementation libraries.slf4j_log4j
-    implementation libraries.spring_core
-    implementation libraries.spring_context
+    implementation project(":jodconverter-local")
 
-    testImplementation libraries.spring_test
+    implementation Deps.commonsLang
+    implementation Deps.slf4jLog4j
+    implementation Deps.springCore
+    implementation Deps.springContext
+
+    testImplementation Deps.springTest
 }

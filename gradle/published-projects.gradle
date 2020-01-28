@@ -1,62 +1,87 @@
-// Adds the ability to digitally sign built files and artifacts
 apply plugin: 'signing'
-// Adds support for deploying artifacts to Maven repositories.
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Publishing setup
+ext.isSnapshotVersion = version.endsWith('SNAPSHOT')
+ext.sonatypeRepo = isSnapshotVersion
+        ? 'https://oss.sonatype.org/content/repositories/snapshots/'
+        : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
 
-// Signature of artifacts
-signing {
-    required { gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
 }
 
-// OSSRH publication
-uploadArchives {
+signing {
+    // TODO: Check this issue from time to time to use the commented instructions instead.
+    // https://github.com/gradle/gradle/issues/11387
+    //required { !isSnapshotVersion && findProperty('ossrhUsername') != null && findProperty('ossrhPassword') != null }
+    //sign publishing.publications
+    required { !isSnapshotVersion && hasProperty('ossrhUsername') && hasProperty('ossrhPassword') }
+    if (required) {
+        //sign configurations.archives
+        sign publishing.publications
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
+
+            customizePom(pom, project)
+        }
+    }
     repositories {
-        mavenDeployer {
-            // POM signature
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            // Target repository
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
-            }
-
-            // Snapshot repository
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
-            }
-
-            pom.project {
-                name project.name
-                description project.description
-                packaging 'jar'
-                url 'https://github.com/sbraconnier/jodconverter'
-                scm {
-                    connection 'scm:git:https://github.com/sbraconnier/jodconverter.git'
-                    developerConnection 'scm:git:git@https://github.com/sbraconnier/jodconverter.git'
-                    url 'https://github.com/sbraconnier/jodconverter.git'
-                }
-
-                licenses {
-                    license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = 'sbraconnier'
-                        name = 'Simon Braconnier'
-                        email = 'simonbraconnier@gmail.com'
-                    }
-                }
+        maven {
+            url sonatypeRepo
+            credentials {
+                username project.findProperty("ossrhUsername")
+                password project.findProperty("ossrhPassword")
             }
         }
     }
 }
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def customizePom(pom, p) {
+    pom.withXml {
+        def root = asNode()
+
+        // Add all items necessary for maven central publication
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+
+            name p.hasProperty('moduleName') ? p.moduleName : p.name
+            description p.hasProperty('moduleDescription') ? p.moduleDescription : p.description
+            url 'http://jodconverter.org'
+            organization {
+                name 'JODConverter'
+                url 'http://jodconverter.org'
+            }
+            scm {
+                url 'https://github.com/sbraconnier/jodconverter.git'
+                connection 'scm:git:https://github.com/sbraconnier/jodconverter.git'
+                developerConnection 'scm:git:git@https://github.com/sbraconnier/jodconverter.git'
+            }
+            developers {
+                developer {
+                    id 'sbraconnier'
+                    name 'Simon Braconnier'
+                    email 'simonbraconnier@gmail.com'
+                    timezone  '-5'
+                }
+            }
+            issueManagement {
+                system 'GitHub'
+                url 'https://github.com/sbraconnier/jodconverter/issues'
+            }
+            licenses {
+                license {
+                    name 'The Apache License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                }
+            }
+        }
+    }
+}

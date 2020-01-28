@@ -1,126 +1,100 @@
-// Adds Java compilation along with testing and bundling capabilities
-apply plugin: 'java-library'
-// Add integration tests support (Add new SourceSet, task, etc.)
-apply plugin: 'nebula.integtest'
-// Provides spring dependency management functionality
-apply plugin: 'io.spring.dependency-management'
+import org.jodconverter.Deps
+import org.jodconverter.Plugins
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Dependencies setup
+// Plugins
 
-// See https://github.com/spring-gradle-plugins/dependency-management-plugin
-dependencyManagement {
-    imports {
-        mavenBom libraries.spring_boot_dependencies
-    }
-}
-
-// Appropriately inject the common dependencies into each java projects
-dependencies {
-    // Waiting
-    testImplementation libraries.assertj
-    testImplementation libraries.junit_jupiter_api
-    testImplementation libraries.mockito
-
-    testRuntime libraries.junit_jupiter_engine
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Compilation setup
-
-// Configure the source and target compatibility
-sourceCompatibility = rootProject.baselineJavaVersion
-targetCompatibility = rootProject.baselineJavaVersion
-
-// Ensure the Java compiler uses UTF-8
-[compileJava, compileTestJava, compileIntegTestJava]*.options*.encoding = rootProject.sourceEncoding
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// JaCoCo setup
-
-// Provides code coverage metrics for Java code
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'pmd'
+apply plugin: 'checkstyle'
+apply plugin: 'nebula.facet'
 apply plugin: 'jacoco'
+apply plugin: 'com.diffplug.gradle.spotless'
 
-jacoco {
-    toolVersion = versions.jacoco_version
-}
+//println("sourceEncoding $sourceEncoding")
+//println("baselineJavaVersion $baselineJavaVersion")
 
-// Configures the jacocoTestReport task
-jacocoTestReport {
-    group = "Reporting"
-    description = "Generate Jacoco coverage reports after running tests."
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Integration tests SourceSet configuration
 
-    dependsOn tasks.withType(Test)
-    reports {
-        html.enabled = true
-        xml.enabled = false
-        csv.enabled = false
+facets {
+    integTest {
+        parentSourceSet = 'test'
+        //includeInCheckLifecycle = false
     }
 }
-check.dependsOn jacocoTestReport
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Dependencies
+
+dependencies {
+    implementation platform(Deps.springBootDependencies)
+
+    testImplementation Deps.assertj
+    testImplementation Deps.junitJupiterApi
+    testImplementation Deps.mockito
+
+    testRuntimeOnly Deps.junitJupiterEngine
+}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// IDE Options
+// Compile
 
-// Configure eclipse
+java {
+    sourceCompatibility = baselineJavaVersion
+    targetCompatibility = baselineJavaVersion
+}
+
+if (JavaVersion.current() < baselineJavaVersion) {
+    throw new GradleException("This build must be run with at least Java 8.")
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = sourceEncoding
+    options.compilerArgs << "-Xlint:-options"
+    options.compilerArgs << "-Xlint:unchecked"
+    options.compilerArgs << "-Xlint:deprecation"
+    options.incremental = true
+    options.fork = true
+    //options.debug = true
+    //options.fork = true
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Eclipse
+
 eclipse {
     jdt {
-        sourceCompatibility = rootProject.baselineJavaVersion
-        targetCompatibility = rootProject.baselineJavaVersion
+        sourceCompatibility = baselineJavaVersion
+        targetCompatibility = baselineJavaVersion
     }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Pmd
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Test setup
-
-test {
-    useJUnitPlatform {
-        //excludeTags 'slow'
-        includeEngines 'junit-jupiter', 'junit-vintage'
-    }
-    failFast = true
-
-    // Uncomment when we want to see the logs while testing
-    //testLogging.showStandardStreams = true
-}
-
-integrationTest {
-    useJUnitPlatform {
-        //excludeTags 'slow'
-        includeEngines 'junit-jupiter', 'junit-vintage'
-    }
-    failFast = true
-
-    // Uncomment when we want to see the logs while testing
-    //testLogging.showStandardStreams = true
+pmd {
+    toolVersion = Plugins.pmdVersion
+    ruleSetConfig = rootProject.resources.text.fromFile("ruleset.xml")
+    ignoreFailures = true
+    rulePriority = 5
+    // Don't use the default gradle rule sets
+    ruleSets = []
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Checkstyle
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Checkstyle setup
-
-// Performs quality checks on Java source files and generates reports
-apply plugin: 'checkstyle'
-
-// Configures the checkstyle task
 checkstyle {
-    toolVersion = versions.checkstyle_version
-    config = rootProject.resources.text.fromFile('checkstyle.xml')
+    toolVersion = Plugins.checkstyleVersion
+    config = rootProject.resources.text.fromFile("checkstyle.xml")
 }
 
 // Disable checkstyle for test code
 [checkstyleTest, checkstyleIntegTest]*.enabled = false
 
-// Configures the checkstyle tasks
 tasks.withType(Checkstyle) {
     reports {
         xml.enabled false
@@ -129,29 +103,7 @@ tasks.withType(Checkstyle) {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// pmd setup
-
-apply plugin: 'pmd' // Also performs quality checks on Java source files and generates reports
-
-// Configures the pmd task
-pmd {
-    toolVersion = versions.pmd_version
-    ruleSetConfig = rootProject.resources.text.fromFile('ruleset.xml')
-    ignoreFailures = true
-    rulePriority = 5
-    // Don't use the default gradle rule sets
-    ruleSets = []
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Spotless setup
-
-// Spotless is a general-purpose formatting plugin
-apply plugin: "com.diffplug.gradle.spotless"
+// Spotless
 
 spotless {
 
@@ -168,66 +120,127 @@ spotless {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Test
+
+test {
+    useJUnitPlatform {
+        includeEngines "junit-jupiter", "junit-vintage"
+    }
+    failFast = true
+
+    // Uncomment when we want to see the logs while testing
+    //testLogging.showStandardStreams = true
+}
+
+integTest {
+    useJUnitPlatform {
+        includeEngines "junit-jupiter", "junit-vintage"
+    }
+    failFast = true
+
+    // Uncomment when we want to see the logs while testing
+    //testLogging.showStandardStreams = true
+}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Documentation setup
+// Jacoco
+
+// Configures the jacocoTestReport task
+jacocoTestReport {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+
+    dependsOn tasks.withType(Test)
+    reports {
+        html.enabled = true
+        xml.enabled = false
+        csv.enabled = false
+    }
+}
+check.dependsOn jacocoTestReport
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Licensing
+
+task copyLicense(type: Copy) {
+    from file("$rootProject.projectDir/LICENSE")
+    into file("$projectDir/src/main/resources/META-INF/")
+}
+
+jar {
+    dependsOn copyLicense
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Artifacts
+
+// sources jar
+task sourcesJar(type: Jar, dependsOn: classes) {
+    description = "Builds a source jar artifact suitable for deployment."
+    archiveClassifier.set("sources")
+    from sourceSets.main.allSource
+}
+
+// javadoc jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    description = "Builds a javadoc jar artifact suitable for deployment."
+    archiveClassifier.set("javadoc")
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourcesJar
+    archives javadocJar
+}
+
+jar {
+    manifest {
+        attributes(
+                "Built-By" : "jodconverter.org",
+                "Bundle-License" : "https://github.com/sbraconnier/jodconverter/wiki/LICENSE",
+                "Bundle-Vendor" : "JODConverter",
+                "Bundle-DocURL" : "https://github.com/sbraconnier/jodconverter/wiki",
+                "Implementation-Title": project.hasProperty('moduleName') ? project.moduleName : project.name,
+                "Implementation-Version": project.version,
+                "Implementation-Vendor": "JODConverter Team",
+                "Implementation-Vendor-Id": "org.jodconverter",
+                "Implementation-Url": "http://jodconverter.org",
+                "Specification-Title": project.hasProperty('moduleName') ? project.moduleName : project.name,
+                "Specification-Version": project.version,
+                "Specification-Vendor": "JODConverter Team",
+                "Provider": gradle
+        )
+    }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Documentation
+
+tasks.withType(Javadoc) {
+    options.addBooleanOption("Xdoclint:none")
+    //options.addStringOption('Xdoclint:none', '-quiet')
+}
+
 javadoc {
     classpath = configurations.compileClasspath + configurations.runtimeClasspath
     source = sourceSets.main.allJava
 
     options.with {
-        charSet 'UTF-8'
-        docEncoding 'UTF-8'
-        encoding 'UTF-8'
+        windowTitle "JODConverter API Documentation"
+        docTitle "$project.name $project.version API Documentation"
+        bottom = 'Copyright &#169; 2016 - present <a href="http://jodconverter.org">JODConverter Team</a>'
+        charSet "UTF-8"
+        encoding "UTF-8"
+        docEncoding "UTF-8"
         memberLevel = JavadocMemberLevel.PROTECTED
-        links 'https://api.libreoffice.org/docs/java/ref/'
+        links "https://api.libreoffice.org/docs/java/ref"
         if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
-            links 'https://docs.oracle.com/javase/8/docs/api/'
+            links "https://docs.oracle.com/javase/8/docs/api"
         } else if (JavaVersion.current() == JavaVersion.VERSION_11) {
-            links 'https://docs.oracle.com/en/java/javase/11/docs/api'
+            links "https://docs.oracle.com/en/java/javase/11/docs/api"
         }
-        links "https://docs.spring.io/spring-boot/docs/${versions.spring_boot_version}/api/"
-        links "https://commons.apache.org/proper/commons-lang/javadocs/api-3.4/"
+        links "https://docs.spring.io/spring-boot/docs/${Deps.springBootVersion}/api"
+        links "https://commons.apache.org/proper/commons-lang/javadocs/api-3.9"
     }
 }
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Artifact setup
-
-// Customizes the manifest of output jar files.
-jar {
-    manifest {
-        attributes("Implementation-Title": project.name,
-                "Implementation-Version": project.version,
-                "Implementation-Vendor": 'JODConverter.org',
-                "Implementation-Vendor-Id": 'org.jodconverter',
-                "Implementation-Url": 'http://jodconverter.org',
-                "Specification-Title": project.name,
-                "Specification-Version": project.version,
-                "Specification-Vendor": 'JODConverter.org',
-                "Provider": gradle)
-    }
-}
-
-// Archive task used to create a sources jar
-task sourcesJar(type: Jar, dependsOn: classes) {
-    description = 'Builds a source jar artifact suitable for deployment.'
-    archiveClassifier.set('sources')
-
-    from sourceSets.main.allSource
-}
-
-// Archive task used to create a javadoc jar
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    description = 'Builds a javadoc jar artifact suitable for deployment.'
-    archiveClassifier.set('javadoc')
-
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar, javadocJar
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

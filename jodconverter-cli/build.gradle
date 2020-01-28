@@ -1,19 +1,22 @@
-description = 'JODConverter - Cli'
+import org.jodconverter.Deps
+
+ext.moduleName = 'JODConverter Cli'
+description = 'Client command line tool module of the Java OpenDocument Converter (JODConverter) project.'
 
 dependencies {
-    implementation project(':jodconverter-local')
-    implementation project(':jodconverter-online')
+    implementation project(":jodconverter-local")
+    implementation project(":jodconverter-online")
 
-    implementation libraries.commons_cli
-    implementation libraries.commons_io
-    implementation libraries.commons_lang3
-    implementation libraries.spring_core
-    implementation libraries.spring_context
+    implementation Deps.commonsCli
+    implementation Deps.commonsIo
+    implementation Deps.commonsLang
+    implementation Deps.springCore
+    implementation Deps.springContext
 
-    runtimeOnly libraries.slf4j_log4j // Runtime so it is included in the distribution
+    runtimeOnly Deps.slf4jLog4j // Runtime so it is included in the distribution
 
-    testImplementation libraries.powermock_mockito
-    testImplementation libraries.wiremock
+    testImplementation Deps.powermockMockito
+    testImplementation Deps.wiremock
 }
 
 // Create an executable for the client module
