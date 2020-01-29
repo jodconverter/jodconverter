@@ -45,19 +45,19 @@ public class CustomProcessManager implements ProcessManager {
 
   @Override
   public boolean canFindPid() {
-    LOGGER.info("Checking PID findable from {}", getClass().getName());
+    LOGGER.debug("Checking PID findable from {}", getClass().getName());
     return delegate.canFindPid();
   }
 
   @Override
   public long findPid(final ProcessQuery query) throws IOException {
-    LOGGER.info("Finding PID from {}", getClass().getName());
+    LOGGER.debug("Finding PID from {}", getClass().getName());
     return delegate.findPid(query);
   }
 
   @Override
   public void kill(final Process process, final long pid) throws IOException {
-    LOGGER.info("Kill PID {} from {}", pid, getClass().getName());
+    LOGGER.debug("Kill PID {} from {}", pid, getClass().getName());
     delegate.kill(process, pid);
   }
 }

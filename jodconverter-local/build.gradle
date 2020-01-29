@@ -49,6 +49,6 @@ dependencies {
 
 integTest {
     // Run the stress and performance tests manually only
-    exclude "org/jodconverter/StressITest.class"
-    exclude "org/jodconverter/PerformanceITest.class"
+    exclude "org/jodconverter/local/StressITest.class"
+    exclude "org/jodconverter/local/PerformanceITest.class"
 }

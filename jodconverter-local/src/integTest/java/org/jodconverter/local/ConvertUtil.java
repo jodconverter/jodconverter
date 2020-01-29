@@ -83,7 +83,7 @@ public final class ConvertUtil {
 
         LOGGER.info("Converting [{} -> {}]...", sourceExt, targetExt);
         converter.convert(source).to(target).execute();
-        LOGGER.info("Conversion done [{} -> {}]...", sourceExt, targetExt);
+        LOGGER.debug("Conversion done [{} -> {}]...", sourceExt, targetExt);
 
         // Check that the created file is not empty. The programmer still have to
         // manually if the content of the output file looks good.
