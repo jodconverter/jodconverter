@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
+/** Contains tests for the {@link Draw} class. */
 public class DrawTest {
 
   @Test

@@ -45,13 +45,13 @@ public class JodConverterOnlineProperties {
    * Maximum time allowed to process a task. If the processing time of a task is longer than this
    * timeout, this task will be aborted and the next task is processed.
    */
-  private long taskExecutionTimeout = 120000L;
+  private long taskExecutionTimeout = 120_000L;
 
   /**
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
    * if the waiting time is longer than this timeout.
    */
-  private long taskQueueTimeout = 30000L;
+  private long taskQueueTimeout = 30_000L;
 
   @NestedConfigurationProperty private SslProperties ssl;
 

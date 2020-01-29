@@ -43,6 +43,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeException;
 
+/** Contains tests for the {@link org.jodconverter.online.OnlineConverter} class. */
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-online.properties")
 public class OnlineConverterITest {
@@ -60,7 +61,7 @@ public class OnlineConverterITest {
 
   @Test
   public void execute_FromFileToFileReturning200OK_TargetShouldContaingExpectedResult(
-      @TempDir File testFolder) throws OfficeException, IOException {
+      final @TempDir File testFolder) throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");

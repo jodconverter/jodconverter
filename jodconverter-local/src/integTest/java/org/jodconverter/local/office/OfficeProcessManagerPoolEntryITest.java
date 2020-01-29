@@ -42,16 +42,17 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.local.process.PureJavaProcessManager;
 
+/** Contains tests for the {@link OfficeProcessManagerPoolEntry} class. */
 public class OfficeProcessManagerPoolEntryITest {
 
   private static final org.slf4j.Logger LOGGER =
       LoggerFactory.getLogger(OfficeProcessManagerPoolEntryITest.class);
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
-  private static final long RESTART_INITIAL_WAIT = 5000; // 5 Seconds.
-  private static final long RESTART_WAIT_TIMEOUT = 10000; // 10 Seconds.
+  private static final long RESTART_INITIAL_WAIT = 5_000L; // 5 Seconds.
+  private static final long RESTART_WAIT_TIMEOUT = 10_000L; // 10 Seconds.
 
-  private static void sleep(long millisec) {
+  private static void sleep(final long millisec) {
     try {
       Thread.sleep(millisec);
     } catch (InterruptedException ignore) {
@@ -380,7 +381,7 @@ public class OfficeProcessManagerPoolEntryITest {
 
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(manager::start)
-          .withMessageMatching("A process with acceptString.*is already running.*");
+          .withMessageMatching("A process with --accept.*is already running.*");
 
     } finally {
 
@@ -477,7 +478,7 @@ public class OfficeProcessManagerPoolEntryITest {
       } finally {
 
         // Ensure that after the test, the office instance is terminated.
-        config.setProcessTimeout(30000L);
+        config.setProcessTimeout(30_000L);
         getConnection(manager).getDesktop().removeTerminateListener(terminateListener);
 
         manager.stop();

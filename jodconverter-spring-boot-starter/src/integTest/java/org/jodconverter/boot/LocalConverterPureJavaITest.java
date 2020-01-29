@@ -32,6 +32,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.local.process.PureJavaProcessManager;
 
+/** Tests that we can use a configured process manager. */
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @TestPropertySource(locations = "classpath:config/application-local-purejava.properties")
@@ -42,11 +43,12 @@ public class LocalConverterPureJavaITest {
   @Test
   public void testProcessManagerProperty() {
 
-    Object officeManager = ReflectionTestUtils.getField(converter, "officeManager");
-    Object poolEntry = ReflectionTestUtils.invokeMethod(officeManager, "acquireManager");
-    Object officeProcessManager = ReflectionTestUtils.getField(poolEntry, "officeProcessManager");
-    Object config = ReflectionTestUtils.getField(officeProcessManager, "config");
-    Object processManager = ReflectionTestUtils.getField(config, "processManager");
+    final Object officeManager = ReflectionTestUtils.getField(converter, "officeManager");
+    final Object poolEntry = ReflectionTestUtils.invokeMethod(officeManager, "acquireManager");
+    final Object officeProcessManager =
+        ReflectionTestUtils.getField(poolEntry, "officeProcessManager");
+    final Object config = ReflectionTestUtils.getField(officeProcessManager, "config");
+    final Object processManager = ReflectionTestUtils.getField(config, "processManager");
 
     assertThat(processManager).isInstanceOf(PureJavaProcessManager.class);
   }

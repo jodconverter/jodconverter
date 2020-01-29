@@ -60,11 +60,11 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
   /** The default initial delay when connecting to office. */
   public static final long DEFAULT_INITIAL_DELAY = 0L; // No delay
   /** The default timeout when connecting to office. */
-  public static final long DEFAULT_CONNECT_TIMEOUT = 120000L; // 2 minutes
+  public static final long DEFAULT_CONNECT_TIMEOUT = 120_000L; // 2 minutes
   /** The default delay between each try to connect. */
   public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.
   /** The maximum value for the delay between each try to connect. */
-  public static final long MAX_RETRY_INTERVAL = 10000L; // 10 sec.
+  public static final long MAX_RETRY_INTERVAL = 10_000L; // 10 sec.
 
   private final OfficeConnection connection;
 
@@ -204,7 +204,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
           new ExternalOfficeManager(
               connectionProtocol == OfficeConnectionProtocol.SOCKET
                   ? new OfficeUrl(portNumber)
-                  : pipeName != null ? new OfficeUrl(pipeName) : new OfficeUrl(2002),
+                  : pipeName == null ? new OfficeUrl(2002) : new OfficeUrl(pipeName),
               new ExternalOfficeManagerConfig(
                   workingDir, connectOnStart, connectTimeout, retryInterval));
       if (install) {

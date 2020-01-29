@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
+/** Contains tests for the {@link Calc} class. */
 public class CalcTest {
 
   @Test

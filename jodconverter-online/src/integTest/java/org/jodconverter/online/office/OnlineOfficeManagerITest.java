@@ -51,6 +51,7 @@ import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.SimpleOfficeTask;
 import org.jodconverter.online.OnlineConverter;
 
+/** Contains tests for the {@link OnlineOfficeManager} class. */
 public class OnlineOfficeManagerITest {
 
   private static final String RESOURCES_PATH = "src/integTest/resources/";
@@ -78,8 +79,8 @@ public class OnlineOfficeManagerITest {
     final OnlineOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getWorkingDir().getPath())
         .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(30000L);
+    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120_000L);
+    assertThat(config.getTaskQueueTimeout()).isEqualTo(30_000L);
 
     assertThat(manager).extracting("poolSize", "urlConnection").containsExactly(1, "localhost");
   }
@@ -92,16 +93,16 @@ public class OnlineOfficeManagerITest {
             .workingDir(System.getProperty("java.io.tmpdir"))
             .poolSize(5)
             .urlConnection("localhost")
-            .taskExecutionTimeout(20000)
-            .taskQueueTimeout(1000)
+            .taskExecutionTimeout(20_000L)
+            .taskQueueTimeout(1_000L)
             .build();
 
     assertThat(manager).isInstanceOf(OnlineOfficeManager.class);
     final OnlineOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getWorkingDir().getPath())
         .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(1000L);
+    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20_000L);
+    assertThat(config.getTaskQueueTimeout()).isEqualTo(1_000L);
 
     assertThat(manager).extracting("poolSize", "urlConnection").containsExactly(5, "localhost");
   }
@@ -206,7 +207,7 @@ public class OnlineOfficeManagerITest {
   }
 
   @Test
-  public void execute_WhenReturnNot200OK_ShouldThrowOfficeException(@TempDir File testFolder)
+  public void execute_WhenReturnNot200OK_ShouldThrowOfficeException(final @TempDir File testFolder)
       throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
@@ -238,7 +239,7 @@ public class OnlineOfficeManagerITest {
 
   @Test
   public void execute_FromFileToFileReturning200OK_TargetShouldContaingExpectedResult(
-      @TempDir File testFolder) throws OfficeException, IOException {
+      final @TempDir File testFolder) throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -273,7 +274,7 @@ public class OnlineOfficeManagerITest {
   @Test
   public void
       execute_FromInputStreamToOutputStreamReturning200OK_TargetShouldContaingExpectedResult(
-          @TempDir File testFolder) throws OfficeException, IOException {
+          final @TempDir File testFolder) throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");

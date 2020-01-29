@@ -36,6 +36,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link PagesSelectorFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class PagesSelectorFilterITest {
 
@@ -53,7 +54,7 @@ public class PagesSelectorFilterITest {
 
   @Test
   public void Calc_doFilter_SelectPage2_ShouldOnlyHaveTextFromPage2(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, CALC_FILENAME + ".sheet2.pdf");
 
@@ -79,7 +80,7 @@ public class PagesSelectorFilterITest {
 
   @Test
   public void Calc_doFilter_SelectPage1And3_ShouldOnlyHaveTextFromPage1And3(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, CALC_FILENAME + ".sheet1And3.xls");
 
@@ -105,7 +106,7 @@ public class PagesSelectorFilterITest {
 
   @Test
   public void Draw_doFilter_SelectPage2_ShouldOnlyHaveTextFromPage2(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, DRAW_FILENAME + ".page2.pdf");
 
@@ -131,7 +132,7 @@ public class PagesSelectorFilterITest {
 
   @Test
   public void Draw_doFilter_SelectPage1And3_ShouldOnlyHaveTextFromPage1And3(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, DRAW_FILENAME + ".page1And3.pdf");
 
@@ -157,7 +158,7 @@ public class PagesSelectorFilterITest {
 
   @Test
   public void Impress_doFilter_SelectPage2_ShouldOnlyHaveTextFromPage2(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, IMPRESS_FILENAME + ".page2.pdf");
 
@@ -183,7 +184,7 @@ public class PagesSelectorFilterITest {
 
   @Test
   public void Impress_doFilter_SelectPage1And3_ShouldOnlyHaveTextFromPage1And3(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, IMPRESS_FILENAME + ".page1And3.pdf");
 
@@ -209,7 +210,7 @@ public class PagesSelectorFilterITest {
 
   @Test
   public void Text_doFilter_SelectPage2_ShouldOnlyHaveTextFromPage2(
-      @TempDir File testFolder, OfficeManager manager) throws IOException {
+      final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File targetFile = new File(testFolder, TEXT_FILENAME + ".page2.txt");
 
@@ -235,7 +236,7 @@ public class PagesSelectorFilterITest {
 
   @Test
   public void Text_doFilter_SelectPage1And3_ShouldOnlyHaveTextFromPage1And3(
-      @TempDir File testFolder, OfficeManager manager) throws IOException {
+      final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File targetFile = new File(testFolder, TEXT_FILENAME + ".page1And3.txt");
 

@@ -41,6 +41,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.core.DocumentConverter;
 
+/** Tests that an application can use both an online converter and a local converter. */
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-all.properties")
 public class AllConverterITest {
@@ -56,7 +57,7 @@ public class AllConverterITest {
 
   @Test
   public void execute_UsingLocalConverter_TargetShouldContaingExpectedResult(
-      @TempDir File testFolder) throws Exception {
+      final @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "local_out.txt");
@@ -76,7 +77,7 @@ public class AllConverterITest {
 
   @Test
   public void execute_UsingOnlineConverter_TargetShouldContaingExpectedResult(
-      @TempDir File testFolder) throws Exception {
+      final @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "online_out.txt");

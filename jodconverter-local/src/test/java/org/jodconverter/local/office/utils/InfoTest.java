@@ -40,6 +40,7 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
+/** Contains tests for the {@link Info} class. */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(UnoRuntime.class)
 @PowerMockRunnerDelegate(JUnit4.class)
@@ -116,7 +117,7 @@ public class InfoTest {
   }
 
   @Test
-  public void getConfig_ProviderNotFound_ReturnEmptyOptional() throws com.sun.star.uno.Exception {
+  public void getConfig_ProviderNotFound_ReturnEmptyOptional() throws Exception {
 
     final XComponentContext context = mock(XComponentContext.class);
     final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);

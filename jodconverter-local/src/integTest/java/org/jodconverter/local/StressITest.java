@@ -37,6 +37,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.ConvertUtil.ConvertRunner;
 import org.jodconverter.local.office.LocalOfficeManager;
 
+/** Contain a stress test. */
 public class StressITest {
 
   private static final Logger LOGGER = Logger.getLogger(StressITest.class);
@@ -61,7 +62,7 @@ public class StressITest {
    * @throws Exception if an error occurs.
    */
   @Test
-  public void runParallelConversions(@TempDir File testFolder) throws Exception {
+  public void runParallelConversions(final @TempDir File testFolder) throws Exception {
 
     final File logFile = new File("build/integTest-results/test.log");
     FileUtils.deleteQuietly(logFile);
@@ -113,7 +114,9 @@ public class StressITest {
           first = false;
         }
 
-        LOGGER.info("Creating thread " + threadCount);
+        if (LOGGER.isInfoEnabled()) {
+          LOGGER.info("Creating thread " + threadCount);
+        }
         final ConvertRunner runnable = new ConvertRunner(source, target, converter);
         threads[threadCount] = new Thread(runnable);
         threads[threadCount++].start();

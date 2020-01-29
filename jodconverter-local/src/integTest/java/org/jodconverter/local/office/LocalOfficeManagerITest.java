@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import java.io.File;
 
+import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
@@ -35,6 +36,7 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.SimpleOfficeTask;
 
+/** Contains tests for the {@link LocalOfficeManager} class. */
 public class LocalOfficeManagerITest {
 
   private static class SleepyOfficeTaskRunner implements Runnable {
@@ -78,25 +80,30 @@ public class LocalOfficeManagerITest {
 
     assertThat(manager).isInstanceOf(LocalOfficeManager.class);
     final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getOfficeHome().getPath())
-        .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getProcessManager()).isEqualTo(LocalOfficeUtils.findBestProcessManager());
-    assertThat(config.getRunAsArgs()).isNull();
-    assertThat(config.getTemplateProfileDir()).isNull();
-    assertThat(config.isKillExistingProcess()).isTrue();
-    assertThat(config.getProcessTimeout()).isEqualTo(120000L);
-    assertThat(config.getProcessRetryInterval()).isEqualTo(250L);
-    assertThat(config.getMaxTasksPerProcess()).isEqualTo(200);
-    assertThat(config.isDisableOpengl()).isFalse();
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(30000L);
+    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+      softly
+          .assertThat(config.getOfficeHome().getPath())
+          .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
+      softly
+          .assertThat(config.getWorkingDir().getPath())
+          .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
+      softly
+          .assertThat(config.getProcessManager())
+          .isEqualTo(LocalOfficeUtils.findBestProcessManager());
+      softly.assertThat(config.getRunAsArgs()).isNull();
+      softly.assertThat(config.getTemplateProfileDir()).isNull();
+      softly.assertThat(config.isKillExistingProcess()).isTrue();
+      softly.assertThat(config.getProcessTimeout()).isEqualTo(120_000L);
+      softly.assertThat(config.getProcessRetryInterval()).isEqualTo(250L);
+      softly.assertThat(config.getMaxTasksPerProcess()).isEqualTo(200);
+      softly.assertThat(config.isDisableOpengl()).isFalse();
+      softly.assertThat(config.getTaskExecutionTimeout()).isEqualTo(120_000L);
+      softly.assertThat(config.getTaskQueueTimeout()).isEqualTo(30_000L);
+    }
 
     final OfficeUrl[] officeUrls = Whitebox.getInternalState(manager, "officeUrls");
     assertThat(officeUrls).hasSize(1);
     assertThat(officeUrls[0].getConnectionAndParametersAsString())
-        //    .isEqualTo("socket,host=localhost,port=2002");
         .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
   }
 
@@ -113,31 +120,38 @@ public class LocalOfficeManagerITest {
             .processManager(LocalOfficeUtils.findBestProcessManager())
             .runAsArgs("sudo")
             .killExistingProcess(false)
-            .processTimeout(5000)
-            .processRetryInterval(1000)
+            .processTimeout(5_000L)
+            .processRetryInterval(1_000L)
             .maxTasksPerProcess(10)
             .disableOpengl(true)
-            .taskExecutionTimeout(20000)
-            .taskQueueTimeout(1000)
+            .taskExecutionTimeout(20_000L)
+            .taskQueueTimeout(1_000L)
             .build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
     final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getOfficeHome().getPath())
-        .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getTemplateProfileDir().getPath())
-        .isEqualTo(new File("src/integTest/resources/templateProfileDir").getPath());
-    assertThat(config.getProcessManager()).isEqualTo(LocalOfficeUtils.findBestProcessManager());
-    assertThat(config.getRunAsArgs()).isEqualTo(new String[] {"sudo"});
-    assertThat(config.isKillExistingProcess()).isEqualTo(false);
-    assertThat(config.getProcessTimeout()).isEqualTo(5000L);
-    assertThat(config.getProcessRetryInterval()).isEqualTo(1000L);
-    assertThat(config.getMaxTasksPerProcess()).isEqualTo(10);
-    assertThat(config.isDisableOpengl()).isEqualTo(true);
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(1000L);
+    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+      softly
+          .assertThat(config.getOfficeHome().getPath())
+          .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
+      softly
+          .assertThat(config.getWorkingDir().getPath())
+          .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
+      softly
+          .assertThat(config.getTemplateProfileDir().getPath())
+          .isEqualTo(new File("src/integTest/resources/templateProfileDir").getPath());
+      softly
+          .assertThat(config.getProcessManager())
+          .isEqualTo(LocalOfficeUtils.findBestProcessManager());
+      softly.assertThat(config.getRunAsArgs()).isEqualTo(new String[] {"sudo"});
+      softly.assertThat(config.isKillExistingProcess()).isEqualTo(false);
+      softly.assertThat(config.getProcessTimeout()).isEqualTo(5_000L);
+      softly.assertThat(config.getProcessRetryInterval()).isEqualTo(1_000L);
+      softly.assertThat(config.getMaxTasksPerProcess()).isEqualTo(10);
+      softly.assertThat(config.isDisableOpengl()).isEqualTo(true);
+      softly.assertThat(config.getTaskExecutionTimeout()).isEqualTo(20_000L);
+      softly.assertThat(config.getTaskQueueTimeout()).isEqualTo(1_000L);
+    }
 
     final OfficeUrl[] officeUrls = Whitebox.getInternalState(manager, "officeUrls");
     assertThat(officeUrls).hasSize(2);

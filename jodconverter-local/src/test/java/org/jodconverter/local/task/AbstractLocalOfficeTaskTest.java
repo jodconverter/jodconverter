@@ -41,11 +41,7 @@ import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.local.office.LocalOfficeContext;
 
-/**
- * Contains tests for the {@link AbstractLocalOfficeTask} class.
- *
- * @see AbstractLocalOfficeTask
- */
+/** Contains tests for the {@link AbstractLocalOfficeTask} class. */
 public class AbstractLocalOfficeTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");

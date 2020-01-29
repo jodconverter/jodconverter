@@ -39,11 +39,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
+/** Contains tests for the {@link JodConverterBean} class. */
 @ContextConfiguration
 @ExtendWith(SpringExtension.class)
 public class SpringControllerITest {
 
-  @TempDir File testFolder;
+  /* default */ @TempDir File testFolder;
   private File inputFileTxt;
 
   @Autowired private JodConverterBean bean;
@@ -53,7 +54,7 @@ public class SpringControllerITest {
 
     // this bean will be injected into the SpringControllerTest class
     @Bean
-    JodConverterBean springJodConverter() {
+    /* default */ JodConverterBean springJodConverter() {
 
       final JodConverterBean bean = new JodConverterBean();
       bean.setPortNumbers("2005");
@@ -61,11 +62,11 @@ public class SpringControllerITest {
       bean.setWorkingDir(null);
       bean.setTemplateProfileDir(null);
       bean.setKillExistingProcess(true);
-      bean.setProcessRetryInterval(1000L);
-      bean.setProcessTimeout(60000L);
+      bean.setProcessRetryInterval(1_000L);
+      bean.setProcessTimeout(60_000L);
       bean.setMaxTasksPerProcess(20);
-      bean.setTaskExecutionTimeout(60000L);
-      bean.setTaskQueueTimeout(60000L);
+      bean.setTaskExecutionTimeout(60_000L);
+      bean.setTaskQueueTimeout(60_000L);
 
       return bean;
     }

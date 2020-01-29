@@ -22,9 +22,11 @@ package org.jodconverter.local.process;
 /** {@link org.jodconverter.local.process.ProcessManager} implementation for FreeBSD. */
 public class FreeBSDProcessManager extends UnixProcessManager {
 
-  // This class is required in order to create the default FreeBSDProcessManager
-  // only on demand, as explained by the Initialization-on-demand holder idiom:
-  // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+  /**
+   * This class is required in order to create the default FreeBSDProcessManager only on demand, as
+   * explained by the Initialization-on-demand holder idiom:
+   * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+   */
   private static class DefaultHolder {
     /* default */ static final FreeBSDProcessManager INSTANCE = new FreeBSDProcessManager();
   }

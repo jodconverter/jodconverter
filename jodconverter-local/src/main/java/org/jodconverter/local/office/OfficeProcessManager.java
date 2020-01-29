@@ -111,10 +111,9 @@ class OfficeProcessManager {
               config.getProcessRetryInterval(),
               config.getProcessTimeout());
 
+    } catch (OfficeException ex) {
+      throw ex;
     } catch (Exception ex) {
-      if (ex instanceof OfficeException) {
-        throw (OfficeException) ex;
-      }
       throw new OfficeException("Could not establish connection", ex);
     }
   }

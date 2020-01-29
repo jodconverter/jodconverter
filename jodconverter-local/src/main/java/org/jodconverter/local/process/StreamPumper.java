@@ -77,8 +77,8 @@ public class StreamPumper extends Thread {
       while ((line = bufferedReader.readLine()) != null) {
         consumer.consume(line);
       }
-    } catch (IOException ex) {
-      // ignore errors
+    } catch (IOException ignored) {
+      // ignored
     }
   }
 }

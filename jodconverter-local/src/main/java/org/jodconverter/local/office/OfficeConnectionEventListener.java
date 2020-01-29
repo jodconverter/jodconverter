@@ -21,9 +21,20 @@ package org.jodconverter.local.office;
 
 import java.util.EventListener;
 
+/** Listener for connection event. */
 interface OfficeConnectionEventListener extends EventListener {
 
+  /**
+   * Invoked when an office connection gets opened.
+   *
+   * @param event The event.
+   */
   void connected(OfficeConnectionEvent event);
 
+  /**
+   * Invoked when an office connection gets closed.
+   *
+   * @param event The event.
+   */
   void disconnected(OfficeConnectionEvent event);
 }

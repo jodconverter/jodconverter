@@ -37,6 +37,7 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
+/** Contains tests for the {@link Lo} class. */
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(JUnit4.class)
 @PrepareForTest(UnoRuntime.class)

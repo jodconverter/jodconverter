@@ -53,11 +53,7 @@ import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.local.office.LocalOfficeContext;
 
-/**
- * Contains tests for the {@link LocalConversionTask} class.
- *
- * @see LocalConversionTask
- */
+/** Contains tests for the {@link LocalConversionTask} class. */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(UnoRuntime.class)
 public class LocalConversionTaskTest {

@@ -98,7 +98,7 @@ class OfficeProcess {
       // Kill the any running process with the same connection string if the kill switch is on
       if (existingPid > PID_UNKNOWN && config.isKillExistingProcess()) {
         LOGGER.warn(
-            "A process with acceptString '{}' is already running; pid {}; trying to kill it...",
+            "A process with --accept '{}' is already running; pid {}; trying to kill it...",
             processQuery.getArgument(),
             existingPid);
         processManager.kill(null, existingPid);
@@ -109,18 +109,18 @@ class OfficeProcess {
       if (existingPid > PID_UNKNOWN) {
         throw new OfficeException(
             String.format(
-                "A process with acceptString '%s' is already running; pid %d",
+                "A process with --accept '%s' is already running; pid %d",
                 processQuery.getArgument(), existingPid));
       }
 
       LOGGER.debug(
-          "Checking existing process done successfully. No process running with acceptString '{}'",
+          "Checking existing process done successfully. No process running with --accept '{}'",
           processQuery.getArgument());
 
     } catch (IOException ioEx) {
       throw new OfficeException(
           String.format(
-              "Unable to check if there is already an existing process with acceptString '%s'",
+              "Unable to check if there is already an existing process with --accept '%s'",
               processQuery.getArgument()),
           ioEx);
     }
@@ -409,7 +409,7 @@ class OfficeProcess {
     // Launch the process.
     LOGGER.info("OFFICE HOME: {}", config.getOfficeHome());
     LOGGER.info(
-        "Starting process with acceptString '{}' and profileDir '{}'",
+        "Starting process with --accept '{}' and profileDir '{}'",
         acceptString,
         instanceProfileDir);
 
@@ -430,7 +430,7 @@ class OfficeProcess {
     } catch (Exception ex) {
       throw new OfficeException(
           String.format(
-              "An error prevents us to start a process with acceptString '%s'",
+              "An error prevents us to start a process with --accept '%s'",
               processQuery.getArgument()),
           ex);
     }
@@ -438,8 +438,7 @@ class OfficeProcess {
     if (pid == PID_NOT_FOUND) {
       throw new OfficeException(
           String.format(
-              "A process with acceptString '%s' started but its pid could not be found",
-              acceptString));
+              "A process with --accept '%s' started but its pid could not be found", acceptString));
     }
   }
 

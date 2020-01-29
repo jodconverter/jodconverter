@@ -31,6 +31,7 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.local.office.utils.Lo;
 
+/** Mock task. */
 public class MockOfficeTask implements OfficeTask {
 
   private final long delayTime;
@@ -59,7 +60,7 @@ public class MockOfficeTask implements OfficeTask {
     final XComponentLoader loader = ctx.getComponentLoader();
     assert loader != null : "desktop object is null";
     try {
-      final PropertyValue[] arguments = new PropertyValue[] {property("Hidden", true)};
+      final PropertyValue[] arguments = {property("Hidden", true)};
       final XComponent document =
           loader.loadComponentFromURL("private:factory/swriter", "_blank", 0, arguments);
       if (delayTime > 0) {

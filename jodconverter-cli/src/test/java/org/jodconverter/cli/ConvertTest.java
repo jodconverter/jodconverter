@@ -41,6 +41,7 @@ import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 
+/** Contains tests for the {@link Convert} class. */
 @ExtendWith({
   ConsoleStreamsListenerExtension.class,
   NoExitExtension.class,

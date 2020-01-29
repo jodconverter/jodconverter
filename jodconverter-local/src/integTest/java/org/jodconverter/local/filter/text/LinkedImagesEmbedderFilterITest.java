@@ -32,13 +32,15 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link LinkedImagesEmbedderFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class LinkedImagesEmbedderFilterITest {
 
   private static final File SOURCE_FILE = documentFile("test_with_linked_images.odt");
 
   @Test
-  public void doFilter_DoesNotThrowAnyException(@TempDir File testFolder, OfficeManager manager) {
+  public void doFilter_DoesNotThrowAnyException(
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, "test_with_linked_images.odt");
     assertThatCode(

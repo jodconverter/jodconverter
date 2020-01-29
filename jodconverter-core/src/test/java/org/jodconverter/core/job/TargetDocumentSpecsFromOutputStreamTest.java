@@ -30,6 +30,8 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,12 +41,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.TemporaryFileMaker;
 
+/** Contains tests for the {@link TargetDocumentSpecsFromOutputStream} class. */
 public class TargetDocumentSpecsFromOutputStreamTest {
 
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
   private static final String TARGET_FILENAME = "test.pdf";
 
-  @TempDir File testFolder;
+  /* default */ @TempDir File testFolder;
   private TemporaryFileMaker fileMaker;
 
   /** Setup the file maker before each test. */
@@ -193,9 +196,8 @@ public class TargetDocumentSpecsFromOutputStreamTest {
     assertThat(tempFile).exists();
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
-    try (FileOutputStream outputStream =
-        new FileOutputStream(new File(testFolder, TARGET_FILENAME))) {
-
+    try (OutputStream outputStream =
+        Files.newOutputStream(new File(testFolder, TARGET_FILENAME).toPath())) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
       specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);

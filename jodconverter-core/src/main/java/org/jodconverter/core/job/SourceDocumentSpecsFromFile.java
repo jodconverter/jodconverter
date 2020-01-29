@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.apache.commons.lang3.Validate;
 
+/** Source document specifications for from a file. */
 class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs
     implements SourceDocumentSpecs {
 

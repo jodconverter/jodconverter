@@ -40,6 +40,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
 
+/** Contains performance tests. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class PerformanceITest {
 
@@ -93,7 +94,9 @@ public class PerformanceITest {
 
       stopWatch.split();
       final long splitTime = stopWatch.getSplitTime();
-      LOGGER.info("{} -- Conversion done in {} millisec.", baseName, splitTime - lastSplitTime);
+      if (LOGGER.isInfoEnabled()) {
+        LOGGER.info("{} -- Conversion done in {} millisec.", baseName, splitTime - lastSplitTime);
+      }
       lastSplitTime = splitTime;
     }
     stopWatch.stop();
@@ -108,7 +111,7 @@ public class PerformanceITest {
   }
 
   @Test
-  public void runTest(DocumentConverter converter) {
+  public void runTest(final DocumentConverter converter) {
 
     final File dir = new File("src/integTest/resources/performance");
     final File[] files =

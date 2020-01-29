@@ -20,6 +20,7 @@
 package org.jodconverter.local.office;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ public final class OfficeDescriptor {
       if (line.contains("--help")) {
         desc.useLongOptionNameGnuStyle = true;
       } else {
-        final String lowerLine = line.trim().toLowerCase();
+        final String lowerLine = line.trim().toLowerCase(Locale.ROOT);
         if (lowerLine.startsWith("openoffice") || lowerLine.startsWith("libreoffice")) {
           productLine = line.trim();
         }
@@ -83,13 +84,13 @@ public final class OfficeDescriptor {
 
     final OfficeDescriptor desc = new OfficeDescriptor();
 
-    if (path.toLowerCase().contains("openoffice")) {
-      desc.product = "OpenOffice";
-      desc.useLongOptionNameGnuStyle = false;
-    }
-    if (path.toLowerCase().contains("libreoffice")) {
+    final String lowerPath = path.toLowerCase(Locale.ROOT);
+    if (lowerPath.contains("libreoffice")) {
       desc.product = "LibreOffice";
       desc.useLongOptionNameGnuStyle = true;
+    } else if (lowerPath.contains("openoffice")) {
+      desc.product = "OpenOffice";
+      desc.useLongOptionNameGnuStyle = false;
     }
 
     // Version cannot be known from the installation path.

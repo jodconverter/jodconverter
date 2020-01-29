@@ -279,11 +279,7 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
       return (B) this;
     }
 
-    /**
-     * Creates the manager that is specified by this builder.
-     *
-     * @return The manager that is specified by this builder.
-     */
+    @Override
     protected abstract AbstractOfficeManagerPool build();
   }
 }

@@ -44,6 +44,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link DefaultFilterChain} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class DefaultFilterChainITest {
 
@@ -53,7 +54,7 @@ public class DefaultFilterChainITest {
   /** Test that resetting a chain will actually allow us to reuse it. */
   @Test
   public void reset_WithPageCounterAndSelector_ShoudCountProperSizesForBothUsage(
-      @TempDir File testFolder, OfficeManager manager) throws IOException {
+      final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File targetFile1 = new File(testFolder, SOURCE_FILENAME + ".page1.txt");
     final File targetFile2 = new File(testFolder, SOURCE_FILENAME + ".page1again.txt");
@@ -91,7 +92,7 @@ public class DefaultFilterChainITest {
   /** Test that setting off the automatic insertion of refresh filter won't execute any refresh. */
   @Test
   public void reset_WithEndsWithRefreshFilterOff_ShoudNotApplyRefreshFilter(
-      @TempDir File testFolder, OfficeManager manager) throws Exception {
+      final @TempDir File testFolder, final OfficeManager manager) throws Exception {
 
     // Replace the LAST_REFRESH singleton
 
@@ -130,7 +131,7 @@ public class DefaultFilterChainITest {
   /** Test that setting on the automatic insertion of refresh filter will execute it. */
   @Test
   public void reset_WithEndsWithRefreshFilterOn_ShoudApplyRefreshFilter(
-      @TempDir File testFolder, OfficeManager manager) throws Exception {
+      final @TempDir File testFolder, final OfficeManager manager) throws Exception {
 
     // Replace the LAST_REFRESH singleton
 

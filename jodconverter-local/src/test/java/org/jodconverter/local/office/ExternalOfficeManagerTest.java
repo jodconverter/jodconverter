@@ -29,6 +29,7 @@ import org.powermock.reflect.Whitebox;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeManager;
 
+/** Contains tests for the {@link ExternalOfficeManager} class. */
 public class ExternalOfficeManagerTest {
 
   @Test
@@ -54,7 +55,7 @@ public class ExternalOfficeManagerTest {
     assertThat(config.getWorkingDir().getPath())
         .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
     assertThat(config.isConnectOnStart()).isTrue();
-    assertThat(config.getConnectTimeout()).isEqualTo(120000L);
+    assertThat(config.getConnectTimeout()).isEqualTo(120_000L);
     assertThat(config.getRetryInterval()).isEqualTo(250L);
 
     final OfficeConnection connection = Whitebox.getInternalState(manager, "connection");
@@ -73,8 +74,8 @@ public class ExternalOfficeManagerTest {
             .portNumber(2003)
             .workingDir(System.getProperty("java.io.tmpdir"))
             .connectOnStart(false)
-            .connectTimeout(5000L)
-            .retryInterval(1000)
+            .connectTimeout(5_000L)
+            .retryInterval(1_000L)
             .build();
 
     assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
@@ -82,8 +83,8 @@ public class ExternalOfficeManagerTest {
     assertThat(config.getWorkingDir().getPath())
         .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
     assertThat(config.isConnectOnStart()).isFalse();
-    assertThat(config.getConnectTimeout()).isEqualTo(5000L);
-    assertThat(config.getRetryInterval()).isEqualTo(1000);
+    assertThat(config.getConnectTimeout()).isEqualTo(5_000L);
+    assertThat(config.getRetryInterval()).isEqualTo(1_000L);
 
     final OfficeConnection connection = Whitebox.getInternalState(manager, "connection");
     final OfficeUrl officeUrl = Whitebox.getInternalState(connection, "officeUrl");

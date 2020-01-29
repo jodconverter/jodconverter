@@ -29,6 +29,7 @@ import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.core.office.TemporaryFileMaker;
 
+/** Target document specifications for from an input stream. */
 class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
     implements TargetDocumentSpecs {
 

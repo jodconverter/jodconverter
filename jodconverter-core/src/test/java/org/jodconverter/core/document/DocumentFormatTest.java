@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+/** Contains tests for the {@link DocumentFormat} class. */
 public class DocumentFormatTest {
 
   private void toString(final Set<DocumentFormat> formats) {

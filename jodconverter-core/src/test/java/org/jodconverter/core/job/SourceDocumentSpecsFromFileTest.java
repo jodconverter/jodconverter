@@ -29,16 +29,19 @@ import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 
+/** Contains tests for the {@link SourceDocumentSpecsFromFile} class. */
 public class SourceDocumentSpecsFromFileTest {
 
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
   private static final String BAD_SOURCE_FILE = "src/test/resources/documents/unexisting_file.txt";
 
+  @Test
   public void ctor_WithNullFile_ThrowsNullPointerException() {
 
     assertThatNullPointerException().isThrownBy(() -> new SourceDocumentSpecsFromFile(null));
   }
 
+  @Test
   public void ctor_WithUnexistingFile_ThrowsIllegalArgumentsException() {
 
     assertThatIllegalArgumentException()

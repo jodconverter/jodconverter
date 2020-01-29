@@ -30,13 +30,14 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 
+/** Contains tests for the {@link TargetDocumentSpecsFromFile} class. */
 public class TargetDocumentSpecsFromFileTest {
 
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
   private static final String TARGET_FILENAME = "test.pdf";
 
   @Test
-  public void onFailure_ShouldDeleteTargetFile(@TempDir File testFolder) throws IOException {
+  public void onFailure_ShouldDeleteTargetFile(final @TempDir File testFolder) throws IOException {
 
     final File targetFile = new File(testFolder, TARGET_FILENAME);
     FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
@@ -51,7 +52,7 @@ public class TargetDocumentSpecsFromFileTest {
   }
 
   @Test
-  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues(@TempDir File testFolder)
+  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues(final @TempDir File testFolder)
       throws IOException {
 
     final File targetFile = new File(testFolder, TARGET_FILENAME);

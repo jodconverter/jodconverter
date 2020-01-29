@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.document.DocumentFormat.Builder;
 
+/** Contains tests for the {@link org.jodconverter.core.document.DocumentFormat.Builder} class. */
 public class DocumentFormatBuilderTest {
 
   @Test

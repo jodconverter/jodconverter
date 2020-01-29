@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+/** Contains tests for the {@link JsonDocumentFormatRegistry} class. */
 public class JsonDocumentFormatRegistryTest {
 
   /**

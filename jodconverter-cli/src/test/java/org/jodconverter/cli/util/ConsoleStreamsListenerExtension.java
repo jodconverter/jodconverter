@@ -29,7 +29,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public final class ConsoleStreamsListenerExtension implements BeforeAllCallback {
 
   @Override
-  public void beforeAll(ExtensionContext context) {
+  public void beforeAll(final ExtensionContext context) {
 
     // Redirect console streams.
     System.setOut(new SystemLogHandler(System.out));

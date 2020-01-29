@@ -36,12 +36,13 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link DocumentInserterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class DocumentInserterFilterITest {
 
   @Test
   public void doFilter_With2Filter_TargetShouldContainAllDocuments(
-      @TempDir File testFolder, OfficeManager manager) throws IOException {
+      final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File sourceFile = documentFile("test.doc");
     final File targetFile = new File(testFolder, "target.txt");

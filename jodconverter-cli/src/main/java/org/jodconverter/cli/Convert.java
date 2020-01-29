@@ -21,7 +21,6 @@ package org.jodconverter.cli;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -463,15 +462,13 @@ public final class Convert {
 
   private static void printErr(final String message, final Object... values) {
 
-    final PrintWriter writer = new PrintWriter(System.err);
-    writer.println(String.format(message, values));
-    writer.flush();
+    System.err.println(String.format(message, values));
+    System.err.flush();
   }
 
   private static void printInfo(final String message, final Object... values) {
 
-    final PrintWriter writer = new PrintWriter(System.out);
-    writer.println(String.format(message, values));
-    writer.flush();
+    System.out.println(String.format(message, values));
+    System.out.flush();
   }
 }

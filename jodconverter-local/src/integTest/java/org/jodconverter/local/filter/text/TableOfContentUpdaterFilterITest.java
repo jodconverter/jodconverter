@@ -36,6 +36,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link TableOfContentUpdaterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class TableOfContentUpdaterFilterITest {
 
@@ -45,7 +46,7 @@ public class TableOfContentUpdaterFilterITest {
   /** Test that updating the table of content only will just update the TOC. */
   @Test
   public void doFilter_UpdateOnly_TableOfContentUpdatedSuccessfully(
-      @TempDir File testFolder, OfficeManager manager) throws IOException {
+      final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".updateonly.txt");
 
@@ -99,7 +100,7 @@ public class TableOfContentUpdaterFilterITest {
    */
   @Test
   public void doFilter_UpdateChangingLevel_TableOfContentUpdatedSuccessfully(
-      @TempDir File testFolder, OfficeManager manager) throws IOException {
+      final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".updatelevel.txt");
 

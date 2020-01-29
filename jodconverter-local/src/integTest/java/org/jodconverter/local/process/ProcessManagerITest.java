@@ -26,6 +26,7 @@ import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.local.office.LocalOfficeManager;
 
+/** Contains tests for the {@link ProcessManager} class. */
 public class ProcessManagerITest {
 
   /** Tests that using an custom process manager that appears in the classpath will be used. */

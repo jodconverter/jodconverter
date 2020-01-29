@@ -34,7 +34,7 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
   /** The default initial delay a process call (start/terminate). */
   public static final long DEFAULT_PROCESS_INITIAL_DELAY = 0L; // No delay
   /** The default timeout when executing a process call (start/terminate). */
-  public static final long DEFAULT_PROCESS_TIMEOUT = 120000L; // 2 minutes
+  public static final long DEFAULT_PROCESS_TIMEOUT = 120_000L; // 2 minutes
   /** The default delay between each try when executing a process call (start/terminate). */
   public static final long DEFAULT_PROCESS_RETRY_INTERVAL = 250L; // 0.25 secs.
   /** The default maximum number of tasks an office process can execute before restarting. */
@@ -51,7 +51,7 @@ class OfficeProcessManagerConfig extends OfficeProcessConfig {
    * The maximum value for the delay between each try when executing a process call
    * (start/terminate).
    */
-  public static final long MAX_PROCESS_RETRY_INTERVAL = 10000L; // 10 sec.
+  public static final long MAX_PROCESS_RETRY_INTERVAL = 10_000L; // 10 sec.
 
   private long processTimeout = DEFAULT_PROCESS_TIMEOUT;
   private long processRetryInterval = DEFAULT_PROCESS_RETRY_INTERVAL;

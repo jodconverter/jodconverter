@@ -74,8 +74,8 @@ public class SimpleOfficeManagerTest {
     final SimpleOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getWorkingDir().getPath())
         .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(30000L);
+    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120_000L);
+    assertThat(config.getTaskQueueTimeout()).isEqualTo(30_000L);
 
     manager.start();
     try {
@@ -94,8 +94,8 @@ public class SimpleOfficeManagerTest {
     final OfficeManager manager =
         SimpleOfficeManager.builder()
             .workingDir(System.getProperty("java.io.tmpdir"))
-            .taskExecutionTimeout(20000)
-            .taskQueueTimeout(1000)
+            .taskExecutionTimeout(20_000L)
+            .taskQueueTimeout(1_000L)
             .poolSize(2)
             .build();
 
@@ -103,8 +103,8 @@ public class SimpleOfficeManagerTest {
     final SimpleOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
     assertThat(config.getWorkingDir().getPath())
         .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(1000L);
+    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20_000L);
+    assertThat(config.getTaskQueueTimeout()).isEqualTo(1_000L);
 
     manager.start();
     try {
@@ -196,13 +196,13 @@ public class SimpleOfficeManagerTest {
       throws OfficeException, InterruptedException {
 
     final SimpleOfficeManager manager =
-        SimpleOfficeManager.builder().taskQueueTimeout(1000L).build();
+        SimpleOfficeManager.builder().taskQueueTimeout(1_000L).build();
     try {
       manager.start();
 
       // Create threads that will both execute a task taking 2 sec to execute.
-      final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 2000L);
-      final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 2000L);
+      final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 2_000L);
+      final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 2_000L);
       final Thread thread1 = new Thread(runnable1);
       final Thread thread2 = new Thread(runnable2);
 

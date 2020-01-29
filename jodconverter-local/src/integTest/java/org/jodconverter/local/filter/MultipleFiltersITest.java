@@ -35,6 +35,7 @@ import org.jodconverter.local.LocalOfficeManagerExtension;
 import org.jodconverter.local.filter.text.GraphicInserterFilter;
 import org.jodconverter.local.filter.text.TextReplacerFilter;
 
+/** Contains tests that use multiple filters. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class MultipleFiltersITest {
 
@@ -43,7 +44,8 @@ public class MultipleFiltersITest {
   private static final File IMAGE_FILE = imageFile("sample-1.jpg");
 
   @Test
-  public void doFilter_WithDefaultProperties(@TempDir File testFolder, OfficeManager manager) {
+  public void doFilter_WithDefaultProperties(
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     // Create the TextReplacerFilter to test.
     final TextReplacerFilter replacerFilter =

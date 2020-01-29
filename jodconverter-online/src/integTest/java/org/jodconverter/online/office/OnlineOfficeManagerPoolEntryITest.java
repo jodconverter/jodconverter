@@ -32,6 +32,7 @@ import org.powermock.reflect.Whitebox;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.SimpleOfficeTask;
 
+/** Contains tests for the {@link OnlineOfficeManagerPoolEntry} class. */
 public class OnlineOfficeManagerPoolEntryITest {
 
   @Test

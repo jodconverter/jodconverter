@@ -41,6 +41,7 @@ import org.jodconverter.local.LocalOfficeManagerExtension;
 import org.jodconverter.local.office.LocalOfficeContext;
 import org.jodconverter.local.office.utils.Lo;
 
+/** Test the {@link AbstractLocalOfficeTask} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class AbstractLocalOfficeTaskITest {
 
@@ -105,8 +106,8 @@ public class AbstractLocalOfficeTaskITest {
                 closeable.removeCloseListener(closeListener);
                 try {
                   closeable.close(true);
-                } catch (CloseVetoException e) {
-                  // Swallow
+                } catch (CloseVetoException ignored) {
+                  // ignored
                 }
               });
     }
@@ -130,7 +131,7 @@ public class AbstractLocalOfficeTaskITest {
   }
 
   @Test
-  public void close_WhenVetoCloseExceptionCatch_DocumentNotClosed(OfficeManager manager)
+  public void close_WhenVetoCloseExceptionCatch_DocumentNotClosed(final OfficeManager manager)
       throws OfficeException {
 
     final VetoCloseOfficeTask task = new VetoCloseOfficeTask(new FooSourceSpecs(SOURCE_FILE));

@@ -34,6 +34,10 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.online.office.OnlineOfficeManager;
 
+/**
+ * Test both the {@link JodConverterLocalProperties} and {@link JodConverterOnlineProperties}
+ * classes.
+ */
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-props.properties")
 public class AutoConfigurationPropertiesTest {
@@ -46,12 +50,12 @@ public class AutoConfigurationPropertiesTest {
   /* default */ static class TestConfig {
 
     @Bean
-    public OfficeManager localOfficeManager() {
+    /* default */ OfficeManager localOfficeManager() {
       return LocalOfficeManager.make();
     }
 
     @Bean
-    public OfficeManager onlineOfficeManager() {
+    /* default */ OfficeManager onlineOfficeManager() {
       return OnlineOfficeManager.make("some url");
     }
   }
@@ -80,11 +84,11 @@ public class AutoConfigurationPropertiesTest {
             "working-dir",
             "template-profile-dir",
             false,
-            180000L,
-            1000L,
-            60000L,
+            180_000L,
+            1_000L,
+            60_000L,
             20,
-            60000L,
+            60_000L,
             "classpath:document-formats.json");
   }
 
@@ -120,8 +124,8 @@ public class AutoConfigurationPropertiesTest {
             "https://localhost:8001",
             "working-dir",
             1,
-            60000L,
-            60000L,
+            60_000L,
+            60_000L,
             true,
             new String[] {"TLS_RSA_WITH_AES_128_CBC_SHA"},
             new String[] {"TLSv1.1", "TLSv1.2"},

@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+/** Contains tests for the {@link SimpleDocumentFormatRegistry} class. */
 public class SimpleDocumentFormatRegistryTest {
 
   /** Tests that calling getFormatByExtension with a null extension will return null. */

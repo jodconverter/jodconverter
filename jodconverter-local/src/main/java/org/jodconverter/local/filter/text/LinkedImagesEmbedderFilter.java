@@ -93,7 +93,7 @@ public class LinkedImagesEmbedderFilter implements Filter {
                   AnyConverter.toObject(XGraphic.class, xPropSet.getPropertyValue("Graphic"));
           // Only ones that are not embedded
           final XPropertySet xGraphixPropSet = Lo.qi(XPropertySet.class, xGraphic);
-          boolean linked = (boolean) xGraphixPropSet.getPropertyValue("Linked");
+          final boolean linked = (boolean) xGraphixPropSet.getPropertyValue("Linked");
           if (linked) {
             // Since 6.1, we must use "Graphic" instead of "GraphicURL"
             xPropSet.setPropertyValue(

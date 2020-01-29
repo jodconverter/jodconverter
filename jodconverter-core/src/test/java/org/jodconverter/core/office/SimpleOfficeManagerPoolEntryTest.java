@@ -27,7 +27,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
 
-public class OnlineOfficeManagerPoolEntryTest {
+/** Contains tests for the {@link SimpleOfficeManagerPoolEntry} class. */
+public class SimpleOfficeManagerPoolEntryTest {
 
   @Test
   public void execute_UnproblematicTask_TaskShouldBeExecutedSuccessfully() throws OfficeException {

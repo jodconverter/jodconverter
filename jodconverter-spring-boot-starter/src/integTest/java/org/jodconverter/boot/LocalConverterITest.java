@@ -40,12 +40,13 @@ import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.office.OfficeException;
 
+/** Contains tests for the {@link org.jodconverter.local.LocalConverter} class. */
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @TestPropertySource(locations = "classpath:config/application-local.properties")
 public class LocalConverterITest {
 
-  @TempDir File testFolder;
+  /* default */ @TempDir File testFolder;
   private File inputFileTxt;
 
   @Autowired private DocumentConverter converter;

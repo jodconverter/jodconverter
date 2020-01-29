@@ -49,6 +49,7 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.test.util.AssertUtil;
 
+/** Contains tests for the {@link LocalOfficeUtils} class. */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(UnoRuntime.class)
 @PowerMockRunnerDelegate(JUnit4.class)
@@ -131,6 +132,7 @@ public class LocalOfficeUtilsTest {
   }
 
   /** Tests the validateOfficeTemplateProfileDirectory with null as argument. */
+  @Test
   public void validateOfficeTemplateProfileDir_WithNullDir_ValidateSuccessfully() {
 
     assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(null))
@@ -138,6 +140,7 @@ public class LocalOfficeUtilsTest {
   }
 
   /** Tests the validateOfficeTemplateProfileDirectory when user sub directory is found. */
+  @Test
   public void validateOfficeTemplateProfileDir_WithUserDirFound_ValidateSuccessfully() {
 
     final File tempDir = new File(System.getProperty("java.io.tmpdir"));

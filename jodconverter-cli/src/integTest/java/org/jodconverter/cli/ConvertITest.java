@@ -31,8 +31,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
 import org.jodconverter.cli.util.ExitException;
@@ -51,7 +49,6 @@ import org.jodconverter.local.office.LocalOfficeUtils;
 })
 public class ConvertITest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConvertITest.class);
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
   private static final String SOURCE_FILE = "src/integTest/resources/documents/test1.doc";
   private static final String SOURCE_MULTI_FILE =
@@ -59,7 +56,7 @@ public class ConvertITest {
 
   @Test
   public void convert_WithCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf(
-      @TempDir File testFolder) {
+      final @TempDir File testFolder) {
 
     final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
     final File inputFile = new File(SOURCE_FILE);
@@ -82,7 +79,7 @@ public class ConvertITest {
   }
 
   @Test
-  public void convert_WithFilenames_ShouldSucceed(@TempDir File testFolder) {
+  public void convert_WithFilenames_ShouldSucceed(final @TempDir File testFolder) {
 
     final File inputFile = new File(SOURCE_FILE);
     final File outputFile = new File(testFolder, "convert_WithFilenames.pdf");
@@ -102,7 +99,8 @@ public class ConvertITest {
   }
 
   @Test
-  public void convert_WithOutputFormat_ShouldSucceed(@TempDir File testFolder) throws Exception {
+  public void convert_WithOutputFormat_ShouldSucceed(final @TempDir File testFolder)
+      throws Exception {
 
     final File inputFile = new File(SOURCE_FILE);
     FileUtils.copyFileToDirectory(inputFile, testFolder);
@@ -121,7 +119,7 @@ public class ConvertITest {
   }
 
   @Test
-  public void convert_WithMultipleFilters_ShouldSucceed(@TempDir File testFolder) {
+  public void convert_WithMultipleFilters_ShouldSucceed(final @TempDir File testFolder) {
 
     final File filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
     final File inputFile = new File(SOURCE_FILE);
@@ -148,7 +146,7 @@ public class ConvertITest {
   }
 
   @Test
-  public void convert_WithSingleFilter_ShouldSucceed(@TempDir File testFolder) {
+  public void convert_WithSingleFilter_ShouldSucceed(final @TempDir File testFolder) {
 
     final File filterChainFile =
         new File(CONFIG_DIR + "applicationContext_pagesSelectorFilter.xml");
@@ -185,7 +183,7 @@ public class ConvertITest {
   }
 
   @Test
-  public void convert_WithCustomStoreProperties_ShouldSucceed(@TempDir File testFolder) {
+  public void convert_WithCustomStoreProperties_ShouldSucceed(final @TempDir File testFolder) {
 
     final File inputFile = new File(SOURCE_MULTI_FILE);
     final File outputFile = new File(testFolder, "convert_WithCustomStoreProperties.pdf");
@@ -204,7 +202,7 @@ public class ConvertITest {
               // If the document (with the image) is fully converted, it will
               // be much greater that 30K (over 70K). Only the second page
               // doesn't have an image.
-              assertThat(outputFile.length()).isLessThan(30000);
+              assertThat(outputFile.length()).isLessThan(30_000L);
             });
   }
 

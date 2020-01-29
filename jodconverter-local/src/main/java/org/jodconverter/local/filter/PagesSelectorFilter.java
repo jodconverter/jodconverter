@@ -190,11 +190,11 @@ public class PagesSelectorFilter implements Filter {
     final XController ctrl = doc.getCurrentController();
 
     // Save the PageCount property of the document.
-    int pageCount = (Integer) Props.getProperty(ctrl, "PageCount").orElse(0);
+    final int pageCount = (Integer) Props.getProperty(ctrl, "PageCount").orElse(0);
 
     // Delete all the pages except the ones to select.
     int nextTargetPage = 1;
-    for (int page : pages) {
+    for (final int page : pages) {
       // Ignore invalid page
       if (page > 0 && page <= pageCount) {
         copyPage(doc, page, nextTargetPage++);
@@ -202,7 +202,7 @@ public class PagesSelectorFilter implements Filter {
     }
 
     // Once done, we must delete the pages after that last copied page.
-    int lastPage = nextTargetPage - 1;
+    final int lastPage = nextTargetPage - 1;
 
     // Get the text cursor for the document.
     final XTextCursor tc = doc.getText().createTextCursor();
@@ -240,17 +240,17 @@ public class PagesSelectorFilter implements Filter {
     transSupplier.insertTransferable(trans);
   }
 
-  private void selectSheets(XComponent document) throws Exception {
+  private void selectSheets(final XComponent document) throws Exception {
 
     final XSpreadsheetDocument doc = Calc.getCalcDoc(document);
     final XSpreadsheets sheets = doc.getSheets();
     final XIndexAccess indexedSheets = Lo.qi(XIndexAccess.class, sheets);
 
     // Delete all the sheets except the ones to select.
-    int count = indexedSheets.getCount();
-    for (int i = (count - 1); i >= 0; i--) {
-      XSpreadsheet sheet = Lo.qi(XSpreadsheet.class, indexedSheets.getByIndex(i));
-      XNamed namedSheet = Lo.qi(XNamed.class, sheet);
+    final int count = indexedSheets.getCount();
+    for (int i = count - 1; i >= 0; i--) {
+      final XSpreadsheet sheet = Lo.qi(XSpreadsheet.class, indexedSheets.getByIndex(i));
+      final XNamed namedSheet = Lo.qi(XNamed.class, sheet);
       if (!pages.contains(i + 1)) {
         sheets.removeByName(namedSheet.getName());
       }

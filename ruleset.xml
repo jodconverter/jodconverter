@@ -1,159 +1,153 @@
 <?xml version="1.0"?>
 <ruleset name="JODConverter ruleset" xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
-	<description>
+    <description>
         This is the JODConverter Official PMD ruleset.
     </description>
 
-	<!-- Use the 'bestpractices' category -->
-	<rule ref="category/java/bestpractices.xml">
-		<exclude name="AccessorClassGeneration" />
-		<exclude name="AccessorMethodGeneration" />
-		<exclude name="JUnitAssertionsShouldIncludeMessage" />
-		<exclude name="JUnitTestsShouldIncludeAssert" />
-	</rule>
-	<rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
-		<properties>
-			<property name="maximumAsserts" value="10" />
-		</properties>
-	</rule>
-	<rule ref="category/java/bestpractices.xml/GuardLogStatement">
-		<properties>
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
-	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
+    <!-- Use the 'bestpractices' category -->
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="AccessorClassGeneration"/>
+        <exclude name="AccessorMethodGeneration"/>
+        <exclude name="JUnitAssertionsShouldIncludeMessage"/>
+        <exclude name="JUnitTestsShouldIncludeAssert"/>
+    </rule>
+    <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+        <properties>
+            <property name="maximumAsserts" value="10"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/bestpractices.xml/GuardLogStatement">
+        <properties>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
 
-	<!-- Use the 'code style' category -->
-	<rule ref="category/java/codestyle.xml">
-		<exclude name="AtLeastOneConstructor" />
-		<exclude name="DefaultPackage" />
-		<exclude name="LinguisticNaming" />
-		<exclude name="OnlyOneReturn" />
-		<exclude name="ShortVariable" />
-		<exclude name="TooManyStaticImports" />
-	</rule>
-	<rule ref="category/java/codestyle.xml/MethodNamingConventions">
-		<properties>
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
-	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
-	<rule ref="category/java/codestyle.xml/LongVariable">
-		<properties>
-			<property name="minimum" value="35" />
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
-	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
-	<rule ref="category/java/codestyle.xml/ShortClassName">
-		<properties>
-			<property name="minimum" value="3" />
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
-	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
-	<rule ref="category/java/codestyle.xml/ShortMethodName">
-		<properties>
-			<property name="minimum" value="2" />
-		</properties>
-	</rule>
+    <!-- Use the 'code style' category -->
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="AtLeastOneConstructor"/>
+        <exclude name="DefaultPackage"/>
+        <exclude name="LinguisticNaming"/>
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="ShortVariable"/>
+        <exclude name="TooManyStaticImports"/>
+    </rule>
+    <rule ref="category/java/codestyle.xml/MethodNamingConventions">
+        <properties>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <property name="minimum" value="35"/>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/ShortClassName">
+        <properties>
+            <property name="minimum" value="3"/>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/ShortMethodName">
+        <properties>
+            <property name="minimum" value="2"/>
+        </properties>
+    </rule>
 
-	<!-- Use the 'design' category -->
-	<rule ref="category/java/design.xml">
-		<exclude name="AvoidCatchingGenericException" />
-		<exclude name="AvoidThrowingRawExceptionTypes" />
-		<exclude name="DataClass" />
-		<exclude name="LawOfDemeter" />
-		<exclude name="LoosePackageCoupling" />
-		<exclude name="NcssCount" />
-		<exclude name="SignatureDeclareThrowsException" />
-	</rule>
-	<rule ref="category/java/design.xml/ExcessiveImports">
+    <!-- Use the 'design' category -->
+    <rule ref="category/java/design.xml">
+        <exclude name="AvoidCatchingGenericException"/>
+        <exclude name="AvoidThrowingRawExceptionTypes"/>
+        <exclude name="DataClass"/>
+        <exclude name="LawOfDemeter"/>
+        <exclude name="LoosePackageCoupling"/>
+        <exclude name="NcssCount"/>
+        <exclude name="SignatureDeclareThrowsException"/>
+    </rule>
+    <rule ref="category/java/design.xml/ExcessiveImports">
+        <properties>
+            <property name="minimum" value="50"/>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/ExcessiveMethodLength">
+        <properties>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
+	<rule ref="category/java/design.xml/TooManyFields">
 		<properties>
-			<!-- Ignore the rule for test classes -->
 			<property name="violationSuppressXPath"
-				value="
-	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
-	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Properties')]"/>
 		</properties>
 	</rule>
-	<rule ref="category/java/design.xml/ExcessiveMethodLength">
-		<properties>
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
-	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
-	<rule ref="category/java/design.xml/TooManyMethods">
-		<properties>
-			<property name="maxmethods" value="15" />
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
-	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
+    <rule ref="category/java/design.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="15"/>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/UseUtilityClass">
+        <properties>
+            <property name="ignoredAnnotations" value="org.springframework.boot.autoconfigure.SpringBootApplication"/>
+        </properties>
+    </rule>
 
-	<!-- Use the 'documentation' category -->
-	<rule ref="category/java/documentation.xml">
-		<exclude name="CommentSize" />
-	</rule>
-	<rule ref="category/java/documentation.xml/CommentRequired">
-		<properties>
-			<property name="fieldCommentRequirement" value="Ignored" />
-			<property name="protectedMethodCommentRequirement" value="Ignored" />
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
-	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
+    <!-- Use the 'documentation' category -->
+    <rule ref="category/java/documentation.xml">
+        <exclude name="CommentSize"/>
+    </rule>
+    <rule ref="category/java/documentation.xml/CommentRequired">
+        <properties>
+            <property name="fieldCommentRequirement" value="Ignored"/>
+            <property name="protectedMethodCommentRequirement" value="Ignored"/>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
 
-	<!-- Use the 'errorprone' category -->
-	<rule ref="category/java/errorprone.xml">
-		<exclude name="AvoidFieldNameMatchingMethodName" />
-		<exclude name="BeanMembersShouldSerialize" />
-		<exclude name="DataflowAnomalyAnalysis" />
-		<exclude name="DoNotCallSystemExit" />
-		<exclude name="NullAssignment" />
-	</rule>
-	<rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
-		<properties>
-			<!-- Ignore the rule for test classes -->
-			<property name="violationSuppressXPath"
-				value="
-	            //PackageDeclaration/Name[contains(@Image, '.test.')] | 
-	            //ClassOrInterfaceBodyDeclaration//Name[ends-with(@Image, 'Test')]" />
-		</properties>
-	</rule>
+    <!-- Use the 'errorprone' category -->
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="AvoidFieldNameMatchingMethodName"/>
+        <exclude name="BeanMembersShouldSerialize"/>
+        <exclude name="DataflowAnomalyAnalysis"/>
+        <exclude name="DoNotCallSystemExit"/>
+        <exclude name="NullAssignment"/>
+    </rule>
+    <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
+        <properties>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
 
-	<!-- Use the 'multithreading' category -->
-	<rule ref="category/java/multithreading.xml">
-		<exclude name="DoNotUseThreads" />
-		<exclude name="UseConcurrentHashMap" />
-	</rule>
-	<!-- Use the 'performance' category -->
-	<rule ref="category/java/performance.xml">
-		<exclude name="AvoidInstantiatingObjectsInLoops" />
-	</rule>
+    <!-- Use the 'multithreading' category -->
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="DoNotUseThreads"/>
+        <exclude name="UseConcurrentHashMap"/>
+    </rule>
+    <!-- Use the 'performance' category -->
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
 
 </ruleset>

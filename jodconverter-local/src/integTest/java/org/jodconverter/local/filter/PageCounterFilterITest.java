@@ -33,6 +33,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link PageCounterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class PageCounterFilterITest {
 
@@ -50,7 +51,7 @@ public class PageCounterFilterITest {
 
   @Test
   public void Calc_doFilter_SelectPage2_ShouldCount3Then1(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, CALC_FILENAME + ".sheet2.xls");
 
@@ -75,7 +76,7 @@ public class PageCounterFilterITest {
 
   @Test
   public void Draw_doFilter_SelectPage2_ShouldCount3Then1(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, DRAW_FILENAME + ".page2.pdf");
 
@@ -100,7 +101,7 @@ public class PageCounterFilterITest {
 
   @Test
   public void Impress_doFilter_SelectPage2_ShouldCount4Then1(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, IMPRESS_FILENAME + ".page2.pdf");
 
@@ -125,7 +126,7 @@ public class PageCounterFilterITest {
 
   @Test
   public void Text_doFilter_SelectPage2_ShouldCount3Then1(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, TEXT_FILENAME + ".page2.pdf");
 

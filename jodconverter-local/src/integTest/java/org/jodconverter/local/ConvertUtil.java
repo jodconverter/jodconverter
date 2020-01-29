@@ -34,6 +34,7 @@ import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 
+/** Helper class use to convert files while testing. */
 public final class ConvertUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConvertUtil.class);
@@ -96,9 +97,13 @@ public final class ConvertUtil {
         if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
           final com.sun.star.task.ErrorCodeIOException ioEx =
               (com.sun.star.task.ErrorCodeIOException) ex.getCause();
-          LOGGER.error(message + " " + ioEx.getMessage(), ioEx);
+          if (LOGGER.isErrorEnabled()) {
+            LOGGER.error(message + " " + ioEx.getMessage(), ioEx);
+          }
         } else {
-          LOGGER.error(message + " " + ex.getMessage(), ex);
+          if (LOGGER.isErrorEnabled()) {
+            LOGGER.error(message + " " + ex.getMessage(), ex);
+          }
         }
 
         throw new RuntimeException(ex);
@@ -106,6 +111,13 @@ public final class ConvertUtil {
     }
   }
 
+  /**
+   * Converts a source file into all supported formats.
+   *
+   * @param sourceFile The source file.
+   * @param outputDir The output directory.
+   * @param converter The converter.
+   */
   public static void convertFileToAllSupportedFormats(
       final File sourceFile, final File outputDir, final DocumentConverter converter) {
 

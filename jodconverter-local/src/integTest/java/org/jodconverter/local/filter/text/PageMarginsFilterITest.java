@@ -32,6 +32,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link PageMarginsFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class PageMarginsFilterITest {
 
@@ -44,7 +45,7 @@ public class PageMarginsFilterITest {
    */
   @Test
   public void doFilter_WithMargins_ShouldConvertDocument(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".margins.pdf");
 
@@ -67,7 +68,7 @@ public class PageMarginsFilterITest {
    */
   @Test
   public void doFilter_WithNullMargins_ShouldConvertDocument(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".nullmargins.pdf");
 

@@ -27,16 +27,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.powermock.reflect.Whitebox;
 
+/** Contains tests for the {@link AbstractOfficeManagerPool} class. */
 public class AbstractOfficeManagerPoolTest {
 
   @Test
-  public void create_WithCustomConfig_ShouldUseCustomConfig(@TempDir File testFolder) {
+  public void create_WithCustomConfig_ShouldUseCustomConfig(final @TempDir File testFolder) {
 
     final SimpleOfficeManagerPoolConfig config =
         new SimpleOfficeManagerPoolConfig(new File(System.getProperty("java.io.tmpdir")));
     config.setWorkingDir(testFolder);
-    config.setTaskExecutionTimeout(5000L);
-    config.setTaskQueueTimeout(9000L);
+    config.setTaskExecutionTimeout(5_000L);
+    config.setTaskQueueTimeout(9_000L);
 
     final AbstractOfficeManagerPool pool =
         new AbstractOfficeManagerPool(1, config) {
@@ -48,7 +49,7 @@ public class AbstractOfficeManagerPoolTest {
 
     final SimpleOfficeManagerPoolConfig setupConfig = Whitebox.getInternalState(pool, "config");
     assertThat(setupConfig.getWorkingDir().getPath()).isEqualTo(testFolder.getPath());
-    assertThat(setupConfig.getTaskExecutionTimeout()).isEqualTo(5000L);
-    assertThat(setupConfig.getTaskQueueTimeout()).isEqualTo(9000L);
+    assertThat(setupConfig.getTaskExecutionTimeout()).isEqualTo(5_000L);
+    assertThat(setupConfig.getTaskQueueTimeout()).isEqualTo(9_000L);
   }
 }

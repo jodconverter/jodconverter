@@ -20,9 +20,9 @@
 package org.jodconverter.sample.webapp;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.DocumentConverter;
 
+/** Converter servlet. */
 public class ConverterServlet extends HttpServlet {
   private static final long serialVersionUID = -591469426224201748L;
 
@@ -88,13 +89,15 @@ public class ConverterServlet extends HttpServlet {
       final DocumentConverter converter = webappContext.getDocumentConverter();
       final long startTime = System.currentTimeMillis();
       converter.convert(inputFile).to(outputFile).execute();
-      LOGGER.info(
-          String.format(
-              "Successful conversion: %s [%db] to %s in %dms",
-              inputExtension,
-              inputFile.length(),
-              outputExtension,
-              System.currentTimeMillis() - startTime));
+      if (LOGGER.isInfoEnabled()) {
+        LOGGER.info(
+            String.format(
+                "Successful conversion: %s [%db] to %s in %dms",
+                inputExtension,
+                inputFile.length(),
+                outputExtension,
+                System.currentTimeMillis() - startTime));
+      }
       response.setContentType(
           converter.getFormatRegistry().getFormatByExtension(outputExtension).getMediaType());
       response.setHeader(
@@ -115,7 +118,7 @@ public class ConverterServlet extends HttpServlet {
   private void sendFile(final File file, final HttpServletResponse response) throws IOException {
 
     response.setContentLength((int) file.length());
-    try (InputStream inputStream = new FileInputStream(file)) {
+    try (InputStream inputStream = Files.newInputStream(file.toPath())) {
       IOUtils.copy(inputStream, response.getOutputStream());
     }
   }

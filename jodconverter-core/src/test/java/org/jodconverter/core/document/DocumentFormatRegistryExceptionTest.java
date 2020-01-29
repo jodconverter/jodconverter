@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+/** Contains tests for the {@link DocumentFormatRegistryException} class. */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(JsonDocumentFormatRegistry.class)
 public class DocumentFormatRegistryExceptionTest {

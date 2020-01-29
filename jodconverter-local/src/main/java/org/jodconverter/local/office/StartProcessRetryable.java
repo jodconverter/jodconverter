@@ -37,7 +37,7 @@ import org.jodconverter.local.process.ProcessQuery;
 public class StartProcessRetryable extends AbstractRetryable<Exception> {
 
   private static final int FIND_PID_RETRIES = 10;
-  private static final long FIND_PID_DELAY = 2000L;
+  private static final long FIND_PID_DELAY = 2_000L;
   private static final long FIND_PID_INTERVAL = 250L;
   private static final Integer EXIT_CODE_81 = 81;
   private static final Logger LOGGER = LoggerFactory.getLogger(StartProcessRetryable.class);
@@ -46,7 +46,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
   private final ProcessBuilder processBuilder;
   private final ProcessQuery processQuery;
   private VerboseProcess process;
-  private Integer exitCode = null;
+  private Integer exitCode;
   private long processId = PID_UNKNOWN;
 
   /**
@@ -113,7 +113,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
       }
       throw new TemporaryException(
           String.format(
-              "A process with acceptString '%s' started but its pid could not be found; restarting it",
+              "A process with --accept '%s' started but its pid could not be found; restarting it",
               processQuery.getArgument()));
     }
   }
@@ -139,7 +139,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
   private void tryFindPid(final ProcessManager processManager) throws IOException {
 
     int tryCount = 0;
-    do {
+    while (true) {
       tryCount++;
       LOGGER.debug("Trying to find pid, attempt #{}", tryCount);
 
@@ -169,11 +169,10 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
 
       // Wait a bit before retrying.
       sleep(FIND_PID_INTERVAL);
-
-    } while (true);
+    }
   }
 
-  private void sleep(long millis) {
+  private void sleep(final long millis) {
     try {
       Thread.sleep(millis);
     } catch (InterruptedException ignore) {

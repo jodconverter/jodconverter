@@ -30,13 +30,13 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
 
+/** Contains tests for the {@link DocumentConverter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class DocumentConverterFunctionalITest {
 
-  private static final int MAX_THREADS = 10;
-
   @Test
-  public void htmlWithImageConversion(@TempDir File testFolder, DocumentConverter converter) {
+  public void htmlWithImageConversion(
+      final @TempDir File testFolder, final DocumentConverter converter) {
 
     final File source = documentFile("index.html");
     final File target = new File(testFolder, "index.pdf");
@@ -46,7 +46,8 @@ public class DocumentConverterFunctionalITest {
   }
 
   @Test
-  public void testHtmlConversion(@TempDir File testFolder, DocumentConverter converter) {
+  public void testHtmlConversion(
+      final @TempDir File testFolder, final DocumentConverter converter) {
 
     final File source = documentFile("test.html");
     final File target = new File(testFolder, "test.pdf");
@@ -55,63 +56,10 @@ public class DocumentConverterFunctionalITest {
     converter.convert(source).to(target);
   }
 
-  //  /**
-  //   * Test the conversion of all the supported documents format.
-  //   *
-  //   * @throws Exception if an error occurs.
-  //   */
-  //  @Test
-  //  public void runAllPossibleConversions() throws Exception {
-  //
-  //    final Thread[] threads = new Thread[MAX_THREADS];
-  //    int threadCount = 0;
-  //
-  //    final AtomicReference<Exception> exception = new AtomicReference<>();
-  //    for (final File sourceFile :
-  //        Objects.requireNonNull(
-  //            new File("src/integTest/resources/documents")
-  //                .listFiles((dir, name) -> name.startsWith("test.")))) {
-  //
-  //      // Convert the file to all supported formats in a separated thread
-  //      final Runnable runnable =
-  //          () -> {
-  //            try {
-  //              convertFileToAllSupportedFormats(sourceFile, testFolder);
-  //            } catch (Exception ex) {
-  //              exception.set(ex);
-  //            }
-  //          };
-  //
-  //      // final Runner r = new Runner (source, target, RefreshFilter.CHAIN, converter);
-  //      threads[threadCount] = new Thread(runnable);
-  //      threads[threadCount++].start();
-  //
-  //      if (threadCount == MAX_THREADS) {
-  //        for (int j = 0; j < threadCount; j++) {
-  //          threads[j].join();
-  //        }
-  //        threadCount = 0;
-  //        if (exception.get() != null) {
-  //          throw exception.get();
-  //        }
-  //      }
-  //
-  //      // convertFileToAllSupportedFormats(sourceFile, testFolder);
-  //    }
-  //
-  //    // Wait for remaining threads.
-  //    for (int j = 0; j < threadCount; j++) {
-  //      threads[j].join();
-  //    }
-  //    if (exception.get() != null) {
-  //      throw exception.get();
-  //    }
-  //  }
-
   /** Test the conversion of all the supported documents format. */
   @Test
-  public void runAllPossibleConversionsSingleThread(
-      @TempDir File testFolder, DocumentConverter converter) {
+  public void runAllPossibleConversions(
+      final @TempDir File testFolder, final DocumentConverter converter) {
 
     for (final File sourceFile :
         Objects.requireNonNull(

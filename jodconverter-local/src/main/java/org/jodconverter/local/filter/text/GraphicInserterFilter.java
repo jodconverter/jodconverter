@@ -96,7 +96,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
     // 1 mm = 3.7795275590551 pixel (X)
     // 1 pixel (X) = 0.26458333333333 mm
-    return Math.round(pixels * 0.26458333333333f);
+    return Math.round(pixels * 0.264_583_333_333_33f);
   }
 
   /**

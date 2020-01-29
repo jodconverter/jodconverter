@@ -52,6 +52,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.task.LocalConversionTask;
 
+/** Contains tests for the {@link CliConverter} class. */
 @ExtendWith({
   ConsoleStreamsListenerExtension.class,
   NoExitExtension.class,
@@ -87,7 +88,7 @@ public class CliConverterTest {
 
   @Test
   public void main_WithWrongInputOutputFilenamesLengthMismatch_ThrowsIllegalArgumentException(
-      @TempDir File testFolder) {
+      final @TempDir File testFolder) {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -132,7 +133,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToDirnames_NoTaskExecuted(@TempDir File testFolder)
+  public void convert_FilenamesToDirnames_NoTaskExecuted(final @TempDir File testFolder)
       throws Exception {
 
     converter.convert(
@@ -144,7 +145,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFilenames_TasksExecuted(@TempDir File testFolder)
+  public void convert_FilenamesToFilenames_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
@@ -171,8 +172,8 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFilenamesAllowingOverwrite_TasksExecuted(@TempDir File testFolder)
-      throws Exception {
+  public void convert_FilenamesToFilenamesAllowingOverwrite_TasksExecuted(
+      final @TempDir File testFolder) throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -198,8 +199,8 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted(@TempDir File testFolder)
-      throws Exception {
+  public void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted(
+      final @TempDir File testFolder) throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -217,8 +218,8 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted(@TempDir File testFolder)
-      throws Exception {
+  public void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted(
+      final @TempDir File testFolder) throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -267,7 +268,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFormatWithOutputDir_TasksExecuted(@TempDir File testFolder)
+  public void convert_FilenamesToFormatWithOutputDir_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
@@ -294,8 +295,8 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted(@TempDir File testFolder)
-      throws Exception {
+  public void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted(
+      final @TempDir File testFolder) throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -324,8 +325,8 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted(@TempDir File testFolder)
-      throws Exception {
+  public void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted(
+      final @TempDir File testFolder) throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -370,7 +371,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_DirWithWildcardAndOutputDir_TasksExecuted(@TempDir File testFolder)
+  public void convert_DirWithWildcardAndOutputDir_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
     converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", testFolder.getPath(), false);

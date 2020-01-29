@@ -45,6 +45,7 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.task.LocalConversionTask;
 
+/** Contains tests for the {@link LocalConverter} class. */
 public class LocalConverterTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
@@ -57,7 +58,7 @@ public class LocalConverterTest {
   }
 
   @Test
-  public void make_WithOfficeManagerInstalled_Success(@TempDir File testFolder) {
+  public void make_WithOfficeManagerInstalled_Success(final @TempDir File testFolder) {
 
     final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
     InstalledOfficeManagerHolder.setInstance(officeManager);
@@ -73,7 +74,7 @@ public class LocalConverterTest {
 
   @Test
   public void make_WithoutOfficeManagerInstalled_ThrowsIllegalStateException(
-      @TempDir File testFolder) {
+      final @TempDir File testFolder) {
 
     final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
     InstalledOfficeManagerHolder.setInstance(null);
@@ -89,7 +90,7 @@ public class LocalConverterTest {
 
   @Test
   public void convert_WithCustomLoadProperties_CreateConverterWithExpectedLoadProperties(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final Map<String, Object> loadProperties = new HashMap<>();
     loadProperties.put("Hidden", false);
@@ -118,7 +119,7 @@ public class LocalConverterTest {
 
   @Test
   public void convert_WithCustomStoreProperties_CreateConverterWithExpectedStoreProperties(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final Map<String, Object> filterData = new HashMap<>();
     filterData.put("PageRange", "1");
@@ -146,7 +147,7 @@ public class LocalConverterTest {
 
   @Test
   public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream(
-      @TempDir File testFolder) {
+      final @TempDir File testFolder) {
 
     final File targetFile = new File(testFolder, "test.pdf");
     assertThatIllegalStateException()
@@ -165,7 +166,7 @@ public class LocalConverterTest {
 
   @Test
   public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream(
-      @TempDir File testFolder) {
+      final @TempDir File testFolder) {
 
     assertThatIllegalStateException()
         .isThrownBy(

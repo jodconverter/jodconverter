@@ -33,6 +33,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link TextInserterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class TextInserterFilterITest {
 
@@ -43,7 +44,8 @@ public class TextInserterFilterITest {
 
   /** Test the conversion of a document inserting text along the way. */
   @Test
-  public void doFilter_WithCustomizedProperties(@TempDir File testFolder, OfficeManager manager) {
+  public void doFilter_WithCustomizedProperties(
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
 
@@ -76,7 +78,8 @@ public class TextInserterFilterITest {
 
   /** Test the conversion of a document inserting text along the way. */
   @Test
-  public void doFilter_WithDefaultProperties(@TempDir File testFolder, OfficeManager manager) {
+  public void doFilter_WithDefaultProperties(
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".pdf");
 

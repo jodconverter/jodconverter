@@ -27,7 +27,7 @@ import org.jodconverter.core.office.OfficeException;
 /**
  * Base class for all conversion job implementations.
  *
- * @see ConversionJob
+ * @see org.jodconverter.core.job.ConversionJob
  */
 public abstract class AbstractConversionJob
     implements ConversionJobWithOptionalTargetFormatUnspecified {

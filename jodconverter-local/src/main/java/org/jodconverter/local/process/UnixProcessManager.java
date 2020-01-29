@@ -39,9 +39,11 @@ public class UnixProcessManager extends AbstractProcessManager {
 
   private String[] runAsArgs;
 
-  // This class is required in order to create the default UnixProcessManager
-  // only on demand, as explained by the Initialization-on-demand holder idiom:
-  // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+  /**
+   * This class is required in order to create the default UnixProcessManager only on demand, as
+   * explained by the Initialization-on-demand holder idiom:
+   * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+   */
   private static class DefaultHolder {
     /* default */ static final UnixProcessManager INSTANCE = new UnixProcessManager();
   }

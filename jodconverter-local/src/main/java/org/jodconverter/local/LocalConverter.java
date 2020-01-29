@@ -158,6 +158,7 @@ public class LocalConverter extends AbstractConverter {
     return this;
   }
 
+  /** Local implementation of a conversion job with source format unspecified. */
   private class LocalConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
 
@@ -173,6 +174,7 @@ public class LocalConverter extends AbstractConverter {
     }
   }
 
+  /** Local implementation of a conversion job. */
   private class LocalConversionJob extends AbstractConversionJob {
 
     private LocalConversionJob(

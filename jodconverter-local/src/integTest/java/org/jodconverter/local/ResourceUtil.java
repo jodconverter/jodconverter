@@ -21,18 +21,26 @@ package org.jodconverter.local;
 
 import java.io.File;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+/** Helper class for test resources. */
 public final class ResourceUtil {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ResourceUtil.class);
-
-  public static File documentFile(String filename) {
+  /**
+   * Gets a file instance from the src/integTest/resources/documents folder.
+   *
+   * @param filename The filename to get.
+   * @return The file instance.
+   */
+  public static File documentFile(final String filename) {
     return new File("src/integTest/resources/documents", filename);
   }
 
-  public static File imageFile(String filename) {
+  /**
+   * Gets a file instance from the src/integTest/resources/images folder.
+   *
+   * @param filename The filename to get.
+   * @return The file instance.
+   */
+  public static File imageFile(final String filename) {
     return new File("src/integTest/resources/images", filename);
   }
 

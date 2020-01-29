@@ -53,7 +53,7 @@ public class OnlineConvertITest {
   private static final String SERVER_KEYSTORE_PWD = "serverkeystore";
 
   @Test
-  public void convert_WithConnectionOption_ShouldSucceed(@TempDir File testFolder) {
+  public void convert_WithConnectionOption_ShouldSucceed(final @TempDir File testFolder) {
 
     final File inputFile = new File(SOURCE_FILE_DOC);
     final File outputFile = new File(testFolder, "out.txt");
@@ -94,7 +94,8 @@ public class OnlineConvertITest {
   }
 
   @Test
-  public void convert_WithConnectionOptionAndSslConfig_ShouldSucceed(@TempDir File testFolder) {
+  public void convert_WithConnectionOptionAndSslConfig_ShouldSucceed(
+      final @TempDir File testFolder) {
 
     final File inputFile = new File(SOURCE_FILE_DOC);
     final File outputFile = new File(testFolder, "out.txt");

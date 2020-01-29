@@ -83,6 +83,7 @@ public class OnlineConverter extends AbstractConverter {
     return new OnlineConversionJobWithSourceFormatUnspecified(source);
   }
 
+  /** Online implementation of a conversion job with source format unspecified. */
   private class OnlineConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
 
@@ -98,6 +99,7 @@ public class OnlineConverter extends AbstractConverter {
     }
   }
 
+  /** Online implementation of a conversion job. */
   private class OnlineConversionJob extends AbstractConversionJob {
 
     private OnlineConversionJob(

@@ -34,12 +34,13 @@ import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 import org.jodconverter.local.filter.Filter;
 
+/** Contains tests for the {@link Write} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class WriteITest {
 
   @Test
   public void isTextAndGetTextDoc_WithTextDocument_NoExceptionThrown(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
         (context, document, chain) -> {
@@ -64,7 +65,7 @@ public class WriteITest {
 
   @Test
   public void isNotTextAndGetTextDoc_WithCalcDocument_NoExceptionThrown(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
         (context, document, chain) -> {

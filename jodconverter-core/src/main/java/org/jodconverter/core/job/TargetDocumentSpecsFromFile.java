@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 
+/** Target document specifications for from a file. */
 class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs
     implements TargetDocumentSpecs {
 

@@ -40,6 +40,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
+/** Contains tests for the {@link JodConverter} class. */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(LocalConverter.class)
 public class JodConverterTest {

@@ -33,9 +33,11 @@ public class WindowsProcessManager extends AbstractProcessManager {
   private static final Pattern PROCESS_GET_LINE =
       Pattern.compile("^\\s*(?<CommanLine>.*?)\\s+(?<Pid>\\d+)\\s*$");
 
-  // This class is required in order to create the default WindowsProcessManager
-  // only on demand, as explained by the Initialization-on-demand holder idiom:
-  // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+  /**
+   * This class is required in order to create the default WindowsProcessManager only on demand, as
+   * explained by the Initialization-on-demand holder idiom:
+   * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+   */
   private static class DefaultHolder {
     /* default */ static final WindowsProcessManager INSTANCE = new WindowsProcessManager();
   }

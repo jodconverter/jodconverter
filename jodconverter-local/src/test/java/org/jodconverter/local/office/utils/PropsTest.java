@@ -42,6 +42,7 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
+/** Contains tests for the {@link Props} class. */
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(JUnit4.class)
 @PrepareForTest(UnoRuntime.class)
@@ -136,16 +137,16 @@ public class PropsTest {
   @Test
   public void makeProperties_ArrayNotSameLength_ThrowIllegalArgumentException() {
 
-    final String[] names = new String[] {"name1", "name2", "name3"};
-    final Object[] values = new Object[] {100, 200, 300, 400};
+    final String[] names = {"name1", "name2", "name3"};
+    final Object[] values = {100, 200, 300, 400};
     assertThatIllegalArgumentException().isThrownBy(() -> Props.makeProperties(names, values));
   }
 
   @Test
   public void makeProperties_ArraySameLength_ReturnArrayWithExpectedValues() {
 
-    final String[] names = new String[] {"name1", "name2", "name3", "name4"};
-    final Object[] values = new Object[] {100, 200, 300, 400};
+    final String[] names = {"name1", "name2", "name3", "name4"};
+    final Object[] values = {100, 200, 300, 400};
 
     final PropertyValue[] props = Props.makeProperties(names, values);
     assertThat(props).hasSize(4);

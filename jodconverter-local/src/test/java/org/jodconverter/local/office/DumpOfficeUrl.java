@@ -22,6 +22,7 @@ package org.jodconverter.local.office;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** Application that dumps office url parts. */
 public final class DumpOfficeUrl {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DumpOfficeUrl.class);

@@ -27,7 +27,7 @@ package org.jodconverter.core.office;
 public interface OfficeManagerPoolConfig extends OfficeManagerConfig {
 
   /** The default maximum living time of a task in the conversion queue. */
-  long DEFAULT_TASK_QUEUE_TIMEOUT = 30000L; // 30 seconds
+  long DEFAULT_TASK_QUEUE_TIMEOUT = 30_000L; // 30 seconds
 
   /**
    * Sets the maximum living time of a task in the conversion queue. The task will be removed from

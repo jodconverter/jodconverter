@@ -26,9 +26,11 @@ package org.jodconverter.local.process;
  */
 public class PureJavaProcessManager implements ProcessManager {
 
-  // This class is required in order to create the default PureJavaProcessManager
-  // only on demand, as explained by the Initialization-on-demand holder idiom:
-  // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+  /**
+   * This class is required in order to create the default PureJavaProcessManager only on demand, as
+   * explained by the Initialization-on-demand holder idiom:
+   * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+   */
   private static class DefaultHolder {
     /* default */ static final PureJavaProcessManager INSTANCE = new PureJavaProcessManager();
   }

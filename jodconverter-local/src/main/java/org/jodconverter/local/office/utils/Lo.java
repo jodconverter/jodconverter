@@ -150,8 +150,7 @@ public final class Lo {
    *     the {@link WrappedUnoException}.
    */
   public static <T> T createInstanceMCF(
-      final XComponentContext context, final Class<T> type, final String serviceName)
-      throws WrappedUnoException {
+      final XComponentContext context, final Class<T> type, final String serviceName) {
 
     // Create service component using the specified component context.
     // Then uses bridge to obtain proxy to remote interface inside service;

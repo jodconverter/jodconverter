@@ -45,6 +45,11 @@ public class JodConverterOnlineAutoConfiguration {
 
   private final JodConverterOnlineProperties properties;
 
+  /**
+   * Creates the online auto configuration.
+   *
+   * @param properties The online properties.
+   */
   public JodConverterOnlineAutoConfiguration(final JodConverterOnlineProperties properties) {
     this.properties = properties;
   }
@@ -89,7 +94,7 @@ public class JodConverterOnlineAutoConfiguration {
 
   @Bean(initMethod = "start", destroyMethod = "stop")
   @ConditionalOnMissingBean(name = "onlineOfficeManager")
-  public OfficeManager onlineOfficeManager() {
+  /* default */ OfficeManager onlineOfficeManager() {
 
     return createOfficeManager();
   }
@@ -98,7 +103,7 @@ public class JodConverterOnlineAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean(name = "onlineDocumentConverter")
   @ConditionalOnBean(name = "onlineOfficeManager")
-  public DocumentConverter onlineDocumentConverter(final OfficeManager onlineOfficeManager) {
+  /* default */ DocumentConverter onlineDocumentConverter(final OfficeManager onlineOfficeManager) {
 
     return OnlineConverter.make(onlineOfficeManager);
   }

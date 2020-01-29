@@ -168,7 +168,7 @@ public final class Info {
    */
   public static Optional<String> getConfig(final XComponentContext context, final String propName) {
 
-    for (String nodePath : NODE_PATHS) {
+    for (final String nodePath : NODE_PATHS) {
       final Optional<Object> info = getConfig(context, nodePath, propName);
       if (info.isPresent()) {
         return info.map(String.class::cast);

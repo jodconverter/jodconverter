@@ -41,6 +41,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
 
+/** Controller providing conversion endpoints. */
 @Controller
 public class ConverterController {
 
@@ -50,12 +51,20 @@ public class ConverterController {
   @Autowired private DocumentConverter converter;
 
   @GetMapping("/")
-  public String index() {
+  /* default */ String index() {
     return "converter";
   }
 
+  /**
+   * Converts a souirce file to a target format.
+   *
+   * @param inputFile Source file to convert.
+   * @param outputFormat Output format of the conversion.
+   * @param redirectAttributes Model that contains attributes
+   * @return The converted file, or the error redirection if an error occurs.
+   */
   @PostMapping("/converter")
-  public Object convert(
+  /* default */ Object convert(
       @RequestParam("inputFile") final MultipartFile inputFile,
       @RequestParam(name = "outputFormat", required = false) final String outputFormat,
       final RedirectAttributes redirectAttributes) {

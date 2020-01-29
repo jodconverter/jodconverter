@@ -22,6 +22,7 @@ package org.jodconverter.sample.rest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import io.swagger.annotations.Api;
@@ -88,7 +89,8 @@ public class ConverterController {
   }
 
   @ApiOperation(
-      "Convert the incoming document to the specified format (provided as request param) and returns the converted document.")
+      "Converts the incoming document to the specified format (provided as request param)"
+          + " and returns the converted document.")
   @ApiResponses(
       value = {
         @ApiResponse(code = 200, message = "Document converted successfully."),
@@ -96,14 +98,13 @@ public class ConverterController {
         @ApiResponse(code = 500, message = "An unexpected error occurred.")
       })
   @PostMapping(produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-  public Object convertToUsingParam(
+  /* default */ Object convertToUsingParam(
       @ApiParam(value = "The input document to convert.", required = true) @RequestParam("data")
           final MultipartFile inputFile,
       @ApiParam(value = "The document format to convert the input document to.", required = true)
           @RequestParam(name = "format")
           final String convertToFormat,
-      @ApiParam(value = "The custom options to apply to the conversion.")
-          @RequestParam(required = false)
+      @ApiParam("The custom options to apply to the conversion.") @RequestParam(required = false)
           final Map<String, String> parameters) {
 
     LOGGER.debug("convertUsingRequestParam > Converting file to {}", convertToFormat);
@@ -111,7 +112,8 @@ public class ConverterController {
   }
 
   @ApiOperation(
-      "Convert the incoming document to the specified format (provided as path param) and returns the converted document.")
+      "Converts the incoming document to the specified format (provided as path param)"
+          + " and returns the converted document.")
   @ApiResponses(
       value = {
         @ApiResponse(code = 200, message = "Document converted successfully."),
@@ -119,14 +121,13 @@ public class ConverterController {
         @ApiResponse(code = 500, message = "An unexpected error occurred.")
       })
   @PostMapping(value = "/{format}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-  public Object convertToUsingPath(
+  /* default */ Object convertToUsingPath(
       @ApiParam(value = "The input document to convert.", required = true) @RequestParam("data")
           final MultipartFile inputFile,
       @ApiParam(value = "The document format to convert the input document to.", required = true)
           @PathVariable(name = "format")
           final String convertToFormat,
-      @ApiParam(value = "The custom options to apply to the conversion.")
-          @RequestParam(required = false)
+      @ApiParam("The custom options to apply to the conversion.") @RequestParam(required = false)
           final Map<String, String> parameters) {
 
     LOGGER.debug("convertUsingPathVariable > Converting file to {}", convertToFormat);
@@ -134,7 +135,12 @@ public class ConverterController {
   }
 
   private void addFilterDataProperty(
-      final Map<String, Object> properties, final String name, final String value) {
+      final String paramName,
+      final Map.Entry<String, String> param,
+      final Map<String, Object> properties) {
+
+    final String name = param.getKey().substring(paramName.length());
+    final String value = param.getValue();
 
     final Boolean bool = BooleanUtils.toBooleanObject(value);
     if (bool != null) {
@@ -160,27 +166,15 @@ public class ConverterController {
     final Map<String, Object> loadFilterDataProperties = new HashMap<>();
     final Map<String, Object> storeFilterDataProperties = new HashMap<>();
     for (final Map.Entry<String, String> param : parameters.entrySet()) {
-      final String key = param.getKey().toLowerCase();
+      final String key = param.getKey().toLowerCase(Locale.ROOT);
       if (key.startsWith(LOAD_FILTER_DATA_PREFIX_PARAM)) {
-        addFilterDataProperty(
-            loadFilterDataProperties,
-            param.getKey().substring(LOAD_FILTER_DATA_PREFIX_PARAM.length()),
-            param.getValue());
+        addFilterDataProperty(LOAD_FILTER_DATA_PREFIX_PARAM, param, loadFilterDataProperties);
       } else if (key.startsWith(LOAD_PROPERTIES_PREFIX_PARAM)) {
-        addFilterDataProperty(
-            loadProperties,
-            param.getKey().substring(LOAD_PROPERTIES_PREFIX_PARAM.length()),
-            param.getValue());
+        addFilterDataProperty(LOAD_PROPERTIES_PREFIX_PARAM, param, loadProperties);
       } else if (key.startsWith(STORE_FILTER_DATA_PREFIX_PARAM)) {
-        addFilterDataProperty(
-            storeFilterDataProperties,
-            param.getKey().substring(STORE_FILTER_DATA_PREFIX_PARAM.length()),
-            param.getValue());
+        addFilterDataProperty(STORE_FILTER_DATA_PREFIX_PARAM, param, storeFilterDataProperties);
       } else if (key.startsWith(STORE_PROPERTIES_PREFIX_PARAM)) {
-        addFilterDataProperty(
-            storeProperties,
-            param.getKey().substring(STORE_PROPERTIES_PREFIX_PARAM.length()),
-            param.getValue());
+        addFilterDataProperty(STORE_PROPERTIES_PREFIX_PARAM, param, storeProperties);
       }
     }
 

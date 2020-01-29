@@ -136,7 +136,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
           // by throwing a CloseVetoException. Here we give up ownership. To be on
           // the safe side, catch possible veto exception anyway.
           closeable.close(true);
-        } catch (CloseVetoException closeVetoEx) {
+        } catch (CloseVetoException ignored) {
           // whoever raised the veto should close the document
         }
       }

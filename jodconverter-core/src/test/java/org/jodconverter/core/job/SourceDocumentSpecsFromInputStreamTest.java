@@ -30,6 +30,9 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,11 +41,12 @@ import org.junit.jupiter.api.io.TempDir;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.TemporaryFileMaker;
 
+/** Contains tests for the {@link SourceDocumentSpecsFromInputStream} class. */
 public class SourceDocumentSpecsFromInputStreamTest {
 
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
 
-  @TempDir File testFolder;
+  /* default */ @TempDir File testFolder;
   private TemporaryFileMaker fileMaker;
 
   /** Setup the file maker before each test. */
@@ -66,7 +70,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
     given(fileMaker.makeTemporaryFile()).willReturn(testFolder);
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(testFolder);
 
-    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
+    try (InputStream inputStream = Files.newInputStream(Paths.get(SOURCE_FILE))) {
       final SourceDocumentSpecsFromInputStream specs =
           new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
 
@@ -149,8 +153,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
     assertThat(tempFile).exists();
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
 
-    try (FileInputStream inputStream = new FileInputStream(SOURCE_FILE)) {
-
+    try (InputStream inputStream = Files.newInputStream(Paths.get(SOURCE_FILE))) {
       final SourceDocumentSpecsFromInputStream specs =
           new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
       specs.setDocumentFormat(DefaultDocumentFormatRegistry.ODS);

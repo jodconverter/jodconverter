@@ -34,6 +34,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link GraphicInserterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class GraphicInserterFilterITest {
 
@@ -45,7 +46,8 @@ public class GraphicInserterFilterITest {
 
   /** Test the conversion of a document inserting a graphic along the way on the second page. */
   @Test
-  public void doFilter_WithCustomizedProperties(@TempDir File testFolder, OfficeManager manager) {
+  public void doFilter_WithCustomizedProperties(
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
 
@@ -78,7 +80,8 @@ public class GraphicInserterFilterITest {
 
   /** Test the conversion of a document inserting a graphic along the way. */
   @Test
-  public void doFilter_WithDefaultProperties(@TempDir File testFolder, OfficeManager manager) {
+  public void doFilter_WithDefaultProperties(
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".originalsize.pdf");
 
@@ -109,7 +112,7 @@ public class GraphicInserterFilterITest {
    */
   @Test
   public void doFilter_WithDefaultPropertiesAndSmallerSize(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".smallersize.pdf");
 
@@ -142,7 +145,7 @@ public class GraphicInserterFilterITest {
    */
   @Test
   public void doFilter_WithCustomizedPropertiesAndSmallerSize(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".smallersize.pdf");
 

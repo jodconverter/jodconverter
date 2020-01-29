@@ -46,6 +46,7 @@ import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.ProcessQuery;
 
+/** Contains tests for the {@link OfficeProcess} class. */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(FileUtils.class)
 public class OfficeProcessTest {

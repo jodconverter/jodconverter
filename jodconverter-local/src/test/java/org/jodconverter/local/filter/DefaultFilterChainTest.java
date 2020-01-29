@@ -29,11 +29,7 @@ import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.office.OfficeException;
 
-/**
- * Contains tests for the {@link DefaultFilterChain} class.
- *
- * @see DefaultFilterChain
- */
+/** Contains tests for the {@link DefaultFilterChain} class. */
 @SuppressWarnings("unchecked")
 public class DefaultFilterChainTest {
 

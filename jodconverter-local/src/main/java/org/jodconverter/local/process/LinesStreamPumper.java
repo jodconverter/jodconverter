@@ -26,6 +26,7 @@ import java.util.List;
 /** Read all lines from an input stream. */
 public class LinesStreamPumper extends StreamPumper {
 
+  /** Class that store the lines. */
   private static class LinesConsumer implements LineConsumer {
 
     private final List<String> lines = new ArrayList<>();

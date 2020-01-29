@@ -34,6 +34,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 
+/** Contains tests for the {@link OnlineConverter} class. */
 public class OnlineConverterTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
@@ -49,7 +50,7 @@ public class OnlineConverterTest {
 
   @Test
   public void convert_WithoutOfficeManagerInstalled_ThrowsIllegalStateException(
-      @TempDir File testFolder) {
+      final @TempDir File testFolder) {
 
     assertThatIllegalStateException()
         .isThrownBy(
@@ -62,7 +63,7 @@ public class OnlineConverterTest {
 
   @Test
   public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream(
-      @TempDir File testFolder) {
+      final @TempDir File testFolder) {
 
     assertThatIllegalStateException()
         .isThrownBy(
@@ -80,7 +81,7 @@ public class OnlineConverterTest {
 
   @Test
   public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream(
-      @TempDir File testFolder) {
+      final @TempDir File testFolder) {
 
     assertThatIllegalStateException()
         .isThrownBy(

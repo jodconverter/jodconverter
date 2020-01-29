@@ -38,6 +38,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
+/** Contains tests for the {@link TextReplacerFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class TextReplacerFilterITest {
 
@@ -106,8 +107,8 @@ public class TextReplacerFilterITest {
 
   /** Test the conversion of a document replacing text along the way. */
   @Test
-  public void doFilter_WithDefaultProperties(@TempDir File testFolder, OfficeManager manager)
-      throws IOException {
+  public void doFilter_WithDefaultProperties(
+      final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".txt");
 

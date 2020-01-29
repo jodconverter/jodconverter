@@ -48,7 +48,7 @@ import org.jodconverter.local.office.utils.Lo;
  */
 class OfficeConnection implements LocalOfficeContext, XEventListener {
 
-  private static final AtomicInteger bridgeIndex = new AtomicInteger();
+  private static final AtomicInteger BRIDGE_INDEX = new AtomicInteger();
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeConnection.class);
 
   private final OfficeUrl officeUrl;
@@ -114,7 +114,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
                     "com.sun.star.bridge.BridgeFactory", localContext));
 
         // Create a remote bridge with no instance provider using the urp protocol.
-        final String bridgeName = "jodconverter_" + bridgeIndex.getAndIncrement();
+        final String bridgeName = "jodconverter_" + BRIDGE_INDEX.getAndIncrement();
         final XBridge bridge =
             bridgeFactory.createBridge(
                 bridgeName, officeUrl.getProtocolAndParametersAsString(), connection, null);

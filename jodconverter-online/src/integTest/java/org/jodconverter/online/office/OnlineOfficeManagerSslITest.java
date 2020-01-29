@@ -45,6 +45,7 @@ import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.online.OnlineConverter;
 import org.jodconverter.online.ssl.SslConfig;
 
+/** Contains tests for the {@link SslConfig} class. */
 public class OnlineOfficeManagerSslITest {
 
   private static final String RESOURCES_PATH = "src/integTest/resources/";
@@ -69,7 +70,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithKeyPasswordAndPasswordNotProvided_ShouldThrowUnrecoverableKeyException(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -116,8 +117,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithKeyPasswordAndPasswordProvided_ShouldSucceed(@TempDir File testFolder)
-      throws Exception {
+  public void execute_WithKeyPasswordAndPasswordProvided_ShouldSucceed(
+      final @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -176,7 +177,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithNeedClientAuthAndConfiguredClientAuth_ShouldSucceed(
-      @TempDir File testFolder) throws Exception {
+      final @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -230,7 +231,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithNeedClientAuthAndMissingClientAuth_ShouldThrowSSLException(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -274,7 +275,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithSpecifiedPrivateKeyAndBadPrivateKeySpecified_ShouldThrowSSLException(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -324,7 +325,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithSpecifiedPrivateKeyAndGoodPrivateKeySpecified_ShouldSucceed(
-      @TempDir File testFolder) throws Exception {
+      final @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -381,7 +382,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithSelfSignedCertificateAndNoSslConfiguration_ShouldThrowSSLException(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -421,7 +422,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithSelfSignedCertificateAndSslConfiguration_ShouldSucceed(
-      @TempDir File testFolder) throws Exception {
+      final @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -467,8 +468,8 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithSelfSignedCertificateAndTrustAll_ShouldSucceed(@TempDir File testFolder)
-      throws Exception {
+  public void execute_WithSelfSignedCertificateAndTrustAll_ShouldSucceed(
+      final @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -514,7 +515,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithSelfSignedCertificateAndHostnameVerification_ShouldThrowSslException(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -559,7 +560,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithSelfSignedCertificateAndSslDisabled_ShouldThrowSSLException(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -602,7 +603,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithUnknownSslProtocol_ShouldThrowNoSuchAlgorithmException(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -648,7 +649,7 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithKnownSslProtocol_ShouldSucceed(@TempDir File testFolder)
+  public void execute_WithKnownSslProtocol_ShouldSucceed(final @TempDir File testFolder)
       throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
@@ -698,7 +699,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithUnknownEnabledlProtocol_ShouldThrowNoSuchAlgorithmException(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -744,7 +745,7 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithKnownEnabledProtocol_ShouldSucceed(@TempDir File testFolder)
+  public void execute_WithKnownEnabledProtocol_ShouldSucceed(final @TempDir File testFolder)
       throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
@@ -794,7 +795,7 @@ public class OnlineOfficeManagerSslITest {
 
   @Test
   public void execute_WithUnknownCipher_ShouldThrowNoSuchAlgorithmException(
-      @TempDir File testFolder) throws OfficeException {
+      final @TempDir File testFolder) throws OfficeException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
     final File outputFile = new File(testFolder, "out.txt");
@@ -839,7 +840,7 @@ public class OnlineOfficeManagerSslITest {
   }
 
   @Test
-  public void execute_WithKnownEnabledCipher_ShouldSucceed(@TempDir File testFolder)
+  public void execute_WithKnownEnabledCipher_ShouldSucceed(final @TempDir File testFolder)
       throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);

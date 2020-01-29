@@ -80,7 +80,7 @@ public final class Props {
    */
   public static PropertyValue[] makeProperties(final String name, final Object value) {
 
-    final PropertyValue[] props = new PropertyValue[] {new PropertyValue()};
+    final PropertyValue[] props = {new PropertyValue()};
     props[0].Name = name;
     props[0].Value = value;
     return props;
@@ -99,7 +99,7 @@ public final class Props {
   public static PropertyValue[] makeProperties(
       final String name1, final Object value1, final String name2, final Object value2) {
 
-    final PropertyValue[] props = new PropertyValue[] {new PropertyValue(), new PropertyValue()};
+    final PropertyValue[] props = {new PropertyValue(), new PropertyValue()};
     props[0].Name = name1;
     props[0].Value = value1;
     props[1].Name = name2;

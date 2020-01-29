@@ -54,6 +54,11 @@ public class JodConverterLocalAutoConfiguration {
 
   private final JodConverterLocalProperties properties;
 
+  /**
+   * Creates the local auto configuration.
+   *
+   * @param properties The local properties.
+   */
   public JodConverterLocalAutoConfiguration(final JodConverterLocalProperties properties) {
     this.properties = properties;
   }
@@ -93,13 +98,13 @@ public class JodConverterLocalAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean(name = "processManager")
-  public ProcessManager processManager() {
+  /* default */ ProcessManager processManager() {
     return LocalOfficeUtils.findBestProcessManager();
   }
 
   @Bean
   @ConditionalOnMissingBean(name = "documentFormatRegistry")
-  public DocumentFormatRegistry documentFormatRegistry(final ResourceLoader resourceLoader)
+  /* default */ DocumentFormatRegistry documentFormatRegistry(final ResourceLoader resourceLoader)
       throws Exception {
 
     DocumentFormatRegistry registry = null;
@@ -124,7 +129,7 @@ public class JodConverterLocalAutoConfiguration {
 
   @Bean(name = "localOfficeManager", initMethod = "start", destroyMethod = "stop")
   @ConditionalOnMissingBean(name = "localOfficeManager")
-  public OfficeManager localOfficeManager(final ProcessManager processManager) {
+  /* default */ OfficeManager localOfficeManager(final ProcessManager processManager) {
 
     return createOfficeManager(processManager);
   }
@@ -133,7 +138,7 @@ public class JodConverterLocalAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean(name = "localDocumentConverter")
   @ConditionalOnBean(name = {"localOfficeManager", "documentFormatRegistry"})
-  public DocumentConverter localDocumentConverter(
+  /* default */ DocumentConverter localDocumentConverter(
       final OfficeManager localOfficeManager, final DocumentFormatRegistry documentFormatRegistry) {
 
     return LocalConverter.builder()

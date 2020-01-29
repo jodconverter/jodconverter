@@ -33,18 +33,26 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/** Main application. */
 @SpringBootApplication
 public class SpringBootRestApplication {
 
+  /**
+   * Main entry point of the application.
+   *
+   * @param args Command line arguments.
+   */
   public static void main(final String[] args) {
     SpringApplication.run(SpringBootRestApplication.class, args);
   }
 
+  /** Swagger configuration. */
   @Configuration
   @EnableSwagger2
-  public static class SwaggerConfig {
+  /* default */ static class SwaggerConfig {
+
     @Bean
-    public Docket api() {
+    /* default */ Docket api() {
       return new Docket(DocumentationType.SWAGGER_2)
           .useDefaultResponseMessages(false)
           .select()

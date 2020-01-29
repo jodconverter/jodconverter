@@ -22,14 +22,15 @@ package org.jodconverter.online.office;
 import static java.lang.Math.toIntExact;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -71,9 +72,19 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   private final String connectionUrl;
   private final SslConfig sslConfig;
 
+  /** Strategy that selects a private key by its alias. */
   private static final class SelectByAlias implements PrivateKeyStrategy {
 
     private final String keyAlias;
+
+    /**
+     * Create a new instance of the strategy.
+     *
+     * @param keyAlias The alias of the private key to select.
+     */
+    public SelectByAlias(final String keyAlias) {
+      this.keyAlias = keyAlias;
+    }
 
     @Override
     public String chooseAlias(final Map<String, PrivateKeyDetails> aliases, final Socket socket) {
@@ -83,12 +94,9 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
           .findFirst()
           .orElse(null);
     }
-
-    public SelectByAlias(final String keyAlias) {
-      this.keyAlias = keyAlias;
-    }
   }
 
+  /** Strategy that trust all certificates. */
   private static final class TrustAllStrategy implements TrustStrategy {
 
     private static final TrustAllStrategy INSTANCE = new TrustAllStrategy();
@@ -105,7 +113,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     ClassLoader cl = null;
     try {
       cl = Thread.currentThread().getContextClassLoader();
-    } catch (Throwable ex) {
+    } catch (Throwable ignored) {
       // Cannot access thread context ClassLoader - falling back...
     }
     if (cl == null) {
@@ -115,7 +123,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
         // getClassLoader() returning null indicates the bootstrap ClassLoader
         try {
           cl = ClassLoader.getSystemClassLoader();
-        } catch (Throwable ex) {
+        } catch (Throwable ignored) {
           // Cannot access system ClassLoader - oh well, maybe the caller can live with null...
         }
       }
@@ -143,7 +151,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       final String path = resourceLocation.substring("classpath:".length());
       final String description = "class path resource [" + path + "]";
       final ClassLoader cl = getDefaultClassLoader();
-      final URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
+      final URL url = cl == null ? ClassLoader.getSystemResource(path) : cl.getResource(path);
       if (url == null) {
         throw new FileNotFoundException(
             description + " cannot be resolved to absolute file path because it does not exist");
@@ -206,9 +214,9 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     if (keystore != null) {
       sslBuilder.loadKeyMaterial(
           keystore,
-          sslConfig.getKeyPassword() != null
-              ? sslConfig.getKeyPassword().toCharArray()
-              : sslConfig.getKeyStorePassword().toCharArray(),
+          sslConfig.getKeyPassword() == null
+              ? sslConfig.getKeyStorePassword().toCharArray()
+              : sslConfig.getKeyPassword().toCharArray(),
           sslConfig.getKeyAlias() == null ? null : new SelectByAlias(sslConfig.getKeyAlias()));
     }
   }
@@ -317,7 +325,7 @@ class OnlineOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
         keyStore = KeyStore.getInstance(type, storeProvider);
       }
 
-      try (FileInputStream instream = new FileInputStream(getFile(store))) {
+      try (InputStream instream = Files.newInputStream(getFile(store).toPath())) {
         keyStore.load(instream, storePassword.toCharArray());
       }
 

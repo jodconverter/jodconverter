@@ -26,11 +26,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Contains tests for the {@link NoopFilter} class.
- *
- * @see NoopFilter
- */
+/** Contains tests for the {@link NoopFilter} class. */
 public class NoopFilterTest {
 
   /** Tests that a NoopFilter.CHAIN is read only. */

@@ -21,6 +21,7 @@ package org.jodconverter.core.office;
 
 import org.jodconverter.core.task.OfficeTask;
 
+/** Task that only sleep a specified delay. */
 public class SimpleOfficeTask implements OfficeTask {
 
   private final long delayTime;

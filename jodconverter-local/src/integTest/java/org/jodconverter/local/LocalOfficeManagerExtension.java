@@ -30,7 +30,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
 import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.JUnitException;
 
@@ -39,14 +38,14 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.office.LocalOfficeManager;
 
+/** Provides a {@link LocalOfficeManager} that can be use as argument to a test method. */
 public class LocalOfficeManagerExtension implements ParameterResolver {
 
   private static final Namespace NAMESPACE = create(LocalOfficeManagerExtension.class);
 
   @Override
   public boolean supportsParameter(
-      ParameterContext parameterContext, ExtensionContext extensionContext)
-      throws ParameterResolutionException {
+      final ParameterContext parameterContext, final ExtensionContext extensionContext) {
 
     final Class<?> type = parameterContext.getParameter().getType();
     return OfficeManager.class.isAssignableFrom(type)
@@ -55,8 +54,7 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
 
   @Override
   public Object resolveParameter(
-      ParameterContext parameterContext, ExtensionContext extensionContext)
-      throws ParameterResolutionException {
+      final ParameterContext parameterContext, final ExtensionContext extensionContext) {
 
     final Class<?> type = parameterContext.getParameter().getType();
     if (OfficeManager.class.isAssignableFrom(type)) {
@@ -68,30 +66,31 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
     return null;
   }
 
-  private static ExtensionContext.Store getStore(ExtensionContext context) {
+  private static ExtensionContext.Store getStore(final ExtensionContext context) {
     return context.getRoot().getStore(NAMESPACE);
   }
 
-  private static OfficeManager getOfficeManager(ExtensionContext context) {
+  private static OfficeManager getOfficeManager(final ExtensionContext context) {
     return getStore(context).getOrComputeIfAbsent(LocalOfficeManagerResource.class).get();
   }
 
+  /** Local office manager resource. */
   private static class LocalOfficeManagerResource implements CloseableResource {
 
     private final LocalOfficeManager manager;
 
-    LocalOfficeManagerResource() {
+    /* default */ LocalOfficeManagerResource() {
       // Create the office manager. Don't use the default port number here
       // in order to be able to use it in other tests.
-      String property = System.getProperty("org.jodconverter.test.local.portNumbers");
-      int[] portNumbers =
+      final String property = System.getProperty("org.jodconverter.test.local.portNumbers");
+      final int[] portNumbers =
           StringUtils.isBlank(property)
               ? new int[] {2099}
               : ArrayUtils.toPrimitive(
                   Stream.of(StringUtils.split(property, ", "))
                       .map(str -> NumberUtils.toInt(str, 2099))
                       .toArray(Integer[]::new));
-      LocalOfficeManager mng = LocalOfficeManager.builder().portNumbers(portNumbers).build();
+      final LocalOfficeManager mng = LocalOfficeManager.builder().portNumbers(portNumbers).build();
       try {
         mng.start();
       } catch (OfficeException ex) {
@@ -100,7 +99,7 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
       this.manager = mng;
     }
 
-    LocalOfficeManager get() {
+    /* default */ LocalOfficeManager get() {
       return manager;
     }
 

@@ -30,14 +30,14 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public class NoExitExtension implements BeforeAllCallback, AfterAllCallback {
 
   @Override
-  public void beforeAll(ExtensionContext context) throws Exception {
+  public void beforeAll(final ExtensionContext context) throws Exception {
 
     // Don't allow the program to exit the VM
     System.setSecurityManager(new NoExitSecurityManager());
   }
 
   @Override
-  public void afterAll(ExtensionContext context) throws Exception {
+  public void afterAll(final ExtensionContext context) throws Exception {
 
     // Restore security manager
     System.setSecurityManager(null);

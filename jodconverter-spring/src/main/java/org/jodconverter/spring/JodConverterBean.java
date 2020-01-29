@@ -60,11 +60,11 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   private String workingDir;
   private String templateProfileDir;
   private Boolean killExistingProcess = true;
-  private Long processTimeout = 120000L;
+  private Long processTimeout = 120_000L;
   private Long processRetryInterval = 250L;
-  private Long taskExecutionTimeout = 120000L;
+  private Long taskExecutionTimeout = 120_000L;
   private Integer maxTasksPerProcess = 200;
-  private Long taskQueueTimeout = 30000L;
+  private Long taskQueueTimeout = 30_000L;
 
   private OfficeManager officeManager;
   private DocumentConverter documentConverter;

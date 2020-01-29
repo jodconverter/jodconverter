@@ -56,9 +56,11 @@ public final class LocalOfficeUtils {
   private static final String EXECUTABLE_WINDOWS = "program/soffice.exe";
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeUtils.class);
 
-  // This class is required in order to create a default office home
-  // only on demand, as explained by the Initialization-on-demand holder idiom:
-  // https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+  /**
+   * This class is required in order to create a default office home only on demand, as explained by
+   * the Initialization-on-demand holder idiom:
+   * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+   */
   private static class DefaultOfficeHomeHolder {
 
     /* default */ static final File INSTANCE;
@@ -131,7 +133,7 @@ public final class LocalOfficeUtils {
                 "/opt/openoffice.org3");
       }
 
-      LOGGER.debug("Default office home set to " + INSTANCE);
+      LOGGER.debug("Default office home set to {}", INSTANCE);
     }
 
     private static File findOfficeHome(final String executablePath, final String... homePaths) {

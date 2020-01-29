@@ -67,7 +67,7 @@ public class JodConverterLocalProperties {
    * Process timeout (milliseconds). Used when trying to execute an office process call
    * (start/terminate).
    */
-  private long processTimeout = 120000L;
+  private long processTimeout = 120_000L;
 
   /**
    * Process retry interval (milliseconds). Used for waiting between office process call tries
@@ -79,7 +79,7 @@ public class JodConverterLocalProperties {
    * Maximum time allowed to process a task. If the processing time of a task is longer than this
    * timeout, this task will be aborted and the next task is processed.
    */
-  private long taskExecutionTimeout = 120000L;
+  private long taskExecutionTimeout = 120_000L;
 
   /** Maximum number of tasks an office process can execute before restarting. */
   private int maxTasksPerProcess = 200;
@@ -88,7 +88,7 @@ public class JodConverterLocalProperties {
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
    * if the waiting time is longer than this timeout.
    */
-  private long taskQueueTimeout = 30000L;
+  private long taskQueueTimeout = 30_000L;
 
   /**
    * Class name for explicit office process manager. Type of the provided process manager. The class

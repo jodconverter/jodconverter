@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.sun.star.lib.uno.helper.UnoUrl;
 import org.junit.jupiter.api.Test;
 
+/** Contains tests for the {@link OfficeUrl} class. */
 public class OfficeUrlTest {
 
   @Test

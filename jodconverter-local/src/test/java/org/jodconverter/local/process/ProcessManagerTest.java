@@ -32,6 +32,7 @@ import org.powermock.reflect.Whitebox;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
+/** Contains tests for the {@link ProcessManager} classes */
 public class ProcessManagerTest {
 
   private static void sleep(final long millisec) {

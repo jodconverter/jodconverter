@@ -36,7 +36,7 @@ public class SslConfig {
   private String trustStoreType;
   private String trustStoreProvider;
   private String protocol = "TLS";
-  private boolean trustAll = false;
+  private boolean trustAll;
   private boolean verifyHostname = true;
 
   /**

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public final class ResetExitExceptionExtension implements BeforeEachCallback {
 
   @Override
-  public void beforeEach(ExtensionContext context) {
+  public void beforeEach(final ExtensionContext context) {
 
     ExitException.INSTANCE.reset();
   }

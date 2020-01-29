@@ -23,11 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Contains tests for the {@link UnmodifiableFilterChain} class.
- *
- * @see UnmodifiableFilterChain
- */
+/** Contains tests for the {@link UnmodifiableFilterChain} class. */
 public class UnmodifiableFilterChainTest {
 
   /** Tests that a UnmodifiableFilterChain.addFilter throws an exception after creation. */

@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+/** Contains tests for the {@link OfficeConnectionException} class. */
 public class OfficeConnectionExceptionTest {
 
   @Test

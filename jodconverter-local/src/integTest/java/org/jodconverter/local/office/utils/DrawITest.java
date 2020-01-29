@@ -34,11 +34,13 @@ import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 import org.jodconverter.local.filter.Filter;
 
+/** Contains tests for the {@link Draw} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
 public class DrawITest {
 
   @Test
-  public void isDraw_WithDrawDocument_ReturnsTrue(@TempDir File testFolder, OfficeManager manager) {
+  public void isDraw_WithDrawDocument_ReturnsTrue(
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter = (context, document, chain) -> assertThat(Draw.isDraw(document)).isTrue();
 
@@ -58,7 +60,7 @@ public class DrawITest {
 
   @Test
   public void isDraw_WithTextDocument_ReturnsFalse(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter = (context, document, chain) -> assertThat(Draw.isDraw(document)).isFalse();
 
@@ -78,7 +80,7 @@ public class DrawITest {
 
   @Test
   public void isImpress_WithImpressDocument_ReturnsTrue(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
         (context, document, chain) -> assertThat(Draw.isImpress(document)).isTrue();
@@ -99,7 +101,7 @@ public class DrawITest {
 
   @Test
   public void isImpress_WithTextDocument_ReturnsFalse(
-      @TempDir File testFolder, OfficeManager manager) {
+      final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
         (context, document, chain) -> assertThat(Draw.isImpress(document)).isFalse();
