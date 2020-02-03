@@ -17,29 +17,28 @@
  * limitations under the License.
  */
 
-package org.jodconverter.core.job;
+package org.jodconverter.local.process;
 
-import java.io.File;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.commons.lang3.Validate;
+import org.junit.jupiter.api.Test;
 
-/** Source document specifications for from a file. */
-public class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs
-    implements SourceDocumentSpecs {
+/** Contains tests for the {@link ProcessManager} classes */
+public class ProcessQueryTest {
 
-  /**
-   * Creates specs from the specified file.
-   *
-   * @param file The source file.
-   */
-  public SourceDocumentSpecsFromFile(final File file) {
-    super(file);
+  @Test
+  public void customProcessManagerNotFound() {
 
-    Validate.isTrue(file.exists(), "File not found: %s", file);
-  }
-
-  @Override
-  public void onConsumed(final File file) {
-    // Nothing to do here
+    final ProcessQuery query = new ProcessQuery("toto", "tata");
+    assertThat(query.toString())
+        .isEqualTo(
+            "ProcessQuery{"
+                + "command='"
+                + query.getCommand()
+                + '\''
+                + ", argument='"
+                + query.getArgument()
+                + '\''
+                + '}');
   }
 }

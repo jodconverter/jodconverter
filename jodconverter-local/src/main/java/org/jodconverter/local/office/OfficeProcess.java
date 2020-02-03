@@ -186,7 +186,7 @@ class OfficeProcess {
       try {
         process.waitFor();
         handler.stop();
-      } catch (InterruptedException ex) {
+      } catch (InterruptedException ignored) {
         // Ignore
       }
       descriptor = OfficeDescriptor.fromHelpOutput(handler.getOutputPumper().getLines());

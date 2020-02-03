@@ -12,4 +12,6 @@ dependencies {
     implementation Deps.springContext
 
     testImplementation Deps.springTest
+    testImplementation Deps.slf4jLog4j
+    testImplementation Deps.powermockMockito
 }

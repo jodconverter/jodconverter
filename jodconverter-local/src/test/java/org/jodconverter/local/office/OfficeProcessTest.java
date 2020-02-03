@@ -76,6 +76,36 @@ public class OfficeProcessTest {
   }
 
   @Test
+  public void checkForExistingProcess_WhenIoExceptionCatched_TrowsOfficeException() {
+
+    final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
+    config.setProcessManager(
+        new ProcessManager() {
+          @Override
+          public void kill(final Process process, final long pid) throws IOException {
+            throw new IOException();
+          }
+
+          @Override
+          public long findPid(final ProcessQuery query) throws IOException {
+            throw new IOException();
+          }
+        });
+    final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
+
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(
+            () ->
+                Whitebox.invokeMethod(
+                    process,
+                    "checkForExistingProcess",
+                    new ProcessQuery("command", "acceptString")))
+        .withMessage(
+            "Unable to check if there is already an existing process with --accept 'acceptString'")
+        .withCauseExactlyInstanceOf(IOException.class);
+  }
+
+  @Test
   public void deleteProfileDir_WhenCannotBeDeletedButCanBeRenamed_DirectoryIRenamed()
       throws Exception {
 
@@ -154,6 +184,15 @@ public class OfficeProcessTest {
               process.forciblyTerminate(0L, 0L);
             })
         .withCauseExactlyInstanceOf(IOException.class);
+  }
+
+  @Test
+  public void forciblyTerminate_WhenNotStarted_ShouldReturn0()
+      throws RetryTimeoutException, OfficeException {
+
+    final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
+    final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
+    assertThat(process.forciblyTerminate(0L, 0L)).isEqualTo(0);
   }
 
   @Test

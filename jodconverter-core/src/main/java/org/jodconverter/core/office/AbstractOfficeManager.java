@@ -93,7 +93,7 @@ public abstract class AbstractOfficeManager implements OfficeManager, TemporaryF
       try {
         FileUtils.deleteDirectory(tempDir);
       } catch (IOException ioEx) {
-        LOGGER.error("Could not temporary profileDir: {}", ioEx.getMessage());
+        LOGGER.error("Could not delete temporary profileDir: {}", ioEx.getMessage());
       }
     }
   }

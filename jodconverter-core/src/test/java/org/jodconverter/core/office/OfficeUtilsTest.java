@@ -22,6 +22,7 @@ package org.jodconverter.core.office;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.test.util.AssertUtil;
@@ -42,5 +43,12 @@ public class OfficeUtilsTest {
     doThrow(OfficeException.class).when(officeManager).stop();
 
     OfficeUtils.stopQuietly(officeManager);
+  }
+
+  /** Tests that null is allowed and ignored by the stopQuietly function. */
+  @Test
+  public void stopQuietly_WithNull_DoNothing() {
+
+    Assertions.assertThatCode(() -> OfficeUtils.stopQuietly(null)).doesNotThrowAnyException();
   }
 }

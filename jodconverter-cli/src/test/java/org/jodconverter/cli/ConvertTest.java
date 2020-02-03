@@ -223,6 +223,7 @@ public class ConvertTest {
                   "-sOverwrite=true",
                   "-sFDPageRange=2-4",
                   "-sFDIntProp=5",
+                  "-sFD=NotFilterData",
                   "output1.pdf",
                   "input2.txt"
                 });
@@ -238,7 +239,26 @@ public class ConvertTest {
     expectedFilterData.put("IntProp", 5);
     final Map<String, Object> expectedStoreProperties = new HashMap<>();
     expectedStoreProperties.put("Overwrite", true);
+    expectedStoreProperties.put("FD", "NotFilterData");
     expectedStoreProperties.put("FilterData", expectedFilterData);
     assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
+  }
+
+  @Test
+  public void createCliConverter_WithBadLoadProperties_BadLoadPropertiesIgnored() throws Exception {
+
+    final CommandLine commandLine =
+        new DefaultParser()
+            .parse(
+                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                new String[] {"-lPassword", "output1.pdf", "input2.txt"});
+
+    final CliConverter cliConverter =
+        Whitebox.invokeMethod(
+            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+    final LocalConverter localConverter =
+        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
+
+    assertThat(localConverter).extracting("loadProperties").isEqualTo(null);
   }
 }

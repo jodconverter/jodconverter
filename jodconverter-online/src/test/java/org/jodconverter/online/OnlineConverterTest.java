@@ -19,6 +19,7 @@
 
 package org.jodconverter.online;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
@@ -27,12 +28,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.job.SourceDocumentSpecs;
+import org.jodconverter.core.office.InstalledOfficeManagerHolder;
+import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.task.AbstractOfficeTask;
 
 /** Contains tests for the {@link OnlineConverter} class. */
 public class OnlineConverterTest {
@@ -46,6 +53,25 @@ public class OnlineConverterTest {
   public void setUp() {
 
     officeManager = mock(OfficeManager.class);
+  }
+
+  @Test
+  public void make_WithOfficeManagerInstalled_Success(final @TempDir File testFolder) {
+
+    final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
+    InstalledOfficeManagerHolder.setInstance(officeManager);
+
+    try {
+      assertThatCode(
+              () ->
+                  OnlineConverter.make()
+                      .convert(SOURCE_FILE)
+                      .to(new File(testFolder, "test.pdf"))
+                      .execute())
+          .doesNotThrowAnyException();
+    } finally {
+      InstalledOfficeManagerHolder.setInstance(manager);
+    }
   }
 
   @Test
@@ -96,5 +122,35 @@ public class OnlineConverterTest {
               }
             })
         .withMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
+  }
+
+  @Test
+  public void toString_AsExpected() {
+
+    final SourceDocumentSpecs source =
+        new SourceDocumentSpecs() {
+          @Override
+          public void onConsumed(File file) {}
+
+          @Override
+          public File getFile() {
+            return null;
+          }
+
+          @Override
+          public DocumentFormat getFormat() {
+            return null;
+          }
+        };
+
+    final AbstractOfficeTask obj =
+        new AbstractOfficeTask(source) {
+          @Override
+          public void execute(OfficeContext context) {
+            return;
+          }
+        };
+
+    Assertions.assertThat(obj.toString()).startsWith("{source=").endsWith("}");
   }
 }

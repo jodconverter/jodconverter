@@ -31,7 +31,7 @@ import org.jodconverter.local.process.ProcessManager;
  *
  * @see org.jodconverter.core.office.AbstractOfficeManagerPool
  */
-class OfficeProcessManagerPoolConfig extends OfficeProcessManagerPoolEntryConfig
+public class OfficeProcessManagerPoolConfig extends OfficeProcessManagerPoolEntryConfig
     implements OfficeManagerPoolConfig {
 
   private long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;

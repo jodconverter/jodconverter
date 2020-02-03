@@ -119,45 +119,6 @@ public class LocalConverter extends AbstractConverter {
     return new LocalConversionJobWithSourceFormatUnspecified(source);
   }
 
-  /**
-   * Sets, for this converter, the properties to use when we load (open) a document before a
-   * conversion, regardless the input type of the document.
-   *
-   * <p>This function should be called only by OfficeDocumentConverter for backward compatibility.
-   *
-   * @param loadProperties The default properties to apply when loading a document.
-   * @return This converter instance.
-   */
-  /* default */ LocalConverter setLoadProperties(final Map<String, Object> loadProperties) {
-
-    if (this.loadProperties == null) {
-      this.loadProperties = new HashMap<>();
-    }
-
-    this.loadProperties.clear();
-    this.loadProperties.putAll(loadProperties);
-
-    return this;
-  }
-
-  /**
-   * Sets, for this converter, the whole filter chain to apply when converting a document. A
-   * FilterChain is used to modify the document before the conversion (after it has been loaded).
-   * Filters are applied in the same order they appear in the chain.
-   *
-   * <p>This function should be called only by OfficeDocumentConverter for backward compatibility.
-   *
-   * @param filterChain The FilterChain to be applied after the document is loaded and before it is
-   *     stored (converted) in the new document format.
-   * @return This converter instance.
-   */
-  /* default */ LocalConverter setFilterChain(final FilterChain filterChain) {
-
-    this.filterChain = filterChain;
-
-    return this;
-  }
-
   /** Local implementation of a conversion job with source format unspecified. */
   private class LocalConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {

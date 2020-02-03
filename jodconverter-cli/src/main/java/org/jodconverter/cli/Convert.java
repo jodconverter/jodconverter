@@ -363,7 +363,7 @@ public final class Convert {
 
   private static Map<String, Object> toMap(final String... options) {
 
-    if (options == null || options.length == 0 || options.length % 2 != 0) {
+    if (options.length % 2 != 0) {
       return null;
     }
 
@@ -394,6 +394,9 @@ public final class Convert {
     }
 
     final Map<String, Object> argsMap = toMap(args);
+    if (argsMap == null) {
+      return null;
+    }
 
     final Map<String, Object> properties = new HashMap<>();
     final Map<String, Object> filterDataProperties = new HashMap<>();

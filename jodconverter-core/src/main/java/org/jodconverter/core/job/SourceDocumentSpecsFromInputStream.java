@@ -32,14 +32,21 @@ import org.apache.commons.lang3.Validate;
 import org.jodconverter.core.office.TemporaryFileMaker;
 
 /** Source document specifications for from an input stream. */
-class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
+public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
     implements SourceDocumentSpecs {
 
   private final InputStream inputStream;
   private final boolean closeStream;
   private final TemporaryFileMaker fileMaker;
 
-  /* default */ SourceDocumentSpecsFromInputStream(
+  /**
+   * Creates specs from the specified stream.
+   *
+   * @param inputStream The source stream.
+   * @param fileMaker Temporary file maker.
+   * @param closeStream If we close the stream on completion.
+   */
+  public SourceDocumentSpecsFromInputStream(
       final InputStream inputStream,
       final TemporaryFileMaker fileMaker,
       final boolean closeStream) {

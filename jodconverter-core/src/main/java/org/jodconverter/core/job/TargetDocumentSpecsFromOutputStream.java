@@ -30,14 +30,21 @@ import org.apache.commons.lang3.Validate;
 import org.jodconverter.core.office.TemporaryFileMaker;
 
 /** Target document specifications for from an input stream. */
-class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
+public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
     implements TargetDocumentSpecs {
 
   private final OutputStream outputStream;
   private final boolean closeStream;
   private final TemporaryFileMaker fileMaker;
 
-  /* default */ TargetDocumentSpecsFromOutputStream(
+  /**
+   * Creates specs for the specified output stream.
+   *
+   * @param outputStream The target output stream.
+   * @param fileMaker Temporary file maker.
+   * @param closeStream If we close the stream on completion.
+   */
+  public TargetDocumentSpecsFromOutputStream(
       final OutputStream outputStream,
       final TemporaryFileMaker fileMaker,
       final boolean closeStream) {

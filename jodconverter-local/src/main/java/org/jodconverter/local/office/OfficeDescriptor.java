@@ -77,7 +77,7 @@ public final class OfficeDescriptor {
   /**
    * Creates descriptor from the office installation path.
    *
-   * @param path The installaiton path.
+   * @param path The installation path.
    * @return The descriptor.
    */
   public static OfficeDescriptor fromExecutablePath(final String path) {

@@ -24,10 +24,15 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 
 /** Target document specifications for from a file. */
-class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs
+public class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs
     implements TargetDocumentSpecs {
 
-  /* default */ TargetDocumentSpecsFromFile(final File file) {
+  /**
+   * Creates specs for the specified file.
+   *
+   * @param file The target file.
+   */
+  public TargetDocumentSpecsFromFile(final File file) {
     super(file);
   }
 

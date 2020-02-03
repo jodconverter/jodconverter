@@ -19,7 +19,11 @@
 
 package org.jodconverter.local.filter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,5 +37,16 @@ public class UnmodifiableFilterChainTest {
     final UnmodifiableFilterChain chain = new UnmodifiableFilterChain(RefreshFilter.LAST_REFRESH);
     assertThatExceptionOfType(UnsupportedOperationException.class)
         .isThrownBy(() -> chain.addFilter(NoopFilter.NOOP));
+  }
+
+  @Test
+  public void copy_With2Filters_ShouldCopy2Filters() {
+
+    final List<Filter> filters = new ArrayList<>();
+    filters.add(NoopFilter.NOOP);
+    filters.add(RefreshFilter.LAST_REFRESH);
+    final UnmodifiableFilterChain chain =
+        new UnmodifiableFilterChain(NoopFilter.NOOP, RefreshFilter.LAST_REFRESH);
+    assertThat(chain.copy()).extracting("filters").isEqualTo(filters);
   }
 }

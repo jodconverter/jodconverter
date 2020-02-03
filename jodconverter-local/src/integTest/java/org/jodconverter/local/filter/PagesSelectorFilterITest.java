@@ -27,14 +27,21 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import com.sun.star.lang.XComponent;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
+import org.jodconverter.core.office.OfficeContext;
+import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
+import org.jodconverter.local.office.LocalOfficeContext;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.task.AbstractLocalOfficeTask;
 
 /** Contains tests for the {@link PagesSelectorFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
@@ -258,5 +265,50 @@ public class PagesSelectorFilterITest {
         .contains("Test document Page 1")
         .doesNotContain("Test document Page 2")
         .contains("Test document Page 3");
+  }
+
+  @Test
+  public void doFilter_WithPageOutOfRange_InexistingPagesIgnored(
+      final @TempDir File testFolder, final OfficeManager manager) throws IOException {
+
+    final File targetFile = new File(testFolder, TEXT_FILENAME + ".page2Only.txt");
+
+    // Test the filter
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(manager)
+                    .filterChain(new PagesSelectorFilter(0, 2, 4))
+                    .build()
+                    .convert(TEXT_FILE)
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
+
+    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    assertThat(content)
+        .as("Check content: %s", content)
+        .doesNotContain("Test document Page 1")
+        .contains("Test document Page 2")
+        .doesNotContain("Test document Page 3");
+  }
+
+  @Test
+  public void doFilter_WithUnsupportedDocument_DoNothing(final LocalOfficeManager manager) {
+
+    final AbstractLocalOfficeTask task =
+        new AbstractLocalOfficeTask(new SourceDocumentSpecsFromFile(documentFile("db.odb")) {}) {
+          @Override
+          public void execute(OfficeContext context) throws OfficeException {
+
+            final LocalOfficeContext localContext = (LocalOfficeContext) context;
+            final XComponent document = loadDocument(localContext, source.getFile());
+            final FilterChain chain = new DefaultFilterChain(new PagesSelectorFilter(2));
+            chain.doFilter(context, document);
+            closeDocument(document);
+          }
+        };
+
+    assertThatCode(() -> manager.execute(task)).doesNotThrowAnyException();
   }
 }

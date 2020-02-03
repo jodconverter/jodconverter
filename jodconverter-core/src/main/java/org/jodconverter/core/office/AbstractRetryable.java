@@ -88,7 +88,7 @@ public abstract class AbstractRetryable<T extends Throwable> {
   private void sleep(final long millis) {
     try {
       Thread.sleep(millis);
-    } catch (InterruptedException ignore) {
+    } catch (InterruptedException ignored) {
       // ignore
     }
   }

@@ -25,13 +25,20 @@ import static org.jodconverter.local.ResourceUtil.documentFile;
 
 import java.io.File;
 
+import com.sun.star.lang.XComponent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
+import org.jodconverter.core.office.OfficeContext;
+import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
+import org.jodconverter.local.office.LocalOfficeContext;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.task.AbstractLocalOfficeTask;
 
 /** Contains tests for the {@link PageCounterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
@@ -147,5 +154,24 @@ public class PageCounterFilterITest {
 
     assertThat(count1.getPageCount()).isEqualTo(3);
     assertThat(count2.getPageCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void doFilter_WithUnsupportedDocument_DoNothing(final LocalOfficeManager manager) {
+
+    final AbstractLocalOfficeTask task =
+        new AbstractLocalOfficeTask(new SourceDocumentSpecsFromFile(documentFile("db.odb")) {}) {
+          @Override
+          public void execute(OfficeContext context) throws OfficeException {
+
+            final LocalOfficeContext localContext = (LocalOfficeContext) context;
+            final XComponent document = loadDocument(localContext, source.getFile());
+            final FilterChain chain = new DefaultFilterChain(new PageCounterFilter());
+            chain.doFilter(context, document);
+            closeDocument(document);
+          }
+        };
+
+    assertThatCode(() -> manager.execute(task)).doesNotThrowAnyException();
   }
 }
