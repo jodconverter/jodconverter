@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
+import java.nio.charset.Charset;
 import java.util.Objects;
 
 /** Read all lines from an input stream. */
@@ -71,8 +72,10 @@ public class StreamPumper extends Thread {
 
   @Override
   public void run() {
+
     try (BufferedReader bufferedReader =
-        new BufferedReader(Channels.newReader(Channels.newChannel(stream), "UTF-8"))) {
+        new BufferedReader(
+            Channels.newReader(Channels.newChannel(stream), Charset.defaultCharset().name()))) {
       String line;
       while ((line = bufferedReader.readLine()) != null) {
         consumer.consume(line);
