@@ -46,9 +46,9 @@ import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.office.LocalOfficeManager;
-import org.jodconverter.online.OnlineConverter;
-import org.jodconverter.online.office.OnlineOfficeManager;
-import org.jodconverter.online.ssl.SslConfig;
+import org.jodconverter.remote.RemoteConverter;
+import org.jodconverter.remote.office.RemoteOfficeManager;
+import org.jodconverter.remote.ssl.SslConfig;
 
 /** Command line interface executable. */
 public final class Convert {
@@ -175,17 +175,17 @@ public final class Convert {
   private static OfficeManager createOfficeManager(
       final CommandLine commandLine, final AbstractApplicationContext context) {
 
-    // If the URL is present, we will use the online office manager and thus,
+    // If the URL is present, we will use the remote office manager and thus,
     // an office installation won't be required locally.
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
       final String connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
-      return OnlineOfficeManager.builder()
+      return RemoteOfficeManager.builder()
           .urlConnection(connectionUrl)
           .sslConfig(context == null ? null : context.getBean(SslConfig.class))
           .build();
     }
 
-    // Not online conversion...
+    // Not remote conversion...
 
     final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
 
@@ -423,7 +423,7 @@ public final class Convert {
 
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
       return new CliConverter(
-          OnlineConverter.builder().officeManager(officeManager).formatRegistry(registry).build());
+          RemoteConverter.builder().officeManager(officeManager).formatRegistry(registry).build());
     }
 
     final LocalConverter.Builder builder =

@@ -1,0 +1,22 @@
+import org.jodconverter.Deps
+
+ext.moduleName = 'JODConverter Remote'
+description = 'Module required in order to process remote conversions (LibreOffice Remote) for the Java OpenDocument Converter (JODConverter) project.'
+
+dependencies {
+    api project(":jodconverter-core")
+
+    implementation Deps.slf4jApi
+    implementation Deps.commonsIo
+    implementation Deps.commonsLang
+
+    implementation Deps.httpcomponentsHttpcore
+    implementation Deps.httpcomponentsHttpclient
+    implementation Deps.httpcomponentsHttpmime
+    implementation Deps.httpcomponentsFluenthc
+
+    testImplementation Deps.slf4jLog4j
+    testImplementation Deps.powermockMockito
+    testImplementation Deps.wiremock
+    testImplementation project(path: ":jodconverter-core", configuration: "tests")
+}

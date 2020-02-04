@@ -4,7 +4,7 @@ This is a sample application of a rest api that uses the spring boot integration
 would support the customization of custom (known) load/store properties.
 
 Hint: The exposed REST-API interface imitates the LibreOffice-Online REST interface (/lool), you could think of this example as an LibreOffice-Online server.
-This being a LibreOffice-Online server, you can talk to the REST api using jodconverter-online (LO online client). (`-c parameter`)
+This being a LibreOffice-Online server, you can talk to the REST api using jodconverter-remote (LO online client). (`-c parameter`)
 
 ### Update
 

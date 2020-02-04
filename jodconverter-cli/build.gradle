@@ -5,7 +5,7 @@ description = 'Client command line tool module of the Java OpenDocument Converte
 
 dependencies {
     implementation project(":jodconverter-local")
-    implementation project(":jodconverter-online")
+    implementation project(":jodconverter-remote")
 
     implementation Deps.commonsCli
     implementation Deps.commonsIo

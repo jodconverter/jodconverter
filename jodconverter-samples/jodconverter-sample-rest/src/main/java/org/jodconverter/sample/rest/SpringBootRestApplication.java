@@ -65,7 +65,7 @@ public class SpringBootRestApplication {
     private ApiInfo apiInfo() {
       return new ApiInfo(
           "JODConverter REST API",
-          "JODConverter REST API for Online conversion. JODConverter automates conversions between office document formats using LibreOffice or Apache OpenOffice.",
+          "JODConverter REST API for Remote conversion. JODConverter automates conversions between office document formats using LibreOffice or Apache OpenOffice.",
           "0.1",
           "Terms of service",
           new Contact("John Doe", "www.jodconverter.org", "johndoe@company.com"),

@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     
 	<!-- Configure the SSL to secure communication with a Libre Office Online server. -->
-	<bean class="org.jodconverter.online.ssl.SslConfig">
+	<bean class="org.jodconverter.remote.ssl.SslConfig">
         <property name="enabled" value="true" />
         
         <!-- Available properties

@@ -224,6 +224,8 @@ public class ConvertITest {
                       "30000",
                       "-p",
                       "2002",
+                      "-u",
+                      new File("src/integTest/resources/templateProfileDir").getPath(),
                       "input1.txt",
                       "output1.pdf"
                     }))

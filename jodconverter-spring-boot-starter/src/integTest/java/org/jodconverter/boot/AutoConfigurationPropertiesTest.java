@@ -29,13 +29,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.boot.autoconfigure.JodConverterLocalProperties;
-import org.jodconverter.boot.autoconfigure.JodConverterOnlineProperties;
+import org.jodconverter.boot.autoconfigure.JodConverterRemoteProperties;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.office.LocalOfficeManager;
-import org.jodconverter.online.office.OnlineOfficeManager;
+import org.jodconverter.remote.office.RemoteOfficeManager;
 
 /**
- * Test both the {@link JodConverterLocalProperties} and {@link JodConverterOnlineProperties}
+ * Test both the {@link JodConverterLocalProperties} and {@link JodConverterRemoteProperties}
  * classes.
  */
 @SpringBootTest
@@ -43,7 +43,7 @@ import org.jodconverter.online.office.OnlineOfficeManager;
 public class AutoConfigurationPropertiesTest {
 
   @Autowired private JodConverterLocalProperties localProps;
-  @Autowired private JodConverterOnlineProperties onlineProps;
+  @Autowired private JodConverterRemoteProperties remoteProps;
 
   // Provided valid OfficeManager beans so we will be able to test the Autowired properties.
   @TestConfiguration
@@ -55,8 +55,8 @@ public class AutoConfigurationPropertiesTest {
     }
 
     @Bean
-    /* default */ OfficeManager onlineOfficeManager() {
-      return OnlineOfficeManager.make("some url");
+    /* default */ OfficeManager remoteOfficeManager() {
+      return RemoteOfficeManager.make("some url");
     }
   }
 
@@ -93,9 +93,9 @@ public class AutoConfigurationPropertiesTest {
   }
 
   @Test
-  public void testOnlineProperties() {
+  public void testRemoteProperties() {
 
-    assertThat(onlineProps)
+    assertThat(remoteProps)
         .extracting(
             "enabled",
             "url",

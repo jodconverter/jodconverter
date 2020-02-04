@@ -55,7 +55,7 @@ import org.jodconverter.local.LocalConverter;
 
 /**
  * Controller that will process conversion requests. The mapping is the same as LibreOffice Online
- * (/lool/convert-to) so we can use the jodconverter-online module to send request to this
+ * (/lool/convert-to) so we can use the jodconverter-remote module to send request to this
  * controller. This controller does the same as LibreOffice Online, and also support custom
  * conversions through filters and custom load/store properties.
  */

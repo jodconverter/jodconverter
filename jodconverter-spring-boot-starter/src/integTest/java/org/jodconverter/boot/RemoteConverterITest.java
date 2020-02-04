@@ -25,72 +25,67 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Resource;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.remote.RemoteConverter;
 
-/** Tests that an application can use both an remote converter and a local converter. */
+/** Contains tests for the {@link RemoteConverter} class. */
 @SpringBootTest
-@TestPropertySource(locations = "classpath:config/application-all.properties")
-public class AllConverterITest {
+@TestPropertySource(locations = "classpath:config/application-remote.properties")
+public class RemoteConverterITest {
 
   private static final String RESOURCES_PATH = "src/integTest/resources/";
   private static final String SOURCE_FILE_PATH = RESOURCES_PATH + "documents/test1.doc";
 
-  @Resource(name = "localDocumentConverter")
-  private DocumentConverter localConverter;
+  private static final String SERVER_KEYSTORE_PATH = RESOURCES_PATH + "serverkeystore.jks";
+  private static final String SERVER_KEYSTORE_PWD = "serverkeystore";
 
-  @Resource(name = "remoteDocumentConverter")
-  private DocumentConverter remoteConverter;
+  private static final String SERVER_TRUSTSTORE_PATH = RESOURCES_PATH + "servertruststore.jks";
+  private static final String SERVER_TRUSTSTORE_PWD = "servertruststore";
 
-  @Test
-  public void execute_UsingLocalConverter_TargetShouldContaingExpectedResult(
-      final @TempDir File testFolder) throws Exception {
-
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "local_out.txt");
-
-    final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
-    wireMockServer.start();
-    try {
-      localConverter.convert(inputFile).to(outputFile).execute();
-
-      // Check that the output file was created with the expected content.
-      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-      assertThat(content).as("Check content: %s", content).contains("Test document");
-    } finally {
-      wireMockServer.stop();
-    }
-  }
+  @Autowired private DocumentConverter converter;
 
   @Test
-  public void execute_UsingRemoteConverter_TargetShouldContaingExpectedResult(
-      final @TempDir File testFolder) throws Exception {
+  public void execute_FromFileToFileReturning200OK_TargetShouldContaingExpectedResult(
+      final @TempDir File testFolder) throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "remote_out.txt");
+    final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+    final WireMockServer wireMockServer =
+        new WireMockServer(
+            wireMockConfig()
+                .port(8000)
+                .httpsPort(8001)
+                .keystorePath(SERVER_KEYSTORE_PATH)
+                .keystorePassword(SERVER_KEYSTORE_PWD)
+                .trustStorePath(SERVER_TRUSTSTORE_PATH)
+                .trustStorePassword(SERVER_TRUSTSTORE_PWD)
+                .needClientAuth(true));
     wireMockServer.start();
     try {
+
       wireMockServer.stubFor(
           post(urlPathEqualTo("/lool/convert-to/txt"))
               .willReturn(aResponse().withStatus(200).withBody("Test document")));
 
       // Try to converter the input document
-      remoteConverter.convert(inputFile).to(outputFile).execute();
+      converter.convert(inputFile).to(outputFile).execute();
 
       // Check that the output file was created with the expected content.
       final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
