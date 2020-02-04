@@ -90,4 +90,17 @@ public class ExternalOfficeManagerTest {
     final OfficeUrl officeUrl = Whitebox.getInternalState(connection, "officeUrl");
     assertThat(officeUrl.getConnectionAndParametersAsString()).isEqualTo("pipe,name=test");
   }
+
+  @Test
+  public void config_WithCustomValues_ShouldInitializedConfigWithCustomValues() {
+
+    final ExternalOfficeManagerConfig config =
+        new ExternalOfficeManagerConfig(null, true, 5_000L, 1_000L);
+    config.setWorkingDir(new File(System.getProperty("java.io.tmpdir")));
+    assertThat(config.getWorkingDir().getPath())
+        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
+    assertThat(config.isConnectOnStart()).isTrue();
+    assertThat(config.getConnectTimeout()).isEqualTo(5_000L);
+    assertThat(config.getRetryInterval()).isEqualTo(1_000L);
+  }
 }

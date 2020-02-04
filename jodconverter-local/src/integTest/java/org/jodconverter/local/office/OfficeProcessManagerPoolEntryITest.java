@@ -50,7 +50,7 @@ public class OfficeProcessManagerPoolEntryITest {
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long RESTART_INITIAL_WAIT = 5_000L; // 5 Seconds.
-  private static final long RESTART_WAIT_TIMEOUT = 10_000L; // 10 Seconds.
+  private static final long RESTART_WAIT_TIMEOUT = 15_000L; // 10 Seconds.
 
   private static void sleep(final long millisec) {
     try {
@@ -85,11 +85,11 @@ public class OfficeProcessManagerPoolEntryITest {
     // Starts an office process
     final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
     officeProcess.start();
-    sleep(2000L);
+    sleep(2_000L);
     final Integer exitCode = officeProcess.getExitCode();
     if (exitCode != null && exitCode.equals(81)) {
       officeProcess.start(true);
-      sleep(2000L);
+      sleep(2_000L);
     }
     return officeProcess;
   }
@@ -113,7 +113,7 @@ public class OfficeProcessManagerPoolEntryITest {
       }
 
       // Wait a sec
-      sleep(1000L);
+      sleep(1_000L);
     }
 
     // Times out...
@@ -250,7 +250,7 @@ public class OfficeProcessManagerPoolEntryITest {
       throws OfficeException, RetryTimeoutException {
 
     final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
-    config.setTaskExecutionTimeout(1500L);
+    config.setTaskExecutionTimeout(1_500L);
     final OfficeProcessManagerPoolEntry manager =
         new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
 
@@ -262,18 +262,13 @@ public class OfficeProcessManagerPoolEntryITest {
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(true, true);
 
-      final MockOfficeTask task = new MockOfficeTask(2000);
+      final MockOfficeTask task = new MockOfficeTask(2_000L);
 
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> manager.execute(task))
           .withCauseExactlyInstanceOf(TimeoutException.class);
 
       assertRestartedAndReconnected(manager, RESTART_INITIAL_WAIT, RESTART_WAIT_TIMEOUT);
-
-      assertThat(manager)
-          .extracting(
-              "officeProcessManager.process.running", "officeProcessManager.connection.connected")
-          .containsExactly(true, true);
 
       final MockOfficeTask goodTask = new MockOfficeTask();
       manager.execute(goodTask);
@@ -361,7 +356,7 @@ public class OfficeProcessManagerPoolEntryITest {
           .containsExactly(false, false);
       assertThat(getOfficeProcess(manager).getExitCode(0, 0)).isEqualTo(0);
 
-      process.forciblyTerminate(1000L, 5000L);
+      process.forciblyTerminate(1_000L, 5_000L);
       process.deleteInstanceProfileDir();
     }
   }
@@ -391,7 +386,7 @@ public class OfficeProcessManagerPoolEntryITest {
               "officeProcessManager.process.running", "officeProcessManager.connection.connected")
           .containsExactly(false, false);
 
-      process.forciblyTerminate(1000L, 5000L);
+      process.forciblyTerminate(1_000L, 5_000L);
       process.deleteInstanceProfileDir();
     }
   }

@@ -104,4 +104,36 @@ public class TextInserterFilterITest {
                     .execute())
         .doesNotThrowAnyException();
   }
+
+  /**
+   * Test the conversion of a document which is not a TEXT document. We can't really test the
+   * result, but at least we will test the the conversion doesn't fail (filter does nothing).
+   */
+  @Test
+  public void doFilter_WithBadDocumentType_DoNothing(
+      final @TempDir File testFolder, final OfficeManager manager) {
+
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".badtype.pdf");
+
+    // Create the TextInserterFilter to test.
+    final TextInserterFilter filter =
+        new TextInserterFilter(
+            "This is a test of text insertion",
+            100, // Width, 10 CM
+            20, // Height, 2 CM
+            50, // Horizontal Position, 5 CM
+            100); // Vertical Position , 10 CM
+
+    // Test the filter
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(manager)
+                    .filterChain(filter)
+                    .build()
+                    .convert(documentFile("test.xls"))
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
+  }
 }

@@ -112,7 +112,7 @@ public class TextReplacerFilterITest {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".txt");
 
-    // Create the GraphicInserterFilter to test.
+    // Create the TextReplacerFilter to test.
     final TextReplacerFilter filter =
         new TextReplacerFilter(
             new String[] {"SEARCH_WORD", "that", "have", "new common language will be more simple"},
@@ -146,5 +146,39 @@ public class TextReplacerFilterITest {
         .doesNotContain("have")
         .contains("most recent common language will be more basic")
         .doesNotContain("new common language will be more simple");
+  }
+
+  /**
+   * Test the conversion of a document which is not a TEXT document. We can't really test the
+   * result, but at least we will test the the conversion doesn't fail (filter does nothing).
+   */
+  @Test
+  public void doFilter_WithBadDocumentType_DoNothing(
+      final @TempDir File testFolder, final OfficeManager manager) {
+
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".badtype.pdf");
+
+    // Create the TextReplacerFilter to test.
+    final TextReplacerFilter filter =
+        new TextReplacerFilter(
+            new String[] {"SEARCH_WORD", "that", "have", "new common language will be more simple"},
+            new String[] {
+              "REPLACEMENT_STRING",
+              "REPLACEMENT_THAT",
+              "REPLACEMENT_HAVE",
+              "most recent common language will be more basic"
+            });
+
+    // Test the filter
+    assertThatCode(
+            () ->
+                LocalConverter.builder()
+                    .officeManager(manager)
+                    .filterChain(filter)
+                    .build()
+                    .convert(documentFile("test.xls"))
+                    .to(targetFile)
+                    .execute())
+        .doesNotThrowAnyException();
   }
 }

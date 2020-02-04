@@ -180,4 +180,45 @@ public class GraphicInserterFilterITest {
             })
         .doesNotThrowAnyException();
   }
+
+  /**
+   * Test the conversion of a document which is not a TEXT document. We can't really test the
+   * result, but at least we will test the the conversion doesn't fail (filter does nothing).
+   */
+  @Test
+  public void doFilter_WithBadDocumentType_DoNothing(
+      final @TempDir File testFolder, final OfficeManager manager) {
+
+    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".badtype.pdf");
+
+    // Create the properties of the filter
+    final Map<String, Object> props =
+        GraphicInserterFilter.createDefaultShapeProperties(
+            50, // Horizontal Position, 5 CM
+            100 // Vertical Position, 10 CM
+            );
+
+    // Add a special property to add the image on the second page
+    props.put("AnchorPageNo", (short) 2);
+
+    // Test the filter
+    assertThatCode(
+            () -> {
+              // Create the GraphicInserterFilter to test.
+              final GraphicInserterFilter filter =
+                  new GraphicInserterFilter(
+                      IMAGE_FILE.getPath(),
+                      74, // Image Width // 7.4 CM (half the original size)
+                      56, // Image Height // 5.6 CM (half the original size)
+                      props);
+              LocalConverter.builder()
+                  .officeManager(manager)
+                  .filterChain(filter)
+                  .build()
+                  .convert(documentFile("test.xls"))
+                  .to(targetFile)
+                  .execute();
+            })
+        .doesNotThrowAnyException();
+  }
 }
