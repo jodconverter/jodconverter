@@ -54,7 +54,11 @@ public class SpringControllerITest {
     // this bean will be injected into the SpringControllerTest class
     @Bean
     /* default */ JodConverterBean springJodConverter() {
-      return new JodConverterBean();
+
+      final JodConverterBean bean = new JodConverterBean();
+      bean.setPortNumbers("2005");
+
+      return bean;
     }
   }
 

@@ -83,10 +83,10 @@ public class JodConverterBeanITest {
 
     final JodConverterBean bean = new JodConverterBean();
     bean.setOfficeHome(LocalOfficeUtils.getDefaultOfficeHome().getAbsolutePath());
-    bean.setPortNumbers("2002");
+    bean.setPortNumbers("2003");
     bean.setWorkingDir(System.getProperty("java.io.tmpdir"));
     bean.setTemplateProfileDir("src/integTest/resources/templateProfileDir");
-    bean.setKillExistingProcess(true);
+    bean.setKillExistingProcess(false);
     bean.setProcessTimeout(40_000L);
     bean.setProcessRetryInterval(1_000L);
     bean.setTaskExecutionTimeout(20_000L);
@@ -111,7 +111,7 @@ public class JodConverterBeanITest {
         softly
             .assertThat(config.getProcessManager())
             .isEqualTo(LocalOfficeUtils.findBestProcessManager());
-        softly.assertThat(config.isKillExistingProcess()).isTrue();
+        softly.assertThat(config.isKillExistingProcess()).isFalse();
         softly.assertThat(config.getProcessTimeout()).isEqualTo(40_000L);
         softly.assertThat(config.getProcessRetryInterval()).isEqualTo(1_000L);
         softly.assertThat(config.getMaxTasksPerProcess()).isEqualTo(10);
