@@ -23,7 +23,6 @@ import java.io.File;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.office.OfficeContext;
@@ -37,12 +36,13 @@ public class AbstractRemoteOfficeTaskTest {
   public void toString_AsExpected() {
 
     final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
-    final AbstractRemoteOfficeTask obj = new AbstractRemoteOfficeTask(source) {
-      @Override
-      public void execute(OfficeContext context){
-        // Nothing...
-      }
-    };
+    final AbstractRemoteOfficeTask obj =
+        new AbstractRemoteOfficeTask(source) {
+          @Override
+          public void execute(OfficeContext context) {
+            // Nothing...
+          }
+        };
     Assertions.assertThat(obj.toString()).contains("test.txt");
   }
 }

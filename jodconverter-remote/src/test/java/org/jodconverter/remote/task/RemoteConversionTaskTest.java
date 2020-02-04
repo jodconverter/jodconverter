@@ -27,9 +27,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.job.TargetDocumentSpecsFromFile;
-import org.jodconverter.remote.task.RemoteConversionTask;
 
-/** Contains tests for the {@link RemoteConversionTask} class. */
+/** Contains tests for the {@link org.jodconverter.remote.task.RemoteConversionTask} class. */
 public class RemoteConversionTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
