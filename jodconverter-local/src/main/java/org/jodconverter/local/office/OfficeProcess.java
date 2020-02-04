@@ -46,7 +46,7 @@ class OfficeProcess {
 
   // TODO: Make process constants configurable
   private static final long START_PROCESS_RETRY = 500L;
-  private static final long START_PROCESS_TIMEOUT = 5000L;
+  private static final long START_PROCESS_TIMEOUT = 10_000L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcess.class);
 
