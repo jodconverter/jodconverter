@@ -21,6 +21,8 @@
  * This package contains classes related to the modification of a document after it has been loaded
  * by JODConverter. If provided, a conversion task can apply a {@link
  * org.jodconverter.local.filter.FilterChain} on a loaded document. Each filter in the chain may
- * modify the document being converted.
+ * modify the document being converted. It also provides various {@link
+ * org.jodconverter.local.filter.Filter} implementations that can be used while converting a
+ * document regardless the document family.
  */
 package org.jodconverter.local.filter;

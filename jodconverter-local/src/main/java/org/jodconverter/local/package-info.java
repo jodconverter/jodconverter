@@ -18,7 +18,9 @@
  */
 
 /**
- * This package provides the main converter of the JodConverter local module and a useful static
- * converter for one-liner conversion tasks.
+ * This package provides the {@link org.jodconverter.core.DocumentConverter} implementation of the
+ * JODConverter local module, which is the {@link org.jodconverter.local.LocalConverter} class. It
+ * also provides a useful {@link org.jodconverter.local.JodConverter} utility class for one-liner
+ * conversion tasks.
  */
 package org.jodconverter.local;

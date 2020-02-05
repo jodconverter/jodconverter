@@ -18,7 +18,7 @@
  */
 
 /**
- * This package contains the interfaces/classes related to the management of the office processes
- * launched by JODConverter. Most classes are for internal usage.
+ * This package contains the interfaces/classes related to the use of a pool of separate office
+ * managers launched by JODConverter. Most classes are for implementations usage.
  */
 package org.jodconverter.core.office;

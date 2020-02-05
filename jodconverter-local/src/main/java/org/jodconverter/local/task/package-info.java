@@ -17,7 +17,5 @@
  * limitations under the License.
  */
 
-/**
- * This package contains the interfaces/classes related to the tasks an office process can execute.
- */
+/** This package contains the classes related to local conversion tasks. */
 package org.jodconverter.local.task;

@@ -19,7 +19,7 @@
 
 /**
  * This package contains the interfaces/classes used by the {@link
- * org.jodconverter.core.DocumentConverter} converter implementation that offers a fluent API to
- * execute document conversions.
+ * org.jodconverter.core.DocumentConverter} implementations that offers a fluent API to execute
+ * document conversions. A source document can either be contained in a file or a stream.
  */
 package org.jodconverter.core.job;

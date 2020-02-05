@@ -13,12 +13,9 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * See the License for the specific language governing permissionsnd
  * limitations under the License.
  */
 
-/**
- * This package contains the {@link org.jodconverter.core.DocumentConverter} interface offering a
- * fluent API to execute document conversions.
- */
-package org.jodconverter.core;
+/** Auto-configuration for JODConverter concerns. */
+package org.jodconverter.boot.autoconfigure;

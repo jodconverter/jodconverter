@@ -18,7 +18,6 @@
  */
 
 /**
- * This package contains the {@link org.jodconverter.core.DocumentConverter} interface offering a
- * fluent API to execute document conversions.
+ * This package contains helper classes that can ne used to interact with a running office instance.
  */
-package org.jodconverter.core;
+package org.jodconverter.local.office.utils;

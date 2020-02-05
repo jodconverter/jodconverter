@@ -18,7 +18,7 @@
  */
 
 /**
- * This package provides the classes that can be used to convert a document from a specific format
- * to another format. A source document can either be contained in a file or a stream.
+ * This package provides the base interfaces/classes a conversion task must implement in order to be
+ * executed by an {@link org.jodconverter.core.office.OfficeManager}.
  */
 package org.jodconverter.core.task;

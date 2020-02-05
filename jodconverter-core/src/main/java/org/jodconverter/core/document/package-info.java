@@ -18,9 +18,10 @@
  */
 
 /**
- * This package contains the {@link org.jodconverter.core.document.DocumentFormat} class that
- * contains the information required by JODConverter to convert from/to specific document formats.
- * The package also provides a default {@link org.jodconverter.core.document.DocumentFormatRegistry}
- * registry containing all the formats supported by JODConverter out of the box.
+ * This package contains the interfaces/classes used by {@link
+ * org.jodconverter.core.DocumentConverter} implementations to convert from/to specific document
+ * formats. The package also provides a default {@link
+ * org.jodconverter.core.document.DocumentFormatRegistry} registry containing all the formats
+ * supported by JODConverter out of the box.
  */
 package org.jodconverter.core.document;

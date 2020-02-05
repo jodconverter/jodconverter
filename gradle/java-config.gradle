@@ -13,9 +13,6 @@ apply plugin: 'nebula.facet'
 apply plugin: 'jacoco'
 apply plugin: 'com.diffplug.gradle.spotless'
 
-//println("sourceEncoding $sourceEncoding")
-//println("baselineJavaVersion $baselineJavaVersion")
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Integration tests SourceSet configuration
 
@@ -59,7 +56,6 @@ tasks.withType(JavaCompile) {
     options.incremental = true
     options.fork = true
     //options.debug = true
-    //options.fork = true
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -129,7 +125,7 @@ test {
     failFast = true
 
     // Uncomment when we want to see the logs while testing
-    testLogging.showStandardStreams = true
+    //testLogging.showStandardStreams = true
 }
 
 integTest {
@@ -139,7 +135,7 @@ integTest {
     failFast = true
 
     // Uncomment when we want to see the logs while testing
-    testLogging.showStandardStreams = true
+    //testLogging.showStandardStreams = true
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -195,54 +191,70 @@ artifacts {
 }
 
 jar {
-    manifest {
-        attributes(
-                "Automatic-Module-Name" : project.name.replace("-", "."),
-                "Build-Jdk-Spec" : baselineJavaVersion,
-                "Built-By" : "jodconverter.org",
-                "Bundle-License" : "https://github.com/sbraconnier/jodconverter/wiki/LICENSE",
-                "Bundle-Vendor" : "JODConverter",
-                "Bundle-DocURL" : "https://github.com/sbraconnier/jodconverter/wiki",
-                "Implementation-Title": project.hasProperty('moduleName') ? project.moduleName : project.name,
-                "Implementation-Version": project.version,
-                "Implementation-Vendor": "JODConverter Team",
-                "Implementation-Vendor-Id": "org.jodconverter",
-                "Implementation-Url": "http://jodconverter.org",
-                "Specification-Title": project.hasProperty('moduleName') ? project.moduleName : project.name,
-                "Specification-Version": project.version,
-                "Specification-Vendor": "JODConverter Team",
-                "Provider": gradle
-        )
+    // The following options must be set here orelse the moduleName won't be define.
+    afterEvaluate {
+        manifest {
+            def moduleName = project.hasProperty('moduleName') ? project.moduleName : project.name
+            attributes(
+                    "Automatic-Module-Name": project.name.replace("-", "."),
+                    "Build-Jdk-Spec": baselineJavaVersion,
+                    "Built-By": "jodconverter.org",
+                    "Bundle-License": "https://github.com/sbraconnier/jodconverter/wiki/LICENSE",
+                    "Bundle-Vendor": "JODConverter",
+                    "Bundle-DocURL": "https://github.com/sbraconnier/jodconverter/wiki",
+                    "Implementation-Title": moduleName,
+                    "Implementation-Version": project.version,
+                    "Implementation-Vendor": "JODConverter Team",
+                    "Implementation-Vendor-Id": "org.jodconverter",
+                    "Implementation-Url": "http://jodconverter.org",
+                    "Specification-Title": moduleName,
+                    "Specification-Version": project.version,
+                    "Specification-Vendor": "JODConverter Team",
+                    "Provider": gradle
+            )
+        }
     }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Documentation
 
-tasks.withType(Javadoc) {
-    options.addBooleanOption("Xdoclint:none")
-    //options.addStringOption('Xdoclint:none', '-quiet')
-}
-
 javadoc {
-    classpath = configurations.compileClasspath + configurations.runtimeClasspath
-    source = sourceSets.main.allJava
+
+    //classpath = configurations.compileClasspath + configurations.runtimeClasspath
+    failOnError = false
+    //source = sourceSets.main.allJava
 
     options.with {
-        windowTitle "JODConverter API Documentation"
-        docTitle "$project.name $project.version API Documentation"
-        bottom = 'Copyright &#169; 2016 - present <a href="http://jodconverter.org">JODConverter Team</a>'
-        charSet "UTF-8"
-        encoding "UTF-8"
-        docEncoding "UTF-8"
+        bottom = 'Copyright &#169; 2016 - present; <a href="http://jodconverter.org">JODConverter.org</a>. All rights reserved.'
+
+        //author = false
+        //breakIterator = true
+        charSet = 'UTF-8'
+        docEncoding = 'UTF-8'
+        encoding = 'UTF-8'
         memberLevel = JavadocMemberLevel.PROTECTED
-        links "https://api.libreoffice.org/docs/java/ref"
-        if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
-            links "https://docs.oracle.com/javase/8/docs/api"
-        } else if (JavaVersion.current() == JavaVersion.VERSION_11) {
-            links "https://docs.oracle.com/en/java/javase/11/docs/api"
+        source = baselineJavaVersion
+
+        links(
+                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://api.libreoffice.org/docs/java/ref/",
+                "https://commons.apache.org/proper/commons-lang/javadocs/api-release/",
+                "https://docs.spring.io/spring-boot/docs/${Deps.springBootVersion}/api/"
+        )
+    }
+    options.addBooleanOption("Xdoclint:none")
+    //options.addStringOption('Xdoclint:none', '-quiet')
+
+
+    // The following options must be set here orelse the moduleName won't be define.
+    afterEvaluate {
+        configure(options) {
+            def moduleName = project.hasProperty('moduleName') ? project.moduleName : project.name
+
+            windowTitle = "$moduleName API Documentation"
+            docTitle = "$moduleName $project.version API Documentation"
+            header = "$moduleName $project.version API"
         }
-        links "https://docs.spring.io/spring-boot/docs/${Deps.springBootVersion}/api"
-        links "https://commons.apache.org/proper/commons-lang/javadocs/api-3.9"
     }
 }

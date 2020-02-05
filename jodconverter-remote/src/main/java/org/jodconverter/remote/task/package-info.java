@@ -17,8 +17,5 @@
  * limitations under the License.
  */
 
-/**
- * This package contains the {@link org.jodconverter.core.DocumentConverter} interface offering a
- * fluent API to execute document conversions.
- */
-package org.jodconverter.core;
+/** This package contains the classes related to remote conversion tasks. */
+package org.jodconverter.remote.task;

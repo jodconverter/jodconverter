@@ -18,7 +18,7 @@
  */
 
 /**
- * This package contains the {@link org.jodconverter.core.DocumentConverter} interface offering a
- * fluent API to execute document conversions.
+ * This package provides the {@link org.jodconverter.core.DocumentConverter} implementation of the
+ * JODConverter local module, which is the {@link org.jodconverter.remote.RemoteConverter} class.
  */
-package org.jodconverter.core;
+package org.jodconverter.remote;

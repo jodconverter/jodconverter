@@ -18,7 +18,7 @@
  */
 
 /**
- * This package contains the {@link org.jodconverter.core.DocumentConverter} interface offering a
- * fluent API to execute document conversions.
+ * This package contains the {@link org.jodconverter.remote.ssl.SslConfig} class that can be used to
+ * configure SSL for secure connection to the remote serer.
  */
-package org.jodconverter.core;
+package org.jodconverter.remote.ssl;

@@ -1,3 +1,4 @@
+import org.jodconverter.Deps
 import org.jodconverter.Plugins
 
 // External dependencies for the build script
@@ -37,14 +38,12 @@ ext {
     ext.javaProjects = subprojects.findAll {
         new File(it.projectDir, 'src/main/java').directory
     }
-    ext.javaLibraryProjects = javaProjects.findAll {
-        !it.name.contains('jodconverter-sample') &&
-        !it.name.contains('jodconverter-cli')
-    }
     ext.releasedProjects = javaProjects.findAll {
         !it.name.contains('jodconverter-sample')
     }
-    ext.publishedProjects = javaLibraryProjects.findAll { true }
+    ext.librariesProjects = releasedProjects.findAll {
+        !it.name.contains('jodconverter-cli')
+    }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,20 +63,16 @@ allprojects {
 // Configure Java projects
 configure(javaProjects) {
     //println("Configuring java for ${project.name}")
-    apply from: "${rootProject.projectDir}/gradle/java-projects.gradle"
+    apply from: "${rootProject.projectDir}/gradle/java-config.gradle"
 }
 
 // Configure Java libraries projects
-configure(javaLibraryProjects) {
+configure(librariesProjects) {
     //println("Configuring java-library for ${project.name}")
     apply plugin: 'java-library'
-}
 
-configure(publishedProjects) {
-    //println("Configuring publishing for ${project.name}")
-    apply from: "${rootProject.projectDir}/gradle/published-projects.gradle"
+    apply from: "${rootProject.projectDir}/gradle/publish-config.gradle"
 }
-
 
 // Distribution configuration
 configure(releasedProjects) {
@@ -99,8 +94,8 @@ configure(releasedProjects) {
 
 // Copy all the distributions of the subprojects to the root project
 task distZip(type: Zip) {
-    description "Create full distribution zip"
-    group "Distribution"
+    description 'Create full distribution zip'
+    group 'Distribution'
     archiveBaseName.set(project.name)
 
     //from releasedProjects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
@@ -122,6 +117,46 @@ idea {
     module {
         excludeDirs += file('.idea')
     }
+}
+
+def librariesSources = librariesProjects.sourceSets.main
+
+task javadocAll(type: Javadoc) {
+    description 'Aggregates Javadoc API documentation of all libraries.'
+    group 'Documentation'
+    dependsOn librariesProjects.build
+
+    source librariesSources.allJava
+
+    destinationDir = file("$buildDir/docs/javadoc")
+    classpath = files(librariesSources.compileClasspath)
+
+    options.with {
+        windowTitle = "JODConverter API Documentation"
+        docTitle = "JODConverter $project.version API Documentation"
+        header = "JODConverter $project.version API"
+        bottom = 'Copyright &#169; 2016 - present; <a href="http://jodconverter.org">JODConverter.org</a>. All rights reserved.'
+
+        //author = false
+        //breakIterator = true
+        charSet = 'UTF-8'
+        docEncoding = 'UTF-8'
+        encoding = 'UTF-8'
+        memberLevel = JavadocMemberLevel.PROTECTED
+        source = baselineJavaVersion
+
+        links(
+                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://api.libreoffice.org/docs/java/ref/",
+                "https://commons.apache.org/proper/commons-lang/javadocs/api-release/",
+                "https://docs.spring.io/spring-boot/docs/${Deps.springBootVersion}/api/"
+        )
+    }
+    options.addBooleanOption('Xdoclint:none')
+    //options.addStringOption('Xdoclint:none', '-quiet')
+
+    inputs.files(librariesSources.allSource + librariesSources.compileClasspath)
+    outputs.dir destinationDir
 }
 
 // Creates an aggregated JaCoCo executionData for all

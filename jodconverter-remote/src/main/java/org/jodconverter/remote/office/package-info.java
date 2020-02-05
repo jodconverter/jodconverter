@@ -18,7 +18,7 @@
  */
 
 /**
- * This package contains the {@link org.jodconverter.core.DocumentConverter} interface offering a
- * fluent API to execute document conversions.
+ * This package contains interfaces/classes related to remote office management, such as the remote
+ * connection, remote office instances pool management, etc.
  */
-package org.jodconverter.core;
+package org.jodconverter.remote.office;
