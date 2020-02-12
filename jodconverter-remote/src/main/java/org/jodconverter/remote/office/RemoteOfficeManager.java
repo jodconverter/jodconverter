@@ -20,12 +20,15 @@
 package org.jodconverter.remote.office;
 
 import java.io.File;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.AbstractOfficeManagerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.remote.ssl.SslConfig;
 
 /**
@@ -33,10 +36,6 @@ import org.jodconverter.remote.ssl.SslConfig;
  * office installation to process conversion taks.
  */
 public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
-
-  private final int poolSize;
-  private final String urlConnection;
-  private final SslConfig sslConfig;
 
   /**
    * Creates a new builder instance.
@@ -72,26 +71,27 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
   }
 
   private RemoteOfficeManager(
-      final int poolSize,
+      final File workingDir,
       final String urlConnection,
-      final SslConfig sslConfig,
-      final RemoteOfficeManagerPoolConfig config) {
-    super(poolSize, config);
+      @Nullable final Integer poolSize,
+      @Nullable final SslConfig sslConfig,
+      @Nullable final Long connectTimeout,
+      @Nullable final Long socketTimeout,
+      @Nullable final Long taskExecutionTimeout,
+      @Nullable final Long taskQueueTimeout) {
+    super(workingDir, poolSize, taskQueueTimeout);
 
-    this.poolSize = poolSize;
-    this.urlConnection = urlConnection;
-    this.sslConfig = sslConfig;
-  }
-
-  @Override
-  protected RemoteOfficeManagerPoolEntry[] createPoolEntries() {
-
-    return IntStream.range(0, poolSize)
-        .mapToObj(
-            idx ->
-                new RemoteOfficeManagerPoolEntry(
-                    urlConnection, sslConfig, (RemoteOfficeManagerPoolEntryConfig) config))
-        .toArray(RemoteOfficeManagerPoolEntry[]::new);
+    setEntries(
+        IntStream.range(0, poolSize == null ? DEFAULT_POOL_SIZE : poolSize)
+            .mapToObj(
+                i ->
+                    new RemoteOfficeManagerPoolEntry(
+                        urlConnection,
+                        sslConfig,
+                        connectTimeout,
+                        socketTimeout,
+                        taskExecutionTimeout))
+            .collect(Collectors.toList()));
   }
 
   /**
@@ -101,17 +101,16 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
    */
   public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
 
-    /** The default size of the pool. */
-    public static final int DEFAULT_POOL_SIZE = 1;
+    // The maximum size of the pool.
+    private static final int MAX_POOL_SIZE = 1000;
 
-    /** The maximum size of the pool. */
-    public static final int MAX_POOL_SIZE = 1000;
-
-    private int poolSize = DEFAULT_POOL_SIZE;
+    private Integer poolSize;
     private String urlConnection;
     private SslConfig sslConfig;
+    private Long connectTimeout;
+    private Long socketTimeout;
 
-    // Private ctor so only RemoteOfficeManager can initialize an instance of this builder.
+    // Private constructor so only RemoteOfficeManager can initialize an instance of this builder.
     private Builder() {
       super();
     }
@@ -119,18 +118,23 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
     @Override
     public RemoteOfficeManager build() {
 
-      Validate.notEmpty(urlConnection, "The URL connection is missing");
+      Validate.notBlank(urlConnection, "urlConnection must not be null nor blank");
 
+      // Assign default values for properties that are not set yet.
       if (workingDir == null) {
-        workingDir = new File(System.getProperty("java.io.tmpdir"));
+        workingDir = OfficeUtils.getDefaultWorkingDir();
       }
 
-      final RemoteOfficeManagerPoolConfig config = new RemoteOfficeManagerPoolConfig(workingDir);
-      config.setTaskExecutionTimeout(taskExecutionTimeout);
-      config.setTaskQueueTimeout(taskQueueTimeout);
-
       final RemoteOfficeManager manager =
-          new RemoteOfficeManager(poolSize, urlConnection, sslConfig, config);
+          new RemoteOfficeManager(
+              workingDir,
+              urlConnection,
+              poolSize,
+              sslConfig,
+              connectTimeout,
+              socketTimeout,
+              taskExecutionTimeout,
+              taskQueueTimeout);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
@@ -143,13 +147,15 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
      * @param poolSize The pool size.
      * @return This builder instance.
      */
-    public Builder poolSize(final int poolSize) {
+    public Builder poolSize(@Nullable final Integer poolSize) {
 
-      Validate.inclusiveBetween(
-          0,
-          MAX_POOL_SIZE,
-          poolSize,
-          String.format("The poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
+      if (poolSize != null) {
+        Validate.inclusiveBetween(
+            0,
+            MAX_POOL_SIZE,
+            poolSize,
+            String.format("poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
+      }
       this.poolSize = poolSize;
       return this;
     }
@@ -162,7 +168,6 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
      */
     public Builder urlConnection(final String urlConnection) {
 
-      Validate.notBlank(urlConnection);
       this.urlConnection = urlConnection;
       return this;
     }
@@ -173,9 +178,56 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
      * @param sslConfig The SSL configuration.
      * @return This builder instance.
      */
-    public Builder sslConfig(final SslConfig sslConfig) {
+    public Builder sslConfig(@Nullable final SslConfig sslConfig) {
 
       this.sslConfig = sslConfig;
+      return this;
+    }
+
+    /**
+     * The timeout in milliseconds until a connection is established. A timeout value of zero is
+     * interpreted as an infinite timeout. A negative value is interpreted as undefined (system
+     * default).
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: 60000 (1 minute)
+     *
+     * @param connectTimeout The connect timeout, in milliseconds.
+     * @return This builder instance.
+     */
+    public Builder connectTimeout(@Nullable final Long connectTimeout) {
+
+      if (connectTimeout != null) {
+        Validate.inclusiveBetween(
+            0,
+            Integer.MAX_VALUE,
+            connectTimeout,
+            String.format("connectTimeout %s must greater than or equal to 0", connectTimeout));
+      }
+      this.connectTimeout = connectTimeout;
+      return this;
+    }
+
+    /**
+     * Specifies the socket timeout ({@code SO_TIMEOUT}) in milliseconds, which is the timeout for
+     * waiting for data or, put differently, a maximum period inactivity between two consecutive
+     * data packets). A timeout value of zero is interpreted as an infinite timeout. A negative
+     * value is interpreted as undefined (system default).
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
+     *
+     * @param socketTimeout The socket timeout, in milliseconds.
+     * @return This builder instance.
+     */
+    public Builder socketTimeout(@Nullable final Long socketTimeout) {
+
+      if (socketTimeout != null) {
+        Validate.inclusiveBetween(
+            0,
+            Integer.MAX_VALUE,
+            socketTimeout,
+            String.format("socketTimeout %s must greater than or equal to 0", socketTimeout));
+      }
+      this.socketTimeout = socketTimeout;
       return this;
     }
   }

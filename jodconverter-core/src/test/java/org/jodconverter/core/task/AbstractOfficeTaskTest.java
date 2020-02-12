@@ -20,41 +20,32 @@
 package org.jodconverter.core.task;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.job.SourceDocumentSpecs;
+import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.office.OfficeContext;
 
 /** Contains tests for the {@link AbstractOfficeTaskTest} class. */
 public class AbstractOfficeTaskTest {
 
   @Test
-  public void toString_AsExpected() {
+  public void toString_AsExpected(final @TempDir File testFolder) throws IOException {
 
-    final SourceDocumentSpecs source =
-        new SourceDocumentSpecs() {
-          @Override
-          public void onConsumed(File file) {}
+    final File file = new File(testFolder, getClass().getName() + ".txt");
+    file.createNewFile();
 
-          @Override
-          public File getFile() {
-            return null;
-          }
-
-          @Override
-          public DocumentFormat getFormat() {
-            return null;
-          }
-        };
+    final SourceDocumentSpecs source = new SourceDocumentSpecsFromFile(file);
 
     final AbstractOfficeTask obj =
         new AbstractOfficeTask(source) {
           @Override
-          public void execute(OfficeContext context) {
-            return;
+          public void execute(final OfficeContext context) {
+            // Processing...
           }
         };
 

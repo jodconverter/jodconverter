@@ -21,6 +21,7 @@ package org.jodconverter.local.filter.text;
 
 import java.awt.Dimension;
 import java.util.Map;
+import java.util.Objects;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.drawing.XShape;
@@ -69,7 +70,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
       final int verticalPosition) {
     super(new Dimension(width, height), horizontalPosition, verticalPosition);
 
-    Validate.notBlank(text);
+    Validate.notBlank(text, "text must not be null nor blank");
 
     this.insertedText = text;
   }
@@ -94,7 +95,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
       final Map<String, Object> shapeProperties) {
     super(new Dimension(width, height), shapeProperties);
 
-    Validate.notBlank(text);
+    Validate.notBlank(text, "text must not be null nor blank");
 
     this.insertedText = text;
   }
@@ -138,6 +139,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
 
     // Querying for the interface XTextDocument (text interface) on the XComponent
     final XTextDocument docText = Write.getTextDoc(document);
+    Objects.requireNonNull(docText);
 
     // Access the XText interface of the text contained within the frame
     XText text = docText.getText();

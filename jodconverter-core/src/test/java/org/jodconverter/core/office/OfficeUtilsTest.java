@@ -31,7 +31,7 @@ import org.jodconverter.core.test.util.AssertUtil;
 public class OfficeUtilsTest {
 
   @Test
-  public void ctor_ClassWellDefined() {
+  public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(OfficeUtils.class);
   }
 

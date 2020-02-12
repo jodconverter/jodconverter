@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DocumentFormat;
 
@@ -39,7 +40,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
   protected AbstractDocumentSpecs(final File file) {
     super();
 
-    Validate.notNull(file, "The file is null");
+    Validate.notNull(file, "file must not be null");
 
     this.file = file;
   }
@@ -49,6 +50,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
     return file;
   }
 
+  @Nullable
   @Override
   public DocumentFormat getFormat() {
     return documentFormat;
@@ -61,7 +63,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
    */
   /* default */ void setDocumentFormat(final DocumentFormat documentFormat) {
 
-    Validate.notNull(documentFormat, "The document format is null or unsupported");
+    Validate.notNull(documentFormat, "documentFormat must not be null");
     this.documentFormat = documentFormat;
   }
 
@@ -70,7 +72,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
     return getClass().getSimpleName()
         + "{"
         + "file="
-        + Optional.ofNullable(file).map(File::getName).orElse("null")
+        + Optional.of(file).map(File::getName)
         + ", format="
         + Optional.ofNullable(documentFormat).map(DocumentFormat::getExtension).orElse("null")
         + '}';

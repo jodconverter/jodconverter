@@ -25,34 +25,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 /** Contains tests for the {@link JsonDocumentFormatRegistry} class. */
 public class JsonDocumentFormatRegistryTest {
-
-  /**
-   * Test Backward compatibility.
-   *
-   * @throws IOException If an IO error occurs.
-   */
-  @Test
-  public void create_UsingOldJsonFormat_AllOutputFormatsLoadedSuccessfully() throws IOException {
-
-    try (InputStream input =
-        JsonDocumentFormatRegistry.class.getResourceAsStream("/former-document-formats.json")) {
-      final JsonDocumentFormatRegistry registry = JsonDocumentFormatRegistry.create(input);
-      Set<DocumentFormat> outputFormats = registry.getOutputFormats(DocumentFamily.TEXT);
-      assertThat(outputFormats).hasSize(9);
-      outputFormats = registry.getOutputFormats(DocumentFamily.SPREADSHEET);
-      assertThat(outputFormats).hasSize(9);
-      outputFormats = registry.getOutputFormats(DocumentFamily.PRESENTATION);
-      assertThat(outputFormats).hasSize(8);
-      outputFormats = registry.getOutputFormats(DocumentFamily.DRAWING);
-      assertThat(outputFormats).hasSize(5);
-    }
-  }
 
   /** Test custom properties. */
   @Test
@@ -82,24 +59,21 @@ public class JsonDocumentFormatRegistryTest {
       final JsonDocumentFormatRegistry registry =
           JsonDocumentFormatRegistry.create(input, customPropsPerExtension);
 
-      assertThat(
-              registry
-                  .getFormatByExtension("html")
-                  .getStoreProperties()
-                  .get(DocumentFamily.TEXT)
-                  .get("FilterOptions"))
-          .isEqualTo("EmbedImages");
+      DocumentFormat format = registry.getFormatByExtension("html");
+      assertThat(format).isNotNull();
+      Map<DocumentFamily, Map<String, Object>> storeProps = format.getStoreProperties();
+      assertThat(storeProps).isNotNull();
+      assertThat(storeProps.get(DocumentFamily.TEXT).get("FilterOptions")).isEqualTo("EmbedImages");
 
-      assertThat(registry.getFormatByExtension("txt").getLoadProperties().get("FilterOptions"))
-          .isEqualTo("utf16");
+      format = registry.getFormatByExtension("txt");
+      assertThat(format).isNotNull();
+      final Map<String, Object> loadProps = format.getLoadProperties();
+      assertThat(loadProps).isNotNull();
+      assertThat(loadProps.get("FilterOptions")).isEqualTo("utf16");
 
-      assertThat(
-              registry
-                  .getFormatByExtension("txt")
-                  .getStoreProperties()
-                  .get(DocumentFamily.TEXT)
-                  .get("FilterOptions"))
-          .isEqualTo("utf16");
+      storeProps = format.getStoreProperties();
+      assertThat(storeProps).isNotNull();
+      assertThat(storeProps.get(DocumentFamily.TEXT).get("FilterOptions")).isEqualTo("utf16");
     }
   }
 }

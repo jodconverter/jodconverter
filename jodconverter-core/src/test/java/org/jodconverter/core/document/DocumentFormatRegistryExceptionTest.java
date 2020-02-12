@@ -22,6 +22,7 @@ package org.jodconverter.core.document;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.RETURNS_SMART_NULLS;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
@@ -39,10 +40,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class DocumentFormatRegistryExceptionTest {
 
   @Test
-  public void create_IoExceptionThrownWhileLoading_ThrowDocumentFormatRegistryException()
+  public void create_IoExceptionThrownWhileLoading_ShouldThrowDocumentFormatRegistryException()
       throws Exception {
 
-    mockStatic(JsonDocumentFormatRegistry.class);
+    mockStatic(JsonDocumentFormatRegistry.class, RETURNS_SMART_NULLS);
     when(JsonDocumentFormatRegistry.create(isA(InputStream.class))).thenThrow(IOException.class);
 
     assertThatExceptionOfType(ExceptionInInitializerError.class)

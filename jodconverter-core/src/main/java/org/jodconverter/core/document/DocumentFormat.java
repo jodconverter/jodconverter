@@ -19,7 +19,6 @@
 
 package org.jodconverter.core.document;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,65 +27,29 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** Contains the required information used to deal with a specific document format . */
 public class DocumentFormat {
 
   private final String name;
-  // Be backward compatible. Former json file doesn't
-  // support multiple document format extensions.
-  @SerializedName(
-      value = "extensions",
-      alternate = {"extension"})
-  @JsonAdapter(ExtensionsAdapter.class)
   private final List<String> extensions;
-
   private final String mediaType;
   private final DocumentFamily inputFamily;
   private final Map<String, Object> loadProperties;
-  // Be backward compatible. storePropertiesByFamily
-  // has been renamed storeProperties
-  @SerializedName(
-      value = "storeProperties",
-      alternate = {"storePropertiesByFamily"})
   private final Map<DocumentFamily, Map<String, Object>> storeProperties;
-
-  /**
-   * Special adapter used to support backward compatibility when loading a document format json
-   * file. Former json file doesn't support multiple document format extensions.
-   */
-  private static class ExtensionsAdapter implements JsonDeserializer<List<String>> {
-
-    @Override
-    public List<String> deserialize(
-        final JsonElement json, final Type type, final JsonDeserializationContext cxt) {
-
-      if (json.isJsonArray()) {
-        final Type listType = new TypeToken<List<String>>() {}.getType();
-        return cxt.deserialize(json, listType);
-      }
-      return Stream.of(json.getAsString()).collect(Collectors.toList());
-    }
-  }
 
   /**
    * Creates a new builder instance.
    *
    * @return A new builder instance.
    */
+  @NonNull
   public static Builder builder() {
     return new Builder();
   }
@@ -99,7 +62,6 @@ public class DocumentFormat {
    *     are.
    */
   public static DocumentFormat copy(final DocumentFormat sourceFormat) {
-
     return new Builder().from(sourceFormat).unmodifiable(false).build();
   }
 
@@ -111,7 +73,6 @@ public class DocumentFormat {
    *     are.
    */
   public static DocumentFormat unmodifiableCopy(final DocumentFormat sourceFormat) {
-
     return new Builder().from(sourceFormat).unmodifiable(true).build();
   }
 
@@ -121,7 +82,7 @@ public class DocumentFormat {
    * @param name The name of the format.
    * @param extensions The file name extensions of the format.
    * @param mediaType The media type (mime type) of the format.
-   * @param inputFamily The DocumentFamily of the document.
+   * @param inputFamily The input {@link DocumentFamily} of the document.
    * @param loadProperties The properties required to load(open) a document of this format.
    * @param storeProperties The properties required to store(save) a document of this format to a
    *     document of another family.
@@ -133,40 +94,41 @@ public class DocumentFormat {
       final Collection<String> extensions,
       final String mediaType,
       final DocumentFamily inputFamily,
-      final Map<String, Object> loadProperties,
-      final Map<DocumentFamily, Map<String, Object>> storeProperties,
+      @Nullable final Map<String, Object> loadProperties,
+      @Nullable final Map<DocumentFamily, Map<String, Object>> storeProperties,
       final boolean unmodifiable) {
+
+    Validate.notBlank(name, "name must not be null nor blank");
+    Validate.notNull(extensions, "extensions must not be null");
+    Validate.notBlank(mediaType, "mediaType must not be null nor blank");
+    Validate.notNull(inputFamily, "inputFamily must not be null");
 
     this.name = name;
     this.extensions = new ArrayList<>(extensions);
     this.mediaType = mediaType;
     this.inputFamily = inputFamily;
-    this.loadProperties =
-        Optional.ofNullable(loadProperties)
-            // Create a copy of the map.
-            .map(HashMap::new)
-            // Make the map read only if required.
-            .map(mapCopy -> unmodifiable ? Collections.unmodifiableMap(mapCopy) : mapCopy)
-            .orElse(null);
-    this.storeProperties =
-        Optional.ofNullable(storeProperties)
-            // Create a copy of the map.
-            .map(
-                map -> {
-                  final EnumMap<DocumentFamily, Map<String, Object>> familyMap =
-                      new EnumMap<>(DocumentFamily.class);
-                  map.forEach(
-                      (family, propMap) ->
-                          familyMap.put(
-                              family,
-                              unmodifiable
-                                  ? Collections.unmodifiableMap(new HashMap<>(propMap))
-                                  : new HashMap<>(propMap)));
-                  return familyMap;
-                })
-            // Make the map read only if required.
-            .map(mapCopy -> unmodifiable ? Collections.unmodifiableMap(mapCopy) : mapCopy)
-            .orElse(null);
+    if (loadProperties == null) {
+      this.loadProperties = null;
+    } else {
+      this.loadProperties =
+          unmodifiable
+              ? Collections.unmodifiableMap(new HashMap<>(loadProperties))
+              : new HashMap<>(loadProperties);
+    }
+    if (storeProperties == null) {
+      this.storeProperties = null;
+    } else {
+      final Map<DocumentFamily, Map<String, Object>> familyMap =
+          new EnumMap<>(DocumentFamily.class);
+      storeProperties.forEach(
+          (family, props) ->
+              familyMap.put(
+                  family,
+                  unmodifiable
+                      ? Collections.unmodifiableMap(new HashMap<>(props))
+                      : new HashMap<>(props)));
+      this.storeProperties = unmodifiable ? Collections.unmodifiableMap(familyMap) : familyMap;
+    }
   }
 
   /**
@@ -202,6 +164,7 @@ public class DocumentFormat {
    *
    * @return A map containing the properties to apply when loading a document of this format.
    */
+  @Nullable
   public Map<String, Object> getLoadProperties() {
     return loadProperties;
   }
@@ -231,6 +194,7 @@ public class DocumentFormat {
    * @return A DocumentFamily/Map pairs containing the properties to apply when storing a document
    *     of this format, by DocumentFamily.
    */
+  @Nullable
   public Map<DocumentFamily, Map<String, Object>> getStoreProperties() {
     return storeProperties;
   }
@@ -242,6 +206,7 @@ public class DocumentFormat {
    * @param family The DocumentFamily for which the properties are get.
    * @return A map containing the properties to apply when storing a document to this format.
    */
+  @Nullable
   public Map<String, Object> getStoreProperties(final DocumentFamily family) {
 
     return storeProperties == null ? null : storeProperties.get(family);
@@ -267,7 +232,7 @@ public class DocumentFormat {
     private Map<DocumentFamily, Map<String, Object>> storeProperties;
     private boolean unmodifiable = true;
 
-    // Private ctor so only DocumentFormat can initialize an instance of this builder.
+    // Private constructor so only DocumentFormat can initialize an instance of this builder.
     private Builder() {
       super();
     }
@@ -291,28 +256,21 @@ public class DocumentFormat {
      */
     public Builder from(final DocumentFormat sourceFormat) {
 
-      Validate.notNull(sourceFormat);
+      Validate.notNull(sourceFormat, "sourceFormat must not be null");
       this.name = sourceFormat.getName();
       this.extensions = new LinkedHashSet<>(sourceFormat.getExtensions());
       this.mediaType = sourceFormat.getMediaType();
       this.inputFamily = sourceFormat.getInputFamily();
       this.loadProperties =
-          Optional.ofNullable(sourceFormat.getLoadProperties())
-              .map(
-                  map ->
-                      map.entrySet().stream()
-                          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-              .orElse(null);
-      this.storeProperties =
-          Optional.ofNullable(sourceFormat.getStoreProperties())
-              .map(
-                  map -> {
-                    final EnumMap<DocumentFamily, Map<String, Object>> familyMap =
-                        new EnumMap<>(DocumentFamily.class);
-                    map.forEach((family, propMap) -> familyMap.put(family, new HashMap<>(propMap)));
-                    return familyMap;
-                  })
-              .orElse(null);
+          sourceFormat.getLoadProperties() == null
+              ? null
+              : new HashMap<>(sourceFormat.getLoadProperties());
+      if (sourceFormat.getStoreProperties() != null) {
+        this.storeProperties = new EnumMap<>(DocumentFamily.class);
+        sourceFormat
+            .getStoreProperties()
+            .forEach((family, propMap) -> this.storeProperties.put(family, new HashMap<>(propMap)));
+      }
 
       return this;
     }
@@ -325,7 +283,7 @@ public class DocumentFormat {
      */
     public Builder extension(final String extension) {
 
-      Validate.notBlank(extension);
+      Validate.notBlank(extension, "extension must not be null nor blank");
       if (this.extensions == null) {
         this.extensions = new LinkedHashSet<>();
       }
@@ -342,7 +300,7 @@ public class DocumentFormat {
      */
     public Builder inputFamily(final DocumentFamily inputFamily) {
 
-      Validate.notNull(inputFamily);
+      Validate.notNull(inputFamily, "inputFamily must not be null");
       this.inputFamily = inputFamily;
       return this;
     }
@@ -356,19 +314,24 @@ public class DocumentFormat {
      *     map.
      * @return This builder instance.
      */
-    public Builder loadProperty(final String name, final Object value) {
+    public Builder loadProperty(final String name, @Nullable final Object value) {
 
-      Validate.notBlank(name);
+      Validate.notBlank(name, "name must not be null nor blank");
 
       if (value == null) {
         // Remove the property if the value is null.
-        Optional.ofNullable(loadProperties).ifPresent(propMap -> propMap.remove(name));
+        if (loadProperties != null) {
+          loadProperties.remove(name);
+          if (loadProperties.isEmpty()) {
+            loadProperties = null;
+          }
+        }
       } else {
         // Add the property if a value is given.
-        if (this.loadProperties == null) {
-          this.loadProperties = new HashMap<>();
+        if (loadProperties == null) {
+          loadProperties = new HashMap<>();
         }
-        this.loadProperties.put(name, value);
+        loadProperties.put(name, value);
       }
 
       return this;
@@ -382,7 +345,7 @@ public class DocumentFormat {
      */
     public Builder mediaType(final String mediaType) {
 
-      Validate.notBlank(mediaType);
+      Validate.notBlank(mediaType, "mediaType must not be null nor blank");
       this.mediaType = mediaType;
       return this;
     }
@@ -395,7 +358,7 @@ public class DocumentFormat {
      */
     public Builder name(final String name) {
 
-      Validate.notBlank(name);
+      Validate.notBlank(name, "name must not be null nor blank");
       this.name = name;
       return this;
     }
@@ -418,29 +381,38 @@ public class DocumentFormat {
      * Adds a property to the builder that will be applied when storing (save) a document to this
      * format from a document of the specified family.
      *
-     * @param family The document family of the source (loaded) document, cannot be null.
+     * @param documentFamily The document family of the source (loaded) document, cannot be null.
      * @param name The property name, cannot be null.
      * @param value The property value, may be null. If null, it will REMOVE the property from the
      *     map.
      * @return This builder instance.
      */
     public Builder storeProperty(
-        final DocumentFamily family, final String name, final Object value) {
+        final DocumentFamily documentFamily, final String name, @Nullable final Object value) {
 
-      Validate.notBlank(name);
-      Validate.notNull(family);
+      Validate.notNull(documentFamily, "documentFamily must not be null");
+      Validate.notBlank(name, "name must not be null nor blank");
 
       if (value == null) {
         // Remove the property if the value is null.
-        Optional.ofNullable(storeProperties)
-            .map(familyMap -> familyMap.get(family))
-            .ifPresent(propMap -> propMap.remove(name));
+        if (storeProperties != null) {
+          final Map<String, Object> props = storeProperties.get(documentFamily);
+          if (props != null) {
+            props.remove(name);
+            if (props.isEmpty()) {
+              storeProperties.remove(documentFamily);
+            }
+            if (storeProperties.isEmpty()) {
+              storeProperties = null;
+            }
+          }
+        }
       } else {
         // Add the property if a value is given.
         if (storeProperties == null) {
           storeProperties = new EnumMap<>(DocumentFamily.class);
         }
-        storeProperties.computeIfAbsent(family, key -> new HashMap<>()).put(name, value);
+        storeProperties.computeIfAbsent(documentFamily, key -> new HashMap<>()).put(name, value);
       }
 
       return this;

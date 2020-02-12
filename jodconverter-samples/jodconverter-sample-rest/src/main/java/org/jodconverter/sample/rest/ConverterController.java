@@ -40,6 +40,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -205,6 +206,7 @@ public class ConverterController {
 
       final DocumentFormat targetFormat =
           DefaultDocumentFormatRegistry.getFormatByExtension(outputFormat);
+      Assert.notNull(targetFormat, "targetFormat must not be null");
 
       // Decode the parameters to load and store properties.
       final Map<String, Object> loadProperties =
@@ -221,14 +223,8 @@ public class ConverterController {
               .build();
 
       // Convert...
-      converter
-          .convert(inputFile.getInputStream())
-          .as(
-              DefaultDocumentFormatRegistry.getFormatByExtension(
-                  FilenameUtils.getExtension(inputFile.getOriginalFilename())))
-          .to(baos)
-          .as(targetFormat)
-          .execute();
+      assert targetFormat != null;
+      converter.convert(inputFile.getInputStream()).to(baos).as(targetFormat).execute();
 
       final HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.parseMediaType(targetFormat.getMediaType()));

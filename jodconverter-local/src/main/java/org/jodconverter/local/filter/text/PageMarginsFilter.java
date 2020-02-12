@@ -19,6 +19,8 @@
 
 package org.jodconverter.local.filter.text;
 
+import java.util.Objects;
+
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameAccess;
 import com.sun.star.container.XNameContainer;
@@ -27,6 +29,7 @@ import com.sun.star.style.XStyle;
 import com.sun.star.style.XStyleFamiliesSupplier;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,10 +66,10 @@ public class PageMarginsFilter implements Filter {
    *     does not change.
    */
   public PageMarginsFilter(
-      final Integer leftMargin,
-      final Integer topMargin,
-      final Integer rightMargin,
-      final Integer bottomMargin) {
+      @Nullable final Integer leftMargin,
+      @Nullable final Integer topMargin,
+      @Nullable final Integer rightMargin,
+      @Nullable final Integer bottomMargin) {
     super();
 
     this.leftMargin = leftMargin;
@@ -95,6 +98,7 @@ public class PageMarginsFilter implements Filter {
 
     // Querying for the interface XTextDocument (text interface) on the XComponent
     final XTextDocument docText = Write.getTextDoc(document);
+    Objects.requireNonNull(docText);
 
     // Create a text cursor from the cells XText interface
     final XTextCursor xTextCursor = docText.getText().createTextCursor();

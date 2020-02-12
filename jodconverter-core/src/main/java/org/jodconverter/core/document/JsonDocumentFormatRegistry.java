@@ -29,6 +29,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DocumentFormat.Builder;
 
@@ -47,7 +48,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
    */
   public static JsonDocumentFormatRegistry create(final InputStream source) throws IOException {
 
-    return create(source, null);
+    return create(IOUtils.toString(source, StandardCharsets.UTF_8));
   }
 
   /**
@@ -73,7 +74,9 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
    */
   public static JsonDocumentFormatRegistry create(final String source) {
 
-    return create(source, null);
+    final JsonDocumentFormatRegistry registry = new JsonDocumentFormatRegistry();
+    registry.readJsonArray(source, null);
+    return registry;
   }
 
   /**
@@ -91,14 +94,14 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
     return registry;
   }
 
-  // Force static function call
+  /** Creates a new instance of the class. */
   protected JsonDocumentFormatRegistry() {
     super();
   }
 
   // Fill the registry from the given JSON source
-  protected void readJsonArray(
-      final String source, final Map<String, DocumentFormatProperties> customProperties) {
+  private void readJsonArray(
+      final String source, @Nullable final Map<String, DocumentFormatProperties> customProperties) {
 
     final Gson gson = new Gson();
 

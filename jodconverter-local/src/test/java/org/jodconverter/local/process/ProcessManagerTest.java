@@ -29,19 +29,12 @@ import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
+import org.jodconverter.core.test.util.TestUtil;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
 /** Contains tests for the {@link ProcessManager} classes */
 public class ProcessManagerTest {
-
-  private static void sleep(final long millisec) {
-    try {
-      Thread.sleep(millisec);
-    } catch (InterruptedException ignore) {
-      // ignore
-    }
-  }
 
   private static long waitForPidNotFound(
       final ProcessManager processManager, final ProcessQuery query) throws IOException {
@@ -52,7 +45,7 @@ public class ProcessManagerTest {
       tryCount++;
       pid = processManager.findPid(query);
       if (pid != ProcessManager.PID_NOT_FOUND) {
-        sleep(250L);
+        TestUtil.sleepQuietly(250L);
       }
     } while (pid != ProcessManager.PID_NOT_FOUND && tryCount != 10);
     return pid;

@@ -19,8 +19,6 @@
 
 package org.jodconverter.local.office.utils;
 
-import java.util.Optional;
-
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
@@ -41,13 +39,11 @@ public final class Props {
    *
    * @param obj The object from which a property is get.
    * @param propName The property name to get.
-   * @return An optional containing the property value. the optional will be empty if the property
-   *     could not be retrieved.
+   * @return The property value, or null if the property could not be retrieved.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  public static Optional<Object> getProperty(final Object obj, final String propName) {
-
+  public static Object getProperty(final Object obj, final String propName) {
     return getProperty(Lo.qi(XPropertySet.class, obj), propName);
   }
 
@@ -56,15 +52,14 @@ public final class Props {
    *
    * @param props The {@link XPropertySet} from which a property is get.
    * @param propName The property name to get.
-   * @return An optional containing the property value. the optional will be empty if the property
-   *     could not be retrieved.
+   * @return The property value, or null if the property could not be retrieved.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  public static Optional<Object> getProperty(final XPropertySet props, final String propName) {
+  public static Object getProperty(final XPropertySet props, final String propName) {
 
     try {
-      return Optional.ofNullable(props.getPropertyValue(propName));
+      return props.getPropertyValue(propName);
     } catch (UnknownPropertyException | WrappedTargetException ex) {
       throw new WrappedUnoException(ex.getMessage(), ex);
     }

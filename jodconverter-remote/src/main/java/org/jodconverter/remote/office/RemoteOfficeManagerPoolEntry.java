@@ -19,8 +19,6 @@
 
 package org.jodconverter.remote.office;
 
-import static java.lang.Math.toIntExact;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,6 +38,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
+import java.util.Objects;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +52,7 @@ import org.apache.http.ssl.PrivateKeyDetails;
 import org.apache.http.ssl.PrivateKeyStrategy;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.AbstractOfficeManagerPoolEntry;
 import org.jodconverter.core.office.OfficeException;
@@ -69,8 +69,15 @@ import org.jodconverter.remote.ssl.SslConfig;
  */
 class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
+  // The default connect timeout
+  private static final long DEFAULT_CONNECT_TIMEOUT = 60_000L; // 2 minutes
+  // The default socket timeout
+  private static final long DEFAULT_SOCKET_TIMEOUT = 120_000L; // 2 minutes
+
   private final String connectionUrl;
   private final SslConfig sslConfig;
+  private final long connectTimeout;
+  private final long socketTimeout;
 
   /** Strategy that selects a private key by its alias. */
   private static final class SelectByAlias implements PrivateKeyStrategy {
@@ -86,6 +93,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       this.keyAlias = keyAlias;
     }
 
+    @Nullable
     @Override
     public String chooseAlias(final Map<String, PrivateKeyDetails> aliases, final Socket socket) {
 
@@ -108,6 +116,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   // Taken from Spring org.springframework.util.ClassUtils class.
+  @Nullable
   private static ClassLoader getDefaultClassLoader() {
 
     ClassLoader cl = null;
@@ -146,7 +155,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   // Taken from spring org.springframework.util.ResourceUtils class
   private static File getFile(final String resourceLocation) throws FileNotFoundException {
 
-    Validate.notNull(resourceLocation, "Resource location must not be null");
+    Validate.notNull(resourceLocation, "resourceLocation must not be null");
     if (resourceLocation.startsWith("classpath:")) {
       final String path = resourceLocation.substring("classpath:".length());
       final String description = "class path resource [" + path + "]";
@@ -171,19 +180,31 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   /**
    * Creates a new pool entry with the specified configuration.
    *
-   * @param connectionUrl The URL to the LibreOffice Online server.
-   * @param sslConfig The SSL configuration used to secure communication with LibreOffice Online
-   *     server.
-   * @param config The entry configuration.
+   * @param connectionUrl The URL to the remote server.
+   * @param sslConfig The SSL configuration used to secure communication with the remote server.
+   * @param connectTimeout The timeout in milliseconds until a connection is established. A timeout
+   *     value of zero is interpreted as an infinite timeout. A negative value is interpreted as
+   *     undefined (system default).
+   * @param socketTimeout The socket timeout ({@code SO_TIMEOUT}) in milliseconds, which is the
+   *     timeout for waiting for data or, put differently, a maximum period inactivity between two
+   *     consecutive data packets). A timeout value of zero is interpreted as an infinite timeout. A
+   *     negative value is interpreted as undefined (system default).
+   * @param taskExecutionTimeout The maximum time allowed to process a task. If the processing time
+   *     of a task is longer than this timeout, this task will be aborted and the next task is
+   *     processed.
    */
   public RemoteOfficeManagerPoolEntry(
       final String connectionUrl,
-      final SslConfig sslConfig,
-      final RemoteOfficeManagerPoolEntryConfig config) {
-    super(config);
+      @Nullable final SslConfig sslConfig,
+      @Nullable final Long connectTimeout,
+      @Nullable final Long socketTimeout,
+      @Nullable final Long taskExecutionTimeout) {
+    super(taskExecutionTimeout);
 
     this.connectionUrl = connectionUrl;
     this.sslConfig = sslConfig;
+    this.connectTimeout = connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT : connectTimeout;
+    this.socketTimeout = socketTimeout == null ? DEFAULT_SOCKET_TIMEOUT : socketTimeout;
   }
 
   private String buildUrl(final String connectionUrl) throws MalformedURLException {
@@ -205,6 +226,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException,
           CertificateException, IOException, NoSuchProviderException {
 
+    Objects.requireNonNull(sslConfig);
     final KeyStore keystore =
         loadStore(
             sslConfig.getKeyStore(),
@@ -215,12 +237,13 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       sslBuilder.loadKeyMaterial(
           keystore,
           sslConfig.getKeyPassword() == null
-              ? sslConfig.getKeyStorePassword().toCharArray()
+              ? Objects.requireNonNull(sslConfig.getKeyStorePassword()).toCharArray()
               : sslConfig.getKeyPassword().toCharArray(),
           sslConfig.getKeyAlias() == null ? null : new SelectByAlias(sslConfig.getKeyAlias()));
     }
   }
 
+  @Nullable
   private SSLConnectionSocketFactory configureSsl() throws OfficeException {
 
     if (sslConfig == null || !sslConfig.isEnabled()) {
@@ -258,6 +281,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException,
           NoSuchProviderException {
 
+    Objects.requireNonNull(sslConfig);
     if (sslConfig.isTrustAll()) {
       sslBuilder.loadTrustMaterial(null, TrustAllStrategy.INSTANCE);
     } else {
@@ -283,10 +307,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       // Use the task execution timeout as connection and socket timeout.
       // TODO: Should the user be able to customize connection and socket timeout ?
       final RequestConfig requestConfig =
-          new RequestConfig(
-              buildUrl(connectionUrl),
-              toIntExact(config.getTaskExecutionTimeout()),
-              toIntExact(config.getTaskExecutionTimeout()));
+          new RequestConfig(buildUrl(connectionUrl), connectTimeout, socketTimeout);
       task.execute(new RemoteOfficeConnection(httpClient, requestConfig));
 
     } catch (IOException ex) {
@@ -297,7 +318,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   @Override
   protected void doStart() {
 
-    taskExecutor.setAvailable(true);
+    setAvailable(true);
   }
 
   @Override
@@ -305,16 +326,17 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // Nothing to stop here.
   }
 
+  @Nullable
   private KeyStore loadStore(
-      final String store,
-      final String storePassword,
-      final String storeType,
-      final String storeProvider)
+      @Nullable final String store,
+      @Nullable final String storePassword,
+      @Nullable final String storeType,
+      @Nullable final String storeProvider)
       throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException,
           NoSuchProviderException {
 
     if (store != null) {
-      Validate.notNull(storePassword, "The password of store {0} must not be null", store);
+      Validate.notNull(storePassword, "storePassword of store {0} must not be null", store);
 
       KeyStore keyStore;
 

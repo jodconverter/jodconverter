@@ -24,13 +24,15 @@ import org.jodconverter.core.task.OfficeTask;
 /** Task that only sleep a specified delay. */
 public class SimpleOfficeTask implements OfficeTask {
 
+  private static final long NO_DELAY = 0L;
+
   private final long delayTime;
   private boolean completed;
   private final Exception thrownException;
 
   /** Create a new task with default values. */
   public SimpleOfficeTask() {
-    this(0L, null);
+    this(NO_DELAY);
   }
 
   /**
@@ -39,7 +41,10 @@ public class SimpleOfficeTask implements OfficeTask {
    * @param delayTime The delay.
    */
   public SimpleOfficeTask(final long delayTime) {
-    this(delayTime, null);
+    super();
+
+    this.delayTime = delayTime;
+    this.thrownException = null;
   }
 
   /**
@@ -48,7 +53,7 @@ public class SimpleOfficeTask implements OfficeTask {
    * @param thrownException The thrown exception.
    */
   public SimpleOfficeTask(final Exception thrownException) {
-    this(0L, thrownException);
+    this(NO_DELAY, thrownException);
   }
 
   /**
@@ -68,7 +73,7 @@ public class SimpleOfficeTask implements OfficeTask {
   public void execute(final OfficeContext context) throws OfficeException {
 
     try {
-      if (delayTime > 0L) {
+      if (delayTime > NO_DELAY) {
         Thread.sleep(delayTime);
       }
 

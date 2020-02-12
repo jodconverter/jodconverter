@@ -88,7 +88,7 @@ public class PagesSelectorFilter implements Filter {
   public PagesSelectorFilter(final Set<Integer> pages) {
     super();
 
-    Validate.notEmpty(pages);
+    Validate.notEmpty(pages, "pages must not be null nor empty");
 
     this.pages = new ArrayList<>(pages);
   }
@@ -103,13 +103,13 @@ public class PagesSelectorFilter implements Filter {
 
       // We must process from the start to the end.
       Collections.sort(pages);
-      selectTextPages(document);
+      selectTextPages(Write.getTextDoc(document));
 
     } else if (Calc.isCalc(document)) {
       LOGGER.debug("Applying the PagesSelectorFilter for a Calc document");
 
       // We must process from the end to the start.
-      selectSheets(document);
+      selectSheets(Calc.getCalcDoc(document));
 
     } else if (Draw.isImpress(document)) {
       LOGGER.debug("Applying the PagesSelectorFilter for an Impress document");
@@ -183,14 +183,12 @@ public class PagesSelectorFilter implements Filter {
     transferableSupplier.insertTransferable(xTransferable);
   }
 
-  private void selectTextPages(final XComponent document) throws Exception {
+  private void selectTextPages(final XTextDocument doc) throws Exception {
 
-    // Querying for the interface XTextDocument (text interface) on the XComponent.
-    final XTextDocument doc = Write.getTextDoc(document);
     final XController ctrl = doc.getCurrentController();
 
     // Save the PageCount property of the document.
-    final int pageCount = (Integer) Props.getProperty(ctrl, "PageCount").orElse(0);
+    final int pageCount = (Integer) Props.getProperty(ctrl, "PageCount");
 
     // Delete all the pages except the ones to select.
     int nextTargetPage = 1;
@@ -240,9 +238,8 @@ public class PagesSelectorFilter implements Filter {
     transSupplier.insertTransferable(trans);
   }
 
-  private void selectSheets(final XComponent document) throws Exception {
+  private void selectSheets(final XSpreadsheetDocument doc) throws Exception {
 
-    final XSpreadsheetDocument doc = Calc.getCalcDoc(document);
     final XSpreadsheets sheets = doc.getSheets();
     final XIndexAccess indexedSheets = Lo.qi(XIndexAccess.class, sheets);
 

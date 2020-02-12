@@ -24,7 +24,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.sun.star.lang.XComponent;
 import org.junit.jupiter.api.Test;
+
+import org.jodconverter.core.office.OfficeContext;
 
 /** Contains tests for the {@link NoopFilter} class. */
 public class NoopFilterTest {
@@ -42,10 +45,12 @@ public class NoopFilterTest {
   public void doFilter_ShouldCallNextFilter() throws Exception {
 
     final Filter filter = mock(Filter.class);
+    final OfficeContext context = mock(OfficeContext.class);
+    final XComponent document = mock(XComponent.class);
     final DefaultFilterChain chain = new DefaultFilterChain(NoopFilter.NOOP, filter);
-    chain.doFilter(null, null);
+    chain.doFilter(context, document);
 
     // Verify that the filter is called.
-    verify(filter, times(1)).doFilter(null, null, chain);
+    verify(filter, times(1)).doFilter(context, document, chain);
   }
 }

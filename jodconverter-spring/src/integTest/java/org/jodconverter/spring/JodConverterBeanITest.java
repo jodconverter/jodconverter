@@ -22,16 +22,14 @@ package org.jodconverter.spring;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.util.Collections;
 
-import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
-import org.jodconverter.local.office.OfficeProcessManagerPoolConfig;
-import org.jodconverter.local.office.OfficeUrl;
 
 /** Contains tests for the {@link JodConverterBean} class with default values. */
 public class JodConverterBeanITest {
@@ -44,33 +42,50 @@ public class JodConverterBeanITest {
     try {
       bean.afterPropertiesSet();
 
-      final OfficeManager manager = Whitebox.getInternalState(bean, "officeManager");
-      final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-      try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
-        softly
-            .assertThat(config.getOfficeHome().getPath())
-            .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
-        softly
-            .assertThat(config.getWorkingDir().getPath())
-            .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-        softly
-            .assertThat(config.getProcessManager())
-            .isEqualTo(LocalOfficeUtils.findBestProcessManager());
-        softly.assertThat(config.getRunAsArgs()).isNull();
-        softly.assertThat(config.getTemplateProfileDir()).isNull();
-        softly.assertThat(config.isKillExistingProcess()).isTrue();
-        softly.assertThat(config.getProcessTimeout()).isEqualTo(120_000L);
-        softly.assertThat(config.getProcessRetryInterval()).isEqualTo(250L);
-        softly.assertThat(config.getMaxTasksPerProcess()).isEqualTo(200);
-        softly.assertThat(config.isDisableOpengl()).isFalse();
-        softly.assertThat(config.getTaskExecutionTimeout()).isEqualTo(120_000L);
-        softly.assertThat(config.getTaskQueueTimeout()).isEqualTo(30_000L);
-      }
+      assertThat(bean)
+          .extracting("officeManager")
+          .isInstanceOf(LocalOfficeManager.class)
+          .extracting("workingDir", "taskQueueTimeout")
+          .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
 
-      final OfficeUrl[] officeUrls = Whitebox.getInternalState(manager, "officeUrls");
-      assertThat(officeUrls).hasSize(1);
-      assertThat(officeUrls[0].getConnectionAndParametersAsString())
-          .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
+      assertThat(bean)
+          .extracting("officeManager.entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .extracting(
+                          "taskExecutionTimeout",
+                          "maxTasksPerProcess",
+                          "disableOpengl",
+                          "officeProcessManager.processTimeout",
+                          "officeProcessManager.processRetryInterval",
+                          "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                          "officeProcessManager.process.officeHome",
+                          "officeProcessManager.process.processManager",
+                          "officeProcessManager.process.runAsArgs",
+                          "officeProcessManager.process.templateProfileDir",
+                          "officeProcessManager.process.killExistingProcess",
+                          "officeProcessManager.process.instanceProfileDir",
+                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                      .containsExactly(
+                          120_000L,
+                          200,
+                          false,
+                          120_000L,
+                          250L,
+                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                          LocalOfficeUtils.getDefaultOfficeHome(),
+                          LocalOfficeUtils.findBestProcessManager(),
+                          Collections.EMPTY_LIST,
+                          null,
+                          true,
+                          new File(
+                              OfficeUtils.getDefaultWorkingDir(),
+                              ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
 
     } finally {
       bean.destroy();
@@ -92,38 +107,53 @@ public class JodConverterBeanITest {
     bean.setTaskExecutionTimeout(20_000L);
     bean.setMaxTasksPerProcess(10);
     bean.setTaskQueueTimeout(1_000L);
-
     try {
       bean.afterPropertiesSet();
 
-      final OfficeManager manager = Whitebox.getInternalState(bean, "officeManager");
-      final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-      try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
-        softly
-            .assertThat(config.getOfficeHome().getPath())
-            .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
-        softly
-            .assertThat(config.getWorkingDir().getPath())
-            .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-        softly
-            .assertThat(config.getTemplateProfileDir().getPath())
-            .isEqualTo(new File("src/integTest/resources/templateProfileDir").getPath());
-        softly
-            .assertThat(config.getProcessManager())
-            .isEqualTo(LocalOfficeUtils.findBestProcessManager());
-        softly.assertThat(config.isKillExistingProcess()).isFalse();
-        softly.assertThat(config.getProcessTimeout()).isEqualTo(40_000L);
-        softly.assertThat(config.getProcessRetryInterval()).isEqualTo(1_000L);
-        softly.assertThat(config.getMaxTasksPerProcess()).isEqualTo(10);
-        softly.assertThat(config.isDisableOpengl()).isFalse();
-        softly.assertThat(config.getTaskExecutionTimeout()).isEqualTo(20_000L);
-        softly.assertThat(config.getTaskQueueTimeout()).isEqualTo(1_000L);
-      }
+      assertThat(bean)
+          .extracting("officeManager")
+          .isInstanceOf(LocalOfficeManager.class)
+          .extracting("workingDir", "taskQueueTimeout")
+          .containsExactly(OfficeUtils.getDefaultWorkingDir(), 1_000L);
 
-      final OfficeUrl[] officeUrls = Whitebox.getInternalState(manager, "officeUrls");
-      assertThat(officeUrls).hasSize(1);
-      assertThat(officeUrls[0].getConnectionAndParametersAsString())
-          .isEqualTo("socket,host=127.0.0.1,port=2003,tcpNoDelay=1");
+      assertThat(bean)
+          .extracting("officeManager.entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .extracting(
+                          "taskExecutionTimeout",
+                          "maxTasksPerProcess",
+                          "disableOpengl",
+                          "officeProcessManager.processTimeout",
+                          "officeProcessManager.processRetryInterval",
+                          "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                          "officeProcessManager.process.officeHome",
+                          "officeProcessManager.process.processManager",
+                          "officeProcessManager.process.runAsArgs",
+                          "officeProcessManager.process.templateProfileDir",
+                          "officeProcessManager.process.killExistingProcess",
+                          "officeProcessManager.process.instanceProfileDir",
+                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                      .containsExactly(
+                          20_000L,
+                          10,
+                          false,
+                          40_000L,
+                          1_000L,
+                          "socket,host=127.0.0.1,port=2003,tcpNoDelay=1",
+                          LocalOfficeUtils.getDefaultOfficeHome(),
+                          LocalOfficeUtils.findBestProcessManager(),
+                          Collections.EMPTY_LIST,
+                          new File("src/integTest/resources/templateProfileDir"),
+                          false,
+                          new File(
+                              OfficeUtils.getDefaultWorkingDir(),
+                              ".jodconverter_socket_host-127.0.0.1_port-2003_tcpNoDelay-1"),
+                          "socket,host=127.0.0.1,port=2003,tcpNoDelay=1"));
 
     } finally {
       bean.destroy();

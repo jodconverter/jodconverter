@@ -21,19 +21,18 @@ package org.jodconverter.local.office;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,6 +135,7 @@ public final class LocalOfficeUtils {
       LOGGER.debug("Default office home set to {}", INSTANCE);
     }
 
+    @Nullable
     private static File findOfficeHome(final String executablePath, final String... homePaths) {
 
       return Stream.of(homePaths)
@@ -180,24 +180,24 @@ public final class LocalOfficeUtils {
    * @return an array of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  public static OfficeUrl[] buildOfficeUrls(final int[] portNumbers, final String[] pipeNames) {
+  public static List<OfficeUrl> buildOfficeUrls(
+      @Nullable final List<Integer> portNumbers, @Nullable final List<String> pipeNames) {
 
     // Assign default value if no pipe names or port numbers have been specified.
-    if (portNumbers == null && pipeNames == null) {
-      return new OfficeUrl[] {new OfficeUrl(2002)};
+    if ((portNumbers == null || portNumbers.size() == 0)
+        && (pipeNames == null || pipeNames.size() == 0)) {
+      return Collections.singletonList(new OfficeUrl(2002));
     }
 
     // Build the office URL list and return it
-    final List<OfficeUrl> officeUrls =
-        new ArrayList<>(ArrayUtils.getLength(portNumbers) + ArrayUtils.getLength(pipeNames));
-    Optional.ofNullable(pipeNames)
-        .map(Stream::of)
-        .ifPresent(stream -> stream.map(OfficeUrl::new).forEach(officeUrls::add));
-    // We cannot do the same for an int[]
+    final List<OfficeUrl> officeUrls = new ArrayList<>();
     if (portNumbers != null) {
-      Arrays.stream(portNumbers).forEach(portNumber -> officeUrls.add(new OfficeUrl(portNumber)));
+      portNumbers.stream().map(OfficeUrl::new).forEach(officeUrls::add);
     }
-    return officeUrls.toArray(new OfficeUrl[0]);
+    if (pipeNames != null) {
+      pipeNames.stream().map(OfficeUrl::new).forEach(officeUrls::add);
+    }
+    return officeUrls;
   }
 
   /**
@@ -220,7 +220,7 @@ public final class LocalOfficeUtils {
    */
   public static DocumentFamily getDocumentFamily(final XComponent document) throws OfficeException {
 
-    Validate.notNull(document, "The document is null");
+    Validate.notNull(document, "document must not be null");
 
     final XServiceInfo serviceInfo = Lo.qi(XServiceInfo.class, document);
     if (serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")) {
@@ -325,10 +325,6 @@ public final class LocalOfficeUtils {
    */
   public static void validateOfficeHome(final File officeHome) {
 
-    if (officeHome == null) {
-      throw new IllegalStateException("officeHome not set and could not be auto-detected");
-    }
-
     if (!officeHome.isDirectory()) {
       throw new IllegalStateException(
           "officeHome doesn't exist or is not a directory: " + officeHome);
@@ -347,7 +343,8 @@ public final class LocalOfficeUtils {
    * @exception IllegalStateException If the specified directory if not a valid office template
    *     profile directory.
    */
-  public static void validateOfficeTemplateProfileDirectory(final File templateProfileDir) {
+  public static void validateOfficeTemplateProfileDirectory(
+      @Nullable final File templateProfileDir) {
 
     // Template profile directory is not required.
     if (templateProfileDir == null || new File(templateProfileDir, "user").isDirectory()) {

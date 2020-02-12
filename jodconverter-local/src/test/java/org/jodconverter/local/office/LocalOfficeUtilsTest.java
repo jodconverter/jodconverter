@@ -22,7 +22,6 @@ package org.jodconverter.local.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.isA;
@@ -47,6 +46,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests for the {@link LocalOfficeUtils} class. */
@@ -56,13 +56,8 @@ import org.jodconverter.core.test.util.AssertUtil;
 public class LocalOfficeUtilsTest {
 
   @Test
-  public void ctor_ClassWellDefined() {
+  public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(LocalOfficeUtils.class);
-  }
-
-  @Test
-  public void getDocumentFamily_WithNullDocument_ThrowNullPointerException() {
-    assertThatNullPointerException().isThrownBy(() -> LocalOfficeUtils.getDocumentFamily(null));
   }
 
   @Test(expected = OfficeException.class)
@@ -93,7 +88,7 @@ public class LocalOfficeUtilsTest {
   public void windowsToUrl() {
     assumeTrue(SystemUtils.IS_OS_WINDOWS);
 
-    String tempDir = System.getProperty("java.io.tmpdir");
+    String tempDir = OfficeUtils.getDefaultWorkingDir().getPath();
     final File tempDirFile = new File(tempDir);
     tempDir = FilenameUtils.normalizeNoEndSeparator(tempDir, true);
 
@@ -101,12 +96,6 @@ public class LocalOfficeUtilsTest {
         .isEqualTo("file:///" + tempDir + "/document.odt");
     assertThat(toUrl(new File(tempDirFile, "document with spaces.odt")))
         .isEqualTo("file:///" + tempDir + "/document%20with%20spaces.odt");
-  }
-
-  /** Tests the validateOfficeHome with null as argument. */
-  @Test
-  public void validateOfficeHome_WithNullOfficeHome_ThrowsIllegalStateException() {
-    assertThatIllegalStateException().isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(null));
   }
 
   /** Tests the validateOfficeHome with non directory file as argument. */
@@ -124,7 +113,7 @@ public class LocalOfficeUtilsTest {
   @Test
   public void validateOfficeHome_WithOfficeBinNotFound_ThrowsIllegalStateException() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File tempDir = OfficeUtils.getDefaultWorkingDir();
     final File officeHome = new File(tempDir, UUID.randomUUID().toString());
     officeHome.mkdirs();
     assertThatIllegalStateException()
@@ -143,7 +132,7 @@ public class LocalOfficeUtilsTest {
   @Test
   public void validateOfficeTemplateProfileDir_WithUserDirFound_ValidateSuccessfully() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File tempDir = OfficeUtils.getDefaultWorkingDir();
     final File profileDir = new File(tempDir, UUID.randomUUID().toString());
     new File(profileDir, "user").mkdirs();
     assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir))
@@ -154,7 +143,7 @@ public class LocalOfficeUtilsTest {
   @Test
   public void validateOfficeTemplateProfileDir_WithUserDirNotFound_ThrowsIllegalStateException() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File tempDir = OfficeUtils.getDefaultWorkingDir();
     final File profileDir = new File(tempDir, UUID.randomUUID().toString());
     profileDir.mkdirs();
     assertThatIllegalStateException()
@@ -176,7 +165,7 @@ public class LocalOfficeUtilsTest {
   @Test
   public void validateOfficeWorkingDirectory_WithUnexistingDirectory_ThrowsIllegalStateException() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File tempDir = OfficeUtils.getDefaultWorkingDir();
     final File workingDir = new File(tempDir, UUID.randomUUID().toString());
     assertThatIllegalStateException()
         .isThrownBy(() -> LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir));
@@ -186,7 +175,7 @@ public class LocalOfficeUtilsTest {
   @Test
   public void validateOfficeWorkingDirectory_WithReadOnlyDirectory_ThrowsIllegalStateException() {
 
-    final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    final File tempDir = OfficeUtils.getDefaultWorkingDir();
     final File workingDir = new File(tempDir, UUID.randomUUID().toString());
     workingDir.setWritable(false);
     assertThatIllegalStateException()

@@ -21,6 +21,8 @@ package org.jodconverter.local.process;
 
 import java.io.IOException;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /** Provides services required to manage a running process. */
 public interface ProcessManager {
 
@@ -53,5 +55,5 @@ public interface ProcessManager {
    * @param pid The id of the process to kill.
    * @throws IOException If an IO error occurs.
    */
-  void kill(Process process, long pid) throws IOException;
+  void kill(@Nullable Process process, long pid) throws IOException;
 }

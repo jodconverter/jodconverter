@@ -51,7 +51,7 @@ final class DumpJsonDefaultDocumentFormatRegistry {
     LOGGER.info(gson.toJson(formats.values()));
   }
 
-  // Private ctor.
+  // Private constructor.
   private DumpJsonDefaultDocumentFormatRegistry() {
     super();
   }

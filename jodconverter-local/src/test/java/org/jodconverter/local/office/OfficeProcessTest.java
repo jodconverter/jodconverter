@@ -31,6 +31,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -42,6 +43,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.ProcessQuery;
@@ -78,20 +80,25 @@ public class OfficeProcessTest {
   @Test
   public void checkForExistingProcess_WhenIoExceptionCatched_TrowsOfficeException() {
 
-    final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
-    config.setProcessManager(
-        new ProcessManager() {
-          @Override
-          public void kill(final Process process, final long pid) throws IOException {
-            throw new IOException();
-          }
+    final OfficeProcess process =
+        new OfficeProcess(
+            new OfficeUrl(2002),
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            new ProcessManager() {
+              @Override
+              public void kill(@Nullable final Process process, final long pid) throws IOException {
+                throw new IOException();
+              }
 
-          @Override
-          public long findPid(final ProcessQuery query) throws IOException {
-            throw new IOException();
-          }
-        });
-    final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
+              @Override
+              public long findPid(final ProcessQuery query) throws IOException {
+                throw new IOException();
+              }
+            },
+            null,
+            null,
+            null);
 
     assertThatExceptionOfType(OfficeException.class)
         .isThrownBy(
@@ -116,9 +123,17 @@ public class OfficeProcessTest {
 
     doThrow(new IOException()).when(FileUtils.class, "deleteDirectory", isA(File.class));
 
-    final OfficeProcessConfig config = new OfficeProcessConfig(null, workingDir, null);
-    final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
-    final File instanceProfileDir = Whitebox.invokeMethod(process, "getInstanceProfileDir");
+    final OfficeProcess process =
+        new OfficeProcess(
+            new OfficeUrl(2002),
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            workingDir,
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null);
+
+    final File instanceProfileDir = Whitebox.getInternalState(process, "instanceProfileDir");
     instanceProfileDir.mkdirs();
     Whitebox.invokeMethod(process, "deleteInstanceProfileDir");
 
@@ -143,9 +158,17 @@ public class OfficeProcessTest {
 
     doThrow(new IOException()).when(FileUtils.class, "deleteDirectory", isA(File.class));
 
-    final OfficeProcessConfig config = new OfficeProcessConfig(null, workingDir, null);
-    final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
-    final File instanceProfileDir = Whitebox.invokeMethod(process, "getInstanceProfileDir");
+    final OfficeProcess process =
+        new OfficeProcess(
+            new OfficeUrl(2002),
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            workingDir,
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null);
+
+    final File instanceProfileDir = Whitebox.getInternalState(process, "instanceProfileDir");
     Whitebox.invokeMethod(process, "deleteInstanceProfileDir");
 
     assertThat(
@@ -160,20 +183,26 @@ public class OfficeProcessTest {
   @Test
   public void forciblyTerminate_WhenIoExceptionCatched_TrowsOfficeException() {
 
-    final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
-    config.setProcessManager(
-        new ProcessManager() {
-          @Override
-          public void kill(final Process process, final long pid) throws IOException {
-            throw new IOException();
-          }
+    final OfficeProcess process =
+        new OfficeProcess(
+            new OfficeUrl(2002),
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            new ProcessManager() {
+              @Override
+              public void kill(@Nullable final Process process, final long pid) throws IOException {
+                throw new IOException();
+              }
 
-          @Override
-          public long findPid(final ProcessQuery query) {
-            return PID_NOT_FOUND;
-          }
-        });
-    final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
+              @Override
+              public long findPid(final ProcessQuery query) {
+                return PID_NOT_FOUND;
+              }
+            },
+            null,
+            null,
+            null);
+
     Whitebox.setInternalState(process, "pid", 0L);
 
     final VerboseProcess verboseProcess = mock(VerboseProcess.class);
@@ -190,8 +219,16 @@ public class OfficeProcessTest {
   public void forciblyTerminate_WhenNotStarted_ShouldReturn0()
       throws RetryTimeoutException, OfficeException {
 
-    final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
-    final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
+    final OfficeProcess process =
+        new OfficeProcess(
+            new OfficeUrl(2002),
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null);
+
     assertThat(process.forciblyTerminate(0L, 0L)).isEqualTo(0);
   }
 
@@ -199,8 +236,15 @@ public class OfficeProcessTest {
   public void getExitCode_WhenNotStarted_ShouldReturn0()
       throws RetryTimeoutException, OfficeException {
 
-    final OfficeProcessConfig config = new OfficeProcessConfig(null, null, null);
-    final OfficeProcess process = new OfficeProcess(new OfficeUrl(2002), config);
+    final OfficeProcess process =
+        new OfficeProcess(
+            new OfficeUrl(2002),
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null);
 
     assertThat(process.getExitCode()).isEqualTo(0);
     assertThat(process.getExitCode(0L, 0L)).isEqualTo(0);

@@ -42,7 +42,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
   private static final Integer EXIT_CODE_81 = 81;
   private static final Logger LOGGER = LoggerFactory.getLogger(StartProcessRetryable.class);
 
-  private final OfficeProcessConfig processConfig;
+  private final ProcessManager processManager;
   private final ProcessBuilder processBuilder;
   private final ProcessQuery processQuery;
   private VerboseProcess process;
@@ -52,17 +52,17 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
   /**
    * Creates a new instance of the class.
    *
-   * @param processConfig The office process configuration.
+   * @param processManager The office process manager used to find the process id.
    * @param processBuilder The builder used to build the start the process.
    * @param processQuery The process query.
    */
   public StartProcessRetryable(
-      final OfficeProcessConfig processConfig,
+      final ProcessManager processManager,
       final ProcessBuilder processBuilder,
       final ProcessQuery processQuery) {
     super();
 
-    this.processConfig = processConfig;
+    this.processManager = processManager;
     this.processBuilder = processBuilder;
     this.processQuery = processQuery;
   }
@@ -78,7 +78,6 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
     process = new VerboseProcess(processBuilder.start());
 
     // Try to retrieve the PID.
-    final ProcessManager processManager = processConfig.getProcessManager();
 
     // Add an initial delay for FreeBSD. Without this delay, on FreeBSD only, the
     // OfficeConnection.connect() will hang for more than 5 minutes before throwing
@@ -90,7 +89,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
     }
 
     // Try to retrieve the PID.
-    tryFindPid(processManager);
+    tryFindPid();
 
     if (exitCode != null) {
 
@@ -136,7 +135,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
     return processId;
   }
 
-  private void tryFindPid(final ProcessManager processManager) throws IOException {
+  private void tryFindPid() throws IOException {
 
     int tryCount = 0;
     while (true) {

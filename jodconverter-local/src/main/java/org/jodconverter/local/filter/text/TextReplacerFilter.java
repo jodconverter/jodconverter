@@ -55,8 +55,8 @@ public class TextReplacerFilter implements Filter {
     super();
 
     // Both arrays are required and cannot be empty
-    Validate.notEmpty(searchList, "Search list is empty");
-    Validate.notEmpty(replacementList, "Replacement list is empty");
+    Validate.notEmpty(searchList, "searchList must not be null nor empty");
+    Validate.notEmpty(replacementList, "replacementList must not be null nor empty");
 
     // Make sure lengths are ok, these need to be equal
     final int searchLength = searchList.length;
@@ -93,17 +93,17 @@ public class TextReplacerFilter implements Filter {
     final XReplaceable replaceable = Lo.qi(XReplaceable.class, document);
 
     // We need a descriptor to set properties for Replace
-    final XReplaceDescriptor replaceDescr = replaceable.createReplaceDescriptor();
+    final XReplaceDescriptor replaceDesc = replaceable.createReplaceDescriptor();
 
     LOGGER.debug("Changing all occurrences of ...");
     for (int i = 0; i < searchList.length; i++) {
       LOGGER.debug("{} -> {}", searchList[i], replacementList[i]);
       // Set the properties the replace method need
-      replaceDescr.setSearchString(searchList[i]);
-      replaceDescr.setReplaceString(replacementList[i]);
+      replaceDesc.setSearchString(searchList[i]);
+      replaceDesc.setReplaceString(replacementList[i]);
 
       // Replace all words
-      replaceable.replaceAll(replaceDescr);
+      replaceable.replaceAll(replaceDesc);
     }
   }
 }

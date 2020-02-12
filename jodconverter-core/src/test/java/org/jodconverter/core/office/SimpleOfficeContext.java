@@ -19,24 +19,5 @@
 
 package org.jodconverter.core.office;
 
-/**
- * This class holds the configuration of an {@link SimpleOfficeManagerPoolEntry} when no office
- * instance are required to execute conversion.
- *
- * @see SimpleOfficeManagerPoolEntry
- * @see OfficeManagerPoolEntryConfig
- */
-class SimpleOfficeManagerPoolEntryConfig implements OfficeManagerPoolEntryConfig {
-
-  private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
-
-  @Override
-  public long getTaskExecutionTimeout() {
-    return taskExecutionTimeout;
-  }
-
-  @Override
-  public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
-    this.taskExecutionTimeout = taskExecutionTimeout;
-  }
-}
+/** {@link OfficeContext} pool implementation that does not depend on an office installation. */
+public final class SimpleOfficeContext implements OfficeContext {}

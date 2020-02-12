@@ -19,12 +19,14 @@
 
 package org.jodconverter.remote;
 
+import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.job.AbstractConversionJob;
 import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecified;
 import org.jodconverter.core.job.AbstractConverter;
 import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
 import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.remote.office.RemoteOfficeManager;
@@ -124,7 +126,7 @@ public class RemoteConverter extends AbstractConverter {
    */
   public static final class Builder extends AbstractConverterBuilder<Builder> {
 
-    // Private ctor so only RemoteConverter can create an instance of this builder.
+    // Private constructor so only RemoteConverter can create an instance of this builder.
     private Builder() {
       super();
     }
@@ -132,8 +134,20 @@ public class RemoteConverter extends AbstractConverter {
     @Override
     public RemoteConverter build() {
 
+      // An office manager is required.
+      OfficeManager manager = officeManager;
+      if (manager == null) {
+        manager = InstalledOfficeManagerHolder.getInstance();
+        if (manager == null) {
+          throw new IllegalStateException(
+              "An office manager is required in order to build a converter.");
+        }
+      }
+
       // Create the converter
-      return new RemoteConverter(officeManager, formatRegistry);
+      return new RemoteConverter(
+          manager,
+          formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry);
     }
   }
 }

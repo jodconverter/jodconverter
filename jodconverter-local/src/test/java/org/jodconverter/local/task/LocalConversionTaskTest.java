@@ -112,7 +112,9 @@ public class LocalConversionTaskTest {
     @Override
     public DocumentFormat getFormat() {
       final DocumentFormat fmt = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
-      fmt.getStoreProperties().clear();
+      if (fmt.getStoreProperties() != null) {
+        fmt.getStoreProperties().clear();
+      }
       return fmt;
     }
   }

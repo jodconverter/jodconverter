@@ -20,17 +20,22 @@
 package org.jodconverter.core.office;
 
 import java.io.File;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * {@link OfficeManager} pool implementation that does not depend on an office installation to
- * process conversion taks.
+ * process conversion tasks.
  */
 public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
 
-  private final int poolSize;
+  // The default size of the pool
+  private static final int DEFAULT_POOL_SIZE = 1;
+  // The maximum size of the pool.
+  private static final int MAX_POOL_SIZE = 1000;
 
   /**
    * Creates a new builder instance.
@@ -62,19 +67,17 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
     return builder().install().build();
   }
 
-  private SimpleOfficeManager(final int poolSize, final SimpleOfficeManagerPoolConfig config) {
-    super(poolSize, config);
+  private SimpleOfficeManager(
+      final File workingDir,
+      final int poolSize,
+      @Nullable final Long taskExecutionTimeout,
+      @Nullable final Long taskQueueTimeout) {
+    super(workingDir, poolSize, taskQueueTimeout);
 
-    this.poolSize = poolSize;
-  }
-
-  @Override
-  protected SimpleOfficeManagerPoolEntry[] createPoolEntries() {
-
-    return IntStream.range(0, poolSize)
-        .mapToObj(
-            i -> new SimpleOfficeManagerPoolEntry((SimpleOfficeManagerPoolEntryConfig) config))
-        .toArray(SimpleOfficeManagerPoolEntry[]::new);
+    setEntries(
+        IntStream.range(0, poolSize)
+            .mapToObj(i -> new SimpleOfficeManagerPoolEntry(taskExecutionTimeout))
+            .collect(Collectors.toList()));
   }
 
   /**
@@ -84,15 +87,9 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
    */
   public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
 
-    /** The default size of the pool. */
-    public static final int DEFAULT_POOL_SIZE = 1;
+    private Integer poolSize;
 
-    /** The maximum size of the pool. */
-    public static final int MAX_POOL_SIZE = 1000;
-
-    private int poolSize = DEFAULT_POOL_SIZE;
-
-    // Private ctor so only SimpleOfficeManager can initialize an instance of this builder.
+    // Private constructor so only SimpleOfficeManager can initialize an instance of this builder.
     private Builder() {
       super();
     }
@@ -101,14 +98,15 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
     public SimpleOfficeManager build() {
 
       if (workingDir == null) {
-        workingDir = new File(System.getProperty("java.io.tmpdir"));
+        workingDir = OfficeUtils.getDefaultWorkingDir();
       }
 
-      final SimpleOfficeManagerPoolConfig config = new SimpleOfficeManagerPoolConfig(workingDir);
-      config.setTaskExecutionTimeout(taskExecutionTimeout);
-      config.setTaskQueueTimeout(taskQueueTimeout);
-
-      final SimpleOfficeManager manager = new SimpleOfficeManager(poolSize, config);
+      final SimpleOfficeManager manager =
+          new SimpleOfficeManager(
+              workingDir,
+              poolSize == null ? DEFAULT_POOL_SIZE : poolSize,
+              taskExecutionTimeout,
+              taskQueueTimeout);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
@@ -121,13 +119,15 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
      * @param poolSize The pool size.
      * @return This builder instance.
      */
-    public Builder poolSize(final int poolSize) {
+    public Builder poolSize(@Nullable final Integer poolSize) {
 
-      Validate.inclusiveBetween(
-          0,
-          MAX_POOL_SIZE,
-          poolSize,
-          String.format("The poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
+      if (poolSize != null) {
+        Validate.inclusiveBetween(
+            0,
+            MAX_POOL_SIZE,
+            poolSize,
+            String.format("poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
+      }
       this.poolSize = poolSize;
       return this;
     }

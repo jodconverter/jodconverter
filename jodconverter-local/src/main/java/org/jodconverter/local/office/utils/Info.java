@@ -22,7 +22,6 @@ package org.jodconverter.local.office.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.XComponent;
@@ -30,6 +29,7 @@ import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.XComponentContext;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,36 +79,39 @@ public final class Info {
    * Gets the office product name for the given context.
    *
    * @param context The context.
-   * @return The office product name, or {@code} if it could not be retrieved.
+   * @return The office product name, or {@code null} if it could not be retrieved.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
+  @Nullable
   public static String getOfficeName(final XComponentContext context) {
-    return getConfig(context, "ooName").orElse(null);
+    return getConfig(context, "ooName");
   }
 
   /**
    * Gets the office product version (long representation) for the given context, e.g 6.1.0.3
    *
    * @param context The context.
-   * @return The office product version, or {@code} if it could not be retrieved.
+   * @return The office product version, or {@code null} if it could not be retrieved.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
+  @Nullable
   public static String getOfficeVersionLong(final XComponentContext context) {
-    return getConfig(context, "ooSetupVersionAboutBox").orElse(null);
+    return getConfig(context, "ooSetupVersionAboutBox");
   }
 
   /**
    * Gets the office product version (short representation) for the given context, e.g 6.1
    *
    * @param context The context.
-   * @return The office product version, or {@code} if it could not be retrieved.
+   * @return The office product version, or {@code null} if it could not be retrieved.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
+  @Nullable
   public static String getOfficeVersionShort(final XComponentContext context) {
-    return getConfig(context, "ooSetupVersion").orElse(null);
+    return getConfig(context, "ooSetupVersion");
   }
 
   /**
@@ -120,7 +123,7 @@ public final class Info {
    * @return -1 if version1 &lt; version2, 1 if version1 &gt; version2, 0 if version1 = version2.
    */
   public static int compareVersions(
-      final String version1, final String version2, final int length) {
+      @Nullable final String version1, @Nullable final String version2, final int length) {
 
     if (version1 == null && version2 == null) {
       return 0;
@@ -162,19 +165,20 @@ public final class Info {
    *
    * @param context The main context.
    * @param propName The property name of the property value to get.
-   * @return An optional containing the property value.
+   * @return The property value, or null if not found.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  public static Optional<String> getConfig(final XComponentContext context, final String propName) {
+  @Nullable
+  public static String getConfig(final XComponentContext context, final String propName) {
 
     for (final String nodePath : NODE_PATHS) {
-      final Optional<Object> info = getConfig(context, nodePath, propName);
-      if (info.isPresent()) {
-        return info.map(String.class::cast);
+      final Object info = getConfig(context, nodePath, propName);
+      if (info != null) {
+        return (String) info;
       }
     }
-    return Optional.empty();
+    return null;
   }
 
   /**
@@ -183,15 +187,77 @@ public final class Info {
    * @param context The main context.
    * @param nodePath The path for which the properties are get.
    * @param propName The property name of the property value to get.
-   * @return An optional containing the property value.
+   * @return The property value, or null if not found.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  public static Optional<Object> getConfig(
+  @Nullable
+  public static Object getConfig(
       final XComponentContext context, final String nodePath, final String propName) {
+    final XPropertySet set = getConfigProperties(context, nodePath);
+    if (set == null) {
+      return null;
+    }
+    return Props.getProperty(set, propName);
+  }
 
-    return getConfigProperties(context, nodePath)
-        .flatMap(props -> Props.getProperty(props, propName));
+  /**
+   * Gets the configuration provider for the given context.
+   *
+   * @param context The main context.
+   * @return The {@link XMultiServiceFactory} service, or null if not available.
+   */
+  @Nullable
+  public static XMultiServiceFactory getConfigProvider(final XComponentContext context) {
+    return Lo.createInstanceMCF(
+        context, XMultiServiceFactory.class, "com.sun.star.configuration.ConfigurationProvider");
+  }
+
+  @Nullable
+  private static Object getConfigAccess(
+      final XComponentContext context, final String serviceSpecifier, final String nodePath) {
+
+    final XMultiServiceFactory provider = getConfigProvider(context);
+    if (provider == null) {
+      LOGGER.debug("Could not create configuration provider");
+      return null;
+    }
+
+    // Specifies the location of the view root in the configuration.
+    try {
+      return provider.createInstanceWithArguments(
+          serviceSpecifier, Props.makeProperties("nodepath", nodePath));
+    } catch (Exception ex) {
+      LOGGER.debug("Unable to access config for: " + nodePath, ex);
+    }
+
+    return null;
+  }
+
+  /**
+   * Gets the read-only configuration access for the specified path.
+   *
+   * @param context The main context.
+   * @param nodePath The path for which the configuration access is get.
+   * @return The read-only configuration access service, or null if not available.
+   */
+  @Nullable
+  public static Object getConfigAccess(final XComponentContext context, final String nodePath) {
+    return getConfigAccess(context, "com.sun.star.configuration.ConfigurationAccess", nodePath);
+  }
+
+  /**
+   * Gets the updatable configuration access for the specified path.
+   *
+   * @param context The main context.
+   * @param nodePath The path for which the configuration access is get.
+   * @return The updatable configuration access service, or null if not available.
+   */
+  @Nullable
+  public static Object getConfigUpdateAccess(
+      final XComponentContext context, final String nodePath) {
+    return getConfigAccess(
+        context, "com.sun.star.configuration.ConfigurationUpdateAccess", nodePath);
   }
 
   /**
@@ -199,36 +265,20 @@ public final class Info {
    *
    * @param context The main context.
    * @param nodePath The path for which the properties are get.
-   * @return An optional {@link XPropertySet} containing the configuration properties for the
-   *     specified path.
+   * @return A {@link XPropertySet} containing the configuration properties for the specified path,
+   *     or null if not found.
    */
-  public static Optional<XPropertySet> getConfigProperties(
+  @Nullable
+  public static XPropertySet getConfigProperties(
       final XComponentContext context, final String nodePath) {
 
-    // Create the configuration provider and remember it as a XMultiServiceFactory
-    final XMultiServiceFactory provider =
-        Lo.createInstanceMCF(
-            context,
-            XMultiServiceFactory.class,
-            "com.sun.star.configuration.ConfigurationProvider");
-    if (provider == null) {
-      LOGGER.debug("Could not create configuration provider");
-      return Optional.empty();
+    final Object configAccess = getConfigAccess(context, nodePath);
+    if (configAccess == null) {
+      LOGGER.debug("Could not create configuration access service");
+      return null;
     }
 
-    // Specifies the location of the view root in the configuration.
-    try {
-      return Optional.ofNullable(
-          Lo.qi(
-              XPropertySet.class,
-              provider.createInstanceWithArguments(
-                  "com.sun.star.configuration.ConfigurationAccess",
-                  Props.makeProperties("nodepath", nodePath))));
-    } catch (Exception ex) {
-      LOGGER.debug("Unable to access config properties for: " + nodePath, ex);
-    }
-
-    return Optional.empty();
+    return Lo.qi(XPropertySet.class, configAccess);
   }
 
   /**

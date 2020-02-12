@@ -21,13 +21,16 @@ package org.jodconverter.local.office;
 
 import java.io.File;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.AbstractOfficeManager;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.OfficeTask;
 
 /**
@@ -53,19 +56,24 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExternalOfficeManager.class);
 
-  /** The default port number to connect to office. */
+  // The default port number to connect to office.
   public static final int DEFAULT_PORT_NUMBER = 2002;
-  /** The default pipe name to connect to office. */
+  // The default pipe name to connect to office.
   public static final String DEFAULT_PIPE_NAME = "office";
-  /** The default initial delay when connecting to office. */
+  // The default value for connection on start.
+  public static final boolean DEFAULT_CONNECT_ON_START = true;
+  // The default initial delay when connecting to office.
   public static final long DEFAULT_INITIAL_DELAY = 0L; // No delay
-  /** The default timeout when connecting to office. */
+  // The default timeout when connecting to office.
   public static final long DEFAULT_CONNECT_TIMEOUT = 120_000L; // 2 minutes
-  /** The default delay between each try to connect. */
+  // The default delay between each try to connect.
   public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.
-  /** The maximum value for the delay between each try to connect. */
+  // The maximum value for the delay between each try to connect.
   public static final long MAX_RETRY_INTERVAL = 10_000L; // 10 sec.
 
+  private final boolean connectOnStart;
+  private final long connectTimeout;
+  private final long retryInterval;
   private final OfficeConnection connection;
 
   /**
@@ -103,13 +111,26 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
    * Constructs a new instance of the class with the specified arguments.
    *
    * @param officeUrl The office URL.
-   * @param config The manager configuration.
+   * @param workingDir The directory where temporary files and directories are created.
+   * @param connectOnStart Should a connection be attempted on start? If {@code false}, a connection
+   *     will only be attempted the first time an {@link org.jodconverter.core.task.OfficeTask} is
+   *     executed.
+   * @param connectTimeout Timeout after which a connection attempt will fail.
+   * @param retryInterval Timeout between each try to connect.
    */
   private ExternalOfficeManager(
-      final OfficeUrl officeUrl, final ExternalOfficeManagerConfig config) {
-    super(config);
+      final OfficeUrl officeUrl,
+      final File workingDir,
+      @Nullable final Boolean connectOnStart,
+      @Nullable final Long connectTimeout,
+      @Nullable final Long retryInterval) {
+    super(workingDir);
 
     connection = new OfficeConnection(officeUrl);
+
+    this.connectOnStart = connectOnStart == null ? DEFAULT_CONNECT_ON_START : connectOnStart;
+    this.connectTimeout = connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT : connectTimeout;
+    this.retryInterval = retryInterval == null ? DEFAULT_RETRY_INTERVAL : retryInterval;
   }
 
   private void connect() throws OfficeException {
@@ -117,9 +138,8 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
     LOGGER.debug("Connecting to external office process...");
     try {
       // TODO: Add configuration field for initial delay
-      final ExternalOfficeManagerConfig mconfig = (ExternalOfficeManagerConfig) config;
       new ConnectRetryable(connection)
-          .execute(DEFAULT_INITIAL_DELAY, mconfig.getRetryInterval(), mconfig.getConnectTimeout());
+          .execute(DEFAULT_INITIAL_DELAY, retryInterval, connectTimeout);
 
     } catch (Exception ex) {
       throw new OfficeException("Could not establish connection to external office process", ex);
@@ -146,7 +166,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
   @Override
   public void start() throws OfficeException {
 
-    if (((ExternalOfficeManagerConfig) config).isConnectOnStart()) {
+    if (connectOnStart) {
       synchronized (connection) {
         connect();
 
@@ -178,13 +198,13 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
 
     // OfficeProcessManager
     private OfficeConnectionProtocol connectionProtocol = OfficeConnectionProtocol.SOCKET;
-    private int portNumber = DEFAULT_PORT_NUMBER;
-    private String pipeName = DEFAULT_PIPE_NAME;
-    private boolean connectOnStart = true;
-    private long connectTimeout = DEFAULT_CONNECT_TIMEOUT;
-    private long retryInterval = DEFAULT_RETRY_INTERVAL;
+    private Integer portNumber;
+    private String pipeName;
+    private Boolean connectOnStart;
+    private Long connectTimeout;
+    private Long retryInterval;
 
-    // Private ctor so only LocalOfficeManager can initialize an instance of this builder.
+    // Private constructor so only LocalOfficeManager can initialize an instance of this builder.
     private Builder() {
       super();
     }
@@ -193,7 +213,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
     public ExternalOfficeManager build() {
 
       if (workingDir == null) {
-        workingDir = new File(System.getProperty("java.io.tmpdir"));
+        workingDir = OfficeUtils.getDefaultWorkingDir();
       }
 
       // Validate the office directories
@@ -203,10 +223,14 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
       final ExternalOfficeManager manager =
           new ExternalOfficeManager(
               connectionProtocol == OfficeConnectionProtocol.SOCKET
-                  ? new OfficeUrl(portNumber)
-                  : pipeName == null ? new OfficeUrl(2002) : new OfficeUrl(pipeName),
-              new ExternalOfficeManagerConfig(
-                  workingDir, connectOnStart, connectTimeout, retryInterval));
+                  ? (portNumber == null
+                      ? new OfficeUrl(DEFAULT_PORT_NUMBER)
+                      : new OfficeUrl(portNumber))
+                  : (pipeName == null ? new OfficeUrl(DEFAULT_PIPE_NAME) : new OfficeUrl(pipeName)),
+              workingDir,
+              connectOnStart,
+              connectTimeout,
+              retryInterval);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
@@ -219,9 +243,8 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param connectionProtocol The new protocol to use.
      * @return This builder instance.
      */
-    public Builder connectionProtocol(final OfficeConnectionProtocol connectionProtocol) {
+    public Builder connectionProtocol(@Nullable final OfficeConnectionProtocol connectionProtocol) {
 
-      Validate.notNull(connectionProtocol, "The protocol must not be null");
       this.connectionProtocol = connectionProtocol;
       return this;
     }
@@ -232,10 +255,11 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param pipeName The pipe name to use.
      * @return This builder instance.
      */
-    public Builder pipeName(final String pipeName) {
+    public Builder pipeName(@Nullable final String pipeName) {
 
-      Validate.notBlank(pipeName, "The pipe name must not be blank");
-      this.pipeName = pipeName;
+      if (StringUtils.isNotBlank(pipeName)) {
+        this.pipeName = pipeName;
+      }
       return this;
     }
 
@@ -245,7 +269,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param portNumber The port number to use.
      * @return This builder instance.
      */
-    public Builder portNumber(final int portNumber) {
+    public Builder portNumber(@Nullable final Integer portNumber) {
 
       this.portNumber = portNumber;
       return this;
@@ -255,12 +279,12 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * Specifies whether a connection must be attempted on {@link #start()}? If <em>false</em>, a
      * connection will only be attempted the first time an {@link OfficeTask} is executed.
      *
-     * <p>&nbsp; <b><i>Default</i></b>: truw
+     * <p>&nbsp; <b><i>Default</i></b>: true
      *
      * @param connectOnStart {@code true} to connect on start, {@code false} otherwise.
      * @return This builder instance.
      */
-    public Builder connectOnStart(final boolean connectOnStart) {
+    public Builder connectOnStart(@Nullable final Boolean connectOnStart) {
 
       this.connectOnStart = connectOnStart;
       return this;
@@ -274,14 +298,15 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param connectTimeout the process timeout, in milliseconds.
      * @return This builder instance.
      */
-    public Builder connectTimeout(final long connectTimeout) {
+    public Builder connectTimeout(@Nullable final Long connectTimeout) {
 
-      Validate.inclusiveBetween(
-          0,
-          Long.MAX_VALUE,
-          connectTimeout,
-          String.format(
-              "The connectTimeout %s must be greater than or equal to 0", connectTimeout));
+      if (connectTimeout != null) {
+        Validate.inclusiveBetween(
+            0,
+            Long.MAX_VALUE,
+            connectTimeout,
+            String.format("connectTimeout %s must be greater than or equal to 0", connectTimeout));
+      }
       this.connectTimeout = connectTimeout;
       return this;
     }
@@ -294,15 +319,17 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param retryInterval the retry interval, in milliseconds.
      * @return This builder instance.
      */
-    public Builder retryInterval(final long retryInterval) {
+    public Builder retryInterval(@Nullable final Long retryInterval) {
 
-      Validate.inclusiveBetween(
-          0,
-          MAX_RETRY_INTERVAL,
-          retryInterval,
-          String.format(
-              "The retryInterval %s must be in the inclusive range of %s to %s",
-              retryInterval, 0, MAX_RETRY_INTERVAL));
+      if (retryInterval != null) {
+        Validate.inclusiveBetween(
+            0,
+            MAX_RETRY_INTERVAL,
+            retryInterval,
+            String.format(
+                "retryInterval %s must be in the inclusive range of %s to %s",
+                retryInterval, 0, MAX_RETRY_INTERVAL));
+      }
       this.retryInterval = retryInterval;
       return this;
     }

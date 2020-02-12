@@ -135,18 +135,18 @@ public class LocalConverterITest {
   public void testCustomProperties() {
 
     assertThat(
-            converter
-                .getFormatRegistry()
-                .getFormatByExtension("txt")
-                .getLoadProperties()
+            Objects.requireNonNull(
+                    Objects.requireNonNull(
+                            converter.getFormatRegistry().getFormatByExtension("txt"))
+                        .getLoadProperties())
                 .get("FilterOptions"))
         .isEqualTo("utf16");
 
     assertThat(
-            converter
-                .getFormatRegistry()
-                .getFormatByExtension("txt")
-                .getStoreProperties()
+            Objects.requireNonNull(
+                    Objects.requireNonNull(
+                            converter.getFormatRegistry().getFormatByExtension("txt"))
+                        .getStoreProperties())
                 .get(DocumentFamily.TEXT)
                 .get("FilterOptions"))
         .isEqualTo("utf16");

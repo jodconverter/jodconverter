@@ -34,12 +34,15 @@ import java.util.concurrent.TimeoutException;
 import com.sun.star.frame.TerminationVetoException;
 import com.sun.star.frame.XTerminateListener;
 import com.sun.star.lang.EventObject;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.RetryTimeoutException;
+import org.jodconverter.core.test.util.TestUtil;
 import org.jodconverter.local.process.PureJavaProcessManager;
 
 /** Contains tests for the {@link OfficeProcessManagerPoolEntry} class. */
@@ -51,13 +54,6 @@ public class OfficeProcessManagerPoolEntryITest {
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long RESTART_INITIAL_WAIT = 5_000L; // 5 Seconds.
   private static final long RESTART_WAIT_TIMEOUT = 15_000L; // 10 Seconds.
-
-  private static void sleep(final long millisec) {
-    try {
-      Thread.sleep(millisec);
-    } catch (InterruptedException ignore) {
-    }
-  }
 
   private static class VetoTerminateListener implements XTerminateListener {
 
@@ -79,33 +75,36 @@ public class OfficeProcessManagerPoolEntryITest {
     }
   }
 
-  private static OfficeProcess startOfficeProcess(final OfficeUrl officeUrl)
-      throws OfficeException {
+  private static OfficeProcess startOfficeProcess() throws OfficeException {
 
     // Starts an office process
-    final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
-    officeProcess.start();
-    sleep(2_000L);
-    final Integer exitCode = officeProcess.getExitCode();
+    final OfficeProcess process =
+        new OfficeProcess(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null);
+    process.start();
+    TestUtil.sleepQuietly(2_000L);
+    final Integer exitCode = process.getExitCode();
     if (exitCode != null && exitCode.equals(81)) {
-      officeProcess.start(true);
-      sleep(2_000L);
+      process.start(true);
+      TestUtil.sleepQuietly(2_000L);
     }
-    return officeProcess;
+    return process;
   }
 
   private static void assertRestartedAndReconnected(
-      final OfficeProcessManagerPoolEntry officeManager,
-      final long initialWait,
-      final long timeout) {
+      final OfficeProcessManagerPoolEntry officeManager) {
 
     final long start = System.currentTimeMillis();
 
-    if (initialWait > 0) {
-      sleep(initialWait);
-    }
+    TestUtil.sleepQuietly(RESTART_INITIAL_WAIT);
 
-    final long limit = start + timeout;
+    final long limit = start + RESTART_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (getOfficeProcess(officeManager).isRunning()
           && getConnection(officeManager).isConnected()) {
@@ -113,7 +112,7 @@ public class OfficeProcessManagerPoolEntryITest {
       }
 
       // Wait a sec
-      sleep(1_000L);
+      TestUtil.sleepQuietly(1_000L);
     }
 
     // Times out...
@@ -137,8 +136,20 @@ public class OfficeProcessManagerPoolEntryITest {
   @Test
   public void executeTask() throws OfficeException, RetryTimeoutException {
 
-    final OfficeProcessManagerPoolEntry manager = new OfficeProcessManagerPoolEntry(CONNECT_URL);
-
+    final OfficeProcessManagerPoolEntry manager =
+        new OfficeProcessManagerPoolEntry(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
     try {
       manager.start();
       assertThat(manager.isRunning()).isTrue();
@@ -187,8 +198,20 @@ public class OfficeProcessManagerPoolEntryITest {
   public void execute_WhenOfficeProcessCrash_ShouldRestartAfterCrash()
       throws OfficeException, RetryTimeoutException {
 
-    final OfficeProcessManagerPoolEntry manager = new OfficeProcessManagerPoolEntry(CONNECT_URL);
-
+    final OfficeProcessManagerPoolEntry manager =
+        new OfficeProcessManagerPoolEntry(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
     try {
       manager.start();
       assertThat(manager.isRunning()).isTrue();
@@ -203,7 +226,7 @@ public class OfficeProcessManagerPoolEntryITest {
         final Callable<Boolean> task = new RestartAfterCrashTask(manager);
         final Future<Boolean> future = pool.submit(task);
 
-        sleep(500L);
+        TestUtil.sleepQuietly(500L);
 
         // Simulate crash
         final VerboseProcess verboseProcess =
@@ -226,7 +249,7 @@ public class OfficeProcessManagerPoolEntryITest {
         pool.shutdownNow();
       }
 
-      assertRestartedAndReconnected(manager, RESTART_INITIAL_WAIT, RESTART_WAIT_TIMEOUT);
+      assertRestartedAndReconnected(manager);
 
       final MockOfficeTask goodTask = new MockOfficeTask();
       manager.execute(goodTask);
@@ -249,11 +272,20 @@ public class OfficeProcessManagerPoolEntryITest {
   public void execute_WhenTimeoutExceptionOccured_ShouldRestartAfterTaskTimeout()
       throws OfficeException, RetryTimeoutException {
 
-    final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
-    config.setTaskExecutionTimeout(1_500L);
     final OfficeProcessManagerPoolEntry manager =
-        new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
-
+        new OfficeProcessManagerPoolEntry(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            1_500L,
+            null,
+            null);
     try {
       manager.start();
       assertThat(manager.isRunning()).isTrue();
@@ -268,7 +300,7 @@ public class OfficeProcessManagerPoolEntryITest {
           .isThrownBy(() -> manager.execute(task))
           .withCauseExactlyInstanceOf(TimeoutException.class);
 
-      assertRestartedAndReconnected(manager, RESTART_INITIAL_WAIT, RESTART_WAIT_TIMEOUT);
+      assertRestartedAndReconnected(manager);
 
       final MockOfficeTask goodTask = new MockOfficeTask();
       manager.execute(goodTask);
@@ -293,11 +325,20 @@ public class OfficeProcessManagerPoolEntryITest {
   public void execute_WhenMaxTasksPerProcessReached_ShouldRestart()
       throws OfficeException, RetryTimeoutException {
 
-    final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
-    config.setMaxTasksPerProcess(3);
     final OfficeProcessManagerPoolEntry manager =
-        new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
-
+        new OfficeProcessManagerPoolEntry(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            3,
+            null);
     try {
       manager.start();
       assertThat(manager.isRunning()).isTrue();
@@ -335,9 +376,22 @@ public class OfficeProcessManagerPoolEntryITest {
       throws OfficeException, RetryTimeoutException {
 
     // Starts an office process
-    final OfficeProcess process = startOfficeProcess(CONNECT_URL);
+    final OfficeProcess process = startOfficeProcess();
 
-    final OfficeProcessManagerPoolEntry manager = new OfficeProcessManagerPoolEntry(CONNECT_URL);
+    final OfficeProcessManagerPoolEntry manager =
+        new OfficeProcessManagerPoolEntry(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
     try {
       manager.start();
       assertThat(manager.isRunning()).isTrue();
@@ -366,12 +420,22 @@ public class OfficeProcessManagerPoolEntryITest {
       throws OfficeException, RetryTimeoutException {
 
     // Starts an office process
-    final OfficeProcess process = startOfficeProcess(CONNECT_URL);
+    final OfficeProcess process = startOfficeProcess();
 
-    final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
-    config.setKillExistingProcess(false);
     final OfficeProcessManagerPoolEntry manager =
-        new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
+        new OfficeProcessManagerPoolEntry(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            false,
+            null,
+            null,
+            null,
+            null,
+            null);
     try {
 
       assertThatExceptionOfType(OfficeException.class)
@@ -395,14 +459,20 @@ public class OfficeProcessManagerPoolEntryITest {
   public void start_WithCustomProfileDir_ShouldCopyProfileDirToWorkingDir()
       throws OfficeException, RetryTimeoutException {
 
-    final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
-    config.setOfficeHome(LocalOfficeUtils.getDefaultOfficeHome());
-    config.setWorkingDir(new File(System.getProperty("java.io.tmpdir")));
-    config.setOfficeHome(LocalOfficeUtils.getDefaultOfficeHome());
-    config.setTemplateProfileDir(new File("src/integTest/resources/templateProfileDir"));
-
     final OfficeProcessManagerPoolEntry manager =
-        new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
+        new OfficeProcessManagerPoolEntry(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            new File("src/integTest/resources/templateProfileDir"),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
     try {
       manager.start();
       assertThat(manager.isRunning()).isTrue();
@@ -431,27 +501,35 @@ public class OfficeProcessManagerPoolEntryITest {
   @Test
   public void stop_WhenCouldNotTerminateDueToRetryTimeout_ThrowsOfficeException() throws Exception {
 
-    final OfficeProcessManagerPoolEntryConfig config = new OfficeProcessManagerPoolEntryConfig();
-    config.setProcessManager(
-        new PureJavaProcessManager() {
-
-          private boolean firstAttempt = true;
-
-          @Override
-          public void kill(final Process process, final long pid) {
-            if (firstAttempt) {
-              firstAttempt = false;
-              sleep(500L);
-            } else {
-              super.kill(process, pid);
-            }
-          }
-        });
-
     final VetoTerminateListener terminateListener = new VetoTerminateListener();
 
     final OfficeProcessManagerPoolEntry manager =
-        new OfficeProcessManagerPoolEntry(CONNECT_URL, config);
+        new OfficeProcessManagerPoolEntry(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            new PureJavaProcessManager() {
+
+              private boolean firstAttempt = true;
+
+              @Override
+              public void kill(@Nullable final Process process, final long pid) {
+                if (firstAttempt) {
+                  firstAttempt = false;
+                  TestUtil.sleepQuietly(500L);
+                } else {
+                  super.kill(process, pid);
+                }
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
     try {
       manager.start();
       assertThat(manager.isRunning()).isTrue();
@@ -461,7 +539,8 @@ public class OfficeProcessManagerPoolEntryITest {
           .containsExactly(true, true);
 
       // Listen to termination and change the timeout
-      config.setProcessTimeout(1L);
+      Whitebox.setInternalState(
+          Whitebox.getInternalState(manager, "officeProcessManager"), "processTimeout", 1L);
       getConnection(manager).getDesktop().addTerminateListener(terminateListener);
 
     } finally {
@@ -473,7 +552,8 @@ public class OfficeProcessManagerPoolEntryITest {
       } finally {
 
         // Ensure that after the test, the office instance is terminated.
-        config.setProcessTimeout(30_000L);
+        Whitebox.setInternalState(
+            Whitebox.getInternalState(manager, "officeProcessManager"), "processTimeout", 30_000L);
         getConnection(manager).getDesktop().removeTerminateListener(terminateListener);
 
         manager.stop();
@@ -490,7 +570,20 @@ public class OfficeProcessManagerPoolEntryITest {
   @Test
   public void isRunning_WhenNotStarted_ReturnsFalse() {
 
-    final OfficeProcessManagerPoolEntry manager = new OfficeProcessManagerPoolEntry(CONNECT_URL);
+    final OfficeProcessManagerPoolEntry manager =
+        new OfficeProcessManagerPoolEntry(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
     assertThat(manager.isRunning()).isFalse();
   }
 }

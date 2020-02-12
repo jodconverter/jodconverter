@@ -22,7 +22,6 @@ package org.jodconverter.remote.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -38,44 +37,38 @@ public class RemoteOfficeManagerPoolEntryITest {
   @Test
   public void execute_WhenMalformedUrlExceptionCatch_ShouldThrowOfficeException() throws Exception {
 
-    final RemoteOfficeManagerPoolConfig config = new RemoteOfficeManagerPoolConfig(null);
-    config.setWorkingDir(new File(System.getProperty("java.io.tmpdir")));
-
-    final RemoteOfficeManagerPoolEntry officeManager =
-        new RemoteOfficeManagerPoolEntry("localhost", null, config);
+    final RemoteOfficeManagerPoolEntry manager =
+        new RemoteOfficeManagerPoolEntry("localhost", null, null, null, null);
     try {
-      officeManager.start();
+      manager.start();
 
-      assertThat(officeManager.isRunning()).isTrue();
+      assertThat(manager.isRunning()).isTrue();
       assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(() -> officeManager.execute(new SimpleOfficeTask()))
+          .isThrownBy(() -> manager.execute(new SimpleOfficeTask()))
           .withCauseExactlyInstanceOf(MalformedURLException.class);
     } finally {
 
-      officeManager.stop();
-      assertThat(officeManager.isRunning()).isFalse();
+      manager.stop();
+      assertThat(manager.isRunning()).isFalse();
     }
   }
 
   @Test
   public void execute_WhenIoExceptionExceptionCatch_ShouldThrowOfficeException() throws Exception {
 
-    final RemoteOfficeManagerPoolConfig config = new RemoteOfficeManagerPoolConfig(null);
-    config.setWorkingDir(new File(System.getProperty("java.io.tmpdir")));
-
-    final RemoteOfficeManagerPoolEntry officeManager =
-        new RemoteOfficeManagerPoolEntry("http://localhost/", null, config);
+    final RemoteOfficeManagerPoolEntry manager =
+        new RemoteOfficeManagerPoolEntry("http://localhost/", null, null, null, null);
     try {
-      officeManager.start();
+      manager.start();
 
-      assertThat(officeManager.isRunning()).isTrue();
+      assertThat(manager.isRunning()).isTrue();
       assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(() -> officeManager.execute(new SimpleOfficeTask(new IOException())))
+          .isThrownBy(() -> manager.execute(new SimpleOfficeTask(new IOException())))
           .withCauseExactlyInstanceOf(IOException.class);
     } finally {
 
-      officeManager.stop();
-      assertThat(officeManager.isRunning()).isFalse();
+      manager.stop();
+      assertThat(manager.isRunning()).isFalse();
     }
   }
 
@@ -83,18 +76,16 @@ public class RemoteOfficeManagerPoolEntryITest {
   public void buildUrl_WithAllValidUrlOptions_ShoulReturnProperUrlWithLoolExtension()
       throws Exception {
 
-    final RemoteOfficeManagerPoolEntry officeManager =
-        new RemoteOfficeManagerPoolEntry(
-            "localhost", null, new RemoteOfficeManagerPoolConfig(null));
+    final RemoteOfficeManagerPoolEntry manager =
+        new RemoteOfficeManagerPoolEntry("http://localhost/", null, null, null, null);
 
-    String url =
-        Whitebox.invokeMethod(officeManager, "buildUrl", "http://localhost/lool/convert-to");
+    String url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/lool/convert-to");
     assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-    url = Whitebox.invokeMethod(officeManager, "buildUrl", "http://localhost/lool/convert-to/");
+    url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/lool/convert-to/");
     assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-    url = Whitebox.invokeMethod(officeManager, "buildUrl", "http://localhost");
+    url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost");
     assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-    url = Whitebox.invokeMethod(officeManager, "buildUrl", "http://localhost/");
+    url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/");
     assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
   }
 }

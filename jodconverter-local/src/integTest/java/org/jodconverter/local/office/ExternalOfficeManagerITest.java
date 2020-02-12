@@ -28,32 +28,34 @@ import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.core.office.SimpleOfficeTask;
+import org.jodconverter.core.test.util.TestUtil;
 
 /** Contains tests for the {@link ExternalOfficeManager} class. */
 public class ExternalOfficeManagerITest {
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
 
-  private static void sleep(final long millisec) {
-    try {
-      Thread.sleep(millisec);
-    } catch (InterruptedException ignore) {
-    }
-  }
-
-  private static OfficeProcess startOfficeProcess(final OfficeUrl officeUrl)
-      throws OfficeException {
+  private static OfficeProcess startOfficeProcess() throws OfficeException {
 
     // Starts an office process
-    final OfficeProcess officeProcess = new OfficeProcess(officeUrl);
+    final OfficeProcess officeProcess =
+        new OfficeProcess(
+            CONNECT_URL,
+            LocalOfficeUtils.getDefaultOfficeHome(),
+            OfficeUtils.getDefaultWorkingDir(),
+            LocalOfficeUtils.findBestProcessManager(),
+            null,
+            null,
+            null);
     officeProcess.start();
-    sleep(2_000L);
+    TestUtil.sleepQuietly(2_000L);
     final Integer exitCode = officeProcess.getExitCode();
     if (exitCode != null && exitCode.equals(81)) {
       officeProcess.start(true);
-      sleep(2_000L);
+      TestUtil.sleepQuietly(2_000L);
     }
     return officeProcess;
   }
@@ -64,7 +66,7 @@ public class ExternalOfficeManagerITest {
   public static void setUp() throws OfficeException {
 
     // Starts an office process
-    process = startOfficeProcess(CONNECT_URL);
+    process = startOfficeProcess();
   }
 
   @AfterAll

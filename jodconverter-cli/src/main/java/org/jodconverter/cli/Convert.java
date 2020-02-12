@@ -35,6 +35,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -179,6 +180,7 @@ public final class Convert {
     // an office installation won't be required locally.
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
       final String connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
+      assert connectionUrl != null;
       return RemoteOfficeManager.builder()
           .urlConnection(connectionUrl)
           .sslConfig(context == null ? null : context.getBean(SslConfig.class))
@@ -217,6 +219,7 @@ public final class Convert {
     return builder.install().build();
   }
 
+  @Nullable
   private static AbstractApplicationContext getApplicationContextOption(
       final CommandLine commandLine) {
 
@@ -229,11 +232,13 @@ public final class Convert {
     return null;
   }
 
+  @Nullable
   private static FilterChain getFilterChain(final ApplicationContext context) {
 
     return Optional.ofNullable(context).map(ctx -> ctx.getBean(FilterChain.class)).orElse(null);
   }
 
+  @Nullable
   private static DocumentFormatRegistry getRegistryOption(final CommandLine commandLine)
       throws IOException {
 
@@ -246,6 +251,7 @@ public final class Convert {
     return null;
   }
 
+  @Nullable
   private static String getStringOption(final CommandLine commandLine, final String option) {
 
     if (commandLine.hasOption(option)) {
@@ -351,16 +357,17 @@ public final class Convert {
       System.exit(STATUS_OK);
 
     } catch (ParseException e) {
-      printErr("jodconverter-cli: %s", e.getMessage());
+      printErr(e.getMessage());
       printHelp();
       System.exit(STATUS_ERROR);
     } catch (Exception e) {
-      printErr("jodconverter-cli: %s", e.getMessage());
+      printErr(e.getMessage());
       e.printStackTrace(System.err);
       System.exit(STATUS_ERROR);
     }
   }
 
+  @Nullable
   private static Map<String, Object> toMap(final String... options) {
 
     if (options.length % 2 != 0) {
@@ -387,7 +394,8 @@ public final class Convert {
                 }));
   }
 
-  private static Map<String, Object> buildProperties(final String... args) {
+  @Nullable
+  private static Map<String, Object> buildProperties(@Nullable final String... args) {
 
     if (args == null || args.length == 0) {
       return null;
@@ -419,15 +427,21 @@ public final class Convert {
       final CommandLine commandLine,
       final AbstractApplicationContext context,
       final OfficeManager officeManager,
-      final DocumentFormatRegistry registry) {
+      @Nullable final DocumentFormatRegistry registry) {
 
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
-      return new CliConverter(
-          RemoteConverter.builder().officeManager(officeManager).formatRegistry(registry).build());
+      final RemoteConverter.Builder builder =
+          RemoteConverter.builder().officeManager(officeManager);
+      if (registry != null) {
+        builder.formatRegistry(registry);
+      }
+      return new CliConverter(builder.build());
     }
 
-    final LocalConverter.Builder builder =
-        LocalConverter.builder().officeManager(officeManager).formatRegistry(registry);
+    final LocalConverter.Builder builder = LocalConverter.builder().officeManager(officeManager);
+    if (registry != null) {
+      builder.formatRegistry(registry);
+    }
 
     // Specify custom load properties if required
     final Map<String, Object> loadProperties =
@@ -463,9 +477,9 @@ public final class Convert {
             OPTIONS);
   }
 
-  private static void printErr(final String message, final Object... values) {
+  private static void printErr(final Object... values) {
 
-    System.err.println(String.format(message, values));
+    System.err.println(String.format("jodconverter-cli: %s", values));
     System.err.flush();
   }
 

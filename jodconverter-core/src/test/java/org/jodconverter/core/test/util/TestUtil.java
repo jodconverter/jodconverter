@@ -17,28 +17,27 @@
  * limitations under the License.
  */
 
-package org.jodconverter.remote.office;
+package org.jodconverter.core.test.util;
 
-import org.jodconverter.core.office.OfficeManagerPoolEntryConfig;
+/** Contains helper functions while testing. */
+public final class TestUtil {
 
-/**
- * This class holds the configuration of an {@link RemoteOfficeManagerPoolEntry} when no office
- * instance are required to execute conversion.
- *
- * @see RemoteOfficeManagerPoolEntry
- * @see org.jodconverter.core.office.OfficeManagerPoolEntryConfig
- */
-class RemoteOfficeManagerPoolEntryConfig implements OfficeManagerPoolEntryConfig {
-
-  private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
-
-  @Override
-  public long getTaskExecutionTimeout() {
-    return taskExecutionTimeout;
+  /**
+   * Causes the currently executing thread to sleep (temporarily cease execution) for the specified
+   * number of milliseconds. InterruptedException exception are ignored.
+   *
+   * @param millisec the length of time to sleep in milliseconds.
+   */
+  public static void sleepQuietly(final long millisec) {
+    try {
+      Thread.sleep(millisec);
+    } catch (InterruptedException ignore) {
+      // ignore
+    }
   }
 
-  @Override
-  public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
-    this.taskExecutionTimeout = taskExecutionTimeout;
+  // Suppresses default constructor, ensuring non-instantiability.
+  private TestUtil() {
+    throw new AssertionError("Utility class must not be instantiated");
   }
 }

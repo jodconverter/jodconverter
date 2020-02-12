@@ -85,11 +85,10 @@ public class JodConverterLocalAutoConfiguration {
     builder.taskExecutionTimeout(properties.getTaskExecutionTimeout());
     builder.maxTasksPerProcess(properties.getMaxTasksPerProcess());
     builder.taskQueueTimeout(properties.getTaskQueueTimeout());
-    final String processManagerClass = properties.getProcessManagerClass();
-    if (StringUtils.isNotEmpty(processManagerClass)) {
-      builder.processManager(processManagerClass);
-    } else {
+    if (StringUtils.isBlank(properties.getProcessManagerClass())) {
       builder.processManager(processManager);
+    } else {
+      builder.processManager(properties.getProcessManagerClass());
     }
 
     // Starts the manager
@@ -107,16 +106,22 @@ public class JodConverterLocalAutoConfiguration {
   /* default */ DocumentFormatRegistry documentFormatRegistry(final ResourceLoader resourceLoader)
       throws Exception {
 
-    DocumentFormatRegistry registry = null;
+    DocumentFormatRegistry registry;
     if (StringUtils.isBlank(properties.getDocumentFormatRegistry())) {
       try (InputStream in =
           resourceLoader.getResource("classpath:document-formats.json").getInputStream()) {
-        registry = JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
+        registry =
+            properties.getFormatOptions() == null
+                ? JsonDocumentFormatRegistry.create(in)
+                : JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
       }
     } else {
       try (InputStream in =
           resourceLoader.getResource(properties.getDocumentFormatRegistry()).getInputStream()) {
-        registry = JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
+        registry =
+            properties.getFormatOptions() == null
+                ? JsonDocumentFormatRegistry.create(in)
+                : JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
       }
     }
 

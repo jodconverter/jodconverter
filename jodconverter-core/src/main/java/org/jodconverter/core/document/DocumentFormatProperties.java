@@ -34,10 +34,20 @@ public class DocumentFormatProperties {
   /** Properties applied when storing(saving) a document for each supported families. */
   private final Map<DocumentFamily, Map<String, Object>> store = new HashMap<>();
 
+  /**
+   * Gets the properties applied when loading(opening) a document.
+   *
+   * @return A map containing the properties.
+   */
   public Map<String, Object> getLoad() {
     return load;
   }
 
+  /**
+   * Gets the properties applied when storing(saving) a document for each supported families.
+   *
+   * @return A map containing the properties.
+   */
   public Map<DocumentFamily, Map<String, Object>> getStore() {
     return store;
   }

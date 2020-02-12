@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,18 +46,24 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(AbstractOfficeManagerPoolEntry.class);
 
-  protected final OfficeManagerPoolEntryConfig config;
-  protected final SuspendableThreadPoolExecutor taskExecutor;
-  protected Future<?> currentFuture;
+  // The default timeout when processing
+  private static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120_000L; // 2 minutes
+
+  private final long taskExecutionTimeout;
+  private final SuspendableThreadPoolExecutor taskExecutor;
+  private Future<?> currentFuture;
 
   /**
    * Initializes a new pool entry with the specified configuration.
    *
-   * @param config The entry configuration.
+   * @param taskExecutionTimeout The maximum time allowed to process a task. If the processing time
+   *     of a task is longer than this timeout, this task will be aborted and the next task is
+   *     processed.
    */
-  public AbstractOfficeManagerPoolEntry(final OfficeManagerPoolEntryConfig config) {
+  public AbstractOfficeManagerPoolEntry(@Nullable final Long taskExecutionTimeout) {
 
-    this.config = config;
+    this.taskExecutionTimeout =
+        taskExecutionTimeout == null ? DEFAULT_TASK_EXECUTION_TIMEOUT : taskExecutionTimeout;
     taskExecutor =
         new SuspendableThreadPoolExecutor(new NamedThreadFactory("OfficeManagerPoolEntry"));
   }
@@ -80,7 +87,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     // configured task execution timeout)
     try {
       LOGGER.debug("Waiting for task to complete: {}", task);
-      currentFuture.get(config.getTaskExecutionTimeout(), TimeUnit.MILLISECONDS);
+      currentFuture.get(taskExecutionTimeout, TimeUnit.MILLISECONDS);
       LOGGER.debug("Task executed successfully: {}", task);
 
     } catch (TimeoutException timeoutEx) {
@@ -123,7 +130,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   protected void handleExecuteTimeoutException(final TimeoutException timeoutEx) {
 
     // The default behavior is to do nothing
-    LOGGER.debug("Handling task execution timeout...");
+    LOGGER.debug("Handling task execution timeout.", timeoutEx);
   }
 
   @Override
@@ -169,4 +176,21 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
    * @throws OfficeException If an error occurs while stopping the manager.
    */
   protected abstract void doStop() throws OfficeException;
+
+  /** Cancels the current running task, if any. Do nothing if there is no current running task. */
+  protected void cancelTask() {
+    if (currentFuture != null) {
+      currentFuture.cancel(true);
+    }
+  }
+
+  /**
+   * Sets the availability of this manager entry.
+   *
+   * @param available {@code true} if the manager is available to execute tasks, {@code false}
+   *     otherwise.
+   */
+  protected void setAvailable(final boolean available) {
+    taskExecutor.setAvailable(available);
+  }
 }

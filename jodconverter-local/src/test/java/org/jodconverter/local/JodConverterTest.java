@@ -59,7 +59,7 @@ public class JodConverterTest {
   }
 
   @Test
-  public void ctor_ClassWellDefined() {
+  public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(JodConverter.class);
   }
 

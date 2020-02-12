@@ -21,16 +21,21 @@ package org.jodconverter.core.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Contains tests for the {@link DocumentFormat} class. */
 public class DocumentFormatTest {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentFormatTest.class);
+
   private void toString(final Set<DocumentFormat> formats) {
 
-    formats.forEach(DocumentFormat::toString);
+    formats.forEach(fmt -> LOGGER.info(fmt.toString()));
   }
 
   /** Since toString is overridden, ensure that none of the default formats throws an exception. */
@@ -59,6 +64,8 @@ public class DocumentFormatTest {
     assertThat(copy.getName()).isEqualTo(DefaultDocumentFormatRegistry.CSV.getName());
 
     // Ensure it is modifiable
-    copy.getLoadProperties().put("PropertyX", "ValueX");
+    final Map<String, Object> map = copy.getLoadProperties();
+    assertThat(map).isNotNull();
+    map.put("PropertyX", "ValueX");
   }
 }

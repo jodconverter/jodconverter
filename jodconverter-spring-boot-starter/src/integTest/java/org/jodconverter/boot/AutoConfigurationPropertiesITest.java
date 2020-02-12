@@ -40,7 +40,7 @@ import org.jodconverter.remote.office.RemoteOfficeManager;
  */
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-props.properties")
-public class AutoConfigurationPropertiesTest {
+public class AutoConfigurationPropertiesITest {
 
   @Autowired private JodConverterLocalProperties localProps;
   @Autowired private JodConverterRemoteProperties remoteProps;
@@ -84,12 +84,12 @@ public class AutoConfigurationPropertiesTest {
             "working-dir",
             "template-profile-dir",
             false,
-            180_000L,
+            190_000L,
             1_000L,
-            60_000L,
+            70_000L,
             20,
-            60_000L,
-            "classpath:document-formats.json");
+            70_000L,
+            null);
   }
 
   @Test
@@ -124,8 +124,8 @@ public class AutoConfigurationPropertiesTest {
             "https://localhost:8001",
             "working-dir",
             1,
-            60_000L,
-            60_000L,
+            70_000L,
+            70_000L,
             true,
             new String[] {"TLS_RSA_WITH_AES_128_CBC_SHA"},
             new String[] {"TLSv1.1", "TLSv1.2"},

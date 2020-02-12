@@ -19,22 +19,27 @@
 
 package org.jodconverter.core.office;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.task.OfficeTask;
 
 /**
- * A OfficeManagerPool is responsible to maintain a pool of {@code OfficeProcessManagerPoolEntry}
- * that will be used to execute {@link org.jodconverter.core.task.OfficeTask}. The pool will use the
- * first {@code OfficeProcessManagerPoolEntry} to execute a given task when the {@link
- * #execute(org.jodconverter.core.task.OfficeTask)} function is called.
+ * An AbstractOfficeManagerPool is responsible to maintain a pool of {@link
+ * org.jodconverter.core.office.AbstractOfficeManagerPoolEntry} that will be used to execute {@link
+ * org.jodconverter.core.task.OfficeTask}. The pool will use the first available {@link
+ * org.jodconverter.core.office.AbstractOfficeManagerPoolEntry} to execute a given task when the
+ * {@link #execute(org.jodconverter.core.task.OfficeTask)} function is called.
  */
 public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
 
@@ -43,37 +48,48 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
   private static final int POOL_STOPPED = 0;
   private static final int POOL_STARTED = 1;
   private static final int POOL_SHUTDOWN = 2;
+  protected static final int DEFAULT_POOL_SIZE = 1;
+  // The default maximum living time of a task in the conversion queue.
+  private static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30_000L; // 30 seconds
 
   private final AtomicInteger poolState = new AtomicInteger(POOL_STOPPED);
 
-  protected final OfficeManagerPoolConfig config;
+  private final long taskQueueTimeout;
   private final BlockingQueue<OfficeManager> pool;
-  private OfficeManager[] entries;
+  private List<OfficeManager> entries;
 
   /**
    * Constructs a new instance of the class with the specified settings.
    *
+   * @param workingDir The directory where temporary files and directories are created.
    * @param poolSize The pool size.
-   * @param config The manager configuration.
+   * @param taskQueueTimeout The maximum living time of a task in the conversion queue. The task
+   *     will be removed from the queue if the waiting time is longer than this timeout.
    */
-  protected AbstractOfficeManagerPool(final int poolSize, final OfficeManagerPoolConfig config) {
-    super(config);
+  protected AbstractOfficeManagerPool(
+      final File workingDir,
+      @Nullable final Integer poolSize,
+      @Nullable final Long taskQueueTimeout) {
+    super(workingDir);
 
-    this.config = config;
+    this.taskQueueTimeout =
+        taskQueueTimeout == null ? DEFAULT_TASK_QUEUE_TIMEOUT : taskQueueTimeout;
 
     // Create the pool
-    pool = new ArrayBlockingQueue<>(poolSize);
+    pool = new ArrayBlockingQueue<>(poolSize == null ? DEFAULT_POOL_SIZE : poolSize);
   }
 
   /**
-   * Creates the pool entries when the pool is started.
+   * Sets the manager entries.
    *
-   * @return an array of pool entries.
+   * @param entries The entries.
    */
-  protected abstract OfficeManager[] createPoolEntries();
+  protected void setEntries(final List<OfficeManager> entries) {
+    this.entries = Collections.unmodifiableList(entries);
+  }
 
   @Override
-  public void execute(final OfficeTask task) throws OfficeException {
+  public final void execute(final OfficeTask task) throws OfficeException {
 
     if (!isRunning()) {
       throw new IllegalStateException("This office manager is not running.");
@@ -95,12 +111,12 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
   }
 
   @Override
-  public boolean isRunning() {
+  public final boolean isRunning() {
     return poolState.get() == POOL_STARTED;
   }
 
   @Override
-  public void start() throws OfficeException {
+  public final void start() throws OfficeException {
 
     synchronized (this) {
       if (poolState.get() == POOL_SHUTDOWN) {
@@ -111,11 +127,11 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
         throw new IllegalStateException("This office manager is already running.");
       }
 
-      // Create the poll entries...
-      entries = createPoolEntries();
-
-      // then start them.
-      doStart();
+      // Start all entries and make them available to execute tasks.
+      for (final OfficeManager manager : entries) {
+        manager.start();
+        releaseManager(manager);
+      }
 
       // Create the temporary dir if the pool has successfully started
       makeTempDir();
@@ -125,7 +141,7 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
   }
 
   @Override
-  public void stop() throws OfficeException {
+  public final void stop() throws OfficeException {
 
     synchronized (this) {
       if (poolState.get() == POOL_SHUTDOWN) {
@@ -136,7 +152,25 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
       poolState.set(POOL_SHUTDOWN);
 
       try {
-        doStop();
+        LOGGER.info("Stopping the office manager pool...");
+        pool.clear();
+
+        OfficeException firstException = null;
+        for (final OfficeManager manager : entries) {
+          try {
+            manager.stop();
+          } catch (OfficeException ex) {
+            if (firstException == null) {
+              firstException = ex;
+            }
+          }
+        }
+
+        if (firstException != null) {
+          throw firstException;
+        }
+
+        LOGGER.info("Office manager stopped");
       } finally {
         deleteTempDir();
       }
@@ -152,10 +186,10 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
   private OfficeManager acquireManager() throws OfficeException {
 
     try {
-      final OfficeManager manager = pool.poll(config.getTaskQueueTimeout(), TimeUnit.MILLISECONDS);
+      final OfficeManager manager = pool.poll(taskQueueTimeout, TimeUnit.MILLISECONDS);
       if (manager == null) {
         throw new OfficeException(
-            "No office manager available after " + config.getTaskQueueTimeout() + " millisec.");
+            "No office manager available after " + taskQueueTimeout + " millisec.");
       }
       return manager;
     } catch (InterruptedException interruptedEx) {
@@ -182,43 +216,6 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
   }
 
   /**
-   * Allow base class to perform operation when the pool starts.
-   *
-   * @throws OfficeException If an error occurs.
-   */
-  protected void doStart() throws OfficeException {
-
-    // Start all PooledOfficeManager and make them available to execute tasks.
-    for (final OfficeManager manager : entries) {
-      manager.start();
-      releaseManager(manager);
-    }
-  }
-
-  private void doStop() throws OfficeException {
-
-    LOGGER.info("Stopping the office manager pool...");
-    pool.clear();
-
-    OfficeException firstException = null;
-    for (final OfficeManager manager : entries) {
-      try {
-        manager.stop();
-      } catch (OfficeException ex) {
-        if (firstException == null) {
-          firstException = ex;
-        }
-      }
-    }
-
-    if (firstException != null) {
-      throw firstException;
-    }
-
-    LOGGER.info("Office manager stopped");
-  }
-
-  /**
    * A builder for constructing an {@link AbstractOfficeManagerPool}.
    *
    * @see AbstractOfficeManagerPool
@@ -228,14 +225,16 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
           B extends AbstractOfficeManagerPoolBuilder<B>>
       extends AbstractOfficeManagerBuilder<B> {
 
-    protected long taskExecutionTimeout =
-        OfficeManagerPoolEntryConfig.DEFAULT_TASK_EXECUTION_TIMEOUT;
-    protected long taskQueueTimeout = OfficeManagerPoolConfig.DEFAULT_TASK_QUEUE_TIMEOUT;
+    protected Long taskExecutionTimeout;
+    protected Long taskQueueTimeout;
 
-    // Protected ctor so only subclasses can initialize an instance of this builder.
+    // Protected constructor so only subclasses can initialize an instance of this builder.
     protected AbstractOfficeManagerPoolBuilder() {
       super();
     }
+
+    @Override
+    protected abstract AbstractOfficeManagerPool build();
 
     /**
      * Specifies the maximum time allowed to process a task. If the processing time of a task is
@@ -246,14 +245,16 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
      * @param taskExecutionTimeout The task execution timeout, in milliseconds.
      * @return This builder instance.
      */
-    public B taskExecutionTimeout(final long taskExecutionTimeout) {
+    public B taskExecutionTimeout(@Nullable final Long taskExecutionTimeout) {
 
-      Validate.inclusiveBetween(
-          0,
-          Long.MAX_VALUE,
-          taskExecutionTimeout,
-          String.format(
-              "The taskExecutionTimeout %s must greater than or equal to 0", taskExecutionTimeout));
+      if (taskExecutionTimeout != null) {
+        Validate.inclusiveBetween(
+            0,
+            Long.MAX_VALUE,
+            taskExecutionTimeout,
+            String.format(
+                "taskExecutionTimeout %s must greater than or equal to 0", taskExecutionTimeout));
+      }
       this.taskExecutionTimeout = taskExecutionTimeout;
       return (B) this;
     }
@@ -267,19 +268,17 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
      * @param taskQueueTimeout The task queue timeout, in milliseconds.
      * @return This builder instance.
      */
-    public B taskQueueTimeout(final long taskQueueTimeout) {
+    public B taskQueueTimeout(@Nullable final Long taskQueueTimeout) {
 
-      Validate.inclusiveBetween(
-          0,
-          Long.MAX_VALUE,
-          taskQueueTimeout,
-          String.format(
-              "The taskQueueTimeout %s must greater than or equal to 0", taskQueueTimeout));
+      if (taskQueueTimeout != null) {
+        Validate.inclusiveBetween(
+            0,
+            Long.MAX_VALUE,
+            taskQueueTimeout,
+            String.format("taskQueueTimeout %s must greater than or equal to 0", taskQueueTimeout));
+      }
       this.taskQueueTimeout = taskQueueTimeout;
       return (B) this;
     }
-
-    @Override
-    protected abstract AbstractOfficeManagerPool build();
   }
 }

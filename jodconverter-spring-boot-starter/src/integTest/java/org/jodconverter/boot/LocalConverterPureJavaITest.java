@@ -27,9 +27,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.process.PureJavaProcessManager;
 
 /** Tests that we can use a configured process manager. */
@@ -38,18 +37,20 @@ import org.jodconverter.local.process.PureJavaProcessManager;
 @TestPropertySource(locations = "classpath:config/application-local-purejava.properties")
 public class LocalConverterPureJavaITest {
 
-  @Autowired private DocumentConverter converter;
+  @Autowired private LocalOfficeManager manager;
 
   @Test
   public void testProcessManagerProperty() {
 
-    final Object officeManager = ReflectionTestUtils.getField(converter, "officeManager");
-    final Object poolEntry = ReflectionTestUtils.invokeMethod(officeManager, "acquireManager");
-    final Object officeProcessManager =
-        ReflectionTestUtils.getField(poolEntry, "officeProcessManager");
-    final Object config = ReflectionTestUtils.getField(officeProcessManager, "config");
-    final Object processManager = ReflectionTestUtils.getField(config, "processManager");
-
-    assertThat(processManager).isInstanceOf(PureJavaProcessManager.class);
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .extracting("officeProcessManager.process.processManager")
+                    .isExactlyInstanceOf(PureJavaProcessManager.class));
   }
 }

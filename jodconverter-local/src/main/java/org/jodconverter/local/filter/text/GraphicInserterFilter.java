@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -229,6 +230,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       final XGraphicProvider graphicProvider =
           Lo.createInstanceMCF(
               context, XGraphicProvider.class, "com.sun.star.graphic.GraphicProvider");
+      Objects.requireNonNull(graphicProvider);
 
       // Since 6.1, we must use "Graphic" instead of "GraphicURL"
       propSet.setPropertyValue(
@@ -256,6 +258,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
     // Querying for the interface XTextDocument (text interface) on the XComponent
     final XTextDocument docText = Write.getTextDoc(document);
+    Objects.requireNonNull(docText);
 
     // Getting text field interface
     final XText text = docText.getText();

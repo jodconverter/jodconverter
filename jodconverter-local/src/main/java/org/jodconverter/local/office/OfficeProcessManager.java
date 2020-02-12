@@ -19,6 +19,8 @@
 
 package org.jodconverter.local.office;
 
+import java.io.File;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -26,16 +28,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.sun.star.lang.DisposedException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.NamedThreadFactory;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.RetryTimeoutException;
+import org.jodconverter.local.process.ProcessManager;
 
 /**
- * A OfficeProcessManager is responsible to manage an office process and the connection (bridge) to
- * this office process.
+ * An {@link OfficeProcessManager} is responsible to manage an office process and the connection
+ * (bridge) to this office process.
  *
  * @see org.jodconverter.local.office.OfficeProcess
  * @see org.jodconverter.local.office.OfficeConnection
@@ -44,23 +48,62 @@ class OfficeProcessManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcessManager.class);
 
+  // The default initial delay a process call (start/terminate).
+  private static final long DEFAULT_PROCESS_INITIAL_DELAY = 0L; // No delay
+  // The default timeout when executing a process call (start/terminate).
+  private static final long DEFAULT_PROCESS_TIMEOUT = 120_000L; // 2 minutes
+  // The default delay between each try when executing a process call (start/terminate).
+  private static final long DEFAULT_PROCESS_RETRY_INTERVAL = 250L; // 0.25 secs.
+
   private final OfficeProcess process;
   private final OfficeConnection connection;
   private final ExecutorService executor;
-  private final OfficeProcessManagerConfig config;
+  private final long processTimeout;
+  private final long processRetryInterval;
 
   /**
    * Creates a new manager with the specified configuration.
    *
-   * @param officeUrl The URL for which the manager is created.
-   * @param config The configuration of the manager.
+   * @param officeUrl The URL for which the office process is created.
+   * @param officeHome The home directory of the office installation.
+   * @param workingDir The working directory to set to the office process.
+   * @param processManager The process manager to use to deal with the office process.
+   * @param runAsArgs The sudo arguments that will be used with unix commands.
+   * @param templateProfileDir The directory to copy to the temporary office profile directories to
+   *     be created.
+   * @param killExistingProcess Indicates whether an existing office process is killed when starting
+   *     a new office process for the same connection string.
+   * @param processTimeout The timeout, in milliseconds, when trying to execute an office process
+   *     call (start/terminate).
+   * @param processRetryInterval The delay, in milliseconds, between each try when trying to execute
+   *     an office process call (start/terminate).
    */
-  public OfficeProcessManager(final OfficeUrl officeUrl, final OfficeProcessManagerConfig config) {
+  public OfficeProcessManager(
+      final OfficeUrl officeUrl,
+      final File officeHome,
+      final File workingDir,
+      final ProcessManager processManager,
+      @Nullable final List<String> runAsArgs,
+      @Nullable final File templateProfileDir,
+      @Nullable final Boolean killExistingProcess,
+      @Nullable final Long processTimeout,
+      @Nullable final Long processRetryInterval) {
 
-    this.config = config;
-    process = new OfficeProcess(officeUrl, config);
+    process =
+        new OfficeProcess(
+            officeUrl,
+            officeHome,
+            workingDir,
+            processManager,
+            runAsArgs,
+            templateProfileDir,
+            killExistingProcess);
     connection = new OfficeConnection(officeUrl);
-    executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("OfficeProcessThread"));
+    executor =
+        Executors.newSingleThreadExecutor(new NamedThreadFactory("jodconverter-officeprocess"));
+    this.processTimeout = processTimeout == null ? DEFAULT_PROCESS_TIMEOUT : processTimeout;
+    this.processRetryInterval =
+        processRetryInterval == null ? DEFAULT_PROCESS_RETRY_INTERVAL : processRetryInterval;
   }
 
   /**
@@ -75,8 +118,7 @@ class OfficeProcessManager {
       throws OfficeException {
 
     try {
-      final int exitCode =
-          process.getExitCode(config.getProcessRetryInterval(), config.getProcessTimeout());
+      final int exitCode = process.getExitCode(processRetryInterval, processTimeout);
       LOGGER.info("Process exited with code {}", exitCode);
 
     } catch (RetryTimeoutException retryTimeoutEx) {
@@ -106,10 +148,7 @@ class OfficeProcessManager {
     try {
       // TODO: Add configuration field for initial delay
       new ConnectRetryable(process, connection)
-          .execute(
-              OfficeProcessManagerConfig.DEFAULT_PROCESS_INITIAL_DELAY,
-              config.getProcessRetryInterval(),
-              config.getProcessTimeout());
+          .execute(DEFAULT_PROCESS_INITIAL_DELAY, processRetryInterval, processTimeout);
 
     } catch (OfficeException ex) {
       throw ex;
@@ -140,10 +179,10 @@ class OfficeProcessManager {
 
     } catch (DisposedException disposedEx) {
       // Expected so ignore it
-      LOGGER.debug("Expected DisposedException catched and ignored in doStopProcess", disposedEx);
+      LOGGER.debug("Expected DisposedException catch and ignored in doStopProcess", disposedEx);
 
     } catch (Exception ex) {
-      LOGGER.debug("Exception catched in doStopProcess", ex);
+      LOGGER.debug("Exception catch in doStopProcess", ex);
 
       // In case we can't get hold of the desktop, or it could be a NullPointerException
       // if the desktop was null (no connection established).
@@ -162,8 +201,7 @@ class OfficeProcessManager {
   private void doTerminateProcess() throws OfficeException {
 
     try {
-      final int exitCode =
-          process.forciblyTerminate(config.getProcessRetryInterval(), config.getProcessTimeout());
+      final int exitCode = process.forciblyTerminate(processRetryInterval, processTimeout);
       LOGGER.info("Process terminated with code {}", exitCode);
 
     } catch (Exception ex) {
@@ -282,8 +320,7 @@ class OfficeProcessManager {
       LOGGER.debug("Task executed successfully: {}", taskName);
 
     } catch (ExecutionException executionEx) {
-      LOGGER.debug(
-          "ExecutionException catched in submitAndWait for task: " + taskName, executionEx);
+      LOGGER.debug("ExecutionException catch in submitAndWait for task: " + taskName, executionEx);
 
       // Rethrow the original (cause) exception
       if (executionEx.getCause() instanceof OfficeException) {

@@ -22,6 +22,7 @@ package org.jodconverter.local.filter.text;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 
 import java.io.File;
+import java.util.Objects;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.document.XDocumentInsertable;
@@ -75,6 +76,7 @@ public class DocumentInserterFilter implements Filter {
 
     // Querying for the interface XTextDocument (text interface) on the XComponent.
     final XTextDocument docText = Write.getTextDoc(document);
+    Objects.requireNonNull(docText);
 
     // We need the text cursor in order to go to the end of the document.
     final XTextCursor textCursor = docText.getText().createTextCursor();

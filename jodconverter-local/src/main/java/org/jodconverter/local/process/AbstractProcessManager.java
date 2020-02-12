@@ -131,7 +131,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
       final Matcher lineMatcher = processLinePattern.matcher(line);
       if (lineMatcher.matches()) {
         final String pid = lineMatcher.group("Pid");
-        final String commandLine = lineMatcher.group("CommanLine");
+        final String commandLine = lineMatcher.group("CommandLine");
         if (LOGGER.isTraceEnabled()) {
           LOGGER.trace(
               "Line matches!\n"

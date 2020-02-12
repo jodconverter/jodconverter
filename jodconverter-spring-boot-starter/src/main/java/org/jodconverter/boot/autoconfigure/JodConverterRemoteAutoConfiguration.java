@@ -19,8 +19,7 @@
 
 package org.jodconverter.boot.autoconfigure;
 
-import java.util.Optional;
-
+import org.apache.commons.lang3.Validate;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -34,7 +33,6 @@ import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
-import org.jodconverter.remote.ssl.SslConfig;
 
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter remote module. */
 @Configuration
@@ -57,6 +55,8 @@ public class JodConverterRemoteAutoConfiguration {
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager() {
 
+    Validate.notNull(properties.getUrl(), "urlConnection is required");
+
     final RemoteOfficeManager.Builder builder = RemoteOfficeManager.builder();
 
     builder.urlConnection(properties.getUrl());
@@ -64,29 +64,9 @@ public class JodConverterRemoteAutoConfiguration {
     builder.workingDir(properties.getWorkingDir());
     builder.taskExecutionTimeout(properties.getTaskExecutionTimeout());
     builder.taskQueueTimeout(properties.getTaskQueueTimeout());
-    builder.sslConfig(
-        Optional.ofNullable(properties.getSsl())
-            .map(
-                ssl -> {
-                  final SslConfig sslConfig = new SslConfig();
-                  sslConfig.setEnabled(ssl.isEnabled());
-                  sslConfig.setCiphers(ssl.getCiphers());
-                  sslConfig.setKeyAlias(ssl.getKeyAlias());
-                  sslConfig.setKeyPassword(ssl.getKeyPassword());
-                  sslConfig.setKeyStore(ssl.getKeyStore());
-                  sslConfig.setKeyStorePassword(ssl.getKeyStorePassword());
-                  sslConfig.setKeyStoreType(ssl.getKeyStoreType());
-                  sslConfig.setKeyStoreProvider(ssl.getKeyStoreProvider());
-                  sslConfig.setEnabledProtocols(ssl.getEnabledProtocols());
-                  sslConfig.setTrustStore(ssl.getTrustStore());
-                  sslConfig.setTrustStorePassword(ssl.getTrustStorePassword());
-                  sslConfig.setTrustStoreType(ssl.getTrustStoreType());
-                  sslConfig.setTrustStoreProvider(ssl.getTrustStoreProvider());
-                  sslConfig.setProtocol(ssl.getProtocol());
-                  sslConfig.setVerifyHostname(ssl.isVerifyHostname());
-                  return sslConfig;
-                })
-            .orElse(null));
+    if (properties.getSsl() != null) {
+      builder.sslConfig(properties.getSsl().sslConfig());
+    }
 
     // Starts the manager
     return builder.build();

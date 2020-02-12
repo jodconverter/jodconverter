@@ -50,7 +50,8 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
       final boolean closeStream) {
     super(fileMaker.makeTemporaryFile());
 
-    Validate.notNull(outputStream, "The outputStream is null");
+    Validate.notNull(outputStream, "outputStream must not be null");
+    Validate.notNull(fileMaker, "fileMaker must not be null");
     this.outputStream = outputStream;
     this.closeStream = closeStream;
     this.fileMaker = fileMaker;

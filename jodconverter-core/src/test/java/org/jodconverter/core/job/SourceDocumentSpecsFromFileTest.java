@@ -21,7 +21,6 @@ package org.jodconverter.core.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import java.io.File;
 
@@ -36,20 +35,14 @@ public class SourceDocumentSpecsFromFileTest {
   private static final String BAD_SOURCE_FILE = "src/test/resources/documents/unexisting_file.txt";
 
   @Test
-  public void ctor_WithNullFile_ThrowsNullPointerException() {
-
-    assertThatNullPointerException().isThrownBy(() -> new SourceDocumentSpecsFromFile(null));
-  }
-
-  @Test
-  public void ctor_WithUnexistingFile_ThrowsIllegalArgumentsException() {
+  public void new_WithUnexistingFile_ShouldThrowIllegalArgumentsException() {
 
     assertThatIllegalArgumentException()
         .isThrownBy(() -> new SourceDocumentSpecsFromFile(new File(BAD_SOURCE_FILE)));
   }
 
   @Test
-  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() {
+  public void new_WithValidValues_SpecsCreatedWithExpectedValues() {
 
     final File sourceFile = new File(SOURCE_FILE);
     final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(sourceFile);

@@ -36,8 +36,8 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
     implements SourceDocumentSpecs {
 
   private final InputStream inputStream;
-  private final boolean closeStream;
   private final TemporaryFileMaker fileMaker;
+  private final boolean closeStream;
 
   /**
    * Creates specs from the specified stream.
@@ -52,10 +52,11 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
       final boolean closeStream) {
     super(fileMaker.makeTemporaryFile());
 
-    Validate.notNull(inputStream, "The inputStream is null");
+    Validate.notNull(inputStream, "inputStream must not be null");
+    Validate.notNull(fileMaker, "fileMaker must not be null");
     this.inputStream = inputStream;
-    this.closeStream = closeStream;
     this.fileMaker = fileMaker;
+    this.closeStream = closeStream;
   }
 
   @Override

@@ -19,68 +19,113 @@
 
 package org.jodconverter.local.office;
 
+import java.io.File;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.sun.star.beans.PropertyValue;
 import com.sun.star.beans.XHierarchicalPropertySet;
 import com.sun.star.beans.XHierarchicalPropertySetInfo;
 import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XChangesBatch;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.AbstractOfficeManagerPoolEntry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.OfficeTask;
+import org.jodconverter.local.office.utils.Info;
 import org.jodconverter.local.office.utils.Lo;
+import org.jodconverter.local.process.ProcessManager;
 
 /**
- * A OfficeProcessManagerPoolEntry is responsible to execute tasks submitted through a {@link
- * org.jodconverter.local.office.LocalOfficeManager}. It will submit tasks to its inner {@link
- * org.jodconverter.local.office.OfficeProcessManager} and wait until the task is done or a
+ * An {@link OfficeProcessManagerPoolEntry} is responsible to execute tasks submitted through a
+ * {@link org.jodconverter.local.office.LocalOfficeManager}. It will submit tasks to its inner
+ * {@link org.jodconverter.local.office.OfficeProcessManager} and wait until the task is done or a
  * configured task execution timeout is reached.
  *
- * <p>A OfficeProcessManagerPoolEntry is also responsible to restart an office process when the
- * maximum number of tasks per process is reached.
+ * <p>An {@link OfficeProcessManagerPoolEntry} is also responsible to restart an office process when
+ * the maximum number of tasks per process is reached.
  *
  * @see org.jodconverter.local.office.OfficeProcessManager
  * @see org.jodconverter.local.office.LocalOfficeManager
  */
 class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
-  private static final String PROPPATH_USE_OPENGL = "VCL/UseOpenGL";
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcessManagerPoolEntry.class);
 
-  private final OfficeProcessManager officeProcessManager;
+  // The default maximum number of tasks an office process can execute before restarting.
+  private static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
+  // The default behavior when an office process is started regarding to OpenGL usage.
+  private static final boolean DEFAULT_DISABLE_OPENGL = false;
+  // The path to the UseOpenGL configuration property.
+  private static final String PROP_PATH_USE_OPENGL = "VCL/UseOpenGL";
 
+  private final int maxTasksPerProcess;
+  private final boolean disableOpengl;
+  private final OfficeProcessManager officeProcessManager;
   private final AtomicInteger taskCount = new AtomicInteger(0);
   private final AtomicBoolean disconnectExpected = new AtomicBoolean(false);
 
   /**
-   * Creates a new pool entry for the specified office URL with default configuration.
-   *
-   * @param officeUrl The URL for which the entry is created.
-   */
-  public OfficeProcessManagerPoolEntry(final OfficeUrl officeUrl) {
-    this(officeUrl, new OfficeProcessManagerPoolEntryConfig());
-  }
-
-  /**
    * Creates a new pool entry for the specified office URL with the specified configuration.
    *
-   * @param officeUrl The URL for which the entry is created.
-   * @param config The entry configuration.
+   * @param officeUrl The URL for which the office process is created.
+   * @param officeHome The home directory of the office installation.
+   * @param workingDir The working directory to set to the office process.
+   * @param processManager The process manager to use to deal with the office process.
+   * @param runAsArgs The sudo arguments that will be used with unix commands.
+   * @param templateProfileDir The directory to copy to the temporary office profile directories to
+   *     be created.
+   * @param killExistingProcess Indicates whether an existing office process is killed when starting
+   *     a new office process for the same connection string.
+   * @param processTimeout The timeout, in milliseconds, when trying to execute an office process
+   *     call (start/terminate).
+   * @param processRetryInterval The delay, in milliseconds, between each try when trying to execute
+   *     an office process call (start/terminate).
+   * @param taskExecutionTimeout The maximum time allowed to process a task. If the processing time
+   *     of a task is longer than this timeout, this task will be aborted and the next task is
+   *     processed.
+   * @param maxTasksPerProcess The maximum number of tasks an office process can execute before
+   *     restarting.
+   * @param disableOpengl Indicates whether OpenGL must be disabled when starting a new office
+   *     process. Nothing will be done if OpenGL is already disabled according to the user profile
+   *     used with the office process. If the options is changed, then office must be restarted.
    */
-  public OfficeProcessManagerPoolEntry(
-      final OfficeUrl officeUrl, final OfficeProcessManagerPoolEntryConfig config) {
-    super(config);
+  OfficeProcessManagerPoolEntry(
+      final OfficeUrl officeUrl,
+      final File officeHome,
+      final File workingDir,
+      final ProcessManager processManager,
+      @Nullable final List<String> runAsArgs,
+      @Nullable final File templateProfileDir,
+      @Nullable final Boolean killExistingProcess,
+      @Nullable final Long processTimeout,
+      @Nullable final Long processRetryInterval,
+      @Nullable final Long taskExecutionTimeout,
+      @Nullable final Integer maxTasksPerProcess,
+      @Nullable final Boolean disableOpengl) {
+    super(taskExecutionTimeout);
 
     // Create the process manager that will deal with the office instance
-    officeProcessManager = new OfficeProcessManager(officeUrl, config);
+    officeProcessManager =
+        new OfficeProcessManager(
+            officeUrl,
+            officeHome,
+            workingDir,
+            processManager,
+            runAsArgs,
+            templateProfileDir,
+            killExistingProcess,
+            processTimeout,
+            processRetryInterval);
+
+    this.maxTasksPerProcess =
+        maxTasksPerProcess == null ? DEFAULT_MAX_TASKS_PER_PROCESS : maxTasksPerProcess;
+    this.disableOpengl = disableOpengl == null ? DEFAULT_DISABLE_OPENGL : disableOpengl;
 
     // This connection event listener will be notified when a connection is established or
     // closed/lost to/from an office instance.
@@ -91,17 +136,17 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
           @Override
           public void connected(final OfficeConnectionEvent event) {
 
-            // Reset the task count and make the task executor available.
+            // Reset the task count and make the manager available.
             taskCount.set(0);
-            taskExecutor.setAvailable(true);
+            setAvailable(true);
           }
 
           // A connection is closed/lost.
           @Override
           public void disconnected(final OfficeConnectionEvent event) {
 
-            // Make the task executor unavailable.
-            taskExecutor.setAvailable(false);
+            // Make the manager unavailable.
+            setAvailable(false);
 
             // When it comes from an expected behavior (we have put
             // the field to true before calling a function), just reset
@@ -113,9 +158,7 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
               // Here, we didn't expect this disconnection. We must restart
               // the office process, canceling any task that may be running.
               LOGGER.warn("Connection lost unexpectedly; attempting restart");
-              if (currentFuture != null) {
-                currentFuture.cancel(true);
-              }
+              cancelTask();
               officeProcessManager.restartDueToLostConnection();
             }
           }
@@ -128,16 +171,12 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   @Override
   public void doExecute(final OfficeTask task) throws OfficeException {
 
-    final OfficeProcessManagerPoolEntryConfig entryConfig =
-        (OfficeProcessManagerPoolEntryConfig) config;
-
     // First check if the office process must be restarted
     final int count = taskCount.getAndIncrement();
-    if (entryConfig.getMaxTasksPerProcess() > 0 && count == entryConfig.getMaxTasksPerProcess()) {
+    if (maxTasksPerProcess > 0 && count == maxTasksPerProcess) {
 
       LOGGER.info(
-          "Reached limit of {} maximum tasks per process; restarting...",
-          entryConfig.getMaxTasksPerProcess());
+          "Reached limit of {} maximum tasks per process; restarting...", maxTasksPerProcess);
       restart();
 
       // taskCount will be 0 rather than 1 at this point, so fix this.
@@ -170,9 +209,7 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // Here a connection has been made successfully. Check to disable
     // the usage of OpenGL. Some file won't load properly if OpenGL
     // is on (LibreOffice).
-    final OfficeProcessManagerPoolEntryConfig entryConfig =
-        (OfficeProcessManagerPoolEntryConfig) config;
-    if (entryConfig.isDisableOpengl()
+    if (disableOpengl
         && disableOpengl(officeProcessManager.getConnection().getComponentContext())) {
 
       LOGGER.info("OpenGL has been disabled and a restart is required; restarting...");
@@ -192,31 +229,14 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
   private void restart() throws OfficeException {
 
-    // The executor is no longer available
-    taskExecutor.setAvailable(false);
+    // The manager is no longer available
+    setAvailable(false);
 
     // Indicates that the disconnection to follow is expected
     disconnectExpected.set(true);
 
     // Restart the office instance
     officeProcessManager.restartAndWait();
-  }
-
-  // Create a configuration view for the specified configuration path.
-  private Object createConfigurationView(final XMultiServiceFactory provider, final String path)
-      throws com.sun.star.uno.Exception {
-
-    // Creation arguments: nodepath
-    final PropertyValue argument = new PropertyValue();
-    argument.Name = "nodepath";
-    argument.Value = path;
-
-    final Object[] arguments = new Object[1];
-    arguments[0] = argument;
-
-    // create the view
-    return provider.createInstanceWithArguments(
-        "com.sun.star.configuration.ConfigurationUpdateAccess", arguments);
   }
 
   private boolean disableOpengl(final XComponentContext officeContext) throws OfficeException {
@@ -228,24 +248,22 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
       // Create the view to the root element where UseOpenGL option lives
       final Object viewRoot =
-          createConfigurationView(
-              Lo.createInstanceMCF(
-                  officeContext,
-                  XMultiServiceFactory.class,
-                  "com.sun.star.configuration.ConfigurationProvider"),
-              "/org.openoffice.Office.Common");
+          Info.getConfigUpdateAccess(officeContext, "/org.openoffice.Office.Common");
+      if (viewRoot == null) {
+        return false; // No restart needed
+      }
       try {
 
         // Check if the OpenGL option is on
         final XHierarchicalPropertySet properties = Lo.qi(XHierarchicalPropertySet.class, viewRoot);
 
         final XHierarchicalPropertySetInfo propsInfo = properties.getHierarchicalPropertySetInfo();
-        if (propsInfo.hasPropertyByHierarchicalName(PROPPATH_USE_OPENGL)) {
+        if (propsInfo.hasPropertyByHierarchicalName(PROP_PATH_USE_OPENGL)) {
           final boolean useOpengl =
-              (boolean) properties.getHierarchicalPropertyValue(PROPPATH_USE_OPENGL);
+              (boolean) properties.getHierarchicalPropertyValue(PROP_PATH_USE_OPENGL);
           LOGGER.info("Use OpenGL is set to {}", useOpengl);
           if (useOpengl) {
-            properties.setHierarchicalPropertyValue(PROPPATH_USE_OPENGL, false);
+            properties.setHierarchicalPropertyValue(PROP_PATH_USE_OPENGL, false);
             // Changes have been applied to the view here
             final XChangesBatch updateControl = Lo.qi(XChangesBatch.class, viewRoot);
             updateControl.commitChanges();

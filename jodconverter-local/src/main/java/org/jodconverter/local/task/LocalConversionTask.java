@@ -32,6 +32,7 @@ import com.sun.star.io.IOException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,9 +75,9 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   public LocalConversionTask(
       final SourceDocumentSpecs source,
       final TargetDocumentSpecs target,
-      final Map<String, Object> loadProperties,
-      final FilterChain filterChain,
-      final Map<String, Object> storeProperties) {
+      @Nullable final Map<String, Object> loadProperties,
+      @Nullable final FilterChain filterChain,
+      @Nullable final Map<String, Object> storeProperties) {
     super(source, loadProperties);
 
     this.target = target;
@@ -145,6 +146,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   // Gets the office properties to apply when the converted
   // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
+    Validate.notNull(target.getFormat(), "Target format must not be null");
 
     final Map<String, Object> storeProps = new HashMap<>();
     appendProperties(

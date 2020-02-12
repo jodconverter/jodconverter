@@ -19,6 +19,8 @@
 
 package org.jodconverter.local.filter.text;
 
+import java.util.Objects;
+
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XIndexAccess;
 import com.sun.star.container.XNameContainer;
@@ -92,16 +94,17 @@ public class LinkedImagesEmbedderFilter implements Filter {
               (XGraphic)
                   AnyConverter.toObject(XGraphic.class, xPropSet.getPropertyValue("Graphic"));
           // Only ones that are not embedded
-          final XPropertySet xGraphixPropSet = Lo.qi(XPropertySet.class, xGraphic);
-          final boolean linked = (boolean) xGraphixPropSet.getPropertyValue("Linked");
+          final XPropertySet xGraphicPropSet = Lo.qi(XPropertySet.class, xGraphic);
+          final boolean linked = (boolean) xGraphicPropSet.getPropertyValue("Linked");
           if (linked) {
             // Since 6.1, we must use "Graphic" instead of "GraphicURL"
+            Objects.requireNonNull(graphicProvider);
             xPropSet.setPropertyValue(
                 "Graphic",
                 graphicProvider.queryGraphic(
                     Props.makeProperties(
                         "URL",
-                        xGraphixPropSet.getPropertyValue("OriginURL").toString(),
+                        xGraphicPropSet.getPropertyValue("OriginURL").toString(),
                         "LoadAsLink",
                         false)));
           }

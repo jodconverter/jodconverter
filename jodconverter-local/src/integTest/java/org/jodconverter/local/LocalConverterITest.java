@@ -92,7 +92,7 @@ public class LocalConverterITest {
               () ->
                   converter
                       .convert(stream)
-                      .as(DefaultDocumentFormatRegistry.getFormatByExtension("doc"))
+                      .as(DefaultDocumentFormatRegistry.DOC)
                       .to(outputFile)
                       .execute())
           .doesNotThrowAnyException();
@@ -126,7 +126,7 @@ public class LocalConverterITest {
                   converter
                       .convert(SOURCE_FILE)
                       .to(stream)
-                      .as(DefaultDocumentFormatRegistry.getFormatByExtension("pdf"))
+                      .as(DefaultDocumentFormatRegistry.PDF)
                       .execute())
           .doesNotThrowAnyException();
     }
@@ -148,7 +148,7 @@ public class LocalConverterITest {
                   converter
                       .convert(sourceFile)
                       .to(stream)
-                      .as(DefaultDocumentFormatRegistry.getFormatByExtension("txt"))
+                      .as(DefaultDocumentFormatRegistry.TXT)
                       .execute())
           .doesNotThrowAnyException();
     }

@@ -26,10 +26,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.core.DocumentConverter;
-import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.TemporaryFileMaker;
 
@@ -43,25 +41,18 @@ public abstract class AbstractConverter implements DocumentConverter {
   private static final boolean DEFAULT_CLOSE_STREAM = true;
 
   protected final OfficeManager officeManager;
+
   protected final DocumentFormatRegistry formatRegistry;
 
   protected AbstractConverter(
       final OfficeManager officeManager, final DocumentFormatRegistry formatRegistry) {
     super();
 
-    // An office manager is required
-    OfficeManager manager = officeManager;
-    if (manager == null) {
-      manager = InstalledOfficeManagerHolder.getInstance();
-      if (manager == null) {
-        throw new IllegalStateException(
-            "An office manager is required in order to build a converter.");
-      }
-    }
-
-    this.officeManager = manager;
-    this.formatRegistry =
-        formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry;
+    // Both argument are required.
+    Validate.notNull(officeManager, "officeManager must not be null");
+    Validate.notNull(formatRegistry, "formatRegistry must not be null");
+    this.officeManager = officeManager;
+    this.formatRegistry = formatRegistry;
   }
 
   @Override
@@ -122,35 +113,9 @@ public abstract class AbstractConverter implements DocumentConverter {
     protected OfficeManager officeManager;
     protected DocumentFormatRegistry formatRegistry;
 
-    // Protected ctor so only subclasses can initialize an instance of this builder.
+    // Protected constructor so only subclasses can initialize an instance of this builder.
     protected AbstractConverterBuilder() {
       super();
-    }
-
-    /**
-     * Specifies the {@link OfficeManager} the converter will use to execute office tasks.
-     *
-     * @param manager The office manager this converter will use.
-     * @return This builder instance.
-     */
-    public B officeManager(final OfficeManager manager) {
-
-      Validate.notNull(manager);
-      this.officeManager = manager;
-      return (B) this;
-    }
-
-    /**
-     * Specifies the {@link DocumentFormatRegistry} which contains the document formats that will be
-     * supported by this converter.
-     *
-     * @param registry The registry that contains the supported formats.
-     * @return This builder instance.
-     */
-    public B formatRegistry(final DocumentFormatRegistry registry) {
-
-      this.formatRegistry = registry;
-      return (B) this;
     }
 
     /**
@@ -159,5 +124,32 @@ public abstract class AbstractConverter implements DocumentConverter {
      * @return The converter that is specified by this builder.
      */
     protected abstract AbstractConverter build();
+
+    /**
+     * Specifies the {@link OfficeManager} the converter will use to execute office tasks.
+     *
+     * @param officeManager The office manager this converter will use.
+     * @return This builder instance.
+     */
+    public B officeManager(final OfficeManager officeManager) {
+
+      Validate.notNull(officeManager, "officeManager must not be null");
+      this.officeManager = officeManager;
+      return (B) this;
+    }
+
+    /**
+     * Specifies the {@link DocumentFormatRegistry} which contains the document formats that will be
+     * supported by this converter.
+     *
+     * @param formatRegistry The registry that contains the supported formats.
+     * @return This builder instance.
+     */
+    public B formatRegistry(final DocumentFormatRegistry formatRegistry) {
+
+      Validate.notNull(formatRegistry, "formatRegistry must not be null");
+      this.formatRegistry = formatRegistry;
+      return (B) this;
+    }
   }
 }

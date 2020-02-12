@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * {@link org.jodconverter.local.process.ProcessManager} implementation for *nix systems. Uses the
@@ -35,7 +36,7 @@ import org.apache.commons.lang3.ArrayUtils;
 public class UnixProcessManager extends AbstractProcessManager {
 
   private static final Pattern PS_OUTPUT_LINE =
-      Pattern.compile("^\\s*(?<Pid>\\d+)\\s+(?<CommanLine>.*)$");
+      Pattern.compile("^\\s*(?<Pid>\\d+)\\s+(?<CommandLine>.*)$");
 
   private String[] runAsArgs;
 
@@ -86,7 +87,7 @@ public class UnixProcessManager extends AbstractProcessManager {
   }
 
   @Override
-  public void kill(final Process process, final long pid) throws IOException {
+  public void kill(@Nullable final Process process, final long pid) throws IOException {
 
     execute(new String[] {"/bin/kill", "-KILL", String.valueOf(pid)});
   }

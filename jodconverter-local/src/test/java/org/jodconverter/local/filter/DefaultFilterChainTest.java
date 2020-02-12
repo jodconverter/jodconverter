@@ -21,16 +21,18 @@ package org.jodconverter.local.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 
+import com.sun.star.lang.XComponent;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
+import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 
 /** Contains tests for the {@link DefaultFilterChain} class. */
-@SuppressWarnings("unchecked")
 public class DefaultFilterChainTest {
 
   /** Tests that a DefaultFilterChain is created empty by default. */
@@ -65,7 +67,7 @@ public class DefaultFilterChainTest {
                         (context, document, chain) -> {
                           throw new OfficeException("Unsupported Filter");
                         })
-                    .doFilter(null, null))
+                    .doFilter(mock(OfficeContext.class), mock(XComponent.class)))
         .withNoCause()
         .withMessage("Unsupported Filter");
 
@@ -76,7 +78,7 @@ public class DefaultFilterChainTest {
                         (context, document, chain) -> {
                           throw new IndexOutOfBoundsException();
                         })
-                    .doFilter(null, null))
+                    .doFilter(mock(OfficeContext.class), mock(XComponent.class)))
         .withCauseExactlyInstanceOf(IndexOutOfBoundsException.class);
   }
 }

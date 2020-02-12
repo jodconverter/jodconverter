@@ -23,11 +23,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
-import java.io.File;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
+/** Contains tests for the {@link SimpleOfficeManager} class. */
 public class SimpleOfficeManagerTest {
 
   private static class SleepyOfficeTaskRunner implements Runnable {
@@ -65,55 +66,49 @@ public class SimpleOfficeManagerTest {
   }
 
   @Test
-  public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues()
-      throws OfficeException {
+  public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues() {
 
     final OfficeManager manager = SimpleOfficeManager.make();
 
     assertThat(manager).isInstanceOf(SimpleOfficeManager.class);
-    final SimpleOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120_000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(30_000L);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
 
-    manager.start();
-    try {
-      final OfficeManager[] poolEntries = Whitebox.getInternalState(manager, "entries");
-      assertThat(poolEntries).hasSize(1);
-      assertThat(poolEntries[0]).isInstanceOf(SimpleOfficeManagerPoolEntry.class);
-    } finally {
-      manager.stop();
-    }
+    final List<OfficeManager> entries = Whitebox.getInternalState(manager, "entries");
+    assertThat(entries).hasSize(1);
+    entries.forEach(
+        officeManager ->
+            assertThat(officeManager)
+                .isInstanceOf(SimpleOfficeManagerPoolEntry.class)
+                .extracting("taskExecutionTimeout")
+                .isEqualTo(120_000L));
   }
 
   @Test
-  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues()
-      throws OfficeException {
+  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues() {
 
     final OfficeManager manager =
         SimpleOfficeManager.builder()
-            .workingDir(System.getProperty("java.io.tmpdir"))
+            .workingDir(OfficeUtils.getDefaultWorkingDir())
             .taskExecutionTimeout(20_000L)
             .taskQueueTimeout(1_000L)
             .poolSize(2)
             .build();
 
-    assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final SimpleOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20_000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(1_000L);
+    assertThat(manager).isInstanceOf(SimpleOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 1_000L);
 
-    manager.start();
-    try {
-      final OfficeManager[] poolEntries = Whitebox.getInternalState(manager, "entries");
-      assertThat(poolEntries).hasSize(2);
-      assertThat(poolEntries[0]).isInstanceOf(SimpleOfficeManagerPoolEntry.class);
-    } finally {
-      manager.stop();
-    }
+    final List<OfficeManager> entries = Whitebox.getInternalState(manager, "entries");
+    assertThat(entries).hasSize(2);
+    entries.forEach(
+        officeManager ->
+            assertThat(officeManager)
+                .isInstanceOf(SimpleOfficeManagerPoolEntry.class)
+                .extracting("taskExecutionTimeout")
+                .isEqualTo(20_000L));
   }
 
   @Test
@@ -121,13 +116,11 @@ public class SimpleOfficeManagerTest {
 
     final OfficeManager manager =
         SimpleOfficeManager.builder()
-            .workingDir(new File(System.getProperty("java.io.tmpdir")).getPath())
+            .workingDir(OfficeUtils.getDefaultWorkingDir().getPath())
             .build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final SimpleOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
+    assertThat(manager).extracting("workingDir").isEqualTo(OfficeUtils.getDefaultWorkingDir());
   }
 
   @Test
@@ -136,13 +129,11 @@ public class SimpleOfficeManagerTest {
     final OfficeManager manager = SimpleOfficeManager.builder().workingDir("   ").build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final SimpleOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
+    assertThat(manager).extracting("workingDir").isEqualTo(OfficeUtils.getDefaultWorkingDir());
   }
 
   @Test
-  public void start_StartTwice_ThrowIllegalStateException() throws OfficeException {
+  public void start_StartTwice_ShouldThrowIllegalStateException() throws OfficeException {
 
     final SimpleOfficeManager manager = SimpleOfficeManager.make();
     try {
@@ -154,7 +145,7 @@ public class SimpleOfficeManagerTest {
   }
 
   @Test
-  public void start_WhenTerminated_ThrowIllegalStateException() throws OfficeException {
+  public void start_WhenTerminated_ShouldThrowIllegalStateException() throws OfficeException {
 
     final SimpleOfficeManager manager = SimpleOfficeManager.make();
     manager.start();
@@ -172,14 +163,14 @@ public class SimpleOfficeManagerTest {
   }
 
   @Test
-  public void execute_WithoutBeeingStared_ThrowIllegalStateException() {
+  public void execute_WithoutBeingStared_ShouldThrowIllegalStateException() {
 
     assertThatIllegalStateException()
         .isThrownBy(() -> SimpleOfficeManager.make().execute(new SimpleOfficeTask()));
   }
 
   @Test
-  public void execute_WhenTerminated_ThrowIllegalStateException() throws OfficeException {
+  public void execute_WhenTerminated_ShouldThrowIllegalStateException() throws OfficeException {
 
     final SimpleOfficeManager manager = SimpleOfficeManager.make();
     try {
@@ -192,7 +183,7 @@ public class SimpleOfficeManagerTest {
   }
 
   @Test
-  public void execute_TaskQueueTimeout_ThrowOfficeException()
+  public void execute_TaskQueueTimeout_ShouldThrowOfficeException()
       throws OfficeException, InterruptedException {
 
     final SimpleOfficeManager manager =
@@ -200,9 +191,9 @@ public class SimpleOfficeManagerTest {
     try {
       manager.start();
 
-      // Create threads that will both execute a task taking 2 sec to execute.
+      // Create threads that will both execute a task taking more than a seconds to execute.
       final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 2_000L);
-      final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 2_000L);
+      final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 1_500L);
       final Thread thread1 = new Thread(runnable1);
       final Thread thread2 = new Thread(runnable2);
 

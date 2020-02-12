@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public abstract class AbstractOfficeManager implements OfficeManager, TemporaryF
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOfficeManager.class);
 
-  protected final OfficeManagerConfig config;
+  private final File workingDir;
   private final AtomicLong tempFileCounter;
   private File tempDir;
 
@@ -57,12 +58,12 @@ public abstract class AbstractOfficeManager implements OfficeManager, TemporaryF
   /**
    * Constructs a new instance of the class with the specified settings.
    *
-   * @param config The manager configuration.
+   * @param workingDir The directory where temporary files and directories are created.
    */
-  protected AbstractOfficeManager(final OfficeManagerConfig config) {
+  protected AbstractOfficeManager(final File workingDir) {
     super();
 
-    this.config = config;
+    this.workingDir = workingDir;
 
     // Initialize the temp file counter
     tempFileCounter = new AtomicLong(0);
@@ -82,7 +83,7 @@ public abstract class AbstractOfficeManager implements OfficeManager, TemporaryF
   protected void makeTempDir() {
 
     deleteTempDir();
-    tempDir = makeTempDir(config.getWorkingDir());
+    tempDir = makeTempDir(workingDir);
   }
 
   /** Deletes the temporary directory. */
@@ -110,10 +111,17 @@ public abstract class AbstractOfficeManager implements OfficeManager, TemporaryF
     protected boolean install;
     protected File workingDir;
 
-    // Protected ctor so only subclasses can initialize an instance of this builder.
+    // Protected constructor so only subclasses can initialize an instance of this builder.
     protected AbstractOfficeManagerBuilder() {
       super();
     }
+
+    /**
+     * Creates the manager that is specified by this builder.
+     *
+     * @return The manager that is specified by this builder.
+     */
+    protected abstract AbstractOfficeManager build();
 
     /**
      * Specifies whether the office manager that will be created by this builder will then set the
@@ -140,7 +148,7 @@ public abstract class AbstractOfficeManager implements OfficeManager, TemporaryF
      * @param workingDir The new working directory to set.
      * @return This builder instance.
      */
-    public B workingDir(final File workingDir) {
+    public B workingDir(@Nullable final File workingDir) {
 
       this.workingDir = workingDir;
       return (B) this;
@@ -155,16 +163,9 @@ public abstract class AbstractOfficeManager implements OfficeManager, TemporaryF
      * @param workingDir The new working directory to set.
      * @return This builder instance.
      */
-    public B workingDir(final String workingDir) {
+    public B workingDir(@Nullable final String workingDir) {
 
       return StringUtils.isBlank(workingDir) ? (B) this : workingDir(new File(workingDir));
     }
-
-    /**
-     * Creates the manager that is specified by this builder.
-     *
-     * @return The manager that is specified by this builder.
-     */
-    protected abstract AbstractOfficeManager build();
   }
 }

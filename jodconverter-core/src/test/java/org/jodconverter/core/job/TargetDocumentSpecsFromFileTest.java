@@ -52,7 +52,7 @@ public class TargetDocumentSpecsFromFileTest {
   }
 
   @Test
-  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues(final @TempDir File testFolder)
+  public void new_WithValidValues_SpecsCreatedWithExpectedValues(final @TempDir File testFolder)
       throws IOException {
 
     final File targetFile = new File(testFolder, TARGET_FILENAME);

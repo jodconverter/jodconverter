@@ -22,7 +22,6 @@ package org.jodconverter.local.filter.text;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 
 import java.io.File;
@@ -81,28 +80,6 @@ public class TextReplacerFilterITest {
     assertThatIllegalArgumentException()
         .isThrownBy(
             () -> new TextReplacerFilter(new String[0], new String[] {"REPLACEMENT_STRING"}));
-  }
-
-  /**
-   * Test that the creation of a TextReplacerFilter with a null replacement list throws a
-   * NullPointerException.
-   */
-  @Test
-  public void create_WithNullReplacementList_ThrowsNullPointerException() {
-
-    assertThatNullPointerException()
-        .isThrownBy(() -> new TextReplacerFilter(new String[] {"SEARCH_STRING"}, null));
-  }
-
-  /**
-   * Test that the creation of a TextReplacerFilter with a null search list throws a
-   * NullPointerException.
-   */
-  @Test
-  public void create_WithNullSearchList_ThrowsNullPointerException() {
-
-    assertThatNullPointerException()
-        .isThrownBy(() -> new TextReplacerFilter(null, new String[] {"REPLACEMENT_STRING"}));
   }
 
   /** Test the conversion of a document replacing text along the way. */

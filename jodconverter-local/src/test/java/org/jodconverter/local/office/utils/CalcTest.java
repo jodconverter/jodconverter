@@ -27,7 +27,7 @@ import org.jodconverter.core.test.util.AssertUtil;
 public class CalcTest {
 
   @Test
-  public void ctor_ClassWellDefined() {
+  public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Calc.class);
   }
 }

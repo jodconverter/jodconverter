@@ -51,8 +51,7 @@ public class PageCounterFilter implements Filter {
 
       pageCount =
           (Integer)
-              Props.getProperty(Lo.qi(XModel.class, document).getCurrentController(), "PageCount")
-                  .orElse(0);
+              Props.getProperty(Lo.qi(XModel.class, document).getCurrentController(), "PageCount");
 
     } else if (Calc.isCalc(document)) {
       LOGGER.debug("Applying the PageCounterFilter for a Calc document");

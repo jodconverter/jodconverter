@@ -58,7 +58,6 @@ public class MockOfficeTask implements OfficeTask {
 
     final LocalOfficeContext ctx = (LocalOfficeContext) context;
     final XComponentLoader loader = ctx.getComponentLoader();
-    assert loader != null : "desktop object is null";
     try {
       final PropertyValue[] arguments = {property("Hidden", true)};
       final XComponent document =

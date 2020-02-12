@@ -26,6 +26,8 @@ import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
+import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A collection of utility functions to make Office easier to use.
@@ -36,30 +38,38 @@ import com.sun.star.uno.XComponentContext;
 public final class Lo {
 
   // Document types service names
-  public static final String UNKNOWN_SERVICE = "com.sun.frame.XModel";
-  // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
   // public static final String WRITER_SERVICE = "com.sun.star.text.TextDocument";
   public static final String WRITER_SERVICE = "com.sun.star.text.GenericTextDocument";
-  public static final String BASE_SERVICE = "com.sun.star.sdb.OfficeDatabaseDocument";
   public static final String CALC_SERVICE = "com.sun.star.sheet.SpreadsheetDocument";
   public static final String DRAW_SERVICE = "com.sun.star.drawing.DrawingDocument";
   public static final String IMPRESS_SERVICE = "com.sun.star.presentation.PresentationDocument";
-  public static final String MATH_SERVICE = "com.sun.star.formula.FormulaProperties";
 
   /**
    * Queries the given UNO object for the given Java class (which must represent a UNO interface
    * type).
    *
    * @param <T> The requested UNO interface type.
-   * @param type A Java class representing a UNO interface type.
-   * @param object A reference to any Java object representing (a facet of) a UNO object; may be
-   *     <code>null</code>.
-   * @return A reference to the requested UNO interface type if available, otherwise <code>null
-   *     </code>.
+   * @param type A Java class representing a UNO interface type; cannot be {@code null}.
+   * @param object A reference to any Java object representing (a facet of) a UNO object; cannot be
+   *     {@code null}.
+   * @return A reference to the requested UNO interface type.
    * @see UnoRuntime#queryInterface(Class, Object)
    */
   public static <T> T qi(final Class<T> type, final Object object) {
-    return UnoRuntime.queryInterface(type, object);
+
+    Validate.notNull(type, "type must not be null");
+    Validate.notNull(type, "object must not be null");
+
+    final T obj = UnoRuntime.queryInterface(type, object);
+
+    Validate.notNull(
+        obj,
+        "UNO object of type "
+            + type.getName()
+            + " must not be null for object of type "
+            + object.getClass().getName());
+
+    return obj;
   }
 
   /**
@@ -67,14 +77,14 @@ public final class Lo {
    * type).
    *
    * @param <T> the requested UNO interface type.
-   * @param type A Java class representing a UNO interface type.
+   * @param type A Java class representing a UNO interface type; may be {@code null}.
    * @param object A reference to any Java object representing (a facet of) a UNO object; may be
-   *     <code>null</code>.
-   * @return A reference to the requested UNO interface type if available, otherwise <code>null
-   *     </code>.
+   *     {@code null}.
+   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
    * @see UnoRuntime#queryInterface(Class, Object)
    */
   public static <T> Optional<T> qiOptional(final Class<T> type, final Object object) {
+
     return Optional.ofNullable(UnoRuntime.queryInterface(type, object));
   }
 
@@ -96,8 +106,7 @@ public final class Lo {
    * @param component The component.
    * @param type A Java class representing a UNO interface type.
    * @param serviceName The service name.
-   * @return A reference to the requested UNO interface type if available, otherwise <code>null
-   *     </code>.
+   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
@@ -118,8 +127,7 @@ public final class Lo {
    * @param factory The service factory.
    * @param type A Java class representing a UNO interface type.
    * @param serviceName The service name.
-   * @return A reference to the requested UNO interface type if available, otherwise <code>null
-   *     </code>.
+   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
@@ -144,11 +152,11 @@ public final class Lo {
    * @param context The component context.
    * @param type A Java class representing a UNO interface type.
    * @param serviceName The service name.
-   * @return A reference to the requested UNO interface type if available, otherwise <code>null
-   *     </code>.
+   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
+  @Nullable
   public static <T> T createInstanceMCF(
       final XComponentContext context, final Class<T> type, final String serviceName) {
 
@@ -156,7 +164,9 @@ public final class Lo {
     // Then uses bridge to obtain proxy to remote interface inside service;
     // implements casting across process boundaries
     try {
-      return qi(type, context.getServiceManager().createInstanceWithContext(serviceName, context));
+      return qiOptional(
+              type, context.getServiceManager().createInstanceWithContext(serviceName, context))
+          .orElse(null);
     } catch (Exception ex) {
       throw new WrappedUnoException(ex);
     }

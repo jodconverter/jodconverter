@@ -25,11 +25,12 @@ import static org.jodconverter.local.process.ProcessManager.PID_UNKNOWN;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,40 +45,66 @@ import org.jodconverter.local.process.ProcessQuery;
  */
 class OfficeProcess {
 
+  // The default behavior when we want to start an office process and a process with the same URL
+  // already exists.
+  private static final boolean DEFAULT_KILL_EXISTING_PROCESS = true;
+
   // TODO: Make process constants configurable
   private static final long START_PROCESS_RETRY = 500L;
   private static final long START_PROCESS_TIMEOUT = 10_000L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeProcess.class);
 
+  private final OfficeUrl officeUrl;
+  private final File officeHome;
+  private final ProcessManager processManager;
+  private final List<String> runAsArgs;
+  private final File templateProfileDir;
+  private final boolean killExistingProcess;
+  private final File instanceProfileDir;
+
   private VerboseProcess process;
   private OfficeDescriptor descriptor;
   private long pid = PID_UNKNOWN;
-  private final OfficeUrl officeUrl;
-  private final OfficeProcessConfig config;
-  private final File instanceProfileDir;
-
-  /**
-   * Constructs a new instance of an office process class for the specified URL with default
-   * configuration.
-   *
-   * @param officeUrl The URL for which the process is created.
-   */
-  public OfficeProcess(final OfficeUrl officeUrl) {
-    this(officeUrl, new OfficeProcessConfig());
-  }
 
   /**
    * Constructs a new instance of an office process class with the specified configuration.
    *
-   * @param officeUrl The URL for which the process is created.
-   * @param config The office process configuration.
+   * @param officeUrl The URL for which the office process is created.
+   * @param officeHome The home directory of the office installation.
+   * @param workingDir The working directory to set to the office process.
+   * @param processManager The process manager to use to deal with the office process.
+   * @param runAsArgs The sudo arguments that will be used with unix commands.
+   * @param templateProfileDir The directory to copy to the temporary office profile directories to
+   *     be created.
+   * @param killExistingProcess Indicates whether an existing office process is killed when starting
+   *     a new office process for the same connection string.
    */
-  public OfficeProcess(final OfficeUrl officeUrl, final OfficeProcessConfig config) {
+  public OfficeProcess(
+      final OfficeUrl officeUrl,
+      final File officeHome,
+      final File workingDir,
+      final ProcessManager processManager,
+      @Nullable final List<String> runAsArgs,
+      @Nullable final File templateProfileDir,
+      @Nullable final Boolean killExistingProcess) {
 
     this.officeUrl = officeUrl;
-    this.config = config;
-    this.instanceProfileDir = getInstanceProfileDir();
+    this.officeHome = officeHome;
+    this.processManager = processManager;
+    this.runAsArgs =
+        runAsArgs == null ? Collections.emptyList() : Collections.unmodifiableList(runAsArgs);
+    this.templateProfileDir = templateProfileDir;
+    this.killExistingProcess =
+        killExistingProcess == null ? DEFAULT_KILL_EXISTING_PROCESS : killExistingProcess;
+    this.instanceProfileDir =
+        new File(
+            workingDir,
+            ".jodconverter_"
+                + officeUrl
+                    .getConnectionAndParametersAsString()
+                    .replace(',', '_')
+                    .replace('=', '-'));
   }
 
   /**
@@ -92,11 +119,10 @@ class OfficeProcess {
     try {
       // Search for an existing process that would prevent us to start a new
       // office process with the same connection string.
-      final ProcessManager processManager = config.getProcessManager();
       long existingPid = processManager.findPid(processQuery);
 
       // Kill the any running process with the same connection string if the kill switch is on
-      if (existingPid > PID_UNKNOWN && config.isKillExistingProcess()) {
+      if (existingPid > PID_UNKNOWN && killExistingProcess) {
         LOGGER.warn(
             "A process with --accept '{}' is already running; pid {}; trying to kill it...",
             processQuery.getArgument(),
@@ -148,11 +174,8 @@ class OfficeProcess {
   private void detectOfficeVersion() {
 
     // Create the command used to launch the office process
-    final List<String> command = new ArrayList<>();
-    final File executable = LocalOfficeUtils.getOfficeExecutable(config.getOfficeHome());
-    if (config.getRunAsArgs() != null) {
-      command.addAll(Arrays.asList(config.getRunAsArgs()));
-    }
+    final File executable = LocalOfficeUtils.getOfficeExecutable(officeHome);
+    final List<String> command = new ArrayList<>(runAsArgs);
 
     final String execPath = executable.getAbsolutePath();
 
@@ -218,7 +241,7 @@ class OfficeProcess {
         officeUrl.getConnectionParametersAsString(),
         pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
     try {
-      config.getProcessManager().kill(process.getProcess(), pid);
+      processManager.kill(process.getProcess(), pid);
     } catch (IOException ioEx) {
       throw new OfficeException(
           "Unable to kill the process with pid: "
@@ -235,6 +258,7 @@ class OfficeProcess {
    * @return The exit value of the process. The value 0 indicates normal termination. If the process
    *     is not yet terminated, {@code null} is returned.
    */
+  @Nullable
   public Integer getExitCode() {
 
     // If the process has never been started, just return a success exit code
@@ -276,19 +300,6 @@ class OfficeProcess {
   }
 
   /**
-   * Gets the profile directory of the office process.
-   *
-   * @return The profile directory instance.
-   */
-  private File getInstanceProfileDir() {
-
-    return new File(
-        config.getWorkingDir(),
-        ".jodconverter_"
-            + officeUrl.getConnectionAndParametersAsString().replace(',', '_').replace('=', '-'));
-  }
-
-  /**
    * Gets whether the office process is running.
    *
    * @return {@code true} is the office process is running; {@code false otherwise}.
@@ -310,9 +321,9 @@ class OfficeProcess {
       LOGGER.warn("Profile dir '{}' already exists; deleting", instanceProfileDir);
       deleteInstanceProfileDir();
     }
-    if (config.getTemplateProfileDir() != null) {
+    if (templateProfileDir != null) {
       try {
-        FileUtils.copyDirectory(config.getTemplateProfileDir(), instanceProfileDir);
+        FileUtils.copyDirectory(templateProfileDir, instanceProfileDir);
       } catch (IOException ioEx) {
         throw new OfficeException("Failed to create the instance profile directory", ioEx);
       }
@@ -328,11 +339,8 @@ class OfficeProcess {
   private ProcessBuilder prepareProcessBuilder(final String acceptString) {
 
     // Create the command used to launch the office process
-    final List<String> command = new ArrayList<>();
-    final File executable = LocalOfficeUtils.getOfficeExecutable(config.getOfficeHome());
-    if (config.getRunAsArgs() != null) {
-      command.addAll(Arrays.asList(config.getRunAsArgs()));
-    }
+    final List<String> command = new ArrayList<>(runAsArgs);
+    final File executable = LocalOfficeUtils.getOfficeExecutable(officeHome);
 
     // LibreOffice:
     // https://help.libreoffice.org/Common/Starting_the_Software_With_Parameters
@@ -407,7 +415,7 @@ class OfficeProcess {
     final ProcessBuilder processBuilder = prepareProcessBuilder(acceptString);
 
     // Launch the process.
-    LOGGER.info("OFFICE HOME: {}", config.getOfficeHome());
+    LOGGER.info("OFFICE HOME: {}", officeHome);
     LOGGER.info(
         "Starting process with --accept '{}' and profileDir '{}'",
         acceptString,
@@ -416,7 +424,7 @@ class OfficeProcess {
     try {
       // Start the process.
       final StartProcessRetryable retryable =
-          new StartProcessRetryable(config, processBuilder, processQuery);
+          new StartProcessRetryable(processManager, processBuilder, processQuery);
       retryable.execute(START_PROCESS_RETRY, START_PROCESS_TIMEOUT);
       process = retryable.getProcess();
       pid = retryable.getProcessId();

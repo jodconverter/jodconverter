@@ -36,14 +36,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
 import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitExtension;
 import org.jodconverter.cli.util.ResetExitExceptionExtension;
+import org.jodconverter.cli.util.SystemLogHandler;
 
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
  */
-@ExtendWith({NoExitExtension.class, ResetExitExceptionExtension.class})
+@ExtendWith({
+  ConsoleStreamsListenerExtension.class,
+  NoExitExtension.class,
+  ResetExitExceptionExtension.class
+})
 public class RemoteConvertITest {
 
   private static final String RESOURCES_PATH = "src/integTest/resources/";
@@ -51,6 +57,41 @@ public class RemoteConvertITest {
   private static final String SOURCE_FILE_DOC = RESOURCES_PATH + "documents/test1.doc";
   private static final String SERVER_KEYSTORE_PATH = RESOURCES_PATH + "serverkeystore.jks";
   private static final String SERVER_KEYSTORE_PWD = "serverkeystore";
+
+  @Test
+  public void convert_WithCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf(
+      final @TempDir File testFolder) {
+
+    final File inputFile = new File(SOURCE_FILE_DOC);
+    final File outputFile = new File(testFolder, "out.doc");
+    final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
+
+    final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+    wireMockServer.start();
+    try {
+      SystemLogHandler.startCapture();
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () ->
+                  Convert.main(
+                      new String[] {
+                        "-c",
+                        "http://localhost:8000/lool/convert-to/",
+                        "-r",
+                        registryFile.getPath(),
+                        inputFile.getPath(),
+                        outputFile.getPath()
+                      }))
+          .satisfies(
+              e -> {
+                final String capturedlog = SystemLogHandler.stopCapture();
+                assertThat(e).hasFieldOrPropertyWithValue("status", 2);
+                assertThat(capturedlog).contains("The target format is missing or not supported");
+              });
+    } finally {
+      wireMockServer.stop();
+    }
+  }
 
   @Test
   public void convert_WithConnectionOption_ShouldSucceed(final @TempDir File testFolder) {

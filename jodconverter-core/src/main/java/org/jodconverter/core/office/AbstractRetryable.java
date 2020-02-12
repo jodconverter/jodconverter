@@ -35,10 +35,9 @@ public abstract class AbstractRetryable<T extends Throwable> {
    *
    * @throws TemporaryException For an error condition that can be temporary - i.e. retrying later
    *     could be successful
-   * @throws RetryTimeoutException If this Retryable fails to complete its task in the given time.
    * @throws T For all other error conditions
    */
-  protected abstract void attempt() throws TemporaryException, RetryTimeoutException, T;
+  protected abstract void attempt() throws TemporaryException, T;
 
   /**
    * Executes the task without a starting delay.

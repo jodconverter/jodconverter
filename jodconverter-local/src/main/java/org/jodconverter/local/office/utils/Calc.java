@@ -21,6 +21,7 @@ package org.jodconverter.local.office.utils;
 
 import com.sun.star.lang.XComponent;
 import com.sun.star.sheet.XSpreadsheetDocument;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A collection of utility functions to make Office Calc documents (Spreadsheet) easier to use.
@@ -47,13 +48,14 @@ public final class Calc {
    * @return The {@link XSpreadsheetDocument}, or null if the document is not a Spreadsheet
    *     document.
    */
-  public static XSpreadsheetDocument getCalcDoc(final XComponent document) {
+  @Nullable
+  public static XSpreadsheetDocument getCalcDoc(@Nullable final XComponent document) {
 
     if (document == null) {
       return null;
     }
 
-    return Lo.qi(XSpreadsheetDocument.class, document);
+    return Lo.qiOptional(XSpreadsheetDocument.class, document).orElse(null);
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

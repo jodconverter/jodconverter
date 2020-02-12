@@ -19,11 +19,20 @@
 
 package org.jodconverter.boot.autoconfigure;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+import org.jodconverter.remote.ssl.SslConfig;
+
 /** Configuration class for JODConverter Remote. */
 @ConfigurationProperties("jodconverter.remote")
+@org.checkerframework.framework.qual.DefaultQualifier(
+    value = org.checkerframework.checker.nullness.qual.Nullable.class,
+    locations = {
+      org.checkerframework.framework.qual.TypeUseLocation.PARAMETER,
+      org.checkerframework.framework.qual.TypeUseLocation.RETURN
+    })
 public class JodConverterRemoteProperties {
 
   /** Enable JODConverter Remote. */
@@ -288,6 +297,28 @@ public class JodConverterRemoteProperties {
 
     public void setVerifyHostname(final boolean verifyHostname) {
       this.verifyHostname = verifyHostname;
+    }
+
+    @NonNull
+    public SslConfig sslConfig() {
+
+      final SslConfig sslConfig = new SslConfig();
+      sslConfig.setEnabled(isEnabled());
+      sslConfig.setCiphers(getCiphers());
+      sslConfig.setKeyAlias(getKeyAlias());
+      sslConfig.setKeyPassword(getKeyPassword());
+      sslConfig.setKeyStore(getKeyStore());
+      sslConfig.setKeyStorePassword(getKeyStorePassword());
+      sslConfig.setKeyStoreType(getKeyStoreType());
+      sslConfig.setKeyStoreProvider(getKeyStoreProvider());
+      sslConfig.setEnabledProtocols(getEnabledProtocols());
+      sslConfig.setTrustStore(getTrustStore());
+      sslConfig.setTrustStorePassword(getTrustStorePassword());
+      sslConfig.setTrustStoreType(getTrustStoreType());
+      sslConfig.setTrustStoreProvider(getTrustStoreProvider());
+      sslConfig.setProtocol(getProtocol());
+      sslConfig.setVerifyHostname(isVerifyHostname());
+      return sslConfig;
     }
   }
 }

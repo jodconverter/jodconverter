@@ -22,6 +22,8 @@ package org.jodconverter.local.process;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * {@link org.jodconverter.local.process.ProcessManager} implementation for Windows.
  *
@@ -31,7 +33,7 @@ import java.util.regex.Pattern;
 public class WindowsProcessManager extends AbstractProcessManager {
 
   private static final Pattern PROCESS_GET_LINE =
-      Pattern.compile("^\\s*(?<CommanLine>.*?)\\s+(?<Pid>\\d+)\\s*$");
+      Pattern.compile("^\\s*(?<CommandLine>.*?)\\s+(?<Pid>\\d+)\\s*$");
 
   /**
    * This class is required in order to create the default WindowsProcessManager only on demand, as
@@ -82,7 +84,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
   }
 
   @Override
-  public void kill(final Process process, final long pid) throws IOException {
+  public void kill(@Nullable final Process process, final long pid) throws IOException {
 
     execute(new String[] {"taskkill", "/t", "/f", "/pid", String.valueOf(pid)});
   }

@@ -21,7 +21,6 @@ package org.jodconverter.core.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -46,7 +45,7 @@ public class SourceDocumentSpecsFromInputStreamTest {
 
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
 
-  /* default */ @TempDir File testFolder;
+  /* default */ @TempDir File testFolder; // must be non-private
   private TemporaryFileMaker fileMaker;
 
   /** Setup the file maker before each test. */
@@ -58,14 +57,8 @@ public class SourceDocumentSpecsFromInputStreamTest {
   }
 
   @Test
-  public void ctor_WithNullInputStream_ThrowsNullPointerException() {
-
-    assertThatNullPointerException()
-        .isThrownBy(() -> new SourceDocumentSpecsFromInputStream(null, fileMaker, true));
-  }
-
-  @Test
-  public void getFile_WhenIoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
+  public void getFile_WhenIoExceptionCatch_ShouldThrowDocumentSpecsIoException()
+      throws IOException {
 
     given(fileMaker.makeTemporaryFile()).willReturn(testFolder);
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(testFolder);
@@ -81,7 +74,8 @@ public class SourceDocumentSpecsFromInputStreamTest {
   }
 
   @Test
-  public void onConsumed_WhenIoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
+  public void onConsumed_WhenIoExceptionCatch_ShouldThrowDocumentSpecsIoException()
+      throws IOException {
 
     final File tempFile = new File(testFolder, "onConsumed_WhenIoExceptionCatch.doc");
     assertThat(tempFile.createNewFile()).isTrue();
@@ -146,9 +140,9 @@ public class SourceDocumentSpecsFromInputStreamTest {
   }
 
   @Test
-  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
+  public void new_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
 
-    final File tempFile = new File(testFolder, "ctor_WithValidValues.doc");
+    final File tempFile = new File(testFolder, "new_WithValidValues.doc");
     assertThat(tempFile.createNewFile()).isTrue();
     assertThat(tempFile).exists();
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);

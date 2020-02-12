@@ -71,12 +71,14 @@ public final class ConvertUtil {
           converter
               .getFormatRegistry()
               .getFormatByExtension(FilenameUtils.getExtension(source.getName()));
+      assert sourceFmt != null;
       final String sourceExt = sourceFmt.getExtension();
 
       final DocumentFormat targetFmt =
           converter
               .getFormatRegistry()
               .getFormatByExtension(FilenameUtils.getExtension(target.getName()));
+      assert targetFmt != null;
       final String targetExt = targetFmt.getExtension();
 
       try {

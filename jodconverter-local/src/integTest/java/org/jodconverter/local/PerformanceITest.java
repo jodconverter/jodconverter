@@ -47,10 +47,8 @@ public class PerformanceITest {
   private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceITest.class);
 
   private static final int MAX_CONVERSIONS = 10;
-  private static final DocumentFormat INPUT_FORMAT =
-      DefaultDocumentFormatRegistry.getFormatByExtension("odt");
-  private static final DocumentFormat OUTPUT_FORMAT =
-      DefaultDocumentFormatRegistry.getFormatByExtension("pdf");
+  private static final DocumentFormat INPUT_FORMAT = DefaultDocumentFormatRegistry.ODT;
+  private static final DocumentFormat OUTPUT_FORMAT = DefaultDocumentFormatRegistry.PDF;
 
   private static String getDurationBreakdown(final long millis) {
 
@@ -67,8 +65,7 @@ public class PerformanceITest {
     return String.format("%d min, %d sec, %d millisec", minutes, seconds, localMillis);
   }
 
-  private void convertFileXTimes(
-      final DocumentConverter converter, final File inputFile, final DocumentFormat outputFormat)
+  private void convertFileXTimes(final DocumentConverter converter, final File inputFile)
       throws IOException, OfficeException {
 
     final String baseName = FilenameUtils.getBaseName(inputFile.getName());
@@ -77,20 +74,15 @@ public class PerformanceITest {
     final StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     for (int i = 0; i < MAX_CONVERSIONS; i++) {
-      final File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
+      final File outputFile = File.createTempFile("test", "." + OUTPUT_FORMAT.getExtension());
       outputFile.deleteOnExit();
 
       LOGGER.info(
           "{} -- Converting {} to {}",
           baseName,
           PerformanceITest.INPUT_FORMAT.getExtension(),
-          outputFormat.getExtension());
-      converter
-          .convert(inputFile)
-          .as(PerformanceITest.INPUT_FORMAT)
-          .to(outputFile)
-          .as(outputFormat)
-          .execute();
+          OUTPUT_FORMAT.getExtension());
+      converter.convert(inputFile).to(outputFile).as(OUTPUT_FORMAT).execute();
 
       stopWatch.split();
       final long splitTime = stopWatch.getSplitTime();
@@ -121,7 +113,7 @@ public class PerformanceITest {
     assertThatCode(
             () -> {
               for (final File inputFile : files) {
-                convertFileXTimes(converter, inputFile, OUTPUT_FORMAT);
+                convertFileXTimes(converter, inputFile);
               }
             })
         .doesNotThrowAnyException();

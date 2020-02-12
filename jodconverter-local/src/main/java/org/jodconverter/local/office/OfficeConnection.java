@@ -55,6 +55,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
   private Object desktopService;
   private XComponent bridgeComponent;
   private XComponentContext componentContext;
+  private XMultiComponentFactory serviceManager = null;
   private XComponentLoader componentLoader;
   private final List<OfficeConnectionEventListener> connectionEventListeners;
   private final AtomicBoolean connected = new AtomicBoolean();
@@ -89,9 +90,10 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
       final String connectPart = officeUrl.getConnectionAndParametersAsString();
       LOGGER.debug("Connecting with connectString '{}'", connectPart);
       try {
-        // Create a default local component context.
+        // Create default local component context.
         final XComponentContext localContext = Bootstrap.createInitialComponentContext(null);
-        // Initial service manager.
+
+        // Get the initial service manager.
         final XMultiComponentFactory localServiceManager = localContext.getServiceManager();
 
         // Instantiate a connector service.
@@ -105,7 +107,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
         LOGGER.trace("Connector created successfully, trying to connect...");
         final XConnection connection = connector.connect(connectPart);
 
-        // Instantiate a bridge factory service.
+        // Instantiate a bridge factory.
         LOGGER.trace("Connection done successfully, creating bridge...");
         final XBridgeFactory bridgeFactory =
             Lo.qi(
@@ -114,10 +116,12 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
                     "com.sun.star.bridge.BridgeFactory", localContext));
 
         // Create a remote bridge with no instance provider using the urp protocol.
-        final String bridgeName = "jodconverter_" + BRIDGE_INDEX.getAndIncrement();
         final XBridge bridge =
             bridgeFactory.createBridge(
-                bridgeName, officeUrl.getProtocolAndParametersAsString(), connection, null);
+                "jodconverter_" + BRIDGE_INDEX.getAndIncrement(),
+                officeUrl.getProtocolAndParametersAsString(),
+                connection,
+                null);
 
         // Query for the XComponent interface and add this as event listener.
         LOGGER.trace("Bridge created successfully, creating desktop...");
@@ -137,24 +141,30 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
         final XMultiComponentFactory officeMultiComponentFactory =
             Lo.qi(XMultiComponentFactory.class, bridgeInstance);
 
-        // Retrieve the component context (it's not yet exported from the office)
+        // Retrieve the office component context (it's not yet exported from office)
+
         // Query for the XPropertySet interface.
         final XPropertySet properties = Lo.qi(XPropertySet.class, officeMultiComponentFactory);
 
-        // Query for the interface XComponentContext using the default
-        // context from the office server.
+        // Query for the interface XComponentContext using the default context
+        // from the office server.
         componentContext =
             Lo.qi(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
+
+        // Initialise the service manager.
+        serviceManager = componentContext.getServiceManager();
 
         // Now create the desktop service that handles application windows and documents.
         // NOTE: use the office component context here !
         desktopService =
             officeMultiComponentFactory.createInstanceWithContext(
                 "com.sun.star.frame.Desktop", componentContext);
-        componentLoader = Lo.qi(XComponentLoader.class, desktopService);
-        if (componentLoader == null) {
-          throw new OfficeConnectionException("Could not create a desktop service", connectPart);
-        }
+        componentLoader =
+            Lo.qiOptional(XComponentLoader.class, desktopService)
+                .orElseThrow(
+                    () ->
+                        new OfficeConnectionException(
+                            "Could not create a desktop service", connectPart));
 
         // We are now connected
         connected.set(true);
@@ -195,6 +205,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
       // Remote bridge has gone down, because the office crashed or was terminated.
       connected.set(false);
       componentContext = null;
+      serviceManager = null;
       componentLoader = null;
       desktopService = null;
       bridgeComponent = null;
@@ -210,19 +221,21 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
 
   @Override
   public XComponentContext getComponentContext() {
-
     return componentContext;
   }
 
   @Override
-  public XComponentLoader getComponentLoader() {
+  public XMultiComponentFactory getServiceManager() {
+    return serviceManager;
+  }
 
+  @Override
+  public XComponentLoader getComponentLoader() {
     return componentLoader;
   }
 
   @Override
   public XDesktop getDesktop() {
-
     // Needed only when stopping a process for now, so no need to keep an instance of it.
     return Lo.qi(XDesktop.class, desktopService);
   }

@@ -3,6 +3,7 @@
     "name": "Portable Document Format",
     "extensions": ["pdf"],
     "mediaType": "application/pdf",
+    "inputFamily": "DRAWING",
     "storeProperties": {
       "DRAWING": {
         "FilterName": "draw_pdf_Export"

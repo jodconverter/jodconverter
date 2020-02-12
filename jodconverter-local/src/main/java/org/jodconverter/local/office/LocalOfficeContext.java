@@ -21,6 +21,7 @@ package org.jodconverter.local.office;
 
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDesktop;
+import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uno.XComponentContext;
 
 import org.jodconverter.core.office.OfficeContext;
@@ -31,21 +32,28 @@ public interface LocalOfficeContext extends OfficeContext {
   /**
    * Gets the office component loader for this context.
    *
-   * @return The component loader.
+   * @return The {@link com.sun.star.frame.XComponentLoader}.
    */
   XComponentLoader getComponentLoader();
 
   /**
-   * Gets the office component context for this context.
+   * Gets the ComponentContext interface of the remote component context.
    *
-   * @return The component context.
+   * @return The {@link com.sun.star.uno.XComponentContext}.
    */
   XComponentContext getComponentContext();
 
   /**
-   * Gets the office desktop for this context.
+   * Gets the MultiComponentFactory interface of the remote service manager.
    *
-   * @return The desktop.
+   * @return The {@link com.sun.star.lang.XMultiComponentFactory}.
+   */
+  XMultiComponentFactory getServiceManager();
+
+  /**
+   * Gets the Desktop interface of the desktop service.
+   *
+   * @return The {@link com.sun.star.frame.XDesktop}.
    */
   XDesktop getDesktop();
 }

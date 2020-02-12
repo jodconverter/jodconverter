@@ -20,6 +20,7 @@
 package org.jodconverter.local.office;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
 
@@ -135,7 +136,9 @@ public class OfficeUrl {
    * @return A map with key/value pairs for protocol parameters.
    */
   public Map<String, String> getProtocolParameters() {
-    return unoUrl.getProtocolParameters();
+    return ((Map<?, ?>) unoUrl.getProtocolParameters())
+        .entrySet().stream()
+            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
   }
 
   /**
@@ -145,7 +148,9 @@ public class OfficeUrl {
    * @return A map with key/value pairs for connection parameters.
    */
   public Map<String, String> getConnectionParameters() {
-    return unoUrl.getConnectionParameters();
+    return ((Map<?, ?>) unoUrl.getConnectionParameters())
+        .entrySet().stream()
+            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
   }
 
   /**
@@ -186,5 +191,10 @@ public class OfficeUrl {
    */
   public String getConnectionAndParametersAsString() {
     return unoUrl.getConnectionAndParametersAsString();
+  }
+
+  @Override
+  public String toString() {
+    return unoUrl.toString();
   }
 }

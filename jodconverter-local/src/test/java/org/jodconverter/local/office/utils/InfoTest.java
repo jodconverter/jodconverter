@@ -47,7 +47,7 @@ import org.jodconverter.core.test.util.AssertUtil;
 public class InfoTest {
 
   @Test
-  public void ctor_ClassWellDefined() {
+  public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Info.class);
   }
 
@@ -97,7 +97,7 @@ public class InfoTest {
   }
 
   @Test
-  public void getConfig_WithUnoException_ReturnEmptyOptional() throws Exception {
+  public void getConfig_WithUnoException_ReturnNull() throws Exception {
 
     final XComponentContext context = mock(XComponentContext.class);
     final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
@@ -113,11 +113,11 @@ public class InfoTest {
                 eq("com.sun.star.configuration.ConfigurationAccess"), any(PropertyValue[].class)))
         .willThrow(Exception.class);
 
-    assertThat(Info.getConfig(context, "unknownproperty")).isEmpty();
+    assertThat(Info.getConfig(context, "unknownproperty")).isNull();
   }
 
   @Test
-  public void getConfig_ProviderNotFound_ReturnEmptyOptional() throws Exception {
+  public void getConfig_ProviderNotFound_ReturnNull() throws Exception {
 
     final XComponentContext context = mock(XComponentContext.class);
     final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
@@ -128,6 +128,6 @@ public class InfoTest {
                 "com.sun.star.configuration.ConfigurationProvider", context))
         .willReturn(null);
 
-    assertThat(Info.getConfig(context, "unknownproperty")).isEmpty();
+    assertThat(Info.getConfig(context, "unknownproperty")).isNull();
   }
 }

@@ -21,21 +21,10 @@ package org.jodconverter.core.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 
 /** Contains tests for the {@link SimpleDocumentFormatRegistry} class. */
 public class SimpleDocumentFormatRegistryTest {
-
-  /** Tests that calling getFormatByExtension with a null extension will return null. */
-  @Test
-  public void getFormatByExtension_WithNullExtension_ReturnNull() {
-
-    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
-    final DocumentFormat format = registry.getFormatByExtension(null);
-    assertThat(format).isNull();
-  }
 
   /**
    * Tests that calling getFormatByExtension with a valid extension will return the expected
@@ -49,15 +38,6 @@ public class SimpleDocumentFormatRegistryTest {
     assertThat(format).isNotNull().hasFieldOrPropertyWithValue("extension", "pdf");
   }
 
-  /** Tests that calling getFormatByMediaType with a null type will return null. */
-  @Test
-  public void getFormatByMediaType_WithNullMediaType_ReturnNull() {
-
-    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
-    final DocumentFormat format = registry.getFormatByMediaType(null);
-    assertThat(format).isNull();
-  }
-
   /**
    * Tests that calling getFormatByMediaType with a valid type will return the expected document
    * format.
@@ -68,14 +48,5 @@ public class SimpleDocumentFormatRegistryTest {
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
     final DocumentFormat format = registry.getFormatByMediaType("application/pdf");
     assertThat(format).isNotNull().hasFieldOrPropertyWithValue("extension", "pdf");
-  }
-
-  /** Tests that calling getOutputFormats with a null family will return an empty set. */
-  @Test
-  public void getOutputFormats_WithNullFamily_ReturnEmptySet() {
-
-    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
-    final Set<DocumentFormat> formats = registry.getOutputFormats(null);
-    assertThat(formats).isEmpty();
   }
 }

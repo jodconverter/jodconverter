@@ -40,10 +40,8 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.core.office.AbstractOfficeManagerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
@@ -76,13 +74,64 @@ public class RemoteOfficeManagerITest {
     final OfficeManager manager = RemoteOfficeManager.make("localhost");
 
     assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
-    final RemoteOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(120_000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(30_000L);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
 
-    assertThat(manager).extracting("poolSize", "urlConnection").containsExactly(1, "localhost");
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
+                    .extracting(
+                        "connectionUrl",
+                        "sslConfig",
+                        "connectTimeout",
+                        "socketTimeout",
+                        "taskExecutionTimeout")
+                    .containsExactly("localhost", null, 60_000L, 120_000L, 120_000L));
+  }
+
+  @Test
+  public void build_WithNullValues_ShouldInitializedOfficeManagerWithDefaultValues() {
+
+    final OfficeManager manager =
+        RemoteOfficeManager.builder()
+            .workingDir((File) null)
+            .workingDir((String) null)
+            .poolSize(null)
+            .urlConnection("localhost")
+            .connectTimeout(null)
+            .socketTimeout(null)
+            .taskExecutionTimeout(null)
+            .taskQueueTimeout(null)
+            .build();
+
+    assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
+                    .extracting(
+                        "connectionUrl",
+                        "sslConfig",
+                        "connectTimeout",
+                        "socketTimeout",
+                        "taskExecutionTimeout")
+                    .containsExactly("localhost", null, 60_000L, 120_000L, 120_000L));
   }
 
   @Test
@@ -90,21 +139,35 @@ public class RemoteOfficeManagerITest {
 
     final OfficeManager manager =
         RemoteOfficeManager.builder()
-            .workingDir(System.getProperty("java.io.tmpdir"))
+            .workingDir(OfficeUtils.getDefaultWorkingDir())
             .poolSize(5)
             .urlConnection("localhost")
+            .connectTimeout(50_000L)
+            .socketTimeout(40_000L)
             .taskExecutionTimeout(20_000L)
             .taskQueueTimeout(1_000L)
             .build();
 
     assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
-    final RemoteOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getTaskExecutionTimeout()).isEqualTo(20_000L);
-    assertThat(config.getTaskQueueTimeout()).isEqualTo(1_000L);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 1_000L);
 
-    assertThat(manager).extracting("poolSize", "urlConnection").containsExactly(5, "localhost");
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(5)
+        .allSatisfy(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
+                    .extracting(
+                        "connectionUrl",
+                        "sslConfig",
+                        "connectTimeout",
+                        "socketTimeout",
+                        "taskExecutionTimeout")
+                    .containsExactly("localhost", null, 50_000L, 40_000L, 20_000L));
   }
 
   @Test
@@ -113,13 +176,30 @@ public class RemoteOfficeManagerITest {
     final OfficeManager manager =
         RemoteOfficeManager.builder()
             .urlConnection("localhost")
-            .workingDir(new File(System.getProperty("java.io.tmpdir")).getPath())
+            .workingDir(OfficeUtils.getDefaultWorkingDir().getPath())
             .build();
 
-    assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final RemoteOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
+    assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
+                    .extracting(
+                        "connectionUrl",
+                        "sslConfig",
+                        "connectTimeout",
+                        "socketTimeout",
+                        "taskExecutionTimeout")
+                    .containsExactly("localhost", null, 60_000L, 120_000L, 120_000L));
   }
 
   @Test
@@ -128,10 +208,27 @@ public class RemoteOfficeManagerITest {
     final OfficeManager manager =
         RemoteOfficeManager.builder().urlConnection("localhost").workingDir("   ").build();
 
-    assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final RemoteOfficeManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
+    assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
+                    .extracting(
+                        "connectionUrl",
+                        "sslConfig",
+                        "connectTimeout",
+                        "socketTimeout",
+                        "taskExecutionTimeout")
+                    .containsExactly("localhost", null, 60_000L, 120_000L, 120_000L));
   }
 
   @Test

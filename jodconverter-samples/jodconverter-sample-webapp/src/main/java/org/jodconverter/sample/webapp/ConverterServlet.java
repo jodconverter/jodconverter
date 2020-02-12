@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Objects;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -99,7 +100,9 @@ public class ConverterServlet extends HttpServlet {
                 System.currentTimeMillis() - startTime));
       }
       response.setContentType(
-          converter.getFormatRegistry().getFormatByExtension(outputExtension).getMediaType());
+          Objects.requireNonNull(
+                  converter.getFormatRegistry().getFormatByExtension(outputExtension))
+              .getMediaType());
       response.setHeader(
           "Content-Disposition", "attachment; filename=" + baseName + "." + outputExtension);
       sendFile(outputFile, response);

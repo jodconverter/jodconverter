@@ -26,12 +26,14 @@ import java.util.Map;
 import com.sun.star.document.UpdateDocMode;
 import org.apache.commons.lang3.Validate;
 
+import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.job.AbstractConversionJob;
 import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecified;
 import org.jodconverter.core.job.AbstractConverter;
 import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
 import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.filter.DefaultFilterChain;
@@ -164,7 +166,7 @@ public class LocalConverter extends AbstractConverter {
     private FilterChain filterChain;
     private Map<String, Object> storeProperties;
 
-    // Private ctor so only LocalConverter can create an instance of this builder.
+    // Private constructor so only LocalConverter can create an instance of this builder.
     private Builder() {
       super();
     }
@@ -172,24 +174,23 @@ public class LocalConverter extends AbstractConverter {
     @Override
     public LocalConverter build() {
 
+      // An office manager is required.
+      OfficeManager manager = officeManager;
+      if (manager == null) {
+        manager = InstalledOfficeManagerHolder.getInstance();
+        if (manager == null) {
+          throw new IllegalStateException(
+              "An office manager is required in order to build a converter.");
+        }
+      }
+
       // Create the converter
       return new LocalConverter(
-          officeManager, formatRegistry, loadProperties, filterChain, storeProperties);
-    }
-
-    /**
-     * Specifies the load properties, for this converter, that will be applied when a document is
-     * loaded during a conversion task, regardless of the input format of the document.
-     *
-     * <p>Using this function will replace the default load properties map.
-     *
-     * @param properties A map containing the properties to apply when loading a document.
-     * @return This builder instance.
-     */
-    public Builder loadProperties(final Map<String, Object> properties) {
-
-      this.loadProperties = properties;
-      return this;
+          manager,
+          formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry,
+          loadProperties,
+          filterChain,
+          storeProperties);
     }
 
     /**
@@ -203,7 +204,7 @@ public class LocalConverter extends AbstractConverter {
      */
     public Builder filterChain(final Filter... filters) {
 
-      Validate.notEmpty(filters);
+      Validate.notEmpty(filters, "filters must not be null nor empty");
       this.filterChain = new DefaultFilterChain(filters);
       return this;
     }
@@ -219,8 +220,24 @@ public class LocalConverter extends AbstractConverter {
      */
     public Builder filterChain(final FilterChain filterChain) {
 
-      Validate.notNull(filterChain);
+      Validate.notNull(filterChain, "filterChain must not be null");
       this.filterChain = filterChain;
+      return this;
+    }
+
+    /**
+     * Specifies the load properties, for this converter, that will be applied when a document is
+     * loaded during a conversion task, regardless of the input format of the document.
+     *
+     * <p>Using this function will replace the default load properties map.
+     *
+     * @param loadProperties A map containing the properties to apply when loading a document.
+     * @return This builder instance.
+     */
+    public Builder loadProperties(final Map<String, Object> loadProperties) {
+
+      Validate.notNull(loadProperties, "loadProperties must not be null");
+      this.loadProperties = loadProperties;
       return this;
     }
 
@@ -231,12 +248,14 @@ public class LocalConverter extends AbstractConverter {
      * <p>Custom properties are applied after the store properties of the target {@link
      * org.jodconverter.core.document.DocumentFormat}.
      *
-     * @param properties A map containing the custom properties to apply when storing a document.
+     * @param storeProperties A map containing the custom properties to apply when storing a
+     *     document.
      * @return This builder instance.
      */
-    public Builder storeProperties(final Map<String, Object> properties) {
+    public Builder storeProperties(final Map<String, Object> storeProperties) {
 
-      this.storeProperties = properties;
+      Validate.notNull(storeProperties, "storeProperties must not be null");
+      this.storeProperties = storeProperties;
       return this;
     }
   }

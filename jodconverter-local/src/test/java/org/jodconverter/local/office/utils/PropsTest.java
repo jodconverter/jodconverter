@@ -49,7 +49,7 @@ import org.jodconverter.core.test.util.AssertUtil;
 public class PropsTest {
 
   @Test
-  public void ctor_ClassWellDefined() {
+  public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Props.class);
   }
 
@@ -64,7 +64,7 @@ public class PropsTest {
               mockStatic(UnoRuntime.class);
               given(UnoRuntime.queryInterface(XPropertySet.class, object)).willReturn(props);
 
-              assertThat(Props.getProperty(object, "propTestName")).hasValue("propTestValue");
+              assertThat(Props.getProperty(object, "propTestName")).isEqualTo("propTestValue");
             })
         .doesNotThrowAnyException();
   }
@@ -80,7 +80,7 @@ public class PropsTest {
               mockStatic(UnoRuntime.class);
               given(UnoRuntime.queryInterface(XPropertySet.class, object)).willReturn(props);
 
-              assertThat(Props.getProperty(object, "propTestName")).isEmpty();
+              assertThat(Props.getProperty(object, "propTestName")).isNull();
             })
         .doesNotThrowAnyException();
   }

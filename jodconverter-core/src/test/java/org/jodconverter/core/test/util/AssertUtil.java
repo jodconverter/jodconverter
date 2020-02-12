@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
+/** Contains assertions helper functions. */
 public final class AssertUtil {
 
   /**

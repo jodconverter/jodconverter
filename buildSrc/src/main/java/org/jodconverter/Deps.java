@@ -1,12 +1,20 @@
 package org.jodconverter;
 
 public class Deps {
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // VERSIONS
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  // Compile
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
+  public static final String checkerVersion = "3.1.1";
+
   // Main
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
   public static final String commonsCliVersion = "1.4";
-  // Latest version -> https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
-  public static final String commonsFileUploadVersion = "1.4";
   // Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
   public static final String commonsIoVersion = "2.6";
   // Latest version -> https://mvnrepository.com/artifact/org.libreoffice
@@ -20,12 +28,21 @@ public class Deps {
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/nl.jqno.equalsverifier/equalsverifier
   public static final String equalsVerifierVersion = "3.1.11";
-  // Latest version -> https://mvnrepository.com/artifact/com.google.code.findbugs/findbugs
-  public static final String findbugsVersion = "3.0.1";
   // Latest version -> https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2
   public static final String powermockVersion = "2.0.4";
   // Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
   public static final String wiremockVersion = "2.25.1";
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // DEPENDENCIES
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  // Compile
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  public static final String checkerQual = "org.checkerframework:checker-qual:" + checkerVersion;
+
+  // Main
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // Apache Commons Libraries
   public static final String commonsCli = "commons-cli:commons-cli:" + commonsCliVersion;
@@ -69,13 +86,12 @@ public class Deps {
   // Other Libraries
   public static final String gson = "com.google.code.gson:gson";
 
-  // Tests
+  // Test
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   public static final String assertj = "org.assertj:assertj-core";
   public static final String junitJupiterApi = "org.junit.jupiter:junit-jupiter-api";
   public static final String junitJupiterEngine = "org.junit.jupiter:junit-jupiter-engine";
   public static final String junitVintageEngine = "org.junit.vintage:junit-vintage-engine";
-  // public static final String jsr305 = "com.google.code.findbugs:jsr305:" + findbugsVersion;
-  public static final String findbugs = "com.google.code.findbugs:findbugs:" + findbugsVersion;
   public static final String mockito = "org.mockito:mockito-core";
   public static final String powermockJunit =
       "org.powermock:powermock-module-junit4:" + powermockVersion;

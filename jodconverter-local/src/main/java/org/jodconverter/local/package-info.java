@@ -23,4 +23,10 @@
  * also provides a useful {@link org.jodconverter.local.JodConverter} utility class for one-liner
  * conversion tasks.
  */
+@org.checkerframework.framework.qual.DefaultQualifier(
+    value = org.checkerframework.checker.nullness.qual.NonNull.class,
+    locations = {
+      org.checkerframework.framework.qual.TypeUseLocation.PARAMETER,
+      org.checkerframework.framework.qual.TypeUseLocation.RETURN
+    })
 package org.jodconverter.local;

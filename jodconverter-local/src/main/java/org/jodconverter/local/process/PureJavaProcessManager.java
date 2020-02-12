@@ -19,6 +19,9 @@
 
 package org.jodconverter.local.process;
 
+import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * {@link org.jodconverter.local.process.ProcessManager} implementation for Java.
  *
@@ -55,7 +58,8 @@ public class PureJavaProcessManager implements ProcessManager {
   }
 
   @Override
-  public void kill(final Process process, final long pid) {
+  public void kill(@Nullable final Process process, final long pid) {
+    Validate.notNull(process, "process must not be null");
     process.destroy();
   }
 }

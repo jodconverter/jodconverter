@@ -19,11 +19,13 @@
 
 package org.jodconverter.remote;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -34,8 +36,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.document.SimpleDocumentFormatRegistry;
 import org.jodconverter.core.job.SourceDocumentSpecs;
+import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeManager;
@@ -75,7 +78,7 @@ public class RemoteConverterTest {
   }
 
   @Test
-  public void convert_WithoutOfficeManagerInstalled_ThrowsIllegalStateException(
+  public void make_WithoutOfficeManagerInstalled_ThrowsIllegalStateException(
       final @TempDir File testFolder) {
 
     assertThatIllegalStateException()
@@ -85,6 +88,30 @@ public class RemoteConverterTest {
                     .convert(SOURCE_FILE)
                     .to(new File(testFolder, "test.pdf"))
                     .execute());
+  }
+
+  @Test
+  public void build_WithCustomFormatRegistry_ShouldUseCustomFormatRegistry() {
+
+    final SimpleDocumentFormatRegistry registry = new SimpleDocumentFormatRegistry();
+    registry.addFormat(DefaultDocumentFormatRegistry.DOC);
+    registry.addFormat(DefaultDocumentFormatRegistry.PDF);
+    final RemoteConverter manager =
+        RemoteConverter.builder().officeManager(officeManager).formatRegistry(registry).build();
+
+    assertThat(manager)
+        .extracting("formatRegistry")
+        .isInstanceOfSatisfying(
+            SimpleDocumentFormatRegistry.class,
+            simpleDocumentFormatRegistry -> {
+              assertThat(simpleDocumentFormatRegistry.getFormatByExtension("txt")).isNull();
+              assertThat(simpleDocumentFormatRegistry.getFormatByExtension("doc"))
+                  .usingRecursiveComparison()
+                  .isEqualTo(DefaultDocumentFormatRegistry.DOC);
+              assertThat(simpleDocumentFormatRegistry.getFormatByExtension("pdf"))
+                  .usingRecursiveComparison()
+                  .isEqualTo(DefaultDocumentFormatRegistry.PDF);
+            });
   }
 
   @Test
@@ -125,30 +152,17 @@ public class RemoteConverterTest {
   }
 
   @Test
-  public void toString_AsExpected() {
+  public void toString_AsExpected(final @TempDir File testFolder) throws IOException {
 
-    final SourceDocumentSpecs source =
-        new SourceDocumentSpecs() {
-          @Override
-          public void onConsumed(File file) {}
+    final File file = new File(testFolder, getClass().getName() + ".txt");
+    file.createNewFile();
 
-          @Override
-          public File getFile() {
-            return null;
-          }
-
-          @Override
-          public DocumentFormat getFormat() {
-            return null;
-          }
-        };
+    final SourceDocumentSpecs source = new SourceDocumentSpecsFromFile(file);
 
     final AbstractOfficeTask obj =
         new AbstractOfficeTask(source) {
           @Override
-          public void execute(OfficeContext context) {
-            return;
-          }
+          public void execute(OfficeContext context) {}
         };
 
     Assertions.assertThat(obj.toString()).startsWith("{source=").endsWith("}");

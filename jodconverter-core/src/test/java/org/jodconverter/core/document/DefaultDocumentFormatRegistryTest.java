@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.assertj.core.api.AutoCloseableSoftAssertions;
@@ -34,7 +35,7 @@ import org.jodconverter.core.test.util.AssertUtil;
 public class DefaultDocumentFormatRegistryTest {
 
   @Test
-  public void ctor_ClassWellDefined() {
+  public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(DefaultDocumentFormatRegistry.class);
   }
 
@@ -415,14 +416,19 @@ public class DefaultDocumentFormatRegistryTest {
 
     final DocumentFormat format = DefaultDocumentFormatRegistry.CSV;
 
+    assertThat(format.getLoadProperties()).isNotNull();
+    assertThat(format.getStoreProperties()).isNotNull();
+
     assertThatExceptionOfType(UnsupportedOperationException.class)
         .isThrownBy(() -> format.getLoadProperties().put("newKey", "newValue"));
 
     assertThatExceptionOfType(UnsupportedOperationException.class)
         .isThrownBy(() -> format.getStoreProperties().put(DocumentFamily.DRAWING, new HashMap<>()));
 
+    final Map<String, Object> map = format.getStoreProperties(DocumentFamily.SPREADSHEET);
+    assertThat(map).isNotNull();
+
     assertThatExceptionOfType(UnsupportedOperationException.class)
-        .isThrownBy(
-            () -> format.getStoreProperties(DocumentFamily.SPREADSHEET).put("newKey", "newValue"));
+        .isThrownBy(() -> map.put("newKey", "newValue"));
   }
 }

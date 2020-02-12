@@ -21,13 +21,11 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
-
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.office.OfficeUtils;
 
 /** Contains tests for the {@link ExternalOfficeManager} class. */
 public class ExternalOfficeManagerTest {
@@ -51,17 +49,19 @@ public class ExternalOfficeManagerTest {
     final OfficeManager manager = ExternalOfficeManager.make();
 
     assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
-    final ExternalOfficeManagerConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.isConnectOnStart()).isTrue();
-    assertThat(config.getConnectTimeout()).isEqualTo(120_000L);
-    assertThat(config.getRetryInterval()).isEqualTo(250L);
-
-    final OfficeConnection connection = Whitebox.getInternalState(manager, "connection");
-    final OfficeUrl officeUrl = Whitebox.getInternalState(connection, "officeUrl");
-    assertThat(officeUrl.getConnectionAndParametersAsString())
-        .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
+    assertThat(manager)
+        .extracting(
+            "workingDir",
+            "connectOnStart",
+            "connectTimeout",
+            "retryInterval",
+            "connection.officeUrl.connectionAndParametersAsString")
+        .containsExactly(
+            OfficeUtils.getDefaultWorkingDir(),
+            true,
+            120_000L,
+            250L,
+            "socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
   }
 
   @Test
@@ -72,35 +72,21 @@ public class ExternalOfficeManagerTest {
             .connectionProtocol(OfficeConnectionProtocol.PIPE)
             .pipeName("test")
             .portNumber(2003)
-            .workingDir(System.getProperty("java.io.tmpdir"))
+            .workingDir(OfficeUtils.getDefaultWorkingDir())
             .connectOnStart(false)
             .connectTimeout(5_000L)
             .retryInterval(1_000L)
             .build();
 
     assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
-    final ExternalOfficeManagerConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.isConnectOnStart()).isFalse();
-    assertThat(config.getConnectTimeout()).isEqualTo(5_000L);
-    assertThat(config.getRetryInterval()).isEqualTo(1_000L);
-
-    final OfficeConnection connection = Whitebox.getInternalState(manager, "connection");
-    final OfficeUrl officeUrl = Whitebox.getInternalState(connection, "officeUrl");
-    assertThat(officeUrl.getConnectionAndParametersAsString()).isEqualTo("pipe,name=test");
-  }
-
-  @Test
-  public void config_WithCustomValues_ShouldInitializedConfigWithCustomValues() {
-
-    final ExternalOfficeManagerConfig config =
-        new ExternalOfficeManagerConfig(null, true, 5_000L, 1_000L);
-    config.setWorkingDir(new File(System.getProperty("java.io.tmpdir")));
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.isConnectOnStart()).isTrue();
-    assertThat(config.getConnectTimeout()).isEqualTo(5_000L);
-    assertThat(config.getRetryInterval()).isEqualTo(1_000L);
+    assertThat(manager)
+        .extracting(
+            "workingDir",
+            "connectOnStart",
+            "connectTimeout",
+            "retryInterval",
+            "connection.officeUrl.connectionAndParametersAsString")
+        .containsExactly(
+            OfficeUtils.getDefaultWorkingDir(), false, 5_000L, 1_000L, "pipe,name=test");
   }
 }

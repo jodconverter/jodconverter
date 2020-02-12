@@ -22,7 +22,6 @@ package org.jodconverter.local.process;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.local.office.LocalOfficeManager;
 
@@ -33,13 +32,20 @@ public class ProcessManagerITest {
   @Test
   public void customProcessManager() {
 
-    final LocalOfficeManager officeManager =
+    final LocalOfficeManager manager =
         LocalOfficeManager.builder()
             .processManager("org.jodconverter.local.process.CustomProcessManager")
             .build();
 
-    final Object config = Whitebox.getInternalState(officeManager, "config");
-    final ProcessManager manager = Whitebox.getInternalState(config, "processManager");
-    assertThat(manager).isExactlyInstanceOf(CustomProcessManager.class);
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .extracting("officeProcessManager.process.processManager")
+                    .isExactlyInstanceOf(CustomProcessManager.class));
   }
 }

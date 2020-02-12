@@ -26,6 +26,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.jodconverter.core.document.DocumentFormatProperties;
 
 /** Configuration class for JODConverter. */
+@org.checkerframework.framework.qual.DefaultQualifier(
+    value = org.checkerframework.checker.nullness.qual.Nullable.class,
+    locations = {
+      org.checkerframework.framework.qual.TypeUseLocation.PARAMETER,
+      org.checkerframework.framework.qual.TypeUseLocation.RETURN
+    })
 @ConfigurationProperties("jodconverter.local")
 public class JodConverterLocalProperties {
 

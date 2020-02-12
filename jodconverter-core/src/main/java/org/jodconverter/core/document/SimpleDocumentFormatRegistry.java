@@ -20,13 +20,13 @@
 package org.jodconverter.core.document;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** A SimpleDocumentFormatRegistry contains a collection of document formats supported by office. */
 public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
@@ -47,29 +47,30 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
     fmtsByMediaType.put(StringUtils.lowerCase(documentFormat.getMediaType()), documentFormat);
   }
 
+  @Nullable
   @Override
   public DocumentFormat getFormatByExtension(final String extension) {
 
-    return extension == null ? null : fmtsByExtension.get(StringUtils.lowerCase(extension));
+    Validate.notNull(extension, "extension must not be null");
+    return fmtsByExtension.get(StringUtils.lowerCase(extension));
   }
 
+  @Nullable
   @Override
   public DocumentFormat getFormatByMediaType(final String mediaType) {
 
-    return mediaType == null ? null : fmtsByMediaType.get(StringUtils.lowerCase(mediaType));
+    Validate.notNull(mediaType, "mediaType must not be null");
+    return fmtsByMediaType.get(StringUtils.lowerCase(mediaType));
   }
 
   @Override
-  public Set<DocumentFormat> getOutputFormats(final DocumentFamily family) {
+  public Set<DocumentFormat> getOutputFormats(final DocumentFamily documentFamily) {
 
-    return Optional.ofNullable(family)
-        .map(
-            docFam ->
-                // Use fmtsByMediaType since fmtsByExtension may contain the same
-                // DocumentFormat with multiple extensions (e.g: jpg, jpeg).
-                fmtsByMediaType.values().stream()
-                    .filter(format -> format.getStoreProperties(docFam) != null)
-                    .collect(Collectors.toSet()))
-        .orElse(new HashSet<>());
+    Validate.notNull(documentFamily, "documentFamily must not be null");
+    // Use fmtsByMediaType since fmtsByExtension may contain the same
+    // DocumentFormat with multiple extensions (e.g: jpg, jpeg).
+    return fmtsByMediaType.values().stream()
+        .filter(format -> format.getStoreProperties(documentFamily) != null)
+        .collect(Collectors.toSet());
   }
 }

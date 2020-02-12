@@ -20,6 +20,12 @@
 package org.jodconverter.remote.ssl;
 
 /** Contains the SSL configuration to secure communication with LibreOffice Online. */
+@org.checkerframework.framework.qual.DefaultQualifier(
+    value = org.checkerframework.checker.nullness.qual.Nullable.class,
+    locations = {
+      org.checkerframework.framework.qual.TypeUseLocation.PARAMETER,
+      org.checkerframework.framework.qual.TypeUseLocation.RETURN
+    })
 public class SslConfig {
 
   private boolean enabled = true;

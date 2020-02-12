@@ -21,7 +21,6 @@ package org.jodconverter.core.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -47,7 +46,7 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
   private static final String TARGET_FILENAME = "test.pdf";
 
-  /* default */ @TempDir File testFolder;
+  /* default */ @TempDir File testFolder; // must be non-private
   private TemporaryFileMaker fileMaker;
 
   /** Setup the file maker before each test. */
@@ -59,14 +58,8 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   }
 
   @Test
-  public void ctor_WithNullOutputStream_ThrowsNullPointerException() {
-
-    assertThatNullPointerException()
-        .isThrownBy(() -> new TargetDocumentSpecsFromOutputStream(null, fileMaker, true));
-  }
-
-  @Test
-  public void onComplete_WhenIoExceptionCatch_ThrowsDocumentSpecsIoException() throws IOException {
+  public void onComplete_WhenIoExceptionCatch_ShouldThrowDocumentSpecsIoException()
+      throws IOException {
 
     final File tempFile = new File(testFolder, "onComplete_WhenIoExceptionCatch.txt");
     assertThat(tempFile.createNewFile()).isTrue();
@@ -188,9 +181,9 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   }
 
   @Test
-  public void ctor_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
+  public void new_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
 
-    final File tempFile = new File(testFolder, "ctor_WithValidValues.txt");
+    final File tempFile = new File(testFolder, "new_WithValidValues.txt");
     assertThat(tempFile.createNewFile()).isTrue();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();

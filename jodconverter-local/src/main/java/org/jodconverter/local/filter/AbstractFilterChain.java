@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.sun.star.lang.XComponent;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
@@ -58,13 +59,12 @@ public abstract class AbstractFilterChain implements FilterChain {
    *     can be added to the chain), {@code false} otherwise.
    * @param filters The filters to initially add to the chain.
    */
-  public AbstractFilterChain(final boolean readOnly, final Filter... filters) {
+  public AbstractFilterChain(final boolean readOnly, @Nullable final Filter... filters) {
 
     this.readOnly = readOnly;
     this.pos = 0;
     this.filters =
-        Arrays.stream(Optional.ofNullable(filters).orElse(new Filter[0]))
-            .collect(Collectors.toList());
+        Arrays.stream(Optional.of(filters).orElse(new Filter[0])).collect(Collectors.toList());
 
     if (readOnly) {
       this.filters = Collections.unmodifiableList(this.filters);

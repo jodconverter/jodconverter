@@ -21,6 +21,7 @@ package org.jodconverter.local;
 
 import java.io.File;
 import java.io.OutputStreamWriter;
+import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.ConsoleAppender;
@@ -97,7 +98,9 @@ public class StressITest {
     officeManager.start();
     try {
       final File source =
-          new File("src/integTest/resources/documents/test." + INPUT_FORMAT.getExtension());
+          new File(
+              "src/integTest/resources/documents/test."
+                  + Objects.requireNonNull(INPUT_FORMAT).getExtension());
 
       final Thread[] threads = new Thread[MAX_THREADS];
 
@@ -105,7 +108,10 @@ public class StressITest {
       int threadCount = 0;
 
       for (int i = 0; i < MAX_CONVERSIONS; i++) {
-        final File target = new File(testFolder, "test_" + i + "." + OUTPUT_FORMAT.getExtension());
+        final File target =
+            new File(
+                testFolder,
+                "test_" + i + "." + Objects.requireNonNull(OUTPUT_FORMAT).getExtension());
         target.deleteOnExit();
 
         // Converts the first document without threads to ensure everything is OK.

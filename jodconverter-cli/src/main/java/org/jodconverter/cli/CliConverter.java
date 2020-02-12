@@ -71,8 +71,8 @@ public final class CliConverter {
       final boolean overwrite)
       throws OfficeException {
 
-    Validate.notEmpty(filenames, "The validated filenames array is empty");
-    Validate.notEmpty(outputFormat, "The validated output format is empty");
+    Validate.notEmpty(filenames, "filenames must not be null nor empty");
+    Validate.notEmpty(outputFormat, "outputFormat must not be null nor empty");
 
     // Prepare the output directory
     final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
@@ -141,8 +141,8 @@ public final class CliConverter {
       final boolean overwrite)
       throws OfficeException {
 
-    Validate.notEmpty(inputFilenames, "The validated input filenames array is empty");
-    Validate.notEmpty(outputFilenames, "The validated output filenames array is empty");
+    Validate.notEmpty(inputFilenames, "inputFilenames must not be null nor empty");
+    Validate.notEmpty(outputFilenames, "outputFilenames must not be null nor empty");
 
     final int inputLength = inputFilenames.length;
     final int outputLength = outputFilenames.length;

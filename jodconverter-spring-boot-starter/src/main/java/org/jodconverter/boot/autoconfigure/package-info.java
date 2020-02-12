@@ -18,4 +18,10 @@
  */
 
 /** Auto-configuration for JODConverter concerns. */
+@org.checkerframework.framework.qual.DefaultQualifier(
+    value = org.checkerframework.checker.nullness.qual.NonNull.class,
+    locations = {
+      org.checkerframework.framework.qual.TypeUseLocation.PARAMETER,
+      org.checkerframework.framework.qual.TypeUseLocation.RETURN
+    })
 package org.jodconverter.boot.autoconfigure;

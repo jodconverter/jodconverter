@@ -23,8 +23,8 @@ package org.jodconverter.remote.office;
 public class RequestConfig {
 
   private final String url;
-  private final int connectTimeout;
-  private final int socketTimeout;
+  private final long connectTimeout;
+  private final long socketTimeout;
 
   /**
    * Constructs a new configuration with the specified arguments.
@@ -38,7 +38,7 @@ public class RequestConfig {
    *     consecutive data packets). A timeout value of zero is interpreted as an infinite timeout. A
    *     negative value is interpreted as undefined (system default).
    */
-  public RequestConfig(final String url, final int connectTimeout, final int socketTimeout) {
+  public RequestConfig(final String url, final long connectTimeout, final long socketTimeout) {
 
     this.url = url;
     this.connectTimeout = connectTimeout;
@@ -65,7 +65,7 @@ public class RequestConfig {
    *
    * @return The connection timeout.
    */
-  public int getConnectTimeout() {
+  public long getConnectTimeout() {
     return connectTimeout;
   }
 
@@ -81,7 +81,7 @@ public class RequestConfig {
    *
    * @return The socket timeout.
    */
-  public int getSocketTimeout() {
+  public long getSocketTimeout() {
     return socketTimeout;
   }
 }

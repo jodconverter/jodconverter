@@ -21,6 +21,7 @@ package org.jodconverter.local.office;
 
 import java.util.Objects;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,7 @@ class VerboseProcess {
    *
    * @return The exit code of the process, or null if not terminated yet.
    */
+  @Nullable
   /* default */ Integer getExitCode() {
 
     try {

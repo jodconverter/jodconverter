@@ -27,8 +27,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.Test;
@@ -70,17 +72,68 @@ public class RemoteConversionTaskITest {
 
         final Map<String, Object> filterData = new HashMap<>();
         filterData.put("PageRange", "2");
+        filterData.put("RestrictPermissions", true);
+        filterData.put("Printing", 0);
         final Map<String, Object> customProperties = new HashMap<>();
         customProperties.put("FilterData", filterData);
+        customProperties.put("Overwrite", true);
+        customProperties.put("Primitive", 10);
+        customProperties.put("NonStringNorPrimitive", Collections.EMPTY_LIST);
 
         final DocumentFormat pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
-        pdf.getStoreProperties(DocumentFamily.TEXT).putAll(customProperties);
+        Objects.requireNonNull(pdf.getStoreProperties(DocumentFamily.TEXT))
+            .putAll(customProperties);
         RemoteConverter.make(manager).convert(inputFile).to(outputFile).as(pdf).execute();
 
         wireMockServer.verify(
             postRequestedFor(urlPathEqualTo("/lool/convert-to/pdf"))
                 .withQueryParam("sFilterName", equalTo("writer_pdf_Export"))
-                .withQueryParam("sfdPageRange", equalTo("2")));
+                .withQueryParam("sOverwrite", equalTo("true"))
+                .withQueryParam("sPrimitive", equalTo("10"))
+                .withQueryParam("sNonStringNorPrimitive", equalTo("[]"))
+                .withQueryParam("sfdPageRange", equalTo("2"))
+                .withQueryParam("sfdRestrictPermissions", equalTo("true"))
+                .withQueryParam("sfdPrinting", equalTo("0")));
+
+      } finally {
+        OfficeUtils.stopQuietly(manager);
+      }
+    } finally {
+      wireMockServer.stop();
+    }
+  }
+
+  @Test
+  public void execute_WithFilterDataNotMap_ShouldHaveNormalFilterDataPropertyAsParameters(
+      final @TempDir File testFolder) throws OfficeException {
+
+    final File inputFile = new File(SOURCE_FILE_PATH);
+    final File outputFile = new File(testFolder, "out.pdf");
+
+    final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+    wireMockServer.start();
+    try {
+      final OfficeManager manager =
+          RemoteOfficeManager.builder()
+              .urlConnection("http://localhost:8000/lool/convert-to/")
+              .build();
+      try {
+        manager.start();
+        wireMockServer.stubFor(
+            post(urlPathEqualTo("/lool/convert-to/pdf")).willReturn(aResponse().withStatus(200)));
+
+        final Map<String, Object> customProperties = new HashMap<>();
+        customProperties.put("FilterData", "foo");
+
+        final DocumentFormat pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
+        Objects.requireNonNull(pdf.getStoreProperties(DocumentFamily.TEXT))
+            .putAll(customProperties);
+        RemoteConverter.make(manager).convert(inputFile).to(outputFile).as(pdf).execute();
+
+        wireMockServer.verify(
+            postRequestedFor(urlPathEqualTo("/lool/convert-to/pdf"))
+                .withQueryParam("sFilterName", equalTo("writer_pdf_Export"))
+                .withQueryParam("sFilterData", equalTo("foo")));
 
       } finally {
         OfficeUtils.stopQuietly(manager);

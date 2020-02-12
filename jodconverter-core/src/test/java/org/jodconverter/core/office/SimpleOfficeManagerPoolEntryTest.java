@@ -33,8 +33,7 @@ public class SimpleOfficeManagerPoolEntryTest {
   @Test
   public void execute_UnproblematicTask_TaskShouldBeExecutedSuccessfully() throws OfficeException {
 
-    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry();
-
+    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(null);
     try {
       officeManager.start();
       assertThat(officeManager.isRunning()).isTrue();
@@ -51,12 +50,10 @@ public class SimpleOfficeManagerPoolEntryTest {
   }
 
   @Test
-  public void execute_WhenTimeoutExceptionOccured_ThrowsOfficeException() throws OfficeException {
+  public void execute_WhenTimeoutExceptionOccurred_ShouldThrowOfficeException()
+      throws OfficeException {
 
-    final SimpleOfficeManagerPoolEntryConfig config = new SimpleOfficeManagerPoolEntryConfig();
-    config.setTaskExecutionTimeout(500L);
-    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(config);
-
+    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(500L);
     try {
       officeManager.start();
       assertThat(officeManager.isRunning()).isTrue();
@@ -74,12 +71,11 @@ public class SimpleOfficeManagerPoolEntryTest {
   }
 
   @Test
-  public void execute_WhenUnknownExecutionExceptionOccured_ThrowsOfficeExceptionWithCause()
+  public void execute_WhenUnknownExecutionExceptionOccurred_ShouldThrowOfficeExceptionWithCause()
       throws OfficeException {
 
-    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry();
+    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(null);
     final IllegalStateException exception = new IllegalStateException("this is a test");
-
     try {
       officeManager.start();
       assertThat(officeManager.isRunning()).isTrue();
@@ -97,12 +93,11 @@ public class SimpleOfficeManagerPoolEntryTest {
   }
 
   @Test
-  public void execute_WhenOfficeExecutionExceptionOccured_ThrowsOnlyOfficeException()
+  public void execute_WhenOfficeExecutionExceptionOccurred_ShouldThrowOnlyOfficeException()
       throws OfficeException {
 
-    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry();
+    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(null);
     final OfficeException exception = new OfficeException("this is a test");
-
     try {
       officeManager.start();
       assertThat(officeManager.isRunning()).isTrue();
@@ -120,13 +115,10 @@ public class SimpleOfficeManagerPoolEntryTest {
   }
 
   @Test
-  public void execute_WhithoutHavingBeenStarted_ThrowsOfficeExceptionAfterTimeout()
+  public void execute_WithoutHavingBeenStarted_ShouldThrowOfficeExceptionAfterTimeout()
       throws OfficeException {
 
-    final SimpleOfficeManagerPoolEntryConfig config = new SimpleOfficeManagerPoolEntryConfig();
-    config.setTaskExecutionTimeout(500L);
-    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(config);
-
+    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(500L);
     try {
       final SimpleOfficeTask task = new SimpleOfficeTask(1000);
 
@@ -143,8 +135,7 @@ public class SimpleOfficeManagerPoolEntryTest {
   @Test
   public void start_WhenStartedTwice_ShouldHaveNoEffect() throws OfficeException {
 
-    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry();
-
+    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(null);
     try {
       officeManager.start();
       assertThat(officeManager.isRunning()).isTrue();
@@ -162,8 +153,7 @@ public class SimpleOfficeManagerPoolEntryTest {
   public void start_WhenStartedAfterItHasBeenStopped_ShouldThrowIllegalStateException()
       throws OfficeException {
 
-    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry();
-
+    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(null);
     officeManager.start();
     assertThat(officeManager.isRunning()).isTrue();
     officeManager.stop();
@@ -174,8 +164,7 @@ public class SimpleOfficeManagerPoolEntryTest {
   @Test
   public void stop_WhenNeverStartedBefore_ShouldStopAndInvalidateManager() throws OfficeException {
 
-    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry();
-
+    final SimpleOfficeManagerPoolEntry officeManager = new SimpleOfficeManagerPoolEntry(null);
     officeManager.stop();
     assertThat(officeManager.isRunning()).isFalse();
     assertThatIllegalStateException().isThrownBy(officeManager::start);

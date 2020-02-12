@@ -19,6 +19,8 @@
 
 package org.jodconverter.core.office;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import org.jodconverter.core.task.OfficeTask;
 
 /**
@@ -31,31 +33,28 @@ import org.jodconverter.core.task.OfficeTask;
  */
 class SimpleOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
-  /** Creates a new pool entry with default configuration. */
-  public SimpleOfficeManagerPoolEntry() {
-    this(new SimpleOfficeManagerPoolEntryConfig());
-  }
-
   /**
    * Creates a new pool entry for the specified office URL with the specified configuration.
    *
-   * @param config The entry configuration.
+   * @param taskExecutionTimeout The maximum time allowed to process a task. If the processing time
+   *     of a task is longer than this timeout, this task will be aborted and the next task is
+   *     processed.
    */
-  public SimpleOfficeManagerPoolEntry(final SimpleOfficeManagerPoolEntryConfig config) {
-    super(config);
+  public SimpleOfficeManagerPoolEntry(@Nullable final Long taskExecutionTimeout) {
+    super(taskExecutionTimeout);
   }
 
   @Override
   protected void doStart() {
 
-    taskExecutor.setAvailable(true);
+    setAvailable(true);
   }
 
   @Override
   protected void doExecute(final OfficeTask task) throws OfficeException {
 
     // Simply execute the task
-    task.execute(null);
+    task.execute(new SimpleOfficeContext());
   }
 
   @Override

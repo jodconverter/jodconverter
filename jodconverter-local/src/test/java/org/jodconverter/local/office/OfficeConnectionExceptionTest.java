@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 public class OfficeConnectionExceptionTest {
 
   @Test
-  public void ctor_WithConnectString_ExceptionCreatedWithConnectString() {
+  public void new_WithConnectString_ExceptionCreatedWithConnectString() {
 
     final OfficeConnectionException ex = new OfficeConnectionException("message", "host=127.0.0.1");
     assertThat(ex.getConnectString()).isEqualTo("host=127.0.0.1");

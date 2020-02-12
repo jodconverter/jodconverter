@@ -19,7 +19,7 @@
 
 package org.jodconverter.local.filter.text;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

@@ -19,6 +19,7 @@
 
 package org.jodconverter.local.office;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,8 @@ public class ConnectRetryable extends AbstractRetryable<OfficeException> {
    * @param process The office process whose exit code is to be retrieved.
    * @param connection The office connection to connect.
    */
-  public ConnectRetryable(final OfficeProcess process, final OfficeConnection connection) {
+  public ConnectRetryable(
+      @Nullable final OfficeProcess process, final OfficeConnection connection) {
     super();
 
     this.process = process;

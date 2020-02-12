@@ -25,16 +25,17 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import java.io.File;
+import java.util.Collections;
 
-import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.office.AbstractOfficeManagerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.SimpleOfficeTask;
+import org.jodconverter.local.process.ProcessManager;
 
 /** Contains tests for the {@link LocalOfficeManager} class. */
 public class LocalOfficeManagerITest {
@@ -79,32 +80,49 @@ public class LocalOfficeManagerITest {
     final OfficeManager manager = LocalOfficeManager.make();
 
     assertThat(manager).isInstanceOf(LocalOfficeManager.class);
-    final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
-      softly
-          .assertThat(config.getOfficeHome().getPath())
-          .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
-      softly
-          .assertThat(config.getWorkingDir().getPath())
-          .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-      softly
-          .assertThat(config.getProcessManager())
-          .isEqualTo(LocalOfficeUtils.findBestProcessManager());
-      softly.assertThat(config.getRunAsArgs()).isNull();
-      softly.assertThat(config.getTemplateProfileDir()).isNull();
-      softly.assertThat(config.isKillExistingProcess()).isTrue();
-      softly.assertThat(config.getProcessTimeout()).isEqualTo(120_000L);
-      softly.assertThat(config.getProcessRetryInterval()).isEqualTo(250L);
-      softly.assertThat(config.getMaxTasksPerProcess()).isEqualTo(200);
-      softly.assertThat(config.isDisableOpengl()).isFalse();
-      softly.assertThat(config.getTaskExecutionTimeout()).isEqualTo(120_000L);
-      softly.assertThat(config.getTaskQueueTimeout()).isEqualTo(30_000L);
-    }
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
 
-    final OfficeUrl[] officeUrls = Whitebox.getInternalState(manager, "officeUrls");
-    assertThat(officeUrls).hasSize(1);
-    assertThat(officeUrls[0].getConnectionAndParametersAsString())
-        .isEqualTo("socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
   }
 
   @Test
@@ -115,7 +133,7 @@ public class LocalOfficeManagerITest {
             .pipeNames("test")
             .portNumbers(2003)
             .officeHome(LocalOfficeUtils.getDefaultOfficeHome())
-            .workingDir(System.getProperty("java.io.tmpdir"))
+            .workingDir(OfficeUtils.getDefaultWorkingDir())
             .templateProfileDir("src/integTest/resources/templateProfileDir")
             .processManager(LocalOfficeUtils.findBestProcessManager())
             .runAsArgs("sudo")
@@ -128,36 +146,65 @@ public class LocalOfficeManagerITest {
             .taskQueueTimeout(1_000L)
             .build();
 
-    assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
-      softly
-          .assertThat(config.getOfficeHome().getPath())
-          .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
-      softly
-          .assertThat(config.getWorkingDir().getPath())
-          .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-      softly
-          .assertThat(config.getTemplateProfileDir().getPath())
-          .isEqualTo(new File("src/integTest/resources/templateProfileDir").getPath());
-      softly
-          .assertThat(config.getProcessManager())
-          .isEqualTo(LocalOfficeUtils.findBestProcessManager());
-      softly.assertThat(config.getRunAsArgs()).isEqualTo(new String[] {"sudo"});
-      softly.assertThat(config.isKillExistingProcess()).isEqualTo(false);
-      softly.assertThat(config.getProcessTimeout()).isEqualTo(5_000L);
-      softly.assertThat(config.getProcessRetryInterval()).isEqualTo(1_000L);
-      softly.assertThat(config.getMaxTasksPerProcess()).isEqualTo(10);
-      softly.assertThat(config.isDisableOpengl()).isEqualTo(true);
-      softly.assertThat(config.getTaskExecutionTimeout()).isEqualTo(20_000L);
-      softly.assertThat(config.getTaskQueueTimeout()).isEqualTo(1_000L);
-    }
-
-    final OfficeUrl[] officeUrls = Whitebox.getInternalState(manager, "officeUrls");
-    assertThat(officeUrls).hasSize(2);
-    assertThat(officeUrls[0].getConnectionAndParametersAsString()).isEqualTo("pipe,name=test");
-    assertThat(officeUrls[1].getConnectionAndParametersAsString())
-        .isEqualTo("socket,host=127.0.0.1,port=2003,tcpNoDelay=1");
+    assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 1_000L);
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(2)
+        .allSatisfy(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess")
+                    .containsExactly(
+                        20_000L,
+                        10,
+                        true,
+                        5_000L,
+                        1_000L,
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.singletonList("sudo"),
+                        new File("src/integTest/resources/templateProfileDir"),
+                        false))
+        .satisfies(
+            o -> {
+              assertThat(o.get(0))
+                  .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                  .extracting(
+                      "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                      "officeProcessManager.process.instanceProfileDir",
+                      "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                  .containsExactly(
+                      "socket,host=127.0.0.1,port=2003,tcpNoDelay=1",
+                      new File(
+                          OfficeUtils.getDefaultWorkingDir(),
+                          ".jodconverter_socket_host-127.0.0.1_port-2003_tcpNoDelay-1"),
+                      "socket,host=127.0.0.1,port=2003,tcpNoDelay=1");
+              assertThat(o.get(1))
+                  .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                  .extracting(
+                      "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                      "officeProcessManager.process.instanceProfileDir",
+                      "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                  .containsExactly(
+                      "pipe,name=test",
+                      new File(OfficeUtils.getDefaultWorkingDir(), ".jodconverter_pipe_name-test"),
+                      "pipe,name=test");
+            });
   }
 
   @Test
@@ -168,8 +215,46 @@ public class LocalOfficeManagerITest {
         LocalOfficeManager.builder().templateProfileDirOrDefault("src/foo/foo/foo/foo/foo").build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getTemplateProfileDir()).isNull();
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
   }
 
   @Test
@@ -178,39 +263,51 @@ public class LocalOfficeManagerITest {
     final OfficeManager manager =
         LocalOfficeManager.builder()
             .officeHome(LocalOfficeUtils.getDefaultOfficeHome().getPath())
-            .workingDir(new File(System.getProperty("java.io.tmpdir")).getPath())
+            .workingDir(OfficeUtils.getDefaultWorkingDir().getPath())
             .processManager(LocalOfficeUtils.findBestProcessManager().getClass().getName())
             .build();
 
     assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getOfficeHome().getPath())
-        .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getProcessManager().getClass().getName())
-        .isEqualTo(LocalOfficeUtils.findBestProcessManager().getClass().getName());
-  }
 
-  @Test
-  public void build_WithEmptyValuesAsString_ShouldInitializedOfficeManagerWithDefaultValues() {
-
-    final OfficeManager manager =
-        LocalOfficeManager.builder()
-            .officeHome("   ")
-            .workingDir("   ")
-            .processManager("   ")
-            .templateProfileDir("   ")
-            .templateProfileDirOrDefault("   ")
-            .build();
-
-    assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
-    final OfficeProcessManagerPoolConfig config = Whitebox.getInternalState(manager, "config");
-    assertThat(config.getOfficeHome().getPath())
-        .isEqualTo(LocalOfficeUtils.getDefaultOfficeHome().getPath());
-    assertThat(config.getWorkingDir().getPath())
-        .isEqualTo(new File(System.getProperty("java.io.tmpdir")).getPath());
-    assertThat(config.getProcessManager()).isEqualTo(LocalOfficeUtils.findBestProcessManager());
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager.class.name",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager().getClass().getName(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
   }
 
   @Test
@@ -225,45 +322,380 @@ public class LocalOfficeManagerITest {
   }
 
   @Test
-  public void build_WithNullPipeNames_ThrowIllegalArgumentException() {
+  public void build_WithNullPipeNames_ShouldInitializedOfficeManagerWithDefaultValues() {
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> LocalOfficeManager.builder().pipeNames((String[]) null).build());
+    final OfficeManager manager = LocalOfficeManager.builder().pipeNames((String[]) null).build();
+
+    assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
   }
 
   @Test
-  public void build_WithEmptyPipeNames_ThrowIllegalArgumentException() {
+  public void build_WithEmptyPipeNames_ShouldInitializedOfficeManagerWithDefaultValues() {
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> LocalOfficeManager.builder().pipeNames(new String[0]).build());
+    final OfficeManager manager = LocalOfficeManager.builder().pipeNames(new String[0]).build();
+
+    assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
   }
 
   @Test
-  public void build_WithNullPortNumbers_ThrowIllegalArgumentException() {
+  public void build_WithNullPortNumbers_ShouldInitializedOfficeManagerWithDefaultValues() {
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> LocalOfficeManager.builder().portNumbers((int[]) null).build());
+    final OfficeManager manager = LocalOfficeManager.builder().portNumbers((int[]) null).build();
+
+    assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
+  }
+
+  @Test
+  public void build_WithNullValues_ShouldInitializedOfficeManagerWithDefaultValues() {
+
+    final OfficeManager manager =
+        LocalOfficeManager.builder()
+            .pipeNames((String[]) null)
+            .portNumbers((int[]) null)
+            .officeHome((File) null)
+            .officeHome((String) null)
+            .workingDir((File) null)
+            .workingDir((String) null)
+            .templateProfileDir((File) null)
+            .templateProfileDir((String) null)
+            .processManager((ProcessManager) null)
+            .processManager((String) null)
+            .runAsArgs((String[]) null)
+            .killExistingProcess(null)
+            .processTimeout(null)
+            .processRetryInterval(null)
+            .maxTasksPerProcess(null)
+            .disableOpengl(null)
+            .taskExecutionTimeout(null)
+            .taskQueueTimeout(null)
+            .build();
+
+    assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
   }
 
   @Test
   public void build_WithEmptyPortNumbers_ThrowIllegalArgumentException() {
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> LocalOfficeManager.builder().portNumbers(new int[0]).build());
+    final OfficeManager manager = LocalOfficeManager.builder().portNumbers(new int[0]).build();
+
+    assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
   }
 
   @Test
-  public void build_WithNullRunAsArgs_ThrowIllegalArgumentException() {
+  public void build_WithNullRunAsArgs_ShouldInitializedOfficeManagerWithDefaultValues() {
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> LocalOfficeManager.builder().runAsArgs((String[]) null).build());
+    final OfficeManager manager = LocalOfficeManager.builder().runAsArgs((String[]) null).build();
+
+    assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
   }
 
   @Test
-  public void build_WithEmptyRunAsArgs_ThrowIllegalArgumentException() {
+  public void build_WithEmptyRunAsArgs_ShouldInitializedOfficeManagerWithDefaultValues() {
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> LocalOfficeManager.builder().runAsArgs(new String[0]).build());
+    final OfficeManager manager = LocalOfficeManager.builder().runAsArgs(new String[0]).build();
+
+    assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(OfficeProcessManagerPoolEntry.class)
+                    .extracting(
+                        "taskExecutionTimeout",
+                        "maxTasksPerProcess",
+                        "disableOpengl",
+                        "officeProcessManager.processTimeout",
+                        "officeProcessManager.processRetryInterval",
+                        "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                        "officeProcessManager.process.officeHome",
+                        "officeProcessManager.process.processManager",
+                        "officeProcessManager.process.runAsArgs",
+                        "officeProcessManager.process.templateProfileDir",
+                        "officeProcessManager.process.killExistingProcess",
+                        "officeProcessManager.process.instanceProfileDir",
+                        "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                    .containsExactly(
+                        120_000L,
+                        200,
+                        false,
+                        120_000L,
+                        250L,
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                        LocalOfficeUtils.getDefaultOfficeHome(),
+                        LocalOfficeUtils.findBestProcessManager(),
+                        Collections.EMPTY_LIST,
+                        null,
+                        true,
+                        new File(
+                            OfficeUtils.getDefaultWorkingDir(),
+                            ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                        "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
   }
 
   @Test
@@ -323,13 +755,14 @@ public class LocalOfficeManagerITest {
   @Test
   public void execute_TaskQueueTimeout_ThrowOfficeException() throws Exception {
 
-    final LocalOfficeManager manager = LocalOfficeManager.builder().taskQueueTimeout(1000L).build();
+    final LocalOfficeManager manager =
+        LocalOfficeManager.builder().taskQueueTimeout(1_000L).build();
     try {
       manager.start();
 
-      // Create threads that will both execute a task taking 2 sec to execute.
-      final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 2000L);
-      final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 2000L);
+      // Create threads that will both execute a task taking more than a second to execute.
+      final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 2_000L);
+      final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 1_500L);
       final Thread thread1 = new Thread(runnable1);
       final Thread thread2 = new Thread(runnable2);
 
