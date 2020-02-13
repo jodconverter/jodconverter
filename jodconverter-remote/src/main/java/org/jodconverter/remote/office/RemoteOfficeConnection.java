@@ -21,12 +21,13 @@ package org.jodconverter.remote.office;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * An RemoteOfficeConnection holds the request configuration to communicate with the LibreOffice
  * Online server.
  */
-class RemoteOfficeConnection implements RemoteOfficeContext {
+public class RemoteOfficeConnection implements RemoteOfficeContext {
 
   private final CloseableHttpClient httpClient;
   private final RequestConfig requestConfig;
@@ -39,17 +40,19 @@ class RemoteOfficeConnection implements RemoteOfficeContext {
    * @param requestConfig The request configuration for the conversion.
    */
   public RemoteOfficeConnection(
-      final CloseableHttpClient httpClient, final RequestConfig requestConfig) {
+      @NonNull final CloseableHttpClient httpClient, @NonNull final RequestConfig requestConfig) {
 
     this.httpClient = httpClient;
     this.requestConfig = requestConfig;
   }
 
+  @NonNull
   @Override
   public HttpClient getHttpClient() {
     return httpClient;
   }
 
+  @NonNull
   @Override
   public RequestConfig getRequestConfig() {
     return requestConfig;

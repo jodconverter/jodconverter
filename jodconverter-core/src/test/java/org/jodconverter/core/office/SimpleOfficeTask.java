@@ -70,6 +70,7 @@ public class SimpleOfficeTask implements OfficeTask {
   }
 
   @Override
+  @SuppressWarnings("NullableProblems")
   public void execute(final OfficeContext context) throws OfficeException {
 
     try {

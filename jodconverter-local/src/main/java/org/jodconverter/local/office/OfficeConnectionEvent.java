@@ -21,6 +21,8 @@ package org.jodconverter.local.office;
 
 import java.util.EventObject;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /** Event raised when an office connection gets opened or closed. */
 class OfficeConnectionEvent extends EventObject {
   private static final long serialVersionUID = 2060652797570876077L;
@@ -30,7 +32,7 @@ class OfficeConnectionEvent extends EventObject {
    *
    * @param source The connection on which the event initially occurred.
    */
-  public OfficeConnectionEvent(final OfficeConnection source) {
+  public OfficeConnectionEvent(@NonNull final OfficeConnection source) {
     super(source);
   }
 }

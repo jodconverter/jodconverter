@@ -21,7 +21,6 @@ package org.jodconverter.local.process;
 
 import java.io.IOException;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +50,14 @@ public class CustomProcessManager implements ProcessManager {
   }
 
   @Override
+  @SuppressWarnings("NullableProblems")
   public long findPid(final ProcessQuery query) throws IOException {
     LOGGER.debug("Finding PID from {}", getClass().getName());
     return delegate.findPid(query);
   }
 
   @Override
-  public void kill(@Nullable final Process process, final long pid) throws IOException {
+  public void kill(final Process process, final long pid) throws IOException {
     LOGGER.debug("Kill PID {} from {}", pid, getClass().getName());
     delegate.kill(process, pid);
   }

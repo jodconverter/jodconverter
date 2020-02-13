@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,8 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * @return The command execution output.
    * @throws IOException If an I/O error occurs.
    */
-  protected List<String> execute(final String[] cmdarray) throws IOException {
+  @NonNull
+  protected List<@NonNull String> execute(@NonNull final String[] cmdarray) throws IOException {
 
     final Process process = Runtime.getRuntime().exec(cmdarray);
 
@@ -101,7 +103,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
   }
 
   @Override
-  public long findPid(final ProcessQuery query) throws IOException {
+  public long findPid(@NonNull final ProcessQuery query) throws IOException {
 
     final Pattern commandPattern =
         Pattern.compile(
@@ -158,6 +160,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * @param process The name of the process to query for.
    * @return An array containing the command to call and its arguments.
    */
+  @NonNull
   protected abstract String[] getRunningProcessesCommand(String process);
 
   /**
@@ -168,5 +171,6 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * @return The pattern.
    * @see #getRunningProcessesCommand(String)
    */
+  @NonNull
   protected abstract Pattern getRunningProcessLinePattern();
 }

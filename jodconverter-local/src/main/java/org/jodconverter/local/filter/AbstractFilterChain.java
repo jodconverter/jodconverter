@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.sun.star.lang.XComponent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.OfficeContext;
@@ -48,7 +49,7 @@ public abstract class AbstractFilterChain implements FilterChain {
    *
    * @param filters The filters to add to the chain.
    */
-  public AbstractFilterChain(final Filter... filters) {
+  public AbstractFilterChain(@Nullable final Filter... filters) {
     this(false, filters);
   }
 
@@ -72,7 +73,7 @@ public abstract class AbstractFilterChain implements FilterChain {
   }
 
   @Override
-  public void addFilter(final Filter filter) {
+  public void addFilter(@NonNull final Filter filter) {
 
     if (readOnly) {
       throw new UnsupportedOperationException();
@@ -81,7 +82,7 @@ public abstract class AbstractFilterChain implements FilterChain {
   }
 
   @Override
-  public void doFilter(final OfficeContext context, final XComponent document)
+  public void doFilter(@NonNull final OfficeContext context, @NonNull final XComponent document)
       throws OfficeException {
 
     // Call the next filter if there is one
@@ -100,7 +101,9 @@ public abstract class AbstractFilterChain implements FilterChain {
    * @throws OfficeException If an error occurs processing the filter.
    */
   protected void doFilter(
-      final Filter filter, final OfficeContext context, final XComponent document)
+      @NonNull final Filter filter,
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document)
       throws OfficeException {
 
     try {

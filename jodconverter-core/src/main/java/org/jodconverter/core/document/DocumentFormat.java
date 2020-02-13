@@ -61,7 +61,8 @@ public class DocumentFormat {
    * @return A {@link DocumentFormat}, which will be modifiable, unlike the default document formats
    *     are.
    */
-  public static DocumentFormat copy(final DocumentFormat sourceFormat) {
+  @NonNull
+  public static DocumentFormat copy(@NonNull final DocumentFormat sourceFormat) {
     return new Builder().from(sourceFormat).unmodifiable(false).build();
   }
 
@@ -72,7 +73,8 @@ public class DocumentFormat {
    * @return A {@link DocumentFormat}, which will be unmodifiable, like the default document formats
    *     are.
    */
-  public static DocumentFormat unmodifiableCopy(final DocumentFormat sourceFormat) {
+  @NonNull
+  public static DocumentFormat unmodifiableCopy(@NonNull final DocumentFormat sourceFormat) {
     return new Builder().from(sourceFormat).unmodifiable(true).build();
   }
 
@@ -94,8 +96,8 @@ public class DocumentFormat {
       final Collection<String> extensions,
       final String mediaType,
       final DocumentFamily inputFamily,
-      @Nullable final Map<String, Object> loadProperties,
-      @Nullable final Map<DocumentFamily, Map<String, Object>> storeProperties,
+      final Map<String, Object> loadProperties,
+      final Map<DocumentFamily, Map<String, Object>> storeProperties,
       final boolean unmodifiable) {
 
     Validate.notBlank(name, "name must not be null nor blank");
@@ -137,6 +139,7 @@ public class DocumentFormat {
    *
    * @return A string that represents an extension.
    */
+  @NonNull
   public String getExtension() {
     return extensions.get(0);
   }
@@ -146,7 +149,8 @@ public class DocumentFormat {
    *
    * @return A list of string that represents the extensions.
    */
-  public List<String> getExtensions() {
+  @NonNull
+  public List<@NonNull String> getExtensions() {
     return extensions;
   }
 
@@ -155,6 +159,7 @@ public class DocumentFormat {
    *
    * @return The input DocumentFamily of the document format.
    */
+  @NonNull
   public DocumentFamily getInputFamily() {
     return inputFamily;
   }
@@ -165,7 +170,7 @@ public class DocumentFormat {
    * @return A map containing the properties to apply when loading a document of this format.
    */
   @Nullable
-  public Map<String, Object> getLoadProperties() {
+  public Map<@NonNull String, @NonNull Object> getLoadProperties() {
     return loadProperties;
   }
 
@@ -174,6 +179,7 @@ public class DocumentFormat {
    *
    * @return A string that represents the media type.
    */
+  @NonNull
   public String getMediaType() {
     return mediaType;
   }
@@ -183,6 +189,7 @@ public class DocumentFormat {
    *
    * @return A string that represents the name of the format.
    */
+  @NonNull
   public String getName() {
     return name;
   }
@@ -195,7 +202,8 @@ public class DocumentFormat {
    *     of this format, by DocumentFamily.
    */
   @Nullable
-  public Map<DocumentFamily, Map<String, Object>> getStoreProperties() {
+  public Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
+      getStoreProperties() {
     return storeProperties;
   }
 
@@ -207,11 +215,13 @@ public class DocumentFormat {
    * @return A map containing the properties to apply when storing a document to this format.
    */
   @Nullable
-  public Map<String, Object> getStoreProperties(final DocumentFamily family) {
+  public Map<@NonNull String, @NonNull Object> getStoreProperties(
+      @NonNull final DocumentFamily family) {
 
     return storeProperties == null ? null : storeProperties.get(family);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return ToStringBuilder.reflectionToString(this);
@@ -242,6 +252,7 @@ public class DocumentFormat {
      *
      * @return The converter that is specified by this builder.
      */
+    @NonNull
     public DocumentFormat build() {
 
       return new DocumentFormat(
@@ -254,7 +265,8 @@ public class DocumentFormat {
      * @param sourceFormat The source document format, cannot be null.
      * @return This builder instance.
      */
-    public Builder from(final DocumentFormat sourceFormat) {
+    @NonNull
+    public Builder from(@NonNull final DocumentFormat sourceFormat) {
 
       Validate.notNull(sourceFormat, "sourceFormat must not be null");
       this.name = sourceFormat.getName();
@@ -281,7 +293,8 @@ public class DocumentFormat {
      * @param extension The extension, cannot be null.
      * @return This builder instance.
      */
-    public Builder extension(final String extension) {
+    @NonNull
+    public Builder extension(@NonNull final String extension) {
 
       Validate.notBlank(extension, "extension must not be null nor blank");
       if (this.extensions == null) {
@@ -298,7 +311,8 @@ public class DocumentFormat {
      * @param inputFamily The DocumentFamily, cannot be null.
      * @return This builder instance.
      */
-    public Builder inputFamily(final DocumentFamily inputFamily) {
+    @NonNull
+    public Builder inputFamily(@NonNull final DocumentFamily inputFamily) {
 
       Validate.notNull(inputFamily, "inputFamily must not be null");
       this.inputFamily = inputFamily;
@@ -314,7 +328,8 @@ public class DocumentFormat {
      *     map.
      * @return This builder instance.
      */
-    public Builder loadProperty(final String name, @Nullable final Object value) {
+    @NonNull
+    public Builder loadProperty(@NonNull final String name, @Nullable final Object value) {
 
       Validate.notBlank(name, "name must not be null nor blank");
 
@@ -343,7 +358,8 @@ public class DocumentFormat {
      * @param mediaType A string that represents the media type, cannot be null.
      * @return This builder instance.
      */
-    public Builder mediaType(final String mediaType) {
+    @NonNull
+    public Builder mediaType(@NonNull final String mediaType) {
 
       Validate.notBlank(mediaType, "mediaType must not be null nor blank");
       this.mediaType = mediaType;
@@ -356,7 +372,8 @@ public class DocumentFormat {
      * @param name The name of the document format, cannot be null.
      * @return This builder instance.
      */
-    public Builder name(final String name) {
+    @NonNull
+    public Builder name(@NonNull final String name) {
 
       Validate.notBlank(name, "name must not be null nor blank");
       this.name = name;
@@ -371,6 +388,7 @@ public class DocumentFormat {
      *     creation, {@code false} otherwise.
      * @return This builder instance.
      */
+    @NonNull
     public Builder unmodifiable(final boolean unmodifiable) {
 
       this.unmodifiable = unmodifiable;
@@ -387,8 +405,11 @@ public class DocumentFormat {
      *     map.
      * @return This builder instance.
      */
+    @NonNull
     public Builder storeProperty(
-        final DocumentFamily documentFamily, final String name, @Nullable final Object value) {
+        @NonNull final DocumentFamily documentFamily,
+        @NonNull final String name,
+        @Nullable final Object value) {
 
       Validate.notNull(documentFamily, "documentFamily must not be null");
       Validate.notBlank(name, "name must not be null nor blank");

@@ -29,6 +29,7 @@ import com.sun.star.style.XStyle;
 import com.sun.star.style.XStyleFamiliesSupplier;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,9 @@ public class PageMarginsFilter implements Filter {
 
   @Override
   public void doFilter(
-      final OfficeContext context, final XComponent document, final FilterChain chain)
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document,
+      @NonNull final FilterChain chain)
       throws Exception {
 
     LOGGER.debug("Applying the PageMarginsFilter");

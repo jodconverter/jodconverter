@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.TemporaryFileMaker;
 
@@ -45,8 +46,8 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
    * @param closeStream If we close the stream on completion.
    */
   public TargetDocumentSpecsFromOutputStream(
-      final OutputStream outputStream,
-      final TemporaryFileMaker fileMaker,
+      @NonNull final OutputStream outputStream,
+      @NonNull final TemporaryFileMaker fileMaker,
       final boolean closeStream) {
     super(fileMaker.makeTemporaryFile());
 
@@ -57,6 +58,7 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
     this.fileMaker = fileMaker;
   }
 
+  @NonNull
   @Override
   public File getFile() {
 
@@ -66,7 +68,7 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
   }
 
   @Override
-  public void onComplete(final File tempFile) {
+  public void onComplete(@NonNull final File tempFile) {
 
     // Copy the content of the tempFile, which is the result
     // of the conversion, to the outputStream
@@ -86,7 +88,7 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
   }
 
   @Override
-  public void onFailure(final File tempFile, final Exception exception) {
+  public void onFailure(@NonNull final File tempFile, @NonNull final Exception exception) {
 
     // Ensure the created tempFile is deleted
     FileUtils.deleteQuietly(tempFile);

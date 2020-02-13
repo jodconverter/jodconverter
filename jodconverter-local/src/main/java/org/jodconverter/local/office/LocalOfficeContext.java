@@ -23,6 +23,7 @@ import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uno.XComponentContext;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.OfficeContext;
 
@@ -34,6 +35,7 @@ public interface LocalOfficeContext extends OfficeContext {
    *
    * @return The {@link com.sun.star.frame.XComponentLoader}.
    */
+  @NonNull
   XComponentLoader getComponentLoader();
 
   /**
@@ -41,6 +43,7 @@ public interface LocalOfficeContext extends OfficeContext {
    *
    * @return The {@link com.sun.star.uno.XComponentContext}.
    */
+  @NonNull
   XComponentContext getComponentContext();
 
   /**
@@ -48,6 +51,7 @@ public interface LocalOfficeContext extends OfficeContext {
    *
    * @return The {@link com.sun.star.lang.XMultiComponentFactory}.
    */
+  @NonNull
   XMultiComponentFactory getServiceManager();
 
   /**
@@ -55,5 +59,6 @@ public interface LocalOfficeContext extends OfficeContext {
    *
    * @return The {@link com.sun.star.frame.XDesktop}.
    */
+  @NonNull
   XDesktop getDesktop();
 }

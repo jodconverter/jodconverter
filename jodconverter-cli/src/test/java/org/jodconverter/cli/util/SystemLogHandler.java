@@ -36,7 +36,7 @@ import java.util.Stack;
  * @author Remy Maucherat
  * @author Glenn L. Nielsen
  */
-@SuppressWarnings("PMD")
+@SuppressWarnings({"PMD", "NullableProblems"})
 public class SystemLogHandler extends PrintStream {
 
   // ----------------------------------------------------- Instance Variables

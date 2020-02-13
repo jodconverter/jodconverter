@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -34,7 +35,6 @@ import java.util.concurrent.TimeoutException;
 import com.sun.star.frame.TerminationVetoException;
 import com.sun.star.frame.XTerminateListener;
 import com.sun.star.lang.EventObject;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
@@ -513,7 +513,7 @@ public class OfficeProcessManagerPoolEntryITest {
               private boolean firstAttempt = true;
 
               @Override
-              public void kill(@Nullable final Process process, final long pid) {
+              public void kill(final Process process, final long pid) throws IOException {
                 if (firstAttempt) {
                   firstAttempt = false;
                   TestUtil.sleepQuietly(500L);

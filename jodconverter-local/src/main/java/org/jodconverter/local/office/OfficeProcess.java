@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,11 +82,11 @@ class OfficeProcess {
    *     a new office process for the same connection string.
    */
   public OfficeProcess(
-      final OfficeUrl officeUrl,
-      final File officeHome,
-      final File workingDir,
-      final ProcessManager processManager,
-      @Nullable final List<String> runAsArgs,
+      @NonNull final OfficeUrl officeUrl,
+      @NonNull final File officeHome,
+      @NonNull final File workingDir,
+      @NonNull final ProcessManager processManager,
+      @Nullable final List<@NonNull String> runAsArgs,
       @Nullable final File templateProfileDir,
       @Nullable final Boolean killExistingProcess) {
 
@@ -336,7 +337,8 @@ class OfficeProcess {
    * @param acceptString The connection string (accept argument) of the office process.
    * @return The created ProcessBuilder.
    */
-  private ProcessBuilder prepareProcessBuilder(final String acceptString) {
+  @NonNull
+  private ProcessBuilder prepareProcessBuilder(@NonNull final String acceptString) {
 
     // Create the command used to launch the office process
     final List<String> command = new ArrayList<>(runAsArgs);

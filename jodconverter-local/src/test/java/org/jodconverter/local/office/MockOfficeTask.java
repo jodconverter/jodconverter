@@ -54,6 +54,7 @@ public class MockOfficeTask implements OfficeTask {
   }
 
   @Override
+  @SuppressWarnings("NullableProblems")
   public void execute(final OfficeContext context) throws OfficeException {
 
     final LocalOfficeContext ctx = (LocalOfficeContext) context;

@@ -30,7 +30,7 @@ import com.sun.star.beans.XHierarchicalPropertySetInfo;
 import com.sun.star.lang.XComponent;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XChangesBatch;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,14 +100,14 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       final File officeHome,
       final File workingDir,
       final ProcessManager processManager,
-      @Nullable final List<String> runAsArgs,
-      @Nullable final File templateProfileDir,
-      @Nullable final Boolean killExistingProcess,
-      @Nullable final Long processTimeout,
-      @Nullable final Long processRetryInterval,
-      @Nullable final Long taskExecutionTimeout,
-      @Nullable final Integer maxTasksPerProcess,
-      @Nullable final Boolean disableOpengl) {
+      final List<String> runAsArgs,
+      final File templateProfileDir,
+      final Boolean killExistingProcess,
+      final Long processTimeout,
+      final Long processRetryInterval,
+      final Long taskExecutionTimeout,
+      final Integer maxTasksPerProcess,
+      final Boolean disableOpengl) {
     super(taskExecutionTimeout);
 
     // Create the process manager that will deal with the office instance
@@ -169,7 +169,7 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   @Override
-  public void doExecute(final OfficeTask task) throws OfficeException {
+  public void doExecute(@NonNull final OfficeTask task) throws OfficeException {
 
     // First check if the office process must be restarted
     final int count = taskCount.getAndIncrement();
@@ -188,7 +188,7 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   @Override
-  protected void handleExecuteTimeoutException(final TimeoutException timeoutEx) {
+  protected void handleExecuteTimeoutException(@NonNull final TimeoutException timeoutEx) {
 
     // Is the the task did not complete within the configured timeout, we must restart
     officeProcessManager.restartDueToTaskTimeout();

@@ -19,6 +19,8 @@
 
 package org.jodconverter.core.task;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 
@@ -35,5 +37,5 @@ public interface OfficeTask {
    * @param context The office context.
    * @throws OfficeException If an error occurs.
    */
-  void execute(OfficeContext context) throws OfficeException;
+  void execute(@NonNull OfficeContext context) throws OfficeException;
 }

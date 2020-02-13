@@ -33,6 +33,7 @@ import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.job.SourceDocumentSpecs;
@@ -53,7 +54,8 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   protected final Map<String, Object> loadProperties;
 
   protected static void appendProperties(
-      final Map<String, Object> properties, @Nullable final Map<String, Object> toAddProperties) {
+      @NonNull final Map<@NonNull String, @NonNull Object> properties,
+      @Nullable final Map<@NonNull String, @NonNull Object> toAddProperties) {
 
     if (toAddProperties != null) {
       properties.putAll(toAddProperties);
@@ -65,7 +67,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
    *
    * @param source The source specifications of the document.
    */
-  public AbstractLocalOfficeTask(final SourceDocumentSpecs source) {
+  public AbstractLocalOfficeTask(@NonNull final SourceDocumentSpecs source) {
     this(source, null);
   }
 
@@ -78,14 +80,16 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
    *     {@code source} arguments.
    */
   public AbstractLocalOfficeTask(
-      final SourceDocumentSpecs source, @Nullable final Map<String, Object> loadProperties) {
+      @NonNull final SourceDocumentSpecs source,
+      @Nullable final Map<@NonNull String, @NonNull Object> loadProperties) {
     super(source);
 
     this.loadProperties = loadProperties;
   }
 
   // Gets the office properties to apply when the input file will be loaded.
-  protected Map<String, Object> getLoadProperties() {
+  @NonNull
+  protected Map<@NonNull String, @NonNull Object> getLoadProperties() {
 
     final Map<String, Object> loadProps =
         new HashMap<>(
@@ -98,7 +102,9 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   }
 
   // Loads the document from the specified source file.
-  protected XComponent loadDocument(final LocalOfficeContext context, final File sourceFile)
+  @NonNull
+  protected XComponent loadDocument(
+      @NonNull final LocalOfficeContext context, @NonNull final File sourceFile)
       throws OfficeException {
 
     try {
@@ -146,6 +152,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
     }
   }
 
+  @NonNull
   @Override
   public String toString() {
     return getClass().getSimpleName()

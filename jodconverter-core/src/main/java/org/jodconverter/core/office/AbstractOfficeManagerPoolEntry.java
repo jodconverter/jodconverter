@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,11 +66,11 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     this.taskExecutionTimeout =
         taskExecutionTimeout == null ? DEFAULT_TASK_EXECUTION_TIMEOUT : taskExecutionTimeout;
     taskExecutor =
-        new SuspendableThreadPoolExecutor(new NamedThreadFactory("OfficeManagerPoolEntry"));
+        new SuspendableThreadPoolExecutor(new NamedThreadFactory("jodconverter-poolentry"));
   }
 
   @Override
-  public final void execute(final OfficeTask task) throws OfficeException {
+  public final void execute(@NonNull final OfficeTask task) throws OfficeException {
 
     // No need to check if the manager if running here.
     // This check is already done in the pool
@@ -120,14 +121,14 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
    * @param task The task to execute.
    * @throws Exception If any errors occurs during the conversion.
    */
-  protected abstract void doExecute(final OfficeTask task) throws Exception;
+  protected abstract void doExecute(@NonNull final OfficeTask task) throws Exception;
 
   /**
    * Handles a timeout exception raised while executing a task.
    *
    * @param timeoutEx the exception thrown.
    */
-  protected void handleExecuteTimeoutException(final TimeoutException timeoutEx) {
+  protected void handleExecuteTimeoutException(@NonNull final TimeoutException timeoutEx) {
 
     // The default behavior is to do nothing
     LOGGER.debug("Handling task execution timeout.", timeoutEx);

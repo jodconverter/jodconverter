@@ -21,6 +21,7 @@ package org.jodconverter.local.filter;
 
 import com.sun.star.lang.XComponent;
 import com.sun.star.util.XRefreshable;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,9 @@ public class RefreshFilter implements Filter {
 
   @Override
   public void doFilter(
-      final OfficeContext context, final XComponent document, final FilterChain chain)
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document,
+      @NonNull final FilterChain chain)
       throws Exception {
 
     LOGGER.debug("Applying the RefreshFilter");

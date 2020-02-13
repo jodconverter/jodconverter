@@ -23,11 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
-import java.util.List;
-
 import com.sun.star.lang.XComponent;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
@@ -40,8 +37,7 @@ public class DefaultFilterChainTest {
   public void create_WithoutFilters_ShouldBeEmpty() {
 
     final DefaultFilterChain chain = new DefaultFilterChain();
-    final List<Filter> filters = Whitebox.getInternalState(chain, "filters");
-    assertThat(filters).hasSize(0);
+    assertThat(chain).extracting("filters").asList().hasSize(0);
   }
 
   /** Tests that a DefaultFilterChain.addFilter works as expected. */
@@ -52,9 +48,7 @@ public class DefaultFilterChainTest {
     final DefaultFilterChain chain = new DefaultFilterChain();
     chain.addFilter(filter);
 
-    final List<Filter> filters = Whitebox.getInternalState(chain, "filters");
-    assertThat(filters).hasSize(1);
-    assertThat(filters).containsExactly(filter);
+    assertThat(chain).extracting("filters").asList().hasSize(0).containsExactly(filter);
   }
 
   @Test

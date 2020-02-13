@@ -30,7 +30,7 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,8 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
    * @param source The source specifications for the conversion.
    * @param target The target specifications for the conversion.
    */
-  public RemoteConversionTask(final SourceDocumentSpecs source, final TargetDocumentSpecs target) {
+  public RemoteConversionTask(
+      @NonNull final SourceDocumentSpecs source, @NonNull final TargetDocumentSpecs target) {
     super(source);
 
     this.target = target;
@@ -68,7 +69,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
   private void addPropertiesToBuilder(
       final URIBuilder uriBuilder,
       final String parameterPrefix,
-      @Nullable final Map<String, Object> properties) {
+      final Map<String, Object> properties) {
 
     if (properties != null) {
       for (final Map.Entry<String, Object> entry : properties.entrySet()) {
@@ -91,7 +92,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
   }
 
   @Override
-  public void execute(final OfficeContext context) throws OfficeException {
+  public void execute(@NonNull final OfficeContext context) throws OfficeException {
 
     LOGGER.info("Executing remote conversion task...");
     final RemoteOfficeContext remoteContext = (RemoteOfficeContext) context;
@@ -171,6 +172,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
         + Objects.requireNonNull(target.getFormat()).getExtension();
   }
 
+  @NonNull
   @Override
   public String toString() {
     return getClass().getSimpleName() + "{" + "source=" + source + ", target=" + target + '}';

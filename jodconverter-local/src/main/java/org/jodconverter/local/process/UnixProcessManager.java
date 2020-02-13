@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -54,12 +55,14 @@ public class UnixProcessManager extends AbstractProcessManager {
    *
    * @return The default {@code UnixProcessManager} instance.
    */
+  @NonNull
   public static UnixProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
 
+  @NonNull
   @Override
-  protected List<String> execute(final String[] cmdarray) throws IOException {
+  protected List<@NonNull String> execute(@NonNull final String[] cmdarray) throws IOException {
 
     if (runAsArgs == null) {
       return super.execute(cmdarray);
@@ -72,14 +75,16 @@ public class UnixProcessManager extends AbstractProcessManager {
     return super.execute(newarray);
   }
 
+  @NonNull
   @Override
-  protected String[] getRunningProcessesCommand(final String process) {
+  protected String[] getRunningProcessesCommand(@NonNull final String process) {
 
     return new String[] {
       "/bin/sh", "-c", "/bin/ps -e -o pid,args | /bin/grep " + process + " | /bin/grep -v grep"
     };
   }
 
+  @NonNull
   @Override
   protected Pattern getRunningProcessLinePattern() {
 
@@ -97,7 +102,7 @@ public class UnixProcessManager extends AbstractProcessManager {
    *
    * @param runAsArgs The sudo command arguments.
    */
-  public void setRunAsArgs(final String[] runAsArgs) {
+  public void setRunAsArgs(@NonNull final String[] runAsArgs) {
     this.runAsArgs = ArrayUtils.clone(runAsArgs);
   }
 }

@@ -19,6 +19,8 @@
 
 package org.jodconverter.core.office;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import org.jodconverter.core.task.OfficeTask;
 
 /**
@@ -34,7 +36,7 @@ public interface OfficeManager {
    * @param task The task to execute.
    * @throws OfficeException If an error occurs.
    */
-  void execute(OfficeTask task) throws OfficeException;
+  void execute(@NonNull OfficeTask task) throws OfficeException;
 
   /**
    * Gets whether the manager is running.

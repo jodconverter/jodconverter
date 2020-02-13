@@ -20,6 +20,7 @@
 package org.jodconverter.local.filter;
 
 import com.sun.star.lang.XComponent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.OfficeContext;
 
@@ -41,6 +42,9 @@ public interface Filter {
    * @param chain The chain.
    * @throws Exception If an error occurs processing the filter.
    */
-  void doFilter(final OfficeContext context, final XComponent document, final FilterChain chain)
+  void doFilter(
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document,
+      @NonNull final FilterChain chain)
       throws Exception;
 }

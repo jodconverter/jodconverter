@@ -19,11 +19,14 @@
 
 package org.jodconverter.local.filter;
 
+import java.util.Objects;
+
 import com.sun.star.drawing.XDrawPages;
 import com.sun.star.drawing.XDrawPagesSupplier;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
 import com.sun.star.sheet.XSpreadsheetDocument;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +46,9 @@ public class PageCounterFilter implements Filter {
 
   @Override
   public void doFilter(
-      final OfficeContext context, final XComponent document, final FilterChain chain)
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document,
+      @NonNull final FilterChain chain)
       throws Exception {
 
     if (Write.isText(document)) {
@@ -57,7 +62,7 @@ public class PageCounterFilter implements Filter {
       LOGGER.debug("Applying the PageCounterFilter for a Calc document");
 
       final XSpreadsheetDocument doc = Calc.getCalcDoc(document);
-      pageCount = doc.getSheets().getElementNames().length;
+      pageCount = Objects.requireNonNull(doc).getSheets().getElementNames().length;
 
     } else if (Draw.isImpress(document)) {
       LOGGER.debug("Applying the PageCounterFilter for an Impress document");

@@ -19,6 +19,8 @@
 
 package org.jodconverter.core.office;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /** An exception that provides information on an error while dealing with office. */
 public class OfficeException extends Exception {
   private static final long serialVersionUID = -1360754252407765922L;
@@ -30,7 +32,7 @@ public class OfficeException extends Exception {
    * @param message The detail message. The detail message is saved for later retrieval by the
    *     {@link #getMessage()} method.
    */
-  public OfficeException(final String message) {
+  public OfficeException(@NonNull final String message) {
     super(message);
   }
 
@@ -46,7 +48,7 @@ public class OfficeException extends Exception {
    *     (A {@code null} value is permitted, and indicates that the cause is nonexistent or
    *     unknown.)
    */
-  public OfficeException(final String message, final Throwable cause) {
+  public OfficeException(@NonNull final String message, @NonNull final Throwable cause) {
     super(message, cause);
   }
 }

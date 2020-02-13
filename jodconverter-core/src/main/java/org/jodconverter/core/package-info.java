@@ -21,10 +21,4 @@
  * This package contains the {@link org.jodconverter.core.DocumentConverter} interface offering a
  * fluent API to execute document conversions.
  */
-@org.checkerframework.framework.qual.DefaultQualifier(
-    value = org.checkerframework.checker.nullness.qual.NonNull.class,
-    locations = {
-      org.checkerframework.framework.qual.TypeUseLocation.PARAMETER,
-      org.checkerframework.framework.qual.TypeUseLocation.RETURN
-    })
 package org.jodconverter.core;

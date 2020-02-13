@@ -53,6 +53,7 @@ public class AbstractLocalOfficeTaskTest {
     }
 
     @Override
+    @SuppressWarnings("NullableProblems")
     public void execute(final OfficeContext context) {
       // Do nothing here
     }
@@ -67,11 +68,6 @@ public class AbstractLocalOfficeTaskTest {
     @Override
     public DocumentFormat getFormat() {
       return DefaultDocumentFormatRegistry.TXT;
-    }
-
-    @Override
-    public void onConsumed(final File file) {
-      // Do nothing here
     }
   }
 

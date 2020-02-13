@@ -19,6 +19,8 @@
 
 package org.jodconverter.core.office;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * A {@code RetryTimeoutException} is thrown by an {@code AbstractRetryable} when it is unable to
  * execute its task within a specified amount of time.
@@ -31,7 +33,7 @@ public class RetryTimeoutException extends Exception {
    *
    * @param cause The cause.
    */
-  public RetryTimeoutException(final Throwable cause) {
+  public RetryTimeoutException(@NonNull final Throwable cause) {
     super(cause);
   }
 }

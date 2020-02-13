@@ -24,6 +24,7 @@ import com.sun.star.container.XIndexAccess;
 import com.sun.star.lang.XComponent;
 import com.sun.star.text.XDocumentIndex;
 import com.sun.star.text.XDocumentIndexesSupplier;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,9 @@ public class TableOfContentUpdaterFilter implements Filter {
 
   @Override
   public void doFilter(
-      final OfficeContext context, final XComponent document, final FilterChain chain)
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document,
+      @NonNull final FilterChain chain)
       throws Exception {
 
     LOGGER.debug("Applying the TableOfContentUpdaterFilter");

@@ -20,6 +20,7 @@
 package org.jodconverter.core.job;
 
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
@@ -36,15 +37,17 @@ public abstract class AbstractConversionJob
   protected final AbstractTargetDocumentSpecs target;
 
   protected AbstractConversionJob(
-      final AbstractSourceDocumentSpecs source, final AbstractTargetDocumentSpecs target) {
+      @NonNull final AbstractSourceDocumentSpecs source,
+      @NonNull final AbstractTargetDocumentSpecs target) {
     super();
 
     this.source = source;
     this.target = target;
   }
 
+  @NonNull
   @Override
-  public ConversionJob as(final DocumentFormat format) {
+  public ConversionJob as(@NonNull final DocumentFormat format) {
 
     target.setDocumentFormat(format);
     return this;

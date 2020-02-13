@@ -19,6 +19,8 @@
 
 package org.jodconverter.core.document;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Exception thrown when a {@link DefaultDocumentFormatRegistry} cannot be created and initialized
  * properly.
@@ -32,7 +34,8 @@ public class DocumentFormatRegistryException extends RuntimeException {
    * @param message the detail message.
    * @param cause the cause.
    */
-  public DocumentFormatRegistryException(final String message, final Throwable cause) {
+  public DocumentFormatRegistryException(
+      @NonNull final String message, @NonNull final Throwable cause) {
     super(message, cause);
   }
 }

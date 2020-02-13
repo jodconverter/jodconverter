@@ -21,6 +21,7 @@ package org.jodconverter.core.document;
 
 import java.util.Set;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -37,7 +38,7 @@ public interface DocumentFormatRegistry {
    *     specified extension.
    */
   @Nullable
-  DocumentFormat getFormatByExtension(String extension);
+  DocumentFormat getFormatByExtension(@NonNull String extension);
 
   /**
    * Gets a document format for the specified media type.
@@ -47,7 +48,7 @@ public interface DocumentFormatRegistry {
    *     specified media type.
    */
   @Nullable
-  DocumentFormat getFormatByMediaType(String mediaType);
+  DocumentFormat getFormatByMediaType(@NonNull String mediaType);
 
   /**
    * Gets all the {@link DocumentFormat}s of a given family.
@@ -55,5 +56,6 @@ public interface DocumentFormatRegistry {
    * @param family The family whose document formats will be returned.
    * @return A set with all the document formats for the specified family.
    */
-  Set<DocumentFormat> getOutputFormats(DocumentFamily family);
+  @NonNull
+  Set<@NonNull DocumentFormat> getOutputFormats(@NonNull DocumentFamily family);
 }

@@ -37,6 +37,7 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XEventListener;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uno.XComponentContext;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ import org.jodconverter.local.office.utils.Lo;
  * An OfficeConnection is responsible to manage the connection to an office process using a given
  * UnoUrl.
  */
-class OfficeConnection implements LocalOfficeContext, XEventListener {
+public class OfficeConnection implements LocalOfficeContext, XEventListener {
 
   private static final AtomicInteger BRIDGE_INDEX = new AtomicInteger();
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeConnection.class);
@@ -65,7 +66,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
    *
    * @param officeUrl The URL for which the connection is created.
    */
-  public OfficeConnection(final OfficeUrl officeUrl) {
+  public OfficeConnection(@NonNull final OfficeUrl officeUrl) {
 
     this.officeUrl = officeUrl;
     this.connectionEventListeners = new ArrayList<>();
@@ -78,12 +79,16 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
    *     established with an office process and when a connection is lost.
    */
   public void addConnectionEventListener(
-      final OfficeConnectionEventListener connectionEventListener) {
+      @NonNull final OfficeConnectionEventListener connectionEventListener) {
 
     connectionEventListeners.add(connectionEventListener);
   }
 
-  /** Establishes the connection to an office instance. */
+  /**
+   * Establishes the connection to an office instance.
+   *
+   * @throws OfficeConnectionException If the connection could not be established.
+   */
   public void connect() throws OfficeConnectionException {
 
     synchronized (this) {
@@ -198,7 +203,7 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
   }
 
   @Override
-  public void disposing(final EventObject eventObject) {
+  public void disposing(@NonNull final EventObject eventObject) {
 
     if (connected.get()) {
 
@@ -219,21 +224,25 @@ class OfficeConnection implements LocalOfficeContext, XEventListener {
     // else we tried to connect to a server that doesn't speak URP
   }
 
+  @NonNull
   @Override
   public XComponentContext getComponentContext() {
     return componentContext;
   }
 
+  @NonNull
   @Override
   public XMultiComponentFactory getServiceManager() {
     return serviceManager;
   }
 
+  @NonNull
   @Override
   public XComponentLoader getComponentLoader() {
     return componentLoader;
   }
 
+  @NonNull
   @Override
   public XDesktop getDesktop() {
     // Needed only when stopping a process for now, so no need to keep an instance of it.

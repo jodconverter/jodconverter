@@ -19,6 +19,8 @@
 
 package org.jodconverter.core.office;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Represents an error condition that can be temporary, i.e. that could go away by simply retrying
  * the same operation after an interval.
@@ -31,7 +33,7 @@ public class TemporaryException extends Exception {
    *
    * @param message The message.
    */
-  public TemporaryException(final String message) {
+  public TemporaryException(@NonNull final String message) {
     super(message);
   }
 
@@ -40,7 +42,7 @@ public class TemporaryException extends Exception {
    *
    * @param cause The cause.
    */
-  public TemporaryException(final Throwable cause) {
+  public TemporaryException(@NonNull final Throwable cause) {
     super(cause);
   }
 }

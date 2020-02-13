@@ -31,6 +31,7 @@ import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextFrame;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +64,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
    *     (millimeters).
    */
   public TextInserterFilter(
-      final String text,
+      @NonNull final String text,
       final int width,
       final int height,
       final int horizontalPosition,
@@ -89,10 +90,10 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */
   public TextInserterFilter(
-      final String text,
+      @NonNull final String text,
       final int width,
       final int height,
-      final Map<String, Object> shapeProperties) {
+      final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super(new Dimension(width, height), shapeProperties);
 
     Validate.notBlank(text, "text must not be null nor blank");
@@ -102,7 +103,9 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
 
   @Override
   public void doFilter(
-      final OfficeContext context, final XComponent document, final FilterChain chain)
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document,
+      @NonNull final FilterChain chain)
       throws Exception {
 
     LOGGER.debug("Applying the TextInserterFilter");

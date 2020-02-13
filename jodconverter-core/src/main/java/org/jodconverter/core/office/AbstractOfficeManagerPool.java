@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,7 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
    *     will be removed from the queue if the waiting time is longer than this timeout.
    */
   protected AbstractOfficeManagerPool(
-      final File workingDir,
+      @NonNull final File workingDir,
       @Nullable final Integer poolSize,
       @Nullable final Long taskQueueTimeout) {
     super(workingDir);
@@ -84,12 +85,12 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
    *
    * @param entries The entries.
    */
-  protected void setEntries(final List<OfficeManager> entries) {
+  protected void setEntries(@NonNull final List<@NonNull OfficeManager> entries) {
     this.entries = Collections.unmodifiableList(entries);
   }
 
   @Override
-  public final void execute(final OfficeTask task) throws OfficeException {
+  public final void execute(@NonNull final OfficeTask task) throws OfficeException {
 
     if (!isRunning()) {
       throw new IllegalStateException("This office manager is not running.");
@@ -233,9 +234,6 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
       super();
     }
 
-    @Override
-    protected abstract AbstractOfficeManagerPool build();
-
     /**
      * Specifies the maximum time allowed to process a task. If the processing time of a task is
      * longer than this timeout, this task will be aborted and the next task is processed.
@@ -245,6 +243,7 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
      * @param taskExecutionTimeout The task execution timeout, in milliseconds.
      * @return This builder instance.
      */
+    @NonNull
     public B taskExecutionTimeout(@Nullable final Long taskExecutionTimeout) {
 
       if (taskExecutionTimeout != null) {
@@ -268,6 +267,7 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
      * @param taskQueueTimeout The task queue timeout, in milliseconds.
      * @return This builder instance.
      */
+    @NonNull
     public B taskQueueTimeout(@Nullable final Long taskQueueTimeout) {
 
       if (taskQueueTimeout != null) {

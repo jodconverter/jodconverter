@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -59,7 +60,7 @@ public class JodConverterLocalAutoConfiguration {
    *
    * @param properties The local properties.
    */
-  public JodConverterLocalAutoConfiguration(final JodConverterLocalProperties properties) {
+  public JodConverterLocalAutoConfiguration(@NonNull final JodConverterLocalProperties properties) {
     this.properties = properties;
   }
 

@@ -20,6 +20,7 @@
 package org.jodconverter.local.office.utils;
 
 import com.sun.star.lang.XComponent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * A collection of utility functions to make Office Draw documents (Drawing) easier to use.
@@ -35,7 +36,7 @@ public final class Draw {
    * @param document The document to test.
    * @return {@code true} if the document is a Draw document, {@code false} otherwise.
    */
-  public static boolean isDraw(final XComponent document) {
+  public static boolean isDraw(@NonNull final XComponent document) {
     return Info.isDocumentType(document, Lo.DRAW_SERVICE);
   }
 
@@ -45,7 +46,7 @@ public final class Draw {
    * @param document The document to test.
    * @return {@code true} if the document is a Presentation document, {@code false} otherwise.
    */
-  public static boolean isImpress(final XComponent document) {
+  public static boolean isImpress(@NonNull final XComponent document) {
     return Info.isDocumentType(document, Lo.IMPRESS_SERVICE);
   }
 

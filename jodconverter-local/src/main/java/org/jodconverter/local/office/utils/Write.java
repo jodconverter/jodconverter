@@ -21,6 +21,7 @@ package org.jodconverter.local.office.utils;
 
 import com.sun.star.lang.XComponent;
 import com.sun.star.text.XTextDocument;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -37,7 +38,7 @@ public final class Write {
    * @param document The document to test.
    * @return {@code true} if the document is a Text document, {@code false} otherwise.
    */
-  public static boolean isText(final XComponent document) {
+  public static boolean isText(@NonNull final XComponent document) {
     return Info.isDocumentType(document, Lo.WRITER_SERVICE);
   }
 

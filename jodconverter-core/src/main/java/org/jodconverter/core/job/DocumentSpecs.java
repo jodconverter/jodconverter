@@ -21,6 +21,7 @@ package org.jodconverter.core.job;
 
 import java.io.File;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DocumentFormat;
@@ -36,6 +37,7 @@ public interface DocumentSpecs {
    *
    * @return A file instance.
    */
+  @NonNull
   File getFile();
 
   /**

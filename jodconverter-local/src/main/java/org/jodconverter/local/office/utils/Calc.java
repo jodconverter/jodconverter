@@ -21,6 +21,7 @@ package org.jodconverter.local.office.utils;
 
 import com.sun.star.lang.XComponent;
 import com.sun.star.sheet.XSpreadsheetDocument;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -37,7 +38,7 @@ public final class Calc {
    * @param document The document to test.
    * @return {@code true} if the document is a Spreadsheet document, {@code false} otherwise.
    */
-  public static boolean isCalc(final XComponent document) {
+  public static boolean isCalc(@NonNull final XComponent document) {
     return Info.isDocumentType(document, Lo.CALC_SERVICE);
   }
 

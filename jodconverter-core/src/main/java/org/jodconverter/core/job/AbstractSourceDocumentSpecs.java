@@ -21,6 +21,8 @@ package org.jodconverter.core.job;
 
 import java.io.File;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Base class for all source document specifications implementations.
  *
@@ -29,7 +31,8 @@ import java.io.File;
 public abstract class AbstractSourceDocumentSpecs extends AbstractDocumentSpecs
     implements SourceDocumentSpecs {
 
-  protected AbstractSourceDocumentSpecs(final File file) {
+  @NonNull
+  protected AbstractSourceDocumentSpecs(@NonNull final File file) {
     super(file);
   }
 }

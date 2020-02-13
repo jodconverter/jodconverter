@@ -32,6 +32,7 @@ import com.sun.star.io.IOException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,11 +74,11 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
    *     {@code target} arguments.
    */
   public LocalConversionTask(
-      final SourceDocumentSpecs source,
-      final TargetDocumentSpecs target,
-      @Nullable final Map<String, Object> loadProperties,
+      @NonNull final SourceDocumentSpecs source,
+      @NonNull final TargetDocumentSpecs target,
+      @Nullable final Map<@NonNull String, @NonNull Object> loadProperties,
       @Nullable final FilterChain filterChain,
-      @Nullable final Map<String, Object> storeProperties) {
+      @Nullable final Map<@NonNull String, @NonNull Object> storeProperties) {
     super(source, loadProperties);
 
     this.target = target;
@@ -87,7 +88,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   }
 
   @Override
-  public void execute(final OfficeContext context) throws OfficeException {
+  public void execute(@NonNull final OfficeContext context) throws OfficeException {
 
     LOGGER.info(
         "Executing local conversion task [{} -> {}]...",
@@ -159,14 +160,15 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
 
   // Modifies the document after it has been loaded and before
   // it gets saved in the new format.
-  protected void modifyDocument(final OfficeContext context, final XComponent document)
+  protected void modifyDocument(
+      @NonNull final OfficeContext context, @NonNull final XComponent document)
       throws OfficeException {
 
     filterChain.doFilter(context, document);
   }
 
   // Stores the converted document as the output file.
-  protected void storeDocument(final XComponent document, final File targetFile)
+  protected void storeDocument(@NonNull final XComponent document, @NonNull final File targetFile)
       throws OfficeException {
 
     final Map<String, Object> storeProps = getStoreProperties(document);
@@ -185,6 +187,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     }
   }
 
+  @NonNull
   @Override
   public String toString() {
     return getClass().getSimpleName()

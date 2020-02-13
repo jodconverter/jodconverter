@@ -19,8 +19,6 @@
 
 package org.jodconverter.core.office;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import org.jodconverter.core.task.OfficeTask;
 
 /**
@@ -40,7 +38,7 @@ class SimpleOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
    *     of a task is longer than this timeout, this task will be aborted and the next task is
    *     processed.
    */
-  public SimpleOfficeManagerPoolEntry(@Nullable final Long taskExecutionTimeout) {
+  public SimpleOfficeManagerPoolEntry(final Long taskExecutionTimeout) {
     super(taskExecutionTimeout);
   }
 

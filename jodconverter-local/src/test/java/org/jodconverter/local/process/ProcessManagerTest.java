@@ -27,7 +27,6 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.test.util.TestUtil;
 import org.jodconverter.local.office.LocalOfficeManager;
@@ -61,8 +60,7 @@ public class ProcessManagerTest {
 
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-    final Number javaPid = Whitebox.getInternalState(process, "pid");
-    assertThat(pid).isEqualTo(javaPid.longValue());
+    assertThat(process).extracting("pid").isEqualTo(pid);
 
     processManager.kill(process, pid);
     assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
@@ -94,8 +92,7 @@ public class ProcessManagerTest {
 
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-    final Number javaPid = Whitebox.getInternalState(process, "pid");
-    assertThat(pid).isEqualTo(javaPid.longValue());
+    assertThat(process).extracting("pid").isEqualTo(pid);
 
     processManager.kill(process, pid);
     assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
@@ -127,9 +124,7 @@ public class ProcessManagerTest {
 
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-    final Number javaPid = Whitebox.getInternalState(process, "pid");
-
-    assertThat(pid).isEqualTo(javaPid.longValue());
+    assertThat(process).extracting("pid").isEqualTo(pid);
 
     processManager.kill(process, pid);
     assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
@@ -162,8 +157,7 @@ public class ProcessManagerTest {
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     // Won't work on Windows, skip this assertion
-    // Number javaPid = Whitebox.getInternalState(process, "pid");
-    // assertThat(pid).isEqualTo(javaPid.longValue());
+    // assertThat(process).extracting("pid").isEqualTo(pid);
 
     processManager.kill(process, pid);
     assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);

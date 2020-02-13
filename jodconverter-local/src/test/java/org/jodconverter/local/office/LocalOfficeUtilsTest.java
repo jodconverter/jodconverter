@@ -115,6 +115,7 @@ public class LocalOfficeUtilsTest {
 
     final File tempDir = OfficeUtils.getDefaultWorkingDir();
     final File officeHome = new File(tempDir, UUID.randomUUID().toString());
+    //noinspection ResultOfMethodCallIgnored
     officeHome.mkdirs();
     assertThatIllegalStateException()
         .isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(officeHome));
@@ -134,6 +135,7 @@ public class LocalOfficeUtilsTest {
 
     final File tempDir = OfficeUtils.getDefaultWorkingDir();
     final File profileDir = new File(tempDir, UUID.randomUUID().toString());
+    //noinspection ResultOfMethodCallIgnored
     new File(profileDir, "user").mkdirs();
     assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir))
         .doesNotThrowAnyException();
@@ -145,6 +147,7 @@ public class LocalOfficeUtilsTest {
 
     final File tempDir = OfficeUtils.getDefaultWorkingDir();
     final File profileDir = new File(tempDir, UUID.randomUUID().toString());
+    //noinspection ResultOfMethodCallIgnored
     profileDir.mkdirs();
     assertThatIllegalStateException()
         .isThrownBy(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir));
@@ -177,6 +180,7 @@ public class LocalOfficeUtilsTest {
 
     final File tempDir = OfficeUtils.getDefaultWorkingDir();
     final File workingDir = new File(tempDir, UUID.randomUUID().toString());
+    //noinspection ResultOfMethodCallIgnored
     workingDir.setWritable(false);
     assertThatIllegalStateException()
         .isThrownBy(() -> LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir));

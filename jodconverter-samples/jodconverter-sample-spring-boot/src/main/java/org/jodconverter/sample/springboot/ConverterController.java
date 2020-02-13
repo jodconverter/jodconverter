@@ -51,6 +51,7 @@ public class ConverterController {
 
   @Autowired private DocumentConverter converter;
 
+  @SuppressWarnings("SameReturnValue")
   @GetMapping("/")
   /* default */ String index() {
     return "converter";

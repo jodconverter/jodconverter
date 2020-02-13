@@ -24,6 +24,7 @@ import com.sun.star.util.XReplaceDescriptor;
 import com.sun.star.util.XReplaceable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,8 @@ public class TextReplacerFilter implements Filter {
    * @param searchList The Strings to search for, no-op if null.
    * @param replacementList The Strings to replace them with, no-op if null.
    */
-  public TextReplacerFilter(final String[] searchList, final String[] replacementList) {
+  public TextReplacerFilter(
+      @NonNull final String[] searchList, @NonNull final String[] replacementList) {
     super();
 
     // Both arrays are required and cannot be empty
@@ -74,7 +76,9 @@ public class TextReplacerFilter implements Filter {
 
   @Override
   public void doFilter(
-      final OfficeContext context, final XComponent document, final FilterChain chain)
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document,
+      @NonNull final FilterChain chain)
       throws OfficeException {
 
     LOGGER.debug("Applying the TextReplacerFilter");
@@ -88,7 +92,7 @@ public class TextReplacerFilter implements Filter {
     chain.doFilter(context, document);
   }
 
-  private void replaceText(final XComponent document) {
+  private void replaceText(@NonNull final XComponent document) {
 
     final XReplaceable replaceable = Lo.qi(XReplaceable.class, document);
 

@@ -22,6 +22,8 @@ package org.jodconverter.core.document;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Holds the default {@link DocumentFormatRegistry} instance. The {@link
  * DefaultDocumentFormatRegistry} will use this holder to initialize all its {@link DocumentFormat}
@@ -36,6 +38,7 @@ public final class DefaultDocumentFormatRegistryInstanceHolder {
    *
    * @return The default {@link DocumentFormatRegistry}.
    */
+  @NonNull
   public static DocumentFormatRegistry getInstance() {
     synchronized (DocumentFormatRegistry.class) {
       if (instance == null) {
@@ -58,7 +61,7 @@ public final class DefaultDocumentFormatRegistryInstanceHolder {
    *
    * @param registry The default {@link DocumentFormatRegistry}.
    */
-  public static void setInstance(final DocumentFormatRegistry registry) {
+  public static void setInstance(@NonNull final DocumentFormatRegistry registry) {
     synchronized (DocumentFormatRegistry.class) {
       instance = registry;
     }

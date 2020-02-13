@@ -26,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /** A thread pool executor that can be suspended. Only 1 thread is allowed in the pool. */
 public class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
 
@@ -38,7 +40,7 @@ public class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
   }
 
   @Override
-  protected void beforeExecute(final Thread thread, final Runnable task) {
+  protected void beforeExecute(@NonNull final Thread thread, @NonNull final Runnable task) {
     super.beforeExecute(thread, task);
 
     suspendLock.lock();

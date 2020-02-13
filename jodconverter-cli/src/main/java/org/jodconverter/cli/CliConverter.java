@@ -226,6 +226,7 @@ public final class CliConverter {
 
         } else {
           // Create the output directory
+          //noinspection ResultOfMethodCallIgnored
           outputDir.mkdirs();
         }
 

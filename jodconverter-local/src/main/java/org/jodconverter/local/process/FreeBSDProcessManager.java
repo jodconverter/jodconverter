@@ -19,6 +19,8 @@
 
 package org.jodconverter.local.process;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /** {@link org.jodconverter.local.process.ProcessManager} implementation for FreeBSD. */
 public class FreeBSDProcessManager extends UnixProcessManager {
 
@@ -36,12 +38,14 @@ public class FreeBSDProcessManager extends UnixProcessManager {
    *
    * @return The default {@code FreeBSDProcessManager} instance.
    */
+  @NonNull
   public static FreeBSDProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
 
+  @NonNull
   @Override
-  protected String[] getRunningProcessesCommand(final String process) {
+  protected String[] getRunningProcessesCommand(@NonNull final String process) {
 
     return new String[] {"/bin/ps", "-awx", "-o", "pid,args"};
   }

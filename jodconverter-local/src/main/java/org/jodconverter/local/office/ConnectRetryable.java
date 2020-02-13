@@ -19,6 +19,7 @@
 
 package org.jodconverter.local.office;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,18 +42,18 @@ public class ConnectRetryable extends AbstractRetryable<OfficeException> {
    *
    * @param connection The office connection to connect.
    */
-  public ConnectRetryable(final OfficeConnection connection) {
-    this(null, connection);
+  public ConnectRetryable(@NonNull final OfficeConnection connection) {
+    this(connection, null);
   }
 
   /**
    * Creates a new instance of the class for the specified process and connection.
    *
-   * @param process The office process whose exit code is to be retrieved.
    * @param connection The office connection to connect.
+   * @param process The office process whose exit code is to be retrieved.
    */
   public ConnectRetryable(
-      @Nullable final OfficeProcess process, final OfficeConnection connection) {
+      @NonNull final OfficeConnection connection, @Nullable final OfficeProcess process) {
     super();
 
     this.process = process;

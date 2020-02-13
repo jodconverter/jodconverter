@@ -36,7 +36,6 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.job.TargetDocumentSpecsFromFile;
-import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
@@ -48,7 +47,7 @@ public class LocalConvertionTaskITest {
 
   @Test
   public void execute_WithoutCustomLoadProperties_UseDefaultLoadProperties(
-      final OfficeManager manager, final @TempDir File testFolder) throws OfficeException {
+      final OfficeManager manager, final @TempDir File testFolder) {
 
     final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
     final TargetDocumentSpecsFromFile target =
@@ -80,7 +79,7 @@ public class LocalConvertionTaskITest {
 
   @Test
   public void execute_WithCustomLoadProperties_UseCustomLoadProperties(
-      final OfficeManager manager, final @TempDir File testFolder) throws OfficeException {
+      final OfficeManager manager, final @TempDir File testFolder) {
 
     final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
     final TargetDocumentSpecsFromFile target =
@@ -96,6 +95,7 @@ public class LocalConvertionTaskITest {
     loadProperties.put("UpdateDocMode", UpdateDocMode.NO_UPDATE);
     final LocalConversionTask task =
         new LocalConversionTask(source, target, loadProperties, null, null) {
+
           @Override
           protected Map<String, Object> getLoadProperties() {
             final Map<String, Object> props = super.getLoadProperties();

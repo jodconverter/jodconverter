@@ -24,6 +24,7 @@ import static org.jodconverter.local.process.ProcessManager.PID_UNKNOWN;
 import java.io.IOException;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,9 +58,9 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
    * @param processQuery The process query.
    */
   public StartProcessRetryable(
-      final ProcessManager processManager,
-      final ProcessBuilder processBuilder,
-      final ProcessQuery processQuery) {
+      @NonNull final ProcessManager processManager,
+      @NonNull final ProcessBuilder processBuilder,
+      @NonNull final ProcessQuery processQuery) {
     super();
 
     this.processManager = processManager;
@@ -122,6 +123,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
    *
    * @return The started process.
    */
+  @NonNull
   public VerboseProcess getProcess() {
     return process;
   }

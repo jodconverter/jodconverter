@@ -41,6 +41,7 @@ import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.uno.XComponentContext;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +113,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
    * @throws OfficeException If the size of the image cannot be detected.
    */
   public GraphicInserterFilter(
-      final String imagePath, final int horizontalPosition, final int verticalPosition)
+      @NonNull final String imagePath, final int horizontalPosition, final int verticalPosition)
       throws OfficeException {
     super(getImageSize(new File(imagePath)), horizontalPosition, verticalPosition);
 
@@ -134,7 +135,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
    *     (millimeters).
    */
   public GraphicInserterFilter(
-      final String imagePath,
+      @NonNull final String imagePath,
       final int width,
       final int height,
       final int horizontalPosition,
@@ -158,10 +159,10 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */
   public GraphicInserterFilter(
-      final String imagePath,
+      @NonNull final String imagePath,
       final int width,
       final int height,
-      final Map<String, Object> shapeProperties) {
+      final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super(new Dimension(width, height), shapeProperties);
 
     this.imagePath = imagePath;
@@ -177,7 +178,9 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
    * @see <a
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */
-  public GraphicInserterFilter(final String imagePath, final Map<String, Object> shapeProperties)
+  public GraphicInserterFilter(
+      @NonNull final String imagePath,
+      @NonNull final Map<@NonNull String, @NonNull Object> shapeProperties)
       throws OfficeException {
     super(getImageSize(new File(imagePath)), shapeProperties);
 
@@ -186,7 +189,9 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
   @Override
   public void doFilter(
-      final OfficeContext context, final XComponent document, final FilterChain chain)
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document,
+      @NonNull final FilterChain chain)
       throws Exception {
 
     LOGGER.debug("Applying the GraphicInserterFilter");

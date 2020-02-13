@@ -20,6 +20,7 @@
 package org.jodconverter.boot.autoconfigure;
 
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -48,7 +49,8 @@ public class JodConverterRemoteAutoConfiguration {
    *
    * @param properties The remote properties.
    */
-  public JodConverterRemoteAutoConfiguration(final JodConverterRemoteProperties properties) {
+  public JodConverterRemoteAutoConfiguration(
+      @NonNull final JodConverterRemoteProperties properties) {
     this.properties = properties;
   }
 

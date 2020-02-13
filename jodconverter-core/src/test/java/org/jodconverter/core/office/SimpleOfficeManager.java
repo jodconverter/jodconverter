@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.Validate;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * {@link OfficeManager} pool implementation that does not depend on an office installation to
@@ -70,8 +69,8 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
   private SimpleOfficeManager(
       final File workingDir,
       final int poolSize,
-      @Nullable final Long taskExecutionTimeout,
-      @Nullable final Long taskQueueTimeout) {
+      final Long taskExecutionTimeout,
+      final Long taskQueueTimeout) {
     super(workingDir, poolSize, taskQueueTimeout);
 
     setEntries(
@@ -119,7 +118,7 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
      * @param poolSize The pool size.
      * @return This builder instance.
      */
-    public Builder poolSize(@Nullable final Integer poolSize) {
+    public Builder poolSize(final Integer poolSize) {
 
       if (poolSize != null) {
         Validate.inclusiveBetween(

@@ -81,6 +81,7 @@ public class AbstractLocalOfficeTaskITest {
     }
 
     @Override
+    @SuppressWarnings("NullableProblems")
     protected XComponent loadDocument(final LocalOfficeContext context, final File sourceFile)
         throws OfficeException {
 
@@ -91,6 +92,7 @@ public class AbstractLocalOfficeTaskITest {
     }
 
     @Override
+    @SuppressWarnings("NullableProblems")
     public void execute(final OfficeContext context) throws OfficeException {
 
       final LocalOfficeContext localContext = (LocalOfficeContext) context;
@@ -122,11 +124,6 @@ public class AbstractLocalOfficeTaskITest {
     @Override
     public DocumentFormat getFormat() {
       return DefaultDocumentFormatRegistry.TXT;
-    }
-
-    @Override
-    public void onConsumed(final File file) {
-      // Do nothing here
     }
   }
 

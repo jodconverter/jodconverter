@@ -19,6 +19,8 @@
 
 package org.jodconverter.core.job;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Wraps an IOException with an unchecked exception while performing IO operations on a {@link
  * DocumentSpecs} implementation.
@@ -32,7 +34,7 @@ public class DocumentSpecsIOException extends RuntimeException {
    * @param message the detail message.
    * @param cause the cause.
    */
-  public DocumentSpecsIOException(final String message, final Throwable cause) {
+  public DocumentSpecsIOException(@NonNull final String message, @NonNull final Throwable cause) {
     super(message, cause);
   }
 }

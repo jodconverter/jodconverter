@@ -22,6 +22,8 @@ package org.jodconverter.core.document;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Contains properties that will be applied when loading(opening) and storing(saving) document for a
  * specific {@link DocumentFormat}.
@@ -39,7 +41,8 @@ public class DocumentFormatProperties {
    *
    * @return A map containing the properties.
    */
-  public Map<String, Object> getLoad() {
+  @NonNull
+  public Map<@NonNull String, @NonNull Object> getLoad() {
     return load;
   }
 
@@ -48,7 +51,8 @@ public class DocumentFormatProperties {
    *
    * @return A map containing the properties.
    */
-  public Map<DocumentFamily, Map<String, Object>> getStore() {
+  @NonNull
+  public Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>> getStore() {
     return store;
   }
 }

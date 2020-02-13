@@ -299,7 +299,8 @@ public class PagesSelectorFilterITest {
     final AbstractLocalOfficeTask task =
         new AbstractLocalOfficeTask(new SourceDocumentSpecsFromFile(documentFile("db.odb")) {}) {
           @Override
-          public void execute(OfficeContext context) throws OfficeException {
+          @SuppressWarnings("NullableProblems")
+          public void execute(final OfficeContext context) throws OfficeException {
 
             final LocalOfficeContext localContext = (LocalOfficeContext) context;
             final XComponent document = loadDocument(localContext, source.getFile());

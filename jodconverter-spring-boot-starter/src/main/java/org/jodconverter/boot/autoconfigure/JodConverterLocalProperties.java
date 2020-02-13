@@ -21,17 +21,13 @@ package org.jodconverter.boot.autoconfigure;
 
 import java.util.Map;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import org.jodconverter.core.document.DocumentFormatProperties;
 
 /** Configuration class for JODConverter. */
-@org.checkerframework.framework.qual.DefaultQualifier(
-    value = org.checkerframework.checker.nullness.qual.Nullable.class,
-    locations = {
-      org.checkerframework.framework.qual.TypeUseLocation.PARAMETER,
-      org.checkerframework.framework.qual.TypeUseLocation.RETURN
-    })
 @ConfigurationProperties("jodconverter.local")
 public class JodConverterLocalProperties {
 
@@ -116,35 +112,39 @@ public class JodConverterLocalProperties {
     this.enabled = enabled;
   }
 
+  @Nullable
   public String getOfficeHome() {
     return officeHome;
   }
 
-  public void setOfficeHome(final String officeHome) {
+  public void setOfficeHome(@Nullable final String officeHome) {
     this.officeHome = officeHome;
   }
 
+  @Nullable
   public String getPortNumbers() {
     return portNumbers;
   }
 
-  public void setPortNumbers(final String portNumbers) {
+  public void setPortNumbers(@Nullable final String portNumbers) {
     this.portNumbers = portNumbers;
   }
 
+  @Nullable
   public String getWorkingDir() {
     return workingDir;
   }
 
-  public void setWorkingDir(final String workingDir) {
+  public void setWorkingDir(@Nullable final String workingDir) {
     this.workingDir = workingDir;
   }
 
+  @Nullable
   public String getTemplateProfileDir() {
     return templateProfileDir;
   }
 
-  public void setTemplateProfileDir(final String templateProfileDir) {
+  public void setTemplateProfileDir(@Nullable final String templateProfileDir) {
     this.templateProfileDir = templateProfileDir;
   }
 
@@ -196,27 +196,31 @@ public class JodConverterLocalProperties {
     this.taskQueueTimeout = taskQueueTimeout;
   }
 
+  @Nullable
   public String getProcessManagerClass() {
     return processManagerClass;
   }
 
-  public void setProcessManagerClass(final String processManagerClass) {
+  public void setProcessManagerClass(@Nullable final String processManagerClass) {
     this.processManagerClass = processManagerClass;
   }
 
+  @Nullable
   public String getDocumentFormatRegistry() {
     return documentFormatRegistry;
   }
 
-  public void setDocumentFormatRegistry(final String documentFormatRegistry) {
+  public void setDocumentFormatRegistry(@Nullable final String documentFormatRegistry) {
     this.documentFormatRegistry = documentFormatRegistry;
   }
 
-  public Map<String, DocumentFormatProperties> getFormatOptions() {
+  @Nullable
+  public Map<@NonNull String, @NonNull DocumentFormatProperties> getFormatOptions() {
     return formatOptions;
   }
 
-  public void setFormatOptions(final Map<String, DocumentFormatProperties> formatOptions) {
+  public void setFormatOptions(
+      @Nullable final Map<@NonNull String, @NonNull DocumentFormatProperties> formatOptions) {
     this.formatOptions = formatOptions;
   }
 }

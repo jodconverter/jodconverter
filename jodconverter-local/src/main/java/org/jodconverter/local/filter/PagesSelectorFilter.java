@@ -22,6 +22,7 @@ package org.jodconverter.local.filter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,6 +46,7 @@ import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.view.XSelectionSupplier;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +77,7 @@ public class PagesSelectorFilter implements Filter {
    *
    * @param pages The page numbers of the page to convert. First page is index 1.
    */
-  public PagesSelectorFilter(final Integer... pages) {
+  public PagesSelectorFilter(@NonNull final Integer... pages) {
     this(Stream.of(pages).collect(Collectors.toSet()));
   }
 
@@ -85,7 +87,7 @@ public class PagesSelectorFilter implements Filter {
    *
    * @param pages The page numbers of the page to convert. First page is index 1.
    */
-  public PagesSelectorFilter(final Set<Integer> pages) {
+  public PagesSelectorFilter(@NonNull final Set<@NonNull Integer> pages) {
     super();
 
     Validate.notEmpty(pages, "pages must not be null nor empty");
@@ -95,7 +97,9 @@ public class PagesSelectorFilter implements Filter {
 
   @Override
   public void doFilter(
-      final OfficeContext context, final XComponent document, final FilterChain chain)
+      @NonNull final OfficeContext context,
+      @NonNull final XComponent document,
+      @NonNull final FilterChain chain)
       throws Exception {
 
     if (Write.isText(document)) {
@@ -103,13 +107,13 @@ public class PagesSelectorFilter implements Filter {
 
       // We must process from the start to the end.
       Collections.sort(pages);
-      selectTextPages(Write.getTextDoc(document));
+      selectTextPages(Objects.requireNonNull(Write.getTextDoc(document)));
 
     } else if (Calc.isCalc(document)) {
       LOGGER.debug("Applying the PagesSelectorFilter for a Calc document");
 
       // We must process from the end to the start.
-      selectSheets(Calc.getCalcDoc(document));
+      selectSheets(Objects.requireNonNull(Calc.getCalcDoc(document)));
 
     } else if (Draw.isImpress(document)) {
       LOGGER.debug("Applying the PagesSelectorFilter for an Impress document");

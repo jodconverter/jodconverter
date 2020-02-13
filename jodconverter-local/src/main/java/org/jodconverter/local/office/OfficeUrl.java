@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Wrapper class around an UnoUrl so we are not importing the com.sun.star.lib.uno.helper.UnoUrl
@@ -41,7 +42,7 @@ import com.sun.star.lib.uno.helper.UnoUrl;
  * a Connection</a> and <a href="http://www.openoffice.org/udk/common/man/spec/uno-url.html">UNO Url
  * - Specification</a> in the OpenOffice.org Developer's Guide for more details.
  */
-public class OfficeUrl {
+class OfficeUrl {
 
   private final UnoUrl unoUrl;
 
@@ -51,7 +52,7 @@ public class OfficeUrl {
    * @param pipeName The pipe name.
    * @return The created UnoUrl.
    */
-  /* default */ static UnoUrl pipe(final String pipeName) {
+  /* default */ static UnoUrl pipe(@NonNull final String pipeName) {
 
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature

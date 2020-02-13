@@ -37,6 +37,7 @@ public class AbstractOfficeTaskTest {
   public void toString_AsExpected(final @TempDir File testFolder) throws IOException {
 
     final File file = new File(testFolder, getClass().getName() + ".txt");
+    //noinspection ResultOfMethodCallIgnored
     file.createNewFile();
 
     final SourceDocumentSpecs source = new SourceDocumentSpecsFromFile(file);
@@ -44,6 +45,7 @@ public class AbstractOfficeTaskTest {
     final AbstractOfficeTask obj =
         new AbstractOfficeTask(source) {
           @Override
+          @SuppressWarnings("NullableProblems")
           public void execute(final OfficeContext context) {
             // Processing...
           }

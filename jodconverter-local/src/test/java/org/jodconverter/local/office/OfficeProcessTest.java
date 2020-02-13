@@ -31,7 +31,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -87,11 +86,12 @@ public class OfficeProcessTest {
             OfficeUtils.getDefaultWorkingDir(),
             new ProcessManager() {
               @Override
-              public void kill(@Nullable final Process process, final long pid) throws IOException {
+              public void kill(final Process process, final long pid) throws IOException {
                 throw new IOException();
               }
 
               @Override
+              @SuppressWarnings("NullableProblems")
               public long findPid(final ProcessQuery query) throws IOException {
                 throw new IOException();
               }
@@ -134,6 +134,7 @@ public class OfficeProcessTest {
             null);
 
     final File instanceProfileDir = Whitebox.getInternalState(process, "instanceProfileDir");
+    //noinspection ResultOfMethodCallIgnored
     instanceProfileDir.mkdirs();
     Whitebox.invokeMethod(process, "deleteInstanceProfileDir");
 
@@ -190,13 +191,8 @@ public class OfficeProcessTest {
             OfficeUtils.getDefaultWorkingDir(),
             new ProcessManager() {
               @Override
-              public void kill(@Nullable final Process process, final long pid) throws IOException {
+              public void kill(final Process process, final long pid) throws IOException {
                 throw new IOException();
-              }
-
-              @Override
-              public long findPid(final ProcessQuery query) {
-                return PID_NOT_FOUND;
               }
             },
             null,

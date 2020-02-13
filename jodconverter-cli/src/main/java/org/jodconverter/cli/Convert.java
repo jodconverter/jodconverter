@@ -55,7 +55,7 @@ import org.jodconverter.remote.ssl.SslConfig;
 public final class Convert {
 
   public static final int STATUS_OK = 0;
-  public static final int STATUS_MISSING_INPUT_FILE = 1;
+  // public static final int STATUS_MISSING_INPUT_FILE = 1;
   public static final int STATUS_ERROR = 2;
   public static final int STATUS_INVALID_ARGUMENTS = 255;
 

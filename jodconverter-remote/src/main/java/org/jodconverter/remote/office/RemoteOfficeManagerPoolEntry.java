@@ -37,6 +37,7 @@ import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import javax.net.ssl.SSLContext;
@@ -52,7 +53,6 @@ import org.apache.http.ssl.PrivateKeyDetails;
 import org.apache.http.ssl.PrivateKeyStrategy;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.AbstractOfficeManagerPoolEntry;
 import org.jodconverter.core.office.OfficeException;
@@ -93,7 +93,6 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       this.keyAlias = keyAlias;
     }
 
-    @Nullable
     @Override
     public String chooseAlias(final Map<String, PrivateKeyDetails> aliases, final Socket socket) {
 
@@ -116,7 +115,6 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   // Taken from Spring org.springframework.util.ClassUtils class.
-  @Nullable
   private static ClassLoader getDefaultClassLoader() {
 
     ClassLoader cl = null;
@@ -193,12 +191,12 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
    *     of a task is longer than this timeout, this task will be aborted and the next task is
    *     processed.
    */
-  public RemoteOfficeManagerPoolEntry(
+  /* default */ RemoteOfficeManagerPoolEntry(
       final String connectionUrl,
-      @Nullable final SslConfig sslConfig,
-      @Nullable final Long connectTimeout,
-      @Nullable final Long socketTimeout,
-      @Nullable final Long taskExecutionTimeout) {
+      final SslConfig sslConfig,
+      final Long connectTimeout,
+      final Long socketTimeout,
+      final Long taskExecutionTimeout) {
     super(taskExecutionTimeout);
 
     this.connectionUrl = connectionUrl;
@@ -213,7 +211,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // http://localhost:9980/lool/convert-to/docx
 
     final URL url = new URL(connectionUrl);
-    final String path = url.toExternalForm().toLowerCase();
+    final String path = url.toExternalForm().toLowerCase(Locale.ROOT);
     if (StringUtils.endsWithAny(path, "lool/convert-to", "lool/convert-to/")) {
       return StringUtils.appendIfMissing(connectionUrl, "/");
     } else if (StringUtils.endsWithAny(path, "lool", "lool/")) {
@@ -226,7 +224,6 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException,
           CertificateException, IOException, NoSuchProviderException {
 
-    Objects.requireNonNull(sslConfig);
     final KeyStore keystore =
         loadStore(
             sslConfig.getKeyStore(),
@@ -243,7 +240,6 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     }
   }
 
-  @Nullable
   private SSLConnectionSocketFactory configureSsl() throws OfficeException {
 
     if (sslConfig == null || !sslConfig.isEnabled()) {
@@ -281,7 +277,6 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException,
           NoSuchProviderException {
 
-    Objects.requireNonNull(sslConfig);
     if (sslConfig.isTrustAll()) {
       sslBuilder.loadTrustMaterial(null, TrustAllStrategy.INSTANCE);
     } else {
@@ -326,12 +321,11 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // Nothing to stop here.
   }
 
-  @Nullable
   private KeyStore loadStore(
-      @Nullable final String store,
-      @Nullable final String storePassword,
-      @Nullable final String storeType,
-      @Nullable final String storeProvider)
+      final String store,
+      final String storePassword,
+      final String storeType,
+      final String storeProvider)
       throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException,
           NoSuchProviderException {
 

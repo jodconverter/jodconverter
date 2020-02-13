@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** A SimpleDocumentFormatRegistry contains a collection of document formats supported by office. */
@@ -39,7 +40,7 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
    *
    * @param documentFormat The format to add.
    */
-  public void addFormat(final DocumentFormat documentFormat) {
+  public void addFormat(@NonNull final DocumentFormat documentFormat) {
 
     documentFormat.getExtensions().stream()
         .map(StringUtils::lowerCase)
@@ -49,7 +50,7 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
 
   @Nullable
   @Override
-  public DocumentFormat getFormatByExtension(final String extension) {
+  public DocumentFormat getFormatByExtension(@NonNull final String extension) {
 
     Validate.notNull(extension, "extension must not be null");
     return fmtsByExtension.get(StringUtils.lowerCase(extension));
@@ -57,14 +58,16 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
 
   @Nullable
   @Override
-  public DocumentFormat getFormatByMediaType(final String mediaType) {
+  public DocumentFormat getFormatByMediaType(@NonNull final String mediaType) {
 
     Validate.notNull(mediaType, "mediaType must not be null");
     return fmtsByMediaType.get(StringUtils.lowerCase(mediaType));
   }
 
+  @NonNull
   @Override
-  public Set<DocumentFormat> getOutputFormats(final DocumentFamily documentFamily) {
+  public Set<@NonNull DocumentFormat> getOutputFormats(
+      @NonNull final DocumentFamily documentFamily) {
 
     Validate.notNull(documentFamily, "documentFamily must not be null");
     // Use fmtsByMediaType since fmtsByExtension may contain the same

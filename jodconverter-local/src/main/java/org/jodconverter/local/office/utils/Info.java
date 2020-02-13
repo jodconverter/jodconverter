@@ -29,6 +29,7 @@ import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.XComponentContext;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public final class Info {
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  public static boolean isOpenOffice(final XComponentContext context) {
+  public static boolean isOpenOffice(@NonNull final XComponentContext context) {
     return "openoffice".equalsIgnoreCase(getOfficeName(context));
   }
 
@@ -71,7 +72,7 @@ public final class Info {
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  public static boolean isLibreOffice(final XComponentContext context) {
+  public static boolean isLibreOffice(@NonNull final XComponentContext context) {
     return "libreoffice".equalsIgnoreCase(getOfficeName(context));
   }
 
@@ -84,7 +85,7 @@ public final class Info {
    *     the {@link WrappedUnoException}.
    */
   @Nullable
-  public static String getOfficeName(final XComponentContext context) {
+  public static String getOfficeName(@NonNull final XComponentContext context) {
     return getConfig(context, "ooName");
   }
 
@@ -97,7 +98,7 @@ public final class Info {
    *     the {@link WrappedUnoException}.
    */
   @Nullable
-  public static String getOfficeVersionLong(final XComponentContext context) {
+  public static String getOfficeVersionLong(@NonNull final XComponentContext context) {
     return getConfig(context, "ooSetupVersionAboutBox");
   }
 
@@ -110,7 +111,7 @@ public final class Info {
    *     the {@link WrappedUnoException}.
    */
   @Nullable
-  public static String getOfficeVersionShort(final XComponentContext context) {
+  public static String getOfficeVersionShort(@NonNull final XComponentContext context) {
     return getConfig(context, "ooSetupVersion");
   }
 
@@ -150,7 +151,8 @@ public final class Info {
   /**
    * Normalizes a version string so that it has 'length' number of version numbers separated by '.'
    */
-  private static String normalizeVersion(final String version, final int length) {
+  @NonNull
+  private static String normalizeVersion(@NonNull final String version, final int length) {
 
     final List<String> numbers = new ArrayList<>(Arrays.asList(version.split("\\.")));
     while (numbers.size() < length) {
@@ -170,7 +172,8 @@ public final class Info {
    *     the {@link WrappedUnoException}.
    */
   @Nullable
-  public static String getConfig(final XComponentContext context, final String propName) {
+  public static String getConfig(
+      @NonNull final XComponentContext context, @NonNull final String propName) {
 
     for (final String nodePath : NODE_PATHS) {
       final Object info = getConfig(context, nodePath, propName);
@@ -193,7 +196,9 @@ public final class Info {
    */
   @Nullable
   public static Object getConfig(
-      final XComponentContext context, final String nodePath, final String propName) {
+      @NonNull final XComponentContext context,
+      @NonNull final String nodePath,
+      @NonNull final String propName) {
     final XPropertySet set = getConfigProperties(context, nodePath);
     if (set == null) {
       return null;
@@ -208,14 +213,16 @@ public final class Info {
    * @return The {@link XMultiServiceFactory} service, or null if not available.
    */
   @Nullable
-  public static XMultiServiceFactory getConfigProvider(final XComponentContext context) {
+  public static XMultiServiceFactory getConfigProvider(@NonNull final XComponentContext context) {
     return Lo.createInstanceMCF(
         context, XMultiServiceFactory.class, "com.sun.star.configuration.ConfigurationProvider");
   }
 
   @Nullable
   private static Object getConfigAccess(
-      final XComponentContext context, final String serviceSpecifier, final String nodePath) {
+      @NonNull final XComponentContext context,
+      @NonNull final String serviceSpecifier,
+      @NonNull final String nodePath) {
 
     final XMultiServiceFactory provider = getConfigProvider(context);
     if (provider == null) {
@@ -242,7 +249,8 @@ public final class Info {
    * @return The read-only configuration access service, or null if not available.
    */
   @Nullable
-  public static Object getConfigAccess(final XComponentContext context, final String nodePath) {
+  public static Object getConfigAccess(
+      @NonNull final XComponentContext context, @NonNull final String nodePath) {
     return getConfigAccess(context, "com.sun.star.configuration.ConfigurationAccess", nodePath);
   }
 
@@ -255,7 +263,7 @@ public final class Info {
    */
   @Nullable
   public static Object getConfigUpdateAccess(
-      final XComponentContext context, final String nodePath) {
+      @NonNull final XComponentContext context, @NonNull final String nodePath) {
     return getConfigAccess(
         context, "com.sun.star.configuration.ConfigurationUpdateAccess", nodePath);
   }
@@ -270,7 +278,7 @@ public final class Info {
    */
   @Nullable
   public static XPropertySet getConfigProperties(
-      final XComponentContext context, final String nodePath) {
+      @NonNull final XComponentContext context, @NonNull final String nodePath) {
 
     final Object configAccess = getConfigAccess(context, nodePath);
     if (configAccess == null) {
@@ -288,7 +296,8 @@ public final class Info {
    * @param documentType The document type to check.
    * @return {@code true} if the document is of the specified type, {@code true} otherwise.
    */
-  public static boolean isDocumentType(final XComponent document, final String documentType) {
+  public static boolean isDocumentType(
+      @NonNull final XComponent document, @NonNull final String documentType) {
     return Lo.qi(XServiceInfo.class, document).supportsService(documentType);
   }
 

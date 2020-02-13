@@ -27,6 +27,7 @@ import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -55,7 +56,8 @@ public final class Lo {
    * @return A reference to the requested UNO interface type.
    * @see UnoRuntime#queryInterface(Class, Object)
    */
-  public static <T> T qi(final Class<T> type, final Object object) {
+  @NonNull
+  public static <T> T qi(@NonNull final Class<T> type, @NonNull final Object object) {
 
     Validate.notNull(type, "type must not be null");
     Validate.notNull(type, "object must not be null");
@@ -83,7 +85,9 @@ public final class Lo {
    * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
    * @see UnoRuntime#queryInterface(Class, Object)
    */
-  public static <T> Optional<T> qiOptional(final Class<T> type, final Object object) {
+  @NonNull
+  public static <T> Optional<T> qiOptional(
+      @NonNull final Class<T> type, @NonNull final Object object) {
 
     return Optional.ofNullable(UnoRuntime.queryInterface(type, object));
   }
@@ -94,7 +98,8 @@ public final class Lo {
    * @param component The component.
    * @return The service factory.
    */
-  public static XMultiServiceFactory getServiceFactory(final XComponent component) {
+  @NonNull
+  public static XMultiServiceFactory getServiceFactory(@NonNull final XComponent component) {
     return qi(XMultiServiceFactory.class, component);
   }
 
@@ -110,8 +115,11 @@ public final class Lo {
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
+  @NonNull
   public static <T> T createInstanceMSF(
-      final XComponent component, final Class<T> type, final String serviceName) {
+      @NonNull final XComponent component,
+      @NonNull final Class<T> type,
+      @NonNull final String serviceName) {
 
     // Create service component using the specified factory.
     // Then uses bridge to obtain proxy to remote interface inside service;
@@ -131,8 +139,11 @@ public final class Lo {
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
+  @NonNull
   public static <T> T createInstanceMSF(
-      final XMultiServiceFactory factory, final Class<T> type, final String serviceName) {
+      @NonNull final XMultiServiceFactory factory,
+      @NonNull final Class<T> type,
+      @NonNull final String serviceName) {
 
     // Create service component using the specified factory.
     // Then uses bridge to obtain proxy to remote interface inside service;
@@ -158,7 +169,9 @@ public final class Lo {
    */
   @Nullable
   public static <T> T createInstanceMCF(
-      final XComponentContext context, final Class<T> type, final String serviceName) {
+      @NonNull final XComponentContext context,
+      @NonNull final Class<T> type,
+      @NonNull final String serviceName) {
 
     // Create service component using the specified component context.
     // Then uses bridge to obtain proxy to remote interface inside service;

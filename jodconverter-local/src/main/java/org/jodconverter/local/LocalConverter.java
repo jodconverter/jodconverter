@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
@@ -73,6 +74,7 @@ public class LocalConverter extends AbstractConverter {
    *
    * @return A new builder instance.
    */
+  @NonNull
   public static Builder builder() {
     return new Builder();
   }
@@ -84,8 +86,8 @@ public class LocalConverter extends AbstractConverter {
    *
    * @return A {@link LocalConverter} with default configuration.
    */
+  @NonNull
   public static LocalConverter make() {
-
     return builder().build();
   }
 
@@ -97,7 +99,8 @@ public class LocalConverter extends AbstractConverter {
    *     use to convert document.
    * @return A {@link org.jodconverter.local.LocalConverter} with default configuration.
    */
-  public static LocalConverter make(final OfficeManager officeManager) {
+  @NonNull
+  public static LocalConverter make(@NonNull final OfficeManager officeManager) {
     return builder().officeManager(officeManager).build();
   }
 
@@ -114,9 +117,10 @@ public class LocalConverter extends AbstractConverter {
     this.storeProperties = storeProperties;
   }
 
+  @NonNull
   @Override
   protected AbstractConversionJobWithSourceFormatUnspecified convert(
-      final AbstractSourceDocumentSpecs source) {
+      @NonNull final AbstractSourceDocumentSpecs source) {
 
     return new LocalConversionJobWithSourceFormatUnspecified(source);
   }
@@ -130,9 +134,9 @@ public class LocalConverter extends AbstractConverter {
       super(source, LocalConverter.this.officeManager, LocalConverter.this.formatRegistry);
     }
 
+    @NonNull
     @Override
-    protected AbstractConversionJob to(final AbstractTargetDocumentSpecs target) {
-
+    protected AbstractConversionJob to(@NonNull final AbstractTargetDocumentSpecs target) {
       return new LocalConversionJob(source, target);
     }
   }
@@ -171,6 +175,7 @@ public class LocalConverter extends AbstractConverter {
       super();
     }
 
+    @NonNull
     @Override
     public LocalConverter build() {
 
@@ -202,7 +207,8 @@ public class LocalConverter extends AbstractConverter {
      *     (converted) in the new document format.
      * @return This builder instance.
      */
-    public Builder filterChain(final Filter... filters) {
+    @NonNull
+    public Builder filterChain(@NonNull final Filter... filters) {
 
       Validate.notEmpty(filters, "filters must not be null nor empty");
       this.filterChain = new DefaultFilterChain(filters);
@@ -218,7 +224,8 @@ public class LocalConverter extends AbstractConverter {
      *     is stored (converted) in the new document format.
      * @return This builder instance.
      */
-    public Builder filterChain(final FilterChain filterChain) {
+    @NonNull
+    public Builder filterChain(@NonNull final FilterChain filterChain) {
 
       Validate.notNull(filterChain, "filterChain must not be null");
       this.filterChain = filterChain;
@@ -234,7 +241,9 @@ public class LocalConverter extends AbstractConverter {
      * @param loadProperties A map containing the properties to apply when loading a document.
      * @return This builder instance.
      */
-    public Builder loadProperties(final Map<String, Object> loadProperties) {
+    @NonNull
+    public Builder loadProperties(
+        @NonNull final Map<@NonNull String, @NonNull Object> loadProperties) {
 
       Validate.notNull(loadProperties, "loadProperties must not be null");
       this.loadProperties = loadProperties;
@@ -252,7 +261,9 @@ public class LocalConverter extends AbstractConverter {
      *     document.
      * @return This builder instance.
      */
-    public Builder storeProperties(final Map<String, Object> storeProperties) {
+    @NonNull
+    public Builder storeProperties(
+        @NonNull final Map<@NonNull String, @NonNull Object> storeProperties) {
 
       Validate.notNull(storeProperties, "storeProperties must not be null");
       this.storeProperties = storeProperties;

@@ -223,7 +223,6 @@ public class ConverterController {
               .build();
 
       // Convert...
-      assert targetFormat != null;
       converter.convert(inputFile.getInputStream()).to(baos).as(targetFormat).execute();
 
       final HttpHeaders headers = new HttpHeaders();

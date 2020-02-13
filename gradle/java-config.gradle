@@ -34,7 +34,7 @@ dependencies {
     testImplementation Deps.junitJupiterApi
     testImplementation Deps.mockito
 
-    testImplementation Deps.checkerQual // Required by PowerMock
+    testRuntimeOnly Deps.checkerQual // Required by PowerMock
     testRuntimeOnly Deps.junitJupiterEngine
 }
 
@@ -241,7 +241,8 @@ javadoc {
         links(
                 "https://docs.oracle.com/javase/8/docs/api/",
                 "https://api.libreoffice.org/docs/java/ref/",
-                "https://commons.apache.org/proper/commons-lang/javadocs/api-release/",
+                "https://commons.apache.org/proper/commons-lang/apidocs/",
+                //"https://commons.apache.org/proper/commons-lang/javadocs/api-release/",
                 "https://docs.spring.io/spring-boot/docs/${Deps.springBootVersion}/api/"
         )
     }

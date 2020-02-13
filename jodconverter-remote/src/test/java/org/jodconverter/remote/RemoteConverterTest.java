@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -155,6 +154,7 @@ public class RemoteConverterTest {
   public void toString_AsExpected(final @TempDir File testFolder) throws IOException {
 
     final File file = new File(testFolder, getClass().getName() + ".txt");
+    //noinspection ResultOfMethodCallIgnored
     file.createNewFile();
 
     final SourceDocumentSpecs source = new SourceDocumentSpecsFromFile(file);
@@ -162,9 +162,10 @@ public class RemoteConverterTest {
     final AbstractOfficeTask obj =
         new AbstractOfficeTask(source) {
           @Override
-          public void execute(OfficeContext context) {}
+          @SuppressWarnings("NullableProblems")
+          public void execute(final OfficeContext context) {}
         };
 
-    Assertions.assertThat(obj.toString()).startsWith("{source=").endsWith("}");
+    assertThat(obj.toString()).startsWith("{source=").endsWith("}");
   }
 }

@@ -301,7 +301,9 @@ public class CliConverterTest {
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
+    //noinspection ResultOfMethodCallIgnored
     targetFile1.createNewFile();
+    //noinspection ResultOfMethodCallIgnored
     targetFile2.createNewFile();
 
     converter.convert(

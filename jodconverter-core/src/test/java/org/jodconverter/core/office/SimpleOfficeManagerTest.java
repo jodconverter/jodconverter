@@ -23,10 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 
 /** Contains tests for the {@link SimpleOfficeManager} class. */
 public class SimpleOfficeManagerTest {
@@ -75,14 +72,22 @@ public class SimpleOfficeManagerTest {
         .extracting("workingDir", "taskQueueTimeout")
         .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
 
-    final List<OfficeManager> entries = Whitebox.getInternalState(manager, "entries");
-    assertThat(entries).hasSize(1);
-    entries.forEach(
-        officeManager ->
-            assertThat(officeManager)
-                .isInstanceOf(SimpleOfficeManagerPoolEntry.class)
-                .extracting("taskExecutionTimeout")
-                .isEqualTo(120_000L));
+    assertThat(manager).isInstanceOf(SimpleOfficeManager.class);
+    assertThat(manager)
+        .extracting("workingDir", "taskQueueTimeout")
+        .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(1)
+        .element(0)
+        .satisfies(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(SimpleOfficeManagerPoolEntry.class)
+                    .extracting("taskExecutionTimeout")
+                    .isEqualTo(120_000L));
   }
 
   @Test
@@ -101,14 +106,16 @@ public class SimpleOfficeManagerTest {
         .extracting("workingDir", "taskQueueTimeout")
         .containsExactly(OfficeUtils.getDefaultWorkingDir(), 1_000L);
 
-    final List<OfficeManager> entries = Whitebox.getInternalState(manager, "entries");
-    assertThat(entries).hasSize(2);
-    entries.forEach(
-        officeManager ->
-            assertThat(officeManager)
-                .isInstanceOf(SimpleOfficeManagerPoolEntry.class)
-                .extracting("taskExecutionTimeout")
-                .isEqualTo(20_000L));
+    assertThat(manager)
+        .extracting("entries")
+        .asList()
+        .hasSize(2)
+        .allSatisfy(
+            o ->
+                assertThat(o)
+                    .isInstanceOf(SimpleOfficeManagerPoolEntry.class)
+                    .extracting("taskExecutionTimeout")
+                    .isEqualTo(20_000L));
   }
 
   @Test

@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DocumentFormat;
@@ -37,7 +38,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
   private final File file;
   private DocumentFormat documentFormat;
 
-  protected AbstractDocumentSpecs(final File file) {
+  protected AbstractDocumentSpecs(@NonNull final File file) {
     super();
 
     Validate.notNull(file, "file must not be null");
@@ -45,6 +46,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
     this.file = file;
   }
 
+  @NonNull
   @Override
   public File getFile() {
     return file;
@@ -67,6 +69,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
     this.documentFormat = documentFormat;
   }
 
+  @NonNull
   @Override
   public String toString() {
     return getClass().getSimpleName()

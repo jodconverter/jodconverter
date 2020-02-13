@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +82,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
    *
    * @return A new builder instance.
    */
+  @NonNull
   public static Builder builder() {
     return new Builder();
   }
@@ -90,6 +92,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
    *
    * @return A {@link ExternalOfficeManager} with default configuration.
    */
+  @NonNull
   public static ExternalOfficeManager make() {
     return builder().build();
   }
@@ -103,6 +106,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
    *
    * @return A {@link ExternalOfficeManager} with default configuration.
    */
+  @NonNull
   public static ExternalOfficeManager install() {
     return builder().install().build();
   }
@@ -121,9 +125,9 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
   private ExternalOfficeManager(
       final OfficeUrl officeUrl,
       final File workingDir,
-      @Nullable final Boolean connectOnStart,
-      @Nullable final Long connectTimeout,
-      @Nullable final Long retryInterval) {
+      final Boolean connectOnStart,
+      final Long connectTimeout,
+      final Long retryInterval) {
     super(workingDir);
 
     connection = new OfficeConnection(officeUrl);
@@ -147,7 +151,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
   }
 
   @Override
-  public void execute(final OfficeTask task) throws OfficeException {
+  public void execute(@NonNull final OfficeTask task) throws OfficeException {
 
     synchronized (connection) {
       if (!isRunning()) {
@@ -209,6 +213,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
       super();
     }
 
+    @NonNull
     @Override
     public ExternalOfficeManager build() {
 
@@ -223,10 +228,10 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
       final ExternalOfficeManager manager =
           new ExternalOfficeManager(
               connectionProtocol == OfficeConnectionProtocol.SOCKET
-                  ? (portNumber == null
+                  ? portNumber == null
                       ? new OfficeUrl(DEFAULT_PORT_NUMBER)
-                      : new OfficeUrl(portNumber))
-                  : (pipeName == null ? new OfficeUrl(DEFAULT_PIPE_NAME) : new OfficeUrl(pipeName)),
+                      : new OfficeUrl(portNumber)
+                  : pipeName == null ? new OfficeUrl(DEFAULT_PIPE_NAME) : new OfficeUrl(pipeName),
               workingDir,
               connectOnStart,
               connectTimeout,
@@ -243,6 +248,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param connectionProtocol The new protocol to use.
      * @return This builder instance.
      */
+    @NonNull
     public Builder connectionProtocol(@Nullable final OfficeConnectionProtocol connectionProtocol) {
 
       this.connectionProtocol = connectionProtocol;
@@ -255,6 +261,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param pipeName The pipe name to use.
      * @return This builder instance.
      */
+    @NonNull
     public Builder pipeName(@Nullable final String pipeName) {
 
       if (StringUtils.isNotBlank(pipeName)) {
@@ -269,6 +276,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param portNumber The port number to use.
      * @return This builder instance.
      */
+    @NonNull
     public Builder portNumber(@Nullable final Integer portNumber) {
 
       this.portNumber = portNumber;
@@ -284,6 +292,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param connectOnStart {@code true} to connect on start, {@code false} otherwise.
      * @return This builder instance.
      */
+    @NonNull
     public Builder connectOnStart(@Nullable final Boolean connectOnStart) {
 
       this.connectOnStart = connectOnStart;
@@ -298,6 +307,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param connectTimeout the process timeout, in milliseconds.
      * @return This builder instance.
      */
+    @NonNull
     public Builder connectTimeout(@Nullable final Long connectTimeout) {
 
       if (connectTimeout != null) {
@@ -319,6 +329,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param retryInterval the retry interval, in milliseconds.
      * @return This builder instance.
      */
+    @NonNull
     public Builder retryInterval(@Nullable final Long retryInterval) {
 
       if (retryInterval != null) {

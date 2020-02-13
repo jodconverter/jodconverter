@@ -19,6 +19,8 @@
 
 package org.jodconverter.remote.office;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /** Contains the request configuration to communication with LibreOffice Online. */
 public class RequestConfig {
 
@@ -38,7 +40,8 @@ public class RequestConfig {
    *     consecutive data packets). A timeout value of zero is interpreted as an infinite timeout. A
    *     negative value is interpreted as undefined (system default).
    */
-  public RequestConfig(final String url, final long connectTimeout, final long socketTimeout) {
+  public RequestConfig(
+      @NonNull final String url, final long connectTimeout, final long socketTimeout) {
 
     this.url = url;
     this.connectTimeout = connectTimeout;
@@ -50,6 +53,7 @@ public class RequestConfig {
    *
    * @return The URL where to send conversion request.
    */
+  @NonNull
   public String getUrl() {
     return url;
   }

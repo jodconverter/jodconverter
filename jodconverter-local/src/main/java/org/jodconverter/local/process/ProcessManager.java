@@ -21,6 +21,8 @@ package org.jodconverter.local.process;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** Provides services required to manage a running process. */
@@ -46,7 +48,9 @@ public interface ProcessManager {
    *     implementation is unable to find out
    * @throws IOException If an IO error occurs.
    */
-  long findPid(ProcessQuery query) throws IOException;
+  default long findPid(@NonNull ProcessQuery query) throws IOException {
+    return PID_UNKNOWN;
+  }
 
   /**
    * Kills the specified process.
@@ -55,5 +59,8 @@ public interface ProcessManager {
    * @param pid The id of the process to kill.
    * @throws IOException If an IO error occurs.
    */
-  void kill(@Nullable Process process, long pid) throws IOException;
+  default void kill(@Nullable Process process, long pid) throws IOException {
+    Validate.notNull(process, "process must not be null");
+    process.destroy();
+  }
 }

@@ -32,6 +32,7 @@ import com.sun.star.lang.XServiceInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +136,6 @@ public final class LocalOfficeUtils {
       LOGGER.debug("Default office home set to {}", INSTANCE);
     }
 
-    @Nullable
     private static File findOfficeHome(final String executablePath, final String... homePaths) {
 
       return Stream.of(homePaths)
@@ -152,6 +152,7 @@ public final class LocalOfficeUtils {
    *
    * @return The best process manager according to the current OS.
    */
+  @NonNull
   public static ProcessManager findBestProcessManager() {
 
     if (SystemUtils.IS_OS_MAC) {
@@ -180,8 +181,10 @@ public final class LocalOfficeUtils {
    * @return an array of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  public static List<OfficeUrl> buildOfficeUrls(
-      @Nullable final List<Integer> portNumbers, @Nullable final List<String> pipeNames) {
+  @NonNull
+  public static List<@NonNull OfficeUrl> buildOfficeUrls(
+      @Nullable final List<@NonNull Integer> portNumbers,
+      @Nullable final List<@NonNull String> pipeNames) {
 
     // Assign default value if no pipe names or port numbers have been specified.
     if ((portNumbers == null || portNumbers.size() == 0)
@@ -206,6 +209,7 @@ public final class LocalOfficeUtils {
    * @return A {@code File} instance that is the directory where lives the first detected office
    *     installation.
    */
+  @NonNull
   public static File getDefaultOfficeHome() {
     return DefaultOfficeHomeHolder.INSTANCE;
   }
@@ -218,7 +222,9 @@ public final class LocalOfficeUtils {
    * @throws org.jodconverter.core.office.OfficeException If the document family cannot be
    *     retrieved.
    */
-  public static DocumentFamily getDocumentFamily(final XComponent document) throws OfficeException {
+  @NonNull
+  public static DocumentFamily getDocumentFamily(@NonNull final XComponent document)
+      throws OfficeException {
 
     Validate.notNull(document, "document must not be null");
 
@@ -244,7 +250,8 @@ public final class LocalOfficeUtils {
    * @param officeHome The root (home) directory of the office installation.
    * @return A instance of the executable file.
    */
-  public static File getOfficeExecutable(final File officeHome) {
+  @NonNull
+  public static File getOfficeExecutable(@NonNull final File officeHome) {
 
     // Mac
     if (SystemUtils.IS_OS_MAC) {
@@ -273,7 +280,8 @@ public final class LocalOfficeUtils {
    * @param value The property value.
    * @return The created {@code PropertyValue}.
    */
-  public static PropertyValue property(final String name, final Object value) {
+  @NonNull
+  public static PropertyValue property(@NonNull final String name, @NonNull final Object value) {
 
     final PropertyValue prop = new PropertyValue();
     prop.Name = name;
@@ -288,7 +296,9 @@ public final class LocalOfficeUtils {
    * @param properties The map to convert.
    * @return An array of {@code PropertyValue}.
    */
-  public static PropertyValue[] toUnoProperties(final Map<String, Object> properties) {
+  @NonNull
+  public static PropertyValue[] toUnoProperties(
+      @NonNull final Map<@NonNull String, @NonNull Object> properties) {
 
     final List<PropertyValue> propertyValues = new ArrayList<>(properties.size());
     for (final Map.Entry<String, Object> entry : properties.entrySet()) {
@@ -309,7 +319,8 @@ public final class LocalOfficeUtils {
    * @param file The file for which an URL will be constructed.
    * @return A valid office URL.
    */
-  public static String toUrl(final File file) {
+  @NonNull
+  public static String toUrl(@NonNull final File file) {
 
     final String path = file.toURI().getRawPath();
     final String url = path.startsWith("//") ? "file:" + path : "file://" + path;
@@ -323,7 +334,7 @@ public final class LocalOfficeUtils {
    * @exception IllegalStateException If the specified directory if not a valid office home
    *     directory.
    */
-  public static void validateOfficeHome(final File officeHome) {
+  public static void validateOfficeHome(@NonNull final File officeHome) {
 
     if (!officeHome.isDirectory()) {
       throw new IllegalStateException(
@@ -362,7 +373,7 @@ public final class LocalOfficeUtils {
    * @exception IllegalStateException If the specified directory if not a valid office working
    *     directory.
    */
-  public static void validateOfficeWorkingDirectory(final File workingDir) {
+  public static void validateOfficeWorkingDirectory(@NonNull final File workingDir) {
 
     if (!workingDir.isDirectory()) {
       throw new IllegalStateException(

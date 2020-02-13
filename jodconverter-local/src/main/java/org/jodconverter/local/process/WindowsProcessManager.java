@@ -22,6 +22,7 @@ package org.jodconverter.local.process;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -49,18 +50,21 @@ public class WindowsProcessManager extends AbstractProcessManager {
    *
    * @return The default {@code WindowsProcessManager} instance.
    */
+  @NonNull
   public static WindowsProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
 
+  @NonNull
   @Override
-  protected String[] getRunningProcessesCommand(final String process) {
+  protected String[] getRunningProcessesCommand(@NonNull final String process) {
 
     return new String[] {
       "cmd", "/c", "wmic process where(name like '" + process + "%') get commandline,processid"
     };
   }
 
+  @NonNull
   @Override
   protected Pattern getRunningProcessLinePattern() {
 

@@ -28,7 +28,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.sun.star.lang.DisposedException;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,11 +82,11 @@ class OfficeProcessManager {
       final File officeHome,
       final File workingDir,
       final ProcessManager processManager,
-      @Nullable final List<String> runAsArgs,
-      @Nullable final File templateProfileDir,
-      @Nullable final Boolean killExistingProcess,
-      @Nullable final Long processTimeout,
-      @Nullable final Long processRetryInterval) {
+      final List<String> runAsArgs,
+      final File templateProfileDir,
+      final Boolean killExistingProcess,
+      final Long processTimeout,
+      final Long processRetryInterval) {
 
     process =
         new OfficeProcess(
@@ -147,7 +146,7 @@ class OfficeProcessManager {
 
     try {
       // TODO: Add configuration field for initial delay
-      new ConnectRetryable(process, connection)
+      new ConnectRetryable(connection, process)
           .execute(DEFAULT_PROCESS_INITIAL_DELAY, processRetryInterval, processTimeout);
 
     } catch (OfficeException ex) {

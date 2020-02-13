@@ -74,11 +74,6 @@ public class LocalConversionTaskTest {
     public DocumentFormat getFormat() {
       return DefaultDocumentFormatRegistry.TXT;
     }
-
-    @Override
-    public void onConsumed(final File file) {
-      // Do nothing here
-    }
   }
 
   private static class FooTargetSpecs extends AbstractTargetDocumentSpecs {
@@ -90,16 +85,6 @@ public class LocalConversionTaskTest {
     @Override
     public DocumentFormat getFormat() {
       return DefaultDocumentFormatRegistry.PDF;
-    }
-
-    @Override
-    public void onComplete(final File file) {
-      // Do nothing here
-    }
-
-    @Override
-    public void onFailure(final File file, final Exception exception) {
-      // Do nothing here
     }
   }
 

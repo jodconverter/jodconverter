@@ -26,6 +26,8 @@ import java.nio.channels.Channels;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /** Read all lines from an input stream. */
 public class StreamPumper extends Thread {
 
@@ -41,7 +43,7 @@ public class StreamPumper extends Thread {
      *
      * @param line The line to consume.
      */
-    void consume(String line);
+    void consume(@NonNull String line);
   }
 
   /**
@@ -50,7 +52,7 @@ public class StreamPumper extends Thread {
    * @param stream The input stream to read from.
    * @param consumer The consumer of lines read from the input stream.
    */
-  public StreamPumper(final InputStream stream, final LineConsumer consumer) {
+  public StreamPumper(@NonNull final InputStream stream, @NonNull final LineConsumer consumer) {
     super();
 
     Objects.requireNonNull(stream, "stream must not be null");
@@ -66,6 +68,7 @@ public class StreamPumper extends Thread {
    *
    * @return The consumer.
    */
+  @NonNull
   public LineConsumer getConsumer() {
     return consumer;
   }

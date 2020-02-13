@@ -38,6 +38,8 @@ public class ExternalOfficeManagerITest {
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
 
+  private static OfficeProcess process;
+
   private static OfficeProcess startOfficeProcess() throws OfficeException {
 
     // Starts an office process
@@ -59,8 +61,6 @@ public class ExternalOfficeManagerITest {
     }
     return officeProcess;
   }
-
-  private static OfficeProcess process;
 
   @BeforeAll
   public static void setUp() throws OfficeException {
@@ -84,7 +84,7 @@ public class ExternalOfficeManagerITest {
 
     final OfficeManager manager =
         ExternalOfficeManager.builder()
-            .portNumber(65530)
+            .portNumber(65_530)
             .connectOnStart(false)
             .connectTimeout(3_000L)
             .retryInterval(1_000L)
@@ -106,7 +106,7 @@ public class ExternalOfficeManagerITest {
 
     final OfficeManager manager =
         ExternalOfficeManager.builder()
-            .portNumber(65530)
+            .portNumber(65_530)
             .connectTimeout(3_000L)
             .retryInterval(1_000L)
             .build();
@@ -156,7 +156,7 @@ public class ExternalOfficeManagerITest {
 
     final OfficeManager manager =
         ExternalOfficeManager.builder()
-            .portNumber(65530)
+            .portNumber(65_530)
             .connectTimeout(3_000L)
             .retryInterval(1_000L)
             .build();

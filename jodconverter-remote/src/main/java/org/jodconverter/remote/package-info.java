@@ -21,10 +21,4 @@
  * This package provides the {@link org.jodconverter.core.DocumentConverter} implementation of the
  * JODConverter local module, which is the {@link org.jodconverter.remote.RemoteConverter} class.
  */
-@org.checkerframework.framework.qual.DefaultQualifier(
-    value = org.checkerframework.checker.nullness.qual.NonNull.class,
-    locations = {
-      org.checkerframework.framework.qual.TypeUseLocation.PARAMETER,
-      org.checkerframework.framework.qual.TypeUseLocation.RETURN
-    })
 package org.jodconverter.remote;

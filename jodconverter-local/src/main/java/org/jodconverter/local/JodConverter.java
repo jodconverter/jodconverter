@@ -22,6 +22,8 @@ package org.jodconverter.local;
 import java.io.File;
 import java.io.InputStream;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import org.jodconverter.core.job.ConversionJobWithOptionalSourceFormatUnspecified;
 
 /**
@@ -40,7 +42,9 @@ public final class JodConverter {
    * @param source The conversion input as a file.
    * @return The current conversion specification.
    */
-  public static ConversionJobWithOptionalSourceFormatUnspecified convert(final File source) {
+  @NonNull
+  public static ConversionJobWithOptionalSourceFormatUnspecified convert(
+      @NonNull final File source) {
 
     return LocalConverter.make().convert(source);
   }
@@ -51,7 +55,9 @@ public final class JodConverter {
    * @param source The conversion input as an input stream.
    * @return The current conversion specification.
    */
-  public static ConversionJobWithOptionalSourceFormatUnspecified convert(final InputStream source) {
+  @NonNull
+  public static ConversionJobWithOptionalSourceFormatUnspecified convert(
+      @NonNull final InputStream source) {
 
     return LocalConverter.make().convert(source);
   }
@@ -63,8 +69,9 @@ public final class JodConverter {
    * @param closeStream Whether the {@link InputStream} is closed after the conversion terminates.
    * @return The current conversion specification.
    */
+  @NonNull
   public static ConversionJobWithOptionalSourceFormatUnspecified convert(
-      final InputStream source, final boolean closeStream) {
+      @NonNull final InputStream source, final boolean closeStream) {
 
     return LocalConverter.make().convert(source, closeStream);
   }

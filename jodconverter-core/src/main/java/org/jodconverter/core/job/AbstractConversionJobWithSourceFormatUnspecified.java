@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.OutputStream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.document.DocumentFormatRegistry;
@@ -45,9 +46,9 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   protected final DocumentFormatRegistry formatRegistry;
 
   protected AbstractConversionJobWithSourceFormatUnspecified(
-      final AbstractSourceDocumentSpecs source,
-      final OfficeManager officeManager,
-      final DocumentFormatRegistry formatRegistry) {
+      @NonNull final AbstractSourceDocumentSpecs source,
+      @NonNull final OfficeManager officeManager,
+      @NonNull final DocumentFormatRegistry formatRegistry) {
     super();
 
     this.source = source;
@@ -55,15 +56,17 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
     this.formatRegistry = formatRegistry;
   }
 
+  @NonNull
   @Override
-  public AbstractConversionJobWithSourceFormatUnspecified as(final DocumentFormat format) {
+  public AbstractConversionJobWithSourceFormatUnspecified as(@NonNull final DocumentFormat format) {
 
     source.setDocumentFormat(format);
     return this;
   }
 
+  @NonNull
   @Override
-  public AbstractConversionJob to(final File target) {
+  public AbstractConversionJob to(@NonNull final File target) {
 
     final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(target);
     final DocumentFormat format =
@@ -75,14 +78,16 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
     return toInternal(specs);
   }
 
+  @NonNull
   @Override
-  public AbstractConversionJob to(final OutputStream target) {
+  public AbstractConversionJob to(@NonNull final OutputStream target) {
 
     return to(target, DEFAULT_CLOSE_STREAM);
   }
 
+  @NonNull
   @Override
-  public AbstractConversionJob to(final OutputStream target, final boolean closeStream) {
+  public AbstractConversionJob to(@NonNull final OutputStream target, final boolean closeStream) {
 
     if (officeManager instanceof TemporaryFileMaker) {
       return toInternal(
@@ -100,7 +105,8 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
    * @param target The target specifications to use for the conversion.
    * @return The current conversion specification.
    */
-  protected abstract AbstractConversionJob to(AbstractTargetDocumentSpecs target);
+  @NonNull
+  protected abstract AbstractConversionJob to(@NonNull AbstractTargetDocumentSpecs target);
 
   private AbstractConversionJob toInternal(final AbstractTargetDocumentSpecs target) {
 

@@ -39,7 +39,8 @@ public class AbstractRemoteOfficeTaskTest {
     final AbstractRemoteOfficeTask obj =
         new AbstractRemoteOfficeTask(source) {
           @Override
-          public void execute(OfficeContext context) {
+          @SuppressWarnings("NullableProblems")
+          public void execute(final OfficeContext context) {
             // Nothing...
           }
         };
