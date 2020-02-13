@@ -48,7 +48,7 @@ public class DefaultFilterChainTest {
     final DefaultFilterChain chain = new DefaultFilterChain();
     chain.addFilter(filter);
 
-    assertThat(chain).extracting("filters").asList().hasSize(0).containsExactly(filter);
+    assertThat(chain).extracting("filters").asList().hasSize(1).containsExactly(filter);
   }
 
   @Test
