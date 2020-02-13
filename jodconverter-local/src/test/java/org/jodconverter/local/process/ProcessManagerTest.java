@@ -60,7 +60,10 @@ public class ProcessManagerTest {
 
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-    assertThat(process).extracting("pid").isEqualTo(pid);
+    assertThat(process)
+        .extracting("pid")
+        .isInstanceOfSatisfying(
+            Number.class, number -> assertThat(number.longValue()).isEqualTo(pid));
 
     processManager.kill(process, pid);
     assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
@@ -92,7 +95,10 @@ public class ProcessManagerTest {
 
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-    assertThat(process).extracting("pid").isEqualTo(pid);
+    assertThat(process)
+        .extracting("pid")
+        .isInstanceOfSatisfying(
+            Number.class, number -> assertThat(number.longValue()).isEqualTo(pid));
 
     processManager.kill(process, pid);
     assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
@@ -124,7 +130,10 @@ public class ProcessManagerTest {
 
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-    assertThat(process).extracting("pid").isEqualTo(pid);
+    assertThat(process)
+        .extracting("pid")
+        .isInstanceOfSatisfying(
+            Number.class, number -> assertThat(number.longValue()).isEqualTo(pid));
 
     processManager.kill(process, pid);
     assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
@@ -157,7 +166,9 @@ public class ProcessManagerTest {
     final long pid = processManager.findPid(query);
     assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
     // Won't work on Windows, skip this assertion
-    // assertThat(process).extracting("pid").isEqualTo(pid);
+    // assertThat(process).extracting("pid")
+    //        .isInstanceOfSatisfying(
+    //            Number.class, number -> assertThat(number.longValue()).isEqualTo(pid));
 
     processManager.kill(process, pid);
     assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
