@@ -1,6 +1,24 @@
 # Changelog
 
-## [v4.2.3](https://github.com/sbraconnier/jodconverter/tree/v4.2.3) (2020-01-15)
+## [v4.3.0](https://github.com/sbraconnier/jodconverter/tree/v4.3.0) (2020-03-05)
+
+[Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.2.4...v4.3.0)
+
+**Implemented enhancements:**
+
+- Rename jodconverter-online module to jodconverter-remote [\#190](https://github.com/sbraconnier/jodconverter/issues/190)
+- Issues in java11 project [\#178](https://github.com/sbraconnier/jodconverter/issues/178)
+
+**Fixed bugs:**
+
+- regression: Upgrade to jodconverter-local 4.2.3 imply to also add a dependency to jodconverter-core [\#183](https://github.com/sbraconnier/jodconverter/issues/183)
+- Unthrown MalformedInputException when looking for soffice PID [\#180](https://github.com/sbraconnier/jodconverter/issues/180)
+
+## [v4.2.4](https://github.com/sbraconnier/jodconverter/tree/v4.2.4) (2020-01-16)
+
+[Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.2.3...v4.2.4)
+
+## [v4.2.3](https://github.com/sbraconnier/jodconverter/tree/v4.2.3) (2020-01-16)
 
 [Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.2.2...v4.2.3)
 
@@ -21,6 +39,27 @@
 - ExternalOfficeManager creates temporary files in the current directory [\#130](https://github.com/sbraconnier/jodconverter/issues/130)
 - class ExternalOfficeManager is not Public [\#121](https://github.com/sbraconnier/jodconverter/issues/121)
 - Build fails with JDK10 on macOS [\#79](https://github.com/sbraconnier/jodconverter/issues/79)
+
+**Closed issues:**
+
+- Task did not complete within timeout  [\#177](https://github.com/sbraconnier/jodconverter/issues/177)
+- TIFF conversion to PDF  [\#162](https://github.com/sbraconnier/jodconverter/issues/162)
+- It‘s not working on jre7？ [\#156](https://github.com/sbraconnier/jodconverter/issues/156)
+- There was an Exception after a while, and it persisted [\#154](https://github.com/sbraconnier/jodconverter/issues/154)
+- Add support for vsd and vsdx to PDF [\#151](https://github.com/sbraconnier/jodconverter/issues/151)
+- java.lang.VerifyError [\#149](https://github.com/sbraconnier/jodconverter/issues/149)
+- org.jodconverter.office.OfficeException: Task did not complete within timeout [\#146](https://github.com/sbraconnier/jodconverter/issues/146)
+- How to change the Paper Format before export PDF? [\#144](https://github.com/sbraconnier/jodconverter/issues/144)
+- how to set defaultLoadProperties in version 4.2.2？ [\#141](https://github.com/sbraconnier/jodconverter/issues/141)
+- lost images while converting to pdf [\#138](https://github.com/sbraconnier/jodconverter/issues/138)
+- Great, finally... your the official successor [\#123](https://github.com/sbraconnier/jodconverter/issues/123)
+- Improve documentation for LibreOffice Portable Support [\#29](https://github.com/sbraconnier/jodconverter/issues/29)
+
+**Merged pull requests:**
+
+- If parent dir is not exist,Program will throw exception while it crea… [\#181](https://github.com/sbraconnier/jodconverter/pull/181) ([qiangtoudianyan](https://github.com/qiangtoudianyan))
+- fixes \#151 [\#152](https://github.com/sbraconnier/jodconverter/pull/152) ([anghelutar](https://github.com/anghelutar))
+- Get Java11 compatible \#127 [\#128](https://github.com/sbraconnier/jodconverter/pull/128) ([EugenMayer](https://github.com/EugenMayer))
 
 ## [v4.2.2](https://github.com/sbraconnier/jodconverter/tree/v4.2.2) (2018-11-30)
 
