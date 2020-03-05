@@ -14,6 +14,7 @@ buildscript {
     dependencies {
         classpath Plugins.coveralls
         classpath Plugins.nebulaProject
+        classpath Plugins.nexusStaging
         classpath Plugins.spotless
     }
 }
@@ -111,6 +112,12 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'io.codearte.nexus-staging'
+
+nexusStaging {
+    username = findProperty('ossrhUsername')
+    password = findProperty('ossrhPassword')
+}
 
 // Exclude folders from IDEA project
 idea {

@@ -1,21 +1,14 @@
-apply plugin: 'signing'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
-ext.isSnapshotVersion = version.endsWith('SNAPSHOT')
-ext.sonatypeRepo = isSnapshotVersion
-        ? 'https://oss.sonatype.org/content/repositories/snapshots/'
-        : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-
-tasks.withType(GenerateModuleMetadata) {
-    enabled = false
-}
 
 signing {
     // TODO: Check this issue from time to time to use the commented instructions instead.
     // https://github.com/gradle/gradle/issues/11387
-    //required { !isSnapshotVersion && findProperty('ossrhUsername') != null && findProperty('ossrhPassword') != null }
+    //required { !isSnapshotVersion && project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword') }
     //sign publishing.publications
-    required { !isSnapshotVersion && hasProperty('ossrhUsername') && hasProperty('ossrhPassword') }
+    def isSnapshotVersion = version.endsWith('SNAPSHOT')
+    required { !isSnapshotVersion && project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword') }
     if (required) {
         //sign configurations.archives
         sign publishing.publications
@@ -35,7 +28,10 @@ publishing {
     }
     repositories {
         maven {
-            url sonatypeRepo
+            def isSnapshotVersion = version.endsWith('SNAPSHOT')
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            url = isSnapshotVersion ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
                 username project.findProperty("ossrhUsername")
                 password project.findProperty("ossrhPassword")
