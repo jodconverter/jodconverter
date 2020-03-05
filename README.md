@@ -90,4 +90,4 @@ including some [wiki pages](https://code.google.com/archive/p/jodconverter/wikis
 
 If this project helps you, please consider a donation. I have to pay for the jodconverter web site (domain and hosting) every year. I also sit on my chair in front of a monitor a lot instead of being outside drinking a beer to improve this project :). Thanks.
 
-[![paypal](https://www.paypalobjects.com/en_CA/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)
