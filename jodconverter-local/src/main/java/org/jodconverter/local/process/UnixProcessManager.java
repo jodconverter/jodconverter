@@ -20,10 +20,10 @@
 package org.jodconverter.local.process;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -103,6 +103,6 @@ public class UnixProcessManager extends AbstractProcessManager {
    * @param runAsArgs The sudo command arguments.
    */
   public void setRunAsArgs(@NonNull final String[] runAsArgs) {
-    this.runAsArgs = ArrayUtils.clone(runAsArgs);
+    this.runAsArgs = Arrays.copyOf(runAsArgs, runAsArgs.length);
   }
 }

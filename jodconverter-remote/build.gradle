@@ -8,7 +8,6 @@ dependencies {
 
     implementation Deps.slf4jApi
     implementation Deps.commonsIo
-    implementation Deps.commonsLang
 
     implementation Deps.httpcomponentsHttpcore
     implementation Deps.httpcomponentsHttpclient

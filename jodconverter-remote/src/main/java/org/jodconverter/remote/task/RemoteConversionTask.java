@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
@@ -38,6 +37,7 @@ import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.job.TargetDocumentSpecs;
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.remote.office.RemoteOfficeContext;
 import org.jodconverter.remote.office.RequestConfig;
 

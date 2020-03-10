@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.InputStream;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.DocumentConverter;
@@ -31,6 +30,7 @@ import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.TemporaryFileMaker;
+import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Base class for all document converter implementations.
@@ -51,8 +51,8 @@ public abstract class AbstractConverter implements DocumentConverter {
     super();
 
     // Both argument are required.
-    Validate.notNull(officeManager, "officeManager must not be null");
-    Validate.notNull(formatRegistry, "formatRegistry must not be null");
+    AssertUtils.notNull(officeManager, "officeManager must not be null");
+    AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
     this.officeManager = officeManager;
     this.formatRegistry = formatRegistry;
   }
@@ -143,7 +143,7 @@ public abstract class AbstractConverter implements DocumentConverter {
     @NonNull
     public B officeManager(@NonNull final OfficeManager officeManager) {
 
-      Validate.notNull(officeManager, "officeManager must not be null");
+      AssertUtils.notNull(officeManager, "officeManager must not be null");
       this.officeManager = officeManager;
       return (B) this;
     }
@@ -158,7 +158,7 @@ public abstract class AbstractConverter implements DocumentConverter {
     @NonNull
     public B formatRegistry(@NonNull final DocumentFormatRegistry formatRegistry) {
 
-      Validate.notNull(formatRegistry, "formatRegistry must not be null");
+      AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
       this.formatRegistry = formatRegistry;
       return (B) this;
     }

@@ -42,8 +42,6 @@ import java.util.Map;
 import java.util.Objects;
 import javax.net.ssl.SSLContext;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -57,6 +55,8 @@ import org.apache.http.ssl.SSLContexts;
 import org.jodconverter.core.office.AbstractOfficeManagerPoolEntry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.OfficeTask;
+import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.remote.ssl.SslConfig;
 
 /**
@@ -97,7 +97,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     public String chooseAlias(final Map<String, PrivateKeyDetails> aliases, final Socket socket) {
 
       return aliases.keySet().stream()
-          .filter(key -> StringUtils.equalsIgnoreCase(key, keyAlias))
+          .filter(key -> key.equalsIgnoreCase(keyAlias))
           .findFirst()
           .orElse(null);
     }
@@ -142,8 +142,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   private static File getFile(final URL url) {
 
     try {
-      return new File(
-          new URI(StringUtils.replace(url.toString(), " ", "%20")).getSchemeSpecificPart());
+      return new File(new URI(url.toString().replace(" ", "%20")).getSchemeSpecificPart());
     } catch (URISyntaxException ex) {
       // Fallback for URLs that are not valid URIs (should hardly ever happen).
       return new File(url.getFile());
@@ -153,7 +152,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   // Taken from spring org.springframework.util.ResourceUtils class
   private static File getFile(final String resourceLocation) throws FileNotFoundException {
 
-    Validate.notNull(resourceLocation, "resourceLocation must not be null");
+    AssertUtils.notNull(resourceLocation, "resourceLocation must not be null");
     if (resourceLocation.startsWith("classpath:")) {
       final String path = resourceLocation.substring("classpath:".length());
       final String description = "class path resource [" + path + "]";
@@ -330,7 +329,8 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
           NoSuchProviderException {
 
     if (store != null) {
-      Validate.notNull(storePassword, "storePassword of store {0} must not be null", store);
+      AssertUtils.notNull(
+          storePassword, String.format("storePassword of store %s must not be null", store));
 
       KeyStore keyStore;
 

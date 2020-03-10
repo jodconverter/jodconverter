@@ -22,9 +22,6 @@ package org.jodconverter.boot.autoconfigure;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -41,6 +38,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistryInstanceHolde
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
@@ -71,10 +69,16 @@ public class JodConverterLocalAutoConfiguration {
 
     if (!StringUtils.isBlank(properties.getPortNumbers())) {
       builder.portNumbers(
-          ArrayUtils.toPrimitive(
-              Stream.of(StringUtils.split(properties.getPortNumbers(), ", "))
-                  .map(str -> NumberUtils.toInt(str, 2002))
-                  .toArray(Integer[]::new)));
+          Stream.of(properties.getPortNumbers().split("\\s*,\\s*"))
+              .mapToInt(
+                  str -> {
+                    try {
+                      return Integer.parseInt(str);
+                    } catch (final Exception e) {
+                      return 2002;
+                    }
+                  })
+              .toArray());
     }
 
     builder.officeHome(properties.getOfficeHome());

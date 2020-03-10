@@ -26,9 +26,10 @@ import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import org.jodconverter.core.util.AssertUtils;
 
 /**
  * A collection of utility functions to make Office easier to use.
@@ -59,17 +60,16 @@ public final class Lo {
   @NonNull
   public static <T> T qi(@NonNull final Class<T> type, @NonNull final Object object) {
 
-    Validate.notNull(type, "type must not be null");
-    Validate.notNull(type, "object must not be null");
+    AssertUtils.notNull(type, "type must not be null");
+    AssertUtils.notNull(type, "object must not be null");
 
     final T obj = UnoRuntime.queryInterface(type, object);
 
-    Validate.notNull(
+    AssertUtils.notNull(
         obj,
-        "UNO object of type "
-            + type.getName()
-            + " must not be null for object of type "
-            + object.getClass().getName());
+        String.format(
+            "UNO object of type %s must not be null for object of type %s",
+            type.getName(), object.getClass().getName()));
 
     return obj;
   }

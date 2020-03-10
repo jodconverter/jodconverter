@@ -6,7 +6,6 @@ description = 'Spring integration module of the Java OpenDocument Converter (JOD
 dependencies {
     implementation project(":jodconverter-local")
 
-    implementation Deps.commonsLang
     implementation Deps.slf4jLog4j
     implementation Deps.springCore
     implementation Deps.springContext

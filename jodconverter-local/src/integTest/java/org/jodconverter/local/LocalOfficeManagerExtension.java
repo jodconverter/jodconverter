@@ -23,9 +23,6 @@ import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.create;
 
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
@@ -36,6 +33,7 @@ import org.junit.platform.commons.JUnitException;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.LocalOfficeManager;
 
 /** Provides a {@link LocalOfficeManager} that can be use as argument to a test method. */
@@ -86,10 +84,16 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
       final int[] portNumbers =
           StringUtils.isBlank(property)
               ? new int[] {2099}
-              : ArrayUtils.toPrimitive(
-                  Stream.of(StringUtils.split(property, ", "))
-                      .map(str -> NumberUtils.toInt(str, 2099))
-                      .toArray(Integer[]::new));
+              : Stream.of(property.split("\\s*,\\s*"))
+                  .mapToInt(
+                      str -> {
+                        try {
+                          return Integer.parseInt(str);
+                        } catch (final Exception e) {
+                          return 2099;
+                        }
+                      })
+                  .toArray();
       final LocalOfficeManager mng = LocalOfficeManager.builder().portNumbers(portNumbers).build();
       try {
         mng.start();

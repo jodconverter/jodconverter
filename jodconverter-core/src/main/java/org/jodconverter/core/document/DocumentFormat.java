@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import org.jodconverter.core.util.AssertUtils;
 
 /** Contains the required information used to deal with a specific document format . */
 public class DocumentFormat {
@@ -100,10 +100,10 @@ public class DocumentFormat {
       final Map<DocumentFamily, Map<String, Object>> storeProperties,
       final boolean unmodifiable) {
 
-    Validate.notBlank(name, "name must not be null nor blank");
-    Validate.notNull(extensions, "extensions must not be null");
-    Validate.notBlank(mediaType, "mediaType must not be null nor blank");
-    Validate.notNull(inputFamily, "inputFamily must not be null");
+    AssertUtils.notBlank(name, "name must not be null nor blank");
+    AssertUtils.notNull(extensions, "extensions must not be null");
+    AssertUtils.notBlank(mediaType, "mediaType must not be null nor blank");
+    AssertUtils.notNull(inputFamily, "inputFamily must not be null");
 
     this.name = name;
     this.extensions = new ArrayList<>(extensions);
@@ -224,7 +224,21 @@ public class DocumentFormat {
   @NonNull
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this);
+    return getClass().getSimpleName()
+        + "{"
+        + "name=\""
+        + name
+        + "\", extensions="
+        + extensions
+        + ", mediaType=\""
+        + mediaType
+        + "\", inputFamily="
+        + inputFamily
+        + ", loadProperties="
+        + loadProperties
+        + ", storeProperties="
+        + storeProperties
+        + '}';
   }
 
   /**
@@ -268,7 +282,7 @@ public class DocumentFormat {
     @NonNull
     public Builder from(@NonNull final DocumentFormat sourceFormat) {
 
-      Validate.notNull(sourceFormat, "sourceFormat must not be null");
+      AssertUtils.notNull(sourceFormat, "sourceFormat must not be null");
       this.name = sourceFormat.getName();
       this.extensions = new LinkedHashSet<>(sourceFormat.getExtensions());
       this.mediaType = sourceFormat.getMediaType();
@@ -296,7 +310,7 @@ public class DocumentFormat {
     @NonNull
     public Builder extension(@NonNull final String extension) {
 
-      Validate.notBlank(extension, "extension must not be null nor blank");
+      AssertUtils.notBlank(extension, "extension must not be null nor blank");
       if (this.extensions == null) {
         this.extensions = new LinkedHashSet<>();
       }
@@ -314,7 +328,7 @@ public class DocumentFormat {
     @NonNull
     public Builder inputFamily(@NonNull final DocumentFamily inputFamily) {
 
-      Validate.notNull(inputFamily, "inputFamily must not be null");
+      AssertUtils.notNull(inputFamily, "inputFamily must not be null");
       this.inputFamily = inputFamily;
       return this;
     }
@@ -331,7 +345,7 @@ public class DocumentFormat {
     @NonNull
     public Builder loadProperty(@NonNull final String name, @Nullable final Object value) {
 
-      Validate.notBlank(name, "name must not be null nor blank");
+      AssertUtils.notBlank(name, "name must not be null nor blank");
 
       if (value == null) {
         // Remove the property if the value is null.
@@ -361,7 +375,7 @@ public class DocumentFormat {
     @NonNull
     public Builder mediaType(@NonNull final String mediaType) {
 
-      Validate.notBlank(mediaType, "mediaType must not be null nor blank");
+      AssertUtils.notBlank(mediaType, "mediaType must not be null nor blank");
       this.mediaType = mediaType;
       return this;
     }
@@ -375,7 +389,7 @@ public class DocumentFormat {
     @NonNull
     public Builder name(@NonNull final String name) {
 
-      Validate.notBlank(name, "name must not be null nor blank");
+      AssertUtils.notBlank(name, "name must not be null nor blank");
       this.name = name;
       return this;
     }
@@ -411,8 +425,8 @@ public class DocumentFormat {
         @NonNull final String name,
         @Nullable final Object value) {
 
-      Validate.notNull(documentFamily, "documentFamily must not be null");
-      Validate.notBlank(name, "name must not be null nor blank");
+      AssertUtils.notNull(documentFamily, "documentFamily must not be null");
+      AssertUtils.notBlank(name, "name must not be null nor blank");
 
       if (value == null) {
         // Remove the property if the value is null.

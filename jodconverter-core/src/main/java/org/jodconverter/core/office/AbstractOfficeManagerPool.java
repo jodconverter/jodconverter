@@ -27,13 +27,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.task.OfficeTask;
+import org.jodconverter.core.util.AssertUtils;
 
 /**
  * An AbstractOfficeManagerPool is responsible to maintain a pool of {@link
@@ -247,10 +247,8 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
     public B taskExecutionTimeout(@Nullable final Long taskExecutionTimeout) {
 
       if (taskExecutionTimeout != null) {
-        Validate.inclusiveBetween(
-            0,
-            Long.MAX_VALUE,
-            taskExecutionTimeout,
+        AssertUtils.isTrue(
+            taskExecutionTimeout >= 0,
             String.format(
                 "taskExecutionTimeout %s must greater than or equal to 0", taskExecutionTimeout));
       }
@@ -271,10 +269,8 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
     public B taskQueueTimeout(@Nullable final Long taskQueueTimeout) {
 
       if (taskQueueTimeout != null) {
-        Validate.inclusiveBetween(
-            0,
-            Long.MAX_VALUE,
-            taskQueueTimeout,
+        AssertUtils.isTrue(
+            taskQueueTimeout >= 0,
             String.format("taskQueueTimeout %s must greater than or equal to 0", taskQueueTimeout));
       }
       this.taskQueueTimeout = taskQueueTimeout;

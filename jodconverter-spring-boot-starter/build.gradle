@@ -10,7 +10,6 @@ dependencies {
     compileOnly Deps.springBootConfigurationProcessor
 
     implementation Deps.springBootStarter
-    implementation Deps.commonsLang
 
     testImplementation project(":jodconverter-local")
     testImplementation project(":jodconverter-remote")

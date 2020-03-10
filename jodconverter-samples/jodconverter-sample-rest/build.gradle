@@ -29,7 +29,6 @@ dependencies {
     implementation project(":jodconverter-spring-boot-starter")
 
     implementation "commons-io:commons-io:$commonsIoVersion"
-    implementation "org.apache.commons:commons-lang3"
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.glassfish.jaxb:jaxb-runtime"

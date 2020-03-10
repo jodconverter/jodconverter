@@ -45,12 +45,12 @@ import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.view.XSelectionSupplier;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.OfficeContext;
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.office.utils.Calc;
 import org.jodconverter.local.office.utils.Draw;
 import org.jodconverter.local.office.utils.Lo;
@@ -90,7 +90,7 @@ public class PagesSelectorFilter implements Filter {
   public PagesSelectorFilter(@NonNull final Set<@NonNull Integer> pages) {
     super();
 
-    Validate.notEmpty(pages, "pages must not be null nor empty");
+    AssertUtils.notEmpty(pages, "pages must not be null nor empty");
 
     this.pages = new ArrayList<>(pages);
   }

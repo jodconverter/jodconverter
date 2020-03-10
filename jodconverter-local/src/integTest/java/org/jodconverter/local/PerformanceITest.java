@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -70,9 +69,8 @@ public class PerformanceITest {
 
     final String baseName = FilenameUtils.getBaseName(inputFile.getName());
 
-    long lastSplitTime = 0L;
-    final StopWatch stopWatch = new StopWatch();
-    stopWatch.start();
+    final long start = System.currentTimeMillis();
+    long split = start;
     for (int i = 0; i < MAX_CONVERSIONS; i++) {
       final File outputFile = File.createTempFile("test", "." + OUTPUT_FORMAT.getExtension());
       outputFile.deleteOnExit();
@@ -84,22 +82,20 @@ public class PerformanceITest {
           OUTPUT_FORMAT.getExtension());
       converter.convert(inputFile).to(outputFile).as(OUTPUT_FORMAT).execute();
 
-      stopWatch.split();
-      final long splitTime = stopWatch.getSplitTime();
+      final long now = System.currentTimeMillis();
       if (LOGGER.isInfoEnabled()) {
-        LOGGER.info("{} -- Conversion done in {} millisec.", baseName, splitTime - lastSplitTime);
+        LOGGER.info("{} -- Conversion done in {} millisec.", baseName, now - split);
       }
-      lastSplitTime = splitTime;
+      split = now;
     }
-    stopWatch.stop();
-    final long conversionTime = stopWatch.getTime();
 
+    final long total = System.currentTimeMillis() - start;
     LOGGER.info(
         "{} -- All {} conversions done in {}. The average per document is {} ms.",
         baseName,
         MAX_CONVERSIONS,
-        getDurationBreakdown(conversionTime),
-        conversionTime / MAX_CONVERSIONS);
+        getDurationBreakdown(total),
+        total / MAX_CONVERSIONS);
   }
 
   @Test

@@ -30,12 +30,12 @@ import com.sun.star.text.XText;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextFrame;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.OfficeContext;
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.Write;
@@ -71,7 +71,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
       final int verticalPosition) {
     super(new Dimension(width, height), horizontalPosition, verticalPosition);
 
-    Validate.notBlank(text, "text must not be null nor blank");
+    AssertUtils.notBlank(text, "text must not be null nor blank");
 
     this.insertedText = text;
   }
@@ -96,7 +96,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
       final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super(new Dimension(width, height), shapeProperties);
 
-    Validate.notBlank(text, "text must not be null nor blank");
+    AssertUtils.notBlank(text, "text must not be null nor blank");
 
     this.insertedText = text;
   }

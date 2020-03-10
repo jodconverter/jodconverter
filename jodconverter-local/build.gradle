@@ -33,7 +33,6 @@ dependencies {
     }
 
     implementation Deps.commonsIo
-    implementation Deps.commonsLang
     implementation Deps.slf4jApi
 
     testImplementation Deps.slf4jLog4j

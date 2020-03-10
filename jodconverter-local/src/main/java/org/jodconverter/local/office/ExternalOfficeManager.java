@@ -21,8 +21,6 @@ package org.jodconverter.local.office;
 
 import java.io.File;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -33,6 +31,8 @@ import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.OfficeTask;
+import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.StringUtils;
 
 /**
  * {@link org.jodconverter.core.office.OfficeManager} implementation that connects to an external
@@ -311,10 +311,8 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
     public Builder connectTimeout(@Nullable final Long connectTimeout) {
 
       if (connectTimeout != null) {
-        Validate.inclusiveBetween(
-            0,
-            Long.MAX_VALUE,
-            connectTimeout,
+        AssertUtils.isTrue(
+            connectTimeout >= 0,
             String.format("connectTimeout %s must be greater than or equal to 0", connectTimeout));
       }
       this.connectTimeout = connectTimeout;
@@ -333,10 +331,8 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
     public Builder retryInterval(@Nullable final Long retryInterval) {
 
       if (retryInterval != null) {
-        Validate.inclusiveBetween(
-            0,
-            MAX_RETRY_INTERVAL,
-            retryInterval,
+        AssertUtils.isTrue(
+            retryInterval >= 0 && retryInterval <= MAX_RETRY_INTERVAL,
             String.format(
                 "retryInterval %s must be in the inclusive range of %s to %s",
                 retryInterval, 0, MAX_RETRY_INTERVAL));

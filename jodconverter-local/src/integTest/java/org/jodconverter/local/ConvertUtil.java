@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,10 +139,13 @@ public final class ConvertUtil {
     // This will create 1 output file per output format.
     for (final DocumentFormat outputFormat : outputFormats) {
 
-      if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
-        LOGGER.info(
-            "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
-        continue;
+      switch (outputFormat.getExtension()) {
+        case "sxc":
+        case "sxi":
+        case "sxw":
+          LOGGER.info(
+              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+          continue;
       }
 
       //      if (SystemUtils.IS_OS_WINDOWS) {

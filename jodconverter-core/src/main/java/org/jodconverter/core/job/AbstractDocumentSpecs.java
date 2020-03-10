@@ -22,11 +22,11 @@ package org.jodconverter.core.job;
 import java.io.File;
 import java.util.Optional;
 
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Base class for all document specifications implementations.
@@ -41,7 +41,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
   protected AbstractDocumentSpecs(@NonNull final File file) {
     super();
 
-    Validate.notNull(file, "file must not be null");
+    AssertUtils.notNull(file, "file must not be null");
 
     this.file = file;
   }
@@ -65,7 +65,7 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
    */
   /* default */ void setDocumentFormat(final DocumentFormat documentFormat) {
 
-    Validate.notNull(documentFormat, "documentFormat must not be null");
+    AssertUtils.notNull(documentFormat, "documentFormat must not be null");
     this.documentFormat = documentFormat;
   }
 

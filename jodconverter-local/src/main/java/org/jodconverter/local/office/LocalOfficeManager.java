@@ -24,8 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -34,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.core.office.AbstractOfficeManagerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.process.ProcessManager;
 
 /**
@@ -406,10 +406,8 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
     public Builder processTimeout(@Nullable final Long processTimeout) {
 
       if (processTimeout != null) {
-        Validate.inclusiveBetween(
-            0,
-            Long.MAX_VALUE,
-            processTimeout,
+        AssertUtils.isTrue(
+            processTimeout >= 0,
             String.format("processTimeout %s must be greater than or equal to 0", processTimeout));
       }
       this.processTimeout = processTimeout;
@@ -429,10 +427,9 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
     public Builder processRetryInterval(@Nullable final Long processRetryInterval) {
 
       if (processRetryInterval != null) {
-        Validate.inclusiveBetween(
-            MIN_PROCESS_RETRY_INTERVAL,
-            MAX_PROCESS_RETRY_INTERVAL,
-            processRetryInterval,
+        AssertUtils.isTrue(
+            processRetryInterval >= MIN_PROCESS_RETRY_INTERVAL
+                && processRetryInterval <= MAX_PROCESS_RETRY_INTERVAL,
             String.format(
                 "processRetryInterval %s must be in the inclusive range of %s to %s",
                 processRetryInterval, MIN_PROCESS_RETRY_INTERVAL, MAX_PROCESS_RETRY_INTERVAL));
@@ -453,10 +450,8 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
     public Builder maxTasksPerProcess(@Nullable final Integer maxTasksPerProcess) {
 
       if (maxTasksPerProcess != null) {
-        Validate.inclusiveBetween(
-            1,
-            Integer.MAX_VALUE,
-            maxTasksPerProcess,
+        AssertUtils.isTrue(
+            maxTasksPerProcess >= 1,
             String.format("maxTasksPerProcess %s must be greater than 0", maxTasksPerProcess));
       }
       this.maxTasksPerProcess = maxTasksPerProcess;

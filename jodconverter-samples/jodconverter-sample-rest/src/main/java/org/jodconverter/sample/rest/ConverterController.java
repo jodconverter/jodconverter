@@ -31,8 +31,6 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +50,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
 
 /**
@@ -143,15 +142,17 @@ public class ConverterController {
     final String name = param.getKey().substring(paramName.length());
     final String value = param.getValue();
 
-    final Boolean bool = BooleanUtils.toBooleanObject(value);
-    if (bool != null) {
-      properties.put(name, bool);
-    }
-    try {
-      final int ival = Integer.parseInt(value);
-      properties.put(name, ival);
-    } catch (NumberFormatException nfe) {
-      properties.put(name, value);
+    if ("true".equalsIgnoreCase(value)) {
+      properties.put(name, Boolean.TRUE);
+    } else if ("false".equalsIgnoreCase(value)) {
+      properties.put(name, Boolean.FALSE);
+    } else {
+      try {
+        final int ival = Integer.parseInt(value);
+        properties.put(name, ival);
+      } catch (NumberFormatException nfe) {
+        properties.put(name, value);
+      }
     }
   }
 

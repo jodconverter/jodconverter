@@ -26,7 +26,6 @@ dependencies {
     implementation project(":jodconverter-local")
     implementation project(":jodconverter-spring-boot-starter")
 
-    implementation "org.apache.commons:commons-lang3"
     implementation "commons-io:commons-io:$commonsIoVersion"
 
     implementation "org.springframework.boot:spring-boot-starter-web"

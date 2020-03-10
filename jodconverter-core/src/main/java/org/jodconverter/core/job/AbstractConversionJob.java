@@ -19,11 +19,11 @@
 
 package org.jodconverter.core.job;
 
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Base class for all conversion job implementations.
@@ -56,7 +56,7 @@ public abstract class AbstractConversionJob
   @Override
   public final void execute() throws OfficeException {
 
-    Validate.notNull(target.getFormat(), "The target format is missing or not supported");
+    AssertUtils.notNull(target.getFormat(), "The target format is missing or not supported");
     doExecute();
   }
 

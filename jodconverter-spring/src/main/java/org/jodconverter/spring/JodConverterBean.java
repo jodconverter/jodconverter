@@ -22,9 +22,6 @@ package org.jodconverter.spring;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -40,6 +37,7 @@ import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
 
@@ -78,10 +76,16 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
 
     if (!StringUtils.isBlank(portNumbers)) {
       builder.portNumbers(
-          ArrayUtils.toPrimitive(
-              Stream.of(StringUtils.split(portNumbers, ", "))
-                  .map(str -> NumberUtils.toInt(str, 2002))
-                  .toArray(Integer[]::new)));
+          Stream.of(portNumbers.split("\\s*,\\s*"))
+              .mapToInt(
+                  str -> {
+                    try {
+                      return Integer.parseInt(str);
+                    } catch (final Exception e) {
+                      return 2002;
+                    }
+                  })
+              .toArray());
     }
 
     builder.officeHome(officeHome);

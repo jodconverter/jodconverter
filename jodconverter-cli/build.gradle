@@ -9,7 +9,6 @@ dependencies {
 
     implementation Deps.commonsCli
     implementation Deps.commonsIo
-    implementation Deps.commonsLang
     implementation Deps.springCore
     implementation Deps.springContext
 

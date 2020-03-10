@@ -31,7 +31,6 @@ import com.sun.star.frame.XStorable;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -43,6 +42,7 @@ import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.job.TargetDocumentSpecs;
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.filter.RefreshFilter;
 import org.jodconverter.local.office.LocalOfficeContext;
@@ -147,7 +147,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   // Gets the office properties to apply when the converted
   // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
-    Validate.notNull(target.getFormat(), "Target format must not be null");
+    AssertUtils.notNull(target.getFormat(), "Target format must not be null");
 
     final Map<String, Object> storeProps = new HashMap<>();
     appendProperties(
@@ -174,7 +174,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     final Map<String, Object> storeProps = getStoreProperties(document);
 
     // FilterName must be specify.
-    Validate.isTrue(storeProps.containsKey("FilterName"), "Unsupported conversion");
+    AssertUtils.isTrue(storeProps.containsKey("FilterName"), "Unsupported conversion");
 
     try {
       Lo.qi(XStorable.class, document).storeToURL(toUrl(targetFile), toUnoProperties(storeProps));

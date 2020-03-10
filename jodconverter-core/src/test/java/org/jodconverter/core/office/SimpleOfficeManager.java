@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.Validate;
+import org.jodconverter.core.util.AssertUtils;
 
 /**
  * {@link OfficeManager} pool implementation that does not depend on an office installation to
@@ -121,10 +121,8 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
     public Builder poolSize(final Integer poolSize) {
 
       if (poolSize != null) {
-        Validate.inclusiveBetween(
-            0,
-            MAX_POOL_SIZE,
-            poolSize,
+        AssertUtils.isTrue(
+            poolSize >= 0 && poolSize <= MAX_POOL_SIZE,
             String.format("poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
       }
       this.poolSize = poolSize;

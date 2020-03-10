@@ -21,8 +21,9 @@ package org.jodconverter.core.job;
 
 import java.io.File;
 
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import org.jodconverter.core.util.AssertUtils;
 
 /** Source document specifications for from a file. */
 public class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs
@@ -36,6 +37,6 @@ public class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs
   public SourceDocumentSpecsFromFile(@NonNull final File file) {
     super(file);
 
-    Validate.isTrue(file.exists(), "File not found: %s", file);
+    AssertUtils.isTrue(file.exists(), String.format("File not found: %s", file));
   }
 }

@@ -19,17 +19,18 @@
 
 package org.jodconverter.local.filter.text;
 
+import java.util.Arrays;
+
 import com.sun.star.lang.XComponent;
 import com.sun.star.util.XReplaceDescriptor;
 import com.sun.star.util.XReplaceable;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.office.utils.Lo;
@@ -57,21 +58,21 @@ public class TextReplacerFilter implements Filter {
     super();
 
     // Both arrays are required and cannot be empty
-    Validate.notEmpty(searchList, "searchList must not be null nor empty");
-    Validate.notEmpty(replacementList, "replacementList must not be null nor empty");
+    AssertUtils.notEmpty(searchList, "searchList must not be null nor empty");
+    AssertUtils.notEmpty(replacementList, "replacementList must not be null nor empty");
 
     // Make sure lengths are ok, these need to be equal
     final int searchLength = searchList.length;
     final int replacementLength = replacementList.length;
-    Validate.isTrue(
+    AssertUtils.isTrue(
         searchLength == replacementLength,
-        "search array length [%d] and replacement array length [%d] don't match",
-        searchLength,
-        replacementLength);
+        String.format(
+            "search array length [%s] and replacement array length [%s] don't match",
+            searchLength, replacementLength));
 
     // Everything is fine
-    this.searchList = ArrayUtils.clone(searchList);
-    this.replacementList = ArrayUtils.clone(replacementList);
+    this.searchList = Arrays.copyOf(searchList, searchList.length);
+    this.replacementList = Arrays.copyOf(replacementList, replacementList.length);
   }
 
   @Override

@@ -21,9 +21,10 @@ package org.jodconverter.local.process;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import org.jodconverter.core.util.AssertUtils;
 
 /** Provides services required to manage a running process. */
 public interface ProcessManager {
@@ -60,7 +61,7 @@ public interface ProcessManager {
    * @throws IOException If an IO error occurs.
    */
   default void kill(@Nullable Process process, long pid) throws IOException {
-    Validate.notNull(process, "process must not be null");
+    AssertUtils.notNull(process, "process must not be null");
     process.destroy();
   }
 }

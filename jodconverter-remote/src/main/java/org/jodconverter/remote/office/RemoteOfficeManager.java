@@ -23,13 +23,13 @@ import java.io.File;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.AbstractOfficeManagerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.remote.ssl.SslConfig;
 
 /**
@@ -123,7 +123,7 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
     @Override
     public RemoteOfficeManager build() {
 
-      Validate.notBlank(urlConnection, "urlConnection must not be null nor blank");
+      AssertUtils.notBlank(urlConnection, "urlConnection must not be null nor blank");
 
       // Assign default values for properties that are not set yet.
       if (workingDir == null) {
@@ -156,10 +156,8 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
     public Builder poolSize(@Nullable final Integer poolSize) {
 
       if (poolSize != null) {
-        Validate.inclusiveBetween(
-            0,
-            MAX_POOL_SIZE,
-            poolSize,
+        AssertUtils.isTrue(
+            poolSize >= 0 && poolSize <= MAX_POOL_SIZE,
             String.format("poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
       }
       this.poolSize = poolSize;
@@ -206,10 +204,8 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
     public Builder connectTimeout(@Nullable final Long connectTimeout) {
 
       if (connectTimeout != null) {
-        Validate.inclusiveBetween(
-            0,
-            Integer.MAX_VALUE,
-            connectTimeout,
+        AssertUtils.isTrue(
+            connectTimeout >= 0,
             String.format("connectTimeout %s must greater than or equal to 0", connectTimeout));
       }
       this.connectTimeout = connectTimeout;
@@ -231,10 +227,8 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
     public Builder socketTimeout(@Nullable final Long socketTimeout) {
 
       if (socketTimeout != null) {
-        Validate.inclusiveBetween(
-            0,
-            Integer.MAX_VALUE,
-            socketTimeout,
+        AssertUtils.isTrue(
+            socketTimeout >= 0,
             String.format("socketTimeout %s must greater than or equal to 0", socketTimeout));
       }
       this.socketTimeout = socketTimeout;

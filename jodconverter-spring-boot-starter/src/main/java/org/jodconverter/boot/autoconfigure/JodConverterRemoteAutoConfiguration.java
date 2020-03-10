@@ -19,7 +19,6 @@
 
 package org.jodconverter.boot.autoconfigure;
 
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -32,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
@@ -57,7 +57,7 @@ public class JodConverterRemoteAutoConfiguration {
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager() {
 
-    Validate.notNull(properties.getUrl(), "urlConnection is required");
+    AssertUtils.notNull(properties.getUrl(), "urlConnection is required");
 
     final RemoteOfficeManager.Builder builder = RemoteOfficeManager.builder();
 

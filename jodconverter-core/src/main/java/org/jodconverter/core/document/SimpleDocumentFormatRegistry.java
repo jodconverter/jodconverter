@@ -20,14 +20,15 @@
 package org.jodconverter.core.document;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import org.jodconverter.core.util.AssertUtils;
 
 /** A SimpleDocumentFormatRegistry contains a collection of document formats supported by office. */
 public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
@@ -43,25 +44,25 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
   public void addFormat(@NonNull final DocumentFormat documentFormat) {
 
     documentFormat.getExtensions().stream()
-        .map(StringUtils::lowerCase)
+        .map(s -> s.toLowerCase(Locale.ROOT))
         .forEach(ext -> fmtsByExtension.put(ext, documentFormat));
-    fmtsByMediaType.put(StringUtils.lowerCase(documentFormat.getMediaType()), documentFormat);
+    fmtsByMediaType.put(documentFormat.getMediaType().toLowerCase(Locale.ROOT), documentFormat);
   }
 
   @Nullable
   @Override
   public DocumentFormat getFormatByExtension(@NonNull final String extension) {
 
-    Validate.notNull(extension, "extension must not be null");
-    return fmtsByExtension.get(StringUtils.lowerCase(extension));
+    AssertUtils.notNull(extension, "extension must not be null");
+    return fmtsByExtension.get(extension.toLowerCase(Locale.ROOT));
   }
 
   @Nullable
   @Override
   public DocumentFormat getFormatByMediaType(@NonNull final String mediaType) {
 
-    Validate.notNull(mediaType, "mediaType must not be null");
-    return fmtsByMediaType.get(StringUtils.lowerCase(mediaType));
+    AssertUtils.notNull(mediaType, "mediaType must not be null");
+    return fmtsByMediaType.get(mediaType.toLowerCase(Locale.ROOT));
   }
 
   @NonNull
@@ -69,7 +70,7 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
   public Set<@NonNull DocumentFormat> getOutputFormats(
       @NonNull final DocumentFamily documentFamily) {
 
-    Validate.notNull(documentFamily, "documentFamily must not be null");
+    AssertUtils.notNull(documentFamily, "documentFamily must not be null");
     // Use fmtsByMediaType since fmtsByExtension may contain the same
     // DocumentFormat with multiple extensions (e.g: jpg, jpeg).
     return fmtsByMediaType.values().stream()

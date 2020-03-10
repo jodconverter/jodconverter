@@ -32,13 +32,13 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.AbstractOfficeTask;
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeContext;
 import org.jodconverter.local.office.utils.Lo;
@@ -115,7 +115,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
                   toUrl(sourceFile), "_blank", 0, toUnoProperties(getLoadProperties()));
 
       // The document cannot be null
-      Validate.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
+      AssertUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
       return document;
 
     } catch (ErrorCodeIOException exception) {

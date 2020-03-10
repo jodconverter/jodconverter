@@ -26,11 +26,11 @@ import java.io.PrintWriter;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.StringUtils;
 
 /**
  * Converts document(s) according to the command line given to the {@link Convert} class.
@@ -71,8 +71,8 @@ public final class CliConverter {
       final boolean overwrite)
       throws OfficeException {
 
-    Validate.notEmpty(filenames, "filenames must not be null nor empty");
-    Validate.notEmpty(outputFormat, "outputFormat must not be null nor empty");
+    AssertUtils.notEmpty(filenames, "filenames must not be null nor empty");
+    AssertUtils.notEmpty(outputFormat, "outputFormat must not be null nor empty");
 
     // Prepare the output directory
     final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
@@ -141,18 +141,18 @@ public final class CliConverter {
       final boolean overwrite)
       throws OfficeException {
 
-    Validate.notEmpty(inputFilenames, "inputFilenames must not be null nor empty");
-    Validate.notEmpty(outputFilenames, "outputFilenames must not be null nor empty");
+    AssertUtils.notEmpty(inputFilenames, "inputFilenames must not be null nor empty");
+    AssertUtils.notEmpty(outputFilenames, "outputFilenames must not be null nor empty");
 
     final int inputLength = inputFilenames.length;
     final int outputLength = outputFilenames.length;
 
     // Make sure lengths are ok, these need to be equal
-    Validate.isTrue(
+    AssertUtils.isTrue(
         inputLength == outputLength,
-        "input filenames array length [%d] and output filenames array length [%d] don't match",
-        inputLength,
-        outputLength);
+        String.format(
+            "input filenames array length [%d] and output filenames array length [%d] don't match",
+            inputLength, outputLength));
 
     // Prepare the output directory
     final File outputDir = outputDirPath == null ? null : new File(outputDirPath);

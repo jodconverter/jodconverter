@@ -29,9 +29,6 @@ import java.util.stream.Stream;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -39,6 +36,9 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.OSUtils;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.process.FreeBSDProcessManager;
 import org.jodconverter.local.process.MacProcessManager;
@@ -69,7 +69,7 @@ public final class LocalOfficeUtils {
       if (StringUtils.isNotBlank(System.getProperty("office.home"))) {
         INSTANCE = new File(System.getProperty("office.home"));
 
-      } else if (SystemUtils.IS_OS_WINDOWS) {
+      } else if (OSUtils.IS_OS_WINDOWS) {
 
         // Try to find the most recent version of LibreOffice or OpenOffice,
         // starting with the 64-bit version. %ProgramFiles(x86)% on 64-bit
@@ -90,7 +90,7 @@ public final class LocalOfficeUtils {
                 programFiles32 + File.separator + "LibreOffice 3",
                 programFiles32 + File.separator + "OpenOffice.org 3");
 
-      } else if (SystemUtils.IS_OS_MAC) {
+      } else if (OSUtils.IS_OS_MAC) {
 
         File homeDir =
             findOfficeHome(
@@ -155,13 +155,13 @@ public final class LocalOfficeUtils {
   @NonNull
   public static ProcessManager findBestProcessManager() {
 
-    if (SystemUtils.IS_OS_MAC) {
+    if (OSUtils.IS_OS_MAC) {
       return MacProcessManager.getDefault();
-    } else if (SystemUtils.IS_OS_FREE_BSD) {
+    } else if (OSUtils.IS_OS_FREE_BSD) {
       return FreeBSDProcessManager.getDefault();
-    } else if (SystemUtils.IS_OS_UNIX) {
+    } else if (OSUtils.IS_OS_UNIX) {
       return UnixProcessManager.getDefault();
-    } else if (SystemUtils.IS_OS_WINDOWS) {
+    } else if (OSUtils.IS_OS_WINDOWS) {
       final WindowsProcessManager windowsProcessManager = WindowsProcessManager.getDefault();
       return windowsProcessManager.isUsable()
           ? windowsProcessManager
@@ -226,7 +226,7 @@ public final class LocalOfficeUtils {
   public static DocumentFamily getDocumentFamily(@NonNull final XComponent document)
       throws OfficeException {
 
-    Validate.notNull(document, "document must not be null");
+    AssertUtils.notNull(document, "document must not be null");
 
     final XServiceInfo serviceInfo = Lo.qi(XServiceInfo.class, document);
     if (serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")) {
@@ -254,7 +254,7 @@ public final class LocalOfficeUtils {
   public static File getOfficeExecutable(@NonNull final File officeHome) {
 
     // Mac
-    if (SystemUtils.IS_OS_MAC) {
+    if (OSUtils.IS_OS_MAC) {
       // Starting with LibreOffice 4.1 the location of the executable has changed on Mac.
       // It's now in program/soffice. Handle both cases!
       File executableFile = new File(officeHome, EXECUTABLE_MAC_41);
@@ -265,7 +265,7 @@ public final class LocalOfficeUtils {
     }
 
     // Windows
-    if (SystemUtils.IS_OS_WINDOWS) {
+    if (OSUtils.IS_OS_WINDOWS) {
       return new File(officeHome, EXECUTABLE_WINDOWS);
     }
 

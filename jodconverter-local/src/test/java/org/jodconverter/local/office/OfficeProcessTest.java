@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -142,8 +141,7 @@ public class OfficeProcessTest {
             workingDir.listFiles(
                 pathname ->
                     pathname.isDirectory()
-                        && StringUtils.startsWith(
-                            pathname.getName(), instanceProfileDir.getName() + ".old.")))
+                        && pathname.getName().startsWith(instanceProfileDir.getName() + ".old.")))
         .hasSize(1);
 
     FileUtils.deleteQuietly(workingDir);
@@ -176,8 +174,7 @@ public class OfficeProcessTest {
             workingDir.listFiles(
                 pathname ->
                     pathname.isDirectory()
-                        && StringUtils.startsWith(
-                            pathname.getName(), instanceProfileDir.getName() + ".old.")))
+                        && pathname.getName().startsWith(instanceProfileDir.getName() + ".old.")))
         .isNullOrEmpty();
   }
 

@@ -47,7 +47,6 @@ public class Deps {
   // Apache Commons Libraries
   public static final String commonsCli = "commons-cli:commons-cli:" + commonsCliVersion;
   public static final String commonsIo = "commons-io:commons-io:" + commonsIoVersion;
-  public static final String commonsLang = "org.apache.commons:commons-lang3";
 
   // Spring Boot libraries
   public static final String springBootDependencies =

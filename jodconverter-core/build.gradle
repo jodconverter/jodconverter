@@ -5,7 +5,6 @@ description = 'Core JODConverter abstractions, used by JODConverter implementati
 
 dependencies {
     implementation Deps.commonsIo
-    implementation Deps.commonsLang
     implementation Deps.gson
     implementation Deps.slf4jApi
 

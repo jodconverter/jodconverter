@@ -25,11 +25,12 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.jodconverter.core.util.StringUtils;
 
 /** Base class for all {@link OfficeManager}. */
 public abstract class AbstractOfficeManager implements OfficeManager, TemporaryFileMaker {

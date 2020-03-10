@@ -25,10 +25,10 @@ import java.io.OutputStream;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.TemporaryFileMaker;
+import org.jodconverter.core.util.AssertUtils;
 
 /** Target document specifications for from an input stream. */
 public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
@@ -51,8 +51,8 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
       final boolean closeStream) {
     super(fileMaker.makeTemporaryFile());
 
-    Validate.notNull(outputStream, "outputStream must not be null");
-    Validate.notNull(fileMaker, "fileMaker must not be null");
+    AssertUtils.notNull(outputStream, "outputStream must not be null");
+    AssertUtils.notNull(fileMaker, "fileMaker must not be null");
     this.outputStream = outputStream;
     this.closeStream = closeStream;
     this.fileMaker = fileMaker;

@@ -37,7 +37,6 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.uno.UnoRuntime;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -48,6 +47,7 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.test.util.AssertUtil;
+import org.jodconverter.core.util.OSUtils;
 
 /** Contains tests for the {@link LocalOfficeUtils} class. */
 @RunWith(PowerMockRunner.class)
@@ -76,7 +76,7 @@ public class LocalOfficeUtilsTest {
   /** Tests the LocalOfficeUtils.toUrl function on unix OS. */
   @Test
   public void unixToUrl() {
-    assumeTrue(SystemUtils.IS_OS_UNIX);
+    assumeTrue(OSUtils.IS_OS_UNIX);
 
     assertThat(toUrl(new File("/tmp/document.odt"))).isEqualTo("file:///tmp/document.odt");
     assertThat(toUrl(new File("/tmp/document with spaces.odt")))
@@ -86,7 +86,7 @@ public class LocalOfficeUtilsTest {
   /** Tests the LocalOfficeUtils.toUrl function on Windows OS. */
   @Test
   public void windowsToUrl() {
-    assumeTrue(SystemUtils.IS_OS_WINDOWS);
+    assumeTrue(OSUtils.IS_OS_WINDOWS);
 
     String tempDir = OfficeUtils.getDefaultWorkingDir().getPath();
     final File tempDirFile = new File(tempDir);

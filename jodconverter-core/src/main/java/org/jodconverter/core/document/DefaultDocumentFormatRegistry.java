@@ -21,9 +21,10 @@ package org.jodconverter.core.document;
 
 import java.util.Set;
 
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Default {@code DocumentFormat} registry. It contains the list of {@code DocumentFormat} that
@@ -39,7 +40,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * href="https://svn.apache.org/repos/asf/openoffice/trunk/main/filter/source/config/fragments/filters">OpenOffice
  * Filters</a>.
  */
-public final class DefaultDocumentFormatRegistry {
+public final
+class DefaultDocumentFormatRegistry { // NOPMD Remove utility class name convention rule violation.
 
   // Another sources
   // https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_SO_8
@@ -437,7 +439,7 @@ public final class DefaultDocumentFormatRegistry {
 
   private static DocumentFormat byExtension(final String extension) {
     final DocumentFormat fmt = getInstance().getFormatByExtension(extension);
-    Validate.notNull(fmt, "byExtension(extension) must not be null");
+    AssertUtils.notNull(fmt, "byExtension(extension) must not be null");
     return fmt;
   }
 

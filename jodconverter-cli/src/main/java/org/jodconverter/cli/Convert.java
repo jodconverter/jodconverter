@@ -34,7 +34,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -382,9 +381,11 @@ public final class Convert {
                 i -> options[i],
                 i -> {
                   final String val = options[i + 1];
-                  final Boolean bool = BooleanUtils.toBooleanObject(val);
-                  if (bool != null) {
-                    return bool;
+                  if ("true".equalsIgnoreCase(val)) {
+                    return Boolean.TRUE;
+                  }
+                  if ("false".equalsIgnoreCase(val)) {
+                    return Boolean.FALSE;
                   }
                   try {
                     return Integer.parseInt(val);

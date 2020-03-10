@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
-import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
@@ -37,6 +36,7 @@ import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
@@ -210,7 +210,7 @@ public class LocalConverter extends AbstractConverter {
     @NonNull
     public Builder filterChain(@NonNull final Filter... filters) {
 
-      Validate.notEmpty(filters, "filters must not be null nor empty");
+      AssertUtils.notEmpty(filters, "filters must not be null nor empty");
       this.filterChain = new DefaultFilterChain(filters);
       return this;
     }
@@ -227,7 +227,7 @@ public class LocalConverter extends AbstractConverter {
     @NonNull
     public Builder filterChain(@NonNull final FilterChain filterChain) {
 
-      Validate.notNull(filterChain, "filterChain must not be null");
+      AssertUtils.notNull(filterChain, "filterChain must not be null");
       this.filterChain = filterChain;
       return this;
     }
@@ -245,7 +245,7 @@ public class LocalConverter extends AbstractConverter {
     public Builder loadProperties(
         @NonNull final Map<@NonNull String, @NonNull Object> loadProperties) {
 
-      Validate.notNull(loadProperties, "loadProperties must not be null");
+      AssertUtils.notNull(loadProperties, "loadProperties must not be null");
       this.loadProperties = loadProperties;
       return this;
     }
@@ -265,7 +265,7 @@ public class LocalConverter extends AbstractConverter {
     public Builder storeProperties(
         @NonNull final Map<@NonNull String, @NonNull Object> storeProperties) {
 
-      Validate.notNull(storeProperties, "storeProperties must not be null");
+      AssertUtils.notNull(storeProperties, "storeProperties must not be null");
       this.storeProperties = storeProperties;
       return this;
     }

@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -37,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.RetryTimeoutException;
+import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.process.LinesPumpStreamHandler;
 import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.ProcessQuery;
@@ -184,7 +184,7 @@ class OfficeProcess {
 
     // On windows, we can't try the help option.
     // See https://bugs.documentfoundation.org/show_bug.cgi?id=100826
-    if (SystemUtils.IS_OS_WINDOWS) {
+    if (OSUtils.IS_OS_WINDOWS) {
       return;
     }
 

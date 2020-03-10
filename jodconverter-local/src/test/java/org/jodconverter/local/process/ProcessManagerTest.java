@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.test.util.TestUtil;
+import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
@@ -52,7 +52,7 @@ public class ProcessManagerTest {
 
   @Test
   public void freeBsdProcessManager() throws IOException {
-    assumeTrue(SystemUtils.IS_OS_FREE_BSD);
+    assumeTrue(OSUtils.IS_OS_FREE_BSD);
 
     final ProcessManager processManager = FreeBSDProcessManager.getDefault();
     final Process process = Runtime.getRuntime().exec("ping -c 5 127.0.0.1");
@@ -71,7 +71,7 @@ public class ProcessManagerTest {
 
   @Test
   public void freeBsdPureJavaProcessManager() throws IOException {
-    assumeTrue(SystemUtils.IS_OS_FREE_BSD);
+    assumeTrue(OSUtils.IS_OS_FREE_BSD);
 
     final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
     final ProcessManager processManager = PureJavaProcessManager.getDefault();
@@ -87,7 +87,7 @@ public class ProcessManagerTest {
 
   @Test
   public void unixProcessManager() throws IOException {
-    assumeTrue(SystemUtils.IS_OS_UNIX && !SystemUtils.IS_OS_MAC && !SystemUtils.IS_OS_FREE_BSD);
+    assumeTrue(OSUtils.IS_OS_UNIX && !OSUtils.IS_OS_MAC && !OSUtils.IS_OS_FREE_BSD);
 
     final ProcessManager processManager = UnixProcessManager.getDefault();
     final Process process = Runtime.getRuntime().exec("sleep 5s");
@@ -106,7 +106,7 @@ public class ProcessManagerTest {
 
   @Test
   public void unixPureJavaProcessManager() throws IOException {
-    assumeTrue(SystemUtils.IS_OS_UNIX && !SystemUtils.IS_OS_MAC && !SystemUtils.IS_OS_FREE_BSD);
+    assumeTrue(OSUtils.IS_OS_UNIX && !OSUtils.IS_OS_MAC && !OSUtils.IS_OS_FREE_BSD);
 
     final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
     final ProcessManager processManager = PureJavaProcessManager.getDefault();
@@ -122,7 +122,7 @@ public class ProcessManagerTest {
 
   @Test
   public void macProcessManager() throws IOException {
-    assumeTrue(SystemUtils.IS_OS_MAC);
+    assumeTrue(OSUtils.IS_OS_MAC);
 
     final ProcessManager processManager = MacProcessManager.getDefault();
     final Process process = Runtime.getRuntime().exec("sleep 5s");
@@ -141,7 +141,7 @@ public class ProcessManagerTest {
 
   @Test
   public void macPureJavaProcessManager() throws IOException {
-    assumeTrue(SystemUtils.IS_OS_MAC);
+    assumeTrue(OSUtils.IS_OS_MAC);
 
     final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
     final ProcessManager processManager = PureJavaProcessManager.getDefault();
@@ -157,7 +157,7 @@ public class ProcessManagerTest {
 
   @Test
   public void windowsProcessManager() throws IOException {
-    assumeTrue(SystemUtils.IS_OS_WINDOWS);
+    assumeTrue(OSUtils.IS_OS_WINDOWS);
 
     final ProcessManager processManager = WindowsProcessManager.getDefault();
     final Process process = Runtime.getRuntime().exec("ping 127.0.0.1 -n 5");
@@ -176,7 +176,7 @@ public class ProcessManagerTest {
 
   @Test
   public void windowsPureJavaProcessManager() throws IOException {
-    assumeTrue(SystemUtils.IS_OS_WINDOWS);
+    assumeTrue(OSUtils.IS_OS_WINDOWS);
 
     final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
     final ProcessManager processManager = PureJavaProcessManager.getDefault();
