@@ -37,7 +37,7 @@ import org.jodconverter.core.util.AssertUtils;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public final class Lo {
+public final class Lo { // NOPMD - Disable utility class name rule violation
 
   // Document types service names
   // public static final String WRITER_SERVICE = "com.sun.star.text.TextDocument";

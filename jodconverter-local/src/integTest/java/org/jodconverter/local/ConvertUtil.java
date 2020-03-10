@@ -119,7 +119,7 @@ public final class ConvertUtil {
    * @param outputDir The output directory.
    * @param converter The converter.
    */
-  public static void convertFileToAllSupportedFormats(
+  public static void convertFileToSupportedFormats(
       final File sourceFile, final File outputDir, final DocumentConverter converter) {
 
     // Detect input format
@@ -146,6 +146,8 @@ public final class ConvertUtil {
           LOGGER.info(
               "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
           continue;
+        default:
+          break;
       }
 
       //      if (SystemUtils.IS_OS_WINDOWS) {

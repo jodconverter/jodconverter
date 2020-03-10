@@ -95,7 +95,7 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
    *     process. Nothing will be done if OpenGL is already disabled according to the user profile
    *     used with the office process. If the options is changed, then office must be restarted.
    */
-  OfficeProcessManagerPoolEntry(
+  /* default */ OfficeProcessManagerPoolEntry(
       final OfficeUrl officeUrl,
       final File officeHome,
       final File workingDir,

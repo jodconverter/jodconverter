@@ -84,7 +84,7 @@ public class SimpleOfficeTask implements OfficeTask {
       completed = true;
 
     } catch (OfficeException exception) {
-      throw exception;
+      throw exception; // NOPMD - Better this than checking in the other catch statement
     } catch (Exception exception) {
       throw new OfficeException("Failed to execute task", exception);
     }

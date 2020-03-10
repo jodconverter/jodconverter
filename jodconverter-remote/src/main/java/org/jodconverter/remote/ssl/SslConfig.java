@@ -22,6 +22,12 @@ package org.jodconverter.remote.ssl;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** Contains the SSL configuration to secure communication with LibreOffice Online. */
+@SuppressWarnings({
+  "PMD.ArrayIsStoredDirectly",
+  "PMD.MethodReturnsInternalArray",
+  "PMD.TooManyFields",
+  "PMD.UseVarargs"
+})
 public class SslConfig {
 
   private boolean enabled = true;

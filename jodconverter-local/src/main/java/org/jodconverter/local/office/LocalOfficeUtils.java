@@ -187,8 +187,8 @@ public final class LocalOfficeUtils {
       @Nullable final List<@NonNull String> pipeNames) {
 
     // Assign default value if no pipe names or port numbers have been specified.
-    if ((portNumbers == null || portNumbers.size() == 0)
-        && (pipeNames == null || pipeNames.size() == 0)) {
+    if ((portNumbers == null || portNumbers.isEmpty())
+        && (pipeNames == null || pipeNames.isEmpty())) {
       return Collections.singletonList(new OfficeUrl(2002));
     }
 

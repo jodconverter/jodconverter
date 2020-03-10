@@ -176,7 +176,6 @@ class OfficeProcess {
 
     // Create the command used to launch the office process
     final File executable = LocalOfficeUtils.getOfficeExecutable(officeHome);
-    final List<String> command = new ArrayList<>(runAsArgs);
 
     final String execPath = executable.getAbsolutePath();
 
@@ -190,6 +189,7 @@ class OfficeProcess {
 
     final String prefix = descriptor.useLongOptionNameGnuStyle() ? "--" : "-";
 
+    final List<String> command = new ArrayList<>(runAsArgs);
     command.add(execPath);
     command.add(prefix + "invisible");
     command.add(prefix + "help");

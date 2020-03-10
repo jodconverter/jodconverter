@@ -65,7 +65,7 @@ public class DocumentConverterFunctionalITest {
         Objects.requireNonNull(
             new File("src/integTest/resources/documents")
                 .listFiles((dir, name) -> name.startsWith("test.")))) {
-      ConvertUtil.convertFileToAllSupportedFormats(sourceFile, testFolder, converter);
+      ConvertUtil.convertFileToSupportedFormats(sourceFile, testFolder, converter);
     }
   }
 }

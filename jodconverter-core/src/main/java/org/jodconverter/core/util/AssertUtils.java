@@ -25,6 +25,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** Contains assertions helper functions. */
+@SuppressWarnings("PMD.AvoidThrowingNullPointerException")
 public final class AssertUtils {
 
   /**

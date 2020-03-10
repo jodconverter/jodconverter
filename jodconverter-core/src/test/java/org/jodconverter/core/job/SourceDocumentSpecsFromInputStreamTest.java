@@ -41,6 +41,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.TemporaryFileMaker;
 
 /** Contains tests for the {@link SourceDocumentSpecsFromInputStream} class. */
+@SuppressWarnings({"PMD.AvoidFileStream", "PMD.CloseResource"})
 public class SourceDocumentSpecsFromInputStreamTest {
 
   private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";

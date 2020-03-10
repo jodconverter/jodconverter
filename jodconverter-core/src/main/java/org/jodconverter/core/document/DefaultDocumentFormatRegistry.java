@@ -40,8 +40,7 @@ import org.jodconverter.core.util.AssertUtils;
  * href="https://svn.apache.org/repos/asf/openoffice/trunk/main/filter/source/config/fragments/filters">OpenOffice
  * Filters</a>.
  */
-public final
-class DefaultDocumentFormatRegistry { // NOPMD Remove utility class name convention rule violation.
+public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name rule violation
 
   // Another sources
   // https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_SO_8

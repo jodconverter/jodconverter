@@ -190,7 +190,7 @@ public class OfficeDescriptorTest {
 
     final OfficeDescriptor descr = OfficeDescriptor.fromHelpOutput(Arrays.asList(HELP_OUTPUT));
     assertThat(descr.getProduct()).isEqualTo("LibreOffice");
-    assertThat(descr.getVersion()).isEqualTo("6.4.0.3");
+    assertThat(descr.getVersion()).isEqualTo("6.4.0.3"); // NOPMD - This is not an IP address
     assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(true);
   }
 

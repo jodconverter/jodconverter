@@ -115,6 +115,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   // Taken from Spring org.springframework.util.ClassUtils class.
+  @SuppressWarnings("PMD")
   private static ClassLoader getDefaultClassLoader() {
 
     ClassLoader cl = null;

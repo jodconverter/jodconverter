@@ -29,7 +29,7 @@ public class FreeBSDProcessManager extends UnixProcessManager {
    * explained by the Initialization-on-demand holder idiom:
    * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
    */
-  private static class DefaultHolder {
+  private static class DefaultHolder { // NOPMD - Disable utility class name rule violation
     /* default */ static final FreeBSDProcessManager INSTANCE = new FreeBSDProcessManager();
   }
 

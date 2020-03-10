@@ -30,7 +30,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public final class Calc {
+public final class Calc { // NOPMD - Disable utility class name rule violation
 
   /**
    * Gets whether the given document is a Spreadsheet document.

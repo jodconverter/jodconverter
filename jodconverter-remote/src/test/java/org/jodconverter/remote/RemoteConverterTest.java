@@ -163,7 +163,9 @@ public class RemoteConverterTest {
         new AbstractOfficeTask(source) {
           @Override
           @SuppressWarnings("NullableProblems")
-          public void execute(final OfficeContext context) {}
+          public void execute(final OfficeContext context) {
+            // Do nothing.
+          }
         };
 
     assertThat(obj.toString()).startsWith("{source=").endsWith("}");

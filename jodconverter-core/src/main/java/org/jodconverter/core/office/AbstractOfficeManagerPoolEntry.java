@@ -103,7 +103,8 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
       if (executionEx.getCause() instanceof OfficeException) {
         throw (OfficeException) executionEx.getCause();
       }
-      throw new OfficeException("Task failed: " + task, executionEx.getCause());
+      throw new OfficeException( // NOPMD - Only cause is relevant
+          "Task failed: " + task, executionEx.getCause());
 
     } catch (Exception ex) {
 

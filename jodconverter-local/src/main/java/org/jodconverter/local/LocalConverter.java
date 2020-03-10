@@ -57,8 +57,8 @@ public class LocalConverter extends AbstractConverter {
    */
   public static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
 
-  private Map<String, Object> loadProperties;
-  private FilterChain filterChain;
+  private final Map<String, Object> loadProperties;
+  private final FilterChain filterChain;
   private final Map<String, Object> storeProperties;
 
   static {

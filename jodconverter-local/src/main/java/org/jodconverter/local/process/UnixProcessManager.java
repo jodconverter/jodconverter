@@ -46,7 +46,7 @@ public class UnixProcessManager extends AbstractProcessManager {
    * explained by the Initialization-on-demand holder idiom:
    * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
    */
-  private static class DefaultHolder {
+  private static class DefaultHolder { // NOPMD - Disable utility class name rule violation
     /* default */ static final UnixProcessManager INSTANCE = new UnixProcessManager();
   }
 

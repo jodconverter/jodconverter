@@ -56,7 +56,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
   private Object desktopService;
   private XComponent bridgeComponent;
   private XComponentContext componentContext;
-  private XMultiComponentFactory serviceManager = null;
+  private XMultiComponentFactory serviceManager;
   private XComponentLoader componentLoader;
   private final List<OfficeConnectionEventListener> connectionEventListeners;
   private final AtomicBoolean connected = new AtomicBoolean();

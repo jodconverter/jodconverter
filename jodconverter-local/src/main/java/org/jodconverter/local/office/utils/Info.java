@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public final class Info {
+public final class Info { // NOPMD - Disable utility class name rule violation
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Info.class);
 

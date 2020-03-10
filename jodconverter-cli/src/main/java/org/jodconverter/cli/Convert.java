@@ -51,6 +51,7 @@ import org.jodconverter.remote.office.RemoteOfficeManager;
 import org.jodconverter.remote.ssl.SslConfig;
 
 /** Command line interface executable. */
+@SuppressWarnings("PMD.UseUtilityClass")
 public final class Convert {
 
   public static final int STATUS_OK = 0;
@@ -333,7 +334,9 @@ public final class Convert {
           // containing the output files.
           final String[] inputFilenames = new String[filenames.length / 2];
           final String[] outputFilenames = new String[inputFilenames.length];
-          for (int i = 0, j = 0; i < filenames.length; i += 2, j++) {
+          for (int i = 0, j = 0; // NOPMD - Disable for loop variables count
+              i < filenames.length;
+              i += 2, j++) {
             inputFilenames[j] = filenames[i];
             outputFilenames[j] = filenames[i + 1];
           }
@@ -480,13 +483,15 @@ public final class Convert {
 
   private static void printErr(final Object... values) {
 
-    System.err.println(String.format("jodconverter-cli: %s", values));
+    System.err.println( // NOPMD - Allow System.err.println
+        String.format("jodconverter-cli: %s", values));
     System.err.flush();
   }
 
   private static void printInfo(final String message, final Object... values) {
 
-    System.out.println(String.format(message, values));
+    System.out.println( // NOPMD - Allow System.out.println
+        String.format(message, values));
     System.out.flush();
   }
 }

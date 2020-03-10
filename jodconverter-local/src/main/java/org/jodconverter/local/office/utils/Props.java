@@ -31,7 +31,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public final class Props {
+public final class Props { // NOPMD - Disable utility class name rule violation
 
   // private static final Logger LOGGER = LoggerFactory.getLogger(Props.class);
 

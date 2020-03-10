@@ -28,6 +28,13 @@ import org.jodconverter.remote.ssl.SslConfig;
 
 /** Configuration class for JODConverter Remote. */
 @ConfigurationProperties("jodconverter.remote")
+@SuppressWarnings({
+  "PMD.ArrayIsStoredDirectly",
+  "PMD.ExcessivePublicCount",
+  "PMD.MethodReturnsInternalArray",
+  "PMD.TooManyFields",
+  "PMD.UseVarargs"
+})
 public class JodConverterRemoteProperties {
 
   /** Enable JODConverter Remote. */
@@ -310,6 +317,12 @@ public class JodConverterRemoteProperties {
       this.verifyHostname = verifyHostname;
     }
 
+    /**
+     * Creates a {@link org.jodconverter.remote.ssl.SslConfig} instance from this {@link
+     * org.jodconverter.boot.autoconfigure.JodConverterRemoteProperties}.
+     *
+     * @return The created {@link org.jodconverter.remote.ssl.SslConfig}.
+     */
     @NonNull
     public SslConfig sslConfig() {
 
