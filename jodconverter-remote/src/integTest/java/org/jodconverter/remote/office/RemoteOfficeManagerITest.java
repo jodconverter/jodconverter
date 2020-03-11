@@ -37,7 +37,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -47,6 +46,7 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.SimpleOfficeTask;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.remote.RemoteConverter;
 
 /** Contains tests for the {@link RemoteOfficeManager} class. */

@@ -28,10 +28,10 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.io.IOUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DocumentFormat.Builder;
+import org.jodconverter.core.util.IOUtils;
 
 /**
  * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office

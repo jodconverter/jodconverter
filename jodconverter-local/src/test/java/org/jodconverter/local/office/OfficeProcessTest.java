@@ -29,7 +29,6 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -43,6 +42,7 @@ import org.powermock.reflect.Whitebox;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.RetryTimeoutException;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.ProcessQuery;
 
@@ -120,7 +120,7 @@ public class OfficeProcessTest {
     final File workingDir =
         testFolder.newFolder("deleteProfileDir_WhenCannotBeDeleted_RenameDirectory");
 
-    doThrow(new IOException()).when(FileUtils.class, "deleteDirectory", isA(File.class));
+    doThrow(new IOException()).when(FileUtils.class, "delete", isA(File.class));
 
     final OfficeProcess process =
         new OfficeProcess(
@@ -155,7 +155,7 @@ public class OfficeProcessTest {
     final File workingDir =
         testFolder.newFolder("deleteProfileDir_WhenCannotBeDeleted_OperationIgnored");
 
-    doThrow(new IOException()).when(FileUtils.class, "deleteDirectory", isA(File.class));
+    doThrow(new IOException()).when(FileUtils.class, "delete", isA(File.class));
 
     final OfficeProcess process =
         new OfficeProcess(

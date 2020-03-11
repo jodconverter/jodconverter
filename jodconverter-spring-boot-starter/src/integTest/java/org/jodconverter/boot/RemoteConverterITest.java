@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.remote.RemoteConverter;
 
 /** Contains tests for the {@link RemoteConverter} class. */

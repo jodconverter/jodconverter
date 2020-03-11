@@ -22,13 +22,14 @@ package org.jodconverter.core.job;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Optional;
 
-import org.apache.commons.io.FileUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.TemporaryFileMaker;
 import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.FileUtils;
 
 /** Target document specifications for from an input stream. */
 public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
@@ -73,7 +74,7 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
     // Copy the content of the tempFile, which is the result
     // of the conversion, to the outputStream
     try {
-      FileUtils.copyFile(tempFile, outputStream);
+      Files.copy(tempFile.toPath(), outputStream);
       if (closeStream) {
         outputStream.close();
       }

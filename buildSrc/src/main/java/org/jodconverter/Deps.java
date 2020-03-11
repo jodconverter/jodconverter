@@ -26,8 +26,6 @@ public class Deps {
 
   // Test
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Latest version -> https://mvnrepository.com/artifact/nl.jqno.equalsverifier/equalsverifier
-  public static final String equalsVerifierVersion = "3.1.11";
   // Latest version -> https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2
   public static final String powermockVersion = "2.0.4";
   // Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock

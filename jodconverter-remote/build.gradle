@@ -7,7 +7,6 @@ dependencies {
     api project(":jodconverter-core")
 
     implementation Deps.slf4jApi
-    implementation Deps.commonsIo
 
     implementation Deps.httpcomponentsHttpcore
     implementation Deps.httpcomponentsHttpclient

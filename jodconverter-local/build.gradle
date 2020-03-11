@@ -32,7 +32,6 @@ dependencies {
         api Deps.ooUnoil
     }
 
-    implementation Deps.commonsIo
     implementation Deps.slf4jApi
 
     testImplementation Deps.slf4jLog4j

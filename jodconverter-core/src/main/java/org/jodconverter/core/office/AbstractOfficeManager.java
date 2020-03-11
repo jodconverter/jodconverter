@@ -24,12 +24,12 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.io.FileUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.StringUtils;
 
 /** Base class for all {@link OfficeManager}. */
@@ -98,7 +98,7 @@ public abstract class AbstractOfficeManager implements OfficeManager, TemporaryF
     if (tempDir != null) {
       LOGGER.debug("Deleting temporary directory '{}'", tempDir);
       try {
-        FileUtils.deleteDirectory(tempDir);
+        FileUtils.delete(tempDir);
       } catch (IOException ioEx) {
         LOGGER.error("Could not delete temporary profileDir: {}", ioEx.getMessage());
       }

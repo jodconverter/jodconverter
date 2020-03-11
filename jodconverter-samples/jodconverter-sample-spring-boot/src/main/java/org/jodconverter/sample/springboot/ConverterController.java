@@ -22,7 +22,6 @@ package org.jodconverter.sample.springboot;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,6 +39,7 @@ import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.StringUtils;
 
 /** Controller providing conversion endpoints. */
@@ -96,7 +96,7 @@ public class ConverterController {
       headers.add(
           "Content-Disposition",
           "attachment; filename="
-              + FilenameUtils.getBaseName(inputFile.getOriginalFilename())
+              + FileUtils.getBaseName(inputFile.getOriginalFilename())
               + "."
               + targetFormat.getExtension());
       return new ResponseEntity<>(baos.toByteArray(), headers, HttpStatus.OK);

@@ -14,7 +14,6 @@ dependencies {
     testImplementation project(":jodconverter-local")
     testImplementation project(":jodconverter-remote")
 
-    testImplementation Deps.commonsIo
     testImplementation Deps.wiremock
     testImplementation Deps.springBootStarterTest
 }

@@ -26,8 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,6 +35,7 @@ import org.jodconverter.cli.util.ExitException;
 import org.jodconverter.cli.util.NoExitExtension;
 import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
 /**
@@ -104,9 +103,9 @@ public class ConvertITest {
 
     final File inputFile = new File(SOURCE_FILE);
     FileUtils.copyFileToDirectory(inputFile, testFolder);
-    final File inputFileTmp = new File(testFolder, FilenameUtils.getName(SOURCE_FILE));
+    final File inputFileTmp = new File(testFolder, FileUtils.getName(SOURCE_FILE));
     final File outputFile =
-        new File(testFolder, FilenameUtils.getBaseName(inputFile.getName()) + ".pdf");
+        new File(testFolder, FileUtils.getBaseName(inputFile.getName()) + ".pdf");
 
     assertThatExceptionOfType(ExitException.class)
         .isThrownBy(() -> Convert.main(new String[] {"-k", "-f", "pdf", inputFileTmp.getPath()}))

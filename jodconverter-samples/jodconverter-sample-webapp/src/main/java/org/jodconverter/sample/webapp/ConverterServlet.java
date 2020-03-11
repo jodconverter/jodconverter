@@ -21,7 +21,6 @@ package org.jodconverter.sample.webapp;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Objects;
 import javax.servlet.ServletException;
@@ -32,13 +31,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.util.FileUtils;
 
 /** Converter servlet. */
 public class ConverterServlet extends HttpServlet {
@@ -76,14 +73,15 @@ public class ConverterServlet extends HttpServlet {
     if (uploadedFile == null) {
       throw new ServletException("Uploaded file is null");
     }
-    final String inputExtension = FilenameUtils.getExtension(uploadedFile.getName());
+    final String inputExtension = FileUtils.getExtension(uploadedFile.getName());
 
-    final String baseName = FilenameUtils.getBaseName(uploadedFile.getName());
+    final String baseName = Objects.requireNonNull(FileUtils.getBaseName(uploadedFile.getName()));
     final File inputFile = File.createTempFile(baseName, "." + inputExtension);
     FileUtils.deleteQuietly(inputFile);
     writeUploadedFile(uploadedFile, inputFile);
 
-    final String outputExtension = FilenameUtils.getExtension(request.getRequestURI());
+    final String outputExtension =
+        Objects.requireNonNull(FileUtils.getExtension(request.getRequestURI()));
     final File outputFile = File.createTempFile(baseName, "." + outputExtension);
     FileUtils.deleteQuietly(outputFile);
     try {
@@ -121,9 +119,7 @@ public class ConverterServlet extends HttpServlet {
   private void sendFile(final File file, final HttpServletResponse response) throws IOException {
 
     response.setContentLength((int) file.length());
-    try (InputStream inputStream = Files.newInputStream(file.toPath())) {
-      IOUtils.copy(inputStream, response.getOutputStream());
-    }
+    Files.copy(file.toPath(), response.getOutputStream());
   }
 
   private void writeUploadedFile(final FileItem uploadedFile, final File destinationFile)

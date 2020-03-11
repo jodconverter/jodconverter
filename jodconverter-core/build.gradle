@@ -4,7 +4,6 @@ ext.moduleName = 'JODConverter Core'
 description = 'Core JODConverter abstractions, used by JODConverter implementations, such as JODConverter Local or JODConverter Remote, used to convert office documents using LibreOffice or Apache OpenOffice.'
 
 dependencies {
-    implementation Deps.commonsIo
     implementation Deps.gson
     implementation Deps.slf4jApi
 

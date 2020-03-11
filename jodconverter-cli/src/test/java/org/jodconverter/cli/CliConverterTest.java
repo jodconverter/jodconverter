@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,6 +48,7 @@ import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.task.LocalConversionTask;
 
@@ -205,8 +205,8 @@ public class CliConverterTest {
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
-    FileUtils.touch(targetFile1);
-    FileUtils.touch(targetFile2);
+    targetFile1.createNewFile();
+    targetFile2.createNewFile();
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},

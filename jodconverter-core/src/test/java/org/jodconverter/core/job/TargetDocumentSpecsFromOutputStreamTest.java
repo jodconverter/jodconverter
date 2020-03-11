@@ -32,13 +32,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.TemporaryFileMaker;
+import org.jodconverter.core.util.FileUtils;
 
 /** Contains tests for the {@link TargetDocumentSpecsFromOutputStream} class. */
 @SuppressWarnings({"PMD.AvoidFileStream", "PMD.CloseResource"})
@@ -63,7 +63,6 @@ public class TargetDocumentSpecsFromOutputStreamTest {
       throws IOException {
 
     final File tempFile = new File(testFolder, "onComplete_WhenIoExceptionCatch.txt");
-    assertThat(tempFile.createNewFile()).isTrue();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
@@ -86,7 +85,6 @@ public class TargetDocumentSpecsFromOutputStreamTest {
       throws IOException {
 
     final File tempFile = new File(testFolder, "onComplete_WhenCloseStreamIsTrue.txt");
-    assertThat(tempFile.createNewFile()).isTrue();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
@@ -111,7 +109,6 @@ public class TargetDocumentSpecsFromOutputStreamTest {
       throws IOException {
 
     final File tempFile = new File(testFolder, "onConsumed_WhenCloseStreamIsFalse.txt");
-    assertThat(tempFile.createNewFile()).isTrue();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
@@ -136,7 +133,6 @@ public class TargetDocumentSpecsFromOutputStreamTest {
       throws IOException {
 
     final File tempFile = new File(testFolder, "onConsumed_WhenIoExceptionCatch.txt");
-    assertThat(tempFile.createNewFile()).isTrue();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
@@ -161,7 +157,6 @@ public class TargetDocumentSpecsFromOutputStreamTest {
       throws IOException {
 
     final File tempFile = new File(testFolder, "onFailure_WhenCloseStreamIsFalse.txt");
-    assertThat(tempFile.createNewFile()).isTrue();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
@@ -185,7 +180,6 @@ public class TargetDocumentSpecsFromOutputStreamTest {
   public void new_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
 
     final File tempFile = new File(testFolder, "new_WithValidValues.txt");
-    assertThat(tempFile.createNewFile()).isTrue();
     FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
     assertThat(tempFile).exists();
     given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);

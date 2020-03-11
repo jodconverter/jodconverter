@@ -21,8 +21,8 @@ package org.jodconverter.core.job;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Objects;
 
-import org.apache.commons.io.FilenameUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.DocumentConverter;
@@ -31,6 +31,7 @@ import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.TemporaryFileMaker;
 import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.FileUtils;
 
 /**
  * Base class for all document converter implementations.
@@ -63,7 +64,8 @@ public abstract class AbstractConverter implements DocumentConverter {
 
     final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(source);
     final DocumentFormat format =
-        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(source.getName()));
+        formatRegistry.getFormatByExtension(
+            Objects.requireNonNull(FileUtils.getExtension(source.getName())));
     if (format != null) {
       specs.setDocumentFormat(format);
     }

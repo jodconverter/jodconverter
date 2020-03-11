@@ -36,7 +36,6 @@ import java.util.UUID;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.uno.UnoRuntime;
-import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -48,6 +47,7 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.test.util.AssertUtil;
 import org.jodconverter.core.util.OSUtils;
+import org.jodconverter.core.util.StringUtils;
 
 /** Contains tests for the {@link LocalOfficeUtils} class. */
 @RunWith(PowerMockRunner.class)
@@ -90,12 +90,12 @@ public class LocalOfficeUtilsTest {
 
     String tempDir = OfficeUtils.getDefaultWorkingDir().getPath();
     final File tempDirFile = new File(tempDir);
-    tempDir = FilenameUtils.normalizeNoEndSeparator(tempDir, true);
+    tempDir = StringUtils.appendIfMissing(tempDir, File.separator).replace('\\', '/');
 
     assertThat(toUrl(new File(tempDirFile, "document.odt")))
-        .isEqualTo("file:///" + tempDir + "/document.odt");
+        .isEqualTo("file:///" + tempDir + "document.odt");
     assertThat(toUrl(new File(tempDirFile, "document with spaces.odt")))
-        .isEqualTo("file:///" + tempDir + "/document%20with%20spaces.odt");
+        .isEqualTo("file:///" + tempDir + "document%20with%20spaces.odt");
   }
 
   /** Tests the validateOfficeHome with non directory file as argument. */

@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.OutputStreamWriter;
 import java.util.Objects;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.ConvertUtil.ConvertRunner;
 import org.jodconverter.local.office.LocalOfficeManager;
 

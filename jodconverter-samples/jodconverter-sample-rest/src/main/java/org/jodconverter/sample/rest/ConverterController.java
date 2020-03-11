@@ -30,7 +30,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -50,6 +49,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
 
@@ -231,7 +231,7 @@ public class ConverterController {
       headers.add(
           "Content-Disposition",
           "attachment; filename="
-              + FilenameUtils.getBaseName(inputFile.getOriginalFilename())
+              + FileUtils.getBaseName(inputFile.getOriginalFilename())
               + "."
               + targetFormat.getExtension());
       return ResponseEntity.ok().headers(headers).body(baos.toByteArray());

@@ -25,12 +25,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.TemporaryFileMaker;
 import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.FileUtils;
+import org.jodconverter.core.util.IOUtils;
 
 /** Source document specifications for from an input stream. */
 public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs

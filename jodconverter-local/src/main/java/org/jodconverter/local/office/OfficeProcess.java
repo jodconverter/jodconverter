@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -36,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.RetryTimeoutException;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.process.LinesPumpStreamHandler;
 import org.jodconverter.local.process.ProcessManager;
@@ -158,7 +158,7 @@ class OfficeProcess {
 
     LOGGER.debug("Deleting instance profile directory '{}'", instanceProfileDir);
     try {
-      FileUtils.deleteDirectory(instanceProfileDir);
+      FileUtils.delete(instanceProfileDir);
     } catch (IOException ioEx) {
       final File oldProfileDir =
           new File(

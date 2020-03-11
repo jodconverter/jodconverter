@@ -21,8 +21,9 @@ package org.jodconverter.core.job;
 
 import java.io.File;
 
-import org.apache.commons.io.FileUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import org.jodconverter.core.util.FileUtils;
 
 /** Target document specifications for from a file. */
 public class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs

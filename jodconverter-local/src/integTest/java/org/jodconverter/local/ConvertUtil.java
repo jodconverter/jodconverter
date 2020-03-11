@@ -22,16 +22,16 @@ package org.jodconverter.local;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.util.FileUtils;
 
 /** Helper class use to convert files while testing. */
 public final class ConvertUtil {
@@ -69,14 +69,16 @@ public final class ConvertUtil {
       final DocumentFormat sourceFmt =
           converter
               .getFormatRegistry()
-              .getFormatByExtension(FilenameUtils.getExtension(source.getName()));
+              .getFormatByExtension(
+                  Objects.requireNonNull(FileUtils.getExtension(source.getName())));
       assert sourceFmt != null;
       final String sourceExt = sourceFmt.getExtension();
 
       final DocumentFormat targetFmt =
           converter
               .getFormatRegistry()
-              .getFormatByExtension(FilenameUtils.getExtension(target.getName()));
+              .getFormatByExtension(
+                  Objects.requireNonNull(FileUtils.getExtension(target.getName())));
       assert targetFmt != null;
       final String targetExt = targetFmt.getExtension();
 
@@ -123,8 +125,9 @@ public final class ConvertUtil {
       final File sourceFile, final File outputDir, final DocumentConverter converter) {
 
     // Detect input format
-    final String inputExt = FilenameUtils.getExtension(sourceFile.getName());
-    final DocumentFormat inputFormat = DefaultDocumentFormatRegistry.getFormatByExtension(inputExt);
+    final String inputExt = FileUtils.getExtension(sourceFile.getName());
+    final DocumentFormat inputFormat =
+        DefaultDocumentFormatRegistry.getFormatByExtension(Objects.requireNonNull(inputExt));
     if (inputFormat == null) {
       LOGGER.info("Skipping unsupported input format {}", inputExt);
       return;

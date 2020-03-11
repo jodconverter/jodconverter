@@ -33,13 +33,13 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Resource;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.util.FileUtils;
 
 /** Tests that an application can use both an remote converter and a local converter. */
 @SpringBootTest

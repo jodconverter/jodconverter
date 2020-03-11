@@ -21,6 +21,7 @@ package org.jodconverter.cli;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,7 +34,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.FileUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -43,6 +43,7 @@ import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.office.LocalOfficeManager;
@@ -245,7 +246,7 @@ public final class Convert {
     if (commandLine.hasOption(OPT_REGISTRY.getOpt())) {
       return JsonDocumentFormatRegistry.create(
           FileUtils.readFileToString(
-              new File(commandLine.getOptionValue(OPT_REGISTRY.getOpt())), "UTF-8"));
+              new File(commandLine.getOptionValue(OPT_REGISTRY.getOpt())), StandardCharsets.UTF_8));
     }
 
     return null;
@@ -483,15 +484,15 @@ public final class Convert {
 
   private static void printErr(final Object... values) {
 
-    System.err.println( // NOPMD - Allow System.err.println
-        String.format("jodconverter-cli: %s", values));
+    System.err.println // NOPMD - Allow System.err.println
+        (String.format("jodconverter-cli: %s", values));
     System.err.flush();
   }
 
   private static void printInfo(final String message, final Object... values) {
 
-    System.out.println( // NOPMD - Allow System.out.println
-        String.format(message, values));
+    System.out.println // NOPMD - Allow System.out.println
+        (String.format(message, values));
     System.out.flush();
   }
 }

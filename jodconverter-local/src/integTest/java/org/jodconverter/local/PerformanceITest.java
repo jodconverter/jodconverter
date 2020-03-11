@@ -22,13 +22,10 @@ package org.jodconverter.local;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -38,6 +35,7 @@ import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.FileUtils;
 
 /** Contains performance tests. */
 @ExtendWith(LocalOfficeManagerExtension.class)
@@ -67,7 +65,7 @@ public class PerformanceITest {
   private void convertFileXTimes(final DocumentConverter converter, final File inputFile)
       throws IOException, OfficeException {
 
-    final String baseName = FilenameUtils.getBaseName(inputFile.getName());
+    final String baseName = FileUtils.getBaseName(inputFile.getName());
 
     final long start = System.currentTimeMillis();
     long split = start;
@@ -103,7 +101,7 @@ public class PerformanceITest {
 
     final File dir = new File("src/integTest/resources/performance");
     final File[] files =
-        dir.listFiles((FileFilter) new WildcardFileFilter("*.odt", IOCase.INSENSITIVE));
+        dir.listFiles((dir1, name) -> name.toLowerCase(Locale.ROOT).endsWith(".odt"));
 
     assert files != null;
     assertThatCode(

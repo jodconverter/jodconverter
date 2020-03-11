@@ -21,14 +21,15 @@ package org.jodconverter.core.job;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.Objects;
 
-import org.apache.commons.io.FilenameUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.TemporaryFileMaker;
+import org.jodconverter.core.util.FileUtils;
 
 /**
  * Base class for all conversion job implementations with source format that is not yet applied to
@@ -70,7 +71,8 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
 
     final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(target);
     final DocumentFormat format =
-        formatRegistry.getFormatByExtension(FilenameUtils.getExtension(target.getName()));
+        formatRegistry.getFormatByExtension(
+            Objects.requireNonNull(FileUtils.getExtension(target.getName())));
     if (format != null) {
       specs.setDocumentFormat(format);
     }

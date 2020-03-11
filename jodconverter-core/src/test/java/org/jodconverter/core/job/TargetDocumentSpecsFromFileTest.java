@@ -24,11 +24,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.util.FileUtils;
 
 /** Contains tests for the {@link TargetDocumentSpecsFromFile} class. */
 public class TargetDocumentSpecsFromFileTest {
