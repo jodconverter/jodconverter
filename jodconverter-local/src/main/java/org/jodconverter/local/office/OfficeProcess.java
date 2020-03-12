@@ -113,7 +113,7 @@ class OfficeProcess {
    * use. The process will be killed if the kill switch is on.
    *
    * @param processQuery The query that connection string we want to use.
-   * @throws org.jodconverter.core.office.OfficeException If the verification fails.
+   * @throws OfficeException If the verification fails.
    */
   private void checkForExistingProcess(final ProcessQuery processQuery) throws OfficeException {
 
@@ -147,7 +147,7 @@ class OfficeProcess {
     } catch (IOException ioEx) {
       throw new OfficeException(
           String.format(
-              "Unable to check if there is already an existing process with --accept '%s'",
+              "Could not check if there is already an existing process with --accept '%s'",
               processQuery.getArgument()),
           ioEx);
     }
@@ -219,55 +219,35 @@ class OfficeProcess {
     }
   }
 
-  /**
-   * Kills the office process instance.
-   *
-   * @param retryInterval The interval between each exit code retrieval attempt.
-   * @param retryTimeout The timeout after which we won't try again to retrieve the exit code.
-   * @throws org.jodconverter.core.office.OfficeException If we are unable to kill the process due
-   *     to an I/O error occurs.
-   * @throws org.jodconverter.core.office.RetryTimeoutException If we are unable to get the exit
-   *     code of the process.
-   */
-  public int forciblyTerminate(final long retryInterval, final long retryTimeout)
-      throws OfficeException, RetryTimeoutException {
+  /** Kills the office process instance. */
+  public void forciblyTerminate() {
 
     // No need to terminate anything if the process has never been started
     if (process == null) {
-      return 0; // success
+      return;
     }
 
     LOGGER.info(
         "Trying to forcibly terminate process: '{}'; pid: {}",
         officeUrl.getConnectionParametersAsString(),
         pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
+
     try {
       processManager.kill(process.getProcess(), pid);
-    } catch (IOException ioEx) {
-      throw new OfficeException(
-          "Unable to kill the process with pid: "
-              + (pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid),
-          ioEx);
+    } catch (IOException ex) {
+      LOGGER.error("Could not forcibly terminate process", ex);
     }
-
-    return getExitCode(retryInterval, retryTimeout);
   }
 
   /**
-   * Gets the exit code of the office process.
+   * Gets the {@link VerboseProcess} managed by this {@link OfficeProcess}.
    *
-   * @return The exit value of the process. The value 0 indicates normal termination. If the process
-   *     is not yet terminated, {@code null} is returned.
+   * @return The {@link VerboseProcess}. The value {@code null} means that the process has never
+   *     been started.
    */
   @Nullable
-  public Integer getExitCode() {
-
-    // If the process has never been started, just return a success exit code
-    if (process == null) {
-      return 0; // success
-    }
-
-    return process.getExitCode();
+  /* default */ VerboseProcess getProcess() {
+    return process;
   }
 
   /**
@@ -277,27 +257,19 @@ class OfficeProcess {
    * @param retryInterval The interval between each exit code retrieval attempt.
    * @param retryTimeout The timeout after which we won't try again to retrieve the exit code.
    * @return The exit value of the process. The value 0 indicates normal termination.
-   * @throws org.jodconverter.core.office.OfficeException If we are unable to kill the process.
-   * @throws org.jodconverter.core.office.RetryTimeoutException If we are unable to get the exit
-   *     code of the process.
+   * @throws RetryTimeoutException If we are unable to get the exit code of the process.
    */
   public int getExitCode(final long retryInterval, final long retryTimeout)
-      throws OfficeException, RetryTimeoutException {
+      throws RetryTimeoutException {
 
     // If the process has never been started, just return a success exit code
     if (process == null) {
       return 0; // success
     }
 
-    try {
-      final ExitCodeRetryable retryable = new ExitCodeRetryable(process);
-      retryable.execute(retryInterval, retryTimeout);
-      return retryable.getExitCode();
-    } catch (RetryTimeoutException timeoutEx) {
-      throw timeoutEx;
-    } catch (Exception ex) {
-      throw new OfficeException("Could not get the process exit code", ex);
-    }
+    final ExitCodeRetryable retryable = new ExitCodeRetryable(process);
+    retryable.execute(retryInterval, retryTimeout);
+    return retryable.getExitCode();
   }
 
   /**
@@ -306,15 +278,14 @@ class OfficeProcess {
    * @return {@code true} is the office process is running; {@code false otherwise}.
    */
   public boolean isRunning() {
-
-    return process != null && getExitCode() == null;
+    return process != null && process.getExitCode() == null;
   }
 
   /**
    * Prepare the profile directory of the office process.
    *
-   * @throws org.jodconverter.core.office.OfficeException If the template profile directory cannot
-   *     be copied to the new instance profile directory.
+   * @throws OfficeException If the template profile directory cannot be copied to the new instance
+   *     profile directory.
    */
   private void prepareInstanceProfileDir() throws OfficeException {
 
@@ -377,10 +348,9 @@ class OfficeProcess {
   /**
    * Starts the office process.
    *
-   * @throws org.jodconverter.core.office.OfficeException If the office process cannot be started.
+   * @throws OfficeException If the office process cannot be started.
    */
   public void start() throws OfficeException {
-
     start(false);
   }
 
@@ -390,7 +360,7 @@ class OfficeProcess {
    * @param restart Indicates whether it is a fresh start or a restart. A restart will assume that
    *     the instance profile directory is already created. To recreate the instance profile
    *     directory, {@code restart} should be set to {@code false}.
-   * @throws org.jodconverter.core.office.OfficeException If the office process cannot be started.
+   * @throws OfficeException If the office process cannot be started.
    */
   public void start(final boolean restart) throws OfficeException {
 

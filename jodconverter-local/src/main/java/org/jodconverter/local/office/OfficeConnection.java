@@ -38,6 +38,7 @@ import com.sun.star.lang.XEventListener;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uno.XComponentContext;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,27 +196,29 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
   public void disconnect() {
 
     synchronized (this) {
-      LOGGER.debug("Disconnecting from '{}'", officeUrl.getConnectionAndParametersAsString());
+      if (bridgeComponent != null) {
+        LOGGER.debug("Disconnecting from '{}'", officeUrl.getConnectionAndParametersAsString());
 
-      // Dispose of the bridge
-      bridgeComponent.dispose();
+        // Dispose of the bridge
+        bridgeComponent.dispose();
+      }
     }
   }
 
   @Override
   public void disposing(@NonNull final EventObject eventObject) {
 
-    if (connected.get()) {
+    if (connected.compareAndSet(true, false)) {
 
-      // Remote bridge has gone down, because the office crashed or was terminated.
-      connected.set(false);
+      // Remote bridge has gone down, because the office crashed,
+      // was terminated or because we called disconnect().
       componentContext = null;
       serviceManager = null;
       componentLoader = null;
       desktopService = null;
       bridgeComponent = null;
 
-      LOGGER.info("Disconnected: '{}'", officeUrl.getConnectionAndParametersAsString());
+      LOGGER.info("Disconnected from '{}'", officeUrl.getConnectionAndParametersAsString());
 
       // Inform listeners. Must be done at the end since a listener may recreated the bridge
       final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
@@ -224,29 +227,33 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
     // else we tried to connect to a server that doesn't speak URP
   }
 
-  @NonNull
+  @Nullable
   @Override
   public XComponentContext getComponentContext() {
     return componentContext;
   }
 
-  @NonNull
+  @Nullable
   @Override
   public XMultiComponentFactory getServiceManager() {
     return serviceManager;
   }
 
-  @NonNull
+  @Nullable
   @Override
   public XComponentLoader getComponentLoader() {
     return componentLoader;
   }
 
-  @NonNull
+  @Nullable
   @Override
   public XDesktop getDesktop() {
+    if (desktopService == null) {
+      return null;
+    }
+
     // Needed only when stopping a process for now, so no need to keep an instance of it.
-    return Lo.qi(XDesktop.class, desktopService);
+    return Lo.qiOptional(XDesktop.class, desktopService).orElse(null);
   }
 
   /**
@@ -255,7 +262,6 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
    * @return {@code true} if we are connected to an office instance; {@code false} otherwise.
    */
   public boolean isConnected() {
-
     return connected.get();
   }
 }

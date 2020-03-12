@@ -89,7 +89,10 @@ public class WindowsProcessManager extends AbstractProcessManager {
 
   @Override
   public void kill(@Nullable final Process process, final long pid) throws IOException {
-
-    execute(new String[] {"taskkill", "/t", "/f", "/pid", String.valueOf(pid)});
+    if (pid > PID_UNKNOWN) {
+      execute(new String[] {"taskkill", "/t", "/f", "/pid", String.valueOf(pid)});
+    } else {
+      super.kill(process, pid);
+    }
   }
 }

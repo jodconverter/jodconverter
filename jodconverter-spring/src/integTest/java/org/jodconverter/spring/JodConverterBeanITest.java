@@ -59,9 +59,9 @@ public class JodConverterBeanITest {
                       .extracting(
                           "taskExecutionTimeout",
                           "maxTasksPerProcess",
-                          "disableOpengl",
                           "officeProcessManager.processTimeout",
                           "officeProcessManager.processRetryInterval",
+                          "officeProcessManager.disableOpengl",
                           "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
                           "officeProcessManager.process.officeHome",
                           "officeProcessManager.process.processManager",
@@ -73,9 +73,9 @@ public class JodConverterBeanITest {
                       .containsExactly(
                           120_000L,
                           200,
-                          false,
                           120_000L,
                           250L,
+                          false,
                           "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
                           LocalOfficeUtils.getDefaultOfficeHome(),
                           LocalOfficeUtils.findBestProcessManager(),
@@ -127,9 +127,9 @@ public class JodConverterBeanITest {
                       .extracting(
                           "taskExecutionTimeout",
                           "maxTasksPerProcess",
-                          "disableOpengl",
                           "officeProcessManager.processTimeout",
                           "officeProcessManager.processRetryInterval",
+                          "officeProcessManager.disableOpengl",
                           "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
                           "officeProcessManager.process.officeHome",
                           "officeProcessManager.process.processManager",
@@ -141,9 +141,9 @@ public class JodConverterBeanITest {
                       .containsExactly(
                           20_000L,
                           10,
-                          false,
                           40_000L,
                           1_000L,
+                          false,
                           "socket,host=127.0.0.1,port=2003,tcpNoDelay=1",
                           LocalOfficeUtils.getDefaultOfficeHome(),
                           LocalOfficeUtils.findBestProcessManager(),
@@ -154,6 +154,65 @@ public class JodConverterBeanITest {
                               OfficeUtils.getDefaultWorkingDir(),
                               ".jodconverter_socket_host-127.0.0.1_port-2003_tcpNoDelay-1"),
                           "socket,host=127.0.0.1,port=2003,tcpNoDelay=1"));
+
+    } finally {
+      bean.destroy();
+    }
+  }
+
+  @Test
+  public void build_WithBadPortNumber_ShouldInitializedOfficeManagerWithDefaultValues()
+      throws OfficeException {
+
+    final JodConverterBean bean = new JodConverterBean();
+    bean.setPortNumbers("potato");
+    try {
+      bean.afterPropertiesSet();
+
+      assertThat(bean)
+          .extracting("officeManager")
+          .isInstanceOf(LocalOfficeManager.class)
+          .extracting("workingDir", "taskQueueTimeout")
+          .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
+
+      assertThat(bean)
+          .extracting("officeManager.entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .extracting(
+                          "taskExecutionTimeout",
+                          "maxTasksPerProcess",
+                          "officeProcessManager.processTimeout",
+                          "officeProcessManager.processRetryInterval",
+                          "officeProcessManager.disableOpengl",
+                          "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
+                          "officeProcessManager.process.officeHome",
+                          "officeProcessManager.process.processManager",
+                          "officeProcessManager.process.runAsArgs",
+                          "officeProcessManager.process.templateProfileDir",
+                          "officeProcessManager.process.killExistingProcess",
+                          "officeProcessManager.process.instanceProfileDir",
+                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                      .containsExactly(
+                          120_000L,
+                          200,
+                          120_000L,
+                          250L,
+                          false,
+                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                          LocalOfficeUtils.getDefaultOfficeHome(),
+                          LocalOfficeUtils.findBestProcessManager(),
+                          Collections.EMPTY_LIST,
+                          null,
+                          true,
+                          new File(
+                              OfficeUtils.getDefaultWorkingDir(),
+                              ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
+                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
 
     } finally {
       bean.destroy();

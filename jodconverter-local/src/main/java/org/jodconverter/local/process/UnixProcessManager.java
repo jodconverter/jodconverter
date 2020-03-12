@@ -93,8 +93,11 @@ public class UnixProcessManager extends AbstractProcessManager {
 
   @Override
   public void kill(@Nullable final Process process, final long pid) throws IOException {
-
-    execute(new String[] {"/bin/kill", "-KILL", String.valueOf(pid)});
+    if (pid > PID_UNKNOWN) {
+      execute(new String[] {"/bin/kill", "-KILL", String.valueOf(pid)});
+    } else {
+      super.kill(process, pid);
+    }
   }
 
   /**

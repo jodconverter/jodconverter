@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
@@ -107,12 +108,13 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       @NonNull final LocalOfficeContext context, @NonNull final File sourceFile)
       throws OfficeException {
 
+    final XComponentLoader loader = context.getComponentLoader();
+    AssertUtils.notNull(loader, "Context component loader must not be null");
+
     try {
       final XComponent document =
-          context
-              .getComponentLoader()
-              .loadComponentFromURL(
-                  toUrl(sourceFile), "_blank", 0, toUnoProperties(getLoadProperties()));
+          loader.loadComponentFromURL(
+              toUrl(sourceFile), "_blank", 0, toUnoProperties(getLoadProperties()));
 
       // The document cannot be null
       AssertUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());

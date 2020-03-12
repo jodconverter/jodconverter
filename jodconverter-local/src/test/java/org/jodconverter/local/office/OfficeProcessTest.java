@@ -20,6 +20,7 @@
 package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
@@ -41,7 +42,6 @@ import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.ProcessQuery;
@@ -107,7 +107,7 @@ public class OfficeProcessTest {
                     "checkForExistingProcess",
                     new ProcessQuery("command", "acceptString")))
         .withMessage(
-            "Unable to check if there is already an existing process with --accept 'acceptString'")
+            "Could not check if there is already an existing process with --accept 'acceptString'")
         .withCauseExactlyInstanceOf(IOException.class);
   }
 
@@ -179,7 +179,7 @@ public class OfficeProcessTest {
   }
 
   @Test
-  public void forciblyTerminate_WhenIoExceptionCatched_TrowsOfficeException() {
+  public void forciblyTerminate_WhenIoExceptionCatched_ShouldLogError() {
 
     final OfficeProcess process =
         new OfficeProcess(
@@ -196,21 +196,19 @@ public class OfficeProcessTest {
             null,
             null);
 
-    Whitebox.setInternalState(process, "pid", 0L);
-
-    final VerboseProcess verboseProcess = mock(VerboseProcess.class);
-    assertThatExceptionOfType(OfficeException.class)
-        .isThrownBy(
+    // TODO: Check that the error message if properly logged.
+    assertThatCode(
             () -> {
+              final VerboseProcess verboseProcess = mock(VerboseProcess.class);
+              Whitebox.setInternalState(process, "pid", 0L);
               Whitebox.setInternalState(process, "process", verboseProcess);
-              process.forciblyTerminate(0L, 0L);
+              process.forciblyTerminate();
             })
-        .withCauseExactlyInstanceOf(IOException.class);
+        .doesNotThrowAnyException();
   }
 
   @Test
-  public void forciblyTerminate_WhenNotStarted_ShouldReturn0()
-      throws RetryTimeoutException, OfficeException {
+  public void forciblyTerminate_WhenNotStarted_ShouldDoNothing() {
 
     final OfficeProcess process =
         new OfficeProcess(
@@ -222,24 +220,6 @@ public class OfficeProcessTest {
             null,
             null);
 
-    assertThat(process.forciblyTerminate(0L, 0L)).isEqualTo(0);
-  }
-
-  @Test
-  public void getExitCode_WhenNotStarted_ShouldReturn0()
-      throws RetryTimeoutException, OfficeException {
-
-    final OfficeProcess process =
-        new OfficeProcess(
-            new OfficeUrl(2002),
-            LocalOfficeUtils.getDefaultOfficeHome(),
-            OfficeUtils.getDefaultWorkingDir(),
-            LocalOfficeUtils.findBestProcessManager(),
-            null,
-            null,
-            null);
-
-    assertThat(process.getExitCode()).isEqualTo(0);
-    assertThat(process.getExitCode(0L, 0L)).isEqualTo(0);
+    assertThatCode(process::forciblyTerminate).doesNotThrowAnyException();
   }
 }

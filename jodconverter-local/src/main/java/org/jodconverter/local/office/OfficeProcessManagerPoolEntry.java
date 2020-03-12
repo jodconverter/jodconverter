@@ -25,11 +25,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.sun.star.beans.XHierarchicalPropertySet;
-import com.sun.star.beans.XHierarchicalPropertySetInfo;
-import com.sun.star.lang.XComponent;
-import com.sun.star.uno.XComponentContext;
-import com.sun.star.util.XChangesBatch;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.core.office.AbstractOfficeManagerPoolEntry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.OfficeTask;
-import org.jodconverter.local.office.utils.Info;
-import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.process.ProcessManager;
 
 /**
@@ -59,13 +52,8 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
   // The default maximum number of tasks an office process can execute before restarting.
   private static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
-  // The default behavior when an office process is started regarding to OpenGL usage.
-  private static final boolean DEFAULT_DISABLE_OPENGL = false;
-  // The path to the UseOpenGL configuration property.
-  private static final String PROP_PATH_USE_OPENGL = "VCL/UseOpenGL";
 
   private final int maxTasksPerProcess;
-  private final boolean disableOpengl;
   private final OfficeProcessManager officeProcessManager;
   private final AtomicInteger taskCount = new AtomicInteger(0);
   private final AtomicBoolean disconnectExpected = new AtomicBoolean(false);
@@ -121,11 +109,11 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
             templateProfileDir,
             killExistingProcess,
             processTimeout,
-            processRetryInterval);
+            processRetryInterval,
+            disableOpengl);
 
     this.maxTasksPerProcess =
         maxTasksPerProcess == null ? DEFAULT_MAX_TASKS_PER_PROCESS : maxTasksPerProcess;
-    this.disableOpengl = disableOpengl == null ? DEFAULT_DISABLE_OPENGL : disableOpengl;
 
     // This connection event listener will be notified when a connection is established or
     // closed/lost to/from an office instance.
@@ -171,20 +159,19 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   @Override
   public void doExecute(@NonNull final OfficeTask task) throws OfficeException {
 
-    // First check if the office process must be restarted
-    final int count = taskCount.getAndIncrement();
+    // Execute the task.
+    task.execute(officeProcessManager.getConnection());
+
+    // Increment the task count
+    final int count = taskCount.incrementAndGet();
+
+    // Now check if the office process must be restarted.
     if (maxTasksPerProcess > 0 && count == maxTasksPerProcess) {
 
       LOGGER.info(
           "Reached limit of {} maximum tasks per process; restarting...", maxTasksPerProcess);
       restart();
-
-      // taskCount will be 0 rather than 1 at this point, so fix this.
-      taskCount.getAndIncrement();
     }
-
-    // Execute the task
-    task.execute(officeProcessManager.getConnection());
   }
 
   @Override
@@ -201,33 +188,26 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   @Override
-  public void doStart() throws OfficeException {
+  public void doStart() {
 
     // Start the office process and connect to it.
-    officeProcessManager.startAndWait();
-
-    // Here a connection has been made successfully. Check to disable
-    // the usage of OpenGL. Some file won't load properly if OpenGL
-    // is on (LibreOffice).
-    if (disableOpengl
-        && disableOpengl(officeProcessManager.getConnection().getComponentContext())) {
-
-      LOGGER.info("OpenGL has been disabled and a restart is required; restarting...");
-      restart();
-    }
+    officeProcessManager.start();
   }
 
   @Override
-  public void doStop() throws OfficeException {
+  public void doStop() {
+
+    // The manager is no longer available
+    setAvailable(false);
 
     // From here on, any disconnection from an office process is expected.
     disconnectExpected.set(true);
 
     // Now we can stopped the running office process
-    officeProcessManager.stopAndWait();
+    officeProcessManager.stop();
   }
 
-  private void restart() throws OfficeException {
+  private void restart() {
 
     // The manager is no longer available
     setAvailable(false);
@@ -236,50 +216,6 @@ class OfficeProcessManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     disconnectExpected.set(true);
 
     // Restart the office instance
-    officeProcessManager.restartAndWait();
-  }
-
-  private boolean disableOpengl(final XComponentContext officeContext) throws OfficeException {
-
-    // See configuration registry for more options.
-    // e.g: C:\Program Files\LibreOffice 5\share\registry\main.xcd
-
-    try {
-
-      // Create the view to the root element where UseOpenGL option lives
-      final Object viewRoot =
-          Info.getConfigUpdateAccess(officeContext, "/org.openoffice.Office.Common");
-      if (viewRoot == null) {
-        return false; // No restart needed
-      }
-      try {
-
-        // Check if the OpenGL option is on
-        final XHierarchicalPropertySet properties = Lo.qi(XHierarchicalPropertySet.class, viewRoot);
-
-        final XHierarchicalPropertySetInfo propsInfo = properties.getHierarchicalPropertySetInfo();
-        if (propsInfo.hasPropertyByHierarchicalName(PROP_PATH_USE_OPENGL)) {
-          final boolean useOpengl =
-              (boolean) properties.getHierarchicalPropertyValue(PROP_PATH_USE_OPENGL);
-          LOGGER.info("Use OpenGL is set to {}", useOpengl);
-          if (useOpengl) {
-            properties.setHierarchicalPropertyValue(PROP_PATH_USE_OPENGL, false);
-            // Changes have been applied to the view here
-            final XChangesBatch updateControl = Lo.qi(XChangesBatch.class, viewRoot);
-            updateControl.commitChanges();
-
-            // A restart is required.
-            return true;
-          }
-        }
-      } finally {
-        // We are done with the view - dispose it
-        Lo.qi(XComponent.class, viewRoot).dispose();
-      }
-      return false; // No restart needed
-
-    } catch (com.sun.star.uno.Exception ex) {
-      throw new OfficeException("Unable to check if the Use OpenGL option is on.", ex);
-    }
+    officeProcessManager.restart();
   }
 }

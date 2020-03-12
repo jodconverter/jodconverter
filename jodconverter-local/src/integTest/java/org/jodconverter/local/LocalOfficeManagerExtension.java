@@ -94,11 +94,13 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
                         }
                       })
                   .toArray();
-      final LocalOfficeManager mng = LocalOfficeManager.builder().portNumbers(portNumbers).build();
+      // TODO: Add support for custom configuration.
+      final LocalOfficeManager mng =
+          LocalOfficeManager.builder().portNumbers(portNumbers).maxTasksPerProcess(1000).build();
       try {
         mng.start();
       } catch (OfficeException ex) {
-        throw new JUnitException("Unable to start an office process for the test suite", ex);
+        throw new JUnitException("Could not start an office process for the test suite", ex);
       }
       this.manager = mng;
     }

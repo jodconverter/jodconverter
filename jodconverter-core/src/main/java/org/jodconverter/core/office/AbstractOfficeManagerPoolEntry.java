@@ -141,7 +141,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   }
 
   @Override
-  public final void start() throws OfficeException {
+  public final void start() {
 
     // We cannot reuse an executor that has been shutdown.
     if (taskExecutor.isShutdown()) {
@@ -151,15 +151,8 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     doStart();
   }
 
-  /**
-   * Allow subclasses to perform operation when the office manager is started.
-   *
-   * @throws OfficeException If an error occurs while starting the manager.
-   */
-  protected abstract void doStart() throws OfficeException;
-
   @Override
-  public final void stop() throws OfficeException {
+  public final void stop() {
 
     // While stopping, the executor should not be available to any
     // new task that could be submitted.
@@ -171,13 +164,6 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     // Execute the subclass implementation
     doStop();
   }
-
-  /**
-   * Allow subclasses to perform operation when the office manager is stopped.
-   *
-   * @throws OfficeException If an error occurs while stopping the manager.
-   */
-  protected abstract void doStop() throws OfficeException;
 
   /** Cancels the current running task, if any. Do nothing if there is no current running task. */
   protected void cancelTask() {
@@ -195,4 +181,10 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   protected void setAvailable(final boolean available) {
     taskExecutor.setAvailable(available);
   }
+
+  /** Allow subclasses to perform operation when the office manager is started. */
+  protected abstract void doStart();
+
+  /** Allow subclasses to perform operation when the office manager is stopped. */
+  protected abstract void doStop();
 }

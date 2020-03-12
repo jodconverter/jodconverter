@@ -171,7 +171,6 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
           throw firstException;
         }
 
-        LOGGER.info("Office manager stopped");
       } finally {
         deleteTempDir();
       }
@@ -185,34 +184,35 @@ public abstract class AbstractOfficeManagerPool extends AbstractOfficeManager {
    * @throws OfficeException If we are unable to acquire a manager.
    */
   private OfficeManager acquireManager() throws OfficeException {
+    LOGGER.debug("Acquiring an office manager from the pool...");
 
+    OfficeManager manager = null;
     try {
-      final OfficeManager manager = pool.poll(taskQueueTimeout, TimeUnit.MILLISECONDS);
-      if (manager == null) {
-        throw new OfficeException(
-            "No office manager available after " + taskQueueTimeout + " millisec.");
-      }
-      return manager;
+      manager = pool.poll(taskQueueTimeout, TimeUnit.MILLISECONDS);
     } catch (InterruptedException interruptedEx) {
-      throw new OfficeException(
-          "Thread has been interrupted while waiting for a manager to become available.",
-          interruptedEx);
+      Thread.currentThread().interrupt();
     }
+
+    if (manager == null) {
+      throw new OfficeException(
+          "No office manager available after " + taskQueueTimeout + " millisec.");
+    }
+    LOGGER.debug("Office manager acquired successfully from the pool...");
+    return manager;
   }
 
   /**
    * Make the given manager available to executes tasks.
    *
    * @param manager A manager to return to the pool.
-   * @throws OfficeException If we are unable to release the manager.
    */
-  private void releaseManager(final OfficeManager manager) throws OfficeException {
+  private void releaseManager(final OfficeManager manager) {
+    LOGGER.debug("Returning office manager to the pool...");
 
     try {
       pool.put(manager);
-    } catch (InterruptedException interruptedEx) {
-      // Not supposed to happened
-      throw new OfficeException("interrupted", interruptedEx);
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
     }
   }
 

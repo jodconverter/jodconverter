@@ -43,16 +43,16 @@ class SimpleOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   @Override
-  protected void doStart() {
-
-    setAvailable(true);
-  }
-
-  @Override
   protected void doExecute(final OfficeTask task) throws OfficeException {
 
     // Simply execute the task
     task.execute(new SimpleOfficeContext());
+  }
+
+  @Override
+  protected void doStart() {
+
+    setAvailable(true);
   }
 
   @Override

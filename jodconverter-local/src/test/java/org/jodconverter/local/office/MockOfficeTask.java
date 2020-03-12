@@ -21,6 +21,8 @@ package org.jodconverter.local.office;
 
 import static org.jodconverter.local.office.LocalOfficeUtils.property;
 
+import java.util.Objects;
+
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.lang.XComponent;
@@ -62,7 +64,8 @@ public class MockOfficeTask implements OfficeTask {
     try {
       final PropertyValue[] arguments = {property("Hidden", true)};
       final XComponent document =
-          loader.loadComponentFromURL("private:factory/swriter", "_blank", 0, arguments);
+          Objects.requireNonNull(loader)
+              .loadComponentFromURL("private:factory/swriter", "_blank", 0, arguments);
       if (delayTime > 0) {
         Thread.sleep(delayTime);
       }

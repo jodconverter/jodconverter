@@ -312,7 +312,6 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
   @Override
   protected void doStart() {
-
     setAvailable(true);
   }
 

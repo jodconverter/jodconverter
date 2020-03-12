@@ -66,20 +66,23 @@ public class ConnectRetryable extends AbstractRetryable<OfficeException> {
     try {
       // Try to connect
       connection.connect();
+      LOGGER.trace("An attempt to connect to an office process has succeeded");
 
     } catch (OfficeConnectionException ex) {
+      LOGGER.trace("An attempt to connect to an office process has failed", ex);
 
       // If we cannot get the exit code of a process, just
       // throw a TemporaryException
-      if (process == null) {
+      if (process == null || process.getProcess() == null) {
         throw new TemporaryException(ex);
       }
 
       // Here, we can get the exit code of the process
-      final Integer exitCode = process.getExitCode();
+      final VerboseProcess verboseProcess = process.getProcess();
+      final Integer exitCode = verboseProcess == null ? null : verboseProcess.getExitCode();
       if (exitCode == null) {
 
-        // Process is running; retry later
+        // Process is running; retry connect later
         throw new TemporaryException(ex);
 
       } else if (exitCode.equals(EXIT_CODE_81)) {

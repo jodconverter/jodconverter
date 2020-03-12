@@ -22,6 +22,8 @@ package org.jodconverter.local.office;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.util.Objects;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.core.office.SimpleOfficeTask;
 import org.jodconverter.core.test.util.TestUtil;
 
@@ -43,7 +44,7 @@ public class ExternalOfficeManagerITest {
   private static OfficeProcess startOfficeProcess() throws OfficeException {
 
     // Starts an office process
-    final OfficeProcess officeProcess =
+    final OfficeProcess process =
         new OfficeProcess(
             CONNECT_URL,
             LocalOfficeUtils.getDefaultOfficeHome(),
@@ -52,14 +53,14 @@ public class ExternalOfficeManagerITest {
             null,
             null,
             null);
-    officeProcess.start();
+    process.start();
     TestUtil.sleepQuietly(2_000L);
-    final Integer exitCode = officeProcess.getExitCode();
+    final Integer exitCode = Objects.requireNonNull(process.getProcess()).getExitCode();
     if (exitCode != null && exitCode.equals(81)) {
-      officeProcess.start(true);
+      process.start(true);
       TestUtil.sleepQuietly(2_000L);
     }
-    return officeProcess;
+    return process;
   }
 
   @BeforeAll
@@ -70,13 +71,10 @@ public class ExternalOfficeManagerITest {
   }
 
   @AfterAll
-  public static void tearDown() throws OfficeException, RetryTimeoutException {
+  public static void tearDown() {
 
-    try {
-      process.forciblyTerminate(1_000L, 5_000L);
-    } finally {
-      process.deleteInstanceProfileDir();
-    }
+    process.forciblyTerminate();
+    process.deleteInstanceProfileDir();
   }
 
   @Test
