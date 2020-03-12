@@ -78,7 +78,18 @@ public class AutoConfigurationDefaultPropertiesITest {
             "taskQueueTimeout",
             "documentFormatRegistry")
         .containsExactly(
-            true, null, "", null, null, true, 120_000L, 250L, 120_000L, 200, 30_000L, null);
+            true,
+            null,
+            new int[] {2002},
+            null,
+            null,
+            true,
+            120_000L,
+            250L,
+            120_000L,
+            200,
+            30_000L,
+            null);
   }
 
   @Test

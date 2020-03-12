@@ -45,7 +45,7 @@ public class JodConverterLocalProperties {
    * office instances is equal to the number of ports, since 1 office process will be launched for
    * each port number.
    */
-  private String portNumbers = "2002";
+  private int[] portNumbers = new int[] {2002};
 
   /**
    * Directory where temporary office profiles will be created. If not set, it defaults to the
@@ -122,11 +122,11 @@ public class JodConverterLocalProperties {
   }
 
   @Nullable
-  public String getPortNumbers() {
+  public int[] getPortNumbers() {
     return portNumbers;
   }
 
-  public void setPortNumbers(@Nullable final String portNumbers) {
+  public void setPortNumbers(@Nullable final int[] portNumbers) {
     this.portNumbers = portNumbers;
   }
 

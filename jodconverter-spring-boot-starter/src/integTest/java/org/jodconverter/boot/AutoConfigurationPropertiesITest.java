@@ -80,7 +80,7 @@ public class AutoConfigurationPropertiesITest {
         .containsExactly(
             true,
             "office-home",
-            "2005",
+            new int[] {2005, 2006},
             "working-dir",
             "template-profile-dir",
             false,

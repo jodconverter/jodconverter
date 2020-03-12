@@ -20,7 +20,6 @@
 package org.jodconverter.boot.autoconfigure;
 
 import java.io.InputStream;
-import java.util.stream.Stream;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -67,20 +66,7 @@ public class JodConverterLocalAutoConfiguration {
 
     final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
 
-    if (!StringUtils.isBlank(properties.getPortNumbers())) {
-      builder.portNumbers(
-          Stream.of(properties.getPortNumbers().split("\\s*,\\s*"))
-              .mapToInt(
-                  str -> {
-                    try {
-                      return Integer.parseInt(str);
-                    } catch (final Exception e) {
-                      return 2002;
-                    }
-                  })
-              .toArray());
-    }
-
+    builder.portNumbers(properties.getPortNumbers());
     builder.officeHome(properties.getOfficeHome());
     builder.workingDir(properties.getWorkingDir());
     builder.templateProfileDir(properties.getTemplateProfileDir());
