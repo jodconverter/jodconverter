@@ -7,7 +7,7 @@ jobs:
       dist: trusty
       jdk: oraclejdk8
       script:
-        - ./gradlew build --stacktrace
+        - ./gradlew :jodconverter-core:build --stacktrace
       after_success:
         - ./gradlew coveralls
 #    #linux Java11

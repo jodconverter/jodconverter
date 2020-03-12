@@ -71,6 +71,9 @@ public class FileUtilsTest {
       // Call FileUtils.delete on the root directory. It should throw
       // an exception since we have a lock on the file.
       assertThatIOException().isThrownBy(() -> FileUtils.delete(dir));
+
+      // Release the lock
+      lock.release();
     }
   }
 
