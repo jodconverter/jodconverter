@@ -49,7 +49,7 @@ class DefaultDocumentFormatRegistryInstanceHolder { // NOPMD - Disable class nam
           instance = JsonDocumentFormatRegistry.create(input);
         } catch (IOException ex) {
           throw new DocumentFormatRegistryException(
-              "Unable to load the default document-formats.json configuration file", ex);
+              "Could not load the default document-formats.json configuration file", ex);
         }
       }
 

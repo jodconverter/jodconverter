@@ -294,7 +294,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
             : processManager((ProcessManager) Class.forName(processManagerClass).newInstance());
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
         throw new IllegalArgumentException(
-            "Unable to create a Process manager from the specified class name: "
+            "Could not create a process manager from the specified class name: "
                 + processManagerClass,
             ex);
       }

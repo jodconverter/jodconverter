@@ -85,11 +85,11 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
             reader.dispose();
           }
         } else {
-          throw new OfficeException("Unable to detect the image size: No reader found");
+          throw new OfficeException("Could not detect the image size: No reader found");
         }
       }
     } catch (IOException ioEx) {
-      throw new OfficeException("Unable to detect the image size", ioEx);
+      throw new OfficeException("Could not detect the image size", ioEx);
     }
   }
 

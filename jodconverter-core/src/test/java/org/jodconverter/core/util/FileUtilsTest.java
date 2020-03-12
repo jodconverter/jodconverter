@@ -30,7 +30,7 @@ public class FileUtilsTest {
 
   @Test
   public void new_ClassWellDefined() {
-    AssertUtil.assertUtilityClassWellDefined(StringUtils.class);
+    AssertUtil.assertUtilityClassWellDefined(FileUtils.class);
   }
 
   @Test

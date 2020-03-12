@@ -29,8 +29,8 @@ import org.jodconverter.core.util.AssertUtils;
 /** Provides services required to manage a running process. */
 public interface ProcessManager {
 
-  long PID_NOT_FOUND = -2;
-  long PID_UNKNOWN = -1;
+  long PID_NOT_FOUND = -2L;
+  long PID_UNKNOWN = -1L;
 
   /**
    * Indicates whether the pid of the process can be found using a command line.

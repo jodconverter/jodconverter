@@ -104,7 +104,7 @@ public class ConverterController {
     } catch (OfficeException | IOException e) {
       redirectAttributes.addFlashAttribute(
           ATTRNAME_ERROR_MESSAGE,
-          "Unable to convert the file "
+          "Could not convert the file "
               + inputFile.getOriginalFilename()
               + ". Cause: "
               + e.getMessage());

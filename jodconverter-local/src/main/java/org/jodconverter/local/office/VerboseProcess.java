@@ -73,10 +73,11 @@ class VerboseProcess {
     try {
       final int exitValue = process.exitValue();
       streamHandler.stop();
+      LOGGER.trace("Process has been terminated with exit value {}", exitValue);
       return exitValue;
 
     } catch (IllegalThreadStateException ex) {
-      LOGGER.trace("The Office process has not yet terminated.");
+      LOGGER.trace("Could not get exit value; the process is running");
       return null;
     }
   }

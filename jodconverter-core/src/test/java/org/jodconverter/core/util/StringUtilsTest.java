@@ -69,6 +69,11 @@ public class StringUtilsTest {
   }
 
   @Test
+  public void endsWithAny_WithNullSearchStrings_ShouldReturnFalse() {
+    assertThat(StringUtils.endsWithAny("input", (String[]) null)).isFalse();
+  }
+
+  @Test
   public void endsWithAny_WithEmptySearchStrings_ShouldReturnFalse() {
     assertThat(StringUtils.endsWithAny("input")).isFalse();
   }

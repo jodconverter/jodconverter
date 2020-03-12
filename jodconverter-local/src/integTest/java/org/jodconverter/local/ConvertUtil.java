@@ -96,7 +96,7 @@ public final class ConvertUtil {
       } catch (Exception ex) {
 
         // Log the error.
-        final String message = "Unable to convert from " + sourceExt + " to " + targetExt + ".";
+        final String message = "Could not convert from " + sourceExt + " to " + targetExt + ".";
         if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
           final com.sun.star.task.ErrorCodeIOException ioEx =
               (com.sun.star.task.ErrorCodeIOException) ex.getCause();

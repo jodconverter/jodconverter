@@ -93,6 +93,6 @@ including some [wiki pages](https://code.google.com/archive/p/jodconverter/wikis
 
 ## Donations
 
-If this project helps you, please consider a donation. I have to pay for the jodconverter web site (domain and hosting) every year. I also sit on my chair in front of a monitor a lot instead of being outside drinking a beer to improve this project :). Thanks.
+If this project helps you, please consider a donation. I have to pay for the jodconverter web site (domain and hosting) every year. I also sit on my chair in front of a monitor a lot instead of being outside drinking a beer to improve this project :smiley:. Thanks!! :heart:
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)

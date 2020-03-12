@@ -109,7 +109,7 @@ public class StartProcessRetryable extends AbstractRetryable<Exception> {
       try {
         process.getProcess().destroy();
       } catch (Exception ex) {
-        LOGGER.warn("Unable to destroy the process", ex);
+        LOGGER.warn("Could not destroy the process", ex);
       }
       throw new TemporaryException(
           String.format(

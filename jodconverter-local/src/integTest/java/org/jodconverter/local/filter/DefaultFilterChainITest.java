@@ -103,7 +103,7 @@ public class DefaultFilterChainITest {
     final RefreshFilter newFilter = mock(RefreshFilter.class);
     final boolean restoreFilter =
         setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), newFilter);
-    assumeTrue(restoreFilter, () -> "Aborting test: unable to set mock static field");
+    assumeTrue(restoreFilter, () -> "Aborting test: could not set mock static field");
 
     // Then execute the test
     try {
@@ -142,7 +142,7 @@ public class DefaultFilterChainITest {
     final RefreshFilter newFilter = mock(RefreshFilter.class);
     final boolean restoreFilter =
         setFinalStatic(RefreshFilter.class.getDeclaredField("LAST_REFRESH"), newFilter);
-    assumeTrue(restoreFilter, () -> "Aborting test: unable to set mock static field");
+    assumeTrue(restoreFilter, () -> "Aborting test: could not set mock static field");
 
     // Then execute the test
     try {

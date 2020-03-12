@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests for the {@link AssertUtils} class. */
-public class AssertTest {
+public class AssertUtilsTest {
 
   @Test
   public void new_ClassWellDefined() {

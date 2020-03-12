@@ -231,7 +231,7 @@ public final class CliConverter {
         }
 
       } catch (IOException ex) {
-        throw new OfficeException("Unable to prepare the output directory", ex);
+        throw new OfficeException("Could not prepare the output directory", ex);
       }
     }
   }

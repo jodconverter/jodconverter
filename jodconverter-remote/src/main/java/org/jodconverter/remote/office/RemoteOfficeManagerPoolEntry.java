@@ -269,7 +269,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
         | CertificateException
         | UnrecoverableKeyException
         | NoSuchProviderException ex) {
-      throw new OfficeException("Unable to create SSL context.", ex);
+      throw new OfficeException("Could not create SSL context.", ex);
     }
   }
 
@@ -306,7 +306,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       task.execute(new RemoteOfficeConnection(httpClient, requestConfig));
 
     } catch (IOException ex) {
-      throw new OfficeException("Unable to create the HTTP client", ex);
+      throw new OfficeException("Could not create the HTTP client", ex);
     }
   }
 
