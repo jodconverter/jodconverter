@@ -26,6 +26,9 @@ import static org.assertj.core.api.Assertions.assertThatIOException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -60,8 +63,13 @@ public class FileUtilsTest {
     final File file = new File(dir, "test.txt");
     file.createNewFile();
 
-    try (FileOutputStream outputStream = new FileOutputStream(file)) {
-      outputStream.getChannel().lock();
+    try (FileChannel channel = new RandomAccessFile(file, "rw").getChannel()) {
+      // Use the file channel to create a lock on the file.
+      // This method blocks until it can retrieve the lock.
+      FileLock lock = channel.lock();
+
+      // Call FileUtils.delete on the root directory. It should throw
+      // an exception since we have a lock on the file.
       assertThatIOException().isThrownBy(() -> FileUtils.delete(dir));
     }
   }
