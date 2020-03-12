@@ -22,6 +22,7 @@ package org.jodconverter.core.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,6 +58,9 @@ public class FileUtilsTest {
   @Test
   public void delete_WithFolderWhenIOExceptionOccured_ShouldThrowIOException(
       final @TempDir File testFolder) throws IOException {
+
+    // TODO: Find a way to make that test work on non-windows OS.
+    assumeTrue(OSUtils.IS_OS_WINDOWS);
 
     final File dir = new File(testFolder, "test");
     dir.mkdir();
