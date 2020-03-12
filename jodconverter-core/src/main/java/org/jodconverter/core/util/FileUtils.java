@@ -21,13 +21,14 @@ package org.jodconverter.core.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
+import java.nio.file.CopyOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
 
@@ -51,6 +52,9 @@ public final class FileUtils {
 
   private static boolean endsWithSeparator(@NonNull final String filename) {
 
+    if (filename.length() == 0) {
+      return false;
+    }
     final char lastChar = filename.charAt(filename.length() - 1);
     return lastChar == UNIX_SEPARATOR || lastChar == WINDOWS_SEPARATOR;
   }
@@ -59,21 +63,33 @@ public final class FileUtils {
    * Deletes a file. If file is a directory, delete it and all sub-directories.
    *
    * @param file File or directory to delete, can be {@code null}.
-   * @return {@code true} If the file or directory is deleted, {@code false} otherwise.
+   * @return {@code true} If the file or directory is deleted, {@code false} otherwise. The file or
+   *     directory is considered deleted if it does not exist when the function ends, meaning that a
+   *     {@code null} input file or a file that does not exist will also returns {@code false}.
    * @throws IOException If an IO error occurs.
    */
   public static boolean delete(@Nullable final File file) throws IOException {
-    if (file == null) {
+    if (file == null || !file.exists()) {
       return false;
     }
 
     final Path pathToDelete = file.toPath();
 
     if (Files.isDirectory(pathToDelete)) {
-      Files.walk(pathToDelete)
-          .sorted(Comparator.reverseOrder())
-          .map(Path::toFile)
-          .forEach(File::delete);
+      try {
+        Files.walk(pathToDelete)
+            .sorted(Comparator.reverseOrder())
+            .forEach(
+                path -> {
+                  try {
+                    Files.delete(path);
+                  } catch (IOException ex) {
+                    throw new UncheckedIOException(ex);
+                  }
+                });
+      } catch (UncheckedIOException ex) {
+        throw ex.getCause();
+      }
     } else {
       Files.delete(pathToDelete);
     }
@@ -89,26 +105,11 @@ public final class FileUtils {
    * @return {@code true} If the file or directory is deleted, {@code false} otherwise.
    */
   public static boolean deleteQuietly(@Nullable final File file) {
-    if (file == null) {
-      return false;
-    }
-
-    final Path pathToDelete = file.toPath();
-
     try {
-      if (Files.isDirectory(pathToDelete)) {
-        Files.walk(pathToDelete)
-            .sorted(Comparator.reverseOrder())
-            .map(Path::toFile)
-            .forEach(File::delete);
-      } else {
-        Files.delete(pathToDelete);
-      }
+      return delete(file);
     } catch (IOException ignored) {
       return false;
     }
-
-    return !Files.exists(pathToDelete);
   }
 
   /**
@@ -175,13 +176,17 @@ public final class FileUtils {
   }
 
   /**
-   * Copies a file to another path preserving the file attributes.
+   * Copies a file to another path, preserving the last modified date.
    *
    * @param srcFile An existing file to copy, must not be {@code null}.
    * @param destFile The target file, must not be {@code null}.
+   * @param options Options specifying how the copy should be done.
    * @throws IOException If an IO error occurs.
    */
-  public static void copyFile(@NonNull final File srcFile, @NonNull final File destFile)
+  public static void copyFile(
+      @NonNull final File srcFile,
+      @NonNull final File destFile,
+      @Nullable final CopyOption... options)
       throws IOException {
     AssertUtils.notNull(srcFile, "srcFile must not be null");
     AssertUtils.notNull(destFile, "destFile must not be null");
@@ -190,17 +195,22 @@ public final class FileUtils {
 
     AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
 
-    Files.copy(srcPath, destFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+    Files.copy(srcPath, destFile.toPath(), options);
+    destFile.setLastModified(srcFile.lastModified());
   }
 
   /**
-   * Copies a file to a directory preserving the file attributes.
+   * Copies a file to a directory, preserving the last modified date.
    *
    * @param srcFile An existing file to copy, must not be {@code null}.
    * @param destDir The directory to place the copy in, must not be {@code null}.
+   * @param options Options specifying how the copy should be done.
    * @throws IOException If an IO error occurs.
    */
-  public static void copyFileToDirectory(@NonNull final File srcFile, @NonNull final File destDir)
+  public static void copyFileToDirectory(
+      @NonNull final File srcFile,
+      @NonNull final File destDir,
+      @Nullable final CopyOption... options)
       throws IOException {
     AssertUtils.notNull(srcFile, "srcFile must not be null");
     AssertUtils.notNull(destDir, "destDir must not be null");
@@ -209,18 +219,23 @@ public final class FileUtils {
 
     AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
 
-    Files.copy(
-        srcPath, destDir.toPath().resolve(srcFile.getName()), StandardCopyOption.COPY_ATTRIBUTES);
+    final Path destPath = destDir.toPath().resolve(srcFile.getName());
+    Files.copy(srcPath, destPath, options);
+    destPath.toFile().setLastModified(srcFile.lastModified());
   }
 
   /**
-   * Copies a directory recursively, preserving the files attributes.
+   * Copies a directory recursively, preserving the files last modified date.
    *
    * @param srcDir An existing directory to copy, must not be {@code null}.
    * @param destDir The target directory, must not be {@code null}.
+   * @param options Options specifying how the copy should be done.
    * @throws IOException If an IO error occurs.
    */
-  public static void copyDirectory(@NonNull final File srcDir, @NonNull final File destDir)
+  public static void copyDirectory(
+      @NonNull final File srcDir,
+      @NonNull final File destDir,
+      @Nullable final CopyOption... options)
       throws IOException {
     AssertUtils.notNull(srcDir, "srcDir must not be null");
     AssertUtils.notNull(destDir, "destDir must not be null");
@@ -260,12 +275,14 @@ public final class FileUtils {
   private static class CopyDir extends SimpleFileVisitor<Path> {
     private final Path sourceDir;
     private final Path targetDir;
+    private final CopyOption[] options;
 
-    /* default */ CopyDir(final Path sourceDir, final Path targetDir) {
+    /* default */ CopyDir(final Path sourceDir, final Path targetDir, final CopyOption... options) {
       super();
 
       this.sourceDir = sourceDir;
       this.targetDir = targetDir;
+      this.options = options;
     }
 
     @Override
@@ -273,7 +290,8 @@ public final class FileUtils {
         throws IOException {
 
       final Path targetFile = targetDir.resolve(sourceDir.relativize(file));
-      Files.copy(file, targetFile, StandardCopyOption.COPY_ATTRIBUTES);
+      Files.copy(file, targetFile, options);
+      targetFile.toFile().setLastModified(file.toFile().lastModified());
 
       return FileVisitResult.CONTINUE;
     }
