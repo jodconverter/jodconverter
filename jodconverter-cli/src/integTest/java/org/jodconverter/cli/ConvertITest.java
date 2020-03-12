@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -103,7 +104,8 @@ public class ConvertITest {
 
     final File inputFile = new File(SOURCE_FILE);
     FileUtils.copyFileToDirectory(inputFile, testFolder);
-    final File inputFileTmp = new File(testFolder, FileUtils.getName(SOURCE_FILE));
+    final File inputFileTmp =
+        new File(testFolder, Objects.requireNonNull(FileUtils.getName(SOURCE_FILE)));
     final File outputFile =
         new File(testFolder, FileUtils.getBaseName(inputFile.getName()) + ".pdf");
 

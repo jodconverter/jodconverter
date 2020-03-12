@@ -97,30 +97,26 @@ public class JodConverterLocalAutoConfiguration {
   /* default */ DocumentFormatRegistry documentFormatRegistry(final ResourceLoader resourceLoader)
       throws Exception {
 
-    DocumentFormatRegistry registry;
-    if (StringUtils.isBlank(properties.getDocumentFormatRegistry())) {
-      try (InputStream in =
-          resourceLoader.getResource("classpath:document-formats.json").getInputStream()) {
-        registry =
-            properties.getFormatOptions() == null
-                ? JsonDocumentFormatRegistry.create(in)
-                : JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
-      }
-    } else {
-      try (InputStream in =
-          resourceLoader.getResource(properties.getDocumentFormatRegistry()).getInputStream()) {
-        registry =
-            properties.getFormatOptions() == null
-                ? JsonDocumentFormatRegistry.create(in)
-                : JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
-      }
+    try (InputStream in =
+        // Load the json resource containing default document formats.
+        (StringUtils.isBlank(properties.getDocumentFormatRegistry())
+            ? resourceLoader.getResource("classpath:document-formats.json").getInputStream()
+            : resourceLoader
+                .getResource(properties.getDocumentFormatRegistry())
+                .getInputStream())) {
+
+      // Create the registry
+      final DocumentFormatRegistry registry =
+          properties.getFormatOptions() == null
+              ? JsonDocumentFormatRegistry.create(in)
+              : JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
+
+      // Set as default.
+      DefaultDocumentFormatRegistryInstanceHolder.setInstance(registry);
+
+      // Return it.
+      return registry;
     }
-
-    // Set as default.
-    DefaultDocumentFormatRegistryInstanceHolder.setInstance(registry);
-
-    // Return it.
-    return registry;
   }
 
   @Bean(name = "localOfficeManager", initMethod = "start", destroyMethod = "stop")

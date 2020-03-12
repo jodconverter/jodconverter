@@ -20,8 +20,16 @@
 package org.jodconverter.core.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIOException;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
@@ -31,6 +39,84 @@ public class FileUtilsTest {
   @Test
   public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(FileUtils.class);
+  }
+
+  @Test
+  public void delete_WithNull_ShouldReturnFalse() throws IOException {
+    assertThat(FileUtils.delete(null)).isFalse();
+  }
+
+  @Test
+  public void delete_WithUnexistingFile_ShouldReturnNull() throws IOException {
+    assertThat(FileUtils.delete(new File(UUID.randomUUID().toString()))).isFalse();
+  }
+
+  @Test
+  public void delete_WithFolderWhenIOExceptionOccured_ShouldThrowIOException(
+      final @TempDir File testFolder) throws IOException {
+
+    final File dir = new File(testFolder, "test");
+    dir.mkdir();
+    final File file = new File(dir, "test.txt");
+    file.createNewFile();
+
+    try (FileOutputStream outputStream = new FileOutputStream(file)) {
+      outputStream.getChannel().lock();
+      assertThatIOException().isThrownBy(() -> FileUtils.delete(dir));
+    }
+  }
+
+  @Test
+  public void delete_WithNotEmptyFolder_ShouldDeleteFolderRecursivelyAndReturnTrue(
+      final @TempDir File testFolder) throws IOException {
+
+    final File root = new File(testFolder, "test");
+    root.mkdir();
+
+    File dir = new File(root, "test1");
+    dir.mkdir();
+    File file = new File(dir, "test1.txt");
+    file.createNewFile();
+    file = new File(dir, "test2.txt");
+    file.createNewFile();
+
+    dir = new File(root, "test2");
+    dir.mkdir();
+    file = new File(dir, "test1.txt");
+    file.createNewFile();
+    file = new File(dir, "test2.txt");
+    file.createNewFile();
+
+    dir = new File(dir, "test3");
+    dir.mkdir();
+    file = new File(dir, "test1.txt");
+    file.createNewFile();
+    file = new File(dir, "test2.txt");
+    file.createNewFile();
+
+    dir = new File(dir, "test4");
+    dir.mkdir();
+    file = new File(dir, "test1.txt");
+    file.createNewFile();
+    file = new File(dir, "test2.txt");
+    file.createNewFile();
+
+    assertThat(FileUtils.delete(root)).isTrue();
+  }
+
+  @Test
+  public void deleteQuietly_WhenIOExceptionOccured_ShouldSwallowIOException(
+      final @TempDir File testFolder) throws IOException {
+
+    final File dir = new File(testFolder, "test");
+    dir.mkdir();
+    final File file = new File(dir, "test.txt");
+    file.createNewFile();
+
+    try (FileOutputStream outputStream = new FileOutputStream(file)) {
+      outputStream.getChannel().lock();
+      assertThatCode(() -> FileUtils.deleteQuietly(dir)).doesNotThrowAnyException();
+    }
   }
 
   @Test
@@ -139,8 +225,23 @@ public class FileUtilsTest {
   }
 
   @Test
+  public void getExtension_WithEmptyString_ShouldReturnEmptyString() {
+    assertThat(FileUtils.getExtension("")).isEqualTo("");
+  }
+
+  @Test
   public void getExtension_WithDot_ShouldReturnEmptyString() {
     assertThat(FileUtils.getExtension(".")).isEqualTo("");
+  }
+
+  @Test
+  public void getExtension_WithDotButNoExtension_ShouldReturnEmptyString() {
+    assertThat(FileUtils.getExtension("/test/a.")).isEqualTo("");
+  }
+
+  @Test
+  public void getExtension_WithDotButNoBaseNameNorExtension_ShouldReturnEmptyString() {
+    assertThat(FileUtils.getExtension("/test/.")).isEqualTo("");
   }
 
   @Test

@@ -121,12 +121,11 @@ public class JodConverterLocalProperties {
     this.officeHome = officeHome;
   }
 
-  @Nullable
   public int[] getPortNumbers() {
     return portNumbers;
   }
 
-  public void setPortNumbers(@Nullable final int[] portNumbers) {
+  public void setPortNumbers(final int[] portNumbers) {
     this.portNumbers = portNumbers;
   }
 

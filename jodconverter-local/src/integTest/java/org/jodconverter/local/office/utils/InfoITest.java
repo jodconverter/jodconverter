@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 
 import java.io.File;
+import java.util.Objects;
 
 import com.sun.star.uno.XComponentContext;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,7 @@ public class InfoITest {
           // call everything to ensure no exceptions are thrown.
           final LocalOfficeContext lcontext = (LocalOfficeContext) context;
           final XComponentContext ccontext = lcontext.getComponentContext();
-          Info.getOfficeName(ccontext);
+          Info.getOfficeName(Objects.requireNonNull(ccontext));
           Info.getOfficeVersionLong(ccontext);
           Info.getOfficeVersionShort(ccontext);
           Info.isOpenOffice(ccontext);
