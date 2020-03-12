@@ -150,7 +150,7 @@ public class OSUtilsTest {
       softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
       softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
       softly.assertThat(OSUtils.IS_OS_MAC).isTrue();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isTrue();
+      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
       softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
       softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
       softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
