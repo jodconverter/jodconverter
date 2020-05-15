@@ -64,6 +64,21 @@ public class JodConverterRemoteProperties {
    */
   private long taskQueueTimeout = 30_000L;
 
+  /**
+   * The timeout in milliseconds until a connection is established. A timeout value of zero is
+   * interpreted as an infinite timeout. A negative value is interpreted as undefined (system
+   * default).
+   */
+  private long connectTimeout = 30_000L;
+
+  /**
+   * The socket timeout in milliseconds, which is the timeout for waiting for data or, put
+   * differently, a maximum period inactivity between two consecutive data packets). A timeout value
+   * of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined
+   * (system default).
+   */
+  private long socketTimeout = 60_000L;
+
   @NestedConfigurationProperty private SslProperties ssl;
 
   public boolean isEnabled() {
@@ -114,6 +129,22 @@ public class JodConverterRemoteProperties {
 
   public void setTaskQueueTimeout(final long taskQueueTimeout) {
     this.taskQueueTimeout = taskQueueTimeout;
+  }
+
+  public long getConnectTimeout() {
+    return connectTimeout;
+  }
+
+  public void setConnectTimeout(final long connectTimeout) {
+    this.connectTimeout = connectTimeout;
+  }
+
+  public long getSocketTimeout() {
+    return socketTimeout;
+  }
+
+  public void setSocketTimeout(final long socketTimeout) {
+    this.socketTimeout = socketTimeout;
   }
 
   @Nullable

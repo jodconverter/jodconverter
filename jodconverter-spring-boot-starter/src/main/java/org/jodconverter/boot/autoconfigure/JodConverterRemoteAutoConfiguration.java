@@ -66,6 +66,8 @@ public class JodConverterRemoteAutoConfiguration {
     builder.workingDir(properties.getWorkingDir());
     builder.taskExecutionTimeout(properties.getTaskExecutionTimeout());
     builder.taskQueueTimeout(properties.getTaskQueueTimeout());
+    builder.connectTimeout(properties.getConnectTimeout());
+    builder.socketTimeout(properties.getSocketTimeout());
     if (properties.getSsl() != null) {
       builder.sslConfig(properties.getSsl().sslConfig());
     }
