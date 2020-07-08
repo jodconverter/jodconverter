@@ -19,8 +19,39 @@
 
 package org.jodconverter.core.office;
 
-/**
- * {@link org.jodconverter.core.office.OfficeContext} pool implementation that does not depend on an
- * office installation.
- */
-public final class SimpleOfficeContext implements OfficeContext {}
+public final class SimpleRetryable extends AbstractRetryable<Exception> {
+
+  private static final long NO_SLEEP = 0L;
+
+  private int attempts;
+  private final long sleepms;
+  private final int maxAttempts;
+
+  public SimpleRetryable(final int maxAttempts) {
+    this(maxAttempts, NO_SLEEP);
+  }
+
+  public SimpleRetryable(final int maxAttempts, final long sleepms) {
+    super();
+
+    this.maxAttempts = maxAttempts;
+    this.sleepms = sleepms;
+  }
+
+  @Override
+  protected void attempt() throws Exception {
+
+    attempts++;
+    if (sleepms > 0L) {
+      Thread.sleep(sleepms);
+    }
+    if (attempts >= maxAttempts) {
+      return;
+    }
+    throw new TemporaryException("attempt failed");
+  }
+
+  public int getAttempts() {
+    return attempts;
+  }
+}

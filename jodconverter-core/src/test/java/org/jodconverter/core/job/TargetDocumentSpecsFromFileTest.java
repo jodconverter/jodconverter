@@ -20,50 +20,68 @@
 package org.jodconverter.core.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.core.util.FileUtils;
-
 /** Contains tests for the {@link TargetDocumentSpecsFromFile} class. */
-public class TargetDocumentSpecsFromFileTest {
+class TargetDocumentSpecsFromFileTest {
 
-  private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
-  private static final String TARGET_FILENAME = "test.pdf";
+  @Nested
+  class New {
 
-  @Test
-  public void onFailure_ShouldDeleteTargetFile(final @TempDir File testFolder) throws IOException {
+    @Test
+    void whenFileIsNull_ShouldThrowNullPointerException() {
 
-    final File targetFile = new File(testFolder, TARGET_FILENAME);
-    FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
-    assertThat(targetFile).exists();
+      assertThatNullPointerException().isThrownBy(() -> new TargetDocumentSpecsFromFile(null));
+    }
 
-    final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(targetFile);
+    @Test
+    void whenFileIsNotNull_ShouldCreateSpecsWithExpectedValues(@TempDir final File testFolder) {
 
-    specs.onFailure(targetFile, new IOException());
+      final File file = new File(testFolder, "test.txt");
+      final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(file);
 
-    // Check that the temp file is deleted
-    assertThat(targetFile).doesNotExist();
+      assertThat(specs.getFile()).isEqualTo(file);
+    }
   }
 
-  @Test
-  public void new_WithValidValues_SpecsCreatedWithExpectedValues(final @TempDir File testFolder)
-      throws IOException {
+  @Nested
+  class OnComplete {
 
-    final File targetFile = new File(testFolder, TARGET_FILENAME);
-    FileUtils.copyFile(new File(SOURCE_FILE), targetFile);
-    assertThat(targetFile).exists();
+    @Test
+    void whenFileExists_ShouldNotDeleteFile(@TempDir final File testFolder) throws IOException {
 
-    final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(targetFile);
-    specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);
+      final File file = new File(testFolder, "test.txt");
+      assertThat(file.createNewFile()).isTrue();
+      final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(file);
 
-    assertThat(specs)
-        .extracting("file", "documentFormat")
-        .containsExactly(targetFile, DefaultDocumentFormatRegistry.CSV);
+      specs.onComplete(file);
+
+      assertThat(file).exists();
+    }
+  }
+
+  @Nested
+  class OnFailure {
+
+    @Test
+    void whenFileExists_ShouldDeleteFile(@TempDir final File testFolder) throws IOException {
+
+      final File targetFile = new File(testFolder, "target.txt");
+      assertThat(targetFile.createNewFile()).isTrue();
+
+      final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(targetFile);
+
+      specs.onFailure(targetFile, new IOException());
+
+      // Check that the temp file is deleted
+      assertThat(targetFile).doesNotExist();
+    }
   }
 }

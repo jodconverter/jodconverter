@@ -20,6 +20,7 @@
 package org.jodconverter.core.office;
 
 import java.io.File;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -29,12 +30,13 @@ import org.jodconverter.core.util.AssertUtils;
  * {@link OfficeManager} pool implementation that does not depend on an office installation to
  * process conversion tasks.
  */
-public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
+public final class SimpleOfficeManager
+    extends AbstractOfficeManagerPool<SimpleOfficeManagerPoolEntry> {
 
   // The default size of the pool
-  private static final int DEFAULT_POOL_SIZE = 1;
+  static final int DEFAULT_POOL_SIZE = 1;
   // The maximum size of the pool.
-  private static final int MAX_POOL_SIZE = 1000;
+  static final int MAX_POOL_SIZE = 1000;
 
   /**
    * Creates a new builder instance.
@@ -69,14 +71,20 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
   private SimpleOfficeManager(
       final File workingDir,
       final int poolSize,
-      final Long taskExecutionTimeout,
-      final Long taskQueueTimeout) {
-    super(workingDir, poolSize, taskQueueTimeout);
+      final long taskExecutionTimeout,
+      final long taskQueueTimeout) {
+    super(poolSize, workingDir, taskQueueTimeout);
 
     setEntries(
         IntStream.range(0, poolSize)
             .mapToObj(i -> new SimpleOfficeManagerPoolEntry(taskExecutionTimeout))
             .collect(Collectors.toList()));
+  }
+
+  // Change visibility in order to be able to mock the entries
+  @Override
+  public void setEntries(List<SimpleOfficeManagerPoolEntry> entries) {
+    super.setEntries(entries);
   }
 
   /**
@@ -86,7 +94,7 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
    */
   public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
 
-    private Integer poolSize;
+    private int poolSize = DEFAULT_POOL_SIZE;
 
     // Private constructor so only SimpleOfficeManager can initialize an instance of this builder.
     private Builder() {
@@ -96,16 +104,8 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
     @Override
     public SimpleOfficeManager build() {
 
-      if (workingDir == null) {
-        workingDir = OfficeUtils.getDefaultWorkingDir();
-      }
-
       final SimpleOfficeManager manager =
-          new SimpleOfficeManager(
-              workingDir,
-              poolSize == null ? DEFAULT_POOL_SIZE : poolSize,
-              taskExecutionTimeout,
-              taskQueueTimeout);
+          new SimpleOfficeManager(workingDir, poolSize, taskExecutionTimeout, taskQueueTimeout);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
@@ -124,8 +124,8 @@ public final class SimpleOfficeManager extends AbstractOfficeManagerPool {
         AssertUtils.isTrue(
             poolSize >= 0 && poolSize <= MAX_POOL_SIZE,
             String.format("poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
+        this.poolSize = poolSize;
       }
-      this.poolSize = poolSize;
       return this;
     }
   }

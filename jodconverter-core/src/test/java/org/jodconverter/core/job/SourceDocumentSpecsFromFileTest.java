@@ -23,33 +23,50 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.junit.jupiter.api.io.TempDir;
 
 /** Contains tests for the {@link SourceDocumentSpecsFromFile} class. */
-public class SourceDocumentSpecsFromFileTest {
+class SourceDocumentSpecsFromFileTest {
 
-  private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
-  private static final String BAD_SOURCE_FILE = "src/test/resources/documents/unexisting_file.txt";
+  @Nested
+  class New {
 
-  @Test
-  public void new_WithUnexistingFile_ShouldThrowIllegalArgumentsException() {
+    @Test
+    void whenFileDoesNotExist_ShouldThrowIllegalArgumentsException(@TempDir final File testFolder) {
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> new SourceDocumentSpecsFromFile(new File(BAD_SOURCE_FILE)));
+      final File file = new File(testFolder, "test.txt");
+      assertThatIllegalArgumentException().isThrownBy(() -> new SourceDocumentSpecsFromFile(file));
+    }
+
+    @Test
+    void whenFileExists_ShouldCreateSpecsWithExpectedValues(@TempDir final File testFolder)
+        throws IOException {
+
+      final File file = new File(testFolder, "test.txt");
+      assertThat(file.createNewFile()).isTrue();
+      final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(file);
+
+      assertThat(specs.getFile()).isEqualTo(file);
+    }
   }
 
-  @Test
-  public void new_WithValidValues_SpecsCreatedWithExpectedValues() {
+  @Nested
+  class OnConsume {
 
-    final File sourceFile = new File(SOURCE_FILE);
-    final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(sourceFile);
-    specs.setDocumentFormat(DefaultDocumentFormatRegistry.ODS);
+    @Test
+    void whenFileExists_ShouldNotDeleteFile(@TempDir final File testFolder) throws IOException {
 
-    assertThat(specs)
-        .extracting("file", "documentFormat")
-        .containsExactly(sourceFile, DefaultDocumentFormatRegistry.ODS);
+      final File file = new File(testFolder, "test.txt");
+      assertThat(file.createNewFile()).isTrue();
+      final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(file);
+
+      specs.onConsumed(file);
+
+      assertThat(file).exists();
+    }
   }
 }

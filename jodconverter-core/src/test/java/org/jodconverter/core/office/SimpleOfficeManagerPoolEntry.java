@@ -38,7 +38,7 @@ class SimpleOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
    *     of a task is longer than this timeout, this task will be aborted and the next task is
    *     processed.
    */
-  public SimpleOfficeManagerPoolEntry(final Long taskExecutionTimeout) {
+  public SimpleOfficeManagerPoolEntry(final long taskExecutionTimeout) {
     super(taskExecutionTimeout);
   }
 
@@ -58,5 +58,11 @@ class SimpleOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   @Override
   protected void doStop() {
     // Nothing to stop here.
+  }
+
+  // Change visibility in order to be able to call while testing
+  @Override
+  public void cancelTask() {
+    super.cancelTask();
   }
 }

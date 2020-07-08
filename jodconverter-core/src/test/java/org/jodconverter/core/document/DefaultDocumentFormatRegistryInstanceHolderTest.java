@@ -19,6 +19,9 @@
 
 package org.jodconverter.core.document;
 
+import java.util.Set;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.test.util.AssertUtil;
@@ -29,5 +32,41 @@ public class DefaultDocumentFormatRegistryInstanceHolderTest {
   @Test
   public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(DefaultDocumentFormatRegistryInstanceHolder.class);
+  }
+
+  @Test
+  public void setInstance_WithCustomRegistry_getInstanceShouldReturnCutomRedistry() {
+
+    final DocumentFormatRegistry registry =
+        new DocumentFormatRegistry() {
+          @Override
+          public DocumentFormat getFormatByExtension(String extension) {
+            return null;
+          }
+
+          @Override
+          public DocumentFormat getFormatByMediaType(String mediaType) {
+            return null;
+          }
+
+          @Override
+          public Set<DocumentFormat> getOutputFormats(DocumentFamily family) {
+            return null;
+          }
+
+          @Override
+          public String toString() {
+            return "setInstance_WithCustomRegistry_getInstanceShouldReturnCutomRedistry";
+          }
+        };
+
+    final DocumentFormatRegistry saved = DefaultDocumentFormatRegistryInstanceHolder.getInstance();
+    try {
+      DefaultDocumentFormatRegistryInstanceHolder.setInstance(registry);
+      Assertions.assertThat(DefaultDocumentFormatRegistryInstanceHolder.getInstance().toString())
+          .isEqualTo("setInstance_WithCustomRegistry_getInstanceShouldReturnCutomRedistry");
+    } finally {
+      DefaultDocumentFormatRegistryInstanceHolder.setInstance(saved);
+    }
   }
 }

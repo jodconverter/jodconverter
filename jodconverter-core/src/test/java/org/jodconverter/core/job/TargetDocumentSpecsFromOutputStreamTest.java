@@ -29,170 +29,178 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.TemporaryFileMaker;
-import org.jodconverter.core.util.FileUtils;
 
 /** Contains tests for the {@link TargetDocumentSpecsFromOutputStream} class. */
 @SuppressWarnings({"PMD.AvoidFileStream", "PMD.CloseResource"})
-public class TargetDocumentSpecsFromOutputStreamTest {
+class TargetDocumentSpecsFromOutputStreamTest {
 
-  private static final String SOURCE_FILE = "src/test/resources/documents/test.txt";
-  private static final String TARGET_FILENAME = "test.pdf";
+  @Nested
+  class GetFile {
 
-  /* default */ @TempDir File testFolder; // must be non-private
-  private TemporaryFileMaker fileMaker;
+    @Test
+    void withFormat_ShouldCreateTempFileWithExtension(@TempDir final File testFolder)
+        throws IOException {
 
-  /** Setup the file maker before each test. */
-  @BeforeEach
-  public void setUp() {
+      final File tempFile = new File(testFolder, "temp.txt");
+      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+      given(fileMaker.makeTemporaryFile("txt")).willReturn(tempFile);
 
-    fileMaker = mock(TemporaryFileMaker.class);
-    given(fileMaker.makeTemporaryFile()).willReturn(new File(testFolder, "temp"));
-  }
+      final FileOutputStream outputStream = mock(FileOutputStream.class);
+      doThrow(IOException.class)
+          .when(outputStream)
+          .write(isA(byte[].class), isA(int.class), isA(int.class));
 
-  @Test
-  public void onComplete_WhenIoExceptionCatch_ShouldThrowDocumentSpecsIoException()
-      throws IOException {
-
-    final File tempFile = new File(testFolder, "onComplete_WhenIoExceptionCatch.txt");
-    FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
-    assertThat(tempFile).exists();
-    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
-
-    final FileOutputStream outputStream = mock(FileOutputStream.class);
-    doThrow(IOException.class)
-        .when(outputStream)
-        .write(isA(byte[].class), isA(int.class), isA(int.class));
-
-    final TargetDocumentSpecsFromOutputStream specs =
-        new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
-
-    assertThatExceptionOfType(DocumentSpecsIOException.class)
-        .isThrownBy(() -> specs.onComplete(tempFile))
-        .withCauseInstanceOf(IOException.class);
-  }
-
-  @Test
-  public void onComplete_WhenCloseStreamIsTrue_ShouldDeleteTempFileAndCloseOutputStream()
-      throws IOException {
-
-    final File tempFile = new File(testFolder, "onComplete_WhenCloseStreamIsTrue.txt");
-    FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
-    assertThat(tempFile).exists();
-    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
-
-    try (FileOutputStream outputStream =
-        new FileOutputStream(new File(testFolder, TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
-          new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, true);
+          new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
+      specs.setDocumentFormat(DefaultDocumentFormatRegistry.TXT);
 
-      specs.onComplete(tempFile);
-
-      // Check that the temp file is deleted
-      assertThat(tempFile).doesNotExist();
-
-      // Check that the OutputStream is closed.
-      assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", true);
+      assertThat(specs.getFile()).isEqualTo(tempFile);
     }
-  }
 
-  @Test
-  public void onConsumed_WhenCloseStreamIsFalse_ShouldDeleteTempFileAndNotCloseOutputStream()
-      throws IOException {
+    @Test
+    void withoutFormat_ShouldCreateTempFileWithoutExtension(@TempDir final File testFolder)
+        throws IOException {
 
-    final File tempFile = new File(testFolder, "onConsumed_WhenCloseStreamIsFalse.txt");
-    FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
-    assertThat(tempFile).exists();
-    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
+      final File tempFile = new File(testFolder, "temp");
+      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+      given(fileMaker.makeTemporaryFile()).willReturn(tempFile);
 
-    try (FileOutputStream outputStream =
-        new FileOutputStream(new File(testFolder, TARGET_FILENAME))) {
+      final FileOutputStream outputStream = mock(FileOutputStream.class);
+      doThrow(IOException.class)
+          .when(outputStream)
+          .write(isA(byte[].class), isA(int.class), isA(int.class));
+
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
 
-      specs.onComplete(tempFile);
-
-      // Check that the temp file is deleted
-      assertThat(tempFile).doesNotExist();
-
-      // Check that the OutputStream is not closed.
-      assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", false);
+      assertThat(specs.getFile()).isEqualTo(tempFile);
     }
   }
 
-  @Test
-  public void onFailure_WhenCloseStreamIsTrue_ShouldDeleteTempFileAndNotCloseOutputStream()
-      throws IOException {
+  @Nested
+  class OnComplete {
 
-    final File tempFile = new File(testFolder, "onConsumed_WhenIoExceptionCatch.txt");
-    FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
-    assertThat(tempFile).exists();
-    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
+    @Test
+    void whenIOExceptionOccurs_ShouldThrowDocumentSpecsIoException(@TempDir final File testFolder)
+        throws IOException {
 
-    try (FileOutputStream outputStream =
-        new FileOutputStream(new File(testFolder, TARGET_FILENAME))) {
-      final TargetDocumentSpecsFromOutputStream specs =
-          new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, true);
+      final File tempFile = new File(testFolder, "temp.txt");
+      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
 
-      specs.onFailure(tempFile, new IOException());
+      final FileOutputStream outputStream = mock(FileOutputStream.class);
+      doThrow(IOException.class)
+          .when(outputStream)
+          .write(isA(byte[].class), isA(int.class), isA(int.class));
 
-      // Check that the temp file is deleted
-      assertThat(tempFile).doesNotExist();
-
-      // Check that the OutputStream is not closed.
-      assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", false);
-    }
-  }
-
-  @Test
-  public void onFailure_WhenCloseStreamIsFalse_ShouldDeleteTempFileAndNotCloseOutputStream()
-      throws IOException {
-
-    final File tempFile = new File(testFolder, "onFailure_WhenCloseStreamIsFalse.txt");
-    FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
-    assertThat(tempFile).exists();
-    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
-
-    try (FileOutputStream outputStream =
-        new FileOutputStream(new File(testFolder, TARGET_FILENAME))) {
       final TargetDocumentSpecsFromOutputStream specs =
           new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
+      assertThatExceptionOfType(DocumentSpecsIOException.class)
+          .isThrownBy(() -> specs.onComplete(tempFile))
+          .withMessageStartingWith("Could not write file")
+          .withCauseInstanceOf(IOException.class);
+    }
 
-      specs.onFailure(tempFile, new IOException());
+    @Test
+    void whenCloseStreamIsTrue_ShouldDeleteTempFileAndCloseOutputStream(
+        @TempDir final File testFolder) throws IOException {
 
-      // Check that the temp file is deleted
-      assertThat(tempFile).doesNotExist();
+      final File tempFile = new File(testFolder, "temp.txt");
+      assertThat(tempFile.createNewFile()).isTrue();
+      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
 
-      // Check that the OutputStream is not closed.
-      assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", false);
+      try (FileOutputStream outputStream =
+          new FileOutputStream(new File(testFolder, "target.txt"))) {
+        final TargetDocumentSpecsFromOutputStream specs =
+            new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, true);
+
+        specs.onComplete(tempFile);
+
+        // Check that the temp file is deleted
+        assertThat(tempFile).doesNotExist();
+
+        // Check that the OutputStream is closed.
+        assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", true);
+      }
+    }
+
+    @Test
+    void whenCloseStreamIsFalse_ShouldDeleteTempFileAndNotCloseOutputStream(
+        @TempDir final File testFolder) throws IOException {
+
+      final File tempFile = new File(testFolder, "temp.txt");
+      assertThat(tempFile.createNewFile()).isTrue();
+      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+
+      try (FileOutputStream outputStream =
+          new FileOutputStream(new File(testFolder, "target.txt"))) {
+        final TargetDocumentSpecsFromOutputStream specs =
+            new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
+
+        specs.onComplete(tempFile);
+
+        // Check that the temp file is deleted
+        assertThat(tempFile).doesNotExist();
+
+        // Check that the OutputStream is not closed.
+        assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", false);
+      }
     }
   }
 
-  @Test
-  public void new_WithValidValues_SpecsCreatedWithExpectedValues() throws IOException {
+  @Nested
+  class OnFailure {
 
-    final File tempFile = new File(testFolder, "new_WithValidValues.txt");
-    FileUtils.copyFile(new File(SOURCE_FILE), tempFile);
-    assertThat(tempFile).exists();
-    given(fileMaker.makeTemporaryFile(isA(String.class))).willReturn(tempFile);
+    @Test
+    void whenCloseStreamIsTrue_ShouldDeleteTempFileAndNotCloseOutputStream(
+        @TempDir final File testFolder) throws IOException {
 
-    try (OutputStream outputStream =
-        Files.newOutputStream(new File(testFolder, TARGET_FILENAME).toPath())) {
-      final TargetDocumentSpecsFromOutputStream specs =
-          new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
-      specs.setDocumentFormat(DefaultDocumentFormatRegistry.CSV);
+      final File tempFile = new File(testFolder, "temp.txt");
+      assertThat(tempFile.createNewFile()).isTrue();
+      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
 
-      assertThat(specs)
-          .extracting("outputStream", "documentFormat")
-          .containsExactly(outputStream, DefaultDocumentFormatRegistry.CSV);
+      try (FileOutputStream outputStream =
+          new FileOutputStream(new File(testFolder, "target.txt"))) {
+        final TargetDocumentSpecsFromOutputStream specs =
+            new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, true);
+
+        specs.onFailure(tempFile, new IOException());
+
+        // Check that the temp file is deleted
+        assertThat(tempFile).doesNotExist();
+
+        // Check that the OutputStream is not closed.
+        assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", false);
+      }
+    }
+
+    @Test
+    void whenCloseStreamIsFalse_ShouldDeleteTempFileAndNotCloseOutputStream(
+        @TempDir final File testFolder) throws IOException {
+
+      final File tempFile = new File(testFolder, "temp.txt");
+      assertThat(tempFile.createNewFile()).isTrue();
+      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+
+      try (FileOutputStream outputStream =
+          new FileOutputStream(new File(testFolder, "target.txt"))) {
+        final TargetDocumentSpecsFromOutputStream specs =
+            new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
+
+        specs.onFailure(tempFile, new IOException());
+
+        // Check that the temp file is deleted
+        assertThat(tempFile).doesNotExist();
+
+        // Check that the OutputStream is not closed.
+        assertThat(outputStream).hasFieldOrPropertyWithValue("closed", false);
+      }
     }
   }
 }

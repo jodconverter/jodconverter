@@ -21,7 +21,9 @@ package org.jodconverter.core.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
@@ -30,237 +32,735 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests for the {@link FileUtils} class. */
-public class FileUtilsTest {
+class FileUtilsTest {
 
   @Test
   public void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(FileUtils.class);
   }
 
-  @Test
-  public void delete_WithNull_ShouldReturnFalse() throws IOException {
-    assertThat(FileUtils.delete(null)).isFalse();
-  }
+  @Nested
+  class CopyFile {
 
-  @Test
-  public void delete_WithUnexistingFile_ShouldReturnNull() throws IOException {
-    assertThat(FileUtils.delete(new File(UUID.randomUUID().toString()))).isFalse();
-  }
+    @Nested
+    class Failure {
 
-  @Test
-  public void delete_WithFolderWhenIOExceptionOccured_ShouldThrowIOException(
-      final @TempDir File testFolder) throws IOException {
+      @Test
+      public void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) {
 
-    // TODO: Find a way to make that test work on non-windows OS.
-    assumeTrue(OSUtils.IS_OS_WINDOWS);
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
 
-    final File dir = new File(testFolder, "test");
-    dir.mkdir();
-    final File file = new File(dir, "test.txt");
-    file.createNewFile();
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.copyFile(dir, new File(dir, "to.txt")))
+            .withMessage("srcFile must be an existing file");
+      }
 
-    try (FileChannel channel = new RandomAccessFile(file, "rw").getChannel()) {
-      // Use the file channel to create a lock on the file.
-      // This method blocks until it can retrieve the lock.
-      FileLock lock = channel.lock();
+      @Test
+      public void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) {
 
-      // Call FileUtils.delete on the root directory. It should throw
-      // an exception since we have a lock on the file.
-      assertThatIOException().isThrownBy(() -> FileUtils.delete(dir));
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
 
-      // Release the lock
-      lock.release();
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.copyFile(from, new File(dir, "to.txt")))
+            .withMessage("srcFile must be an existing file");
+      }
+
+      @Test
+      public void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
+          final @TempDir File testFolder) throws IOException {
+
+        final Charset encoding = StandardCharsets.UTF_8;
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
+        from.createNewFile();
+        final File to = new File(dir, "to.txt");
+        to.createNewFile();
+
+        Files.write(from.toPath(), "Whatever".getBytes(encoding));
+        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
+
+        assertThatExceptionOfType(FileAlreadyExistsException.class)
+            .isThrownBy(() -> FileUtils.copyFile(from, to));
+
+        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Yihaa");
+      }
+    }
+
+    @Nested
+    class Success {
+
+      @Test
+      public void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(
+          final @TempDir File testFolder) throws IOException {
+
+        final Charset encoding = StandardCharsets.UTF_8;
+        final String test = "ABDCEF\nGHIJKL  \nMNOPQRS\n\tTUVWXYZééé^ç^ç^ç^ç^pawewew";
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
+        from.createNewFile();
+        final File to = new File(dir, "to.txt");
+
+        Files.write(from.toPath(), test.getBytes(encoding));
+
+        FileUtils.copyFile(from, to);
+
+        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo(test);
+        assertThat(from.lastModified()).isEqualTo(to.lastModified());
+      }
+
+      @Test
+      public void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFileAndModifiedDate(
+          final @TempDir File testFolder) throws IOException {
+
+        final Charset encoding = StandardCharsets.UTF_8;
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
+        from.createNewFile();
+        final File to = new File(dir, "to.txt");
+        to.createNewFile();
+
+        Files.write(from.toPath(), "Whatever".getBytes(encoding));
+        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
+
+        FileUtils.copyFile(from, to, StandardCopyOption.REPLACE_EXISTING);
+
+        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Whatever");
+        assertThat(from.lastModified()).isEqualTo(to.lastModified());
+      }
     }
   }
 
-  @Test
-  public void delete_WithNotEmptyFolder_ShouldDeleteFolderRecursivelyAndReturnTrue(
-      final @TempDir File testFolder) throws IOException {
+  @Nested
+  class CopyFileToDirectory {
 
-    final File root = new File(testFolder, "test");
-    root.mkdir();
+    @Nested
+    class Failure {
 
-    File dir = new File(root, "test1");
-    dir.mkdir();
-    File file = new File(dir, "test1.txt");
-    file.createNewFile();
-    file = new File(dir, "test2.txt");
-    file.createNewFile();
+      @Test
+      public void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) {
 
-    dir = new File(root, "test2");
-    dir.mkdir();
-    file = new File(dir, "test1.txt");
-    file.createNewFile();
-    file = new File(dir, "test2.txt");
-    file.createNewFile();
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
 
-    dir = new File(dir, "test3");
-    dir.mkdir();
-    file = new File(dir, "test1.txt");
-    file.createNewFile();
-    file = new File(dir, "test2.txt");
-    file.createNewFile();
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.copyFileToDirectory(dir, new File(dir, "to")))
+            .withMessage("srcFile must be an existing file");
+      }
 
-    dir = new File(dir, "test4");
-    dir.mkdir();
-    file = new File(dir, "test1.txt");
-    file.createNewFile();
-    file = new File(dir, "test2.txt");
-    file.createNewFile();
+      @Test
+      public void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) {
 
-    assertThat(FileUtils.delete(root)).isTrue();
-  }
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
 
-  @Test
-  public void deleteQuietly_WhenIOExceptionOccured_ShouldSwallowIOException(
-      final @TempDir File testFolder) throws IOException {
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.copyFileToDirectory(from, new File(dir, "to.txt")))
+            .withMessage("srcFile must be an existing file");
+      }
 
-    final File dir = new File(testFolder, "test");
-    dir.mkdir();
-    final File file = new File(dir, "test.txt");
-    file.createNewFile();
+      @Test
+      public void whenTargetIsFile_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) throws IOException {
 
-    try (FileOutputStream outputStream = new FileOutputStream(file)) {
-      outputStream.getChannel().lock();
-      assertThatCode(() -> FileUtils.deleteQuietly(dir)).doesNotThrowAnyException();
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        File from = new File(dir, "from.txt");
+        from.createNewFile();
+        File to = new File(dir, "to.txt");
+        to.createNewFile();
+
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.copyFileToDirectory(from, to))
+            .withMessage("destDir cannot be an existing file");
+      }
+
+      @Test
+      public void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
+          final @TempDir File testFolder) throws IOException {
+
+        final Charset encoding = StandardCharsets.UTF_8;
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
+        from.createNewFile();
+        final File toDir = new File(dir, "to");
+        toDir.mkdir();
+        final File to = new File(toDir, "from.txt");
+        to.createNewFile();
+
+        Files.write(from.toPath(), "Whatever".getBytes(encoding));
+        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
+
+        assertThatExceptionOfType(FileAlreadyExistsException.class)
+            .isThrownBy(() -> FileUtils.copyFileToDirectory(from, toDir));
+
+        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Yihaa");
+      }
+    }
+
+    @Nested
+    class Success {
+
+      @Test
+      public void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(
+          final @TempDir File testFolder) throws IOException {
+
+        final Charset encoding = StandardCharsets.UTF_8;
+        final String test = "test";
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
+        from.createNewFile();
+        final File toDir = new File(dir, "to");
+        toDir.mkdir();
+
+        Files.write(from.toPath(), test.getBytes(encoding));
+
+        FileUtils.copyFileToDirectory(from, toDir);
+
+        final File to = new File(toDir, "from.txt");
+        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo(test);
+        assertThat(from.lastModified()).isEqualTo(to.lastModified());
+      }
+
+      @Test
+      public void whenTargetHerarchyDoesNotExist_ShouldCopyFileAndModifiedDate(
+          final @TempDir File testFolder) throws IOException {
+
+        final Charset encoding = StandardCharsets.UTF_8;
+        final String test = "test";
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
+        from.createNewFile();
+        final File toDir = new File(new File(new File(new File(dir, "to"), "to"), "to"), "to");
+
+        Files.write(from.toPath(), test.getBytes(encoding));
+
+        FileUtils.copyFileToDirectory(from, toDir);
+
+        final File to = new File(toDir, "from.txt");
+        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo(test);
+        assertThat(from.lastModified()).isEqualTo(to.lastModified());
+      }
+
+      @Test
+      public void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFileAndModifiedDate(
+          final @TempDir File testFolder) throws IOException {
+
+        final Charset encoding = StandardCharsets.UTF_8;
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
+        from.createNewFile();
+        final File toDir = new File(dir, "to");
+        toDir.mkdir();
+        final File to = new File(toDir, "from.txt");
+        to.createNewFile();
+
+        Files.write(from.toPath(), "Whatever".getBytes(encoding));
+        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
+
+        FileUtils.copyFileToDirectory(from, toDir, StandardCopyOption.REPLACE_EXISTING);
+
+        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Whatever");
+        assertThat(from.lastModified()).isEqualTo(to.lastModified());
+      }
     }
   }
 
-  @Test
-  public void getName_WithNull_ShouldReturnNull() {
-    assertThat(FileUtils.getName(null)).isNull();
+  @Nested
+  class CopyDirectory {
+
+    @Nested
+    class Failure {
+
+      @Test
+      public void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) {
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from");
+
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.copyDirectory(from, new File(dir, "to.txt")))
+            .withMessage("srcDir must be an existing directory");
+      }
+
+      @Test
+      public void whenSourceIsFile_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) throws IOException {
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
+        from.createNewFile();
+
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.copyDirectory(from, new File(dir, "to")))
+            .withMessage("srcDir must be an existing directory");
+      }
+
+      @Test
+      public void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
+          final @TempDir File testFolder) {
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from");
+        from.mkdir();
+        final File to = new File(dir, "to");
+        to.mkdir();
+
+        assertThatExceptionOfType(FileAlreadyExistsException.class)
+            .isThrownBy(() -> FileUtils.copyDirectory(from, to));
+      }
+
+      @Test
+      public void whenTargetIsFile_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) throws IOException {
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from");
+        from.mkdir();
+        final File to = new File(dir, "to.txt");
+        to.createNewFile();
+
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.copyDirectory(from, to))
+            .withMessage("destDir cannot be an existing file");
+      }
+
+      @Test
+      public void whenTargetIsChildOfSource_ShouldThrowIllagalArgumentException(
+          final @TempDir File testFolder) throws IOException {
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from");
+        from.mkdir();
+        final File to = new File(from, "to");
+        to.mkdir();
+        final File to1 = new File(to, "to");
+
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.copyDirectory(from, to1))
+            .withMessage("destDir cannot be a child of srcDir");
+      }
+    }
+
+    @Nested
+    class Success {
+
+      @Test
+      public void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(
+          final @TempDir File testFolder) throws IOException {
+
+        final Charset encoding = StandardCharsets.UTF_8;
+
+        final File from = new File(testFolder, "test");
+        from.mkdir();
+        final File from1 = new File(from, "from1.txt");
+        from1.createNewFile();
+        final File from2 = new File(from, "from2/from2.txt");
+        from2.getParentFile().mkdirs();
+        from2.createNewFile();
+        final File from3 = new File(from, "from3/from3/from1.txt");
+        from3.getParentFile().mkdirs();
+        from3.createNewFile();
+        final File toDir = new File(testFolder, "to");
+
+        Files.write(from1.toPath(), "Whatever1".getBytes(encoding));
+        Files.write(from2.toPath(), "Whatever2".getBytes(encoding));
+        Files.write(from3.toPath(), "Whatever3".getBytes(encoding));
+
+        FileUtils.copyDirectory(from, toDir);
+
+        final File to1 = new File(toDir, "from1.txt");
+        assertThat(new String(Files.readAllBytes(to1.toPath()), encoding)).isEqualTo("Whatever1");
+        assertThat(from1.lastModified()).isEqualTo(to1.lastModified());
+        final File to2 = new File(toDir, "from2/from2.txt");
+        assertThat(new String(Files.readAllBytes(to2.toPath()), encoding)).isEqualTo("Whatever2");
+        assertThat(from2.lastModified()).isEqualTo(to2.lastModified());
+        final File to3 = new File(toDir, "from3/from3/from1.txt");
+        assertThat(new String(Files.readAllBytes(to3.toPath()), encoding)).isEqualTo("Whatever3");
+        assertThat(from3.lastModified()).isEqualTo(to3.lastModified());
+      }
+
+      @Test
+      public void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFilesAndModifiedDate(
+          final @TempDir File testFolder) throws IOException {
+
+        final Charset encoding = StandardCharsets.UTF_8;
+
+        final File from = new File(testFolder, "test");
+        from.mkdir();
+        final File from1 = new File(from, "from1.txt");
+        from1.createNewFile();
+        final File from2 = new File(from, "from2/from2.txt");
+        from2.getParentFile().mkdirs();
+        from2.createNewFile();
+        final File from3 = new File(from, "from3/from3/from1.txt");
+        from3.getParentFile().mkdirs();
+        from3.createNewFile();
+        final File toDir = new File(testFolder, "to");
+        toDir.mkdir();
+
+        Files.write(from1.toPath(), "Whatever1".getBytes(encoding));
+        Files.write(from2.toPath(), "Whatever2".getBytes(encoding));
+        Files.write(from3.toPath(), "Whatever3".getBytes(encoding));
+
+        FileUtils.copyDirectory(from, toDir, StandardCopyOption.REPLACE_EXISTING);
+
+        final File to1 = new File(toDir, "from1.txt");
+        assertThat(new String(Files.readAllBytes(to1.toPath()), encoding)).isEqualTo("Whatever1");
+        assertThat(from1.lastModified()).isEqualTo(to1.lastModified());
+        final File to2 = new File(toDir, "from2/from2.txt");
+        assertThat(new String(Files.readAllBytes(to2.toPath()), encoding)).isEqualTo("Whatever2");
+        assertThat(from2.lastModified()).isEqualTo(to2.lastModified());
+        final File to3 = new File(toDir, "from3/from3/from1.txt");
+        assertThat(new String(Files.readAllBytes(to3.toPath()), encoding)).isEqualTo("Whatever3");
+        assertThat(from3.lastModified()).isEqualTo(to3.lastModified());
+      }
+    }
   }
 
-  @Test
-  public void getName_WithFullPath_ShouldReturnFileName() {
-    assertThat(FileUtils.getName("a/b/c.txt")).isEqualTo("c.txt");
+  @Nested
+  class Delete {
+
+    @Nested
+    class Failure {
+
+      @Test
+      public void whenIOExceptionOccured_ShouldThrowIOException(final @TempDir File testFolder)
+          throws IOException {
+
+        // TODO: Find a way to make that test work on non-windows OS.
+        assumeTrue(OSUtils.IS_OS_WINDOWS);
+
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File file = new File(dir, "test.txt");
+        file.createNewFile();
+
+        try (FileChannel channel = new RandomAccessFile(file, "rw").getChannel()) {
+          // Use the file channel to create a lock on the file.
+          // This method blocks until it can retrieve the lock.
+          FileLock lock = channel.lock();
+
+          // Call FileUtils.delete on the root directory. It should throw
+          // an exception since we have a lock on the file.
+          assertThatIOException().isThrownBy(() -> FileUtils.delete(dir));
+
+          // Release the lock
+          lock.release();
+        }
+      }
+    }
+
+    @Nested
+    class Success {
+
+      @Test
+      public void withNull_ShouldReturnFalse() throws IOException {
+        assertThat(FileUtils.delete(null)).isFalse();
+      }
+
+      @Test
+      public void withUnexistingFile_ShouldReturnNull() throws IOException {
+        assertThat(FileUtils.delete(new File(UUID.randomUUID().toString()))).isFalse();
+      }
+
+      @Test
+      public void withFolderNotEmpty_ShouldDeleteFolderRecursivelyAndReturnTrue(
+          final @TempDir File testFolder) throws IOException {
+
+        final File root = new File(testFolder, "test");
+        root.mkdir();
+
+        File dir = new File(root, "test1");
+        dir.mkdir();
+        File file = new File(dir, "test1.txt");
+        file.createNewFile();
+        file = new File(dir, "test2.txt");
+        file.createNewFile();
+
+        dir = new File(root, "test2");
+        dir.mkdir();
+        file = new File(dir, "test1.txt");
+        file.createNewFile();
+        file = new File(dir, "test2.txt");
+        file.createNewFile();
+
+        dir = new File(dir, "test3");
+        dir.mkdir();
+        file = new File(dir, "test1.txt");
+        file.createNewFile();
+        file = new File(dir, "test2.txt");
+        file.createNewFile();
+
+        dir = new File(dir, "test4");
+        dir.mkdir();
+        file = new File(dir, "test1.txt");
+        file.createNewFile();
+        file = new File(dir, "test2.txt");
+        file.createNewFile();
+
+        assertThat(FileUtils.delete(root)).isTrue();
+      }
+    }
   }
 
-  @Test
-  public void getName_WithOnlyFileName_ShouldReturnFileName() {
-    assertThat(FileUtils.getName("c.txt")).isEqualTo("c.txt");
+  @Nested
+  class DeleteQuietly {
+
+    @Test
+    public void whenIOExceptionOccured_ShouldSwallowIOException(final @TempDir File testFolder)
+        throws IOException {
+
+      final File dir = new File(testFolder, "test");
+      dir.mkdir();
+      final File file = new File(dir, "test.txt");
+      file.createNewFile();
+
+      try (FileOutputStream outputStream = new FileOutputStream(file)) {
+        outputStream.getChannel().lock();
+        assertThatCode(() -> FileUtils.deleteQuietly(dir)).doesNotThrowAnyException();
+      }
+    }
   }
 
-  @Test
-  public void getName_WithFullPathWithoutExtension_ShouldReturnFileName() {
-    assertThat(FileUtils.getName("a/b/c")).isEqualTo("c");
+  @Nested
+  class GetName {
+
+    @Test
+    public void withNull_ShouldReturnNull() {
+      assertThat(FileUtils.getName(null)).isNull();
+    }
+
+    @Test
+    public void withFullPath_ShouldReturnFileName() {
+      assertThat(FileUtils.getName("a/b/c.txt")).isEqualTo("c.txt");
+    }
+
+    @Test
+    public void withOnlyFileName_ShouldReturnFileName() {
+      assertThat(FileUtils.getName("c.txt")).isEqualTo("c.txt");
+    }
+
+    @Test
+    public void withFullPathWithoutExtension_ShouldReturnFileName() {
+      assertThat(FileUtils.getName("a/b/c")).isEqualTo("c");
+    }
+
+    @Test
+    public void withOnlyFileNameWithoutExtension_ShouldReturnFileName() {
+      assertThat(FileUtils.getName("c")).isEqualTo("c");
+    }
+
+    @Test
+    public void withFullDirectoryPath_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getName("a/b/")).isEqualTo("");
+    }
+
+    @Test
+    public void withSlash_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getName("/")).isEqualTo("");
+    }
   }
 
-  @Test
-  public void getName_WithOnlyFileNameWithoutExtension_ShouldReturnFileName() {
-    assertThat(FileUtils.getName("c")).isEqualTo("c");
+  @Nested
+  class GetBaseName {
+
+    @Test
+    public void withNull_ShouldReturnNull() {
+      assertThat(FileUtils.getBaseName(null)).isNull();
+    }
+
+    @Test
+    public void withFullPath_ShouldReturnBaseName() {
+      assertThat(FileUtils.getBaseName("a/b/c.txt")).isEqualTo("c");
+    }
+
+    @Test
+    public void withOnlyFileName_ShouldReturnBaseName() {
+      assertThat(FileUtils.getBaseName("c.txt")).isEqualTo("c");
+    }
+
+    @Test
+    public void withFullPathWithoutExtension_ShouldReturnFileName() {
+      assertThat(FileUtils.getBaseName("a/b/c")).isEqualTo("c");
+    }
+
+    @Test
+    public void withOnlyFileNameWithoutExtension_ShouldReturnFileName() {
+      assertThat(FileUtils.getBaseName("c")).isEqualTo("c");
+    }
+
+    @Test
+    public void withFullDirectoryPath_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getBaseName("a/b/")).isEqualTo("");
+    }
+
+    @Test
+    public void withSlash_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getBaseName("/")).isEqualTo("");
+    }
   }
 
-  @Test
-  public void getName_WithFullDirectoryPath_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getName("a/b/")).isEqualTo("");
+  @Nested
+  class GetExtension {
+
+    @Test
+    public void withNull_ShouldReturnNull() {
+      assertThat(FileUtils.getExtension(null)).isNull();
+    }
+
+    @Test
+    public void withFullPath_ShouldReturnExtension() {
+      assertThat(FileUtils.getExtension("a/b/c.txt")).isEqualTo("txt");
+    }
+
+    @Test
+    public void withOnlyFileName_ShouldReturnExtension() {
+      assertThat(FileUtils.getExtension("c.txt")).isEqualTo("txt");
+    }
+
+    @Test
+    public void withFullPathWithoutExtension_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getExtension("a/b/c")).isEqualTo("");
+    }
+
+    @Test
+    public void withOnlyFileNameWithoutExtension_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getExtension("c")).isEqualTo("");
+    }
+
+    @Test
+    public void withFullDirectoryPath_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getExtension("a/b/")).isEqualTo("");
+    }
+
+    @Test
+    public void withSlash_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getExtension("/")).isEqualTo("");
+    }
+
+    @Test
+    public void withEmptyString_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getExtension("")).isEqualTo("");
+    }
+
+    @Test
+    public void withDot_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getExtension(".")).isEqualTo("");
+    }
+
+    @Test
+    public void withDotButNoExtension_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getExtension("/test/a.")).isEqualTo("");
+    }
+
+    @Test
+    public void withDotButNoBaseNameNorExtension_ShouldReturnEmptyString() {
+      assertThat(FileUtils.getExtension("/test/.")).isEqualTo("");
+    }
   }
 
-  @Test
-  public void getName_WithSlash_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getName("/")).isEqualTo("");
+  @Nested
+  class GetFullPath {
+
+    @Test
+    public void withNull_ShouldReturnNull() {
+      assertThat(FileUtils.getBaseName(null)).isNull();
+    }
   }
 
-  @Test
-  public void getBaseName_WithNull_ShouldReturnNull() {
-    assertThat(FileUtils.getBaseName(null)).isNull();
-  }
+  @Nested
+  class ReadFileToString {
 
-  @Test
-  public void getBaseName_WithFullPath_ShouldReturnBaseName() {
-    assertThat(FileUtils.getBaseName("a/b/c.txt")).isEqualTo("c");
-  }
+    @Nested
+    class Failure {
 
-  @Test
-  public void getBaseName_WithOnlyFileName_ShouldReturnBaseName() {
-    assertThat(FileUtils.getBaseName("c.txt")).isEqualTo("c");
-  }
+      @Test
+      public void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) {
 
-  @Test
-  public void getBaseName_WithFullPathWithoutExtension_ShouldReturnFileName() {
-    assertThat(FileUtils.getBaseName("a/b/c")).isEqualTo("c");
-  }
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
 
-  @Test
-  public void getBaseName_WithOnlyFileNameWithoutExtension_ShouldReturnFileName() {
-    assertThat(FileUtils.getBaseName("c")).isEqualTo("c");
-  }
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.readFileToString(dir, StandardCharsets.UTF_8))
+            .withMessage("srcFile must be an existing file");
+      }
 
-  @Test
-  public void getBaseName_WithFullDirectoryPath_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getBaseName("a/b/")).isEqualTo("");
-  }
+      @Test
+      public void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
+          final @TempDir File testFolder) {
 
-  @Test
-  public void getBaseName_WithSlash_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getBaseName("/")).isEqualTo("");
-  }
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File from = new File(dir, "from.txt");
 
-  @Test
-  public void getExtension_WithNull_ShouldReturnNull() {
-    assertThat(FileUtils.getExtension(null)).isNull();
-  }
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> FileUtils.readFileToString(from, StandardCharsets.UTF_8))
+            .withMessage("srcFile must be an existing file");
+      }
+    }
 
-  @Test
-  public void getExtension_WithFullPath_ShouldReturnExtension() {
-    assertThat(FileUtils.getExtension("a/b/c.txt")).isEqualTo("txt");
-  }
+    @Nested
+    class Success {
 
-  @Test
-  public void getExtension_WithOnlyFileName_ShouldReturnExtension() {
-    assertThat(FileUtils.getExtension("c.txt")).isEqualTo("txt");
-  }
+      @Test
+      public void withFile_ShouldReturnFilecontentAsString(final @TempDir File testFolder)
+          throws IOException {
 
-  @Test
-  public void getExtension_WithFullPathWithoutExtension_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getExtension("a/b/c")).isEqualTo("");
-  }
+        final Charset encoding = StandardCharsets.UTF_8;
+        final String test = "ABDCEF\nGHIJKL  \nMNOPQRS\n\tTUVWXYZééé^ç^ç^ç^ç^pawewew";
 
-  @Test
-  public void getExtension_WithOnlyFileNameWithoutExtension_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getExtension("c")).isEqualTo("");
-  }
+        final File dir = new File(testFolder, "test");
+        dir.mkdir();
+        final File file = new File(dir, "file.txt");
+        file.createNewFile();
 
-  @Test
-  public void getExtension_WithFullDirectoryPath_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getExtension("a/b/")).isEqualTo("");
-  }
+        Files.write(file.toPath(), test.getBytes(encoding));
 
-  @Test
-  public void getExtension_WithSlash_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getExtension("/")).isEqualTo("");
-  }
-
-  @Test
-  public void getExtension_WithEmptyString_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getExtension("")).isEqualTo("");
-  }
-
-  @Test
-  public void getExtension_WithDot_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getExtension(".")).isEqualTo("");
-  }
-
-  @Test
-  public void getExtension_WithDotButNoExtension_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getExtension("/test/a.")).isEqualTo("");
-  }
-
-  @Test
-  public void getExtension_WithDotButNoBaseNameNorExtension_ShouldReturnEmptyString() {
-    assertThat(FileUtils.getExtension("/test/.")).isEqualTo("");
-  }
-
-  @Test
-  public void getFullPath_WithNull_ShouldReturnNull() {
-    assertThat(FileUtils.getBaseName(null)).isNull();
+        assertThat(FileUtils.readFileToString(file, encoding)).isEqualTo(test);
+      }
+    }
   }
 }

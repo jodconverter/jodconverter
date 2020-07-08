@@ -19,6 +19,8 @@
 
 package org.jodconverter.core.task;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -37,8 +39,7 @@ public class AbstractOfficeTaskTest {
   public void toString_AsExpected(final @TempDir File testFolder) throws IOException {
 
     final File file = new File(testFolder, getClass().getName() + ".txt");
-    //noinspection ResultOfMethodCallIgnored
-    file.createNewFile();
+    assertThat(file.createNewFile()).isTrue();
 
     final SourceDocumentSpecs source = new SourceDocumentSpecsFromFile(file);
 

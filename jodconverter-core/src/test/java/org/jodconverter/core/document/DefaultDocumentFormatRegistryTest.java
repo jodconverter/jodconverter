@@ -21,12 +21,14 @@ package org.jodconverter.core.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.assertj.core.api.AutoCloseableSoftAssertions;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.test.util.AssertUtil;
@@ -40,374 +42,193 @@ public class DefaultDocumentFormatRegistryTest {
   }
 
   private void assertExpectedExtensions(
-      final Set<DocumentFormat> formats, final String... extensions) {
+      SoftAssertions soft, final Set<DocumentFormat> formats, final String... extensions) {
 
-    assertThat(formats).hasSize(extensions.length);
-    formats.forEach(format -> assertThat(format.getExtension()).isIn((Object[]) extensions));
+    soft.assertThat(formats).hasSize(extensions.length);
+    formats.forEach(format -> soft.assertThat(format.getExtension()).isIn((Object[]) extensions));
   }
 
   /** Tests all the default output formats are load successfully. */
   @Test
   public void getInstance_AllOutputFormatsLoadedSuccessfully() {
 
-    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+    try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
+      // TEXT output format
+      assertExpectedExtensions(
+          ass,
+          DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.TEXT),
+          "doc",
+          "docx",
+          "html",
+          "xhtml",
+          "jpg",
+          "odt",
+          "ott",
+          "fodt",
+          "pdf",
+          "png",
+          "rtf",
+          "sxw",
+          "txt");
 
-    // TEXT output format
-    Set<DocumentFormat> outputFormats = registry.getOutputFormats(DocumentFamily.TEXT);
-    assertExpectedExtensions(
-        outputFormats,
-        "doc",
-        "docx",
-        "html",
-        "xhtml",
-        "jpg",
-        "odt",
-        "ott",
-        "fodt",
-        "pdf",
-        "png",
-        "rtf",
-        "sxw",
-        "txt");
-    // SPREADSHEET output format
-    outputFormats = registry.getOutputFormats(DocumentFamily.SPREADSHEET);
-    assertExpectedExtensions(
-        outputFormats,
-        "csv",
-        "html",
-        "xhtml",
-        "jpg",
-        "ods",
-        "ots",
-        "fods",
-        "pdf",
-        "png",
-        "sxc",
-        "tsv",
-        "xls",
-        "xlsx");
-    // PRESENTATION output format
-    outputFormats = registry.getOutputFormats(DocumentFamily.PRESENTATION);
-    assertExpectedExtensions(
-        outputFormats,
-        "gif",
-        "html",
-        "xhtml",
-        "jpg",
-        "odp",
-        "otp",
-        "fodp",
-        "pdf",
-        "png",
-        "ppt",
-        "pptx",
-        "swf",
-        "sxi",
-        "tif",
-        "bmp");
-    // DRAWING output format
-    outputFormats = registry.getOutputFormats(DocumentFamily.DRAWING);
-    assertExpectedExtensions(
-        outputFormats,
-        "gif",
-        "jpg",
-        "odg",
-        "otg",
-        "fodg",
-        "pdf",
-        "png",
-        "svg",
-        "swf",
-        "tif",
-        "vsd",
-        "vsdx",
-        "bmp");
+      // SPREADSHEET output format
+      assertExpectedExtensions(
+          ass,
+          DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.SPREADSHEET),
+          "csv",
+          "html",
+          "xhtml",
+          "jpg",
+          "ods",
+          "ots",
+          "fods",
+          "pdf",
+          "png",
+          "sxc",
+          "tsv",
+          "xls",
+          "xlsx");
+
+      // PRESENTATION output format
+      assertExpectedExtensions(
+          ass,
+          DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.PRESENTATION),
+          "gif",
+          "html",
+          "xhtml",
+          "jpg",
+          "odp",
+          "otp",
+          "fodp",
+          "pdf",
+          "png",
+          "ppt",
+          "pptx",
+          "swf",
+          "sxi",
+          "tif",
+          "bmp");
+
+      // DRAWING output format
+      assertExpectedExtensions(
+          ass,
+          DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.DRAWING),
+          "gif",
+          "jpg",
+          "odg",
+          "otg",
+          "fodg",
+          "pdf",
+          "png",
+          "svg",
+          "swf",
+          "tif",
+          "vsd",
+          "vsdx",
+          "bmp");
+    }
+  }
+
+  private void assertByExt(SoftAssertions soft, String ext, DocumentFormat expected) {
+    soft.assertThat(DefaultDocumentFormatRegistry.getFormatByExtension(ext)).isEqualTo(expected);
   }
 
   @Test
   public void getFormatByExtension_AllFormatsLoadedSuccessfully() {
 
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("pdf"))
-          .isEqualTo(DefaultDocumentFormatRegistry.PDF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("swf"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SWF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("html"))
-          .isEqualTo(DefaultDocumentFormatRegistry.HTML);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("xhtml"))
-          .isEqualTo(DefaultDocumentFormatRegistry.XHTML);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("odt"))
-          .isEqualTo(DefaultDocumentFormatRegistry.ODT);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("ott"))
-          .isEqualTo(DefaultDocumentFormatRegistry.OTT);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("fodt"))
-          .isEqualTo(DefaultDocumentFormatRegistry.FODT);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("sxw"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SXW);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("doc"))
-          .isEqualTo(DefaultDocumentFormatRegistry.DOC);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("docx"))
-          .isEqualTo(DefaultDocumentFormatRegistry.DOCX);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("rtf"))
-          .isEqualTo(DefaultDocumentFormatRegistry.RTF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("wpd"))
-          .isEqualTo(DefaultDocumentFormatRegistry.WPD);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("txt"))
-          .isEqualTo(DefaultDocumentFormatRegistry.TXT);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("ods"))
-          .isEqualTo(DefaultDocumentFormatRegistry.ODS);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("ots"))
-          .isEqualTo(DefaultDocumentFormatRegistry.OTS);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("fods"))
-          .isEqualTo(DefaultDocumentFormatRegistry.FODS);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("sxc"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SXC);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("xls"))
-          .isEqualTo(DefaultDocumentFormatRegistry.XLS);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("xlsx"))
-          .isEqualTo(DefaultDocumentFormatRegistry.XLSX);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("csv"))
-          .isEqualTo(DefaultDocumentFormatRegistry.CSV);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("tsv"))
-          .isEqualTo(DefaultDocumentFormatRegistry.TSV);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("odp"))
-          .isEqualTo(DefaultDocumentFormatRegistry.ODP);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("otp"))
-          .isEqualTo(DefaultDocumentFormatRegistry.OTP);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("fodp"))
-          .isEqualTo(DefaultDocumentFormatRegistry.FODP);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("sxi"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SXI);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("ppt"))
-          .isEqualTo(DefaultDocumentFormatRegistry.PPT);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("pptx"))
-          .isEqualTo(DefaultDocumentFormatRegistry.PPTX);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("odg"))
-          .isEqualTo(DefaultDocumentFormatRegistry.ODG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("otg"))
-          .isEqualTo(DefaultDocumentFormatRegistry.OTG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("fodg"))
-          .isEqualTo(DefaultDocumentFormatRegistry.FODG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("svg"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SVG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("png"))
-          .isEqualTo(DefaultDocumentFormatRegistry.PNG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("jpg"))
-          .isEqualTo(DefaultDocumentFormatRegistry.JPEG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("jpeg"))
-          .isEqualTo(DefaultDocumentFormatRegistry.JPEG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("tif"))
-          .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("tiff"))
-          .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("gif"))
-          .isEqualTo(DefaultDocumentFormatRegistry.GIF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("bmp"))
-          .isEqualTo(DefaultDocumentFormatRegistry.BMP);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("vsd"))
-          .isEqualTo(DefaultDocumentFormatRegistry.VSD);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByExtension("vsdx"))
-          .isEqualTo(DefaultDocumentFormatRegistry.VSDX);
+    try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
+      assertByExt(ass, "pdf", PDF);
+      assertByExt(ass, "swf", SWF);
+      assertByExt(ass, "html", HTML);
+      assertByExt(ass, "xhtml", XHTML);
+      assertByExt(ass, "odt", ODT);
+      assertByExt(ass, "ott", OTT);
+      assertByExt(ass, "fodt", FODT);
+      assertByExt(ass, "sxw", SXW);
+      assertByExt(ass, "doc", DOC);
+      assertByExt(ass, "docx", DOCX);
+      assertByExt(ass, "rtf", RTF);
+      assertByExt(ass, "wpd", WPD);
+      assertByExt(ass, "txt", TXT);
+      assertByExt(ass, "ods", ODS);
+      assertByExt(ass, "ots", OTS);
+      assertByExt(ass, "fods", FODS);
+      assertByExt(ass, "sxc", SXC);
+      assertByExt(ass, "xls", XLS);
+      assertByExt(ass, "xlsx", XLSX);
+      assertByExt(ass, "csv", CSV);
+      assertByExt(ass, "tsv", TSV);
+      assertByExt(ass, "odp", ODP);
+      assertByExt(ass, "otp", OTP);
+      assertByExt(ass, "fodp", FODP);
+      assertByExt(ass, "sxi", SXI);
+      assertByExt(ass, "ppt", PPT);
+      assertByExt(ass, "pptx", PPTX);
+      assertByExt(ass, "odg", ODG);
+      assertByExt(ass, "otg", OTG);
+      assertByExt(ass, "fodg", FODG);
+      assertByExt(ass, "svg", SVG);
+      assertByExt(ass, "png", PNG);
+      assertByExt(ass, "jpg", JPEG);
+      assertByExt(ass, "jpeg", JPEG);
+      assertByExt(ass, "tif", TIFF);
+      assertByExt(ass, "tiff", TIFF);
+      assertByExt(ass, "gif", GIF);
+      assertByExt(ass, "bmp", BMP);
+      assertByExt(ass, "vsd", VSD);
+      assertByExt(ass, "vsdx", VSDX);
     }
+  }
+
+  private void assertByType(SoftAssertions soft, String mediaType, DocumentFormat expected) {
+    soft.assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType(mediaType))
+        .isEqualTo(expected);
   }
 
   @Test
   public void getFormatByMediaType_AllFormatsLoadedSuccessfully() {
 
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/pdf"))
-          .isEqualTo(DefaultDocumentFormatRegistry.PDF);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType("application/x-shockwave-flash"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SWF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("text/html"))
-          .isEqualTo(DefaultDocumentFormatRegistry.HTML);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/xhtml+xml"))
-          .isEqualTo(DefaultDocumentFormatRegistry.XHTML);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.text"))
-          .isEqualTo(DefaultDocumentFormatRegistry.ODT);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.text-template"))
-          .isEqualTo(DefaultDocumentFormatRegistry.OTT);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.text-flat-xml"))
-          .isEqualTo(DefaultDocumentFormatRegistry.FODT);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.sun.xml.writer"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SXW);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/msword"))
-          .isEqualTo(DefaultDocumentFormatRegistry.DOC);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
-          .isEqualTo(DefaultDocumentFormatRegistry.DOCX);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("text/rtf"))
-          .isEqualTo(DefaultDocumentFormatRegistry.RTF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/wordperfect"))
-          .isEqualTo(DefaultDocumentFormatRegistry.WPD);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("text/plain"))
-          .isEqualTo(DefaultDocumentFormatRegistry.TXT);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.spreadsheet"))
-          .isEqualTo(DefaultDocumentFormatRegistry.ODS);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.spreadsheet-template"))
-          .isEqualTo(DefaultDocumentFormatRegistry.OTS);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.spreadsheet-flat-xml"))
-          .isEqualTo(DefaultDocumentFormatRegistry.FODS);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.sun.xml.calc"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SXC);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.ms-excel"))
-          .isEqualTo(DefaultDocumentFormatRegistry.XLS);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-          .isEqualTo(DefaultDocumentFormatRegistry.XLSX);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("text/csv"))
-          .isEqualTo(DefaultDocumentFormatRegistry.CSV);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType("text/tab-separated-values"))
-          .isEqualTo(DefaultDocumentFormatRegistry.TSV);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.presentation"))
-          .isEqualTo(DefaultDocumentFormatRegistry.ODP);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.presentation-template"))
-          .isEqualTo(DefaultDocumentFormatRegistry.OTP);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.presentation-flat-xml"))
-          .isEqualTo(DefaultDocumentFormatRegistry.FODP);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.sun.xml.impress"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SXI);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.ms-powerpoint"))
-          .isEqualTo(DefaultDocumentFormatRegistry.PPT);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.openxmlformats-officedocument.presentationml.presentation"))
-          .isEqualTo(DefaultDocumentFormatRegistry.PPTX);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.graphics"))
-          .isEqualTo(DefaultDocumentFormatRegistry.ODG);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.graphics-template"))
-          .isEqualTo(DefaultDocumentFormatRegistry.OTG);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd.oasis.opendocument.graphics-flat-xml"))
-          .isEqualTo(DefaultDocumentFormatRegistry.FODG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/svg+xml"))
-          .isEqualTo(DefaultDocumentFormatRegistry.SVG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/png"))
-          .isEqualTo(DefaultDocumentFormatRegistry.PNG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/jpeg"))
-          .isEqualTo(DefaultDocumentFormatRegistry.JPEG);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/gif"))
-          .isEqualTo(DefaultDocumentFormatRegistry.GIF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/tiff"))
-          .isEqualTo(DefaultDocumentFormatRegistry.TIFF);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("image/bmp"))
-          .isEqualTo(DefaultDocumentFormatRegistry.BMP);
-      softly
-          .assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd-visio"))
-          .isEqualTo(DefaultDocumentFormatRegistry.VSD);
-      softly
-          .assertThat(
-              DefaultDocumentFormatRegistry.getFormatByMediaType(
-                  "application/vnd-ms-visio.drawing"))
-          .isEqualTo(DefaultDocumentFormatRegistry.VSDX);
+    try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
+      assertByType(ass, "application/pdf", PDF);
+      assertByType(ass, "application/x-shockwave-flash", SWF);
+      assertByType(ass, "text/html", HTML);
+      assertByType(ass, "application/xhtml+xml", XHTML);
+      assertByType(ass, "application/vnd.oasis.opendocument.text", ODT);
+      assertByType(ass, "application/vnd.oasis.opendocument.text-template", OTT);
+      assertByType(ass, "application/vnd.oasis.opendocument.text-flat-xml", FODT);
+      assertByType(ass, "application/vnd.sun.xml.writer", SXW);
+      assertByType(ass, "application/msword", DOC);
+      assertByType(
+          ass, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", DOCX);
+      assertByType(ass, "text/rtf", RTF);
+      assertByType(ass, "application/wordperfect", WPD);
+      assertByType(ass, "text/plain", TXT);
+      assertByType(ass, "application/vnd.oasis.opendocument.spreadsheet", ODS);
+      assertByType(ass, "application/vnd.oasis.opendocument.spreadsheet-template", OTS);
+      assertByType(ass, "application/vnd.oasis.opendocument.spreadsheet-flat-xml", FODS);
+      assertByType(ass, "application/vnd.sun.xml.calc", SXC);
+      assertByType(ass, "application/vnd.ms-excel", XLS);
+      assertByType(ass, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", XLSX);
+      assertByType(ass, "text/csv", CSV);
+      assertByType(ass, "text/tab-separated-values", TSV);
+      assertByType(ass, "application/vnd.oasis.opendocument.presentation", ODP);
+      assertByType(ass, "application/vnd.oasis.opendocument.presentation-template", OTP);
+      assertByType(ass, "application/vnd.oasis.opendocument.presentation-flat-xml", FODP);
+      assertByType(ass, "application/vnd.sun.xml.impress", SXI);
+      assertByType(ass, "application/vnd.ms-powerpoint", PPT);
+      assertByType(
+          ass, "application/vnd.openxmlformats-officedocument.presentationml.presentation", PPTX);
+      assertByType(ass, "application/vnd.oasis.opendocument.graphics", ODG);
+      assertByType(ass, "application/vnd.oasis.opendocument.graphics-template", OTG);
+      assertByType(ass, "application/vnd.oasis.opendocument.graphics-flat-xml", FODG);
+      assertByType(ass, "image/svg+xml", SVG);
+      assertByType(ass, "image/png", PNG);
+      assertByType(ass, "image/jpeg", JPEG);
+      assertByType(ass, "image/gif", GIF);
+      assertByType(ass, "image/tiff", TIFF);
+      assertByType(ass, "image/bmp", BMP);
+      assertByType(ass, "application/vnd-visio", VSD);
+      assertByType(ass, "application/vnd-ms-visio.drawing", VSDX);
     }
   }
 

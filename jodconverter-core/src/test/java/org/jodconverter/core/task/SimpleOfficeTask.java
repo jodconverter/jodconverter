@@ -17,12 +17,13 @@
  * limitations under the License.
  */
 
-package org.jodconverter.core.office;
+package org.jodconverter.core.task;
 
-import org.jodconverter.core.task.OfficeTask;
+import org.jodconverter.core.office.OfficeContext;
+import org.jodconverter.core.office.OfficeException;
 
 /** Task that only sleep a specified delay. */
-public class SimpleOfficeTask implements OfficeTask {
+public final class SimpleOfficeTask implements OfficeTask {
 
   private static final long NO_DELAY = 0L;
 
@@ -83,10 +84,12 @@ public class SimpleOfficeTask implements OfficeTask {
       }
       completed = true;
 
-    } catch (OfficeException exception) {
-      throw exception; // NOPMD - Better this than checking in the other catch statement
-    } catch (Exception exception) {
-      throw new OfficeException("Failed to execute task", exception);
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
+    } catch (OfficeException | RuntimeException ex) {
+      throw ex; // NOPMD - Better this than checking in the other catch statement
+    } catch (Exception ex) {
+      throw new OfficeException("Failed to execute task", ex);
     }
   }
 
