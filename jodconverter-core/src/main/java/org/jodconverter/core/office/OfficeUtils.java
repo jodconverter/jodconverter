@@ -32,9 +32,28 @@ public final class OfficeUtils {
    *
    * @return A {@code File} instance that is default working directory.
    */
-  @NonNull
-  public static File getDefaultWorkingDir() {
+  public static @NonNull File getDefaultWorkingDir() {
     return new File(System.getProperty("java.io.tmpdir"));
+  }
+
+  /**
+   * Validates that the specified File instance is a valid working directory. To be valid, a working
+   * directory must be a writable, existing directory.
+   *
+   * @param workingDir The directory to validate.
+   * @exception IllegalStateException If the specified directory if not a valid working directory.
+   */
+  public static void validateWorkingDir(final @NonNull File workingDir) {
+
+    if (!workingDir.isDirectory()) {
+      throw new IllegalStateException(
+          "workingDir doesn't exist or is not a directory: " + workingDir);
+    }
+
+    if (!workingDir.canWrite()) {
+      throw new IllegalStateException(
+          String.format("workingDir '%s' cannot be written to", workingDir));
+    }
   }
 
   /**
@@ -62,7 +81,7 @@ public final class OfficeUtils {
    *
    * @param manager the manager to stop, may be null or already stopped.
    */
-  public static void stopQuietly(@Nullable final OfficeManager manager) {
+  public static void stopQuietly(final @Nullable OfficeManager manager) {
 
     try {
       if (manager != null) {

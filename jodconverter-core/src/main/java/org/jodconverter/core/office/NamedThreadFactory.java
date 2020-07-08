@@ -37,7 +37,7 @@ public class NamedThreadFactory implements ThreadFactory {
    *
    * @param basename Basename of a new tread created by this factory.
    */
-  public NamedThreadFactory(@NonNull final String basename) {
+  public NamedThreadFactory(final @NonNull String basename) {
     this(basename, true);
   }
 
@@ -47,15 +47,14 @@ public class NamedThreadFactory implements ThreadFactory {
    * @param basename Basename of a new tread created by this factory.
    * @param daemon If true, marks new thread as a daemon thread
    */
-  public NamedThreadFactory(@NonNull final String basename, final boolean daemon) {
+  public NamedThreadFactory(final @NonNull String basename, final boolean daemon) {
 
     this.basename = basename;
     this.daemon = daemon;
   }
 
-  @NonNull
   @Override
-  public Thread newThread(@NonNull final Runnable runnable) {
+  public @NonNull Thread newThread(final @NonNull Runnable runnable) {
 
     final Thread thread = new Thread(runnable, basename + "-" + THREAD_INDEX.getAndIncrement());
     thread.setDaemon(daemon);

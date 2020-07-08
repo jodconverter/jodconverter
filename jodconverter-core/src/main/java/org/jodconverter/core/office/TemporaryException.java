@@ -33,7 +33,7 @@ public class TemporaryException extends Exception {
    *
    * @param message The message.
    */
-  public TemporaryException(@NonNull final String message) {
+  public TemporaryException(final @NonNull String message) {
     super(message);
   }
 
@@ -42,7 +42,7 @@ public class TemporaryException extends Exception {
    *
    * @param cause The cause.
    */
-  public TemporaryException(@NonNull final Throwable cause) {
+  public TemporaryException(final @NonNull Throwable cause) {
     super(cause);
   }
 }

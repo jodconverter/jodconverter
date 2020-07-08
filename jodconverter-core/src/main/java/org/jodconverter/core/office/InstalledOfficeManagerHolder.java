@@ -36,8 +36,7 @@ class InstalledOfficeManagerHolder { // NOPMD - Disable utility class name rule 
    *
    * @return The main default office manager.
    */
-  @Nullable
-  public static OfficeManager getInstance() {
+  public static @Nullable OfficeManager getInstance() {
 
     synchronized (InstalledOfficeManagerHolder.class) {
       return instance;
@@ -51,8 +50,7 @@ class InstalledOfficeManagerHolder { // NOPMD - Disable utility class name rule 
    * @return the previous installed office manager, or {@code null} if there was no installed office
    *     manager.
    */
-  @Nullable
-  public static OfficeManager setInstance(@Nullable final OfficeManager manager) {
+  public static @Nullable OfficeManager setInstance(final @Nullable OfficeManager manager) {
 
     synchronized (InstalledOfficeManagerHolder.class) {
       final OfficeManager oldManager = instance;

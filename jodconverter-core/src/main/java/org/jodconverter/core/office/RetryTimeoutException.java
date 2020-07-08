@@ -33,7 +33,7 @@ public class RetryTimeoutException extends Exception {
    *
    * @param cause The cause.
    */
-  public RetryTimeoutException(@NonNull final Throwable cause) {
+  public RetryTimeoutException(final @NonNull Throwable cause) {
     super(cause);
   }
 }

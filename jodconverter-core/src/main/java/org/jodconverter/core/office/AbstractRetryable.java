@@ -25,7 +25,7 @@ package org.jodconverter.core.office;
  */
 public abstract class AbstractRetryable<T extends Throwable> {
 
-  private static final long NO_DELAY = 0L;
+  private static final long NO_SLEEP = 0L;
 
   /** Initializes a new instance of the class. */
   protected AbstractRetryable() {
@@ -51,7 +51,7 @@ public abstract class AbstractRetryable<T extends Throwable> {
    */
   public void execute(final long interval, final long timeout) throws RetryTimeoutException, T {
 
-    execute(NO_DELAY, interval, timeout);
+    execute(NO_SLEEP, interval, timeout);
   }
 
   /**
@@ -68,7 +68,7 @@ public abstract class AbstractRetryable<T extends Throwable> {
 
     final long start = System.currentTimeMillis();
 
-    if (delay > NO_DELAY) {
+    if (delay > NO_SLEEP) {
       sleep(delay);
     }
 
@@ -78,7 +78,9 @@ public abstract class AbstractRetryable<T extends Throwable> {
         return;
       } catch (TemporaryException temporaryException) {
         if (System.currentTimeMillis() - start < timeout) {
-          sleep(interval);
+          if (interval > NO_SLEEP) {
+            sleep(interval);
+          }
         } else {
           throw new RetryTimeoutException( // NOPMD - Only cause is relevant
               temporaryException.getCause());
@@ -87,11 +89,12 @@ public abstract class AbstractRetryable<T extends Throwable> {
     }
   }
 
-  private void sleep(final long millis) {
+  private void sleep(final long millis) throws RetryTimeoutException {
     try {
       Thread.sleep(millis);
-    } catch (InterruptedException ignored) {
-      // ignore
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
+      throw new RetryTimeoutException(ex);
     }
   }
 }

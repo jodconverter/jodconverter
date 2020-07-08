@@ -20,13 +20,13 @@
 package org.jodconverter.core.office;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +47,6 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(AbstractOfficeManagerPoolEntry.class);
 
-  // The default timeout when processing
-  private static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120_000L; // 2 minutes
-
   private final long taskExecutionTimeout;
   private final SuspendableThreadPoolExecutor taskExecutor;
   private Future<?> currentFuture;
@@ -61,19 +58,21 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
    *     of a task is longer than this timeout, this task will be aborted and the next task is
    *     processed.
    */
-  public AbstractOfficeManagerPoolEntry(@Nullable final Long taskExecutionTimeout) {
+  protected AbstractOfficeManagerPoolEntry(final long taskExecutionTimeout) {
 
-    this.taskExecutionTimeout =
-        taskExecutionTimeout == null ? DEFAULT_TASK_EXECUTION_TIMEOUT : taskExecutionTimeout;
+    this.taskExecutionTimeout = taskExecutionTimeout;
     taskExecutor =
         new SuspendableThreadPoolExecutor(new NamedThreadFactory("jodconverter-poolentry"));
   }
 
   @Override
-  public final void execute(@NonNull final OfficeTask task) throws OfficeException {
+  public final void execute(final @NonNull OfficeTask task) throws OfficeException {
 
     // No need to check if the manager if running here.
-    // This check is already done in the pool
+    // This check is already done in the pool.
+
+    // TODO: Maybe will should check if the taskExecutor was made available
+    // at least once, meaning that the entry has been started.
 
     // Submit the task to the executor
     currentFuture =
@@ -91,25 +90,34 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
       currentFuture.get(taskExecutionTimeout, TimeUnit.MILLISECONDS);
       LOGGER.debug("Task executed successfully: {}", task);
 
-    } catch (TimeoutException timeoutEx) {
+    } catch (CancellationException ex) {
 
-      // The task did not complete within the configured timeout...
-      handleExecuteTimeoutException(timeoutEx);
-      throw new OfficeException("Task did not complete within timeout: " + task, timeoutEx);
+      // The task was cancelled...
+      throw new OfficeException(String.format("Task was cancelled: %s", task), ex);
 
-    } catch (ExecutionException executionEx) {
+    } catch (ExecutionException ex) {
 
       // Rethrow the original (cause) exception
-      if (executionEx.getCause() instanceof OfficeException) {
-        throw (OfficeException) executionEx.getCause();
+      if (ex.getCause() instanceof OfficeException) {
+        throw (OfficeException) ex.getCause();
       }
+
       throw new OfficeException( // NOPMD - Only cause is relevant
-          "Task failed: " + task, executionEx.getCause());
+          String.format("Task did not complete: %s", task), ex.getCause());
 
-    } catch (Exception ex) {
+    } catch (InterruptedException ex) {
 
-      // Unexpected exception
-      throw new OfficeException("Task failed: " + task, ex);
+      // The task was interrupted...
+      Thread.currentThread().interrupt();
+      throw new OfficeException(
+          String.format("Task was interrupted while executing: %s", task), ex);
+
+    } catch (TimeoutException ex) {
+
+      // The task did not complete within the configured timeout...
+      handleExecuteTimeoutException(ex);
+      throw new OfficeException(
+          String.format("Task did not complete within timeout: %s", task), ex);
 
     } finally {
       currentFuture = null;
@@ -120,16 +128,16 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
    * Performs the execution of a task.
    *
    * @param task The task to execute.
-   * @throws Exception If any errors occurs during the conversion.
+   * @throws OfficeException If any errors occurs during the conversion.
    */
-  protected abstract void doExecute(@NonNull final OfficeTask task) throws Exception;
+  protected abstract void doExecute(final @NonNull OfficeTask task) throws OfficeException;
 
   /**
    * Handles a timeout exception raised while executing a task.
    *
    * @param timeoutEx the exception thrown.
    */
-  protected void handleExecuteTimeoutException(@NonNull final TimeoutException timeoutEx) {
+  protected void handleExecuteTimeoutException(final @NonNull TimeoutException timeoutEx) {
 
     // The default behavior is to do nothing
     LOGGER.debug("Handling task execution timeout.", timeoutEx);

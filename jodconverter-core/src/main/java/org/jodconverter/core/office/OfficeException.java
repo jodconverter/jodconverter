@@ -32,7 +32,7 @@ public class OfficeException extends Exception {
    * @param message The detail message. The detail message is saved for later retrieval by the
    *     {@link #getMessage()} method.
    */
-  public OfficeException(@NonNull final String message) {
+  public OfficeException(final @NonNull String message) {
     super(message);
   }
 
@@ -48,7 +48,7 @@ public class OfficeException extends Exception {
    *     (A {@code null} value is permitted, and indicates that the cause is nonexistent or
    *     unknown.)
    */
-  public OfficeException(@NonNull final String message, @NonNull final Throwable cause) {
+  public OfficeException(final @NonNull String message, final @NonNull Throwable cause) {
     super(message, cause);
   }
 }

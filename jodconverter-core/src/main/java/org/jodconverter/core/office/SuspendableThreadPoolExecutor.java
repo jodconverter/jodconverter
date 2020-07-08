@@ -40,7 +40,7 @@ public class SuspendableThreadPoolExecutor extends ThreadPoolExecutor {
   }
 
   @Override
-  protected void beforeExecute(@NonNull final Thread thread, @NonNull final Runnable task) {
+  protected void beforeExecute(final @NonNull Thread thread, final @NonNull Runnable task) {
     super.beforeExecute(thread, task);
 
     suspendLock.lock();
