@@ -34,7 +34,7 @@ public class PumpStreamHandler {
    * @param errorPumper the error {@code StreamPumper}.
    */
   public PumpStreamHandler(
-      @NonNull final StreamPumper outputPumper, @NonNull final StreamPumper errorPumper) {
+      final @NonNull StreamPumper outputPumper, final @NonNull StreamPumper errorPumper) {
     this.outputPumper = outputPumper;
     this.errorPumper = errorPumper;
   }
@@ -44,8 +44,7 @@ public class PumpStreamHandler {
    *
    * @return The output pumper.
    */
-  @NonNull
-  public StreamPumper getOutputPumper() {
+  public @NonNull StreamPumper getOutputPumper() {
     return outputPumper;
   }
 
@@ -54,8 +53,7 @@ public class PumpStreamHandler {
    *
    * @return The error pumper.
    */
-  @NonNull
-  public StreamPumper getErrorPumper() {
+  public @NonNull StreamPumper getErrorPumper() {
     return errorPumper;
   }
 

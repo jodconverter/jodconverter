@@ -35,7 +35,7 @@ public class WrappedUnoException extends RuntimeException {
    *     unknown.)
    */
   public WrappedUnoException(
-      @NonNull final String message, final com.sun.star.uno.Exception cause) {
+      final @NonNull String message, final com.sun.star.uno.Exception cause) {
     super(message, cause);
   }
 

@@ -55,14 +55,13 @@ public class UnixProcessManager extends AbstractProcessManager {
    *
    * @return The default {@code UnixProcessManager} instance.
    */
-  @NonNull
-  public static UnixProcessManager getDefault() {
+  public static @NonNull UnixProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
 
-  @NonNull
   @Override
-  protected List<@NonNull String> execute(@NonNull final String[] cmdarray) throws IOException {
+  protected @NonNull List<@NonNull String> execute(final @NonNull String[] cmdarray)
+      throws IOException {
 
     if (runAsArgs == null) {
       return super.execute(cmdarray);
@@ -75,24 +74,22 @@ public class UnixProcessManager extends AbstractProcessManager {
     return super.execute(newarray);
   }
 
-  @NonNull
   @Override
-  protected String[] getRunningProcessesCommand(@NonNull final String process) {
+  protected @NonNull String[] getRunningProcessesCommand(final @NonNull String process) {
 
     return new String[] {
       "/bin/sh", "-c", "/bin/ps -e -o pid,args | /bin/grep " + process + " | /bin/grep -v grep"
     };
   }
 
-  @NonNull
   @Override
-  protected Pattern getRunningProcessLinePattern() {
+  protected @NonNull Pattern getRunningProcessLinePattern() {
 
     return PS_OUTPUT_LINE;
   }
 
   @Override
-  public void kill(@Nullable final Process process, final long pid) throws IOException {
+  public void kill(final @Nullable Process process, final long pid) throws IOException {
     if (pid > PID_UNKNOWN) {
       execute(new String[] {"/bin/kill", "-KILL", String.valueOf(pid)});
     } else {
@@ -105,7 +102,7 @@ public class UnixProcessManager extends AbstractProcessManager {
    *
    * @param runAsArgs The sudo command arguments.
    */
-  public void setRunAsArgs(@NonNull final String[] runAsArgs) {
+  public void setRunAsArgs(final @NonNull String[] runAsArgs) {
     this.runAsArgs = Arrays.copyOf(runAsArgs, runAsArgs.length);
   }
 }

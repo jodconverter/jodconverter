@@ -77,7 +77,7 @@ public class PagesSelectorFilter implements Filter {
    *
    * @param pages The page numbers of the page to convert. First page is index 1.
    */
-  public PagesSelectorFilter(@NonNull final Integer... pages) {
+  public PagesSelectorFilter(final @NonNull Integer... pages) {
     this(Stream.of(pages).collect(Collectors.toSet()));
   }
 
@@ -87,7 +87,7 @@ public class PagesSelectorFilter implements Filter {
    *
    * @param pages The page numbers of the page to convert. First page is index 1.
    */
-  public PagesSelectorFilter(@NonNull final Set<@NonNull Integer> pages) {
+  public PagesSelectorFilter(final @NonNull Set<@NonNull Integer> pages) {
     super();
 
     AssertUtils.notEmpty(pages, "pages must not be null nor empty");
@@ -97,9 +97,9 @@ public class PagesSelectorFilter implements Filter {
 
   @Override
   public void doFilter(
-      @NonNull final OfficeContext context,
-      @NonNull final XComponent document,
-      @NonNull final FilterChain chain)
+      final @NonNull OfficeContext context,
+      final @NonNull XComponent document,
+      final @NonNull FilterChain chain)
       throws Exception {
 
     if (Write.isText(document)) {

@@ -41,7 +41,7 @@ compile 'org.jodconverter:jodconverter-local:4.3.0'
 
 ### Building the Project
 
-Build default, JODConverter is built using the OpenOffice libraries. See [here](https://github.com/sbraconnier/jodconverter/issues/113) to know why. Bu you can build the project using the LibreOffice libraries with the `useLibreOffice` argument.
+Build default, JODConverter is built using the OpenOffice libraries. See [here](https://github.com/sbraconnier/jodconverter/issues/113) to know why. But you can build the project using the LibreOffice libraries with the `useLibreOffice` argument.
 
 #### With OpenOffice libraries:
 ```Shell
@@ -80,7 +80,7 @@ Here are my favorite/inspiration forks/projects:
 - [Nuxeo fork](https://github.com/nuxeo/jodconverter): Nice choice if you don't want to use SIGAR and don't came across an unresponsive office process following a timeout exception that drives you crazy.
 - [documents4j project](https://github.com/documents4j/documents4j): Nice choice if you want 100% perfect conversion using MS Office. But work only on Windows out of the box (Local implementation) and not totally free (since MS Office is not free). The new "job" package is strongly inspired by this project.
 
-### A special thanks to:
+### :sparkles: A special thanks to :
 
 [@michelole](https://github.com/michelole) who created a pull request in these two forks with a [stress test](https://github.com/sbraconnier/jodconverter/blob/master/jodconverter-local/src/integTest/java/org/jodconverter/StressITest.java) that made my office process to crash every times! My first commit was when I was able to build my things with his stress test on!!  
 
@@ -93,6 +93,6 @@ including some [wiki pages](https://code.google.com/archive/p/jodconverter/wikis
 
 ## Donations
 
-If this project helps you, please consider a donation. I have to pay for the jodconverter web site (domain and hosting) every year. I also sit on my chair in front of a monitor a lot instead of being outside drinking a beer to improve this project :smiley:. Thanks!! :heart:
+If this project helps you, please consider a donation. I have to pay for the jodconverter web site (domain and hosting) every year. I also sit on my chair in front of a monitor a lot instead of being outside drinking a :beer: to improve this project :smiley:. Thanks!! :heart:
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)

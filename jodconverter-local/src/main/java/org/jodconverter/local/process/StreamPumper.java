@@ -52,7 +52,7 @@ public class StreamPumper extends Thread {
    * @param stream The input stream to read from.
    * @param consumer The consumer of lines read from the input stream.
    */
-  public StreamPumper(@NonNull final InputStream stream, @NonNull final LineConsumer consumer) {
+  public StreamPumper(final @NonNull InputStream stream, final @NonNull LineConsumer consumer) {
     super();
 
     Objects.requireNonNull(stream, "stream must not be null");
@@ -68,8 +68,7 @@ public class StreamPumper extends Thread {
    *
    * @return The consumer.
    */
-  @NonNull
-  public LineConsumer getConsumer() {
+  public @NonNull LineConsumer getConsumer() {
     return consumer;
   }
 

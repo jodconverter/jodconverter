@@ -39,6 +39,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
 
 /**
@@ -59,7 +60,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   private String portNumbers;
   private String workingDir;
   private String templateProfileDir;
-  private Boolean killExistingProcess = true;
+  private ExistingProcessAction existingProcessAction = ExistingProcessAction.KILL;
   private Long processTimeout = 120_000L;
   private Long processRetryInterval = 250L;
   private Long taskExecutionTimeout = 120_000L;
@@ -91,7 +92,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
     builder.officeHome(officeHome);
     builder.workingDir(workingDir);
     builder.templateProfileDir(templateProfileDir);
-    builder.killExistingProcess(killExistingProcess);
+    builder.existingProcessAction(existingProcessAction);
     builder.processTimeout(processTimeout);
     builder.processRetryInterval(processRetryInterval);
     builder.taskExecutionTimeout(taskExecutionTimeout);
@@ -144,16 +145,16 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Sets whether an existing office process is killed when starting a new office process for the
-   * same connection string.
+   * Specifies the action the must be taken when starting a new office process and there already is
+   * a existing running process for the same connection string.
    *
-   * <p>&nbsp; <b><i>Default</i></b>: true
+   * <p>&nbsp; <b><i>Default</i></b>: ExistingProcessAction.KILL
    *
-   * @param killExistingProcess {@code true} to kill existing process when a new process must be
-   *     created with the same connection string, {@code false} otherwise.
+   * @param existingProcessAction The existing process action.
    */
-  public void setKillExistingProcess(@Nullable final Boolean killExistingProcess) {
-    this.killExistingProcess = killExistingProcess;
+  public void setExistingProcessAction(
+      final @Nullable ExistingProcessAction existingProcessAction) {
+    this.existingProcessAction = existingProcessAction;
   }
 
   /**
@@ -161,7 +162,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    *
    * @param maxTasksPerProcess the new value to set.
    */
-  public void setMaxTasksPerProcess(@Nullable final Integer maxTasksPerProcess) {
+  public void setMaxTasksPerProcess(final @Nullable Integer maxTasksPerProcess) {
     this.maxTasksPerProcess = maxTasksPerProcess;
   }
 
@@ -170,7 +171,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    *
    * @param officeHome the new home directory to set.
    */
-  public void setOfficeHome(@Nullable final String officeHome) {
+  public void setOfficeHome(final @Nullable String officeHome) {
     this.officeHome = officeHome;
   }
 
@@ -181,7 +182,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    *
    * @param portNumbers the port numbers to use.
    */
-  public void setPortNumbers(@Nullable final String portNumbers) {
+  public void setPortNumbers(final @Nullable String portNumbers) {
     this.portNumbers = portNumbers;
   }
 
@@ -193,7 +194,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    *
    * @param processRetryInterval the retry interval, in milliseconds.
    */
-  public void setProcessRetryInterval(@Nullable final Long processRetryInterval) {
+  public void setProcessRetryInterval(final @Nullable Long processRetryInterval) {
     this.processRetryInterval = processRetryInterval;
   }
 
@@ -205,7 +206,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    *
    * @param processTimeout the process timeout, in milliseconds.
    */
-  public void setProcessTimeout(@Nullable final Long processTimeout) {
+  public void setProcessTimeout(final @Nullable Long processTimeout) {
     this.processTimeout = processTimeout;
   }
 
@@ -217,7 +218,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    *
    * @param taskExecutionTimeout The task execution timeout, in milliseconds.
    */
-  public void setTaskExecutionTimeout(@Nullable final Long taskExecutionTimeout) {
+  public void setTaskExecutionTimeout(final @Nullable Long taskExecutionTimeout) {
     this.taskExecutionTimeout = taskExecutionTimeout;
   }
 
@@ -229,7 +230,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    *
    * @param taskQueueTimeout The task queue timeout, in milliseconds.
    */
-  public void setTaskQueueTimeout(@Nullable final Long taskQueueTimeout) {
+  public void setTaskQueueTimeout(final @Nullable Long taskQueueTimeout) {
     this.taskQueueTimeout = taskQueueTimeout;
   }
 
@@ -238,7 +239,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    *
    * @param templateProfileDir The new template profile directory.
    */
-  public void setTemplateProfileDir(@Nullable final String templateProfileDir) {
+  public void setTemplateProfileDir(final @Nullable String templateProfileDir) {
     this.templateProfileDir = templateProfileDir;
   }
 
@@ -251,7 +252,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    *
    * @param workingDir The new working directory to set.
    */
-  public void setWorkingDir(@Nullable final String workingDir) {
+  public void setWorkingDir(final @Nullable String workingDir) {
     this.workingDir = workingDir;
   }
 }

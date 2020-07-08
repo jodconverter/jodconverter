@@ -42,9 +42,8 @@ public final class JodConverter { // NOPMD - Disable utility class name rule vio
    * @param source The conversion input as a file.
    * @return The current conversion specification.
    */
-  @NonNull
-  public static ConversionJobWithOptionalSourceFormatUnspecified convert(
-      @NonNull final File source) {
+  public static @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
+      final @NonNull File source) {
 
     return LocalConverter.make().convert(source);
   }
@@ -55,9 +54,8 @@ public final class JodConverter { // NOPMD - Disable utility class name rule vio
    * @param source The conversion input as an input stream.
    * @return The current conversion specification.
    */
-  @NonNull
-  public static ConversionJobWithOptionalSourceFormatUnspecified convert(
-      @NonNull final InputStream source) {
+  public static @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
+      final @NonNull InputStream source) {
 
     return LocalConverter.make().convert(source);
   }
@@ -69,9 +67,8 @@ public final class JodConverter { // NOPMD - Disable utility class name rule vio
    * @param closeStream Whether the {@link InputStream} is closed after the conversion terminates.
    * @return The current conversion specification.
    */
-  @NonNull
-  public static ConversionJobWithOptionalSourceFormatUnspecified convert(
-      @NonNull final InputStream source, final boolean closeStream) {
+  public static @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
+      final @NonNull InputStream source, final boolean closeStream) {
 
     return LocalConverter.make().convert(source, closeStream);
   }

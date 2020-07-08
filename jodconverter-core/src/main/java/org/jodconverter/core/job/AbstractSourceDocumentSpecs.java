@@ -31,8 +31,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public abstract class AbstractSourceDocumentSpecs extends AbstractDocumentSpecs
     implements SourceDocumentSpecs {
 
-  @NonNull
-  protected AbstractSourceDocumentSpecs(@NonNull final File file) {
+  protected AbstractSourceDocumentSpecs() {
+    super();
+  }
+
+  protected AbstractSourceDocumentSpecs(final @NonNull File file) {
     super(file);
   }
 }

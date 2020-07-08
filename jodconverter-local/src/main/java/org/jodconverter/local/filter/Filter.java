@@ -43,8 +43,6 @@ public interface Filter {
    * @throws Exception If an error occurs processing the filter.
    */
   void doFilter(
-      @NonNull final OfficeContext context,
-      @NonNull final XComponent document,
-      @NonNull final FilterChain chain)
+      @NonNull OfficeContext context, @NonNull XComponent document, @NonNull FilterChain chain)
       throws Exception;
 }

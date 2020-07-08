@@ -37,15 +37,14 @@ public abstract class AbstractOfficeTask implements OfficeTask {
    *
    * @param source The source specifications of the document.
    */
-  public AbstractOfficeTask(@NonNull final SourceDocumentSpecs source) {
+  public AbstractOfficeTask(final @NonNull SourceDocumentSpecs source) {
     super();
 
     this.source = source;
   }
 
-  @NonNull
   @Override
-  public String toString() {
+  public @NonNull String toString() {
     return getClass().getSimpleName() + "{" + "source=" + source + '}';
   }
 }

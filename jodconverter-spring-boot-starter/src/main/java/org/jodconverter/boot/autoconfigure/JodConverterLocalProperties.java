@@ -26,6 +26,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import org.jodconverter.core.document.DocumentFormatProperties;
+import org.jodconverter.local.office.ExistingProcessAction;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter.local")
@@ -60,10 +61,10 @@ public class JodConverterLocalProperties {
   private String templateProfileDir;
 
   /**
-   * Indicates whether we must kill existing office process when an office process already exists
-   * for the same connection string.
+   * Specifies the action the must be taken when starting a new office process and there already is
+   * a existing running process for the same connection string.
    */
-  private boolean killExistingProcess = true;
+  private ExistingProcessAction existingProcessAction = ExistingProcessAction.KILL;
 
   /**
    * Process timeout (milliseconds). Used when trying to execute an office process call
@@ -112,12 +113,11 @@ public class JodConverterLocalProperties {
     this.enabled = enabled;
   }
 
-  @Nullable
-  public String getOfficeHome() {
+  public @Nullable String getOfficeHome() {
     return officeHome;
   }
 
-  public void setOfficeHome(@Nullable final String officeHome) {
+  public void setOfficeHome(final @Nullable String officeHome) {
     this.officeHome = officeHome;
   }
 
@@ -129,30 +129,29 @@ public class JodConverterLocalProperties {
     this.portNumbers = portNumbers;
   }
 
-  @Nullable
-  public String getWorkingDir() {
+  public @Nullable String getWorkingDir() {
     return workingDir;
   }
 
-  public void setWorkingDir(@Nullable final String workingDir) {
+  public void setWorkingDir(final @Nullable String workingDir) {
     this.workingDir = workingDir;
   }
 
-  @Nullable
-  public String getTemplateProfileDir() {
+  public @Nullable String getTemplateProfileDir() {
     return templateProfileDir;
   }
 
-  public void setTemplateProfileDir(@Nullable final String templateProfileDir) {
+  public void setTemplateProfileDir(final @Nullable String templateProfileDir) {
     this.templateProfileDir = templateProfileDir;
   }
 
-  public boolean isKillExistingProcess() {
-    return killExistingProcess;
+  public @Nullable ExistingProcessAction getExistingProcessAction() {
+    return existingProcessAction;
   }
 
-  public void setKillExistingProcess(final boolean killExistingProcess) {
-    this.killExistingProcess = killExistingProcess;
+  public void setExistingProcessAction(
+      final @Nullable ExistingProcessAction existingProcessAction) {
+    this.existingProcessAction = existingProcessAction;
   }
 
   public long getProcessTimeout() {
@@ -195,31 +194,28 @@ public class JodConverterLocalProperties {
     this.taskQueueTimeout = taskQueueTimeout;
   }
 
-  @Nullable
-  public String getProcessManagerClass() {
+  public @Nullable String getProcessManagerClass() {
     return processManagerClass;
   }
 
-  public void setProcessManagerClass(@Nullable final String processManagerClass) {
+  public void setProcessManagerClass(final @Nullable String processManagerClass) {
     this.processManagerClass = processManagerClass;
   }
 
-  @Nullable
-  public String getDocumentFormatRegistry() {
+  public @Nullable String getDocumentFormatRegistry() {
     return documentFormatRegistry;
   }
 
-  public void setDocumentFormatRegistry(@Nullable final String documentFormatRegistry) {
+  public void setDocumentFormatRegistry(final @Nullable String documentFormatRegistry) {
     this.documentFormatRegistry = documentFormatRegistry;
   }
 
-  @Nullable
-  public Map<@NonNull String, @NonNull DocumentFormatProperties> getFormatOptions() {
+  public @Nullable Map<@NonNull String, @NonNull DocumentFormatProperties> getFormatOptions() {
     return formatOptions;
   }
 
   public void setFormatOptions(
-      @Nullable final Map<@NonNull String, @NonNull DocumentFormatProperties> formatOptions) {
+      final @Nullable Map<@NonNull String, @NonNull DocumentFormatProperties> formatOptions) {
     this.formatOptions = formatOptions;
   }
 }

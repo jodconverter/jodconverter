@@ -54,7 +54,7 @@ public class TextReplacerFilter implements Filter {
    * @param replacementList The Strings to replace them with, no-op if null.
    */
   public TextReplacerFilter(
-      @NonNull final String[] searchList, @NonNull final String[] replacementList) {
+      final @NonNull String[] searchList, final @NonNull String[] replacementList) {
     super();
 
     // Both arrays are required and cannot be empty
@@ -77,9 +77,9 @@ public class TextReplacerFilter implements Filter {
 
   @Override
   public void doFilter(
-      @NonNull final OfficeContext context,
-      @NonNull final XComponent document,
-      @NonNull final FilterChain chain)
+      final @NonNull OfficeContext context,
+      final @NonNull XComponent document,
+      final @NonNull FilterChain chain)
       throws OfficeException {
 
     LOGGER.debug("Applying the TextReplacerFilter");
@@ -93,7 +93,7 @@ public class TextReplacerFilter implements Filter {
     chain.doFilter(context, document);
   }
 
-  private void replaceText(@NonNull final XComponent document) {
+  private void replaceText(final @NonNull XComponent document) {
 
     final XReplaceable replaceable = Lo.qi(XReplaceable.class, document);
 

@@ -74,8 +74,7 @@ public class LocalConverter extends AbstractConverter {
    *
    * @return A new builder instance.
    */
-  @NonNull
-  public static Builder builder() {
+  public static @NonNull Builder builder() {
     return new Builder();
   }
 
@@ -86,8 +85,7 @@ public class LocalConverter extends AbstractConverter {
    *
    * @return A {@link LocalConverter} with default configuration.
    */
-  @NonNull
-  public static LocalConverter make() {
+  public static @NonNull LocalConverter make() {
     return builder().build();
   }
 
@@ -99,8 +97,7 @@ public class LocalConverter extends AbstractConverter {
    *     use to convert document.
    * @return A {@link org.jodconverter.local.LocalConverter} with default configuration.
    */
-  @NonNull
-  public static LocalConverter make(@NonNull final OfficeManager officeManager) {
+  public static @NonNull LocalConverter make(final @NonNull OfficeManager officeManager) {
     return builder().officeManager(officeManager).build();
   }
 
@@ -117,10 +114,9 @@ public class LocalConverter extends AbstractConverter {
     this.storeProperties = storeProperties;
   }
 
-  @NonNull
   @Override
-  protected AbstractConversionJobWithSourceFormatUnspecified convert(
-      @NonNull final AbstractSourceDocumentSpecs source) {
+  protected @NonNull AbstractConversionJobWithSourceFormatUnspecified convert(
+      final @NonNull AbstractSourceDocumentSpecs source) {
 
     return new LocalConversionJobWithSourceFormatUnspecified(source);
   }
@@ -134,9 +130,8 @@ public class LocalConverter extends AbstractConverter {
       super(source, LocalConverter.this.officeManager, LocalConverter.this.formatRegistry);
     }
 
-    @NonNull
     @Override
-    protected AbstractConversionJob to(@NonNull final AbstractTargetDocumentSpecs target) {
+    protected @NonNull AbstractConversionJob to(final @NonNull AbstractTargetDocumentSpecs target) {
       return new LocalConversionJob(source, target);
     }
   }
@@ -175,9 +170,8 @@ public class LocalConverter extends AbstractConverter {
       super();
     }
 
-    @NonNull
     @Override
-    public LocalConverter build() {
+    public @NonNull LocalConverter build() {
 
       // An office manager is required.
       OfficeManager manager = officeManager;
@@ -207,8 +201,7 @@ public class LocalConverter extends AbstractConverter {
      *     (converted) in the new document format.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder filterChain(@NonNull final Filter... filters) {
+    public @NonNull Builder filterChain(final @NonNull Filter... filters) {
 
       AssertUtils.notEmpty(filters, "filters must not be null nor empty");
       this.filterChain = new DefaultFilterChain(filters);
@@ -224,8 +217,7 @@ public class LocalConverter extends AbstractConverter {
      *     is stored (converted) in the new document format.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder filterChain(@NonNull final FilterChain filterChain) {
+    public @NonNull Builder filterChain(final @NonNull FilterChain filterChain) {
 
       AssertUtils.notNull(filterChain, "filterChain must not be null");
       this.filterChain = filterChain;
@@ -241,9 +233,8 @@ public class LocalConverter extends AbstractConverter {
      * @param loadProperties A map containing the properties to apply when loading a document.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder loadProperties(
-        @NonNull final Map<@NonNull String, @NonNull Object> loadProperties) {
+    public @NonNull Builder loadProperties(
+        @NonNull Map<@NonNull String, @NonNull Object> loadProperties) {
 
       AssertUtils.notNull(loadProperties, "loadProperties must not be null");
       this.loadProperties = loadProperties;
@@ -261,9 +252,8 @@ public class LocalConverter extends AbstractConverter {
      *     document.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder storeProperties(
-        @NonNull final Map<@NonNull String, @NonNull Object> storeProperties) {
+    public @NonNull Builder storeProperties(
+        final @NonNull Map<@NonNull String, @NonNull Object> storeProperties) {
 
       AssertUtils.notNull(storeProperties, "storeProperties must not be null");
       this.storeProperties = storeProperties;

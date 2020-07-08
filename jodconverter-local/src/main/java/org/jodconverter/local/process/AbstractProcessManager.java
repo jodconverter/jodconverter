@@ -64,8 +64,8 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * @return The command execution output.
    * @throws IOException If an I/O error occurs.
    */
-  @NonNull
-  protected List<@NonNull String> execute(@NonNull final String[] cmdarray) throws IOException {
+  protected @NonNull List<@NonNull String> execute(final @NonNull String[] cmdarray)
+      throws IOException {
 
     final Process process = Runtime.getRuntime().exec(cmdarray);
 
@@ -104,7 +104,10 @@ public abstract class AbstractProcessManager implements ProcessManager {
   }
 
   @Override
-  public long findPid(@NonNull final ProcessQuery query) throws IOException {
+  public long findPid(final @NonNull ProcessQuery query) throws IOException {
+    if (!canFindPid()) {
+      return PID_UNKNOWN;
+    }
 
     final Pattern commandPattern =
         Pattern.compile(
@@ -161,8 +164,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * @param process The name of the process to query for.
    * @return An array containing the command to call and its arguments.
    */
-  @NonNull
-  protected abstract String[] getRunningProcessesCommand(String process);
+  protected abstract @NonNull String[] getRunningProcessesCommand(String process);
 
   /**
    * Gets the pattern to be used to match an output line containing the information about a running
@@ -172,6 +174,5 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * @return The pattern.
    * @see #getRunningProcessesCommand(String)
    */
-  @NonNull
-  protected abstract Pattern getRunningProcessLinePattern();
+  protected abstract @NonNull Pattern getRunningProcessLinePattern();
 }

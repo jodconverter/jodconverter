@@ -74,11 +74,11 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
    *     {@code target} arguments.
    */
   public LocalConversionTask(
-      @NonNull final SourceDocumentSpecs source,
-      @NonNull final TargetDocumentSpecs target,
-      @Nullable final Map<@NonNull String, @NonNull Object> loadProperties,
-      @Nullable final FilterChain filterChain,
-      @Nullable final Map<@NonNull String, @NonNull Object> storeProperties) {
+      final @NonNull SourceDocumentSpecs source,
+      final @NonNull TargetDocumentSpecs target,
+      final @Nullable Map<@NonNull String, @NonNull Object> loadProperties,
+      final @Nullable FilterChain filterChain,
+      final @Nullable Map<@NonNull String, @NonNull Object> storeProperties) {
     super(source, loadProperties);
 
     this.target = target;
@@ -88,7 +88,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   }
 
   @Override
-  public void execute(@NonNull final OfficeContext context) throws OfficeException {
+  public void execute(final @NonNull OfficeContext context) throws OfficeException {
 
     LOGGER.info(
         "Executing local conversion task [{} -> {}]...",
@@ -161,14 +161,14 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   // Modifies the document after it has been loaded and before
   // it gets saved in the new format.
   protected void modifyDocument(
-      @NonNull final OfficeContext context, @NonNull final XComponent document)
+      final @NonNull OfficeContext context, final @NonNull XComponent document)
       throws OfficeException {
 
     filterChain.doFilter(context, document);
   }
 
   // Stores the converted document as the output file.
-  protected void storeDocument(@NonNull final XComponent document, @NonNull final File targetFile)
+  protected void storeDocument(final @NonNull XComponent document, final @NonNull File targetFile)
       throws OfficeException {
 
     final Map<String, Object> storeProps = getStoreProperties(document);
@@ -187,9 +187,8 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     }
   }
 
-  @NonNull
   @Override
-  public String toString() {
+  public @NonNull String toString() {
     return getClass().getSimpleName()
         + "{"
         + "source="

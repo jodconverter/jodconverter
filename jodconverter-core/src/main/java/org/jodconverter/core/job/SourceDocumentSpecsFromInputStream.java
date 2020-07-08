@@ -48,10 +48,10 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
    * @param closeStream If we close the stream on completion.
    */
   public SourceDocumentSpecsFromInputStream(
-      @NonNull final InputStream inputStream,
-      @NonNull final TemporaryFileMaker fileMaker,
+      final @NonNull InputStream inputStream,
+      final @NonNull TemporaryFileMaker fileMaker,
       final boolean closeStream) {
-    super(fileMaker.makeTemporaryFile());
+    super();
 
     AssertUtils.notNull(inputStream, "inputStream must not be null");
     AssertUtils.notNull(fileMaker, "fileMaker must not be null");
@@ -60,15 +60,14 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
     this.closeStream = closeStream;
   }
 
-  @NonNull
   @Override
-  public File getFile() {
+  public @NonNull File getFile() {
 
     // Write the InputStream to the temp file
     final File tempFile =
         Optional.ofNullable(getFormat())
             .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
-            .orElse(super.getFile());
+            .orElse(fileMaker.makeTemporaryFile());
     try {
       final FileOutputStream outputStream = new FileOutputStream(tempFile);
       outputStream.getChannel().lock();
@@ -80,12 +79,13 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
         outputStream.close();
       }
     } catch (IOException ex) {
-      throw new DocumentSpecsIOException("Could not write stream to file " + tempFile, ex);
+      throw new DocumentSpecsIOException(
+          String.format("Could not write stream to file '%s'", tempFile), ex);
     }
   }
 
   @Override
-  public void onConsumed(@NonNull final File tempFile) {
+  public void onConsumed(final @NonNull File tempFile) {
 
     // The temporary file must be deleted
     FileUtils.deleteQuietly(tempFile);

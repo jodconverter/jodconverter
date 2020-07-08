@@ -47,20 +47,20 @@ public abstract class AbstractConverter implements DocumentConverter {
   protected final DocumentFormatRegistry formatRegistry;
 
   protected AbstractConverter(
-      @NonNull final OfficeManager officeManager,
-      @NonNull final DocumentFormatRegistry formatRegistry) {
+      final @NonNull OfficeManager officeManager,
+      final @NonNull DocumentFormatRegistry formatRegistry) {
     super();
 
-    // Both argument are required.
+    // Both arguments are required.
     AssertUtils.notNull(officeManager, "officeManager must not be null");
     AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
     this.officeManager = officeManager;
     this.formatRegistry = formatRegistry;
   }
 
-  @NonNull
   @Override
-  public ConversionJobWithOptionalSourceFormatUnspecified convert(@NonNull final File source) {
+  public @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
+      final @NonNull File source) {
 
     final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(source);
     final DocumentFormat format =
@@ -73,18 +73,16 @@ public abstract class AbstractConverter implements DocumentConverter {
     return convert(specs);
   }
 
-  @NonNull
   @Override
-  public ConversionJobWithOptionalSourceFormatUnspecified convert(
-      @NonNull final InputStream source) {
+  public @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
+      final @NonNull InputStream source) {
 
     return convert(source, DEFAULT_CLOSE_STREAM);
   }
 
-  @NonNull
   @Override
-  public ConversionJobWithOptionalSourceFormatUnspecified convert(
-      @NonNull final InputStream source, final boolean closeStream) {
+  public @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
+      final @NonNull InputStream source, final boolean closeStream) {
 
     if (officeManager instanceof TemporaryFileMaker) {
       return convert(
@@ -102,13 +100,11 @@ public abstract class AbstractConverter implements DocumentConverter {
    * @param source The conversion input as a document specifications.
    * @return The current conversion specification.
    */
-  @NonNull
-  protected abstract AbstractConversionJobWithSourceFormatUnspecified convert(
+  protected abstract @NonNull AbstractConversionJobWithSourceFormatUnspecified convert(
       @NonNull AbstractSourceDocumentSpecs source);
 
-  @NonNull
   @Override
-  public DocumentFormatRegistry getFormatRegistry() {
+  public @NonNull DocumentFormatRegistry getFormatRegistry() {
     return formatRegistry;
   }
 
@@ -133,8 +129,7 @@ public abstract class AbstractConverter implements DocumentConverter {
      *
      * @return The converter that is specified by this builder.
      */
-    @NonNull
-    protected abstract AbstractConverter build();
+    protected abstract @NonNull AbstractConverter build();
 
     /**
      * Specifies the {@link OfficeManager} the converter will use to execute office tasks.
@@ -142,8 +137,7 @@ public abstract class AbstractConverter implements DocumentConverter {
      * @param officeManager The office manager this converter will use.
      * @return This builder instance.
      */
-    @NonNull
-    public B officeManager(@NonNull final OfficeManager officeManager) {
+    public @NonNull B officeManager(final @NonNull OfficeManager officeManager) {
 
       AssertUtils.notNull(officeManager, "officeManager must not be null");
       this.officeManager = officeManager;
@@ -157,8 +151,7 @@ public abstract class AbstractConverter implements DocumentConverter {
      * @param formatRegistry The registry that contains the supported formats.
      * @return This builder instance.
      */
-    @NonNull
-    public B formatRegistry(@NonNull final DocumentFormatRegistry formatRegistry) {
+    public @NonNull B formatRegistry(final @NonNull DocumentFormatRegistry formatRegistry) {
 
       AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
       this.formatRegistry = formatRegistry;

@@ -33,7 +33,7 @@ public class ProcessQuery {
    * @param command The process command.
    * @param argument The process argument.
    */
-  public ProcessQuery(@NonNull final String command, @NonNull final String argument) {
+  public ProcessQuery(final @NonNull String command, final @NonNull String argument) {
     super();
 
     this.command = command;
@@ -45,8 +45,7 @@ public class ProcessQuery {
    *
    * @return The process argument.
    */
-  @NonNull
-  public String getArgument() {
+  public @NonNull String getArgument() {
     return argument;
   }
 
@@ -55,14 +54,12 @@ public class ProcessQuery {
    *
    * @return The process command.
    */
-  @NonNull
-  public String getCommand() {
+  public @NonNull String getCommand() {
     return command;
   }
 
-  @NonNull
   @Override
-  public String toString() {
+  public @NonNull String toString() {
     return "ProcessQuery{" + "command='" + command + '\'' + ", argument='" + argument + '\'' + '}';
   }
 }

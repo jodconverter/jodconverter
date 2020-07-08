@@ -23,25 +23,15 @@ import java.io.File;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import org.jodconverter.core.util.FileUtils;
-
 /** Target document specifications for from a file. */
-public class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs
-    implements TargetDocumentSpecs {
+public class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs {
 
   /**
    * Creates specs for the specified file.
    *
    * @param file The target file.
    */
-  public TargetDocumentSpecsFromFile(@NonNull final File file) {
+  public TargetDocumentSpecsFromFile(final @NonNull File file) {
     super(file);
-  }
-
-  @Override
-  public void onFailure(@NonNull final File file, @NonNull final Exception exception) {
-
-    // Ensure the created file is deleted
-    FileUtils.deleteQuietly(file);
   }
 }

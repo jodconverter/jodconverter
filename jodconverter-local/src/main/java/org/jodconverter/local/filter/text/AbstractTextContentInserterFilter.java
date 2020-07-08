@@ -60,8 +60,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    *     (millimeters).
    * @return A map containing The default shape properties.
    */
-  @NonNull
-  public static Map<@NonNull String, @NonNull Object> createDefaultShapeProperties(
+  public static @NonNull Map<@NonNull String, @NonNull Object> createDefaultShapeProperties(
       final int horizontalPosition, final int verticalPosition) {
 
     final Map<String, Object> props = new LinkedHashMap<>();
@@ -95,7 +94,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    * @param size The size to convert, in millimeters.
    * @return The converted size instance, in 1/100 millimeters.
    */
-  public static Size toOfficeSize(@NonNull final Dimension size) {
+  public static Size toOfficeSize(final @NonNull Dimension size) {
 
     return new Size(size.width * 100, size.height * 100);
   }
@@ -111,7 +110,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    *     (millimeters).
    */
   public AbstractTextContentInserterFilter(
-      @NonNull final Dimension size, final int horizontalPosition, final int verticalPosition) {
+      final @NonNull Dimension size, final int horizontalPosition, final int verticalPosition) {
     super();
 
     this.rectSize = new Dimension(size.width, size.height);
@@ -128,8 +127,8 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */
   public AbstractTextContentInserterFilter(
-      @NonNull final Dimension size,
-      @NonNull final Map<@NonNull String, @NonNull Object> shapeProperties) {
+      final @NonNull Dimension size,
+      final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super();
 
     this.rectSize = new Dimension(size.width, size.height);
@@ -144,7 +143,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    * @param textCursor The text cursor of the document.
    */
   protected void applyAnchorPageNoFix(
-      @NonNull final XTextDocument docText, @NonNull final XTextCursor textCursor) {
+      final @NonNull XTextDocument docText, final @NonNull XTextCursor textCursor) {
 
     // The following bloc seems to be required for some output format
     // (doc, docx, rtf) instead of the "AnchorPageNo" property.
@@ -165,8 +164,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    *
    * @return A Rectangle that represents the size of the shape. Units are millimeters.
    */
-  @NonNull
-  public Dimension getRectSize() {
+  public @NonNull Dimension getRectSize() {
     return rectSize;
   }
 
@@ -175,8 +173,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    *
    * @return A map that contains the properties.
    */
-  @NonNull
-  public Map<@NonNull String, Object> getShapeProperties() {
+  public @NonNull Map<@NonNull String, Object> getShapeProperties() {
     return shapeProperties;
   }
 }

@@ -23,6 +23,8 @@ import java.io.File;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import org.jodconverter.core.util.FileUtils;
+
 /**
  * An interface that provides the behavior to apply when a target file is no longer required by a
  * conversion process.
@@ -45,6 +47,7 @@ public interface TargetDocumentSpecs extends DocumentSpecs {
    * @param exception An exception representing the reason for the failed conversion.
    */
   default void onFailure(@NonNull File file, @NonNull Exception exception) {
-    // Default behavior is to do nothing
+    // Ensure the created file is deleted
+    FileUtils.deleteQuietly(file);
   }
 }

@@ -47,8 +47,7 @@ public class PureJavaProcessManager implements ProcessManager {
    *
    * @return The default {@code PureJavaProcessManager} instance.
    */
-  @NonNull
-  public static PureJavaProcessManager getDefault() {
+  public static @NonNull PureJavaProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
 }

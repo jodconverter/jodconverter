@@ -67,10 +67,10 @@ public class PageMarginsFilter implements Filter {
    *     does not change.
    */
   public PageMarginsFilter(
-      @Nullable final Integer leftMargin,
-      @Nullable final Integer topMargin,
-      @Nullable final Integer rightMargin,
-      @Nullable final Integer bottomMargin) {
+      final @Nullable Integer leftMargin,
+      final @Nullable Integer topMargin,
+      final @Nullable Integer rightMargin,
+      final @Nullable Integer bottomMargin) {
     super();
 
     this.leftMargin = leftMargin;
@@ -81,9 +81,9 @@ public class PageMarginsFilter implements Filter {
 
   @Override
   public void doFilter(
-      @NonNull final OfficeContext context,
-      @NonNull final XComponent document,
-      @NonNull final FilterChain chain)
+      final @NonNull OfficeContext context,
+      final @NonNull XComponent document,
+      final @NonNull FilterChain chain)
       throws Exception {
 
     LOGGER.debug("Applying the PageMarginsFilter");

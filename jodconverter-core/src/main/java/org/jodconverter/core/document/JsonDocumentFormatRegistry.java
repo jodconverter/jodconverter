@@ -46,7 +46,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
    * @return The created JsonDocumentFormatRegistry.
    * @throws IOException If an I/O error occurs.
    */
-  public static JsonDocumentFormatRegistry create(@NonNull final InputStream source)
+  public static JsonDocumentFormatRegistry create(final @NonNull InputStream source)
       throws IOException {
 
     return create(IOUtils.toString(source, StandardCharsets.UTF_8));
@@ -61,8 +61,8 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
    * @throws IOException If an I/O error occurs.
    */
   public static JsonDocumentFormatRegistry create(
-      @NonNull final InputStream source,
-      @NonNull final Map<@NonNull String, @NonNull DocumentFormatProperties> customProperties)
+      final @NonNull InputStream source,
+      final @NonNull Map<@NonNull String, @NonNull DocumentFormatProperties> customProperties)
       throws IOException {
 
     return create(IOUtils.toString(source, StandardCharsets.UTF_8), customProperties);
@@ -74,7 +74,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
    * @param source The string (JSON format) containing the DocumentFormat collection.
    * @return The created JsonDocumentFormatRegistry.
    */
-  public static JsonDocumentFormatRegistry create(@NonNull final String source) {
+  public static JsonDocumentFormatRegistry create(final @NonNull String source) {
 
     final JsonDocumentFormatRegistry registry = new JsonDocumentFormatRegistry();
     registry.readJsonArray(source, null);
@@ -89,8 +89,8 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
    * @return The created JsonDocumentFormatRegistry.
    */
   public static JsonDocumentFormatRegistry create(
-      @NonNull final String source,
-      @NonNull final Map<@NonNull String, @NonNull DocumentFormatProperties> customProperties) {
+      final @NonNull String source,
+      final @NonNull Map<@NonNull String, @NonNull DocumentFormatProperties> customProperties) {
 
     final JsonDocumentFormatRegistry registry = new JsonDocumentFormatRegistry();
     registry.readJsonArray(source, customProperties);

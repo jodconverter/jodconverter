@@ -54,7 +54,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/pdf
    * </ul>
    */
-  @NonNull public static final DocumentFormat PDF = byExtension("pdf");
+  public static final @NonNull DocumentFormat PDF = byExtension("pdf");
 
   /**
    * Macromedia Flash.
@@ -64,7 +64,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/x-shockwave-flash
    * </ul>
    */
-  @NonNull public static final DocumentFormat SWF = byExtension("swf");
+  public static final @NonNull DocumentFormat SWF = byExtension("swf");
 
   /**
    * HTML.
@@ -74,7 +74,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: text/html
    * </ul>
    */
-  @NonNull public static final DocumentFormat HTML = byExtension("html");
+  public static final @NonNull DocumentFormat HTML = byExtension("html");
 
   /**
    * XHTML.
@@ -84,7 +84,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/xhtml+xml
    * </ul>
    */
-  @NonNull public static final DocumentFormat XHTML = byExtension("xhtml");
+  public static final @NonNull DocumentFormat XHTML = byExtension("xhtml");
 
   /**
    * OpenDocument Text.
@@ -94,7 +94,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.text
    * </ul>
    */
-  @NonNull public static final DocumentFormat ODT = byExtension("odt");
+  public static final @NonNull DocumentFormat ODT = byExtension("odt");
 
   /**
    * OpenDocument Text Template.
@@ -104,7 +104,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.text-template
    * </ul>
    */
-  @NonNull public static final DocumentFormat OTT = byExtension("ott");
+  public static final @NonNull DocumentFormat OTT = byExtension("ott");
 
   /**
    * OpenDocument Text Flat XML.
@@ -114,7 +114,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.text-flat-xml
    * </ul>
    */
-  @NonNull public static final DocumentFormat FODT = byExtension("fodt");
+  public static final @NonNull DocumentFormat FODT = byExtension("fodt");
 
   /**
    * OpenOffice.org 1.0 Text Document.
@@ -124,7 +124,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.sun.xml.writer
    * </ul>
    */
-  @NonNull public static final DocumentFormat SXW = byExtension("sxw");
+  public static final @NonNull DocumentFormat SXW = byExtension("sxw");
 
   /**
    * Microsoft Word 97-2003.
@@ -134,7 +134,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/msword
    * </ul>
    */
-  @NonNull public static final DocumentFormat DOC = byExtension("doc");
+  public static final @NonNull DocumentFormat DOC = byExtension("doc");
 
   /**
    * Microsoft Word 2007-2013 XML.
@@ -144,7 +144,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
    * </ul>
    */
-  @NonNull public static final DocumentFormat DOCX = byExtension("docx");
+  public static final @NonNull DocumentFormat DOCX = byExtension("docx");
 
   /**
    * Rich Text Format.
@@ -154,7 +154,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: text/rtf"
    * </ul>
    */
-  @NonNull public static final DocumentFormat RTF = byExtension("rtf");
+  public static final @NonNull DocumentFormat RTF = byExtension("rtf");
 
   /**
    * WordPerfect.
@@ -164,7 +164,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/wordperfect
    * </ul>
    */
-  @NonNull public static final DocumentFormat WPD = byExtension("wpd");
+  public static final @NonNull DocumentFormat WPD = byExtension("wpd");
 
   /**
    * Plain Text.
@@ -174,7 +174,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: text/plain
    * </ul>
    */
-  @NonNull public static final DocumentFormat TXT = byExtension("txt");
+  public static final @NonNull DocumentFormat TXT = byExtension("txt");
 
   /**
    * OpenDocument Spreadsheet.
@@ -184,7 +184,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.spreadsheet
    * </ul>
    */
-  @NonNull public static final DocumentFormat ODS = byExtension("ods");
+  public static final @NonNull DocumentFormat ODS = byExtension("ods");
 
   /**
    * OpenDocument Spreadsheet Template.
@@ -194,7 +194,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.spreadsheet-template
    * </ul>
    */
-  @NonNull public static final DocumentFormat OTS = byExtension("ots");
+  public static final @NonNull DocumentFormat OTS = byExtension("ots");
 
   /**
    * OpenDocument Spreadsheet Flat XML.
@@ -204,7 +204,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.spreadsheet-flat-xml
    * </ul>
    */
-  @NonNull public static final DocumentFormat FODS = byExtension("fods");
+  public static final @NonNull DocumentFormat FODS = byExtension("fods");
 
   /**
    * OpenOffice.org 1.0 Spreadsheet.
@@ -214,7 +214,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.sun.xml.calc
    * </ul>
    */
-  @NonNull public static final DocumentFormat SXC = byExtension("sxc");
+  public static final @NonNull DocumentFormat SXC = byExtension("sxc");
 
   /**
    * Microsoft Excel 97-2003.
@@ -224,7 +224,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.ms-excel
    * </ul>
    */
-  @NonNull public static final DocumentFormat XLS = byExtension("xls");
+  public static final @NonNull DocumentFormat XLS = byExtension("xls");
 
   /**
    * Microsoft Excel 2007-2013 XML.
@@ -234,7 +234,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
    * </ul>
    */
-  @NonNull public static final DocumentFormat XLSX = byExtension("xlsx");
+  public static final @NonNull DocumentFormat XLSX = byExtension("xlsx");
 
   /**
    * Comma Separated Values.
@@ -244,7 +244,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: text/csv
    * </ul>
    */
-  @NonNull public static final DocumentFormat CSV = byExtension("csv");
+  public static final @NonNull DocumentFormat CSV = byExtension("csv");
 
   /**
    * Tab Separated Values.
@@ -254,7 +254,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: text/tab-separated-values
    * </ul>
    */
-  @NonNull public static final DocumentFormat TSV = byExtension("tsv");
+  public static final @NonNull DocumentFormat TSV = byExtension("tsv");
 
   /**
    * OpenDocument Presentation.
@@ -264,7 +264,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.presentation
    * </ul>
    */
-  @NonNull public static final DocumentFormat ODP = byExtension("odp");
+  public static final @NonNull DocumentFormat ODP = byExtension("odp");
 
   /**
    * OpenDocument Presentation Template.
@@ -274,7 +274,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.presentation-template
    * </ul>
    */
-  @NonNull public static final DocumentFormat OTP = byExtension("otp");
+  public static final @NonNull DocumentFormat OTP = byExtension("otp");
 
   /**
    * OpenDocument Presentation Flat XML.
@@ -284,7 +284,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.presentation-flat-xml
    * </ul>
    */
-  @NonNull public static final DocumentFormat FODP = byExtension("fodp");
+  public static final @NonNull DocumentFormat FODP = byExtension("fodp");
 
   /**
    * OpenOffice.org 1.0 Presentation.
@@ -294,7 +294,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.sun.xml.impress
    * </ul>
    */
-  @NonNull public static final DocumentFormat SXI = byExtension("sxi");
+  public static final @NonNull DocumentFormat SXI = byExtension("sxi");
 
   /**
    * Microsoft PowerPoint 97-2003.
@@ -304,7 +304,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.ms-powerpoint
    * </ul>
    */
-  @NonNull public static final DocumentFormat PPT = byExtension("ppt");
+  public static final @NonNull DocumentFormat PPT = byExtension("ppt");
 
   /**
    * Microsoft PowerPoint 2007-2013 XML.
@@ -314,7 +314,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.openxmlformats-officedocument.presentationml.presentation
    * </ul>
    */
-  @NonNull public static final DocumentFormat PPTX = byExtension("pptx");
+  public static final @NonNull DocumentFormat PPTX = byExtension("pptx");
 
   /**
    * OpenDocument Drawing.
@@ -324,7 +324,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.graphics
    * </ul>
    */
-  @NonNull public static final DocumentFormat ODG = byExtension("odg");
+  public static final @NonNull DocumentFormat ODG = byExtension("odg");
 
   /**
    * OpenDocument Drawing Template.
@@ -334,7 +334,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.graphics
    * </ul>
    */
-  @NonNull public static final DocumentFormat OTG = byExtension("otg");
+  public static final @NonNull DocumentFormat OTG = byExtension("otg");
 
   /**
    * OpenDocument Drawing Flat XML.
@@ -344,7 +344,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd.oasis.opendocument.graphics-flat-xml
    * </ul>
    */
-  @NonNull public static final DocumentFormat FODG = byExtension("fodg");
+  public static final @NonNull DocumentFormat FODG = byExtension("fodg");
 
   /**
    * Scalable Vector Graphics.
@@ -354,7 +354,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: image/svg+xml
    * </ul>
    */
-  @NonNull public static final DocumentFormat SVG = byExtension("svg");
+  public static final @NonNull DocumentFormat SVG = byExtension("svg");
 
   /**
    * Visio format.
@@ -364,7 +364,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/x-visio
    * </ul>
    */
-  @NonNull public static final DocumentFormat VSD = byExtension("vsd");
+  public static final @NonNull DocumentFormat VSD = byExtension("vsd");
 
   /**
    * New Visio format.
@@ -374,7 +374,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: application/vnd-ms-visio.drawing
    * </ul>
    */
-  @NonNull public static final DocumentFormat VSDX = byExtension("vsdx");
+  public static final @NonNull DocumentFormat VSDX = byExtension("vsdx");
 
   /**
    * Portable Network Graphics.
@@ -384,7 +384,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: image/png
    * </ul>
    */
-  @NonNull public static final DocumentFormat PNG = byExtension("png");
+  public static final @NonNull DocumentFormat PNG = byExtension("png");
 
   /**
    * Joint Photographic Experts Group.
@@ -394,7 +394,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: image/jpg
    * </ul>
    */
-  @NonNull public static final DocumentFormat JPEG = byExtension("jpg");
+  public static final @NonNull DocumentFormat JPEG = byExtension("jpg");
 
   /**
    * Tagged Image File Format.
@@ -404,7 +404,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: image/tif
    * </ul>
    */
-  @NonNull public static final DocumentFormat TIFF = byExtension("tif");
+  public static final @NonNull DocumentFormat TIFF = byExtension("tif");
 
   /**
    * Graphic Interchange Format.
@@ -414,7 +414,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: image/gif
    * </ul>
    */
-  @NonNull public static final DocumentFormat GIF = byExtension("gif");
+  public static final @NonNull DocumentFormat GIF = byExtension("gif");
 
   /**
    * Windows Bitmap.
@@ -424,15 +424,14 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    *   <li>Media Type: image/bmp
    * </ul>
    */
-  @NonNull public static final DocumentFormat BMP = byExtension("bmp");
+  public static final @NonNull DocumentFormat BMP = byExtension("bmp");
 
   /**
    * Gets the default instance of the class.
    *
    * @return The default DocumentFormatRegistry.
    */
-  @NonNull
-  public static DocumentFormatRegistry getInstance() {
+  public static @NonNull DocumentFormatRegistry getInstance() {
     return DefaultDocumentFormatRegistryInstanceHolder.getInstance();
   }
 
@@ -449,8 +448,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    * @return The found document format, or {@code null} if no document format exists for the
    *     specified extension.
    */
-  @Nullable
-  public static DocumentFormat getFormatByExtension(@NonNull final String extension) {
+  public static @Nullable DocumentFormat getFormatByExtension(@NonNull final String extension) {
     return getInstance().getFormatByExtension(extension);
   }
 
@@ -461,8 +459,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    * @return The found document format, or {@code null} if no document format exists for the
    *     specified media type.
    */
-  @Nullable
-  public static DocumentFormat getFormatByMediaType(@NonNull final String mediaType) {
+  public static @Nullable DocumentFormat getFormatByMediaType(@NonNull final String mediaType) {
     return getInstance().getFormatByMediaType(mediaType);
   }
 
@@ -472,9 +469,8 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    * @param family The family whose document formats will be returned.
    * @return A set with all the document formats for the specified family.
    */
-  @NonNull
-  public static Set<@NonNull DocumentFormat> getOutputFormats(
-      @NonNull final DocumentFamily family) {
+  public static @NonNull Set<@NonNull DocumentFormat> getOutputFormats(
+      final @NonNull DocumentFamily family) {
     return getInstance().getOutputFormats(family);
   }
 

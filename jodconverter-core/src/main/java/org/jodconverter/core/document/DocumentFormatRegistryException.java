@@ -35,7 +35,7 @@ public class DocumentFormatRegistryException extends RuntimeException {
    * @param cause the cause.
    */
   public DocumentFormatRegistryException(
-      @NonNull final String message, @NonNull final Throwable cause) {
+      final @NonNull String message, final @NonNull Throwable cause) {
     super(message, cause);
   }
 }

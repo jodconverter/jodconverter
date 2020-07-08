@@ -59,7 +59,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
    * @param target The target specifications for the conversion.
    */
   public RemoteConversionTask(
-      @NonNull final SourceDocumentSpecs source, @NonNull final TargetDocumentSpecs target) {
+      final @NonNull SourceDocumentSpecs source, final @NonNull TargetDocumentSpecs target) {
     super(source);
 
     this.target = target;
@@ -92,7 +92,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
   }
 
   @Override
-  public void execute(@NonNull final OfficeContext context) throws OfficeException {
+  public void execute(final @NonNull OfficeContext context) throws OfficeException {
 
     LOGGER.info("Executing remote conversion task...");
     final RemoteOfficeContext remoteContext = (RemoteOfficeContext) context;
@@ -172,9 +172,8 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
         + Objects.requireNonNull(target.getFormat()).getExtension();
   }
 
-  @NonNull
   @Override
-  public String toString() {
+  public @NonNull String toString() {
     return getClass().getSimpleName() + "{" + "source=" + source + ", target=" + target + '}';
   }
 }

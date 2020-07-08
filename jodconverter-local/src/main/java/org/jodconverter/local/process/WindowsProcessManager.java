@@ -50,23 +50,20 @@ public class WindowsProcessManager extends AbstractProcessManager {
    *
    * @return The default {@code WindowsProcessManager} instance.
    */
-  @NonNull
-  public static WindowsProcessManager getDefault() {
+  public static @NonNull WindowsProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
 
-  @NonNull
   @Override
-  protected String[] getRunningProcessesCommand(@NonNull final String process) {
+  protected @NonNull String[] getRunningProcessesCommand(final @NonNull String process) {
 
     return new String[] {
       "cmd", "/c", "wmic process where(name like '" + process + "%') get commandline,processid"
     };
   }
 
-  @NonNull
   @Override
-  protected Pattern getRunningProcessLinePattern() {
+  protected @NonNull Pattern getRunningProcessLinePattern() {
 
     return PROCESS_GET_LINE;
   }
@@ -88,7 +85,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
   }
 
   @Override
-  public void kill(@Nullable final Process process, final long pid) throws IOException {
+  public void kill(final @Nullable Process process, final long pid) throws IOException {
     if (pid > PID_UNKNOWN) {
       execute(new String[] {"taskkill", "/t", "/f", "/pid", String.valueOf(pid)});
     } else {

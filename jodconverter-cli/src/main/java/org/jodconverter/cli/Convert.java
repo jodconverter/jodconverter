@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +35,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -46,6 +46,7 @@ import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.filter.FilterChain;
+import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
@@ -97,11 +98,6 @@ public final class Convert {
           .argName("dir")
           .hasArg()
           .desc("office home directory (optional; defaults to auto-detect)")
-          .build();
-  private static final Option OPT_KILL_EXISTING_PROCESS =
-      Option.builder("k")
-          .longOpt("kill-process")
-          .desc("Kill existing office process (optional)")
           .build();
   private static final Option OPT_LOAD_PROPERTIES =
       Option.builder("l")
@@ -157,6 +153,18 @@ public final class Convert {
           .build();
   private static final Option OPT_VERSION =
       Option.builder("v").longOpt("version").desc("displays version information and exit").build();
+  private static final Option OPT_EXISTING_PROCESS_ACTION =
+      Option.builder("x")
+          .longOpt("existing-process-action")
+          .hasArg()
+          .desc(
+              "action taken when a process running with the same connection string"
+                  + " (optional; defaults to kill);"
+                  + " with fail: abort conversion;"
+                  + " with kill: kill existing process;"
+                  + " with connect: connect to existing process;"
+                  + " with connect_or_kill: connect to existing process with kill fallback")
+          .build();
 
   private static final Options OPTIONS = initOptions();
 
@@ -196,8 +204,6 @@ public final class Convert {
       builder.officeHome(commandLine.getOptionValue(OPT_OFFICE_HOME.getOpt()));
     }
 
-    builder.killExistingProcess(commandLine.hasOption(OPT_KILL_EXISTING_PROCESS.getOpt()));
-
     builder.disableOpengl(commandLine.hasOption(OPT_DISABLE_OPENGL.getOpt()));
 
     if (commandLine.hasOption(OPT_PROCESS_MANAGER.getOpt())) {
@@ -217,10 +223,25 @@ public final class Convert {
       builder.templateProfileDir(new File(commandLine.getOptionValue(OPT_USER_PROFILE.getOpt())));
     }
 
+    if (commandLine.hasOption(OPT_EXISTING_PROCESS_ACTION.getOpt())) {
+      switch (commandLine
+          .getOptionValue(OPT_EXISTING_PROCESS_ACTION.getOpt())
+          .toLowerCase(Locale.ROOT)
+          .replace('-', '_')) {
+        case "fail":
+          builder.existingProcessAction(ExistingProcessAction.FAIL);
+        case "kill":
+          builder.existingProcessAction(ExistingProcessAction.KILL);
+        case "connect":
+          builder.existingProcessAction(ExistingProcessAction.CONNECT);
+        case "connect_or_kill":
+          builder.existingProcessAction(ExistingProcessAction.CONNECT_OR_KILL);
+      }
+    }
+
     return builder.install().build();
   }
 
-  @Nullable
   private static AbstractApplicationContext getApplicationContextOption(
       final CommandLine commandLine) {
 
@@ -233,13 +254,11 @@ public final class Convert {
     return null;
   }
 
-  @Nullable
   private static FilterChain getFilterChain(final ApplicationContext context) {
 
     return Optional.ofNullable(context).map(ctx -> ctx.getBean(FilterChain.class)).orElse(null);
   }
 
-  @Nullable
   private static DocumentFormatRegistry getRegistryOption(final CommandLine commandLine)
       throws IOException {
 
@@ -252,7 +271,6 @@ public final class Convert {
     return null;
   }
 
-  @Nullable
   private static String getStringOption(final CommandLine commandLine, final String option) {
 
     if (commandLine.hasOption(option)) {
@@ -266,23 +284,23 @@ public final class Convert {
   private static Options initOptions() {
 
     final Options options = new Options();
-    options.addOption(OPT_HELP);
-    options.addOption(OPT_VERSION);
-    options.addOption(OPT_APPLICATION_CONTEXT);
-    options.addOption(OPT_OUTPUT_DIRECTORY);
-    options.addOption(OPT_OUTPUT_FORMAT);
-    options.addOption(OPT_OFFICE_HOME);
-    options.addOption(OPT_KILL_EXISTING_PROCESS);
-    options.addOption(OPT_LOAD_PROPERTIES);
-    options.addOption(OPT_DISABLE_OPENGL);
-    options.addOption(OPT_PROCESS_MANAGER);
-    options.addOption(OPT_OVERWRITE);
-    options.addOption(OPT_PORT);
-    options.addOption(OPT_REGISTRY);
-    options.addOption(OPT_STORE_PROPERTIES);
-    options.addOption(OPT_TIMEOUT);
-    options.addOption(OPT_USER_PROFILE);
-    options.addOption(OPT_CONNECTION_URL);
+    options.addOption(OPT_APPLICATION_CONTEXT); // -a, --application-context
+    options.addOption(OPT_CONNECTION_URL); // -c, --connection-url
+    options.addOption(OPT_OUTPUT_DIRECTORY); // -d, --output-directory
+    options.addOption(OPT_OUTPUT_FORMAT); // -f, --output-format
+    options.addOption(OPT_DISABLE_OPENGL); // -g, --disable-opengl
+    options.addOption(OPT_HELP); // -h, --help
+    options.addOption(OPT_OFFICE_HOME); // -i, --office-home
+    options.addOption(OPT_LOAD_PROPERTIES); // -l, --load-properties
+    options.addOption(OPT_PROCESS_MANAGER); // -m, --process-manager
+    options.addOption(OPT_OVERWRITE); // -o, --overwriteOfficeManager
+    options.addOption(OPT_PORT); // -p, --port
+    options.addOption(OPT_REGISTRY); // -r, --registry
+    options.addOption(OPT_STORE_PROPERTIES); // -s, --store-properties
+    options.addOption(OPT_TIMEOUT); // -u, --timeout
+    options.addOption(OPT_USER_PROFILE); // -u, --user-profile
+    options.addOption(OPT_VERSION); // -c, --connection-url
+    options.addOption(OPT_EXISTING_PROCESS_ACTION); // -x, --existing-process-action
 
     return options;
   }
@@ -370,7 +388,6 @@ public final class Convert {
     }
   }
 
-  @Nullable
   private static Map<String, Object> toMap(final String... options) {
 
     if (options.length % 2 != 0) {
@@ -399,8 +416,7 @@ public final class Convert {
                 }));
   }
 
-  @Nullable
-  private static Map<String, Object> buildProperties(@Nullable final String... args) {
+  private static Map<String, Object> buildProperties(final String... args) {
 
     if (args == null || args.length == 0) {
       return null;
@@ -432,7 +448,7 @@ public final class Convert {
       final CommandLine commandLine,
       final AbstractApplicationContext context,
       final OfficeManager officeManager,
-      @Nullable final DocumentFormatRegistry registry) {
+      final DocumentFormatRegistry registry) {
 
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
       final RemoteConverter.Builder builder =

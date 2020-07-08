@@ -48,8 +48,7 @@ public class RemoteConverter extends AbstractConverter {
    *
    * @return A new builder instance.
    */
-  @NonNull
-  public static Builder builder() {
+  public static @NonNull Builder builder() {
     return new Builder();
   }
 
@@ -60,8 +59,7 @@ public class RemoteConverter extends AbstractConverter {
    *
    * @return A {@link RemoteConverter} with default configuration.
    */
-  @NonNull
-  public static RemoteConverter make() {
+  public static @NonNull RemoteConverter make() {
 
     return builder().build();
   }
@@ -74,8 +72,7 @@ public class RemoteConverter extends AbstractConverter {
    *     use to convert document.
    * @return A {@link RemoteConverter} with default configuration.
    */
-  @NonNull
-  public static RemoteConverter make(@NonNull final OfficeManager officeManager) {
+  public static @NonNull RemoteConverter make(final @NonNull OfficeManager officeManager) {
     return builder().officeManager(officeManager).build();
   }
 
@@ -84,10 +81,9 @@ public class RemoteConverter extends AbstractConverter {
     super(officeManager, formatRegistry);
   }
 
-  @NonNull
   @Override
-  protected AbstractConversionJobWithSourceFormatUnspecified convert(
-      @NonNull final AbstractSourceDocumentSpecs source) {
+  protected @NonNull AbstractConversionJobWithSourceFormatUnspecified convert(
+      final @NonNull AbstractSourceDocumentSpecs source) {
 
     return new RemoteConversionJobWithSourceFormatUnspecified(source);
   }
@@ -101,9 +97,8 @@ public class RemoteConverter extends AbstractConverter {
       super(source, RemoteConverter.this.officeManager, RemoteConverter.this.formatRegistry);
     }
 
-    @NonNull
     @Override
-    protected AbstractConversionJob to(@NonNull final AbstractTargetDocumentSpecs target) {
+    protected @NonNull AbstractConversionJob to(final @NonNull AbstractTargetDocumentSpecs target) {
 
       return new RemoteConversionJob(source, target);
     }
@@ -138,9 +133,8 @@ public class RemoteConverter extends AbstractConverter {
       super();
     }
 
-    @NonNull
     @Override
-    public RemoteConverter build() {
+    public @NonNull RemoteConverter build() {
 
       // An office manager is required.
       OfficeManager manager = officeManager;

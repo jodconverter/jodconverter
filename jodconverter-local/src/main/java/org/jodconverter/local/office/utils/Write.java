@@ -38,7 +38,7 @@ public final class Write { // NOPMD - Disable utility class name rule violation
    * @param document The document to test.
    * @return {@code true} if the document is a Text document, {@code false} otherwise.
    */
-  public static boolean isText(@NonNull final XComponent document) {
+  public static boolean isText(final @NonNull XComponent document) {
     return Info.isDocumentType(document, Lo.WRITER_SERVICE);
   }
 
@@ -48,8 +48,7 @@ public final class Write { // NOPMD - Disable utility class name rule violation
    * @param document The document to cast.
    * @return The {@link XTextDocument}, or null if the document is not a Text document.
    */
-  @Nullable
-  public static XTextDocument getTextDoc(@Nullable final XComponent document) {
+  public static @Nullable XTextDocument getTextDoc(final @Nullable XComponent document) {
 
     if (document == null) {
       return null;

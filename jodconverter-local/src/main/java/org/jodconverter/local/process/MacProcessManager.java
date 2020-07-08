@@ -38,14 +38,12 @@ public class MacProcessManager extends UnixProcessManager {
    *
    * @return The default {@code MacProcessManager} instance.
    */
-  @NonNull
-  public static MacProcessManager getDefault() {
+  public static @NonNull MacProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
 
-  @NonNull
   @Override
-  protected String[] getRunningProcessesCommand(@NonNull final String process) {
+  protected @NonNull String[] getRunningProcessesCommand(final @NonNull String process) {
 
     return new String[] {
       "/bin/bash",

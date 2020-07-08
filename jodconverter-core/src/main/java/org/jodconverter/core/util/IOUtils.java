@@ -43,7 +43,7 @@ public final class IOUtils {
    * @return The input stream content, as a string, never {@code null}.
    * @throws IOException If an IO error occurs.
    */
-  public static String toString(@NonNull final InputStream in, @NonNull final Charset encoding)
+  public static String toString(final @NonNull InputStream in, final @NonNull Charset encoding)
       throws IOException {
     AssertUtils.notNull(in, "in must not be null");
     AssertUtils.notNull(encoding, "encoding must not be null");
@@ -74,7 +74,7 @@ public final class IOUtils {
    * @return The number of bytes read or written.
    * @throws IOException If an IO error occurs.
    */
-  public static long copy(@NonNull final InputStream in, @NonNull final OutputStream out)
+  public static long copy(final @NonNull InputStream in, final @NonNull OutputStream out)
       throws IOException {
     AssertUtils.notNull(in, "in must not be null");
     AssertUtils.notNull(out, "out must not be null");

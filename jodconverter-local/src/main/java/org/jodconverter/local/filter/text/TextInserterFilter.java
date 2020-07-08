@@ -19,7 +19,7 @@
 
 package org.jodconverter.local.filter.text;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
 
@@ -64,7 +64,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
    *     (millimeters).
    */
   public TextInserterFilter(
-      @NonNull final String text,
+      final @NonNull String text,
       final int width,
       final int height,
       final int horizontalPosition,
@@ -90,7 +90,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
    *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
    */
   public TextInserterFilter(
-      @NonNull final String text,
+      final @NonNull String text,
       final int width,
       final int height,
       final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
@@ -103,9 +103,9 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
 
   @Override
   public void doFilter(
-      @NonNull final OfficeContext context,
-      @NonNull final XComponent document,
-      @NonNull final FilterChain chain)
+      final @NonNull OfficeContext context,
+      final @NonNull XComponent document,
+      final @NonNull FilterChain chain)
       throws Exception {
 
     LOGGER.debug("Applying the TextInserterFilter");

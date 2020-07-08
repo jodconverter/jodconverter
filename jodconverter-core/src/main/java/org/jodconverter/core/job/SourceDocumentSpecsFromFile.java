@@ -26,8 +26,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jodconverter.core.util.AssertUtils;
 
 /** Source document specifications for from a file. */
-public class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs
-    implements SourceDocumentSpecs {
+public class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs {
 
   /**
    * Creates specs from the specified file.

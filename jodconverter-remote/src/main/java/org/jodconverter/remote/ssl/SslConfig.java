@@ -70,8 +70,7 @@ public class SslConfig {
    *
    * @return The supported SSL ciphers.
    */
-  @Nullable
-  public String[] getCiphers() {
+  public @Nullable String[] getCiphers() {
     return this.ciphers;
   }
 
@@ -80,7 +79,7 @@ public class SslConfig {
    *
    * @param ciphers The supported SSL ciphers.
    */
-  public void setCiphers(@Nullable final String[] ciphers) {
+  public void setCiphers(final @Nullable String[] ciphers) {
     this.ciphers = ciphers;
   }
 
@@ -89,8 +88,7 @@ public class SslConfig {
    *
    * @return The alias that identifies the key in the key store.
    */
-  @Nullable
-  public String getKeyAlias() {
+  public @Nullable String getKeyAlias() {
     return this.keyAlias;
   }
 
@@ -99,7 +97,7 @@ public class SslConfig {
    *
    * @param keyAlias The alias that identifies the key in the key store.
    */
-  public void setKeyAlias(@Nullable final String keyAlias) {
+  public void setKeyAlias(final @Nullable String keyAlias) {
     this.keyAlias = keyAlias;
   }
 
@@ -108,8 +106,7 @@ public class SslConfig {
    *
    * @return The key password.
    */
-  @Nullable
-  public String getKeyPassword() {
+  public @Nullable String getKeyPassword() {
     return this.keyPassword;
   }
 
@@ -118,7 +115,7 @@ public class SslConfig {
    *
    * @param keyPassword The key password.
    */
-  public void setKeyPassword(@Nullable final String keyPassword) {
+  public void setKeyPassword(final @Nullable String keyPassword) {
     this.keyPassword = keyPassword;
   }
 
@@ -127,8 +124,7 @@ public class SslConfig {
    *
    * @return The path to the key store.
    */
-  @Nullable
-  public String getKeyStore() {
+  public @Nullable String getKeyStore() {
     return this.keyStore;
   }
 
@@ -137,7 +133,7 @@ public class SslConfig {
    *
    * @param keyStore The path to the key store.
    */
-  public void setKeyStore(@Nullable final String keyStore) {
+  public void setKeyStore(final @Nullable String keyStore) {
     this.keyStore = keyStore;
   }
 
@@ -146,8 +142,7 @@ public class SslConfig {
    *
    * @return The key store password.
    */
-  @Nullable
-  public String getKeyStorePassword() {
+  public @Nullable String getKeyStorePassword() {
     return this.keyStorePassword;
   }
 
@@ -156,7 +151,7 @@ public class SslConfig {
    *
    * @param keyStorePassword The key store password.
    */
-  public void setKeyStorePassword(@Nullable final String keyStorePassword) {
+  public void setKeyStorePassword(final @Nullable String keyStorePassword) {
     this.keyStorePassword = keyStorePassword;
   }
 
@@ -165,8 +160,7 @@ public class SslConfig {
    *
    * @return The key store type.
    */
-  @Nullable
-  public String getKeyStoreType() {
+  public @Nullable String getKeyStoreType() {
     return this.keyStoreType;
   }
 
@@ -175,7 +169,7 @@ public class SslConfig {
    *
    * @param keyStoreType The key store type.
    */
-  public void setKeyStoreType(@Nullable final String keyStoreType) {
+  public void setKeyStoreType(final @Nullable String keyStoreType) {
     this.keyStoreType = keyStoreType;
   }
 
@@ -184,8 +178,7 @@ public class SslConfig {
    *
    * @return The key store provider.
    */
-  @Nullable
-  public String getKeyStoreProvider() {
+  public @Nullable String getKeyStoreProvider() {
     return this.keyStoreProvider;
   }
 
@@ -194,7 +187,7 @@ public class SslConfig {
    *
    * @param keyStoreProvider The key store provider.
    */
-  public void setKeyStoreProvider(@Nullable final String keyStoreProvider) {
+  public void setKeyStoreProvider(final @Nullable String keyStoreProvider) {
     this.keyStoreProvider = keyStoreProvider;
   }
 
@@ -203,8 +196,7 @@ public class SslConfig {
    *
    * @return The enabled SSL protocols.
    */
-  @Nullable
-  public String[] getEnabledProtocols() {
+  public @Nullable String[] getEnabledProtocols() {
     return this.enabledProtocols;
   }
 
@@ -213,7 +205,7 @@ public class SslConfig {
    *
    * @param enabledProtocols The enabled SSL protocols to set.
    */
-  public void setEnabledProtocols(@Nullable final String[] enabledProtocols) {
+  public void setEnabledProtocols(final @Nullable String[] enabledProtocols) {
     this.enabledProtocols = enabledProtocols;
   }
 
@@ -222,8 +214,7 @@ public class SslConfig {
    *
    * @return The path to the trust store.
    */
-  @Nullable
-  public String getTrustStore() {
+  public @Nullable String getTrustStore() {
     return this.trustStore;
   }
 
@@ -232,7 +223,7 @@ public class SslConfig {
    *
    * @param trustStore The path to the trust store.
    */
-  public void setTrustStore(@Nullable final String trustStore) {
+  public void setTrustStore(final @Nullable String trustStore) {
     this.trustStore = trustStore;
   }
 
@@ -241,8 +232,7 @@ public class SslConfig {
    *
    * @return The trust store password.
    */
-  @Nullable
-  public String getTrustStorePassword() {
+  public @Nullable String getTrustStorePassword() {
     return this.trustStorePassword;
   }
 
@@ -251,7 +241,7 @@ public class SslConfig {
    *
    * @param trustStorePassword The trust store password.
    */
-  public void setTrustStorePassword(@Nullable final String trustStorePassword) {
+  public void setTrustStorePassword(final @Nullable String trustStorePassword) {
     this.trustStorePassword = trustStorePassword;
   }
 
@@ -260,8 +250,7 @@ public class SslConfig {
    *
    * @return The trust store type.
    */
-  @Nullable
-  public String getTrustStoreType() {
+  public @Nullable String getTrustStoreType() {
     return this.trustStoreType;
   }
 
@@ -270,7 +259,7 @@ public class SslConfig {
    *
    * @param trustStoreType The trust store type.
    */
-  public void setTrustStoreType(@Nullable final String trustStoreType) {
+  public void setTrustStoreType(final @Nullable String trustStoreType) {
     this.trustStoreType = trustStoreType;
   }
 
@@ -279,8 +268,7 @@ public class SslConfig {
    *
    * @return The trust store provider.
    */
-  @Nullable
-  public String getTrustStoreProvider() {
+  public @Nullable String getTrustStoreProvider() {
     return this.trustStoreProvider;
   }
 
@@ -289,7 +277,7 @@ public class SslConfig {
    *
    * @param trustStoreProvider The trust store provider.
    */
-  public void setTrustStoreProvider(@Nullable final String trustStoreProvider) {
+  public void setTrustStoreProvider(final @Nullable String trustStoreProvider) {
     this.trustStoreProvider = trustStoreProvider;
   }
 
@@ -298,8 +286,7 @@ public class SslConfig {
    *
    * @return The SSL protocol.
    */
-  @Nullable
-  public String getProtocol() {
+  public @Nullable String getProtocol() {
     return this.protocol;
   }
 
@@ -308,7 +295,7 @@ public class SslConfig {
    *
    * @param protocol The SSL protocol to use.
    */
-  public void setProtocol(@Nullable final String protocol) {
+  public void setProtocol(final @Nullable String protocol) {
     this.protocol = protocol;
   }
 

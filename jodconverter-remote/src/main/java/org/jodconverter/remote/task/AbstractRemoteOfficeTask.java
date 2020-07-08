@@ -36,13 +36,12 @@ public abstract class AbstractRemoteOfficeTask extends AbstractOfficeTask {
    *
    * @param source The source specifications of the document.
    */
-  public AbstractRemoteOfficeTask(@NonNull final SourceDocumentSpecs source) {
+  public AbstractRemoteOfficeTask(final @NonNull SourceDocumentSpecs source) {
     super(source);
   }
 
-  @NonNull
   @Override
-  public String toString() {
+  public @NonNull String toString() {
     return getClass().getSimpleName() + "{" + "source=" + source + '}';
   }
 }

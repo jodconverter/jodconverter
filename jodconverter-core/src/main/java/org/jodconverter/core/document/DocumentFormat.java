@@ -49,8 +49,7 @@ public class DocumentFormat {
    *
    * @return A new builder instance.
    */
-  @NonNull
-  public static Builder builder() {
+  public static @NonNull Builder builder() {
     return new Builder();
   }
 
@@ -61,8 +60,7 @@ public class DocumentFormat {
    * @return A {@link DocumentFormat}, which will be modifiable, unlike the default document formats
    *     are.
    */
-  @NonNull
-  public static DocumentFormat copy(@NonNull final DocumentFormat sourceFormat) {
+  public static @NonNull DocumentFormat copy(final @NonNull DocumentFormat sourceFormat) {
     return new Builder().from(sourceFormat).unmodifiable(false).build();
   }
 
@@ -73,8 +71,8 @@ public class DocumentFormat {
    * @return A {@link DocumentFormat}, which will be unmodifiable, like the default document formats
    *     are.
    */
-  @NonNull
-  public static DocumentFormat unmodifiableCopy(@NonNull final DocumentFormat sourceFormat) {
+  public static @NonNull DocumentFormat unmodifiableCopy(
+      final @NonNull DocumentFormat sourceFormat) {
     return new Builder().from(sourceFormat).unmodifiable(true).build();
   }
 
@@ -139,8 +137,7 @@ public class DocumentFormat {
    *
    * @return A string that represents an extension.
    */
-  @NonNull
-  public String getExtension() {
+  public @NonNull String getExtension() {
     return extensions.get(0);
   }
 
@@ -149,8 +146,7 @@ public class DocumentFormat {
    *
    * @return A list of string that represents the extensions.
    */
-  @NonNull
-  public List<@NonNull String> getExtensions() {
+  public @NonNull List<@NonNull String> getExtensions() {
     return extensions;
   }
 
@@ -159,8 +155,7 @@ public class DocumentFormat {
    *
    * @return The input DocumentFamily of the document format.
    */
-  @NonNull
-  public DocumentFamily getInputFamily() {
+  public @NonNull DocumentFamily getInputFamily() {
     return inputFamily;
   }
 
@@ -169,8 +164,7 @@ public class DocumentFormat {
    *
    * @return A map containing the properties to apply when loading a document of this format.
    */
-  @Nullable
-  public Map<@NonNull String, @NonNull Object> getLoadProperties() {
+  public @Nullable Map<@NonNull String, @NonNull Object> getLoadProperties() {
     return loadProperties;
   }
 
@@ -179,8 +173,7 @@ public class DocumentFormat {
    *
    * @return A string that represents the media type.
    */
-  @NonNull
-  public String getMediaType() {
+  public @NonNull String getMediaType() {
     return mediaType;
   }
 
@@ -189,8 +182,7 @@ public class DocumentFormat {
    *
    * @return A string that represents the name of the format.
    */
-  @NonNull
-  public String getName() {
+  public @NonNull String getName() {
     return name;
   }
 
@@ -201,8 +193,7 @@ public class DocumentFormat {
    * @return A DocumentFamily/Map pairs containing the properties to apply when storing a document
    *     of this format, by DocumentFamily.
    */
-  @Nullable
-  public Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
+  public @Nullable Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
       getStoreProperties() {
     return storeProperties;
   }
@@ -214,16 +205,14 @@ public class DocumentFormat {
    * @param family The DocumentFamily for which the properties are get.
    * @return A map containing the properties to apply when storing a document to this format.
    */
-  @Nullable
-  public Map<@NonNull String, @NonNull Object> getStoreProperties(
+  public @Nullable Map<@NonNull String, @NonNull Object> getStoreProperties(
       @NonNull final DocumentFamily family) {
 
     return storeProperties == null ? null : storeProperties.get(family);
   }
 
-  @NonNull
   @Override
-  public String toString() {
+  public @NonNull String toString() {
     return getClass().getSimpleName()
         + "{"
         + "name=\""
@@ -343,7 +332,7 @@ public class DocumentFormat {
      * @return This builder instance.
      */
     @NonNull
-    public Builder loadProperty(@NonNull final String name, @Nullable final Object value) {
+    public Builder loadProperty(@NonNull final String name, final @Nullable Object value) {
 
       AssertUtils.notBlank(name, "name must not be null nor blank");
 
@@ -423,7 +412,7 @@ public class DocumentFormat {
     public Builder storeProperty(
         @NonNull final DocumentFamily documentFamily,
         @NonNull final String name,
-        @Nullable final Object value) {
+        final @Nullable Object value) {
 
       AssertUtils.notNull(documentFamily, "documentFamily must not be null");
       AssertUtils.notBlank(name, "name must not be null nor blank");

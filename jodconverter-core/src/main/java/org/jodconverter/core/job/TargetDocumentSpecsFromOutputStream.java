@@ -47,10 +47,10 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
    * @param closeStream If we close the stream on completion.
    */
   public TargetDocumentSpecsFromOutputStream(
-      @NonNull final OutputStream outputStream,
-      @NonNull final TemporaryFileMaker fileMaker,
+      final @NonNull OutputStream outputStream,
+      final @NonNull TemporaryFileMaker fileMaker,
       final boolean closeStream) {
-    super(fileMaker.makeTemporaryFile());
+    super();
 
     AssertUtils.notNull(outputStream, "outputStream must not be null");
     AssertUtils.notNull(fileMaker, "fileMaker must not be null");
@@ -59,17 +59,16 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
     this.fileMaker = fileMaker;
   }
 
-  @NonNull
   @Override
-  public File getFile() {
+  public @NonNull File getFile() {
 
     return Optional.ofNullable(getFormat())
         .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
-        .orElse(super.getFile());
+        .orElse(fileMaker.makeTemporaryFile());
   }
 
   @Override
-  public void onComplete(@NonNull final File tempFile) {
+  public void onComplete(final @NonNull File tempFile) {
 
     // Copy the content of the tempFile, which is the result
     // of the conversion, to the outputStream
@@ -78,20 +77,12 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
       if (closeStream) {
         outputStream.close();
       }
-
     } catch (IOException ex) {
-      throw new DocumentSpecsIOException("Could not write file '" + tempFile + "' to stream", ex);
+      throw new DocumentSpecsIOException(
+          String.format("Could not write file '%s' to stream", tempFile), ex);
     } finally {
-
       // Ensure the created tempFile is deleted
       FileUtils.deleteQuietly(tempFile);
     }
-  }
-
-  @Override
-  public void onFailure(@NonNull final File tempFile, @NonNull final Exception exception) {
-
-    // Ensure the created tempFile is deleted
-    FileUtils.deleteQuietly(tempFile);
   }
 }

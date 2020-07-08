@@ -31,7 +31,8 @@ public final class StringUtils {
    * @param suffix The suffix to append to the end of the string.
    * @return A new String if suffix was appended, the same string otherwise.
    */
-  public static String appendIfMissing(@Nullable final String str, @Nullable final String suffix) {
+  public static @Nullable String appendIfMissing(
+      final @Nullable String str, final @Nullable String suffix) {
     if (str == null || isEmpty(suffix) || str.endsWith(suffix)) {
       return str;
     }
@@ -48,7 +49,7 @@ public final class StringUtils {
    *     searchStrings}.
    */
   public static boolean endsWithAny(
-      @Nullable final String str, @Nullable final String... searchStrings) {
+      final @Nullable String str, final @Nullable String... searchStrings) {
     if (isEmpty(str) || searchStrings == null || searchStrings.length == 0) {
       return false;
     }
@@ -66,7 +67,7 @@ public final class StringUtils {
    * @param str The string to check.
    * @return {@code true} if the given string is {@code null} or empty; false otherwise.
    */
-  public static boolean isEmpty(@Nullable final String str) {
+  public static boolean isEmpty(final @Nullable String str) {
     if (str == null) {
       return true;
     }
@@ -79,7 +80,7 @@ public final class StringUtils {
    * @param str The string to check.
    * @return {@code true} if the given string is nor {@code null} nor empty; false otherwise.
    */
-  public static boolean isNotEmpty(@Nullable final String str) {
+  public static boolean isNotEmpty(final @Nullable String str) {
     if (str == null) {
       return false;
     }
@@ -93,7 +94,7 @@ public final class StringUtils {
    * @return {@code true} if the given string is {@code null}, empty or blank (only whitespace);
    *     false otherwise.
    */
-  public static boolean isBlank(@Nullable final String str) {
+  public static boolean isBlank(final @Nullable String str) {
     if (str == null) {
       return true;
     }
@@ -115,7 +116,7 @@ public final class StringUtils {
    * @return {@code true} if the given string is not {@code null}, empty or blank (only whitespace);
    *     false otherwise.
    */
-  public static boolean isNotBlank(@Nullable final String str) {
+  public static boolean isNotBlank(final @Nullable String str) {
     if (str == null) {
       return false;
     }

@@ -35,10 +35,12 @@ import org.jodconverter.core.util.AssertUtils;
  */
 public abstract class AbstractDocumentSpecs implements DocumentSpecs {
 
-  private final File file;
+  private File file;
   private DocumentFormat documentFormat;
 
-  protected AbstractDocumentSpecs(@NonNull final File file) {
+  protected AbstractDocumentSpecs() {}
+
+  protected AbstractDocumentSpecs(final @NonNull File file) {
     super();
 
     AssertUtils.notNull(file, "file must not be null");
@@ -46,15 +48,13 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
     this.file = file;
   }
 
-  @NonNull
   @Override
-  public File getFile() {
+  public @NonNull File getFile() {
     return file;
   }
 
-  @Nullable
   @Override
-  public DocumentFormat getFormat() {
+  public @Nullable DocumentFormat getFormat() {
     return documentFormat;
   }
 
@@ -69,13 +69,12 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
     this.documentFormat = documentFormat;
   }
 
-  @NonNull
   @Override
-  public String toString() {
+  public @NonNull String toString() {
     return getClass().getSimpleName()
         + "{"
         + "file="
-        + Optional.of(file).map(File::getName)
+        + Optional.ofNullable(file).map(File::getName).orElse("null")
         + ", format="
         + Optional.ofNullable(documentFormat).map(DocumentFormat::getExtension).orElse("null")
         + '}';

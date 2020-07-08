@@ -44,8 +44,8 @@ public final class Props { // NOPMD - Disable utility class name rule violation
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  @NonNull
-  public static Object getProperty(@NonNull final Object obj, @NonNull final String propName) {
+  public static @NonNull Object getProperty(
+      final @NonNull Object obj, final @NonNull String propName) {
     return getProperty(Lo.qi(XPropertySet.class, obj), propName);
   }
 
@@ -58,9 +58,8 @@ public final class Props { // NOPMD - Disable utility class name rule violation
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  @NonNull
-  public static Object getProperty(
-      @NonNull final XPropertySet props, @NonNull final String propName) {
+  public static @NonNull Object getProperty(
+      final @NonNull XPropertySet props, final @NonNull String propName) {
 
     try {
       return props.getPropertyValue(propName);
@@ -77,9 +76,8 @@ public final class Props { // NOPMD - Disable utility class name rule violation
    * @param value The property value.
    * @return An array of size 1.
    */
-  @NonNull
-  public static PropertyValue[] makeProperties(
-      @NonNull final String name, @NonNull final Object value) {
+  public static @NonNull PropertyValue[] makeProperties(
+      final @NonNull String name, final @NonNull Object value) {
 
     final PropertyValue[] props = {new PropertyValue()};
     props[0].Name = name;
@@ -97,12 +95,11 @@ public final class Props { // NOPMD - Disable utility class name rule violation
    * @param value2 The second property value.
    * @return An array of size 2.
    */
-  @NonNull
-  public static PropertyValue[] makeProperties(
-      @NonNull final String name1,
-      @NonNull final Object value1,
-      @NonNull final String name2,
-      @NonNull final Object value2) {
+  public static @NonNull PropertyValue[] makeProperties(
+      final @NonNull String name1,
+      final @NonNull Object value1,
+      final @NonNull String name2,
+      final @NonNull Object value2) {
 
     final PropertyValue[] props = {new PropertyValue(), new PropertyValue()};
     props[0].Name = name1;
@@ -120,9 +117,8 @@ public final class Props { // NOPMD - Disable utility class name rule violation
    * @param values The property values.
    * @return An array of properties.
    */
-  @NonNull
-  public static PropertyValue[] makeProperties(
-      @NonNull final String[] names, @NonNull final Object[] values) {
+  public static @NonNull PropertyValue[] makeProperties(
+      final @NonNull String[] names, final @NonNull Object[] values) {
 
     if (names.length != values.length) {
       throw new IllegalArgumentException("Mismatch in lengths of names and values");

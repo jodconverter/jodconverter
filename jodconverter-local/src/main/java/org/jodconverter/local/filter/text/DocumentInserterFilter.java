@@ -51,7 +51,7 @@ public class DocumentInserterFilter implements Filter {
    *
    * @param document The document to insert at the end of the current document.
    */
-  public DocumentInserterFilter(@NonNull final File document) {
+  public DocumentInserterFilter(final @NonNull File document) {
     super();
 
     this.documentToInsert = document;
@@ -59,9 +59,9 @@ public class DocumentInserterFilter implements Filter {
 
   @Override
   public void doFilter(
-      @NonNull final OfficeContext context,
-      @NonNull final XComponent document,
-      @NonNull final FilterChain chain)
+      final @NonNull OfficeContext context,
+      final @NonNull XComponent document,
+      final @NonNull FilterChain chain)
       throws Exception {
 
     LOGGER.debug("Applying the DocumentInserterFilter");

@@ -38,7 +38,7 @@ public final class Calc { // NOPMD - Disable utility class name rule violation
    * @param document The document to test.
    * @return {@code true} if the document is a Spreadsheet document, {@code false} otherwise.
    */
-  public static boolean isCalc(@NonNull final XComponent document) {
+  public static boolean isCalc(final @NonNull XComponent document) {
     return Info.isDocumentType(document, Lo.CALC_SERVICE);
   }
 
@@ -49,8 +49,7 @@ public final class Calc { // NOPMD - Disable utility class name rule violation
    * @return The {@link XSpreadsheetDocument}, or null if the document is not a Spreadsheet
    *     document.
    */
-  @Nullable
-  public static XSpreadsheetDocument getCalcDoc(@Nullable final XComponent document) {
+  public static @Nullable XSpreadsheetDocument getCalcDoc(final @Nullable XComponent document) {
 
     if (document == null) {
       return null;

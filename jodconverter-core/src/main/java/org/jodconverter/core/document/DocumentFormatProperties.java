@@ -41,8 +41,7 @@ public class DocumentFormatProperties {
    *
    * @return A map containing the properties.
    */
-  @NonNull
-  public Map<@NonNull String, @NonNull Object> getLoad() {
+  public @NonNull Map<@NonNull String, @NonNull Object> getLoad() {
     return load;
   }
 
@@ -51,8 +50,8 @@ public class DocumentFormatProperties {
    *
    * @return A map containing the properties.
    */
-  @NonNull
-  public Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>> getStore() {
+  public @NonNull Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
+      getStore() {
     return store;
   }
 }

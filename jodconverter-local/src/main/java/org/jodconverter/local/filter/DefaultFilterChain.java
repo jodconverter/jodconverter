@@ -70,20 +70,19 @@ public class DefaultFilterChain extends AbstractFilterChain {
    * @param filters The filters to add to the chain.
    */
   public DefaultFilterChain(
-      final boolean endsWithRefreshFilter, @Nullable final Filter... filters) {
+      final boolean endsWithRefreshFilter, final @Nullable Filter... filters) {
     super(filters);
 
     this.endsWithRefreshFilter = endsWithRefreshFilter;
   }
 
-  @NonNull
   @Override
-  public FilterChain copy() {
+  public @NonNull FilterChain copy() {
     return new DefaultFilterChain(endsWithRefreshFilter, filters.toArray(new Filter[0]));
   }
 
   @Override
-  public void doFilter(@NonNull final OfficeContext context, @NonNull final XComponent document)
+  public void doFilter(final @NonNull OfficeContext context, final @NonNull XComponent document)
       throws OfficeException {
 
     // Call the RefreshFilter if we are at the end of the chain

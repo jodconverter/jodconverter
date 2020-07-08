@@ -34,7 +34,7 @@ public class LinesStreamPumper extends StreamPumper {
     private final List<String> lines = new ArrayList<>();
 
     @Override
-    public void consume(@NonNull final String line) {
+    public void consume(final @NonNull String line) {
       lines.add(line);
     }
   }
@@ -44,7 +44,7 @@ public class LinesStreamPumper extends StreamPumper {
    *
    * @param stream The input stream to read from.
    */
-  public LinesStreamPumper(@NonNull final InputStream stream) {
+  public LinesStreamPumper(final @NonNull InputStream stream) {
     super(stream, new LinesConsumer());
   }
 
@@ -53,8 +53,7 @@ public class LinesStreamPumper extends StreamPumper {
    *
    * @return The command output lines.
    */
-  @NonNull
-  public List<@NonNull String> getLines() {
+  public @NonNull List<@NonNull String> getLines() {
     return ((LinesConsumer) getConsumer()).lines;
   }
 }

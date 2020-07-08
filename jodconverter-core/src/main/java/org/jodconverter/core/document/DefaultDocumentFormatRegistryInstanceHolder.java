@@ -39,8 +39,7 @@ class DefaultDocumentFormatRegistryInstanceHolder { // NOPMD - Disable class nam
    *
    * @return The default {@link DocumentFormatRegistry}.
    */
-  @NonNull
-  public static DocumentFormatRegistry getInstance() {
+  public static @NonNull DocumentFormatRegistry getInstance() {
     synchronized (DocumentFormatRegistry.class) {
       if (instance == null) {
         try (InputStream input =
@@ -62,7 +61,7 @@ class DefaultDocumentFormatRegistryInstanceHolder { // NOPMD - Disable class nam
    *
    * @param registry The default {@link DocumentFormatRegistry}.
    */
-  public static void setInstance(@NonNull final DocumentFormatRegistry registry) {
+  public static void setInstance(final @NonNull DocumentFormatRegistry registry) {
     synchronized (DocumentFormatRegistry.class) {
       instance = registry;
     }

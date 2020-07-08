@@ -57,7 +57,7 @@ public class JodConverterLocalAutoConfiguration {
    *
    * @param properties The local properties.
    */
-  public JodConverterLocalAutoConfiguration(@NonNull final JodConverterLocalProperties properties) {
+  public JodConverterLocalAutoConfiguration(final @NonNull JodConverterLocalProperties properties) {
     this.properties = properties;
   }
 
@@ -70,7 +70,7 @@ public class JodConverterLocalAutoConfiguration {
     builder.officeHome(properties.getOfficeHome());
     builder.workingDir(properties.getWorkingDir());
     builder.templateProfileDir(properties.getTemplateProfileDir());
-    builder.killExistingProcess(properties.isKillExistingProcess());
+    builder.existingProcessAction(properties.getExistingProcessAction());
     builder.processTimeout(properties.getProcessTimeout());
     builder.processRetryInterval(properties.getProcessRetryInterval());
     builder.taskExecutionTimeout(properties.getTaskExecutionTimeout());

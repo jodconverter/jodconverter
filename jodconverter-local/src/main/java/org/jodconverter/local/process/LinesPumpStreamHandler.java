@@ -33,19 +33,17 @@ public class LinesPumpStreamHandler extends PumpStreamHandler {
    * @param error The stream for errors.
    */
   public LinesPumpStreamHandler(
-      @NonNull final InputStream output, @NonNull final InputStream error) {
+      final @NonNull InputStream output, final @NonNull InputStream error) {
     super(new LinesStreamPumper(output), new LinesStreamPumper(error));
   }
 
-  @NonNull
   @Override
-  public LinesStreamPumper getOutputPumper() {
+  public @NonNull LinesStreamPumper getOutputPumper() {
     return (LinesStreamPumper) super.getOutputPumper();
   }
 
-  @NonNull
   @Override
-  public LinesStreamPumper getErrorPumper() {
+  public @NonNull LinesStreamPumper getErrorPumper() {
     return (LinesStreamPumper) super.getErrorPumper();
   }
 }

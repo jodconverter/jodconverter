@@ -55,8 +55,8 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   protected final Map<String, Object> loadProperties;
 
   protected static void appendProperties(
-      @NonNull final Map<@NonNull String, @NonNull Object> properties,
-      @Nullable final Map<@NonNull String, @NonNull Object> toAddProperties) {
+      final @NonNull Map<@NonNull String, @NonNull Object> properties,
+      final @Nullable Map<@NonNull String, @NonNull Object> toAddProperties) {
 
     if (toAddProperties != null) {
       properties.putAll(toAddProperties);
@@ -68,7 +68,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
    *
    * @param source The source specifications of the document.
    */
-  public AbstractLocalOfficeTask(@NonNull final SourceDocumentSpecs source) {
+  public AbstractLocalOfficeTask(final @NonNull SourceDocumentSpecs source) {
     this(source, null);
   }
 
@@ -81,16 +81,15 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
    *     {@code source} arguments.
    */
   public AbstractLocalOfficeTask(
-      @NonNull final SourceDocumentSpecs source,
-      @Nullable final Map<@NonNull String, @NonNull Object> loadProperties) {
+      final @NonNull SourceDocumentSpecs source,
+      final @Nullable Map<@NonNull String, @NonNull Object> loadProperties) {
     super(source);
 
     this.loadProperties = loadProperties;
   }
 
   // Gets the office properties to apply when the input file will be loaded.
-  @NonNull
-  protected Map<@NonNull String, @NonNull Object> getLoadProperties() {
+  protected @NonNull Map<@NonNull String, @NonNull Object> getLoadProperties() {
 
     final Map<String, Object> loadProps =
         new HashMap<>(
@@ -103,9 +102,8 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   }
 
   // Loads the document from the specified source file.
-  @NonNull
-  protected XComponent loadDocument(
-      @NonNull final LocalOfficeContext context, @NonNull final File sourceFile)
+  protected @NonNull XComponent loadDocument(
+      final @NonNull LocalOfficeContext context, final @NonNull File sourceFile)
       throws OfficeException {
 
     final XComponentLoader loader = context.getComponentLoader();
@@ -130,7 +128,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   }
 
   // Closes the specified document.
-  protected void closeDocument(@Nullable final XComponent document) {
+  protected void closeDocument(final @Nullable XComponent document) {
 
     if (document != null) {
 
@@ -154,9 +152,8 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
     }
   }
 
-  @NonNull
   @Override
-  public String toString() {
+  public @NonNull String toString() {
     return getClass().getSimpleName()
         + "{"
         + "source="

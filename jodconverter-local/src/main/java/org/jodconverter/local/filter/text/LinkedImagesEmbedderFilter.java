@@ -57,9 +57,9 @@ public class LinkedImagesEmbedderFilter implements Filter {
 
   @Override
   public void doFilter(
-      @NonNull final OfficeContext context,
-      @NonNull final XComponent document,
-      @NonNull final FilterChain chain)
+      final @NonNull OfficeContext context,
+      final @NonNull XComponent document,
+      final @NonNull FilterChain chain)
       throws Exception {
 
     LOGGER.debug("Applying the LinkedImagesEmbedderFilter");

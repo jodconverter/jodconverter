@@ -41,7 +41,7 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
    *
    * @param documentFormat The format to add.
    */
-  public void addFormat(@NonNull final DocumentFormat documentFormat) {
+  public void addFormat(final @NonNull DocumentFormat documentFormat) {
 
     documentFormat.getExtensions().stream()
         .map(s -> s.toLowerCase(Locale.ROOT))
@@ -49,26 +49,23 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
     fmtsByMediaType.put(documentFormat.getMediaType().toLowerCase(Locale.ROOT), documentFormat);
   }
 
-  @Nullable
   @Override
-  public DocumentFormat getFormatByExtension(@NonNull final String extension) {
+  public @Nullable DocumentFormat getFormatByExtension(final @NonNull String extension) {
 
     AssertUtils.notNull(extension, "extension must not be null");
     return fmtsByExtension.get(extension.toLowerCase(Locale.ROOT));
   }
 
-  @Nullable
   @Override
-  public DocumentFormat getFormatByMediaType(@NonNull final String mediaType) {
+  public @Nullable DocumentFormat getFormatByMediaType(final @NonNull String mediaType) {
 
     AssertUtils.notNull(mediaType, "mediaType must not be null");
     return fmtsByMediaType.get(mediaType.toLowerCase(Locale.ROOT));
   }
 
-  @NonNull
   @Override
-  public Set<@NonNull DocumentFormat> getOutputFormats(
-      @NonNull final DocumentFamily documentFamily) {
+  public @NonNull Set<@NonNull DocumentFormat> getOutputFormats(
+      final @NonNull DocumentFamily documentFamily) {
 
     AssertUtils.notNull(documentFamily, "documentFamily must not be null");
     // Use fmtsByMediaType since fmtsByExtension may contain the same

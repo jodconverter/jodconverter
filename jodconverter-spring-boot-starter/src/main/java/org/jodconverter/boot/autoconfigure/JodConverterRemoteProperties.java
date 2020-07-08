@@ -74,12 +74,11 @@ public class JodConverterRemoteProperties {
     this.enabled = enabled;
   }
 
-  @Nullable
-  public String getUrl() {
+  public @Nullable String getUrl() {
     return url;
   }
 
-  public void setUrl(@Nullable final String url) {
+  public void setUrl(final @Nullable String url) {
     this.url = url;
   }
 
@@ -91,12 +90,11 @@ public class JodConverterRemoteProperties {
     this.poolSize = poolSize;
   }
 
-  @Nullable
-  public String getWorkingDir() {
+  public @Nullable String getWorkingDir() {
     return workingDir;
   }
 
-  public void setWorkingDir(@Nullable final String workingDir) {
+  public void setWorkingDir(final @Nullable String workingDir) {
     this.workingDir = workingDir;
   }
 
@@ -116,12 +114,11 @@ public class JodConverterRemoteProperties {
     this.taskQueueTimeout = taskQueueTimeout;
   }
 
-  @Nullable
-  public SslProperties getSsl() {
+  public @Nullable SslProperties getSsl() {
     return this.ssl;
   }
 
-  public void setSsl(@Nullable final SslProperties ssl) {
+  public void setSsl(final @Nullable SslProperties ssl) {
     this.ssl = ssl;
   }
 
@@ -184,120 +181,107 @@ public class JodConverterRemoteProperties {
       this.enabled = enabled;
     }
 
-    @Nullable
-    public String[] getCiphers() {
+    public @Nullable String[] getCiphers() {
       return this.ciphers;
     }
 
-    public void setCiphers(@Nullable final String[] ciphers) {
+    public void setCiphers(final @Nullable String[] ciphers) {
       this.ciphers = ciphers;
     }
 
-    @Nullable
-    public String getKeyAlias() {
+    public @Nullable String getKeyAlias() {
       return this.keyAlias;
     }
 
-    public void setKeyAlias(@Nullable final String keyAlias) {
+    public void setKeyAlias(final @Nullable String keyAlias) {
       this.keyAlias = keyAlias;
     }
 
-    @Nullable
-    public String getKeyPassword() {
+    public @Nullable String getKeyPassword() {
       return this.keyPassword;
     }
 
-    public void setKeyPassword(@Nullable final String keyPassword) {
+    public void setKeyPassword(final @Nullable String keyPassword) {
       this.keyPassword = keyPassword;
     }
 
-    @Nullable
-    public String getKeyStore() {
+    public @Nullable String getKeyStore() {
       return this.keyStore;
     }
 
-    public void setKeyStore(@Nullable final String keyStore) {
+    public void setKeyStore(final @Nullable String keyStore) {
       this.keyStore = keyStore;
     }
 
-    @Nullable
-    public String getKeyStorePassword() {
+    public @Nullable String getKeyStorePassword() {
       return this.keyStorePassword;
     }
 
-    public void setKeyStorePassword(@Nullable final String keyStorePassword) {
+    public void setKeyStorePassword(final @Nullable String keyStorePassword) {
       this.keyStorePassword = keyStorePassword;
     }
 
-    @Nullable
-    public String getKeyStoreType() {
+    public @Nullable String getKeyStoreType() {
       return this.keyStoreType;
     }
 
-    public void setKeyStoreType(@Nullable final String keyStoreType) {
+    public void setKeyStoreType(final @Nullable String keyStoreType) {
       this.keyStoreType = keyStoreType;
     }
 
-    @Nullable
-    public String getKeyStoreProvider() {
+    public @Nullable String getKeyStoreProvider() {
       return this.keyStoreProvider;
     }
 
-    public void setKeyStoreProvider(@Nullable final String keyStoreProvider) {
+    public void setKeyStoreProvider(final @Nullable String keyStoreProvider) {
       this.keyStoreProvider = keyStoreProvider;
     }
 
-    @Nullable
-    public String[] getEnabledProtocols() {
+    public @Nullable String[] getEnabledProtocols() {
       return this.enabledProtocols;
     }
 
-    public void setEnabledProtocols(@Nullable final String[] enabledProtocols) {
+    public void setEnabledProtocols(final @Nullable String[] enabledProtocols) {
       this.enabledProtocols = enabledProtocols;
     }
 
-    @Nullable
-    public String getTrustStore() {
+    public @Nullable String getTrustStore() {
       return this.trustStore;
     }
 
-    public void setTrustStore(@Nullable final String trustStore) {
+    public void setTrustStore(final @Nullable String trustStore) {
       this.trustStore = trustStore;
     }
 
-    @Nullable
-    public String getTrustStorePassword() {
+    public @Nullable String getTrustStorePassword() {
       return this.trustStorePassword;
     }
 
-    public void setTrustStorePassword(@Nullable final String trustStorePassword) {
+    public void setTrustStorePassword(final @Nullable String trustStorePassword) {
       this.trustStorePassword = trustStorePassword;
     }
 
-    @Nullable
-    public String getTrustStoreType() {
+    public @Nullable String getTrustStoreType() {
       return this.trustStoreType;
     }
 
-    public void setTrustStoreType(@Nullable final String trustStoreType) {
+    public void setTrustStoreType(final @Nullable String trustStoreType) {
       this.trustStoreType = trustStoreType;
     }
 
-    @Nullable
-    public String getTrustStoreProvider() {
+    public @Nullable String getTrustStoreProvider() {
       return this.trustStoreProvider;
     }
 
-    public void setTrustStoreProvider(@Nullable final String trustStoreProvider) {
+    public void setTrustStoreProvider(final @Nullable String trustStoreProvider) {
       this.trustStoreProvider = trustStoreProvider;
     }
 
-    @Nullable
-    public String getProtocol() {
+    public @Nullable String getProtocol() {
       return this.protocol;
     }
 
-    public void setProtocol(@Nullable final String protocol) {
+    public void setProtocol(final @Nullable String protocol) {
       this.protocol = protocol;
     }
 
@@ -323,8 +307,7 @@ public class JodConverterRemoteProperties {
      *
      * @return The created {@link org.jodconverter.remote.ssl.SslConfig}.
      */
-    @NonNull
-    public SslConfig sslConfig() {
+    public @NonNull SslConfig sslConfig() {
 
       final SslConfig sslConfig = new SslConfig();
       sslConfig.setEnabled(isEnabled());

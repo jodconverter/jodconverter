@@ -37,17 +37,19 @@ public abstract class AbstractConversionJob
   protected final AbstractTargetDocumentSpecs target;
 
   protected AbstractConversionJob(
-      @NonNull final AbstractSourceDocumentSpecs source,
-      @NonNull final AbstractTargetDocumentSpecs target) {
+      final @NonNull AbstractSourceDocumentSpecs source,
+      final @NonNull AbstractTargetDocumentSpecs target) {
     super();
 
+    // Both arguments are required.
+    AssertUtils.notNull(source, "source must not be null");
+    AssertUtils.notNull(target, "target must not be null");
     this.source = source;
     this.target = target;
   }
 
-  @NonNull
   @Override
-  public ConversionJob as(@NonNull final DocumentFormat format) {
+  public @NonNull AbstractConversionJob as(final @NonNull DocumentFormat format) {
 
     target.setDocumentFormat(format);
     return this;

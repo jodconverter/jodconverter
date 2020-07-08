@@ -49,7 +49,7 @@ public abstract class AbstractFilterChain implements FilterChain {
    *
    * @param filters The filters to add to the chain.
    */
-  public AbstractFilterChain(@Nullable final Filter... filters) {
+  public AbstractFilterChain(final @Nullable Filter... filters) {
     this(false, filters);
   }
 
@@ -60,7 +60,7 @@ public abstract class AbstractFilterChain implements FilterChain {
    *     can be added to the chain), {@code false} otherwise.
    * @param filters The filters to initially add to the chain.
    */
-  public AbstractFilterChain(final boolean readOnly, @Nullable final Filter... filters) {
+  public AbstractFilterChain(final boolean readOnly, final @Nullable Filter... filters) {
 
     this.readOnly = readOnly;
     this.pos = 0;
@@ -73,7 +73,7 @@ public abstract class AbstractFilterChain implements FilterChain {
   }
 
   @Override
-  public void addFilter(@NonNull final Filter filter) {
+  public void addFilter(final @NonNull Filter filter) {
 
     if (readOnly) {
       throw new UnsupportedOperationException();
@@ -82,7 +82,7 @@ public abstract class AbstractFilterChain implements FilterChain {
   }
 
   @Override
-  public void doFilter(@NonNull final OfficeContext context, @NonNull final XComponent document)
+  public void doFilter(final @NonNull OfficeContext context, final @NonNull XComponent document)
       throws OfficeException {
 
     // Call the next filter if there is one
@@ -101,9 +101,9 @@ public abstract class AbstractFilterChain implements FilterChain {
    * @throws OfficeException If an error occurs processing the filter.
    */
   protected void doFilter(
-      @NonNull final Filter filter,
-      @NonNull final OfficeContext context,
-      @NonNull final XComponent document)
+      final @NonNull Filter filter,
+      final @NonNull OfficeContext context,
+      final @NonNull XComponent document)
       throws OfficeException {
 
     try {

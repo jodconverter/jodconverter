@@ -38,14 +38,12 @@ public class FreeBSDProcessManager extends UnixProcessManager {
    *
    * @return The default {@code FreeBSDProcessManager} instance.
    */
-  @NonNull
-  public static FreeBSDProcessManager getDefault() {
+  public static @NonNull FreeBSDProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
 
-  @NonNull
   @Override
-  protected String[] getRunningProcessesCommand(@NonNull final String process) {
+  protected @NonNull String[] getRunningProcessesCommand(final @NonNull String process) {
 
     return new String[] {"/bin/ps", "-awx", "-o", "pid,args"};
   }

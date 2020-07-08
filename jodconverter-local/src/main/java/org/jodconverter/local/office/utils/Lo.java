@@ -57,8 +57,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    * @return A reference to the requested UNO interface type.
    * @see UnoRuntime#queryInterface(Class, Object)
    */
-  @NonNull
-  public static <T> T qi(@NonNull final Class<T> type, @NonNull final Object object) {
+  public static <T> @NonNull T qi(final @NonNull Class<T> type, final @NonNull Object object) {
 
     AssertUtils.notNull(type, "type must not be null");
     AssertUtils.notNull(type, "object must not be null");
@@ -85,9 +84,8 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
    * @see UnoRuntime#queryInterface(Class, Object)
    */
-  @NonNull
-  public static <T> Optional<T> qiOptional(
-      @NonNull final Class<T> type, @NonNull final Object object) {
+  public static <T> @NonNull Optional<T> qiOptional(
+      final @NonNull Class<T> type, final @NonNull Object object) {
 
     return Optional.ofNullable(UnoRuntime.queryInterface(type, object));
   }
@@ -98,8 +96,8 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    * @param component The component.
    * @return The service factory.
    */
-  @NonNull
-  public static XMultiServiceFactory getServiceFactory(@NonNull final XComponent component) {
+  public static @NonNull XMultiServiceFactory getServiceFactory(
+      final @NonNull XComponent component) {
     return qi(XMultiServiceFactory.class, component);
   }
 
@@ -115,11 +113,10 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  @NonNull
-  public static <T> T createInstanceMSF(
-      @NonNull final XComponent component,
-      @NonNull final Class<T> type,
-      @NonNull final String serviceName) {
+  public static <T> @NonNull T createInstanceMSF(
+      final @NonNull XComponent component,
+      final @NonNull Class<T> type,
+      final @NonNull String serviceName) {
 
     // Create service component using the specified factory.
     // Then uses bridge to obtain proxy to remote interface inside service;
@@ -139,11 +136,10 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  @NonNull
-  public static <T> T createInstanceMSF(
-      @NonNull final XMultiServiceFactory factory,
-      @NonNull final Class<T> type,
-      @NonNull final String serviceName) {
+  public static <T> @NonNull T createInstanceMSF(
+      final @NonNull XMultiServiceFactory factory,
+      final @NonNull Class<T> type,
+      final @NonNull String serviceName) {
 
     // Create service component using the specified factory.
     // Then uses bridge to obtain proxy to remote interface inside service;
@@ -167,11 +163,10 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  @Nullable
-  public static <T> T createInstanceMCF(
-      @NonNull final XComponentContext context,
-      @NonNull final Class<T> type,
-      @NonNull final String serviceName) {
+  public static <T> @Nullable T createInstanceMCF(
+      final @NonNull XComponentContext context,
+      final @NonNull Class<T> type,
+      final @NonNull String serviceName) {
 
     // Create service component using the specified component context.
     // Then uses bridge to obtain proxy to remote interface inside service;
