@@ -59,6 +59,7 @@ class DefaultDocumentFormatRegistryTest {
           getOutputFormats(DocumentFamily.TEXT),
           "doc",
           "docx",
+          "dotx",
           "html",
           "xhtml",
           "jpg",
@@ -148,6 +149,7 @@ class DefaultDocumentFormatRegistryTest {
       assertByExt(ass, "sxw", SXW);
       assertByExt(ass, "doc", DOC);
       assertByExt(ass, "docx", DOCX);
+      assertByExt(ass, "dotx", DOTX);
       assertByExt(ass, "rtf", RTF);
       assertByExt(ass, "wpd", WPD);
       assertByExt(ass, "txt", TXT);
@@ -201,6 +203,8 @@ class DefaultDocumentFormatRegistryTest {
       assertByType(ass, "application/msword", DOC);
       assertByType(
           ass, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", DOCX);
+      assertByType(
+          ass, "application/vnd.openxmlformats-officedocument.wordprocessingml.template", DOTX);
       assertByType(ass, "text/rtf", RTF);
       assertByType(ass, "application/wordperfect", WPD);
       assertByType(ass, "text/plain", TXT);

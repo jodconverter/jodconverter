@@ -52,6 +52,19 @@
     }
   },
   {
+    "name": "Word Open XML Document Template",
+    "extensions": [
+      "dotx"
+    ],
+    "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+    "inputFamily": "TEXT",
+    "storeProperties": {
+      "TEXT": {
+        "FilterName": "MS Word 2007 XML"
+      }
+    }
+  },
+  {
     "name": "Microsoft Word 97-2003",
     "extensions": [
       "doc"

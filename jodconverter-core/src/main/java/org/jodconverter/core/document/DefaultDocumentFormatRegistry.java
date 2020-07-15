@@ -147,6 +147,16 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
   public static final @NonNull DocumentFormat DOCX = byExtension("docx");
 
   /**
+   * Word Open XML Document Template.
+   *
+   * <ul>
+   *   <li>Extension: dotx
+   *   <li>Media Type: application/vnd.openxmlformats-officedocument.wordprocessingml.template
+   * </ul>
+   */
+  public static final @NonNull DocumentFormat DOTX = byExtension("dotx");
+
+  /**
    * Rich Text Format.
    *
    * <ul>
