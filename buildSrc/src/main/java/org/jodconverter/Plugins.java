@@ -1,18 +1,18 @@
 package org.jodconverter;
 
 public class Plugins {
-  // Latest version -> https://sourceforge.net/projects/checkstyle/files/checkstyle
-  public static final String checkstyleVersion = "8.29";
+  // Latest version -> https://github.com/checkstyle/checkstyle/releases/
+  public static final String checkstyleVersion = "8.34";
   // Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
-  public static final String coverallsVersion = "2.9.0";
+  public static final String coverallsVersion = "2.10.1";
   // Latest version -> https://plugins.gradle.org/plugin/nebula.integtest
-  public static final String nebulaVersion = "7.0.5";
+  public static final String nebulaVersion = "7.0.9";
   // Latest version -> https://plugins.gradle.org/plugin/io.codearte.nexus-staging
   public static final String nexusStagingVersion = "0.21.2";
   // Latest version -> https://pmd.github.io
-  public static final String pmdVersion = "6.21.0";
+  public static final String pmdVersion = "6.25.0";
   // Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-  public static final String spotlessVersion = "3.27.0";
+  public static final String spotlessVersion = "4.5.1";
 
   public static final String coveralls =
       "gradle.plugin.org.kt3k.gradle.plugin:coveralls-gradle-plugin:" + coverallsVersion;

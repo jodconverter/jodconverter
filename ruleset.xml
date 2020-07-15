@@ -36,7 +36,7 @@
         <exclude name="ShortVariable"/>
         <exclude name="TooManyStaticImports"/>
     </rule>
-    <rule ref="category/java/codestyle.xml/MethodNamingConventions">
+    <rule ref="category/java/codestyle.xml/CommentDefaultAccessModifier">
         <properties>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
@@ -46,6 +46,13 @@
     <rule ref="category/java/codestyle.xml/LongVariable">
         <properties>
             <property name="minimum" value="35"/>
+            <!-- Ignore the rule for test classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/MethodNamingConventions">
+        <properties>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
                       value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
