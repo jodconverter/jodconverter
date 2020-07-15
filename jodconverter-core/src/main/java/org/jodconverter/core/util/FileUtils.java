@@ -70,6 +70,7 @@ public final class FileUtils {
    * @param options Options specifying how the copy should be done.
    * @throws IOException If an IO error occurs.
    */
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static void copyFile(
       final @NonNull File srcFile,
       final @NonNull File destFile,
@@ -94,6 +95,7 @@ public final class FileUtils {
    * @param options Options specifying how the copy should be done.
    * @throws IOException If an IO error occurs.
    */
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static void copyFileToDirectory(
       final @NonNull File srcFile,
       final @NonNull File destDir,
@@ -305,6 +307,7 @@ public final class FileUtils {
     }
 
     @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes)
         throws IOException {
 

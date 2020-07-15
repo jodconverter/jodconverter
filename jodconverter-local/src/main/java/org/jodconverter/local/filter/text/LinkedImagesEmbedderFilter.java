@@ -62,10 +62,9 @@ public class LinkedImagesEmbedderFilter implements Filter {
       final @NonNull FilterChain chain)
       throws Exception {
 
-    LOGGER.debug("Applying the LinkedImagesEmbedderFilter");
-
     // This filter can be used only with text document
     if (Write.isText(document)) {
+      LOGGER.debug("Applying the LinkedImagesEmbedderFilter");
       convertLinkedImagesToEmbedded(((LocalOfficeContext) context).getComponentContext(), document);
     }
 

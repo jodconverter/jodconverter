@@ -21,6 +21,7 @@ package org.jodconverter.local.office;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,17 +41,40 @@ import org.jodconverter.local.process.ProcessManager;
  * Default {@link org.jodconverter.core.office.OfficeManager} implementation that uses a pool of
  * office processes to execute conversion tasks.
  */
-public final class LocalOfficeManager extends AbstractOfficeManagerPool {
+public final class LocalOfficeManager
+    extends AbstractOfficeManagerPool<LocalOfficeManagerPoolEntry> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeManager.class);
+
+  // The default timeout when executing a process call (start/terminate).
+  public static final long DEFAULT_PROCESS_TIMEOUT = 120_000L; // 2 minutes
+  // The default delay between each try when executing a process call (start/terminate).
+  public static final long DEFAULT_PROCESS_RETRY_INTERVAL = 250L; // 0.25 secs.
+  // The default behavior when an office process is started regarding to OpenGL usage.
+  public static final boolean DEFAULT_DISABLE_OPENGL = false;
+  // The default behavior when we want to start an office process and a process with
+  // the same URL already exists.
+  public static final ExistingProcessAction DEFAULT_EXISTING_PROCESS_ACTION =
+      ExistingProcessAction.KILL;
+  // The default "fail fast" behavior when an office process is started.
+  public static final boolean DEFAULT_START_FAIL_FAST = false;
+  // The default "keep process alive" behavior on shutdown.
+  public static final boolean DEFAULT_KEEP_ALIVE_ON_SHUTDOWN = false;
+  // The default maximum number of tasks an office process can execute before restarting.
+  public static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
+  // The minimum value for the delay between each try when executing a process call
+  // (start/terminate).
+  public static final long MIN_PROCESS_RETRY_INTERVAL = 0L; // No delay.
+  // The maximum value for the delay between each try when executing a process call
+  // (start/terminate).
+  public static final long MAX_PROCESS_RETRY_INTERVAL = 10_000L; // 10 sec.
 
   /**
    * Creates a new builder instance.
    *
    * @return A new builder instance.
    */
-  @NonNull
-  public static Builder builder() {
+  public static @NonNull Builder builder() {
     return new Builder();
   }
 
@@ -59,8 +83,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
    *
    * @return A {@link LocalOfficeManager} with default configuration.
    */
-  @NonNull
-  public static LocalOfficeManager make() {
+  public static @NonNull LocalOfficeManager make() {
     return builder().build();
   }
 
@@ -73,8 +96,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
    *
    * @return A {@link LocalOfficeManager} with default configuration.
    */
-  @NonNull
-  public static LocalOfficeManager install() {
+  public static @NonNull LocalOfficeManager install() {
     return builder().install().build();
   }
 
@@ -85,32 +107,38 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
       final ProcessManager processManager,
       final List<String> runAsArgs,
       final File templateProfileDir,
-      final Boolean killExistingProcess,
-      final Long processTimeout,
-      final Long processRetryInterval,
-      final Long taskExecutionTimeout,
-      final Integer maxTasksPerProcess,
-      final Boolean disableOpengl,
-      final Long taskQueueTimeout) {
-    super(workingDir, officeUrls.size(), taskQueueTimeout);
+      final long processTimeout,
+      final long processRetryInterval,
+      final boolean disableOpengl,
+      final ExistingProcessAction existingProcessAction,
+      final boolean startFailFast,
+      final boolean keepAliveOnShutdown,
+      final int maxTasksPerProcess,
+      final long taskExecutionTimeout,
+      final long taskQueueTimeout) {
+    super(officeUrls.size(), workingDir, taskQueueTimeout);
 
     setEntries(
         officeUrls.stream()
             .map(
                 officeUrl ->
-                    new OfficeProcessManagerPoolEntry(
-                        officeUrl,
-                        officeHome,
-                        workingDir,
-                        processManager,
-                        runAsArgs,
-                        templateProfileDir,
-                        killExistingProcess,
-                        processTimeout,
-                        processRetryInterval,
-                        taskExecutionTimeout,
+                    new LocalOfficeManagerPoolEntry(
                         maxTasksPerProcess,
-                        disableOpengl))
+                        taskExecutionTimeout,
+                        new LocalOfficeProcessManager(
+                            officeUrl,
+                            officeHome,
+                            workingDir,
+                            processManager,
+                            runAsArgs,
+                            templateProfileDir,
+                            processTimeout,
+                            processRetryInterval,
+                            disableOpengl,
+                            existingProcessAction,
+                            startFailFast,
+                            keepAliveOnShutdown,
+                            new OfficeConnection(officeUrl))))
             .collect(Collectors.toList()));
   }
 
@@ -121,53 +149,32 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
    */
   public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
 
-    // The minimum value for the delay between each try when executing a process call
-    // (start/terminate).
-    private static final long MIN_PROCESS_RETRY_INTERVAL = 0L; // No delay.
-    // The maximum value for the delay between each try when executing a process call
-    // (start/terminate).
-    private static final long MAX_PROCESS_RETRY_INTERVAL = 10_000L; // 10 sec.
-
     private List<String> pipeNames;
     private List<Integer> portNumbers;
-    private File officeHome;
-    private ProcessManager processManager;
-    private List<String> runAsArgs;
+    private File officeHome = LocalOfficeUtils.getDefaultOfficeHome();
+    private ProcessManager processManager = LocalOfficeUtils.findBestProcessManager();
+    private List<String> runAsArgs = Collections.emptyList();
     private File templateProfileDir;
     private boolean useDefaultOnInvalidTemplateProfileDir;
-    private Boolean killExistingProcess;
-
-    // OfficeProcessManager
-    private Long processTimeout;
-    private Long processRetryInterval;
-    private Integer maxTasksPerProcess;
-    private Boolean disableOpengl;
+    private long processTimeout = DEFAULT_PROCESS_TIMEOUT;
+    private long processRetryInterval = DEFAULT_PROCESS_RETRY_INTERVAL;
+    private boolean disableOpengl = DEFAULT_DISABLE_OPENGL;
+    private ExistingProcessAction existingProcessAction = DEFAULT_EXISTING_PROCESS_ACTION;
+    private boolean startFailFast = DEFAULT_START_FAIL_FAST;
+    private boolean keepAliveOnShutdown = DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+    private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
     // Private constructor so only LocalOfficeManager can initialize an instance of this builder.
     private Builder() {
       super();
     }
 
-    @NonNull
     @Override
-    public LocalOfficeManager build() {
+    public @NonNull LocalOfficeManager build() {
 
-      // Assign default values for properties that are not set yet.
-      if (officeHome == null) {
-        officeHome = LocalOfficeUtils.getDefaultOfficeHome();
-      }
-
-      if (workingDir == null) {
-        workingDir = OfficeUtils.getDefaultWorkingDir();
-      }
-
-      if (processManager == null) {
-        processManager = LocalOfficeUtils.findBestProcessManager();
-      }
-
-      // Validate the office directories
+      // Validate the directories we are working with
+      OfficeUtils.validateWorkingDir(workingDir);
       LocalOfficeUtils.validateOfficeHome(officeHome);
-      LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir);
       if (useDefaultOnInvalidTemplateProfileDir) {
         try {
           LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
@@ -189,12 +196,14 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
               processManager,
               runAsArgs,
               templateProfileDir,
-              killExistingProcess,
               processTimeout,
               processRetryInterval,
-              taskExecutionTimeout,
-              maxTasksPerProcess,
               disableOpengl,
+              existingProcessAction,
+              startFailFast,
+              keepAliveOnShutdown,
+              maxTasksPerProcess,
+              taskExecutionTimeout,
               taskQueueTimeout);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
@@ -209,8 +218,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param pipeNames The pipe names to use.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder pipeNames(@Nullable final String... pipeNames) {
+    public @NonNull Builder pipeNames(final @Nullable String... pipeNames) {
 
       if (pipeNames != null && pipeNames.length != 0) {
         this.pipeNames = Arrays.asList(pipeNames);
@@ -225,8 +233,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param portNumbers The port numbers to use.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder portNumbers(final int... portNumbers) {
+    public @NonNull Builder portNumbers(final int... portNumbers) {
 
       if (portNumbers != null && portNumbers.length != 0) {
         this.portNumbers = Arrays.stream(portNumbers).boxed().collect(Collectors.toList());
@@ -240,10 +247,11 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param officeHome The new home directory to set.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder officeHome(@Nullable final File officeHome) {
+    public @NonNull Builder officeHome(final @Nullable File officeHome) {
 
-      this.officeHome = officeHome;
+      if (officeHome != null) {
+        this.officeHome = officeHome;
+      }
       return this;
     }
 
@@ -253,8 +261,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param officeHome The new home directory to set.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder officeHome(@Nullable final String officeHome) {
+    public @NonNull Builder officeHome(final @Nullable String officeHome) {
 
       return StringUtils.isBlank(officeHome) ? this : officeHome(new File(officeHome));
     }
@@ -266,10 +273,11 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param processManager The provided process manager.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder processManager(@Nullable final ProcessManager processManager) {
+    public @NonNull Builder processManager(final @Nullable ProcessManager processManager) {
 
-      this.processManager = processManager;
+      if (processManager != null) {
+        this.processManager = processManager;
+      }
       return this;
     }
 
@@ -285,8 +293,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @see org.jodconverter.local.process.ProcessManager
      * @see org.jodconverter.local.process.AbstractProcessManager
      */
-    @NonNull
-    public Builder processManager(@Nullable final String processManagerClass) {
+    public @NonNull Builder processManager(final @Nullable String processManagerClass) {
 
       try {
         return StringUtils.isBlank(processManagerClass)
@@ -306,11 +313,10 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param runAsArgs The sudo arguments for a unix os.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder runAsArgs(@Nullable final String... runAsArgs) {
+    public @NonNull Builder runAsArgs(final @Nullable String... runAsArgs) {
 
       if (runAsArgs != null && runAsArgs.length != 0) {
-        this.runAsArgs = Arrays.asList(runAsArgs);
+        this.runAsArgs = Collections.unmodifiableList(Arrays.asList(runAsArgs));
       }
       return this;
     }
@@ -321,10 +327,11 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param templateProfileDir The new template profile directory.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder templateProfileDir(@Nullable final File templateProfileDir) {
+    public @NonNull Builder templateProfileDir(final @Nullable File templateProfileDir) {
 
-      this.templateProfileDir = templateProfileDir;
+      if (templateProfileDir != null) {
+        this.templateProfileDir = templateProfileDir;
+      }
       return this;
     }
 
@@ -334,8 +341,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param templateProfileDir The new template profile directory.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder templateProfileDir(@Nullable final String templateProfileDir) {
+    public @NonNull Builder templateProfileDir(final @Nullable String templateProfileDir) {
 
       return StringUtils.isBlank(templateProfileDir)
           ? this
@@ -350,13 +356,12 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param templateProfileDir The new template profile directory.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder templateProfileDirOrDefault(@Nullable final File templateProfileDir) {
+    public @NonNull Builder templateProfileDirOrDefault(final @Nullable File templateProfileDir) {
 
       if (templateProfileDir != null) {
         this.useDefaultOnInvalidTemplateProfileDir = true;
+        this.templateProfileDir = templateProfileDir;
       }
-      this.templateProfileDir = templateProfileDir;
       return this;
     }
 
@@ -368,29 +373,11 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param templateProfileDir The new template profile directory.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder templateProfileDirOrDefault(@Nullable final String templateProfileDir) {
+    public @NonNull Builder templateProfileDirOrDefault(final @Nullable String templateProfileDir) {
 
       return StringUtils.isBlank(templateProfileDir)
           ? this
           : templateProfileDirOrDefault(new File(templateProfileDir));
-    }
-
-    /**
-     * Specifies whether an existing office process is killed when starting a new office process for
-     * the same connection string.
-     *
-     * <p>&nbsp; <b><i>Default</i></b>: true
-     *
-     * @param killExistingProcess {@code true} to kill existing process when a new process must be
-     *     created with the same connection string, {@code false} otherwise.
-     * @return This builder instance.
-     */
-    @NonNull
-    public Builder killExistingProcess(@Nullable final Boolean killExistingProcess) {
-
-      this.killExistingProcess = killExistingProcess;
-      return this;
     }
 
     /**
@@ -402,15 +389,14 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param processTimeout The process timeout, in milliseconds.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder processTimeout(@Nullable final Long processTimeout) {
+    public @NonNull Builder processTimeout(final @Nullable Long processTimeout) {
 
       if (processTimeout != null) {
         AssertUtils.isTrue(
             processTimeout >= 0,
             String.format("processTimeout %s must be greater than or equal to 0", processTimeout));
+        this.processTimeout = processTimeout;
       }
-      this.processTimeout = processTimeout;
       return this;
     }
 
@@ -423,8 +409,7 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
      * @param processRetryInterval The retry interval, in milliseconds.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder processRetryInterval(@Nullable final Long processRetryInterval) {
+    public @NonNull Builder processRetryInterval(final @Nullable Long processRetryInterval) {
 
       if (processRetryInterval != null) {
         AssertUtils.isTrue(
@@ -433,45 +418,106 @@ public final class LocalOfficeManager extends AbstractOfficeManagerPool {
             String.format(
                 "processRetryInterval %s must be in the inclusive range of %s to %s",
                 processRetryInterval, MIN_PROCESS_RETRY_INTERVAL, MAX_PROCESS_RETRY_INTERVAL));
+        this.processRetryInterval = processRetryInterval;
       }
-      this.processRetryInterval = processRetryInterval;
-      return this;
-    }
-
-    /**
-     * Specifies the maximum number of tasks an office process can execute before restarting.
-     *
-     * <p>&nbsp; <b><i>Default</i></b>: 200
-     *
-     * @param maxTasksPerProcess The new maximum number of tasks an office process can execute.
-     * @return This builder instance.
-     */
-    @NonNull
-    public Builder maxTasksPerProcess(@Nullable final Integer maxTasksPerProcess) {
-
-      if (maxTasksPerProcess != null) {
-        AssertUtils.isTrue(
-            maxTasksPerProcess >= 1,
-            String.format("maxTasksPerProcess %s must be greater than 0", maxTasksPerProcess));
-      }
-      this.maxTasksPerProcess = maxTasksPerProcess;
       return this;
     }
 
     /**
      * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
      * done if OpenGL is already disabled according to the user profile used with the office
-     * process. If the options is changed, then office must be restarted.
+     * process. If the options is changed, then office will be restarted.
      *
      * <p>&nbsp; <b><i>Default</i></b>: false
      *
      * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder disableOpengl(@Nullable final Boolean disableOpengl) {
+    public @NonNull Builder disableOpengl(final @Nullable Boolean disableOpengl) {
 
-      this.disableOpengl = disableOpengl;
+      if (disableOpengl != null) {
+        this.disableOpengl = disableOpengl;
+      }
+      return this;
+    }
+
+    /**
+     * Specifies the action the must be taken when starting a new office process and there already
+     * is a existing running process for the same connection string.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: ExistingProcessAction.KILL
+     *
+     * @param existingProcessAction The existing process action.
+     * @return This builder instance.
+     */
+    public @NonNull Builder existingProcessAction(
+        final @Nullable ExistingProcessAction existingProcessAction) {
+
+      if (existingProcessAction != null) {
+        this.existingProcessAction = existingProcessAction;
+      }
+      return this;
+    }
+
+    /**
+     * Controls whether the manager will "fail fast" if an office process cannot be started or the
+     * connection to the started process fails. If set to {@code true}, the start of a process will
+     * wait for the task to be completed, and will throw an exception if the office process is not
+     * started successfully or if the connection to the started process fails. If set to {@code
+     * false}, the task of starting the process and connecting to it will be submitted and will
+     * return immediately, meaning a faster starting process. Only error logs will be produced if
+     * anything goes wrong.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: false
+     *
+     * @param startFailFast {@code true} to "fail fast", {@code false} otherwise.
+     * @return This builder instance.
+     */
+    public @NonNull Builder startFailFast(final @Nullable Boolean startFailFast) {
+
+      if (startFailFast != null) {
+        this.startFailFast = startFailFast;
+      }
+      return this;
+    }
+
+    /**
+     * Controls whether the manager will keep the office process alive on shutdown. If set to {@code
+     * true}, the stop task will only disconnect from the office process, which will stay alive. If
+     * set to {@code false}, the office process will be stopped gracefully (or killed if could not
+     * been stopped gracefully).
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: false
+     *
+     * @param keepAliveOnShutdown {@code true} to keep the process alive, {@code false} otherwise.
+     * @return This builder instance.
+     */
+    public @NonNull Builder keepAliveOnShutdown(final @Nullable Boolean keepAliveOnShutdown) {
+
+      if (keepAliveOnShutdown != null) {
+        this.keepAliveOnShutdown = keepAliveOnShutdown;
+      }
+      return this;
+    }
+
+    /**
+     * Specifies the maximum number of tasks an office process can execute before restarting. 0
+     * means infinite number of task (will never restart).
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: 200
+     *
+     * @param maxTasksPerProcess The new maximum number of tasks an office process can execute.
+     * @return This builder instance.
+     */
+    public @NonNull Builder maxTasksPerProcess(final @Nullable Integer maxTasksPerProcess) {
+
+      if (maxTasksPerProcess != null) {
+        AssertUtils.isTrue(
+            maxTasksPerProcess >= 0,
+            String.format(
+                "maxTasksPerProcess %s must be reater than or equal to 0", maxTasksPerProcess));
+        this.maxTasksPerProcess = maxTasksPerProcess;
+      }
       return this;
     }
   }

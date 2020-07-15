@@ -38,7 +38,7 @@ public class OfficeConnectionException extends OfficeException {
    * @param connectString The connection string of the connection.
    */
   public OfficeConnectionException(
-      @NonNull final String message, @NonNull final String connectString) {
+      final @NonNull String message, final @NonNull String connectString) {
     super(message);
 
     this.connectString = connectString;
@@ -58,9 +58,9 @@ public class OfficeConnectionException extends OfficeException {
    *     unknown.)
    */
   public OfficeConnectionException(
-      @NonNull final String message,
-      @NonNull final String connectString,
-      @NonNull final Throwable cause) {
+      final @NonNull String message,
+      final @NonNull String connectString,
+      final @NonNull Throwable cause) {
     super(message, cause);
 
     this.connectString = connectString;
@@ -71,8 +71,7 @@ public class OfficeConnectionException extends OfficeException {
    *
    * @return The connection string.
    */
-  @NonNull
-  public String getConnectString() {
+  public @NonNull String getConnectString() {
 
     return connectString;
   }

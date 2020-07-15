@@ -19,8 +19,6 @@
 
 package org.jodconverter.local.filter;
 
-import java.util.Objects;
-
 import com.sun.star.drawing.XDrawPages;
 import com.sun.star.drawing.XDrawPagesSupplier;
 import com.sun.star.frame.XModel;
@@ -30,12 +28,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.office.OfficeContext;
-import org.jodconverter.local.office.utils.Calc;
-import org.jodconverter.local.office.utils.Draw;
+import org.jodconverter.local.office.LocalOfficeUtils;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.Props;
-import org.jodconverter.local.office.utils.Write;
 
 /** This filter is used to count the number of pages of a document. */
 public class PageCounterFilter implements Filter {
@@ -51,30 +48,31 @@ public class PageCounterFilter implements Filter {
       final @NonNull FilterChain chain)
       throws Exception {
 
-    if (Write.isText(document)) {
-      LOGGER.debug("Applying the PageCounterFilter for a Text document");
+    final DocumentFamily family = LocalOfficeUtils.getDocumentFamilySilently(document);
+    if (family != null) {
 
-      pageCount =
-          (Integer)
-              Props.getProperty(Lo.qi(XModel.class, document).getCurrentController(), "PageCount");
-
-    } else if (Calc.isCalc(document)) {
-      LOGGER.debug("Applying the PageCounterFilter for a Calc document");
-
-      final XSpreadsheetDocument doc = Calc.getCalcDoc(document);
-      pageCount = Objects.requireNonNull(doc).getSheets().getElementNames().length;
-
-    } else if (Draw.isImpress(document)) {
-      LOGGER.debug("Applying the PageCounterFilter for an Impress document");
-
-      final XDrawPages xDrawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
-      pageCount = xDrawPages.getCount();
-
-    } else if (Draw.isDraw(document)) {
-      LOGGER.debug("Applying the PageCounterFilter for a Draw document");
-
-      final XDrawPages xDrawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
-      pageCount = xDrawPages.getCount();
+      switch (family) {
+        case TEXT:
+          LOGGER.debug("Applying the PageCounterFilter for a Text document");
+          pageCount =
+              (Integer)
+                  Props.getProperty(
+                      Lo.qi(XModel.class, document).getCurrentController(), "PageCount");
+          break;
+        case SPREADSHEET:
+          LOGGER.debug("Applying the PageCounterFilter for a Calc document");
+          pageCount =
+              Lo.qi(XSpreadsheetDocument.class, document).getSheets().getElementNames().length;
+          break;
+        case PRESENTATION:
+        case DRAWING:
+          LOGGER.debug(
+              "Applying the PageCounterFilter for a {} document",
+              family == DocumentFamily.DRAWING ? "Draw" : "Impress");
+          final XDrawPages xDrawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
+          pageCount = xDrawPages.getCount();
+          break;
+      }
     }
 
     // Invoke the next filter in the chain

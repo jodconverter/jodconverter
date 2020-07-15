@@ -200,6 +200,9 @@ public final class Convert {
 
     final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
 
+    // Always fail fast!!
+    builder.startFailFast(true);
+
     if (commandLine.hasOption(OPT_OFFICE_HOME.getOpt())) {
       builder.officeHome(commandLine.getOptionValue(OPT_OFFICE_HOME.getOpt()));
     }
@@ -230,12 +233,19 @@ public final class Convert {
           .replace('-', '_')) {
         case "fail":
           builder.existingProcessAction(ExistingProcessAction.FAIL);
+          break;
         case "kill":
           builder.existingProcessAction(ExistingProcessAction.KILL);
+          break;
         case "connect":
           builder.existingProcessAction(ExistingProcessAction.CONNECT);
+          break;
         case "connect_or_kill":
           builder.existingProcessAction(ExistingProcessAction.CONNECT_OR_KILL);
+          break;
+        default:
+          // Ignore
+          break;
       }
     }
 
@@ -491,11 +501,12 @@ public final class Convert {
 
   private static void printHelp() {
 
-    new HelpFormatter()
-        .printHelp(
-            "jodconverter-cli [options] infile outfile [infile outfile ...]\n"
-                + "   or: jodconverter-cli [options] -f output-format infile [infile ...]",
-            OPTIONS);
+    final String[] help = {
+      "jodconverter-cli [options] infile outfile [infile outfile ...]",
+      "  or:",
+      "jodconverter-cli [options] -f output-format infile [infile ...]"
+    };
+    new HelpFormatter().printHelp(String.join("\n", help), OPTIONS);
   }
 
   private static void printErr(final Object... values) {

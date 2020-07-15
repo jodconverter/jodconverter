@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.office.LocalOfficeContext;
 import org.jodconverter.local.office.LocalOfficeUtils;
@@ -64,7 +65,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GraphicInserterFilter.class);
 
-  private final String imagePath;
+  private final File imageFile;
 
   // Detect the size of an image without loading it into memory
   // See http://stackoverflow.com/a/1560052
@@ -115,9 +116,13 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
   public GraphicInserterFilter(
       final @NonNull String imagePath, final int horizontalPosition, final int verticalPosition)
       throws OfficeException {
-    super(getImageSize(new File(imagePath)), horizontalPosition, verticalPosition);
+    super(horizontalPosition, verticalPosition);
 
-    this.imagePath = imagePath;
+    AssertUtils.notBlank(imagePath, "imagePath must not be null nor blank");
+    this.imageFile = new File(imagePath);
+    AssertUtils.isTrue(imageFile.exists(), "imagePath must be the path of an existing file");
+
+    setRectSize(getImageSize(this.imageFile));
   }
 
   /**
@@ -142,7 +147,33 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       final int verticalPosition) {
     super(new Dimension(width, height), horizontalPosition, verticalPosition);
 
-    this.imagePath = imagePath;
+    AssertUtils.notBlank(imagePath, "imagePath must not be null nor blank");
+    this.imageFile = new File(imagePath);
+    AssertUtils.isTrue(imageFile.exists(), "imagePath must be the path of an existing file");
+  }
+
+  /**
+   * Creates a new filter that will insert the specified image using the specified properties while
+   * converting a document.
+   *
+   * @param imagePath The path to the image (file) on disk.
+   * @param shapeProperties The properties to apply to the created graphic shape.
+   * @throws OfficeException If the size of the image cannot be detected.
+   * @see <a
+   *     href="https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1Shape.html">Drawing
+   *     Shapes</a>
+   */
+  public GraphicInserterFilter(
+      final @NonNull String imagePath,
+      final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties)
+      throws OfficeException {
+    super(shapeProperties);
+
+    AssertUtils.notBlank(imagePath, "imagePath must not be null nor blank");
+    this.imageFile = new File(imagePath);
+    AssertUtils.isTrue(imageFile.exists(), "imagePath must be the path of an existing file");
+
+    setRectSize(getImageSize(this.imageFile));
   }
 
   /**
@@ -156,7 +187,8 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
    *     (millimeters).
    * @param shapeProperties The properties to apply to the created graphic shape.
    * @see <a
-   *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
+   *     href="https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1Shape.html">Drawing
+   *     Shapes</a>
    */
   public GraphicInserterFilter(
       final @NonNull String imagePath,
@@ -165,26 +197,9 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super(new Dimension(width, height), shapeProperties);
 
-    this.imagePath = imagePath;
-  }
-
-  /**
-   * Creates a new filter that will insert the specified image using the specified properties while
-   * converting a document.
-   *
-   * @param imagePath The path to the image (file) on disk.
-   * @param shapeProperties The properties to apply to the created graphic shape.
-   * @throws OfficeException If the size of the image cannot be detected.
-   * @see <a
-   *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
-   */
-  public GraphicInserterFilter(
-      final @NonNull String imagePath,
-      final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties)
-      throws OfficeException {
-    super(getImageSize(new File(imagePath)), shapeProperties);
-
-    this.imagePath = imagePath;
+    AssertUtils.notBlank(imagePath, "imagePath must not be null nor blank");
+    this.imageFile = new File(imagePath);
+    AssertUtils.isTrue(imageFile.exists(), "imagePath must be the path of an existing file");
   }
 
   @Override
@@ -194,10 +209,9 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       final @NonNull FilterChain chain)
       throws Exception {
 
-    LOGGER.debug("Applying the GraphicInserterFilter");
-
     // This filter can only be used with text document
     if (Write.isText(document)) {
+      LOGGER.debug("Applying the GraphicInserterFilter");
       insertGraphic(((LocalOfficeContext) context).getComponentContext(), document);
     }
 
@@ -222,8 +236,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
     shape.setSize(toOfficeSize(getRectSize()));
 
     // Inserting image to the document
-    final File sourceFile = new File(imagePath);
-    final String strUrl = LocalOfficeUtils.toUrl(sourceFile);
+    final String strUrl = LocalOfficeUtils.toUrl(imageFile);
 
     // Querying property interface for the graphic shape service
     final XPropertySet propSet = Lo.qi(XPropertySet.class, graphicShape);
@@ -262,8 +275,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
     }
 
     // Querying for the interface XTextDocument (text interface) on the XComponent
-    final XTextDocument docText = Write.getTextDoc(document);
-    Objects.requireNonNull(docText);
+    final XTextDocument docText = Lo.qi(XTextDocument.class, document);
 
     // Getting text field interface
     final XText text = docText.getText();

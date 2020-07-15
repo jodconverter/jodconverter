@@ -59,13 +59,13 @@ public class JodConverterRemoteAutoConfiguration {
 
     AssertUtils.notNull(properties.getUrl(), "urlConnection is required");
 
-    final RemoteOfficeManager.Builder builder = RemoteOfficeManager.builder();
-
-    builder.urlConnection(properties.getUrl());
-    builder.poolSize(properties.getPoolSize());
-    builder.workingDir(properties.getWorkingDir());
-    builder.taskExecutionTimeout(properties.getTaskExecutionTimeout());
-    builder.taskQueueTimeout(properties.getTaskQueueTimeout());
+    final RemoteOfficeManager.Builder builder =
+        RemoteOfficeManager.builder()
+            .urlConnection(properties.getUrl())
+            .poolSize(properties.getPoolSize())
+            .workingDir(properties.getWorkingDir())
+            .taskQueueTimeout(properties.getTaskQueueTimeout())
+            .taskExecutionTimeout(properties.getTaskExecutionTimeout());
     if (properties.getSsl() != null) {
       builder.sslConfig(properties.getSsl().sslConfig());
     }

@@ -19,6 +19,16 @@
 
 package org.jodconverter.spring;
 
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -41,6 +51,7 @@ import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.process.ProcessManager;
 
 /**
  * The purpose of this class is to provide to the Spring Container a Bean that encapsulates the
@@ -56,16 +67,22 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JodConverterBean.class);
 
-  private String officeHome;
-  private String portNumbers;
   private String workingDir;
+  private Long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
+  private Long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
+
+  private String portNumbers;
+  private String officeHome;
+  private String processManagerClass;
   private String templateProfileDir;
-  private ExistingProcessAction existingProcessAction = ExistingProcessAction.KILL;
-  private Long processTimeout = 120_000L;
-  private Long processRetryInterval = 250L;
-  private Long taskExecutionTimeout = 120_000L;
-  private Integer maxTasksPerProcess = 200;
-  private Long taskQueueTimeout = 30_000L;
+  private Boolean useDefaultOnInvalidTemplateProfileDir;
+  private Long processTimeout = DEFAULT_PROCESS_TIMEOUT;
+  private Long processRetryInterval = DEFAULT_PROCESS_RETRY_INTERVAL;
+  private Boolean disableOpengl = DEFAULT_DISABLE_OPENGL;
+  private ExistingProcessAction existingProcessAction = DEFAULT_EXISTING_PROCESS_ACTION;
+  private Boolean startFailFast = DEFAULT_START_FAIL_FAST;
+  private Boolean keepAliveOnShutdown = DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+  private Integer maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
   private OfficeManager officeManager;
   private DocumentConverter documentConverter;
@@ -89,15 +106,24 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
               .toArray());
     }
 
-    builder.officeHome(officeHome);
-    builder.workingDir(workingDir);
-    builder.templateProfileDir(templateProfileDir);
-    builder.existingProcessAction(existingProcessAction);
-    builder.processTimeout(processTimeout);
-    builder.processRetryInterval(processRetryInterval);
-    builder.taskExecutionTimeout(taskExecutionTimeout);
-    builder.maxTasksPerProcess(maxTasksPerProcess);
-    builder.taskQueueTimeout(taskQueueTimeout);
+    builder
+        .workingDir(workingDir)
+        .taskExecutionTimeout(taskExecutionTimeout)
+        .taskQueueTimeout(taskQueueTimeout)
+        .officeHome(officeHome)
+        .processManager(processManagerClass)
+        .processTimeout(processTimeout)
+        .processRetryInterval(processRetryInterval)
+        .disableOpengl(disableOpengl)
+        .existingProcessAction(existingProcessAction)
+        .startFailFast(startFailFast)
+        .keepAliveOnShutdown(keepAliveOnShutdown)
+        .maxTasksPerProcess(maxTasksPerProcess);
+    if (Boolean.TRUE.equals(useDefaultOnInvalidTemplateProfileDir)) {
+      builder.templateProfileDirOrDefault(templateProfileDir);
+    } else {
+      builder.templateProfileDir(templateProfileDir);
+    }
 
     // Starts the manager
     officeManager = builder.build();
@@ -145,34 +171,39 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Specifies the action the must be taken when starting a new office process and there already is
-   * a existing running process for the same connection string.
+   * Specifies the directory where temporary files and directories are created.
    *
-   * <p>&nbsp; <b><i>Default</i></b>: ExistingProcessAction.KILL
+   * <p>&nbsp; <b><i>Default</i></b>: The system temporary directory as specified by the <code>
+   * java.io.tmpdir</code> system property.
    *
-   * @param existingProcessAction The existing process action.
+   * @param workingDir The new working directory to set.
    */
-  public void setExistingProcessAction(
-      final @Nullable ExistingProcessAction existingProcessAction) {
-    this.existingProcessAction = existingProcessAction;
+  public void setWorkingDir(final @Nullable String workingDir) {
+    this.workingDir = workingDir;
   }
 
   /**
-   * Sets the maximum number of tasks an office process can execute before restarting.
+   * Specifies the maximum time allowed to process a task. If the processing time of a task is
+   * longer than this timeout, this task will be aborted and the next task is processed.
    *
-   * @param maxTasksPerProcess the new value to set.
+   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
+   *
+   * @param taskExecutionTimeout The task execution timeout, in milliseconds.
    */
-  public void setMaxTasksPerProcess(final @Nullable Integer maxTasksPerProcess) {
-    this.maxTasksPerProcess = maxTasksPerProcess;
+  public void setTaskExecutionTimeout(final @Nullable Long taskExecutionTimeout) {
+    this.taskExecutionTimeout = taskExecutionTimeout;
   }
 
   /**
-   * Sets the office home directory (office installation).
+   * Specifies the maximum living time of a task in the conversion queue. The task will be removed
+   * from the queue if the waiting time is longer than this timeout.
    *
-   * @param officeHome the new home directory to set.
+   * <p>&nbsp; <b><i>Default</i></b>: 30000 (30 seconds)
+   *
+   * @param taskQueueTimeout The task queue timeout, in milliseconds.
    */
-  public void setOfficeHome(final @Nullable String officeHome) {
-    this.officeHome = officeHome;
+  public void setTaskQueueTimeout(final @Nullable Long taskQueueTimeout) {
+    this.taskQueueTimeout = taskQueueTimeout;
   }
 
   /**
@@ -187,55 +218,30 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Specifies the delay, in milliseconds, between each try when trying to execute an office process
-   * call (start/terminate).
+   * Specifies the office home directory (office installation).
    *
-   * <p>&nbsp; <b><i>Default</i></b>: 250 (0.25 seconds)
-   *
-   * @param processRetryInterval the retry interval, in milliseconds.
+   * @param officeHome The new home directory to set.
    */
-  public void setProcessRetryInterval(final @Nullable Long processRetryInterval) {
-    this.processRetryInterval = processRetryInterval;
+  public void setOfficeHome(final @Nullable String officeHome) {
+    this.officeHome = officeHome;
   }
 
   /**
-   * Sets the timeout, in milliseconds, when trying to execute an office process call
-   * (start/terminate).
+   * Provides a custom {@link ProcessManager} implementation, which may not be included in the
+   * standard JODConverter distribution.
    *
-   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
-   *
-   * @param processTimeout the process timeout, in milliseconds.
+   * @param processManagerClass Type of the provided process manager. The class must implement the
+   *     {@code ProcessManager} interface, must be on the classpath (or more specifically accessible
+   *     from the current classloader) and must have a default public constructor (no argument).
+   * @see org.jodconverter.local.process.ProcessManager
+   * @see org.jodconverter.local.process.AbstractProcessManager
    */
-  public void setProcessTimeout(final @Nullable Long processTimeout) {
-    this.processTimeout = processTimeout;
+  public void setProcessManager(final @Nullable String processManagerClass) {
+    this.processManagerClass = processManagerClass;
   }
 
   /**
-   * Sets the maximum time allowed to process a task. If the processing time of a task is longer
-   * than this timeout, this task will be aborted and the next task is processed.
-   *
-   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
-   *
-   * @param taskExecutionTimeout The task execution timeout, in milliseconds.
-   */
-  public void setTaskExecutionTimeout(final @Nullable Long taskExecutionTimeout) {
-    this.taskExecutionTimeout = taskExecutionTimeout;
-  }
-
-  /**
-   * Sets the maximum living time of a task in the conversion queue. The task will be removed from
-   * the queue if the waiting time is longer than this timeout.
-   *
-   * <p>&nbsp; <b><i>Default</i></b>: 30000 (30 seconds)
-   *
-   * @param taskQueueTimeout The task queue timeout, in milliseconds.
-   */
-  public void setTaskQueueTimeout(final @Nullable Long taskQueueTimeout) {
-    this.taskQueueTimeout = taskQueueTimeout;
-  }
-
-  /**
-   * Sets the directory to copy to the temporary office profile directories to be created.
+   * Specifies the directory to copy to the temporary office profile directories to be created.
    *
    * @param templateProfileDir The new template profile directory.
    */
@@ -244,15 +250,108 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Sets the directory where temporary office profile directories will be created. An office
-   * profile directory is created per office process launched.
+   * Specifies the directory to copy to the temporary office profile directories to be created. If
+   * the given templateProfileDir is not valid, it will be ignored and the default behavior will be
+   * applied.
    *
-   * <p>&nbsp; <b><i>Default</i></b>: The system temporary directory as specified by the <code>
-   * java.io.tmpdir</code> system property.
-   *
-   * @param workingDir The new working directory to set.
+   * @param templateProfileDir The new template profile directory.
    */
-  public void setWorkingDir(final @Nullable String workingDir) {
-    this.workingDir = workingDir;
+  public void setTemplateProfileDirOrDefault(final @Nullable String templateProfileDir) {
+
+    this.templateProfileDir = templateProfileDir;
+    this.useDefaultOnInvalidTemplateProfileDir = true;
+  }
+
+  /**
+   * Specifies the timeout, in milliseconds, when trying to execute an office process call
+   * (start/terminate).
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 120000 (2 minutes)
+   *
+   * @param processTimeout The process timeout, in milliseconds.
+   */
+  public void setProcessTimeout(final @Nullable Long processTimeout) {
+    this.processTimeout = processTimeout;
+  }
+
+  /**
+   * Specifies the delay, in milliseconds, between each try when trying to execute an office process
+   * call (start/terminate).
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 250 (0.25 seconds)
+   *
+   * @param processRetryInterval The retry interval, in milliseconds.
+   */
+  public void setProcessRetryInterval(final @Nullable Long processRetryInterval) {
+    this.processRetryInterval = processRetryInterval;
+  }
+
+  /**
+   * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
+   * done if OpenGL is already disabled according to the user profile used with the office process.
+   * If the options is changed, then office must be restarted.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: false
+   *
+   * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
+   */
+  public void setDisableOpengl(final @Nullable Boolean disableOpengl) {
+    this.disableOpengl = disableOpengl;
+  }
+
+  /**
+   * Specifies the action the must be taken when starting a new office process and there already is
+   * a existing running process for the same connection string.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: ExistingProcessAction.KILL
+   *
+   * @param existingProcessAction The existing process action.
+   */
+  public void setExistingProcessAction(
+      final @Nullable ExistingProcessAction existingProcessAction) {
+    this.existingProcessAction = existingProcessAction;
+  }
+
+  /**
+   * Controls whether the manager will "fail fast" if an office process cannot be started or the
+   * connection to the started process fails. If set to {@code true}, the start of a process will
+   * wait for the task to be completed, and will throw an exception if the office process is not
+   * started successfully or if the connection to the started process fails. If set to {@code
+   * false}, the task of starting the process and connecting to it will be submitted and will return
+   * immediately, meaning a faster starting process. Only error logs will be produced if anything
+   * goes wrong.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: false
+   *
+   * @param startFailFast {@code true} to "fail fast", {@code false} otherwise.
+   */
+  public void setStartFailFast(final @Nullable Boolean startFailFast) {
+    this.startFailFast = startFailFast;
+  }
+
+  /**
+   * Controls whether the manager will keep the office process alive on shutdown. If set to {@code
+   * true}, the stop task will only disconnect from the office process, which will stay alive. If
+   * set to {@code false}, the office process will be stopped gracefully (or killed if could not
+   * been stopped gracefully).
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: false
+   *
+   * @param keepAliveOnShutdown {@code true} to keep the process alive, {@code false} otherwise.
+   */
+  public void setKeepAliveOnShutdown(final @Nullable Boolean keepAliveOnShutdown) {
+    this.keepAliveOnShutdown = keepAliveOnShutdown;
+  }
+
+  /**
+   * Specifies the maximum number of tasks an office process can execute before restarting. 0 means
+   * infinite number of task (will never restart).
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 200
+   *
+   * @param maxTasksPerProcess The new maximum number of tasks an office process can execute.
+   */
+  public void setMaxTasksPerProcess(final @Nullable Integer maxTasksPerProcess) {
+    this.maxTasksPerProcess = maxTasksPerProcess;
   }
 }

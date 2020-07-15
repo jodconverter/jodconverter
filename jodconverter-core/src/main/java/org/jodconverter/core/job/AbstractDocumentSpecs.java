@@ -38,7 +38,9 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
   private File file;
   private DocumentFormat documentFormat;
 
-  protected AbstractDocumentSpecs() {}
+  protected AbstractDocumentSpecs() {
+    super();
+  }
 
   protected AbstractDocumentSpecs(final @NonNull File file) {
     super();

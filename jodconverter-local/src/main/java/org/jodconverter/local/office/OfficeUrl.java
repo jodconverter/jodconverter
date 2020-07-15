@@ -52,7 +52,7 @@ class OfficeUrl {
    * @param pipeName The pipe name.
    * @return The created UnoUrl.
    */
-  /* default */ static UnoUrl pipe(@NonNull final String pipeName) {
+  /* default */ static UnoUrl pipe(final @NonNull String pipeName) {
 
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
@@ -198,4 +198,73 @@ class OfficeUrl {
   public String toString() {
     return unoUrl.toString();
   }
+
+  //  /**
+  //   * Main entry point of the program used to test this class.
+  //   *
+  //   * @param args program arguments.
+  //   */
+  //  public static void main(final String[] args) {
+  //
+  //    // Here we must use a try catch since OpenOffice and LibreOffice doesn't
+  //    // have the same UnoUrl.parseUnoUrl signature
+  //    try {
+  //      OfficeUrl url = new OfficeUrl(2002);
+  //
+  //      System.out.println("WITH PORT");
+  //      System.out.println(String.format("url.getConnection(): %s", url.getConnection()));
+  //      System.out.println(
+  //          String.format(
+  //              "url.getConnectionAndParametersAsString(): %s",
+  //              url.getConnectionAndParametersAsString()));
+  //      System.out.println(
+  //          String.format(
+  //              "url.getConnectionParametersAsString(): %s",
+  // url.getConnectionParametersAsString()));
+  //      System.out.println(
+  //          String.format("url.getConnectionParameters(): %s", url.getConnectionParameters()));
+  //      System.out.println(String.format("url.getProtocol(): %s", url.getProtocol()));
+  //      System.out.println(
+  //          String.format(
+  //              "url.getProtocolAndParametersAsString(): %s",
+  //              url.getProtocolAndParametersAsString()));
+  //      System.out.println(
+  //          String.format(
+  //              "url.getProtocolParametersAsString(): %s", url.getProtocolParametersAsString()));
+  //      System.out.println(
+  //          String.format("url.getProtocolParameters(): %s", url.getProtocolParameters()));
+  //      System.out.println(String.format("url.getRootOid(): %s", url.getRootOid()));
+  //
+  //      System.out.println();
+  //      System.out.println();
+  //
+  //      url = new OfficeUrl("office");
+  //
+  //      System.out.println("WITH PIPE");
+  //      System.out.println(String.format("url.getConnection(): %s", url.getConnection()));
+  //      System.out.println(
+  //          String.format(
+  //              "url.getConnectionAndParametersAsString(): %s",
+  //              url.getConnectionAndParametersAsString()));
+  //      System.out.println(
+  //          String.format(
+  //              "url.getConnectionParametersAsString(): %s",
+  // url.getConnectionParametersAsString()));
+  //      System.out.println(
+  //          String.format("url.getConnectionParameters(): %s", url.getConnectionParameters()));
+  //      System.out.println(String.format("url.getProtocol(): %s", url.getProtocol()));
+  //      System.out.println(
+  //          String.format(
+  //              "url.getProtocolAndParametersAsString(): %s",
+  //              url.getProtocolAndParametersAsString()));
+  //      System.out.println(
+  //          String.format(
+  //              "url.getProtocolParametersAsString(): %s", url.getProtocolParametersAsString()));
+  //      System.out.println(
+  //          String.format("url.getProtocolParameters(): %s", url.getProtocolParameters()));
+  //      System.out.println(String.format("url.getRootOid(): %s", url.getRootOid()));
+  //    } catch (Exception ex) {
+  //      throw new IllegalArgumentException(ex);
+  //    }
+  //  }
 }

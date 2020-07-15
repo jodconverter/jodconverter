@@ -69,11 +69,6 @@ import org.jodconverter.remote.ssl.SslConfig;
  */
 class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
-  // The default connect timeout
-  private static final long DEFAULT_CONNECT_TIMEOUT = 60_000L; // 2 minutes
-  // The default socket timeout
-  private static final long DEFAULT_SOCKET_TIMEOUT = 120_000L; // 2 minutes
-
   private final String connectionUrl;
   private final SslConfig sslConfig;
   private final long connectTimeout;
@@ -194,15 +189,15 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   /* default */ RemoteOfficeManagerPoolEntry(
       final String connectionUrl,
       final SslConfig sslConfig,
-      final Long connectTimeout,
-      final Long socketTimeout,
-      final Long taskExecutionTimeout) {
+      final long connectTimeout,
+      final long socketTimeout,
+      final long taskExecutionTimeout) {
     super(taskExecutionTimeout);
 
     this.connectionUrl = connectionUrl;
     this.sslConfig = sslConfig;
-    this.connectTimeout = connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT : connectTimeout;
-    this.socketTimeout = socketTimeout == null ? DEFAULT_SOCKET_TIMEOUT : socketTimeout;
+    this.connectTimeout = connectTimeout;
+    this.socketTimeout = socketTimeout;
   }
 
   private String buildUrl(final String connectionUrl) throws MalformedURLException {

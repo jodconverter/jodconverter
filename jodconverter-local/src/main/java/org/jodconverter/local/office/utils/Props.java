@@ -69,6 +69,22 @@ public final class Props { // NOPMD - Disable utility class name rule violation
   }
 
   /**
+   * Creates a {@code PropertyValue} with the specified name and value.
+   *
+   * @param name The property name.
+   * @param value The property value.
+   * @return The created {@code PropertyValue}.
+   */
+  public static @NonNull PropertyValue makeProperty(
+      final @NonNull String name, final @NonNull Object value) {
+
+    final PropertyValue prop = new PropertyValue();
+    prop.Name = name;
+    prop.Value = value;
+    return prop;
+  }
+
+  /**
    * Creates an array of {@link PropertyValue} with a single property using the specified property
    * name and value.
    *
@@ -79,10 +95,7 @@ public final class Props { // NOPMD - Disable utility class name rule violation
   public static @NonNull PropertyValue[] makeProperties(
       final @NonNull String name, final @NonNull Object value) {
 
-    final PropertyValue[] props = {new PropertyValue()};
-    props[0].Name = name;
-    props[0].Value = value;
-    return props;
+    return new PropertyValue[] {makeProperty(name, value)};
   }
 
   /**
@@ -101,12 +114,7 @@ public final class Props { // NOPMD - Disable utility class name rule violation
       final @NonNull String name2,
       final @NonNull Object value2) {
 
-    final PropertyValue[] props = {new PropertyValue(), new PropertyValue()};
-    props[0].Name = name1;
-    props[0].Value = value1;
-    props[1].Name = name2;
-    props[1].Value = value2;
-    return props;
+    return new PropertyValue[] {makeProperty(name1, value1), makeProperty(name2, value2)};
   }
 
   /**
@@ -126,9 +134,7 @@ public final class Props { // NOPMD - Disable utility class name rule violation
 
     final PropertyValue[] props = new PropertyValue[names.length];
     for (int i = 0; i < names.length; i++) {
-      props[i] = new PropertyValue();
-      props[i].Name = names[i];
-      props[i].Value = values[i];
+      props[i] = makeProperty(names[i], values[i]);
     }
     return props;
   }

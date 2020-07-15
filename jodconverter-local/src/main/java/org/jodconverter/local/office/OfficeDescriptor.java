@@ -43,8 +43,8 @@ public final class OfficeDescriptor {
    * @param lines The output lines of the execution.
    * @return The descriptor.
    */
-  @NonNull
-  public static OfficeDescriptor fromHelpOutput(@NonNull final List<@NonNull String> lines) {
+  public static @NonNull OfficeDescriptor fromHelpOutput(
+      final @NonNull List<@NonNull String> lines) {
 
     final OfficeDescriptor desc = new OfficeDescriptor();
 
@@ -82,8 +82,7 @@ public final class OfficeDescriptor {
    * @param path The installation path.
    * @return The descriptor.
    */
-  @NonNull
-  public static OfficeDescriptor fromExecutablePath(@NonNull final String path) {
+  public static @NonNull OfficeDescriptor fromExecutablePath(final @NonNull String path) {
 
     final OfficeDescriptor desc = new OfficeDescriptor();
 
@@ -107,8 +106,7 @@ public final class OfficeDescriptor {
    *
    * @return LibreOffice or OpenOffice or ??? if unknown.
    */
-  @NonNull
-  public String getProduct() {
+  public @NonNull String getProduct() {
     return product;
   }
 
@@ -117,8 +115,7 @@ public final class OfficeDescriptor {
    *
    * @return The version or ??? if unknown.
    */
-  @NonNull
-  public String getVersion() {
+  public @NonNull String getVersion() {
     return version;
   }
 
@@ -132,9 +129,8 @@ public final class OfficeDescriptor {
     return useLongOptionNameGnuStyle;
   }
 
-  @NonNull
   @Override
-  public String toString() {
+  public @NonNull String toString() {
     return String.format(
         "Product: %s - Version: %s - useLongOptionNameGnuStyle: %s",
         getProduct(), getVersion(), useLongOptionNameGnuStyle());

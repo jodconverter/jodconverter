@@ -35,7 +35,7 @@ public class ExitCodeRetryable extends AbstractRetryable<RuntimeException> {
    *
    * @param process The process whose exit code is to be retrieved.
    */
-  public ExitCodeRetryable(@NonNull final VerboseProcess process) {
+  public ExitCodeRetryable(final @NonNull VerboseProcess process) {
     super();
 
     this.process = process;

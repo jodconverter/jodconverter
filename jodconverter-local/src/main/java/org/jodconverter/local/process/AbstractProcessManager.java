@@ -45,11 +45,6 @@ public abstract class AbstractProcessManager implements ProcessManager {
     super();
   }
 
-  @Override
-  public boolean canFindPid() {
-    return true;
-  }
-
   private String buildOutput(final List<String> lines) {
     Objects.requireNonNull(lines, "lines must not be null");
 

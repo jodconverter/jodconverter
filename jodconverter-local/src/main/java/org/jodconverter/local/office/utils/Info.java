@@ -51,6 +51,51 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   private static final String[] NODE_PATHS = {NODE_PRODUCT, NODE_L10N};
 
   /**
+   * Compares two versions strings (ex. 1.6.1).
+   *
+   * @param version1 The first version to compare.
+   * @param version2 The second version to compare.
+   * @param length The version length for normalization.
+   * @return -1 if version1 &lt; version2, 1 if version1 &gt; version2, 0 if version1 = version2.
+   */
+  public static int compareVersions(
+      final @Nullable String version1, final @Nullable String version2, final int length) {
+
+    if (version1 == null && version2 == null) {
+      return 0;
+    } else if (version1 == null) {
+      return -1;
+    } else if (version2 == null) {
+      return 1;
+    }
+
+    final String[] numbers1 = normalizeVersion(version1, length).split("\\.");
+    final String[] numbers2 = normalizeVersion(version2, length).split("\\.");
+
+    for (int i = 0; i < numbers1.length; i++) {
+      if (Integer.parseInt(numbers1[i]) < Integer.parseInt(numbers2[i])) {
+        return -1;
+      } else if (Integer.parseInt(numbers1[i]) > Integer.parseInt(numbers2[i])) {
+        return 1;
+      }
+    }
+
+    return 0;
+  }
+
+  /**
+   * Gets whether the given document is of the given document type.
+   *
+   * @param document The document.
+   * @param documentType The document type to check.
+   * @return {@code true} if the document is of the specified type, {@code true} otherwise.
+   */
+  public static boolean isDocumentType(
+      final @NonNull XComponent document, final @NonNull String documentType) {
+    return Lo.qi(XServiceInfo.class, document).supportsService(documentType);
+  }
+
+  /**
    * Gets whether the specified context is for an OpenOffice installation.
    *
    * @param context The context.
@@ -113,52 +158,6 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   }
 
   /**
-   * Compares two versions strings (ex. 1.6.1).
-   *
-   * @param version1 The first version to compare.
-   * @param version2 The second version to compare.
-   * @param length The version length for normalization.
-   * @return -1 if version1 &lt; version2, 1 if version1 &gt; version2, 0 if version1 = version2.
-   */
-  public static int compareVersions(
-      final @Nullable String version1, final @Nullable String version2, final int length) {
-
-    if (version1 == null && version2 == null) {
-      return 0;
-    } else if (version1 == null) {
-      return -1;
-    } else if (version2 == null) {
-      return 1;
-    }
-
-    final String[] numbers1 = normalizeVersion(version1, length).split("\\.");
-    final String[] numbers2 = normalizeVersion(version2, length).split("\\.");
-
-    for (int i = 0; i < numbers1.length; i++) {
-      if (Integer.parseInt(numbers1[i]) < Integer.parseInt(numbers2[i])) {
-        return -1;
-      } else if (Integer.parseInt(numbers1[i]) > Integer.parseInt(numbers2[i])) {
-        return 1;
-      }
-    }
-
-    return 0;
-  }
-
-  /**
-   * Normalizes a version string so that it has 'length' number of version numbers separated by '.'
-   */
-  private static @NonNull String normalizeVersion(final @NonNull String version, final int length) {
-
-    final List<String> numbers = new ArrayList<>(Arrays.asList(version.split("\\.")));
-    while (numbers.size() < length) {
-      numbers.add("0");
-    }
-
-    return String.join(".", numbers);
-  }
-
-  /**
    * Gets the configuration value of the specified property.
    *
    * @param context The main context.
@@ -201,35 +200,23 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   }
 
   /**
-   * Gets the configuration provider for the given context.
+   * Gets the configuration properties for the specified path.
    *
    * @param context The main context.
-   * @return The {@link XMultiServiceFactory} service, or null if not available.
+   * @param nodePath The path for which the properties are get.
+   * @return A {@link XPropertySet} containing the configuration properties for the specified path,
+   *     or null if not found.
    */
-  public static @Nullable XMultiServiceFactory getConfigProvider(
-      final @NonNull XComponentContext context) {
-    return Lo.createInstanceMCF(
-        context, XMultiServiceFactory.class, "com.sun.star.configuration.ConfigurationProvider");
-  }
+  public static @Nullable XPropertySet getConfigProperties(
+      final @NonNull XComponentContext context, final @NonNull String nodePath) {
 
-  private static Object getConfigAccess(
-      final XComponentContext context, final String serviceSpecifier, final String nodePath) {
-
-    final XMultiServiceFactory provider = getConfigProvider(context);
-    if (provider == null) {
-      LOGGER.debug("Could not create configuration provider");
+    final Object configAccess = getConfigAccess(context, nodePath);
+    if (configAccess == null) {
+      LOGGER.debug("Could not create configuration access service");
       return null;
     }
 
-    // Specifies the location of the view root in the configuration.
-    try {
-      return provider.createInstanceWithArguments(
-          serviceSpecifier, Props.makeProperties("nodepath", nodePath));
-    } catch (Exception ex) {
-      LOGGER.debug("Could not access config for: " + nodePath, ex);
-    }
-
-    return null;
+    return Lo.qi(XPropertySet.class, configAccess);
   }
 
   /**
@@ -258,35 +245,48 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   }
 
   /**
-   * Gets the configuration properties for the specified path.
-   *
-   * @param context The main context.
-   * @param nodePath The path for which the properties are get.
-   * @return A {@link XPropertySet} containing the configuration properties for the specified path,
-   *     or null if not found.
+   * Normalizes a version string so that it has 'length' number of version numbers separated by '.'
    */
-  public static @Nullable XPropertySet getConfigProperties(
-      final @NonNull XComponentContext context, final @NonNull String nodePath) {
+  private static @NonNull String normalizeVersion(final @NonNull String version, final int length) {
 
-    final Object configAccess = getConfigAccess(context, nodePath);
-    if (configAccess == null) {
-      LOGGER.debug("Could not create configuration access service");
+    final List<String> numbers = new ArrayList<>(Arrays.asList(version.split("\\.")));
+    while (numbers.size() < length) {
+      numbers.add("0");
+    }
+
+    return String.join(".", numbers);
+  }
+
+  private static Object getConfigAccess(
+      final XComponentContext context, final String serviceSpecifier, final String nodePath) {
+
+    final XMultiServiceFactory provider = getConfigProvider(context);
+    if (provider == null) {
+      LOGGER.debug("Could not create configuration provider");
       return null;
     }
 
-    return Lo.qi(XPropertySet.class, configAccess);
+    // Specifies the location of the view root in the configuration.
+    try {
+      return provider.createInstanceWithArguments(
+          serviceSpecifier, Props.makeProperties("nodepath", nodePath));
+    } catch (Exception ex) {
+      LOGGER.debug("Could not access config for: " + nodePath, ex);
+    }
+
+    return null;
   }
 
   /**
-   * Gets whether the given document is of the given document type.
+   * Gets the configuration provider for the given context.
    *
-   * @param document The document.
-   * @param documentType The document type to check.
-   * @return {@code true} if the document is of the specified type, {@code true} otherwise.
+   * @param context The main context.
+   * @return The {@link XMultiServiceFactory} service, or null if not available.
    */
-  public static boolean isDocumentType(
-      final @NonNull XComponent document, final @NonNull String documentType) {
-    return Lo.qi(XServiceInfo.class, document).supportsService(documentType);
+  private static @Nullable XMultiServiceFactory getConfigProvider(
+      final @NonNull XComponentContext context) {
+    return Lo.createInstanceMCF(
+        context, XMultiServiceFactory.class, "com.sun.star.configuration.ConfigurationProvider");
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

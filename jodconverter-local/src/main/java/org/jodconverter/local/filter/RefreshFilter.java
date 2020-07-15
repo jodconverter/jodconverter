@@ -34,6 +34,13 @@ public class RefreshFilter implements Filter {
   private static final Logger LOGGER = LoggerFactory.getLogger(RefreshFilter.class);
 
   /**
+   * Singleton instance of refresh filter that will call the next filter in the chain.
+   *
+   * @since 4.3.1
+   */
+  public static final RefreshFilter REFRESH = new RefreshFilter(false);
+
+  /**
    * Singleton instance of refresh filter that won't call the next filter in the chain. Use this
    * filter only when you are absolutely sure that it will be used as last filter in a filter chain.
    *
@@ -77,10 +84,10 @@ public class RefreshFilter implements Filter {
       final @NonNull FilterChain chain)
       throws Exception {
 
-    LOGGER.debug("Applying the RefreshFilter");
     Lo.qiOptional(XRefreshable.class, document).ifPresent(XRefreshable::refresh);
 
     if (!lastFilter) {
+      LOGGER.debug("Applying the RefreshFilter");
       chain.doFilter(context, document);
     }
   }

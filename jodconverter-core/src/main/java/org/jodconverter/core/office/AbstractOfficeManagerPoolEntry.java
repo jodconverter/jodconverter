@@ -19,7 +19,6 @@
 
 package org.jodconverter.core.office;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -77,11 +76,10 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     // Submit the task to the executor
     currentFuture =
         taskExecutor.submit(
-            (Callable<Void>)
-                () -> {
-                  doExecute(task);
-                  return null;
-                });
+            () -> {
+              doExecute(task);
+              return null;
+            });
 
     // Wait for completion of the task, (maximum wait time is the
     // configured task execution timeout)
@@ -149,7 +147,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   }
 
   @Override
-  public final void start() {
+  public final void start() throws OfficeException {
 
     // We cannot reuse an executor that has been shutdown.
     if (taskExecutor.isShutdown()) {
@@ -160,7 +158,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   }
 
   @Override
-  public final void stop() {
+  public final void stop() throws OfficeException {
 
     // While stopping, the executor should not be available to any
     // new task that could be submitted.
@@ -176,6 +174,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   /** Cancels the current running task, if any. Do nothing if there is no current running task. */
   protected void cancelTask() {
     if (currentFuture != null) {
+      LOGGER.debug("Cancelling current task...");
       currentFuture.cancel(true);
     }
   }
@@ -190,9 +189,17 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     taskExecutor.setAvailable(available);
   }
 
-  /** Allow subclasses to perform operation when the office manager is started. */
-  protected abstract void doStart();
+  /**
+   * Allow subclasses to perform operation when the office manager is started.
+   *
+   * @throws OfficeException If an error occurred while starting the manager.
+   */
+  protected abstract void doStart() throws OfficeException;
 
-  /** Allow subclasses to perform operation when the office manager is stopped. */
-  protected abstract void doStop();
+  /**
+   * Allow subclasses to perform operation when the office manager is stopped.
+   *
+   * @throws OfficeException If an error occurred while stopping the manager.
+   */
+  protected abstract void doStop() throws OfficeException;
 }

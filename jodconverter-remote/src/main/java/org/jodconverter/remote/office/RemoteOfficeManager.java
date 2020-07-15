@@ -36,15 +36,24 @@ import org.jodconverter.remote.ssl.SslConfig;
  * {@link org.jodconverter.core.office.OfficeManager} pool implementation that does not depend on an
  * office installation to process conversion taks.
  */
-public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
+public final class RemoteOfficeManager
+    extends AbstractOfficeManagerPool<RemoteOfficeManagerPoolEntry> {
+
+  // The default pool size.
+  public static final int DEFAULT_POOL_SIZE = 1;
+  // The maximum size of the pool.
+  public static final int MAX_POOL_SIZE = 1000;
+  // The default connect timeout
+  public static final long DEFAULT_CONNECT_TIMEOUT = 60_000L; // 2 minutes
+  // The default socket timeout
+  public static final long DEFAULT_SOCKET_TIMEOUT = 120_000L; // 2 minutes
 
   /**
    * Creates a new builder instance.
    *
    * @return A new builder instance.
    */
-  @NonNull
-  public static Builder builder() {
+  public static @NonNull Builder builder() {
     return new Builder();
   }
 
@@ -54,8 +63,7 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
    * @param urlConnection The URL to the LibreOfficeOnline server.
    * @return A {@link RemoteOfficeManager} with default configuration.
    */
-  @NonNull
-  public static RemoteOfficeManager make(@NonNull final String urlConnection) {
+  public static @NonNull RemoteOfficeManager make(final @NonNull String urlConnection) {
     return builder().urlConnection(urlConnection).build();
   }
 
@@ -69,24 +77,23 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
    * @param urlConnection The URL to the LibreOfficeOnline server.
    * @return A {@link RemoteOfficeManager} with default configuration.
    */
-  @NonNull
-  public static RemoteOfficeManager install(@NonNull final String urlConnection) {
+  public static @NonNull RemoteOfficeManager install(final @NonNull String urlConnection) {
     return builder().urlConnection(urlConnection).install().build();
   }
 
   private RemoteOfficeManager(
+      final int poolSize,
       final File workingDir,
       final String urlConnection,
-      final Integer poolSize,
       final SslConfig sslConfig,
-      final Long connectTimeout,
-      final Long socketTimeout,
-      final Long taskExecutionTimeout,
-      final Long taskQueueTimeout) {
-    super(workingDir, poolSize, taskQueueTimeout);
+      final long connectTimeout,
+      final long socketTimeout,
+      final long taskExecutionTimeout,
+      final long taskQueueTimeout) {
+    super(poolSize, workingDir, taskQueueTimeout);
 
     setEntries(
-        IntStream.range(0, poolSize == null ? DEFAULT_POOL_SIZE : poolSize)
+        IntStream.range(0, poolSize)
             .mapToObj(
                 i ->
                     new RemoteOfficeManagerPoolEntry(
@@ -105,36 +112,30 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
    */
   public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
 
-    // The maximum size of the pool.
-    private static final int MAX_POOL_SIZE = 1000;
-
-    private Integer poolSize;
+    private int poolSize = DEFAULT_POOL_SIZE;
     private String urlConnection;
     private SslConfig sslConfig;
-    private Long connectTimeout;
-    private Long socketTimeout;
+    private long connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+    private long socketTimeout = DEFAULT_SOCKET_TIMEOUT;
 
     // Private constructor so only RemoteOfficeManager can initialize an instance of this builder.
     private Builder() {
       super();
     }
 
-    @NonNull
     @Override
-    public RemoteOfficeManager build() {
+    public @NonNull RemoteOfficeManager build() {
 
       AssertUtils.notBlank(urlConnection, "urlConnection must not be null nor blank");
 
-      // Assign default values for properties that are not set yet.
-      if (workingDir == null) {
-        workingDir = OfficeUtils.getDefaultWorkingDir();
-      }
+      // Validate the working directory
+      OfficeUtils.validateWorkingDir(workingDir);
 
       final RemoteOfficeManager manager =
           new RemoteOfficeManager(
+              poolSize,
               workingDir,
               urlConnection,
-              poolSize,
               sslConfig,
               connectTimeout,
               socketTimeout,
@@ -152,15 +153,14 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
      * @param poolSize The pool size.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder poolSize(@Nullable final Integer poolSize) {
+    public @NonNull Builder poolSize(final @Nullable Integer poolSize) {
 
       if (poolSize != null) {
         AssertUtils.isTrue(
             poolSize >= 0 && poolSize <= MAX_POOL_SIZE,
             String.format("poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
+        this.poolSize = poolSize;
       }
-      this.poolSize = poolSize;
       return this;
     }
 
@@ -170,8 +170,7 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
      * @param urlConnection The URL connection.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder urlConnection(final String urlConnection) {
+    public @NonNull Builder urlConnection(final @Nullable String urlConnection) {
 
       this.urlConnection = urlConnection;
       return this;
@@ -183,8 +182,7 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
      * @param sslConfig The SSL configuration.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder sslConfig(@Nullable final SslConfig sslConfig) {
+    public @NonNull Builder sslConfig(final @Nullable SslConfig sslConfig) {
 
       this.sslConfig = sslConfig;
       return this;
@@ -200,15 +198,14 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
      * @param connectTimeout The connect timeout, in milliseconds.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder connectTimeout(@Nullable final Long connectTimeout) {
+    public @NonNull Builder connectTimeout(final @Nullable Long connectTimeout) {
 
       if (connectTimeout != null) {
         AssertUtils.isTrue(
             connectTimeout >= 0,
             String.format("connectTimeout %s must greater than or equal to 0", connectTimeout));
+        this.connectTimeout = connectTimeout;
       }
-      this.connectTimeout = connectTimeout;
       return this;
     }
 
@@ -223,15 +220,14 @@ public final class RemoteOfficeManager extends AbstractOfficeManagerPool {
      * @param socketTimeout The socket timeout, in milliseconds.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder socketTimeout(@Nullable final Long socketTimeout) {
+    public @NonNull Builder socketTimeout(final @Nullable Long socketTimeout) {
 
       if (socketTimeout != null) {
         AssertUtils.isTrue(
             socketTimeout >= 0,
             String.format("socketTimeout %s must greater than or equal to 0", socketTimeout));
+        this.socketTimeout = socketTimeout;
       }
-      this.socketTimeout = socketTimeout;
       return this;
     }
   }

@@ -40,21 +40,19 @@ public class RemoteOfficeConnection implements RemoteOfficeContext {
    * @param requestConfig The request configuration for the conversion.
    */
   public RemoteOfficeConnection(
-      @NonNull final CloseableHttpClient httpClient, @NonNull final RequestConfig requestConfig) {
+      final @NonNull CloseableHttpClient httpClient, final @NonNull RequestConfig requestConfig) {
 
     this.httpClient = httpClient;
     this.requestConfig = requestConfig;
   }
 
-  @NonNull
   @Override
-  public HttpClient getHttpClient() {
+  public @NonNull HttpClient getHttpClient() {
     return httpClient;
   }
 
-  @NonNull
   @Override
-  public RequestConfig getRequestConfig() {
+  public @NonNull RequestConfig getRequestConfig() {
     return requestConfig;
   }
 }

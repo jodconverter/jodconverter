@@ -38,6 +38,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.office.utils.Lo;
 
@@ -47,7 +48,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(AbstractTextContentInserterFilter.class);
 
-  private final Dimension rectSize;
+  private Dimension rectSize;
   private final Map<String, Object> shapeProperties;
 
   /**
@@ -66,7 +67,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
     final Map<String, Object> props = new LinkedHashMap<>();
 
     // For all the available properties, see
-    // https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes
+    // https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1Shape.html
 
     // Setting the anchor type
     props.put("AnchorType", TextContentAnchorType.AT_PAGE);
@@ -100,6 +101,40 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
   }
 
   /**
+   * Creates a new filter that will insert a text content (shape) at the specified location while
+   * converting a document.
+   *
+   * @param horizontalPosition The horizontal position where to insert the text content on the
+   *     document (millimeters).
+   * @param verticalPosition The vertical position where to insert the text content on the document
+   *     (millimeters).
+   */
+  public AbstractTextContentInserterFilter(
+      final int horizontalPosition, final int verticalPosition) {
+    super();
+
+    this.shapeProperties = createDefaultShapeProperties(horizontalPosition, verticalPosition);
+  }
+
+  /**
+   * Creates a new filter that will insert a text content (shape) using the specified shape
+   * properties while converting a document.
+   *
+   * @param shapeProperties The properties to apply to the created shape.
+   * @see <a
+   *     href="https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1Shape.html">Drawing
+   *     Shapes</a>
+   */
+  public AbstractTextContentInserterFilter(
+      final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
+    super();
+
+    AssertUtils.notNull(shapeProperties, "shapeProperties must not be null");
+
+    this.shapeProperties = new LinkedHashMap<>(shapeProperties);
+  }
+
+  /**
    * Creates a new filter that will insert a text content (shape) of the specified size at the
    * specified location while converting a document.
    *
@@ -113,6 +148,8 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
       final @NonNull Dimension size, final int horizontalPosition, final int verticalPosition) {
     super();
 
+    AssertUtils.notNull(size, "size must not be null");
+
     this.rectSize = new Dimension(size.width, size.height);
     this.shapeProperties = createDefaultShapeProperties(horizontalPosition, verticalPosition);
   }
@@ -124,12 +161,16 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    * @param size The dimension of the shape that will be inserted (millimeters).
    * @param shapeProperties The properties to apply to the created shape.
    * @see <a
-   *     href="https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Drawing_Shapes">Drawing_Shapes</a>
+   *     href="https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1Shape.html">Drawing
+   *     Shapes</a>
    */
   public AbstractTextContentInserterFilter(
       final @NonNull Dimension size,
       final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super();
+
+    AssertUtils.notNull(size, "size must not be null");
+    AssertUtils.notNull(shapeProperties, "shapeProperties must not be null");
 
     this.rectSize = new Dimension(size.width, size.height);
     this.shapeProperties = new LinkedHashMap<>(shapeProperties);
@@ -166,6 +207,15 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    */
   public @NonNull Dimension getRectSize() {
     return rectSize;
+  }
+
+  /**
+   * Sets the rectangle's size of the shape that will be inserted.
+   *
+   * @param size A Rectangle that represents the size of the shape. Units are millimeters.
+   */
+  protected void setRectSize(final @NonNull Dimension size) {
+    this.rectSize = size;
   }
 
   /**

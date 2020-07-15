@@ -21,36 +21,29 @@ package org.jodconverter.local.office;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import org.jodconverter.core.office.AbstractRetryable;
-import org.jodconverter.core.office.TemporaryException;
+/**
+ * Exception that is thrown when an office process already exists for a specified connection string
+ * and that we must try to connect to the running process.
+ */
+public class ExistingProcessConnectException extends RuntimeException {
 
-/** Performs a connection to an office process. */
-public class ConnectRetryable extends AbstractRetryable<OfficeConnectionException> {
-
-  private final OfficeConnection connection;
+  final String accept;
+  final long pid;
+  final ExistingProcessAction action;
 
   /**
-   * Creates a new instance of the class for the specified process and connection.
+   * Constructs a new exception with the specified argument.
    *
-   * @param connection The office connection to connect.
+   * @param accept The accept string (--accept argument) for which the office process is running.
+   * @param pid The id of the running process that was started with the specified accept argument.
+   * @param action {@link ExistingProcessAction} that leads to this exception to be thrown.
    */
-  public ConnectRetryable(final @NonNull OfficeConnection connection) {
+  public ExistingProcessConnectException(
+      final @NonNull String accept, final long pid, final @NonNull ExistingProcessAction action) {
     super();
 
-    this.connection = connection;
-  }
-
-  @Override
-  protected void attempt() throws TemporaryException {
-
-    try {
-      // Try to connect
-      connection.connect();
-
-    } catch (OfficeConnectionException ex) {
-
-      // Throw a TemporaryException
-      throw new TemporaryException(ex);
-    }
+    this.accept = accept;
+    this.pid = pid;
+    this.action = action;
   }
 }

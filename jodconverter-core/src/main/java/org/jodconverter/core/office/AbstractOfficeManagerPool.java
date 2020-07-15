@@ -57,9 +57,9 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
   private static final int POOL_SHUTDOWN = 2;
 
   // The default maximum living time of a task in the conversion queue.
-  static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30_000L; // 30 seconds
+  public static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30_000L; // 30 seconds
   // The default timeout when executing a task
-  static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120_000L; // 2 minutes
+  public static final long DEFAULT_TASK_EXECUTION_TIMEOUT = 120_000L; // 2 minutes
 
   private final AtomicInteger poolState = new AtomicInteger(POOL_STOPPED);
   private final File tempDir;
@@ -128,7 +128,7 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
   }
 
   @Override
-  public final void stop() {
+  public final void stop() throws OfficeException {
 
     synchronized (this) {
       if (poolState.get() == POOL_SHUTDOWN) {
@@ -227,13 +227,14 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
    *
    * @throws OfficeException If the temporary directory cannot be created.
    */
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   private void prepareTempDir() throws OfficeException {
 
     if (tempDir.exists()) {
       LOGGER.warn("Temporary directory '{}' already exists; deleting", tempDir);
       deleteTempDir();
     }
-    //noinspection ResultOfMethodCallIgnored
+
     tempDir.mkdirs();
     if (!tempDir.isDirectory()) {
       throw new OfficeException(String.format("Cannot create temporary directory: %s", tempDir));

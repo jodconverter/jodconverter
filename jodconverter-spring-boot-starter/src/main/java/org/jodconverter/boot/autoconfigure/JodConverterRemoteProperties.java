@@ -53,16 +53,16 @@ public class JodConverterRemoteProperties {
   private String workingDir;
 
   /**
-   * Maximum time allowed to process a task. If the processing time of a task is longer than this
-   * timeout, this task will be aborted and the next task is processed.
-   */
-  private long taskExecutionTimeout = 120_000L;
-
-  /**
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
    * if the waiting time is longer than this timeout.
    */
   private long taskQueueTimeout = 30_000L;
+
+  /**
+   * Maximum time allowed to process a task. If the processing time of a task is longer than this
+   * timeout, this task will be aborted and the next task is processed.
+   */
+  private long taskExecutionTimeout = 120_000L;
 
   @NestedConfigurationProperty private SslProperties ssl;
 
@@ -102,16 +102,16 @@ public class JodConverterRemoteProperties {
     return taskExecutionTimeout;
   }
 
-  public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
-    this.taskExecutionTimeout = taskExecutionTimeout;
-  }
-
   public long getTaskQueueTimeout() {
     return taskQueueTimeout;
   }
 
   public void setTaskQueueTimeout(final long taskQueueTimeout) {
     this.taskQueueTimeout = taskQueueTimeout;
+  }
+
+  public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
+    this.taskExecutionTimeout = taskExecutionTimeout;
   }
 
   public @Nullable SslProperties getSsl() {

@@ -68,10 +68,9 @@ public class TableOfContentUpdaterFilter implements Filter {
       final @NonNull FilterChain chain)
       throws Exception {
 
-    LOGGER.debug("Applying the TableOfContentUpdaterFilter");
-
     // This filter can only be used with text document
     if (Write.isText(document)) {
+      LOGGER.debug("Applying the TableOfContentUpdaterFilter");
       updateToc(document);
     }
 

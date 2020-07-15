@@ -24,7 +24,6 @@ import java.util.Optional;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.Exception;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -40,6 +39,8 @@ import org.jodconverter.core.util.AssertUtils;
 public final class Lo { // NOPMD - Disable utility class name rule violation
 
   // Document types service names
+  // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
+  // but this further distinction doesn't seem to matter for conversions
   // public static final String WRITER_SERVICE = "com.sun.star.text.TextDocument";
   public static final String WRITER_SERVICE = "com.sun.star.text.GenericTextDocument";
   public static final String CALC_SERVICE = "com.sun.star.sheet.SpreadsheetDocument";
@@ -62,7 +63,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
     AssertUtils.notNull(type, "type must not be null");
     AssertUtils.notNull(type, "object must not be null");
 
-    final T obj = UnoRuntime.queryInterface(type, object);
+    final T obj = UnoRuntime.getInstance().queryInterface(type, object);
 
     AssertUtils.notNull(
         obj,
@@ -87,7 +88,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
   public static <T> @NonNull Optional<T> qiOptional(
       final @NonNull Class<T> type, final @NonNull Object object) {
 
-    return Optional.ofNullable(UnoRuntime.queryInterface(type, object));
+    return Optional.ofNullable(UnoRuntime.getInstance().queryInterface(type, object));
   }
 
   /**

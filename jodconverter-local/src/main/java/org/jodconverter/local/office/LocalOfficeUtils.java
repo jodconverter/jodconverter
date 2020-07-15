@@ -20,6 +20,8 @@
 package org.jodconverter.local.office;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +42,7 @@ import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.utils.Lo;
+import org.jodconverter.local.office.utils.Props;
 import org.jodconverter.local.process.FreeBSDProcessManager;
 import org.jodconverter.local.process.MacProcessManager;
 import org.jodconverter.local.process.ProcessManager;
@@ -49,6 +52,8 @@ import org.jodconverter.local.process.WindowsProcessManager;
 
 /** Provides helper functions for local office. */
 public final class LocalOfficeUtils {
+
+  public static final int DEFAULT_PORT = 2002;
 
   private static final String EXECUTABLE_DEFAULT = "program/soffice.bin";
   private static final String EXECUTABLE_MAC = "program/soffice";
@@ -139,9 +144,9 @@ public final class LocalOfficeUtils {
     private static File findOfficeHome(final String executablePath, final String... homePaths) {
 
       return Stream.of(homePaths)
-          .map(File::new)
-          .filter(homeDir -> new File(homeDir, executablePath).isFile())
+          .filter(homePath -> Files.isRegularFile(Paths.get(homePath, executablePath)))
           .findFirst()
+          .map(File::new)
           .orElse(null);
     }
   }
@@ -152,8 +157,7 @@ public final class LocalOfficeUtils {
    *
    * @return The best process manager according to the current OS.
    */
-  @NonNull
-  public static ProcessManager findBestProcessManager() {
+  public static @NonNull ProcessManager findBestProcessManager() {
 
     if (OSUtils.IS_OS_MAC) {
       return MacProcessManager.getDefault();
@@ -181,15 +185,14 @@ public final class LocalOfficeUtils {
    * @return an array of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  @NonNull
-  public static List<@NonNull OfficeUrl> buildOfficeUrls(
-      @Nullable final List<@NonNull Integer> portNumbers,
-      @Nullable final List<@NonNull String> pipeNames) {
+  public static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
+      final @Nullable List<@NonNull Integer> portNumbers,
+      final @Nullable List<@NonNull String> pipeNames) {
 
     // Assign default value if no pipe names or port numbers have been specified.
     if ((portNumbers == null || portNumbers.isEmpty())
         && (pipeNames == null || pipeNames.isEmpty())) {
-      return Collections.singletonList(new OfficeUrl(2002));
+      return Collections.singletonList(new OfficeUrl(DEFAULT_PORT));
     }
 
     // Build the office URL list and return it
@@ -209,39 +212,53 @@ public final class LocalOfficeUtils {
    * @return A {@code File} instance that is the directory where lives the first detected office
    *     installation.
    */
-  @NonNull
-  public static File getDefaultOfficeHome() {
+  public static @NonNull File getDefaultOfficeHome() {
     return DefaultOfficeHomeHolder.INSTANCE;
   }
 
   /**
-   * Gets the {@link org.jodconverter.core.document.DocumentFamily} of the specified document.
+   * Gets the {@link DocumentFamily} of the specified document, without throwing an exception if not
+   * found.
    *
-   * @param document The document whose family will be returned.
-   * @return The {@link org.jodconverter.core.document.DocumentFamily} for the specified document.
-   * @throws org.jodconverter.core.office.OfficeException If the document family cannot be
-   *     retrieved.
+   * @param document The document whose family will be returned. Must not be null.
+   * @return The {@link DocumentFamily} for the specified document, or {@code null} if the document
+   *     does not represent any supported document family.
    */
-  @NonNull
-  public static DocumentFamily getDocumentFamily(@NonNull final XComponent document)
-      throws OfficeException {
-
+  public static @Nullable DocumentFamily getDocumentFamilySilently(
+      final @NonNull XComponent document) {
     AssertUtils.notNull(document, "document must not be null");
 
     final XServiceInfo serviceInfo = Lo.qi(XServiceInfo.class, document);
-    if (serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")) {
+    if (serviceInfo.supportsService(Lo.WRITER_SERVICE)) {
       // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
       // but this further distinction doesn't seem to matter for conversions
       return DocumentFamily.TEXT;
-    } else if (serviceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
+    } else if (serviceInfo.supportsService(Lo.CALC_SERVICE)) {
       return DocumentFamily.SPREADSHEET;
-    } else if (serviceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
+    } else if (serviceInfo.supportsService(Lo.IMPRESS_SERVICE)) {
       return DocumentFamily.PRESENTATION;
-    } else if (serviceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
+    } else if (serviceInfo.supportsService(Lo.DRAW_SERVICE)) {
       return DocumentFamily.DRAWING;
     }
 
-    throw new OfficeException("Document of unknown family: " + serviceInfo.getImplementationName());
+    return null;
+  }
+
+  /**
+   * Gets the {@link DocumentFamily} of the specified document.
+   *
+   * @param document The document whose family will be returned. Must not be null.
+   * @return The {@link DocumentFamily} for the specified document.
+   * @throws OfficeException If the document family cannot be retrieved.
+   */
+  public static @NonNull DocumentFamily getDocumentFamily(final @NonNull XComponent document)
+      throws OfficeException {
+
+    final DocumentFamily family = getDocumentFamilySilently(document);
+    if (family == null) {
+      throw new OfficeException("Document of unknown family: " + document.getClass().getName());
+    }
+    return family;
   }
 
   /**
@@ -250,8 +267,7 @@ public final class LocalOfficeUtils {
    * @param officeHome The root (home) directory of the office installation.
    * @return A instance of the executable file.
    */
-  @NonNull
-  public static File getOfficeExecutable(@NonNull final File officeHome) {
+  public static @NonNull File getOfficeExecutable(final @NonNull File officeHome) {
 
     // Mac
     if (OSUtils.IS_OS_MAC) {
@@ -274,31 +290,14 @@ public final class LocalOfficeUtils {
   }
 
   /**
-   * Creates a {@code PropertyValue} with the specified name and value.
-   *
-   * @param name The property name.
-   * @param value The property value.
-   * @return The created {@code PropertyValue}.
-   */
-  @NonNull
-  public static PropertyValue property(@NonNull final String name, @NonNull final Object value) {
-
-    final PropertyValue prop = new PropertyValue();
-    prop.Name = name;
-    prop.Value = value;
-    return prop;
-  }
-
-  /**
    * Converts a regular java map to an array of {@code PropertyValue}, usable as arguments with UNO
    * interface types.
    *
    * @param properties The map to convert.
    * @return An array of {@code PropertyValue}.
    */
-  @NonNull
-  public static PropertyValue[] toUnoProperties(
-      @NonNull final Map<@NonNull String, @NonNull Object> properties) {
+  public static @NonNull PropertyValue[] toUnoProperties(
+      final @NonNull Map<@NonNull String, @NonNull Object> properties) {
 
     final List<PropertyValue> propertyValues = new ArrayList<>(properties.size());
     for (final Map.Entry<String, Object> entry : properties.entrySet()) {
@@ -308,7 +307,7 @@ public final class LocalOfficeUtils {
         final Map<String, Object> subProperties = (Map<String, Object>) value;
         value = toUnoProperties(subProperties);
       }
-      propertyValues.add(property(entry.getKey(), value));
+      propertyValues.add(Props.makeProperty(entry.getKey(), value));
     }
     return propertyValues.toArray(new PropertyValue[0]);
   }
@@ -319,8 +318,7 @@ public final class LocalOfficeUtils {
    * @param file The file for which an URL will be constructed.
    * @return A valid office URL.
    */
-  @NonNull
-  public static String toUrl(@NonNull final File file) {
+  public static @NonNull String toUrl(final @NonNull File file) {
 
     final String path = file.toURI().getRawPath();
     final String url = path.startsWith("//") ? "file:" + path : "file://" + path;
@@ -334,7 +332,8 @@ public final class LocalOfficeUtils {
    * @exception IllegalStateException If the specified directory if not a valid office home
    *     directory.
    */
-  public static void validateOfficeHome(@NonNull final File officeHome) {
+  public static void validateOfficeHome(final @NonNull File officeHome) {
+    AssertUtils.notNull(officeHome, "officeHome must not be null");
 
     if (!officeHome.isDirectory()) {
       throw new IllegalStateException(
@@ -355,7 +354,7 @@ public final class LocalOfficeUtils {
    *     profile directory.
    */
   public static void validateOfficeTemplateProfileDirectory(
-      @Nullable final File templateProfileDir) {
+      final @Nullable File templateProfileDir) {
 
     // Template profile directory is not required.
     if (templateProfileDir == null || new File(templateProfileDir, "user").isDirectory()) {
@@ -364,25 +363,6 @@ public final class LocalOfficeUtils {
 
     throw new IllegalStateException(
         "templateProfileDir doesn't appear to contain a user profile: " + templateProfileDir);
-  }
-
-  /**
-   * Validates that the specified File instance is a valid office working directory.
-   *
-   * @param workingDir The directory to validate.
-   * @exception IllegalStateException If the specified directory if not a valid office working
-   *     directory.
-   */
-  public static void validateOfficeWorkingDirectory(@NonNull final File workingDir) {
-
-    if (!workingDir.isDirectory()) {
-      throw new IllegalStateException(
-          "workingDir doesn't exist or is not a directory: " + workingDir);
-    }
-
-    if (!workingDir.canWrite()) {
-      throw new IllegalStateException("workingDir '" + workingDir + "' cannot be written to");
-    }
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

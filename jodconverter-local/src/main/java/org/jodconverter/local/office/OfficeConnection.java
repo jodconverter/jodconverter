@@ -67,7 +67,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
    *
    * @param officeUrl The URL for which the connection is created.
    */
-  public OfficeConnection(@NonNull final OfficeUrl officeUrl) {
+  public OfficeConnection(final @NonNull OfficeUrl officeUrl) {
 
     this.officeUrl = officeUrl;
     this.connectionEventListeners = new ArrayList<>();
@@ -80,7 +80,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
    *     established with an office process and when a connection is lost.
    */
   public void addConnectionEventListener(
-      @NonNull final OfficeConnectionEventListener connectionEventListener) {
+      final @NonNull OfficeConnectionEventListener connectionEventListener) {
 
     connectionEventListeners.add(connectionEventListener);
   }
@@ -180,8 +180,8 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
         final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
         connectionEventListeners.forEach(listener -> listener.connected(connectionEvent));
 
-      } catch (OfficeConnectionException connectionEx) {
-        throw connectionEx;
+      } catch (OfficeConnectionException ex) {
+        throw ex;
 
       } catch (Exception ex) {
         throw new OfficeConnectionException(
@@ -206,7 +206,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
   }
 
   @Override
-  public void disposing(@NonNull final EventObject eventObject) {
+  public void disposing(final @NonNull EventObject eventObject) {
 
     if (connected.compareAndSet(true, false)) {
 
@@ -227,27 +227,23 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
     // else we tried to connect to a server that doesn't speak URP
   }
 
-  @Nullable
   @Override
-  public XComponentContext getComponentContext() {
+  public @Nullable XComponentContext getComponentContext() {
     return componentContext;
   }
 
-  @Nullable
   @Override
-  public XMultiComponentFactory getServiceManager() {
+  public @Nullable XMultiComponentFactory getServiceManager() {
     return serviceManager;
   }
 
-  @Nullable
   @Override
-  public XComponentLoader getComponentLoader() {
+  public @Nullable XComponentLoader getComponentLoader() {
     return componentLoader;
   }
 
-  @Nullable
   @Override
-  public XDesktop getDesktop() {
+  public @Nullable XDesktop getDesktop() {
     if (desktopService == null) {
       return null;
     }

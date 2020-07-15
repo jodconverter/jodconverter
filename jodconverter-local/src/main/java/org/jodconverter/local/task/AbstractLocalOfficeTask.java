@@ -137,6 +137,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       final XCloseable closeable = Lo.qiOptional(XCloseable.class, document).orElse(null);
       if (closeable == null) {
         // If close is not supported by this model - try to dispose it.
+        document.dispose();
         Lo.qi(XComponent.class, document).dispose();
       } else {
         try {

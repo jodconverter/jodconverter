@@ -41,7 +41,7 @@ public class RequestConfig {
    *     negative value is interpreted as undefined (system default).
    */
   public RequestConfig(
-      @NonNull final String url, final long connectTimeout, final long socketTimeout) {
+      final @NonNull String url, final long connectTimeout, final long socketTimeout) {
 
     this.url = url;
     this.connectTimeout = connectTimeout;
@@ -53,8 +53,7 @@ public class RequestConfig {
    *
    * @return The URL where to send conversion request.
    */
-  @NonNull
-  public String getUrl() {
+  public @NonNull String getUrl() {
     return url;
   }
 

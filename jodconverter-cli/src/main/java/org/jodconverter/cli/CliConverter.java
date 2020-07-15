@@ -208,6 +208,7 @@ public final class CliConverter {
     }
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   private void prepareOutputDir(final File outputDir) throws OfficeException {
 
     if (outputDir != null) {
@@ -226,7 +227,6 @@ public final class CliConverter {
 
         } else {
           // Create the output directory
-          //noinspection ResultOfMethodCallIgnored
           outputDir.mkdirs();
         }
 

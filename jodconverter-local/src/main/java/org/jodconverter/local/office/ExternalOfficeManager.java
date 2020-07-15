@@ -20,23 +20,22 @@
 package org.jodconverter.local.office;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import org.jodconverter.core.office.AbstractOfficeManager;
+import org.jodconverter.core.office.AbstractOfficeManagerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.util.AssertUtils;
-import org.jodconverter.core.util.StringUtils;
 
 /**
- * {@link org.jodconverter.core.office.OfficeManager} implementation that connects to an external
- * Office process.
+ * {@link org.jodconverter.core.office.OfficeManager} implementation that uses a pool of external
+ * office processes to execute conversion tasks.
  *
  * <p>The external Office process needs to be started manually, e.g. from the command line with
  *
@@ -53,37 +52,28 @@ import org.jodconverter.core.util.StringUtils;
  * same behavior as JODConverter 2.x, including using <em>synchronized</em> blocks for serializing
  * office operations.
  */
-public final class ExternalOfficeManager extends AbstractOfficeManager {
+public final class ExternalOfficeManager
+    extends AbstractOfficeManagerPool<ExternalOfficeManagerPoolEntry> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExternalOfficeManager.class);
-
-  // The default port number to connect to office.
-  public static final int DEFAULT_PORT_NUMBER = 2002;
-  // The default pipe name to connect to office.
-  public static final String DEFAULT_PIPE_NAME = "office";
   // The default value for connection on start.
-  public static final boolean DEFAULT_CONNECT_ON_START = true;
-  // The default initial delay when connecting to office.
-  public static final long DEFAULT_INITIAL_DELAY = 0L; // No delay
+  static final boolean DEFAULT_CONNECT_ON_START = true;
   // The default timeout when connecting to office.
-  public static final long DEFAULT_CONNECT_TIMEOUT = 120_000L; // 2 minutes
+  static final long DEFAULT_CONNECT_TIMEOUT = 120_000L; // 2 minutes
   // The default delay between each try to connect.
-  public static final long DEFAULT_RETRY_INTERVAL = 250L; // 0.25 secs.
+  static final long DEFAULT_CONNECT_RETRY_INTERVAL = 250L; // 0.25 secs.
+  // The default "fail fast" behavior when a connect attempt is made.
+  public static final boolean DEFAULT_CONNECT_FAIL_FAST = false;
   // The maximum value for the delay between each try to connect.
-  public static final long MAX_RETRY_INTERVAL = 10_000L; // 10 sec.
-
-  private final boolean connectOnStart;
-  private final long connectTimeout;
-  private final long retryInterval;
-  private final OfficeConnection connection;
+  static final long MAX_CONNECT_RETRY_INTERVAL = 10_000L; // 10 sec.
+  // The default maximum number of tasks an office process can execute before reconnecting.
+  static final int DEFAULT_MAX_TASKS_PER_CONNECTION = 1_000;
 
   /**
    * Creates a new builder instance.
    *
    * @return A new builder instance.
    */
-  @NonNull
-  public static Builder builder() {
+  public static @NonNull Builder builder() {
     return new Builder();
   }
 
@@ -92,8 +82,7 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
    *
    * @return A {@link ExternalOfficeManager} with default configuration.
    */
-  @NonNull
-  public static ExternalOfficeManager make() {
+  public static @NonNull ExternalOfficeManager make() {
     return builder().build();
   }
 
@@ -106,91 +95,36 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
    *
    * @return A {@link ExternalOfficeManager} with default configuration.
    */
-  @NonNull
-  public static ExternalOfficeManager install() {
+  public static @NonNull ExternalOfficeManager install() {
     return builder().install().build();
   }
 
-  /**
-   * Constructs a new instance of the class with the specified arguments.
-   *
-   * @param officeUrl The office URL.
-   * @param workingDir The directory where temporary files and directories are created.
-   * @param connectOnStart Should a connection be attempted on start? If {@code false}, a connection
-   *     will only be attempted the first time an {@link org.jodconverter.core.task.OfficeTask} is
-   *     executed.
-   * @param connectTimeout Timeout after which a connection attempt will fail.
-   * @param retryInterval Timeout between each try to connect.
-   */
   private ExternalOfficeManager(
-      final OfficeUrl officeUrl,
+      final List<OfficeUrl> officeUrls,
       final File workingDir,
-      final Boolean connectOnStart,
-      final Long connectTimeout,
-      final Long retryInterval) {
-    super(workingDir);
+      final boolean connectOnStart,
+      final long connectTimeout,
+      final long connectRetryInterval,
+      final boolean connectFailFast,
+      final int maxTasksPerConnection,
+      final long taskExecutionTimeout,
+      final long taskQueueTimeout) {
+    super(officeUrls.size(), workingDir, taskQueueTimeout);
 
-    connection = new OfficeConnection(officeUrl);
-
-    this.connectOnStart = connectOnStart == null ? DEFAULT_CONNECT_ON_START : connectOnStart;
-    this.connectTimeout = connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT : connectTimeout;
-    this.retryInterval = retryInterval == null ? DEFAULT_RETRY_INTERVAL : retryInterval;
-  }
-
-  private void connect() throws OfficeException {
-
-    LOGGER.debug("Connecting to external office process...");
-    try {
-      // TODO: Add configuration field for initial delay
-      new ConnectRetryable(connection)
-          .execute(DEFAULT_INITIAL_DELAY, retryInterval, connectTimeout);
-
-    } catch (Exception ex) {
-      throw new OfficeException("Could not establish connection to external office process", ex);
-    }
-  }
-
-  @Override
-  public void execute(@NonNull final OfficeTask task) throws OfficeException {
-
-    synchronized (connection) {
-      if (!isRunning()) {
-        connect();
-      }
-      LOGGER.debug("Executing task: {}", task);
-      task.execute(connection);
-    }
-  }
-
-  @Override
-  public boolean isRunning() {
-    return connection.isConnected();
-  }
-
-  @Override
-  public void start() throws OfficeException {
-
-    if (connectOnStart) {
-      synchronized (connection) {
-        connect();
-
-        makeTempDir();
-      }
-    }
-  }
-
-  @Override
-  public void stop() {
-
-    synchronized (connection) {
-      if (isRunning()) {
-        try {
-          connection.disconnect();
-        } finally {
-          deleteTempDir();
-        }
-      }
-    }
+    setEntries(
+        officeUrls.stream()
+            .map(
+                officeUrl ->
+                    new ExternalOfficeManagerPoolEntry(
+                        connectOnStart,
+                        maxTasksPerConnection,
+                        taskExecutionTimeout,
+                        new ExternalOfficeConnectionManager(
+                            connectTimeout,
+                            connectRetryInterval,
+                            connectFailFast,
+                            new OfficeConnection(officeUrl))))
+            .collect(Collectors.toList()));
   }
 
   /**
@@ -198,44 +132,40 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
    *
    * @see ExternalOfficeManager
    */
-  public static final class Builder extends AbstractOfficeManagerBuilder<Builder> {
+  public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
 
     // OfficeProcessManager
-    private OfficeConnectionProtocol connectionProtocol = OfficeConnectionProtocol.SOCKET;
-    private Integer portNumber;
-    private String pipeName;
-    private Boolean connectOnStart;
-    private Long connectTimeout;
-    private Long retryInterval;
+    private List<String> pipeNames;
+    private List<Integer> portNumbers;
+    private Boolean connectOnStart = DEFAULT_CONNECT_ON_START;
+    private long connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+    private Long connectRetryInterval = DEFAULT_CONNECT_RETRY_INTERVAL;
+    private boolean connectFailFast = DEFAULT_CONNECT_FAIL_FAST;
+    private int maxTasksPerConnection = DEFAULT_MAX_TASKS_PER_CONNECTION;
 
     // Private constructor so only LocalOfficeManager can initialize an instance of this builder.
     private Builder() {
       super();
     }
 
-    @NonNull
     @Override
-    public ExternalOfficeManager build() {
+    public @NonNull ExternalOfficeManager build() {
 
-      if (workingDir == null) {
-        workingDir = OfficeUtils.getDefaultWorkingDir();
-      }
-
-      // Validate the office directories
-      LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir);
+      // Validate the working directory
+      OfficeUtils.validateWorkingDir(workingDir);
 
       // Build the manager
       final ExternalOfficeManager manager =
           new ExternalOfficeManager(
-              connectionProtocol == OfficeConnectionProtocol.SOCKET
-                  ? portNumber == null
-                      ? new OfficeUrl(DEFAULT_PORT_NUMBER)
-                      : new OfficeUrl(portNumber)
-                  : pipeName == null ? new OfficeUrl(DEFAULT_PIPE_NAME) : new OfficeUrl(pipeName),
+              LocalOfficeUtils.buildOfficeUrls(portNumbers, pipeNames),
               workingDir,
               connectOnStart,
               connectTimeout,
-              retryInterval);
+              connectRetryInterval,
+              connectFailFast,
+              maxTasksPerConnection,
+              taskExecutionTimeout,
+              taskQueueTimeout);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
@@ -243,43 +173,32 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
     }
 
     /**
-     * Specifies the connection protocol.
+     * Specifies the pipe names that will be use to communicate with office. An instance of office
+     * will be launched for each pipe name.
      *
-     * @param connectionProtocol The new protocol to use.
+     * @param pipeNames The pipe names to use.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder connectionProtocol(@Nullable final OfficeConnectionProtocol connectionProtocol) {
+    public @NonNull Builder pipeNames(final @Nullable String... pipeNames) {
 
-      this.connectionProtocol = connectionProtocol;
-      return this;
-    }
-
-    /**
-     * Specifies the pipe name that will be use to communicate with office.
-     *
-     * @param pipeName The pipe name to use.
-     * @return This builder instance.
-     */
-    @NonNull
-    public Builder pipeName(@Nullable final String pipeName) {
-
-      if (StringUtils.isNotBlank(pipeName)) {
-        this.pipeName = pipeName;
+      if (pipeNames != null && pipeNames.length != 0) {
+        this.pipeNames = Arrays.asList(pipeNames);
       }
       return this;
     }
 
     /**
-     * Specifies the port number that will be use to communicate with office.
+     * Specifies the port numbers that will be use to communicate with office. An instance of office
+     * will be launched for each port number.
      *
-     * @param portNumber The port number to use.
+     * @param portNumbers The port numbers to use.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder portNumber(@Nullable final Integer portNumber) {
+    public @NonNull Builder portNumbers(final int... portNumbers) {
 
-      this.portNumber = portNumber;
+      if (portNumbers != null && portNumbers.length != 0) {
+        this.portNumbers = Arrays.stream(portNumbers).boxed().collect(Collectors.toList());
+      }
       return this;
     }
 
@@ -292,10 +211,11 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param connectOnStart {@code true} to connect on start, {@code false} otherwise.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder connectOnStart(@Nullable final Boolean connectOnStart) {
+    public @NonNull Builder connectOnStart(final @Nullable Boolean connectOnStart) {
 
-      this.connectOnStart = connectOnStart;
+      if (connectOnStart != null) {
+        this.connectOnStart = connectOnStart;
+      }
       return this;
     }
 
@@ -307,15 +227,14 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      * @param connectTimeout the process timeout, in milliseconds.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder connectTimeout(@Nullable final Long connectTimeout) {
+    public @NonNull Builder connectTimeout(final @Nullable Long connectTimeout) {
 
       if (connectTimeout != null) {
         AssertUtils.isTrue(
-            connectTimeout >= 0,
+            connectTimeout >= 0L,
             String.format("connectTimeout %s must be greater than or equal to 0", connectTimeout));
+        this.connectTimeout = connectTimeout;
       }
-      this.connectTimeout = connectTimeout;
       return this;
     }
 
@@ -324,20 +243,62 @@ public final class ExternalOfficeManager extends AbstractOfficeManager {
      *
      * <p>&nbsp; <b><i>Default</i></b>: 250 (0.25 seconds)
      *
-     * @param retryInterval the retry interval, in milliseconds.
+     * @param connectRetryInterval the connect retry interval, in milliseconds.
      * @return This builder instance.
      */
-    @NonNull
-    public Builder retryInterval(@Nullable final Long retryInterval) {
+    public @NonNull Builder connectRetryInterval(final @Nullable Long connectRetryInterval) {
 
-      if (retryInterval != null) {
+      if (connectRetryInterval != null) {
         AssertUtils.isTrue(
-            retryInterval >= 0 && retryInterval <= MAX_RETRY_INTERVAL,
+            connectRetryInterval >= 0L && connectRetryInterval <= MAX_CONNECT_RETRY_INTERVAL,
             String.format(
                 "retryInterval %s must be in the inclusive range of %s to %s",
-                retryInterval, 0, MAX_RETRY_INTERVAL));
+                connectRetryInterval, 0, MAX_CONNECT_RETRY_INTERVAL));
+        this.connectRetryInterval = connectRetryInterval;
       }
-      this.retryInterval = retryInterval;
+      return this;
+    }
+
+    /**
+     * Controls whether the manager will "fail fast" if the connection to the external process
+     * fails. If set to {@code true}, a connection attempt will wait for the task to be completed,
+     * and will throw an exception if the connection to the external process fails. If set to {@code
+     * false}, the task of connecting to the external process will be submitted and will return
+     * immediately, meaning a faster connecting process. Only error logs will be produced if
+     * anything goes wrong.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: false
+     *
+     * @param connectFailFast {@code true} to "fail fast", {@code false} otherwise.
+     * @return This builder instance.
+     */
+    public @NonNull Builder connectFailFast(final @Nullable Boolean connectFailFast) {
+
+      if (connectFailFast != null) {
+        this.connectFailFast = connectFailFast;
+      }
+      return this;
+    }
+
+    /**
+     * Specifies the maximum number of tasks an office process can execute before reconnecting to
+     * it. 0 means infinite number of task (will never reconnect).
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: 1000
+     *
+     * @param maxTasksPerConnection The new maximum number of tasks an office process can execute.
+     * @return This builder instance.
+     */
+    public @NonNull Builder maxTasksPerConnection(final @Nullable Integer maxTasksPerConnection) {
+
+      if (maxTasksPerConnection != null) {
+        AssertUtils.isTrue(
+            maxTasksPerConnection >= 0,
+            String.format(
+                "maxTasksPerConnection %s must be greater than or equal to 0",
+                maxTasksPerConnection));
+        this.maxTasksPerConnection = maxTasksPerConnection;
+      }
       return this;
     }
   }
