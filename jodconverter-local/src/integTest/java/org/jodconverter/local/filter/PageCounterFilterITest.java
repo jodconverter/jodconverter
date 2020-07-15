@@ -25,24 +25,18 @@ import static org.jodconverter.local.ResourceUtil.documentFile;
 
 import java.io.File;
 
-import com.sun.star.lang.XComponent;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
-import org.jodconverter.core.office.OfficeContext;
-import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
-import org.jodconverter.local.office.LocalOfficeContext;
-import org.jodconverter.local.office.LocalOfficeManager;
-import org.jodconverter.local.task.AbstractLocalOfficeTask;
 
 /** Contains tests for the {@link PageCounterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class PageCounterFilterITest {
+class PageCounterFilterITest {
 
   private static final String CALC_FILENAME = "test_multi_page.xls";
   private static final File CALC_FILE = documentFile(CALC_FILENAME);
@@ -56,123 +50,119 @@ public class PageCounterFilterITest {
   private static final String TEXT_FILENAME = "test_multi_page.doc";
   private static final File TEXT_FILE = documentFile(TEXT_FILENAME);
 
-  @Test
-  public void Calc_doFilter_SelectPage2_ShouldCount3Then1(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  @Nested
+  class Calc {
 
-    final File targetFile = new File(testFolder, CALC_FILENAME + ".sheet2.xls");
+    @Test
+    void whenPage2Selected_ShouldCount3Then1(
+        final @TempDir File testFolder, final OfficeManager manager) {
 
-    final PageCounterFilter count1 = new PageCounterFilter();
-    final PageCounterFilter count2 = new PageCounterFilter();
+      final File targetFile = new File(testFolder, CALC_FILENAME + ".sheet2.xls");
 
-    // Test the filter
-    assertThatCode(
-            () ->
-                LocalConverter.builder()
-                    .officeManager(manager)
-                    .filterChain(count1, new PagesSelectorFilter(2), count2)
-                    .build()
-                    .convert(CALC_FILE)
-                    .to(targetFile)
-                    .execute())
-        .doesNotThrowAnyException();
+      final PageCounterFilter count1 = new PageCounterFilter();
+      final PageCounterFilter count2 = new PageCounterFilter();
 
-    assertThat(count1.getPageCount()).isEqualTo(3);
-    assertThat(count2.getPageCount()).isEqualTo(1);
+      // Test the filter
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(manager)
+                      .filterChain(count1, new PagesSelectorFilter(2), count2)
+                      .build()
+                      .convert(CALC_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      assertThat(count1.getPageCount()).isEqualTo(3);
+      assertThat(count2.getPageCount()).isEqualTo(1);
+    }
   }
 
-  @Test
-  public void Draw_doFilter_SelectPage2_ShouldCount3Then1(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  @Nested
+  class Draw {
 
-    final File targetFile = new File(testFolder, DRAW_FILENAME + ".page2.pdf");
+    @Test
+    void whenPage2Selected_ShouldCount3Then1(
+        final @TempDir File testFolder, final OfficeManager manager) {
 
-    final PageCounterFilter count1 = new PageCounterFilter();
-    final PageCounterFilter count2 = new PageCounterFilter();
+      final File targetFile = new File(testFolder, DRAW_FILENAME + ".page2.pdf");
 
-    // Test the filter
-    assertThatCode(
-            () ->
-                LocalConverter.builder()
-                    .officeManager(manager)
-                    .filterChain(count1, new PagesSelectorFilter(2), count2)
-                    .build()
-                    .convert(DRAW_FILE)
-                    .to(targetFile)
-                    .execute())
-        .doesNotThrowAnyException();
+      final PageCounterFilter count1 = new PageCounterFilter();
+      final PageCounterFilter count2 = new PageCounterFilter();
 
-    assertThat(count1.getPageCount()).isEqualTo(3);
-    assertThat(count2.getPageCount()).isEqualTo(1);
+      // Test the filter
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(manager)
+                      .filterChain(count1, new PagesSelectorFilter(2), count2)
+                      .build()
+                      .convert(DRAW_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      assertThat(count1.getPageCount()).isEqualTo(3);
+      assertThat(count2.getPageCount()).isEqualTo(1);
+    }
   }
 
-  @Test
-  public void Impress_doFilter_SelectPage2_ShouldCount4Then1(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  @Nested
+  class Impress {
 
-    final File targetFile = new File(testFolder, IMPRESS_FILENAME + ".page2.pdf");
+    @Test
+    void whenPage2Selected_ShouldCount4Then1(
+        final @TempDir File testFolder, final OfficeManager manager) {
 
-    final PageCounterFilter count1 = new PageCounterFilter();
-    final PageCounterFilter count2 = new PageCounterFilter();
+      final File targetFile = new File(testFolder, IMPRESS_FILENAME + ".page2.pdf");
 
-    // Test the filter
-    assertThatCode(
-            () ->
-                LocalConverter.builder()
-                    .officeManager(manager)
-                    .filterChain(count1, new PagesSelectorFilter(2), count2)
-                    .build()
-                    .convert(IMPRESS_FILE)
-                    .to(targetFile)
-                    .execute())
-        .doesNotThrowAnyException();
+      final PageCounterFilter count1 = new PageCounterFilter();
+      final PageCounterFilter count2 = new PageCounterFilter();
 
-    assertThat(count1.getPageCount()).isEqualTo(4);
-    assertThat(count2.getPageCount()).isEqualTo(1);
+      // Test the filter
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(manager)
+                      .filterChain(count1, new PagesSelectorFilter(2), count2)
+                      .build()
+                      .convert(IMPRESS_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      assertThat(count1.getPageCount()).isEqualTo(4);
+      assertThat(count2.getPageCount()).isEqualTo(1);
+    }
   }
 
-  @Test
-  public void Text_doFilter_SelectPage2_ShouldCount3Then1(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  @Nested
+  class Text {
 
-    final File targetFile = new File(testFolder, TEXT_FILENAME + ".page2.pdf");
+    @Test
+    void whenPage2Selected_ShouldCount3Then1(
+        final @TempDir File testFolder, final OfficeManager manager) {
 
-    final PageCounterFilter count1 = new PageCounterFilter();
-    final PageCounterFilter count2 = new PageCounterFilter();
+      final File targetFile = new File(testFolder, TEXT_FILENAME + ".page2.pdf");
 
-    // Test the filter
-    assertThatCode(
-            () ->
-                LocalConverter.builder()
-                    .officeManager(manager)
-                    .filterChain(count1, new PagesSelectorFilter(2), count2)
-                    .build()
-                    .convert(TEXT_FILE)
-                    .to(targetFile)
-                    .execute())
-        .doesNotThrowAnyException();
+      final PageCounterFilter count1 = new PageCounterFilter();
+      final PageCounterFilter count2 = new PageCounterFilter();
 
-    assertThat(count1.getPageCount()).isEqualTo(3);
-    assertThat(count2.getPageCount()).isEqualTo(1);
-  }
+      // Test the filter
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(manager)
+                      .filterChain(count1, new PagesSelectorFilter(2), count2)
+                      .build()
+                      .convert(TEXT_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
 
-  @Test
-  public void doFilter_WithUnsupportedDocument_DoNothing(final LocalOfficeManager manager) {
-
-    final AbstractLocalOfficeTask task =
-        new AbstractLocalOfficeTask(new SourceDocumentSpecsFromFile(documentFile("db.odb")) {}) {
-          @Override
-          @SuppressWarnings("NullableProblems")
-          public void execute(final OfficeContext context) throws OfficeException {
-
-            final LocalOfficeContext localContext = (LocalOfficeContext) context;
-            final XComponent document = loadDocument(localContext, source.getFile());
-            final FilterChain chain = new DefaultFilterChain(new PageCounterFilter());
-            chain.doFilter(context, document);
-            closeDocument(document);
-          }
-        };
-
-    assertThatCode(() -> manager.execute(task)).doesNotThrowAnyException();
+      assertThat(count1.getPageCount()).isEqualTo(3);
+      assertThat(count2.getPageCount()).isEqualTo(1);
+    }
   }
 }

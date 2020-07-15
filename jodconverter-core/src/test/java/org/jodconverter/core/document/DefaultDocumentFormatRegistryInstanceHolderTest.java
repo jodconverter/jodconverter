@@ -27,30 +27,33 @@ import org.junit.jupiter.api.Test;
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests for the {@link DefaultDocumentFormatRegistryInstanceHolder} class. */
-public class DefaultDocumentFormatRegistryInstanceHolderTest {
+class DefaultDocumentFormatRegistryInstanceHolderTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(DefaultDocumentFormatRegistryInstanceHolder.class);
   }
 
   @Test
-  public void setInstance_WithCustomRegistry_getInstanceShouldReturnCutomRedistry() {
+  void setInstance_WithCustomRegistry_GetInstanceShouldReturnCustomRegistry() {
 
     final DocumentFormatRegistry registry =
         new DocumentFormatRegistry() {
           @Override
-          public DocumentFormat getFormatByExtension(String extension) {
+          public DocumentFormat getFormatByExtension(
+              @SuppressWarnings("NullableProblems") final String extension) {
             return null;
           }
 
           @Override
-          public DocumentFormat getFormatByMediaType(String mediaType) {
+          public DocumentFormat getFormatByMediaType(
+              @SuppressWarnings("NullableProblems") final String mediaType) {
             return null;
           }
 
           @Override
-          public Set<DocumentFormat> getOutputFormats(DocumentFamily family) {
+          @SuppressWarnings("NullableProblems")
+          public Set<DocumentFormat> getOutputFormats(final DocumentFamily family) {
             return null;
           }
 

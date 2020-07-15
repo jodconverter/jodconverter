@@ -35,6 +35,7 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -46,7 +47,7 @@ import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.ssl.SslConfig;
 
 /** Contains tests for the {@link SslConfig} class. */
-public class RemoteOfficeManagerSslITest {
+class RemoteOfficeManagerSslITest {
 
   private static final String RESOURCES_PATH = "src/integTest/resources/";
   private static final String SOURCE_FILE_PATH = RESOURCES_PATH + "documents/test1.doc";
@@ -68,822 +69,843 @@ public class RemoteOfficeManagerSslITest {
   private static final String SERVER_TRUSTSTORE_PATH = RESOURCES_PATH + "servertruststore.jks";
   private static final String SERVER_TRUSTSTORE_PWD = "servertruststore";
 
-  @Test
-  public void execute_WithKeyPasswordAndPasswordNotProvided_ShouldThrowUnrecoverableKeyException(
-      final @TempDir File testFolder) throws OfficeException {
+  @Nested
+  class Execute {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+    @Test
+    void withKeyPasswordAndPasswordNotProvided_ShouldThrowUnrecoverableKeyException(
+        final @TempDir File testFolder) throws OfficeException {
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD)
-                .trustStorePath(SERVER_TRUSTSTORE_PATH)
-                .trustStorePassword(SERVER_TRUSTSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setKeyStore(CLIENT_KEYSTOREKEYPWD_PATH);
-      sslConfig.setKeyStorePassword(CLIENT_KEYSTOREKEYPWD_PWD);
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/convert-to/")
-              .sslConfig(sslConfig)
-              .build();
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
+
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD)
+                  .trustStorePath(SERVER_TRUSTSTORE_PATH)
+                  .trustStorePassword(SERVER_TRUSTSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setKeyStore(CLIENT_KEYSTOREKEYPWD_PATH);
+        sslConfig.setKeyStorePassword(CLIENT_KEYSTOREKEYPWD_PWD);
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/convert-to/")
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(
-                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-            .withCauseExactlyInstanceOf(UnrecoverableKeyException.class);
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
+              .withCauseExactlyInstanceOf(UnrecoverableKeyException.class);
 
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
       } finally {
-        OfficeUtils.stopQuietly(manager);
+        wireMockServer.stop();
       }
-    } finally {
-      wireMockServer.stop();
     }
-  }
 
-  @Test
-  public void execute_WithKeyPasswordAndPasswordProvided_ShouldSucceed(
-      final @TempDir File testFolder) throws Exception {
+    @Test
+    void withKeyPasswordAndPasswordProvided_ShouldSucceed(final @TempDir File testFolder)
+        throws Exception {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD)
-                .trustStorePath(SERVER_TRUSTSTORE_PATH)
-                .trustStorePassword(SERVER_TRUSTSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setKeyStore(CLIENT_KEYSTOREKEYPWD_PATH);
-      sslConfig.setKeyStorePassword(CLIENT_KEYSTOREKEYPWD_PWD);
-      sslConfig.setKeyPassword(CLIENT_KEYSTOREKEYPWD_KEY_PWD);
-      sslConfig.setKeyStoreType("jks");
-      sslConfig.setKeyStoreProvider("SUN");
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setTrustStoreType("jks");
-      sslConfig.setTrustStoreProvider("SUN");
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001") // try
-              // all
-              // accepted
-              // URL
-              // paths...
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD)
+                  .trustStorePath(SERVER_TRUSTSTORE_PATH)
+                  .trustStorePassword(SERVER_TRUSTSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setKeyStore(CLIENT_KEYSTOREKEYPWD_PATH);
+        sslConfig.setKeyStorePassword(CLIENT_KEYSTOREKEYPWD_PWD);
+        sslConfig.setKeyPassword(CLIENT_KEYSTOREKEYPWD_KEY_PWD);
+        sslConfig.setKeyStoreType("jks");
+        sslConfig.setKeyStoreProvider("SUN");
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setTrustStoreType("jks");
+        sslConfig.setTrustStoreProvider("SUN");
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001") // try
+                // all
+                // accepted
+                // URL
+                // paths...
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
+          // Try to converter the input document
+          RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
-        // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).as("Check content: %s", content).contains("Test Document");
+          // Check that the output file was created with the expected content.
+          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
+        }
       } finally {
-        manager.stop();
+        wireMockServer.stop();
       }
-    } finally {
-      wireMockServer.stop();
     }
-  }
 
-  @Test
-  public void execute_WithNeedClientAuthAndConfiguredClientAuth_ShouldSucceed(
-      final @TempDir File testFolder) throws Exception {
+    @Test
+    void withNeedClientAuthAndConfiguredClientAuth_ShouldSucceed(final @TempDir File testFolder)
+        throws Exception {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD)
-                .trustStorePath(SERVER_TRUSTSTORE_PATH)
-                .trustStorePassword(SERVER_TRUSTSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setKeyStore(CLIENT_KEYSTORE_PATH);
-      sslConfig.setKeyStorePassword(CLIENT_KEYSTORE_PWD);
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/") // try
-              // all
-              // accepted
-              // URL
-              // paths...
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD)
+                  .trustStorePath(SERVER_TRUSTSTORE_PATH)
+                  .trustStorePassword(SERVER_TRUSTSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setKeyStore(CLIENT_KEYSTORE_PATH);
+        sslConfig.setKeyStorePassword(CLIENT_KEYSTORE_PWD);
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/") // try
+                // all
+                // accepted
+                // URL
+                // paths...
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
+          // Try to converter the input document
+          RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
-        // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).as("Check content: %s", content).contains("Test Document");
+          // Check that the output file was created with the expected content.
+          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
+        }
       } finally {
-        manager.stop();
+        wireMockServer.stop();
       }
-    } finally {
-      wireMockServer.stop();
     }
-  }
 
-  @Test
-  public void execute_WithNeedClientAuthAndMissingClientAuth_ShouldThrowSSLException(
-      final @TempDir File testFolder) throws OfficeException {
+    @Test
+    void withNeedClientAuthAndMissingClientAuth_ShouldThrowSSLException(
+        final @TempDir File testFolder) throws OfficeException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD)
-                .needClientAuth(true));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/convert-to/")
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD)
+                  .needClientAuth(true));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/convert-to/")
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(
-                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute());
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute());
 
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
       } finally {
-        OfficeUtils.stopQuietly(manager);
+        wireMockServer.stop();
       }
-    } finally {
-      wireMockServer.stop();
     }
-  }
 
-  @Test
-  public void execute_WithSpecifiedPrivateKeyAndBadPrivateKeySpecified_ShouldThrowSSLException(
-      final @TempDir File testFolder) throws OfficeException {
+    @Test
+    void withSpecifiedPrivateKeyAndBadPrivateKeySpecified_ShouldThrowSSLException(
+        final @TempDir File testFolder) throws OfficeException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD)
-                .trustStorePath(SERVER_TRUSTSTORE_PATH)
-                .trustStorePassword(SERVER_TRUSTSTORE_PWD)
-                .needClientAuth(true));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setKeyStore(CLIENT_KEYSTORE_PATH);
-      sslConfig.setKeyStorePassword(CLIENT_KEYSTORE_PWD);
-      sslConfig.setKeyAlias("foo");
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/convert-to/")
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD)
+                  .trustStorePath(SERVER_TRUSTSTORE_PATH)
+                  .trustStorePassword(SERVER_TRUSTSTORE_PWD)
+                  .needClientAuth(true));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setKeyStore(CLIENT_KEYSTORE_PATH);
+        sslConfig.setKeyStorePassword(CLIENT_KEYSTORE_PWD);
+        sslConfig.setKeyAlias("foo");
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/convert-to/")
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(
-                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute());
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute());
 
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
       } finally {
-        OfficeUtils.stopQuietly(manager);
+        wireMockServer.stop();
       }
-    } finally {
-      wireMockServer.stop();
     }
-  }
 
-  @Test
-  public void execute_WithSpecifiedPrivateKeyAndGoodPrivateKeySpecified_ShouldSucceed(
-      final @TempDir File testFolder) throws Exception {
+    @Test
+    void withSpecifiedPrivateKeyAndGoodPrivateKeySpecified_ShouldSucceed(
+        final @TempDir File testFolder) throws Exception {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD)
-                .trustStorePath(SERVER_TRUSTSTORE_PATH)
-                .trustStorePassword(SERVER_TRUSTSTORE_PWD)
-                .needClientAuth(true));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setKeyStore(CLIENT_KEYSTORE_PATH);
-      sslConfig.setKeyStorePassword(CLIENT_KEYSTORE_PWD);
-      sslConfig.setKeyAlias("clientkeypair");
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool") // try
-              // all
-              // accepted
-              // URL
-              // paths...
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD)
+                  .trustStorePath(SERVER_TRUSTSTORE_PATH)
+                  .trustStorePassword(SERVER_TRUSTSTORE_PWD)
+                  .needClientAuth(true));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setKeyStore(CLIENT_KEYSTORE_PATH);
+        sslConfig.setKeyStorePassword(CLIENT_KEYSTORE_PWD);
+        sslConfig.setKeyAlias("clientkeypair");
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool") // try
+                // all
+                // accepted
+                // URL
+                // paths...
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
+          // Try to converter the input document
+          RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
-        // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).as("Check content: %s", content).contains("Test Document");
+          // Check that the output file was created with the expected content.
+          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
+        }
       } finally {
-        manager.stop();
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithSelfSignedCertificateAndNoSslConfiguration_ShouldThrowSSLException(
-      final @TempDir File testFolder) throws OfficeException {
+    @Test
+    void withSelfSignedCertificateAndNoSslConfiguration_ShouldThrowSSLException(
+        final @TempDir File testFolder) throws OfficeException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/convert-to/")
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/convert-to/")
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(
-                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-            .withCauseExactlyInstanceOf(SSLHandshakeException.class);
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
+              .withCauseExactlyInstanceOf(SSLHandshakeException.class);
 
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
       } finally {
-        OfficeUtils.stopQuietly(manager);
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithSelfSignedCertificateAndSslConfiguration_ShouldSucceed(
-      final @TempDir File testFolder) throws Exception {
+    @Test
+    void withSelfSignedCertificateAndSslConfiguration_ShouldSucceed(final @TempDir File testFolder)
+        throws Exception {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/") // try all accepted URL paths...
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/") // try all accepted URL paths...
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
+          // Try to converter the input document
+          RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
-        // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).as("Check content: %s", content).contains("Test Document");
+          // Check that the output file was created with the expected content.
+          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
+        }
       } finally {
-        manager.stop();
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithSelfSignedCertificateAndTrustAll_ShouldSucceed(
-      final @TempDir File testFolder) throws Exception {
+    @Test
+    void withSelfSignedCertificateAndTrustAll_ShouldSucceed(final @TempDir File testFolder)
+        throws Exception {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setTrustAll(true);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/") // try all accepted URL paths...
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setTrustAll(true);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/") // try all accepted URL paths...
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
+          // Try to converter the input document
+          RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
-        // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).as("Check content: %s", content).contains("Test Document");
+          // Check that the output file was created with the expected content.
+          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
+        }
       } finally {
-        manager.stop();
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithSelfSignedCertificateAndHostnameVerification_ShouldThrowSslException(
-      final @TempDir File testFolder) throws OfficeException {
+    @Test
+    void withSelfSignedCertificateAndHostnameVerification_ShouldThrowSslException(
+        final @TempDir File testFolder) throws OfficeException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/convert-to/")
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/convert-to/")
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(
-                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-            .withCauseExactlyInstanceOf(SSLPeerUnverifiedException.class);
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
+              .withCauseExactlyInstanceOf(SSLPeerUnverifiedException.class);
 
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
       } finally {
-        OfficeUtils.stopQuietly(manager);
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithSelfSignedCertificateAndSslDisabled_ShouldThrowSSLException(
-      final @TempDir File testFolder) throws OfficeException {
+    @Test
+    void withSelfSignedCertificateAndSslDisabled_ShouldThrowSSLException(
+        final @TempDir File testFolder) throws OfficeException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/convert-to/")
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/convert-to/")
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(
-                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-            .withCauseExactlyInstanceOf(SSLHandshakeException.class);
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
+              .withCauseExactlyInstanceOf(SSLHandshakeException.class);
 
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
       } finally {
-        OfficeUtils.stopQuietly(manager);
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithUnknownSslProtocol_ShouldThrowNoSuchAlgorithmException(
-      final @TempDir File testFolder) throws OfficeException {
+    @Test
+    void withUnknownSslProtocol_ShouldThrowNoSuchAlgorithmException(final @TempDir File testFolder)
+        throws OfficeException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setProtocol("UnknownProtocol");
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/convert-to/")
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setProtocol("UnknownProtocol");
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/convert-to/")
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(
-                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-            .withCauseExactlyInstanceOf(NoSuchAlgorithmException.class);
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
+              .withCauseExactlyInstanceOf(NoSuchAlgorithmException.class);
 
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
       } finally {
-        OfficeUtils.stopQuietly(manager);
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithKnownSslProtocol_ShouldSucceed(final @TempDir File testFolder)
-      throws OfficeException, IOException {
+    @Test
+    void withKnownSslProtocol_ShouldSucceed(final @TempDir File testFolder)
+        throws OfficeException, IOException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setProtocol("TLSv1.2");
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection(
-                  "https://localhost:8001/lool/convert-to") // try all accepted URL paths...
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setProtocol("TLSv1.2");
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection(
+                    "https://localhost:8001/lool/convert-to") // try all accepted URL paths...
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
+          // Try to converter the input document
+          RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
-        // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).as("Check content: %s", content).contains("Test Document");
+          // Check that the output file was created with the expected content.
+          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
+        }
       } finally {
-        manager.stop();
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithUnknownEnabledlProtocol_ShouldThrowNoSuchAlgorithmException(
-      final @TempDir File testFolder) throws OfficeException {
+    @Test
+    void withUnknownEnabledlProtocol_ShouldThrowNoSuchAlgorithmException(
+        final @TempDir File testFolder) throws OfficeException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setEnabledProtocols(new String[] {"UnknownProtocol"});
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/convert-to/")
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setEnabledProtocols(new String[] {"UnknownProtocol"});
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/convert-to/")
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(
-                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-            .withCauseExactlyInstanceOf(IllegalArgumentException.class);
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
+              .withCauseExactlyInstanceOf(IllegalArgumentException.class);
 
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
       } finally {
-        OfficeUtils.stopQuietly(manager);
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithKnownEnabledProtocol_ShouldSucceed(final @TempDir File testFolder)
-      throws OfficeException, IOException {
+    @Test
+    void withKnownEnabledProtocol_ShouldSucceed(final @TempDir File testFolder)
+        throws OfficeException, IOException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setEnabledProtocols(new String[] {"TLSv1.2"});
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection(
-                  "https://localhost:8001/lool/convert-to") // try all accepted URL paths...
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setEnabledProtocols(new String[] {"TLSv1.2"});
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection(
+                    "https://localhost:8001/lool/convert-to") // try all accepted URL paths...
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
+          // Try to converter the input document
+          RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
-        // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).as("Check content: %s", content).contains("Test Document");
+          // Check that the output file was created with the expected content.
+          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
+        }
       } finally {
-        manager.stop();
-      }
-    } finally {
 
-      wireMockServer.stop();
+        wireMockServer.stop();
+      }
     }
-  }
 
-  @Test
-  public void execute_WithUnknownCipher_ShouldThrowNoSuchAlgorithmException(
-      final @TempDir File testFolder) throws OfficeException {
+    @Test
+    void withUnknownCipher_ShouldThrowNoSuchAlgorithmException(final @TempDir File testFolder)
+        throws OfficeException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setCiphers(new String[] {"UnknownCipher"});
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection("https://localhost:8001/lool/convert-to/")
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setCiphers(new String[] {"UnknownCipher"});
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("https://localhost:8001/lool/convert-to/")
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(
-                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-            .withCauseExactlyInstanceOf(IllegalArgumentException.class);
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
+              .withCauseExactlyInstanceOf(IllegalArgumentException.class);
 
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
       } finally {
-        OfficeUtils.stopQuietly(manager);
+        wireMockServer.stop();
       }
-    } finally {
-      wireMockServer.stop();
     }
-  }
 
-  @Test
-  public void execute_WithKnownEnabledCipher_ShouldSucceed(final @TempDir File testFolder)
-      throws OfficeException, IOException {
+    @Test
+    void withKnownEnabledCipher_ShouldSucceed(final @TempDir File testFolder)
+        throws OfficeException, IOException {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "out.txt");
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.txt");
 
-    final WireMockServer wireMockServer =
-        new WireMockServer(
-            options()
-                .port(8000)
-                .httpsPort(8001)
-                .keystorePath(SERVER_KEYSTORE_PATH)
-                .keystorePassword(SERVER_KEYSTORE_PWD));
-    wireMockServer.start();
-    try {
-      final SslConfig sslConfig = new SslConfig();
-      sslConfig.setEnabled(true);
-      sslConfig.setCiphers(new String[] {"TLS_RSA_WITH_AES_128_CBC_SHA"});
-      sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
-      sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-      sslConfig.setVerifyHostname(false);
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .urlConnection(
-                  "https://localhost:8001/lool/convert-to/") // try all accepted URL paths...
-              .sslConfig(sslConfig)
-              .build();
+      final WireMockServer wireMockServer =
+          new WireMockServer(
+              options()
+                  .port(8000)
+                  .httpsPort(8001)
+                  .keystorePath(SERVER_KEYSTORE_PATH)
+                  .keystorePassword(SERVER_KEYSTORE_PWD)
+                  .keyManagerPassword(SERVER_KEYSTORE_PWD));
+      wireMockServer.start();
       try {
-        manager.start();
-        wireMockServer.stubFor(
-            post(urlPathEqualTo("/lool/convert-to/txt"))
-                .willReturn(aResponse().withBody("Test Document")));
+        final SslConfig sslConfig = new SslConfig();
+        sslConfig.setEnabled(true);
+        sslConfig.setCiphers(new String[] {"TLS_RSA_WITH_AES_128_CBC_SHA"});
+        sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
+        sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
+        sslConfig.setVerifyHostname(false);
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection(
+                    "https://localhost:8001/lool/convert-to/") // try all accepted URL paths...
+                .sslConfig(sslConfig)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withBody("Test Document")));
 
-        // Try to converter the input document
-        RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
+          // Try to converter the input document
+          RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
-        // Check that the output file was created with the expected content.
-        final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-        assertThat(content).as("Check content: %s", content).contains("Test Document");
+          // Check that the output file was created with the expected content.
+          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
+        }
       } finally {
-        manager.stop();
+        wireMockServer.stop();
       }
-    } finally {
-      wireMockServer.stop();
     }
   }
 }

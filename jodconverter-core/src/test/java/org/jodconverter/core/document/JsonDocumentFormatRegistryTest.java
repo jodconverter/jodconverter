@@ -29,12 +29,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /** Contains tests for the {@link JsonDocumentFormatRegistry} class. */
-public class JsonDocumentFormatRegistryTest {
+class JsonDocumentFormatRegistryTest {
 
   /** Test custom properties. */
   @Test
-  public void create_WithCustomLoadProperties_CustomPropertiesAppliedSuccessfully()
-      throws IOException {
+  void create_WithCustomLoadProperties_CustomPropertiesAppliedSuccessfully() throws IOException {
 
     try (InputStream input =
         JsonDocumentFormatRegistry.class.getResourceAsStream("/document-formats.json")) {

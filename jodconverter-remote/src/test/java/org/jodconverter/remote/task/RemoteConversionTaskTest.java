@@ -22,25 +22,30 @@ package org.jodconverter.remote.task;
 import java.io.File;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.job.TargetDocumentSpecsFromFile;
 
-/** Contains tests for the {@link org.jodconverter.remote.task.RemoteConversionTask} class. */
+/** Contains tests for the {@link RemoteConversionTask} class. */
 public class RemoteConversionTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
-  @Test
-  public void toString_AsExpected(final @TempDir File testFolder) {
+  @Nested
+  class ToString {
 
-    final File targetFile = new File(testFolder, "target.txt");
-    final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
-    final TargetDocumentSpecsFromFile target = new TargetDocumentSpecsFromFile(targetFile);
+    @Test
+    void shouldReturnExpectedValue(final @TempDir File testFolder) {
 
-    final RemoteConversionTask obj = new RemoteConversionTask(source, target);
-    Assertions.assertThat(obj.toString()).contains("test.txt").contains("target.txt");
+      final File targetFile = new File(testFolder, "target.txt");
+      final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
+      final TargetDocumentSpecsFromFile target = new TargetDocumentSpecsFromFile(targetFile);
+
+      final RemoteConversionTask obj = new RemoteConversionTask(source, target);
+      Assertions.assertThat(obj.toString()).contains("test.txt").contains("target.txt");
+    }
   }
 }

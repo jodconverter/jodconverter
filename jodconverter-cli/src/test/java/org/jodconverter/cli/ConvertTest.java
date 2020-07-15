@@ -20,17 +20,30 @@
 package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
 
+import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
-import org.junit.jupiter.api.BeforeAll;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
@@ -39,7 +52,11 @@ import org.jodconverter.cli.util.NoExitExtension;
 import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.ExistingProcessAction;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.office.LocalOfficeUtils;
 
 /** Contains tests for the {@link Convert} class. */
 @ExtendWith({
@@ -47,218 +64,471 @@ import org.jodconverter.local.LocalConverter;
   NoExitExtension.class,
   ResetExitExceptionExtension.class
 })
-public class ConvertTest {
+class ConvertTest {
 
-  private static OfficeManager officeManager;
+  @TempDir File testFolder;
 
-  /** Setup the office manager once before all tests. */
-  @BeforeAll
-  public static void setUpClass() {
-    officeManager = mock(OfficeManager.class);
+  @BeforeEach
+  void setUpOfficeHome() {
+    System.setProperty("office.home", new File("src/test/resources/oohome").getPath());
   }
 
-  @Test
-  public void main_WithOptionHelp_PrintHelpAndExitWithCode0() {
+  @AfterEach
+  void tearDown() {
+    System.setProperty("office.home", "");
+  }
 
-    try {
-      SystemLogHandler.startCapture();
-      Convert.main(new String[] {"-h"});
+  @Nested
+  class Main {
 
-    } catch (Exception ex) {
-      final String capturedlog = SystemLogHandler.stopCapture();
-      assertThat(capturedlog)
-          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
-      assertThat(ex)
-          .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 0);
+    @Test
+    void withOptionHelp_ShouldPrintHelpAndExitWithCode0() {
+
+      try {
+        SystemLogHandler.startCapture();
+        Convert.main(new String[] {"-h"});
+
+      } catch (Exception ex) {
+        final String capturedlog = SystemLogHandler.stopCapture();
+        assertThat(capturedlog)
+            .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+        assertThat(ex)
+            .isExactlyInstanceOf(ExitException.class)
+            .hasFieldOrPropertyWithValue("status", 0);
+      }
+    }
+
+    @Test
+    void withOptionHelp_ShouldPrintVersionAndExitWithCode0() {
+
+      try {
+        SystemLogHandler.startCapture();
+        Convert.main(new String[] {"-v"});
+
+      } catch (Exception ex) {
+        final String capturedlog = SystemLogHandler.stopCapture();
+        assertThat(capturedlog).contains("jodconverter-cli version");
+        assertThat(ex)
+            .isExactlyInstanceOf(ExitException.class)
+            .hasFieldOrPropertyWithValue("status", 0);
+      }
+    }
+
+    @Test
+    void withUnknownArgument_ShouldPrintErrorHelpAndExitWithCode2() {
+
+      try {
+        SystemLogHandler.startCapture();
+        Convert.main(new String[] {"-wyz"});
+
+      } catch (Exception ex) {
+        final String capturedlog = SystemLogHandler.stopCapture();
+        assertThat(capturedlog)
+            .contains(
+                "Unrecognized option: -wyz",
+                "jodconverter-cli [options] infile outfile [infile outfile ...]");
+        assertThat(ex)
+            .isExactlyInstanceOf(ExitException.class)
+            .hasFieldOrPropertyWithValue("status", 2);
+      }
+    }
+
+    @Test
+    void withMissingsFilenames_ShouldPrintErrorHelpAndExitWithCode255() {
+
+      try {
+        SystemLogHandler.startCapture();
+        Convert.main(new String[] {""});
+
+      } catch (Exception ex) {
+        final String capturedlog = SystemLogHandler.stopCapture();
+        assertThat(capturedlog)
+            .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+        assertThat(ex)
+            .isExactlyInstanceOf(ExitException.class)
+            .hasFieldOrPropertyWithValue("status", 255);
+      }
+    }
+
+    @Test
+    void withWrongFilenamesLength_ShouldPrintErrorHelpAndExitWithCode255() {
+
+      try {
+        SystemLogHandler.startCapture();
+        Convert.main(new String[] {"input1.txt", "output1.pdf", "input2.txt"});
+
+      } catch (Exception ex) {
+        final String capturedlog = SystemLogHandler.stopCapture();
+        assertThat(capturedlog)
+            .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+        assertThat(ex)
+            .isExactlyInstanceOf(ExitException.class)
+            .hasFieldOrPropertyWithValue("status", 255);
+      }
     }
   }
 
-  @Test
-  public void main_WithOptionHelp_PrintVersionAndExitWithCode0() {
+  @Nested
+  class CreateOfficeManager {
 
-    try {
-      SystemLogHandler.startCapture();
-      Convert.main(new String[] {"-v"});
+    @Test
+    void withDefaultProperties_ShouldCreateManagerWithDefaultProperties() throws Exception {
 
-    } catch (Exception ex) {
-      final String capturedlog = SystemLogHandler.stopCapture();
-      assertThat(capturedlog).contains("jodconverter-cli version");
-      assertThat(ex)
-          .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 0);
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {"output1.pdf", "input2.txt"});
+
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      assertThat(officeManager).isInstanceOf(LocalOfficeManager.class);
+      assertThat(officeManager)
+          .extracting("tempDir")
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .asInstanceOf(InstanceOfAssertFactories.FILE)
+                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
+      assertThat(officeManager)
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+      assertThat(officeManager)
+          .extracting("entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .extracting(
+                          "taskExecutionTimeout",
+                          "maxTasksPerProcess",
+                          "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                          "officeProcessManager.officeHome",
+                          "officeProcessManager.processManager",
+                          "officeProcessManager.runAsArgs",
+                          "officeProcessManager.templateProfileDir",
+                          "officeProcessManager.processTimeout",
+                          "officeProcessManager.processRetryInterval",
+                          "officeProcessManager.disableOpengl",
+                          "officeProcessManager.existingProcessAction",
+                          "officeProcessManager.startFailFast",
+                          "officeProcessManager.keepAliveOnShutdown",
+                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                      .containsExactly(
+                          DEFAULT_TASK_EXECUTION_TIMEOUT,
+                          DEFAULT_MAX_TASKS_PER_PROCESS,
+                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                          LocalOfficeUtils.getDefaultOfficeHome(),
+                          LocalOfficeUtils.findBestProcessManager(),
+                          Collections.EMPTY_LIST,
+                          null,
+                          DEFAULT_PROCESS_TIMEOUT,
+                          DEFAULT_PROCESS_RETRY_INTERVAL,
+                          DEFAULT_DISABLE_OPENGL,
+                          DEFAULT_EXISTING_PROCESS_ACTION,
+                          true,
+                          DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
+    }
+
+    @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    void withCustomValues_ShouldInitializedManagerWithCustomValues() throws Exception {
+
+      final File ooHome = new File(testFolder, "oohomecustom");
+      final File program = new File(ooHome, "program");
+      program.mkdirs();
+      new File(program, "soffice.bin").createNewFile(); // EXECUTABLE_DEFAULT
+      new File(program, "soffice").createNewFile(); // EXECUTABLE_MAC
+      new File(program, "soffice.exe").createNewFile(); // EXECUTABLE_WINDOWS
+      final File macos = new File(ooHome, "MacOS");
+      macos.mkdirs();
+      new File(macos, "soffice").createNewFile(); // EXECUTABLE_MAC_41
+      program.mkdirs();
+
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {
+                    "-g",
+                    "-i",
+                    ooHome.getPath(),
+                    "-m",
+                    LocalOfficeUtils.findBestProcessManager().getClass().getName(),
+                    "-t",
+                    "30",
+                    "-p",
+                    "2003",
+                    "-u",
+                    new File("src/test/resources/templateProfileDir").getPath(),
+                    "-x",
+                    ExistingProcessAction.KILL.toString(),
+                    "input1.txt",
+                    "output1.pdf"
+                  });
+
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      assertThat(officeManager)
+          .extracting("tempDir")
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .asInstanceOf(InstanceOfAssertFactories.FILE)
+                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
+      assertThat(officeManager)
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+      assertThat(officeManager)
+          .extracting("entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .extracting(
+                          "taskExecutionTimeout",
+                          "maxTasksPerProcess",
+                          "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                          "officeProcessManager.officeHome",
+                          "officeProcessManager.processManager.class.name",
+                          "officeProcessManager.runAsArgs",
+                          "officeProcessManager.templateProfileDir",
+                          "officeProcessManager.processTimeout",
+                          "officeProcessManager.processRetryInterval",
+                          "officeProcessManager.disableOpengl",
+                          "officeProcessManager.existingProcessAction",
+                          "officeProcessManager.startFailFast",
+                          "officeProcessManager.keepAliveOnShutdown",
+                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                      .containsExactly(
+                          30_000L,
+                          DEFAULT_MAX_TASKS_PER_PROCESS,
+                          "socket,host=127.0.0.1,port=2003,tcpNoDelay=1",
+                          ooHome,
+                          LocalOfficeUtils.findBestProcessManager().getClass().getName(),
+                          Collections.EMPTY_LIST,
+                          new File("src/test/resources/templateProfileDir"),
+                          DEFAULT_PROCESS_TIMEOUT,
+                          DEFAULT_PROCESS_RETRY_INTERVAL,
+                          true,
+                          ExistingProcessAction.KILL,
+                          true,
+                          DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                          "socket,host=127.0.0.1,port=2003,tcpNoDelay=1"));
+    }
+
+    @Test
+    void withExistingProcessActionFail_ShouldInitializedManagerWithCustomValues() throws Exception {
+
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {
+                    "-x", ExistingProcessAction.FAIL.toString(), "input1.txt", "output1.pdf"
+                  });
+
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+
+      assertThat(officeManager)
+          .extracting("entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .hasFieldOrPropertyWithValue(
+                          "officeProcessManager.existingProcessAction",
+                          ExistingProcessAction.FAIL));
+    }
+
+    @Test
+    void withExistingProcessActionConnect_ShouldInitializedManagerWithCustomValues()
+        throws Exception {
+
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {
+                    "-x", ExistingProcessAction.CONNECT.toString(), "input1.txt", "output1.pdf"
+                  });
+
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+
+      assertThat(officeManager)
+          .extracting("entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .hasFieldOrPropertyWithValue(
+                          "officeProcessManager.existingProcessAction",
+                          ExistingProcessAction.CONNECT));
+    }
+
+    @Test
+    void withExistingProcessActionConnectOrKill_ShouldInitializedManagerWithCustomValues()
+        throws Exception {
+
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {
+                    "-x",
+                    ExistingProcessAction.CONNECT_OR_KILL.toString(),
+                    "input1.txt",
+                    "output1.pdf"
+                  });
+
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+
+      assertThat(officeManager)
+          .extracting("entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .hasFieldOrPropertyWithValue(
+                          "officeProcessManager.existingProcessAction",
+                          ExistingProcessAction.CONNECT_OR_KILL));
     }
   }
 
-  @Test
-  public void main_WithUnknownArgument_PrintErrorHelpAndExitWithCode2() {
+  @Nested
+  class CreateCliConverter {
 
-    try {
-      SystemLogHandler.startCapture();
-      Convert.main(new String[] {"-xyz"});
+    @Test
+    void withLoadProperties_ShouldCreateConverterWithExpectedProperties() throws Exception {
 
-    } catch (Exception ex) {
-      final String capturedlog = SystemLogHandler.stopCapture();
-      assertThat(capturedlog)
-          .contains(
-              "Unrecognized option: -xyz",
-              "jodconverter-cli [options] infile outfile [infile outfile ...]");
-      assertThat(ex)
-          .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 2);
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {"-lPassword=myPassword", "output1.pdf", "input2.txt"});
+
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      final CliConverter cliConverter =
+          Whitebox.invokeMethod(
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
+
+      final Map<String, Object> expectedLoadProperties =
+          new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      expectedLoadProperties.put("Password", "myPassword");
+      assertThat(localConverter).extracting("loadProperties").isEqualTo(expectedLoadProperties);
     }
-  }
 
-  @Test
-  public void main_WithMissingsFilenames_PrintErrorHelpAndExitWithCode255() {
+    @Test
+    void withFilterDataProperties_ShouldCreateConverterWithExpectedProperties() throws Exception {
 
-    try {
-      SystemLogHandler.startCapture();
-      Convert.main(new String[] {""});
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {"-sFDPageRange=2-2", "output1.pdf", "input2.txt"});
 
-    } catch (Exception ex) {
-      final String capturedlog = SystemLogHandler.stopCapture();
-      assertThat(capturedlog)
-          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
-      assertThat(ex)
-          .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 255);
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      final CliConverter cliConverter =
+          Whitebox.invokeMethod(
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
+
+      final Map<String, Object> expectedFilterData = new HashMap<>();
+      expectedFilterData.put("PageRange", "2-2");
+      final Map<String, Object> expectedStoreProperties = new HashMap<>();
+      expectedStoreProperties.put("FilterData", expectedFilterData);
+      assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
     }
-  }
 
-  @Test
-  public void main_WithWrongFilenamesLength_PrintErrorHelpAndExitWithCode255() {
+    @Test
+    void withStoreProperties_ShouldCreateConverterWithExpectedProperties() throws Exception {
 
-    try {
-      SystemLogHandler.startCapture();
-      Convert.main(new String[] {"input1.txt", "output1.pdf", "input2.txt"});
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {"-sOverwrite=true", "output1.pdf", "input2.txt"});
 
-    } catch (Exception ex) {
-      final String capturedlog = SystemLogHandler.stopCapture();
-      assertThat(capturedlog)
-          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
-      assertThat(ex)
-          .isExactlyInstanceOf(ExitException.class)
-          .hasFieldOrPropertyWithValue("status", 255);
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      final CliConverter cliConverter =
+          Whitebox.invokeMethod(
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
+
+      final Map<String, Object> expectedStoreProperties = new HashMap<>();
+      expectedStoreProperties.put("Overwrite", true);
+      assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
     }
-  }
 
-  @Test
-  public void createCliConverter_WithLoadProperties_CreateConverterWithExpectedLoadProperties()
-      throws Exception {
+    @Test
+    void withStoreAndFilterDataProperties_ShouldCreateConverterWithExpectedProperties()
+        throws Exception {
 
-    final CommandLine commandLine =
-        new DefaultParser()
-            .parse(
-                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
-                new String[] {"-lPassword=myPassword", "output1.pdf", "input2.txt"});
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {
+                    "-sOverwrite=true",
+                    "-sReadOnly=false",
+                    "-sFDPageRange=2-4",
+                    "-sFDIntProp=5",
+                    "-sFD=NotFilterData",
+                    "output1.pdf",
+                    "input2.txt"
+                  });
 
-    final CliConverter cliConverter =
-        Whitebox.invokeMethod(
-            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-    final LocalConverter localConverter =
-        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      final CliConverter cliConverter =
+          Whitebox.invokeMethod(
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
 
-    final Map<String, Object> expectedLoadProperties =
-        new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
-    expectedLoadProperties.put("Password", "myPassword");
-    assertThat(localConverter).extracting("loadProperties").isEqualTo(expectedLoadProperties);
-  }
+      final Map<String, Object> expectedFilterData = new HashMap<>();
+      expectedFilterData.put("PageRange", "2-4");
+      expectedFilterData.put("IntProp", 5);
+      final Map<String, Object> expectedStoreProperties = new HashMap<>();
+      expectedStoreProperties.put("Overwrite", true);
+      expectedStoreProperties.put("ReadOnly", false);
+      expectedStoreProperties.put("FD", "NotFilterData");
+      expectedStoreProperties.put("FilterData", expectedFilterData);
+      assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
+    }
 
-  @Test
-  public void
-      createCliConverter_WithFilterDataProperties_CreateConverterWithExpectedStoreProperties()
-          throws Exception {
+    @Test
+    void withBadLoadProperties_ShouldIgnoreBadLoadProperties() throws Exception {
 
-    final CommandLine commandLine =
-        new DefaultParser()
-            .parse(
-                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
-                new String[] {"-sFDPageRange=2-2", "output1.pdf", "input2.txt"});
+      final CommandLine commandLine =
+          new DefaultParser()
+              .parse(
+                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  new String[] {"-lPassword", "output1.pdf", "input2.txt"});
 
-    final CliConverter cliConverter =
-        Whitebox.invokeMethod(
-            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-    final LocalConverter localConverter =
-        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
+      final OfficeManager officeManager =
+          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      final CliConverter cliConverter =
+          Whitebox.invokeMethod(
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
 
-    final Map<String, Object> expectedFilterData = new HashMap<>();
-    expectedFilterData.put("PageRange", "2-2");
-    final Map<String, Object> expectedStoreProperties = new HashMap<>();
-    expectedStoreProperties.put("FilterData", expectedFilterData);
-    assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
-  }
-
-  @Test
-  public void createCliConverter_WithStoreProperties_CreateConverterWithExpectedStoreProperties()
-      throws Exception {
-
-    final CommandLine commandLine =
-        new DefaultParser()
-            .parse(
-                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
-                new String[] {"-sOverwrite=true", "output1.pdf", "input2.txt"});
-
-    final CliConverter cliConverter =
-        Whitebox.invokeMethod(
-            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-    final LocalConverter localConverter =
-        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
-
-    final Map<String, Object> expectedStoreProperties = new HashMap<>();
-    expectedStoreProperties.put("Overwrite", true);
-    assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
-  }
-
-  @Test
-  public void
-      createCliConverter_WithStoreAndFilterDataProperties_CreateConverterWithExpectedStoreProperties()
-          throws Exception {
-
-    final CommandLine commandLine =
-        new DefaultParser()
-            .parse(
-                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
-                new String[] {
-                  "-sOverwrite=true",
-                  "-sFDPageRange=2-4",
-                  "-sFDIntProp=5",
-                  "-sFD=NotFilterData",
-                  "output1.pdf",
-                  "input2.txt"
-                });
-
-    final CliConverter cliConverter =
-        Whitebox.invokeMethod(
-            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-    final LocalConverter localConverter =
-        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
-
-    final Map<String, Object> expectedFilterData = new HashMap<>();
-    expectedFilterData.put("PageRange", "2-4");
-    expectedFilterData.put("IntProp", 5);
-    final Map<String, Object> expectedStoreProperties = new HashMap<>();
-    expectedStoreProperties.put("Overwrite", true);
-    expectedStoreProperties.put("FD", "NotFilterData");
-    expectedStoreProperties.put("FilterData", expectedFilterData);
-    assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
-  }
-
-  @Test
-  public void createCliConverter_WithBadLoadProperties_BadLoadPropertiesIgnored() throws Exception {
-
-    final CommandLine commandLine =
-        new DefaultParser()
-            .parse(
-                (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
-                new String[] {"-lPassword", "output1.pdf", "input2.txt"});
-
-    final CliConverter cliConverter =
-        Whitebox.invokeMethod(
-            Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-    final LocalConverter localConverter =
-        (LocalConverter) Whitebox.getField(CliConverter.class, "converter").get(cliConverter);
-
-    assertThat(localConverter).extracting("loadProperties").isEqualTo(null);
+      assertThat(localConverter).extracting("loadProperties").isEqualTo(null);
+    }
   }
 }

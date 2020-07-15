@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -33,10 +32,10 @@ import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.office.OfficeContext;
 
 /** Contains tests for the {@link AbstractOfficeTaskTest} class. */
-public class AbstractOfficeTaskTest {
+class AbstractOfficeTaskTest {
 
   @Test
-  public void toString_AsExpected(final @TempDir File testFolder) throws IOException {
+  void toString_AsExpected(final @TempDir File testFolder) throws IOException {
 
     final File file = new File(testFolder, getClass().getName() + ".txt");
     assertThat(file.createNewFile()).isTrue();
@@ -52,6 +51,6 @@ public class AbstractOfficeTaskTest {
           }
         };
 
-    Assertions.assertThat(obj.toString()).startsWith("{source=").endsWith("}");
+    assertThat(obj.toString()).startsWith("{source=").endsWith("}");
   }
 }

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,6 +38,7 @@ import org.jodconverter.cli.util.NoExitExtension;
 import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.util.FileUtils;
+import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
 /**
@@ -47,189 +49,223 @@ import org.jodconverter.local.office.LocalOfficeUtils;
   NoExitExtension.class,
   ResetExitExceptionExtension.class
 })
-public class ConvertITest {
+class ConvertITest {
 
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
   private static final String SOURCE_FILE = "src/integTest/resources/documents/test1.doc";
   private static final String SOURCE_MULTI_FILE =
       "src/integTest/resources/documents/test_multi_page.doc";
 
-  @Test
-  public void convert_WithCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf(
-      final @TempDir File testFolder) {
+  @Nested
+  class Convert_ {
 
-    final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
-    final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(testFolder, "convert_WithMultipleFilters.doc");
+    @Test
+    void withCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf(final @TempDir File testFolder) {
 
-    SystemLogHandler.startCapture();
-    assertThatExceptionOfType(ExitException.class)
-        .isThrownBy(
-            () ->
-                Convert.main(
-                    new String[] {
-                      "-k", "-r", registryFile.getPath(), inputFile.getPath(), outputFile.getPath()
-                    }))
-        .satisfies(
-            e -> {
-              final String capturedlog = SystemLogHandler.stopCapture();
-              assertThat(e).hasFieldOrPropertyWithValue("status", 2);
-              assertThat(capturedlog).contains("The target format is missing or not supported");
-            });
+      final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
+      final File inputFile = new File(SOURCE_FILE);
+      final File outputFile = new File(testFolder, "convert_WithMultipleFilters.doc");
+
+      SystemLogHandler.startCapture();
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () ->
+                  Convert.main(
+                      new String[] {
+                        "-r",
+                        registryFile.getPath(),
+                        "-x",
+                        ExistingProcessAction.KILL.toString(),
+                        inputFile.getPath(),
+                        outputFile.getPath()
+                      }))
+          .satisfies(
+              e -> {
+                final String capturedlog = SystemLogHandler.stopCapture();
+                assertThat(e).hasFieldOrPropertyWithValue("status", 2);
+                assertThat(capturedlog).contains("The target format is missing or not supported");
+              });
+    }
+
+    @Test
+    void withFilenames_ShouldSucceed(final @TempDir File testFolder) {
+
+      final File inputFile = new File(SOURCE_FILE);
+      final File outputFile = new File(testFolder, "convert_WithFilenames.pdf");
+
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () ->
+                  Convert.main(
+                      new String[] {
+                        "-x",
+                        ExistingProcessAction.KILL.toString(),
+                        inputFile.getPath(),
+                        outputFile.getPath()
+                      }))
+          .satisfies(
+              e -> {
+                assertThat(e)
+                    .isExactlyInstanceOf(ExitException.class)
+                    .hasFieldOrPropertyWithValue("status", 0);
+
+                assertThat(outputFile).isFile();
+                assertThat(outputFile.length()).isGreaterThan(0L);
+              });
+    }
+
+    @Test
+    void withOutputFormat_ShouldSucceed(final @TempDir File testFolder) throws Exception {
+
+      final File inputFile = new File(SOURCE_FILE);
+      FileUtils.copyFileToDirectory(inputFile, testFolder);
+      final File inputFileTmp =
+          new File(testFolder, Objects.requireNonNull(FileUtils.getName(SOURCE_FILE)));
+      final File outputFile =
+          new File(testFolder, FileUtils.getBaseName(inputFile.getName()) + ".pdf");
+
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () ->
+                  Convert.main(
+                      new String[] {
+                        "-f",
+                        "pdf",
+                        "-x",
+                        ExistingProcessAction.KILL.toString(),
+                        inputFileTmp.getPath()
+                      }))
+          .satisfies(
+              e -> {
+                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
+                assertThat(outputFile).isFile();
+                assertThat(outputFile.length()).isGreaterThan(0L);
+              });
+    }
+
+    @Test
+    void withMultipleFilters_ShouldSucceed(final @TempDir File testFolder) {
+
+      final File filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
+      final File inputFile = new File(SOURCE_FILE);
+      final File outputFile = new File(testFolder, "convert_WithMultipleFilters.pdf");
+
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () ->
+                  Convert.main(
+                      new String[] {
+                        "-a",
+                        filterChainFile.getPath(),
+                        "-x",
+                        ExistingProcessAction.KILL.toString(),
+                        inputFile.getPath(),
+                        outputFile.getPath()
+                      }))
+          .satisfies(
+              e -> {
+                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
+
+                assertThat(outputFile).isFile();
+                assertThat(outputFile.length()).isGreaterThan(0L);
+              });
+    }
+
+    @Test
+    void withSingleFilter_ShouldSucceed(final @TempDir File testFolder) {
+
+      final File filterChainFile =
+          new File(CONFIG_DIR + "applicationContext_pagesSelectorFilter.xml");
+      final File inputFile = new File(SOURCE_MULTI_FILE);
+      final File outputFile = new File(testFolder, "convert_WithSingleFilter.txt");
+
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () ->
+                  Convert.main(
+                      new String[] {
+                        "-a",
+                        filterChainFile.getPath(),
+                        "-x",
+                        ExistingProcessAction.KILL.toString(),
+                        inputFile.getPath(),
+                        outputFile.getPath()
+                      }))
+          .satisfies(
+              e -> {
+                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
+
+                try {
+                  final String content =
+                      FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+                  assertThat(content)
+                      .as("Check content: %s", content)
+                      .contains("Test document Page 2")
+                      .doesNotContain("Test document Page 1")
+                      .doesNotContain("Test document Page 3");
+                } catch (IOException ex) {
+                  assertThat(ex).isNull();
+                }
+              });
+    }
+
+    @Test
+    void withCustomStoreProperties_ShouldSucceed(final @TempDir File testFolder) {
+
+      final File inputFile = new File(SOURCE_MULTI_FILE);
+      final File outputFile = new File(testFolder, "convert_WithCustomStoreProperties.pdf");
+
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () ->
+                  Convert.main(
+                      new String[] {
+                        "-sFDPageRange=2-2",
+                        "-x",
+                        ExistingProcessAction.KILL.toString(),
+                        inputFile.getPath(),
+                        outputFile.getPath()
+                      }))
+          .satisfies(
+              e -> {
+                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
+
+                // If the document (with the image) is fully converted, it will
+                // be much greater that 30K (over 70K). Only the second page
+                // doesn't have an image.
+                assertThat(outputFile.length()).isLessThan(30_000L);
+              });
+    }
   }
 
-  @Test
-  public void convert_WithFilenames_ShouldSucceed(final @TempDir File testFolder) {
+  @Nested
+  class Main {
 
-    final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(testFolder, "convert_WithFilenames.pdf");
+    @Test
+    public void withAllCustomizableOption_ShouldExecuteAndExitWithCode0() {
 
-    assertThatExceptionOfType(ExitException.class)
-        .isThrownBy(
-            () -> Convert.main(new String[] {"-k", inputFile.getPath(), outputFile.getPath()}))
-        .satisfies(
-            e -> {
-              assertThat(e)
-                  .isExactlyInstanceOf(ExitException.class)
-                  .hasFieldOrPropertyWithValue("status", 0);
-
-              assertThat(outputFile).isFile();
-              assertThat(outputFile.length()).isGreaterThan(0L);
-            });
-  }
-
-  @Test
-  public void convert_WithOutputFormat_ShouldSucceed(final @TempDir File testFolder)
-      throws Exception {
-
-    final File inputFile = new File(SOURCE_FILE);
-    FileUtils.copyFileToDirectory(inputFile, testFolder);
-    final File inputFileTmp =
-        new File(testFolder, Objects.requireNonNull(FileUtils.getName(SOURCE_FILE)));
-    final File outputFile =
-        new File(testFolder, FileUtils.getBaseName(inputFile.getName()) + ".pdf");
-
-    assertThatExceptionOfType(ExitException.class)
-        .isThrownBy(() -> Convert.main(new String[] {"-k", "-f", "pdf", inputFileTmp.getPath()}))
-        .satisfies(
-            e -> {
-              assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-              assertThat(outputFile).isFile();
-              assertThat(outputFile.length()).isGreaterThan(0L);
-            });
-  }
-
-  @Test
-  public void convert_WithMultipleFilters_ShouldSucceed(final @TempDir File testFolder) {
-
-    final File filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
-    final File inputFile = new File(SOURCE_FILE);
-    final File outputFile = new File(testFolder, "convert_WithMultipleFilters.pdf");
-
-    assertThatExceptionOfType(ExitException.class)
-        .isThrownBy(
-            () ->
-                Convert.main(
-                    new String[] {
-                      "-k",
-                      "-a",
-                      filterChainFile.getPath(),
-                      inputFile.getPath(),
-                      outputFile.getPath()
-                    }))
-        .satisfies(
-            e -> {
-              assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-
-              assertThat(outputFile).isFile();
-              assertThat(outputFile.length()).isGreaterThan(0L);
-            });
-  }
-
-  @Test
-  public void convert_WithSingleFilter_ShouldSucceed(final @TempDir File testFolder) {
-
-    final File filterChainFile =
-        new File(CONFIG_DIR + "applicationContext_pagesSelectorFilter.xml");
-    final File inputFile = new File(SOURCE_MULTI_FILE);
-    final File outputFile = new File(testFolder, "convert_WithSingleFilter.txt");
-
-    assertThatExceptionOfType(ExitException.class)
-        .isThrownBy(
-            () ->
-                Convert.main(
-                    new String[] {
-                      "-k",
-                      "-a",
-                      filterChainFile.getPath(),
-                      inputFile.getPath(),
-                      outputFile.getPath()
-                    }))
-        .satisfies(
-            e -> {
-              assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-
-              try {
-                final String content =
-                    FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-                assertThat(content)
-                    .as("Check content: %s", content)
-                    .contains("Test document Page 2")
-                    .doesNotContain("Test document Page 1")
-                    .doesNotContain("Test document Page 3");
-              } catch (IOException ex) {
-                assertThat(ex).isNull();
-              }
-            });
-  }
-
-  @Test
-  public void convert_WithCustomStoreProperties_ShouldSucceed(final @TempDir File testFolder) {
-
-    final File inputFile = new File(SOURCE_MULTI_FILE);
-    final File outputFile = new File(testFolder, "convert_WithCustomStoreProperties.pdf");
-
-    assertThatExceptionOfType(ExitException.class)
-        .isThrownBy(
-            () ->
-                Convert.main(
-                    new String[] {
-                      "-k", "-sFDPageRange=2-2", inputFile.getPath(), outputFile.getPath()
-                    }))
-        .satisfies(
-            e -> {
-              assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-
-              // If the document (with the image) is fully converted, it will
-              // be much greater that 30K (over 70K). Only the second page
-              // doesn't have an image.
-              assertThat(outputFile.length()).isLessThan(30_000L);
-            });
-  }
-
-  @Test
-  public void main_WithAllCustomizableOption_ExecuteAndExitWithCod0() {
-
-    assertThatExceptionOfType(ExitException.class)
-        .isThrownBy(
-            () ->
-                Convert.main(
-                    new String[] {
-                      "-g",
-                      "-k",
-                      "-i",
-                      LocalOfficeUtils.getDefaultOfficeHome().getPath(),
-                      "-m",
-                      LocalOfficeUtils.findBestProcessManager().getClass().getName(),
-                      "-t",
-                      "30000",
-                      "-p",
-                      "2002",
-                      "-u",
-                      new File("src/integTest/resources/templateProfileDir").getPath(),
-                      "input1.txt",
-                      "output1.pdf"
-                    }))
-        .satisfies(e -> assertThat(e.getStatus()).isEqualTo(0));
+      assertThatExceptionOfType(ExitException.class)
+          .isThrownBy(
+              () ->
+                  Convert.main(
+                      new String[] {
+                        "-g",
+                        "-i",
+                        LocalOfficeUtils.getDefaultOfficeHome().getPath(),
+                        "-m",
+                        LocalOfficeUtils.findBestProcessManager().getClass().getName(),
+                        "-t",
+                        "30000",
+                        "-p",
+                        "2002",
+                        "-u",
+                        new File("src/integTest/resources/templateProfileDir").getPath(),
+                        "-x",
+                        ExistingProcessAction.KILL.toString(),
+                        "input1.txt",
+                        "output1.pdf"
+                      }))
+          .satisfies(e -> assertThat(e.getStatus()).isEqualTo(0));
+    }
   }
 }

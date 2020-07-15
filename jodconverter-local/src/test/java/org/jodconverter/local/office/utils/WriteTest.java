@@ -19,15 +19,91 @@
 
 package org.jodconverter.local.office.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
+import com.sun.star.text.XTextDocument;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.jodconverter.core.test.util.AssertUtil;
+import org.jodconverter.local.MockUnoRuntimeExtension;
 
 /** Contains tests for the {@link Write} class. */
-public class WriteTest {
+@ExtendWith(MockUnoRuntimeExtension.class)
+class WriteTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Write.class);
+  }
+
+  @Nested
+  class IsWrite {
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNull_ShouldThrowNullPointerException(final UnoRuntime unoRuntime) {
+
+      given(unoRuntime.queryInterface(XServiceInfo.class, null)).willReturn(null);
+
+      assertThatNullPointerException().isThrownBy(() -> Write.isText(null));
+    }
+
+    @Test
+    void withTextDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(true);
+
+      assertThat(Write.isText(component)).isTrue();
+    }
+
+    @Test
+    void withoutTextDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(false);
+
+      assertThat(Write.isText(component)).isFalse();
+    }
+  }
+
+  @Nested
+  class GetTextDoc {
+
+    @Test
+    void withNull_ShouldReturnNull() {
+
+      assertThat(Write.getTextDoc(null)).isNull();
+    }
+
+    @Test
+    void withTextDoc_ShouldReturnXSpreadsheetDocument(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XTextDocument textDocument = mock(XTextDocument.class);
+      given(unoRuntime.queryInterface(XTextDocument.class, component)).willReturn(textDocument);
+
+      assertThat(Write.getTextDoc(component)).isEqualTo(textDocument);
+    }
+
+    @Test
+    void withoutTextDoc_ShouldReturnNull(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      given(unoRuntime.queryInterface(XTextDocument.class, component)).willReturn(null);
+
+      assertThat(Write.getTextDoc(component)).isNull();
+    }
   }
 }

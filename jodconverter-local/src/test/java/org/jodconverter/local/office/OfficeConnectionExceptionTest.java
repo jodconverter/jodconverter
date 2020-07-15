@@ -24,12 +24,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 /** Contains tests for the {@link OfficeConnectionException} class. */
-public class OfficeConnectionExceptionTest {
+class OfficeConnectionExceptionTest {
 
   @Test
-  public void new_WithConnectString_ExceptionCreatedWithConnectString() {
+  void withConnectStringAndThrowable_ShouldCreateExceptionWithConnectStringAndThrowable() {
 
     final OfficeConnectionException ex = new OfficeConnectionException("message", "host=127.0.0.1");
     assertThat(ex.getConnectString()).isEqualTo("host=127.0.0.1");
+    assertThat(ex).hasNoCause();
+  }
+
+  @Test
+  void withConnectString_ShouldCreateExceptionWithConnectString() {
+
+    final OfficeConnectionException ex =
+        new OfficeConnectionException("message", "host=127.0.0.1", new RuntimeException());
+    assertThat(ex.getConnectString()).isEqualTo("host=127.0.0.1");
+    assertThat(ex).hasCauseExactlyInstanceOf(RuntimeException.class);
   }
 }

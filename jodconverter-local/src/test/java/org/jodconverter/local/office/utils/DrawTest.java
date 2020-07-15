@@ -19,15 +19,96 @@
 
 package org.jodconverter.local.office.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.jodconverter.core.test.util.AssertUtil;
+import org.jodconverter.local.MockUnoRuntimeExtension;
 
 /** Contains tests for the {@link Draw} class. */
-public class DrawTest {
+@ExtendWith(MockUnoRuntimeExtension.class)
+class DrawTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Draw.class);
+  }
+
+  @Nested
+  class IsDraw {
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNull_ShouldThrowNullPointerException(final UnoRuntime unoRuntime) {
+
+      given(unoRuntime.queryInterface(XServiceInfo.class, null)).willReturn(null);
+
+      assertThatNullPointerException().isThrownBy(() -> Draw.isDraw(null));
+    }
+
+    @Test
+    void withDrawDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.DRAW_SERVICE)).willReturn(true);
+
+      assertThat(Draw.isDraw(component)).isTrue();
+    }
+
+    @Test
+    void withoutDrawDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.DRAW_SERVICE)).willReturn(false);
+
+      assertThat(Draw.isDraw(component)).isFalse();
+    }
+  }
+
+  @Nested
+  class IsImpress {
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNull_ShouldThrowNullPointerException(final UnoRuntime unoRuntime) {
+
+      given(unoRuntime.queryInterface(XServiceInfo.class, null)).willReturn(null);
+
+      assertThatNullPointerException().isThrownBy(() -> Draw.isImpress(null));
+    }
+
+    @Test
+    void withImpressDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.IMPRESS_SERVICE)).willReturn(true);
+
+      assertThat(Draw.isImpress(component)).isTrue();
+    }
+
+    @Test
+    void withoutImpressDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.IMPRESS_SERVICE)).willReturn(false);
+
+      assertThat(Draw.isImpress(component)).isFalse();
+    }
   }
 }

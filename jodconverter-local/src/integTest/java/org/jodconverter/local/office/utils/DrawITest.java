@@ -36,13 +36,17 @@ import org.jodconverter.local.filter.Filter;
 
 /** Contains tests for the {@link Draw} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class DrawITest {
+class DrawITest {
 
   @Test
-  public void isDraw_WithDrawDocument_ReturnsTrue(
+  public void withDrawDocument_ShouldSucceed(
       final @TempDir File testFolder, final OfficeManager manager) {
 
-    final Filter filter = (context, document, chain) -> assertThat(Draw.isDraw(document)).isTrue();
+    final Filter filter =
+        (context, document, chain) -> {
+          assertThat(Draw.isDraw(document)).isTrue();
+          assertThat(Draw.isImpress(document)).isFalse();
+        };
 
     final File sourceFile = documentFile("test.odg");
     final File outputFile = new File(testFolder, "out.pdf");
@@ -59,31 +63,14 @@ public class DrawITest {
   }
 
   @Test
-  public void isDraw_WithTextDocument_ReturnsFalse(
-      final @TempDir File testFolder, final OfficeManager manager) {
-
-    final Filter filter = (context, document, chain) -> assertThat(Draw.isDraw(document)).isFalse();
-
-    final File sourceFile = documentFile("test.odt");
-    final File outputFile = new File(testFolder, "out.pdf");
-    assertThatCode(
-            () ->
-                LocalConverter.builder()
-                    .officeManager(manager)
-                    .filterChain(filter)
-                    .build()
-                    .convert(sourceFile)
-                    .to(outputFile)
-                    .execute())
-        .doesNotThrowAnyException();
-  }
-
-  @Test
-  public void isImpress_WithImpressDocument_ReturnsTrue(
+  public void withImpressDocument_ShouldSucceed(
       final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
-        (context, document, chain) -> assertThat(Draw.isImpress(document)).isTrue();
+        (context, document, chain) -> {
+          assertThat(Draw.isDraw(document)).isFalse();
+          assertThat(Draw.isImpress(document)).isTrue();
+        };
 
     final File sourceFile = documentFile("test.odp");
     final File outputFile = new File(testFolder, "out.pdf");
@@ -100,11 +87,13 @@ public class DrawITest {
   }
 
   @Test
-  public void isImpress_WithTextDocument_ReturnsFalse(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withTextDocument_ShouldSucceed(final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
-        (context, document, chain) -> assertThat(Draw.isImpress(document)).isFalse();
+        (context, document, chain) -> {
+          assertThat(Draw.isDraw(document)).isFalse();
+          assertThat(Draw.isImpress(document)).isFalse();
+        };
 
     final File sourceFile = documentFile("test.odt");
     final File outputFile = new File(testFolder, "out.pdf");

@@ -36,16 +36,14 @@ import org.jodconverter.local.filter.Filter;
 
 /** Contains tests for the {@link Write} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class WriteITest {
+class WriteITest {
 
   @Test
-  public void isTextAndGetTextDoc_WithTextDocument_NoExceptionThrown(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withTextDocument_ShouldSucceed(final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
         (context, document, chain) -> {
           assertThat(Write.isText(document)).isTrue();
-          assertThat(Write.getTextDoc(null)).isNull();
           assertThat(Write.getTextDoc(document)).isNotNull();
         };
 
@@ -64,13 +62,11 @@ public class WriteITest {
   }
 
   @Test
-  public void isNotTextAndGetTextDoc_WithCalcDocument_NoExceptionThrown(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withCalcDocument_ShouldSucceed(final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
         (context, document, chain) -> {
           assertThat(Write.isText(document)).isFalse();
-          assertThat(Write.getTextDoc(null)).isNull();
           assertThat(Write.getTextDoc(document)).isNull();
         };
 

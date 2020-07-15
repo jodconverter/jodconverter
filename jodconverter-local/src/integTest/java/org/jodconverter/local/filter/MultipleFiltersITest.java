@@ -37,15 +37,14 @@ import org.jodconverter.local.filter.text.TextReplacerFilter;
 
 /** Contains tests that use multiple filters. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class MultipleFiltersITest {
+class MultipleFiltersITest {
 
   private static final String SOURCE_FILENAME = "test_replace.doc";
   private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
   private static final File IMAGE_FILE = imageFile("sample-1.jpg");
 
   @Test
-  public void doFilter_WithDefaultProperties(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void shouldApplyMultipleFilters(final @TempDir File testFolder, final OfficeManager manager) {
 
     // Create the TextReplacerFilter to test.
     final TextReplacerFilter replacerFilter =

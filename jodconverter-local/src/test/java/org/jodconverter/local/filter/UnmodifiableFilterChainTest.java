@@ -25,28 +25,36 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /** Contains tests for the {@link UnmodifiableFilterChain} class. */
-public class UnmodifiableFilterChainTest {
+class UnmodifiableFilterChainTest {
 
-  /** Tests that a UnmodifiableFilterChain.addFilter throws an exception after creation. */
-  @Test
-  public void create_ShouldBeReadOnly() {
+  @Nested
+  class New {
 
-    final UnmodifiableFilterChain chain = new UnmodifiableFilterChain(RefreshFilter.LAST_REFRESH);
-    assertThatExceptionOfType(UnsupportedOperationException.class)
-        .isThrownBy(() -> chain.addFilter(NoopFilter.NOOP));
+    @Test
+    void shouldBeReadOnly() {
+
+      final UnmodifiableFilterChain chain = new UnmodifiableFilterChain(NoopFilter.NOOP);
+      assertThatExceptionOfType(UnsupportedOperationException.class)
+          .isThrownBy(() -> chain.addFilter(RefreshFilter.REFRESH));
+    }
   }
 
-  @Test
-  public void copy_With2Filters_ShouldCopy2Filters() {
+  @Nested
+  class Copy {
 
-    final List<Filter> filters = new ArrayList<>();
-    filters.add(NoopFilter.NOOP);
-    filters.add(RefreshFilter.LAST_REFRESH);
-    final UnmodifiableFilterChain chain =
-        new UnmodifiableFilterChain(NoopFilter.NOOP, RefreshFilter.LAST_REFRESH);
-    assertThat(chain.copy()).extracting("filters").isEqualTo(filters);
+    @Test
+    void with2Filters_ShouldCopy2Filters() {
+
+      final List<Filter> filters = new ArrayList<>();
+      filters.add(NoopFilter.NOOP);
+      filters.add(RefreshFilter.REFRESH);
+      final UnmodifiableFilterChain chain =
+          new UnmodifiableFilterChain(NoopFilter.NOOP, RefreshFilter.REFRESH);
+      assertThat(chain.copy()).extracting("filters").isEqualTo(filters);
+    }
   }
 }

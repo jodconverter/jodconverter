@@ -20,59 +20,197 @@
 package org.jodconverter.local.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
 
 import com.sun.star.lang.XComponent;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 
 /** Contains tests for the {@link DefaultFilterChain} class. */
-public class DefaultFilterChainTest {
+class DefaultFilterChainTest {
 
-  /** Tests that a DefaultFilterChain is created empty by default. */
-  @Test
-  public void create_WithoutFilters_ShouldBeEmpty() {
+  @Nested
+  class New {
 
-    final DefaultFilterChain chain = new DefaultFilterChain();
-    assertThat(chain).extracting("filters").asList().hasSize(0);
+    @Test
+    void shouldBeEditable() {
+
+      final DefaultFilterChain chain = new DefaultFilterChain(false);
+      assertThatCode(() -> chain.addFilter(new TestFilter())).doesNotThrowAnyException();
+    }
+
+    @Test
+    void emptyCtor_ShouldEndsWithRefreshFilter() {
+
+      final DefaultFilterChain chain = new DefaultFilterChain();
+      assertThat(chain).hasFieldOrPropertyWithValue("endsWithRefreshFilter", true);
+    }
   }
 
-  /** Tests that a DefaultFilterChain.addFilter works as expected. */
-  @Test
-  public void create_ShouldBeEditable() {
+  @Nested
+  class Copy {
 
-    final Filter filter = new RefreshFilter();
-    final DefaultFilterChain chain = new DefaultFilterChain();
-    chain.addFilter(filter);
+    @Test
+    void withFilters_ShouldCopyWithFilters() {
 
-    assertThat(chain).extracting("filters").asList().hasSize(1).containsExactly(filter);
+      final DefaultFilterChain chain =
+          new DefaultFilterChain(
+              false, new TestFilter(), new TestFilter(), new TestFilter(), new TestFilter());
+      assertThat(chain.copy())
+          .hasFieldOrPropertyWithValue("endsWithRefreshFilter", false)
+          .extracting("filters")
+          .asList()
+          .hasSize(4);
+    }
+
+    @Test
+    void withoutFilters_ShouldCopyWithoutFilters() {
+
+      final DefaultFilterChain chain = new DefaultFilterChain(true);
+      assertThat(chain.copy())
+          .hasFieldOrPropertyWithValue("endsWithRefreshFilter", true)
+          .extracting("filters")
+          .asList()
+          .isEmpty();
+    }
   }
 
-  @Test
-  public void doFilter_WithFilterThrowingException_ThrowsOfficeException() {
+  @Nested
+  class DoFilter {
 
-    assertThatExceptionOfType(OfficeException.class)
-        .isThrownBy(
-            () ->
-                new DefaultFilterChain(
-                        (context, document, chain) -> {
-                          throw new OfficeException("Unsupported Filter");
-                        })
-                    .doFilter(mock(OfficeContext.class), mock(XComponent.class)))
-        .withNoCause()
-        .withMessage("Unsupported Filter");
+    @Test
+    void withoutFilterAndEndsWithRefreshFilterIsFalse_ShouldNotExecuteLastRefresh()
+        throws OfficeException {
 
-    assertThatExceptionOfType(OfficeException.class)
-        .isThrownBy(
-            () ->
-                new DefaultFilterChain(
-                        (context, document, chain) -> {
-                          throw new IndexOutOfBoundsException();
-                        })
-                    .doFilter(mock(OfficeContext.class), mock(XComponent.class)))
-        .withCauseExactlyInstanceOf(IndexOutOfBoundsException.class);
+      final TestFilterChain chain = new TestFilterChain(false);
+      chain.doFilter(mock(OfficeContext.class), mock(XComponent.class));
+
+      assertThat(chain.lastRefreshFilterExecutedCount).isEqualTo(0);
+    }
+
+    @Test
+    void withMultipleFiltersAndEndsWithRefreshFilterIsFalse_ShouldNotExecuteLastRefresh()
+        throws OfficeException {
+
+      final TestFilterChain chain =
+          new TestFilterChain(
+              false,
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter());
+      chain.doFilter(mock(OfficeContext.class), mock(XComponent.class));
+
+      assertThat(chain.lastRefreshFilterExecutedCount).isEqualTo(0);
+    }
+
+    @Test
+    void withoutFilterAndEndsWithRefreshFilterIsTrue_ShouldExecuteLastRefresh()
+        throws OfficeException {
+
+      final TestFilterChain chain = new TestFilterChain(true);
+      chain.doFilter(mock(OfficeContext.class), mock(XComponent.class));
+
+      assertThat(chain.lastRefreshFilterExecutedCount).isEqualTo(1);
+    }
+
+    @Test
+    void withMultipleFiltersAndEndsWithRefreshFilterIsTrue_ShouldExecuteLastRefresh()
+        throws OfficeException {
+
+      final TestFilterChain chain =
+          new TestFilterChain(
+              true,
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter());
+      chain.doFilter(mock(OfficeContext.class), mock(XComponent.class));
+
+      assertThat(chain.lastRefreshFilterExecutedCount).isEqualTo(1);
+    }
+
+    @Test
+    void withRefreshFilterAndEndsWithRefreshFilterSetToTrue_ShouldNotExecuteLastRefresh()
+        throws OfficeException {
+
+      final TestFilterChain chain =
+          new TestFilterChain(
+              true,
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new TestFilter(),
+              new RefreshFilter());
+      chain.doFilter(mock(OfficeContext.class), mock(XComponent.class));
+
+      assertThat(chain.lastRefreshFilterExecutedCount).isEqualTo(0);
+    }
+  }
+
+  static class TestFilter implements Filter {
+
+    int executeCount = 0;
+
+    @Override
+    @SuppressWarnings("NullableProblems")
+    public void doFilter(
+        final OfficeContext context, final XComponent document, final FilterChain chain)
+        throws OfficeException {
+
+      executeCount++;
+      chain.doFilter(context, document);
+    }
+  }
+
+  static class TestFilterChain extends DefaultFilterChain {
+
+    final boolean endsWithRefreshFilter;
+    int lastRefreshFilterExecutedCount = 0;
+
+    TestFilterChain(final boolean endsWithRefreshFilter, final Filter... filters) {
+      super(endsWithRefreshFilter, filters);
+
+      this.endsWithRefreshFilter = endsWithRefreshFilter;
+    }
+
+    @Override
+    @SuppressWarnings("NullableProblems")
+    public FilterChain copy() {
+      return new TestFilterChain(endsWithRefreshFilter, filters.toArray(new Filter[0]));
+    }
+
+    @Override
+    @SuppressWarnings("NullableProblems")
+    protected void doFilter(
+        final Filter filter, final OfficeContext context, final XComponent document)
+        throws OfficeException {
+
+      if (filter == RefreshFilter.LAST_REFRESH) {
+        lastRefreshFilterExecutedCount++;
+      }
+      super.doFilter(filter, context, document);
+    }
   }
 }

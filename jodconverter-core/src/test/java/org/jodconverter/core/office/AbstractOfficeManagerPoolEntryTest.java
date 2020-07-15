@@ -42,7 +42,7 @@ class AbstractOfficeManagerPoolEntryTest {
   class Execute {
 
     @Test
-    void whenTaskSuccessful_ShouldBeCompleted() {
+    void whenTaskSuccessful_ShouldBeCompleted() throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -61,7 +61,7 @@ class AbstractOfficeManagerPoolEntryTest {
     }
 
     @Test
-    void whenTaskExecutionTimeout_ShouldThrowOfficeException() {
+    void whenTaskExecutionTimeout_ShouldThrowOfficeException() throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry = new SimpleOfficeManagerPoolEntry(500L);
       try {
@@ -81,7 +81,8 @@ class AbstractOfficeManagerPoolEntryTest {
     }
 
     @Test
-    void whenExecutionExceptionIsOfficeException_ShouldThrowSameOfficeException() {
+    void whenExecutionExceptionIsOfficeException_ShouldThrowSameOfficeException()
+        throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -103,7 +104,8 @@ class AbstractOfficeManagerPoolEntryTest {
     }
 
     @Test
-    void whenExecutionExceptionIsNotOfficeException_ShouldWrapCauseInOfficeException() {
+    void whenExecutionExceptionIsNotOfficeException_ShouldWrapCauseInOfficeException()
+        throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -125,7 +127,8 @@ class AbstractOfficeManagerPoolEntryTest {
     }
 
     @Test
-    void whenEntryNotStarted_ShouldThrowOfficeExceptionAfterExecutionTimeout() {
+    void whenEntryNotStarted_ShouldThrowOfficeExceptionAfterExecutionTimeout()
+        throws OfficeException {
 
       // If the entry has not been started, the SuspendableThreadPoolExecutor of the
       // entry would never has been made available. So, a task execution timeout will
@@ -146,7 +149,7 @@ class AbstractOfficeManagerPoolEntryTest {
     }
 
     @Test
-    void whenTaskInterrupted_ShouldThrowOfficeException() {
+    void whenTaskInterrupted_ShouldThrowOfficeException() throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -187,7 +190,7 @@ class AbstractOfficeManagerPoolEntryTest {
     }
 
     @Test
-    void whenTerminated_ShouldThrowIllegalStateException() {
+    void whenTerminated_ShouldThrowIllegalStateException() throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -204,7 +207,7 @@ class AbstractOfficeManagerPoolEntryTest {
   class Start {
 
     @Test
-    void whenAlreadyStarted_ShouldIgnoreSubsequentStart() {
+    void whenAlreadyStarted_ShouldIgnoreSubsequentStart() throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -221,7 +224,7 @@ class AbstractOfficeManagerPoolEntryTest {
     }
 
     @Test
-    void whenTerminated_ShouldThrowIllegalStateException() {
+    void whenTerminated_ShouldThrowIllegalStateException() throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -236,7 +239,7 @@ class AbstractOfficeManagerPoolEntryTest {
   @Nested
   class Stop {
     @Test
-    void whenNotStartedYet_ShouldStopAndInvalidateManager() {
+    void whenNotStartedYet_ShouldStopAndInvalidateManager() throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -250,7 +253,7 @@ class AbstractOfficeManagerPoolEntryTest {
   class CancelTask {
 
     @Test
-    void whenNoRunningTask_ShouldNoNothing() {
+    void whenNoRunningTask_ShouldNoNothing() throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
@@ -266,7 +269,7 @@ class AbstractOfficeManagerPoolEntryTest {
     }
 
     @Test
-    void whenTaskRunning_ShouldCancelTask() {
+    void whenTaskRunning_ShouldCancelTask() throws OfficeException {
 
       final SimpleOfficeManagerPoolEntry entry =
           new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);

@@ -43,7 +43,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.task.SimpleOfficeTask;
@@ -274,13 +273,13 @@ class AbstractOfficeManagerPoolTest {
     }
 
     @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void whenTempDirAlreadyExists_ShouldHaveDeletesFirstThenCreatedTempDir()
         throws OfficeException, IOException {
 
       final SimpleOfficeManager manager = SimpleOfficeManager.make();
       try {
         final File tempDir = Whitebox.getInternalState(manager, "tempDir");
-        //noinspection ResultOfMethodCallIgnored
         tempDir.mkdirs();
         final File tempFile = new File(tempDir, "test.txt");
         assertThat(tempFile.createNewFile()).isTrue();
@@ -295,9 +294,9 @@ class AbstractOfficeManagerPoolTest {
     }
 
     @Test
-    void whenTempDirNotCreated_ShouldThrowOfficeException() {
+    void whenTempDirNotCreated_ShouldThrowOfficeException() throws OfficeException {
 
-      final File mockDir = Mockito.mock(File.class);
+      final File mockDir = mock(File.class);
       final SimpleOfficeManager manager = SimpleOfficeManager.make();
       try {
         Whitebox.setInternalState(manager, "tempDir", mockDir);
@@ -344,13 +343,14 @@ class AbstractOfficeManagerPoolTest {
     }
 
     @Test
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
     void whenTempDirCannotBeDeleted_ShouldRenameTempDir() throws OfficeException, IOException {
 
       final SimpleOfficeManager manager = SimpleOfficeManager.make();
       manager.start();
 
-      final File mockDir = Mockito.mock(File.class);
-      final Path mockPath = Mockito.mock(Path.class);
+      final File mockDir = mock(File.class);
+      final Path mockPath = mock(Path.class);
       final File tempDir = Whitebox.getInternalState(manager, "tempDir");
       Whitebox.setInternalState(manager, "tempDir", mockDir);
       when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
@@ -360,7 +360,6 @@ class AbstractOfficeManagerPoolTest {
       when(mockDir.renameTo(isA(File.class)))
           .thenAnswer(
               invocation -> {
-                //noinspection ResultOfMethodCallIgnored
                 invocation.getArgument(0, File.class).createNewFile();
                 return true;
               });
@@ -369,8 +368,7 @@ class AbstractOfficeManagerPoolTest {
       final FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
       when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
       when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
-      //noinspection unchecked
-      when(mockFileSystemProvider.readAttributes(isA(Path.class), isA(Class.class), any()))
+      when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
           .thenThrow(new IOException("So that Files.isDirectory(mockPath) return false"));
       doThrow(new IOException("You can't do that bud!"))
           .when(mockFileSystemProvider)
@@ -378,7 +376,6 @@ class AbstractOfficeManagerPoolTest {
 
       manager.stop();
       final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
-      //noinspection ResultOfMethodCallIgnored
       verify(mockDir, times(1)).renameTo(arg.capture());
       assertThat(arg.getValue()).exists();
       assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
@@ -388,14 +385,15 @@ class AbstractOfficeManagerPoolTest {
     }
 
     @Test
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
     void whenTempDirCannotBeDeletedNorRenamed_ShouldNotRenameTempDir()
         throws OfficeException, IOException {
 
       final SimpleOfficeManager manager = SimpleOfficeManager.make();
       manager.start();
 
-      final File mockDir = Mockito.mock(File.class);
-      final Path mockPath = Mockito.mock(Path.class);
+      final File mockDir = mock(File.class);
+      final Path mockPath = mock(Path.class);
       final File tempDir = Whitebox.getInternalState(manager, "tempDir");
       Whitebox.setInternalState(manager, "tempDir", mockDir);
       when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
@@ -408,8 +406,7 @@ class AbstractOfficeManagerPoolTest {
       final FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
       when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
       when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
-      //noinspection unchecked
-      when(mockFileSystemProvider.readAttributes(isA(Path.class), isA(Class.class), any()))
+      when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
           .thenThrow(new IOException("So that Files.isDirectory(mockPath) return false"));
       doThrow(new IOException("You can't do that bud!"))
           .when(mockFileSystemProvider)
@@ -417,7 +414,6 @@ class AbstractOfficeManagerPoolTest {
 
       manager.stop();
       final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
-      //noinspection ResultOfMethodCallIgnored
       verify(mockDir, times(1)).renameTo(arg.capture());
       assertThat(arg.getValue()).doesNotExist();
       assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
@@ -604,6 +600,7 @@ class AbstractOfficeManagerPoolTest {
   class MakeTemporaryFile {
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     void withoutArgument_ShouldCreateTempFileWithoutExtension()
         throws OfficeException, IOException {
 
@@ -624,6 +621,7 @@ class AbstractOfficeManagerPoolTest {
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     void withBlankExtension_ShouldCreateTempFileWithoutExtension()
         throws OfficeException, IOException {
 
@@ -637,13 +635,13 @@ class AbstractOfficeManagerPoolTest {
               file -> {
                 final File[] files = file.listFiles();
                 assertThat(files).hasSize(1);
-                //noinspection ConstantConditions
                 assertThat(files[0].getName().indexOf('.')).isEqualTo(-1);
               });
       manager.stop();
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     void withExtension_ShouldCreateTempFileWithExtension() throws OfficeException, IOException {
 
       final SimpleOfficeManager manager = SimpleOfficeManager.make();
@@ -656,7 +654,6 @@ class AbstractOfficeManagerPoolTest {
               file -> {
                 final File[] files = file.listFiles();
                 assertThat(files).hasSize(1);
-                //noinspection ConstantConditions
                 assertThat(files[0]).hasExtension("txt");
               });
       manager.stop();

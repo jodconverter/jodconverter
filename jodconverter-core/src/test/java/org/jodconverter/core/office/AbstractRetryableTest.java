@@ -37,14 +37,14 @@ class AbstractRetryableTest {
   class Execute {
 
     @Test
-    public void whenExecuteOnTime_ShouldNotThrowAnyException() {
+    void whenExecuteOnTime_ShouldNotThrowAnyException() {
 
       final SimpleRetryable retryable = new SimpleRetryable(1);
       assertThatCode(() -> retryable.execute(250L, 500L)).doesNotThrowAnyException();
     }
 
     @Test
-    public void withInitialDelay_ShouldApplyInitialDelayAndThrowRetryTimeoutException() {
+    void withInitialDelay_ShouldApplyInitialDelayAndThrowRetryTimeoutException() {
 
       final SimpleRetryable retryable = new SimpleRetryable(2, 100L);
       assertThatExceptionOfType(RetryTimeoutException.class)
@@ -53,7 +53,7 @@ class AbstractRetryableTest {
     }
 
     @Test
-    public void withoutInitialDelay_ShouldNotApplyInitialDelay() {
+    void withoutInitialDelay_ShouldNotApplyInitialDelay() {
 
       final SimpleRetryable retryable = new SimpleRetryable(2, 50L);
       assertThatCode(() -> retryable.execute(NO_SLEEP, 150L)).doesNotThrowAnyException();
@@ -61,7 +61,7 @@ class AbstractRetryableTest {
     }
 
     @Test
-    public void withInterval_ShouldApplyIntervalDelayAndThrowRetryTimeoutException() {
+    void withInterval_ShouldApplyIntervalDelayAndThrowRetryTimeoutException() {
 
       final SimpleRetryable retryable = new SimpleRetryable(3, 100L);
       assertThatExceptionOfType(RetryTimeoutException.class)
@@ -70,7 +70,7 @@ class AbstractRetryableTest {
     }
 
     @Test
-    public void withNoInterval_ShouldNotApplyIntervalDelay() {
+    void withNoInterval_ShouldNotApplyIntervalDelay() {
 
       final SimpleRetryable retryable = new SimpleRetryable(3, 50L);
       assertThatCode(() -> retryable.execute(NO_SLEEP, 200L)).doesNotThrowAnyException();
@@ -82,7 +82,7 @@ class AbstractRetryableTest {
   class Sleep {
 
     @Test
-    public void whenInterrupted_ShouldNotApplyIntervalDelay() {
+    void whenInterrupted_ShouldNotApplyIntervalDelay() {
 
       final SimpleRetryable retryable = new SimpleRetryable(2);
       final AtomicReference<Exception> exep = new AtomicReference<>();

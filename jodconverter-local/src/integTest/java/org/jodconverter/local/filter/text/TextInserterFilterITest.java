@@ -35,17 +35,15 @@ import org.jodconverter.local.LocalOfficeManagerExtension;
 
 /** Contains tests for the {@link TextInserterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class TextInserterFilterITest {
+class TextInserterFilterITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
   private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
   private static final String MULTI_PAGE_FILENAME = "test_multi_page.doc";
   private static final File SOURCE_MULTI_PAGE_FILE = documentFile(SOURCE_FILENAME);
 
-  /** Test the conversion of a document inserting text along the way. */
   @Test
-  public void doFilter_WithCustomizedProperties(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withCustomizedProperties(final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
 
@@ -76,10 +74,8 @@ public class TextInserterFilterITest {
         .doesNotThrowAnyException();
   }
 
-  /** Test the conversion of a document inserting text along the way. */
   @Test
-  public void doFilter_WithDefaultProperties(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withDefaultProperties(final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".pdf");
 
@@ -100,38 +96,6 @@ public class TextInserterFilterITest {
                     .filterChain(filter)
                     .build()
                     .convert(SOURCE_FILE)
-                    .to(targetFile)
-                    .execute())
-        .doesNotThrowAnyException();
-  }
-
-  /**
-   * Test the conversion of a document which is not a TEXT document. We can't really test the
-   * result, but at least we will test the the conversion doesn't fail (filter does nothing).
-   */
-  @Test
-  public void doFilter_WithBadDocumentType_DoNothing(
-      final @TempDir File testFolder, final OfficeManager manager) {
-
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".badtype.pdf");
-
-    // Create the TextInserterFilter to test.
-    final TextInserterFilter filter =
-        new TextInserterFilter(
-            "This is a test of text insertion",
-            100, // Width, 10 CM
-            20, // Height, 2 CM
-            50, // Horizontal Position, 5 CM
-            100); // Vertical Position , 10 CM
-
-    // Test the filter
-    assertThatCode(
-            () ->
-                LocalConverter.builder()
-                    .officeManager(manager)
-                    .filterChain(filter)
-                    .build()
-                    .convert(documentFile("test.xls"))
                     .to(targetFile)
                     .execute())
         .doesNotThrowAnyException();

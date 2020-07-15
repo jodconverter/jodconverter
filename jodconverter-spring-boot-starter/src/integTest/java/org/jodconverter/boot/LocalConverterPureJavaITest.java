@@ -50,7 +50,7 @@ public class LocalConverterPureJavaITest {
         .satisfies(
             o ->
                 assertThat(o)
-                    .extracting("officeProcessManager.process.processManager")
+                    .extracting("officeProcessManager.processManager")
                     .isExactlyInstanceOf(PureJavaProcessManager.class));
   }
 }

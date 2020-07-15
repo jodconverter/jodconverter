@@ -62,7 +62,7 @@ class AbstractConverterTest {
   }
 
   @Nested
-  class convertFile {
+  class ConvertFile {
 
     @Test
     void whenKnownExtension_ShouldCreateJobWithSourceFormat(@TempDir final File testFolder)
@@ -96,7 +96,7 @@ class AbstractConverterTest {
   }
 
   @Nested
-  class convertStream {
+  class ConvertStream {
 
     @Test
     void withDefaultCloseStream_ShouldCreateJobWithCloseStreamSetToTrue(
@@ -144,7 +144,10 @@ class AbstractConverterTest {
                     new OfficeManager() {
 
                       @Override
-                      public void execute(final OfficeTask task) {}
+                      public void execute(
+                          @SuppressWarnings("NullableProblems") final OfficeTask task) {
+                        // Ignore
+                      }
 
                       @Override
                       public boolean isRunning() {
@@ -152,10 +155,14 @@ class AbstractConverterTest {
                       }
 
                       @Override
-                      public void start() {}
+                      public void start() {
+                        // Ignore
+                      }
 
                       @Override
-                      public void stop() {}
+                      public void stop() {
+                        // Ignore
+                      }
                     })
                 .formatRegistry(DefaultDocumentFormatRegistry.getInstance())
                 .build();
@@ -170,7 +177,7 @@ class AbstractConverterTest {
   }
 
   @Nested
-  class getFormatRegistry {
+  class GetFormatRegistry {
 
     @Test
     void shouldReturnExpectedRegistry() {

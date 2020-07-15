@@ -76,6 +76,7 @@ class AbstractConversionJobTest {
   class As {
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 

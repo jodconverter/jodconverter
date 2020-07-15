@@ -47,6 +47,22 @@ public class AbstractLocalOfficeTaskITest {
 
   private static final File SOURCE_FILE = documentFile("test.txt");
 
+  @Test
+  public void close_WhenVetoCloseExceptionCatch_DocumentNotClosed(final OfficeManager manager)
+      throws OfficeException {
+
+    final VetoCloseOfficeTask task = new VetoCloseOfficeTask(new FooSourceSpecs(SOURCE_FILE));
+
+    try {
+      manager.execute(task);
+
+      // TODO: How could we check that the document is not closed ?
+
+    } finally {
+      task.closeForGood();
+    }
+  }
+
   private static class VetoCloseListener implements XCloseListener {
 
     @Override
@@ -124,22 +140,6 @@ public class AbstractLocalOfficeTaskITest {
     @Override
     public DocumentFormat getFormat() {
       return DefaultDocumentFormatRegistry.TXT;
-    }
-  }
-
-  @Test
-  public void close_WhenVetoCloseExceptionCatch_DocumentNotClosed(final OfficeManager manager)
-      throws OfficeException {
-
-    final VetoCloseOfficeTask task = new VetoCloseOfficeTask(new FooSourceSpecs(SOURCE_FILE));
-
-    try {
-      manager.execute(task);
-
-      // TODO: How could we check that the document is not closed ?
-
-    } finally {
-      task.closeForGood();
     }
   }
 }

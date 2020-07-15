@@ -26,133 +26,149 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.WrappedTargetException;
-import com.sun.star.uno.UnoRuntime;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.jodconverter.core.test.util.AssertUtil;
+import org.jodconverter.local.MockUnoRuntimeExtension;
 
 /** Contains tests for the {@link Props} class. */
-@RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(JUnit4.class)
-@PrepareForTest(UnoRuntime.class)
-public class PropsTest {
+@ExtendWith(MockUnoRuntimeExtension.class)
+class PropsTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Props.class);
   }
 
-  @Test
-  public void getProperty_WithObjectAndPropertyFound_ReturnExpectedProperty() {
+  @Nested
+  class GetProperty {
 
-    assertThatCode(
-            () -> {
-              final Object object = mock(Object.class);
-              final XPropertySet props = mock(XPropertySet.class);
-              given(props.getPropertyValue("propTestName")).willReturn("propTestValue");
-              mockStatic(UnoRuntime.class);
-              given(UnoRuntime.queryInterface(XPropertySet.class, object)).willReturn(props);
+    @Test
+    void withObjectAndPropertyFound_ShouldReturnExpectedProperty(final UnoRuntime unoRuntime) {
 
-              assertThat(Props.getProperty(object, "propTestName")).isEqualTo("propTestValue");
-            })
-        .doesNotThrowAnyException();
+      assertThatCode(
+              () -> {
+                final Object object = mock(Object.class);
+                final XPropertySet props = mock(XPropertySet.class);
+                given(props.getPropertyValue("propTestName")).willReturn("propTestValue");
+                given(unoRuntime.queryInterface(XPropertySet.class, object)).willReturn(props);
+
+                assertThat(Props.getProperty(object, "propTestName")).isEqualTo("propTestValue");
+              })
+          .doesNotThrowAnyException();
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withObjectAndPropertyNotFound_ShouldReturnExpectedProperty(final UnoRuntime unoRuntime) {
+
+      assertThatCode(
+              () -> {
+                final Object object = mock(Object.class);
+                final XPropertySet props = mock(XPropertySet.class);
+                given(props.getPropertyValue("propTestName")).willReturn(null);
+                given(unoRuntime.queryInterface(XPropertySet.class, object)).willReturn(props);
+
+                assertThat(Props.getProperty(object, "propTestName")).isNull();
+              })
+          .doesNotThrowAnyException();
+    }
+
+    @Test
+    void withUnknownPropertyException_ShouldThrowWrappedUnoException()
+        throws WrappedTargetException, UnknownPropertyException {
+
+      final XPropertySet props = mock(XPropertySet.class);
+      given(props.getPropertyValue(isA(String.class))).willThrow(UnknownPropertyException.class);
+
+      assertThatExceptionOfType(WrappedUnoException.class)
+          .isThrownBy(() -> Props.getProperty(props, "test"))
+          .withCauseExactlyInstanceOf(UnknownPropertyException.class);
+    }
+
+    @Test
+    void wrappedTargetException_ShouldThrowWrappedUnoException()
+        throws WrappedTargetException, UnknownPropertyException {
+
+      final XPropertySet props = mock(XPropertySet.class);
+      given(props.getPropertyValue(isA(String.class))).willThrow(WrappedTargetException.class);
+
+      assertThatExceptionOfType(WrappedUnoException.class)
+          .isThrownBy(() -> Props.getProperty(props, "test"))
+          .withCauseExactlyInstanceOf(WrappedTargetException.class);
+    }
   }
 
-  @Test
-  public void getProperty_WithObjectAndPropertyNotFound_ReturnExpectedProperty() {
+  @Nested
+  class MakeProperty {
 
-    assertThatCode(
-            () -> {
-              final Object object = mock(Object.class);
-              final XPropertySet props = mock(XPropertySet.class);
-              given(props.getPropertyValue("propTestName")).willReturn(null);
-              mockStatic(UnoRuntime.class);
-              given(UnoRuntime.queryInterface(XPropertySet.class, object)).willReturn(props);
+    @Test
+    void shouldReturnExpectedValues() {
 
-              assertThat(Props.getProperty(object, "propTestName")).isNull();
-            })
-        .doesNotThrowAnyException();
+      final String name = "name";
+      final Object value = 100;
+
+      assertThat(Props.makeProperty(name, value))
+          .extracting("Name", "Value")
+          .containsExactly(name, value);
+    }
   }
 
-  @Test
-  public void getProperty_WithUnknownPropertyException_ThrowWrappedUnoException()
-      throws WrappedTargetException, UnknownPropertyException {
+  @Nested
+  class MakeProperties {
 
-    final XPropertySet props = mock(XPropertySet.class);
-    given(props.getPropertyValue(isA(String.class))).willThrow(UnknownPropertyException.class);
+    @Test
+    void withOneValue_ShouldReturnArrayWithExpectedValues() {
 
-    assertThatExceptionOfType(WrappedUnoException.class)
-        .isThrownBy(() -> Props.getProperty(props, "test"))
-        .withCauseExactlyInstanceOf(UnknownPropertyException.class);
-  }
+      final String name = "name";
+      final Object value = 100;
 
-  @Test
-  public void getProperty_WrappedTargetException_ThrowWrappedUnoException()
-      throws WrappedTargetException, UnknownPropertyException {
+      final PropertyValue[] props = Props.makeProperties(name, value);
+      assertThat(props).hasSize(1);
+      assertThat(props[0]).extracting("Name", "Value").containsExactly(name, value);
+    }
 
-    final XPropertySet props = mock(XPropertySet.class);
-    given(props.getPropertyValue(isA(String.class))).willThrow(WrappedTargetException.class);
+    @Test
+    void withTwoValue_ShouldReturnArrayWithExpectedValues() {
 
-    assertThatExceptionOfType(WrappedUnoException.class)
-        .isThrownBy(() -> Props.getProperty(props, "test"))
-        .withCauseExactlyInstanceOf(WrappedTargetException.class);
-  }
+      final String name1 = "name1";
+      final Object value1 = 100;
+      final String name2 = "name2";
+      final Object value2 = 200;
 
-  @Test
-  public void makeProperties_WithOneValue_ReturnArrayWithExpectedValues() {
+      final PropertyValue[] props = Props.makeProperties(name1, value1, name2, value2);
+      assertThat(props).hasSize(2);
+      assertThat(props[0]).extracting("Name", "Value").containsExactly(name1, value1);
+      assertThat(props[1]).extracting("Name", "Value").containsExactly(name2, value2);
+    }
 
-    final String name = "name";
-    final Object value = 100;
+    @Test
+    void withArrayNotSameLength_ShouldThrowIllegalArgumentException() {
 
-    final PropertyValue[] props = Props.makeProperties(name, value);
-    assertThat(props).hasSize(1);
-    assertThat(props[0]).extracting("Name", "Value").containsExactly(name, value);
-  }
+      final String[] names = {"name1", "name2", "name3"};
+      final Object[] values = {100, 200, 300, 400};
+      assertThatIllegalArgumentException().isThrownBy(() -> Props.makeProperties(names, values));
+    }
 
-  @Test
-  public void makeProperties_WithTwoValue_ReturnArrayWithExpectedValues() {
+    @Test
+    void withArraySameLength_ShouldReturnArrayWithExpectedValues() {
 
-    final String name1 = "name1";
-    final Object value1 = 100;
-    final String name2 = "name2";
-    final Object value2 = 200;
+      final String[] names = {"name1", "name2", "name3", "name4"};
+      final Object[] values = {100, 200, 300, 400};
 
-    final PropertyValue[] props = Props.makeProperties(name1, value1, name2, value2);
-    assertThat(props).hasSize(2);
-    assertThat(props[0]).extracting("Name", "Value").containsExactly(name1, value1);
-    assertThat(props[1]).extracting("Name", "Value").containsExactly(name2, value2);
-  }
-
-  @Test
-  public void makeProperties_ArrayNotSameLength_ThrowIllegalArgumentException() {
-
-    final String[] names = {"name1", "name2", "name3"};
-    final Object[] values = {100, 200, 300, 400};
-    assertThatIllegalArgumentException().isThrownBy(() -> Props.makeProperties(names, values));
-  }
-
-  @Test
-  public void makeProperties_ArraySameLength_ReturnArrayWithExpectedValues() {
-
-    final String[] names = {"name1", "name2", "name3", "name4"};
-    final Object[] values = {100, 200, 300, 400};
-
-    final PropertyValue[] props = Props.makeProperties(names, values);
-    assertThat(props).hasSize(4);
-    assertThat(props[0]).extracting("Name", "Value").containsExactly("name1", 100);
-    assertThat(props[1]).extracting("Name", "Value").containsExactly("name2", 200);
-    assertThat(props[2]).extracting("Name", "Value").containsExactly("name3", 300);
-    assertThat(props[3]).extracting("Name", "Value").containsExactly("name4", 400);
+      final PropertyValue[] props = Props.makeProperties(names, values);
+      assertThat(props).hasSize(4);
+      assertThat(props[0]).extracting("Name", "Value").containsExactly("name1", 100);
+      assertThat(props[1]).extracting("Name", "Value").containsExactly("name2", 200);
+      assertThat(props[2]).extracting("Name", "Value").containsExactly("name3", 300);
+      assertThat(props[3]).extracting("Name", "Value").containsExactly("name4", 400);
+    }
   }
 }

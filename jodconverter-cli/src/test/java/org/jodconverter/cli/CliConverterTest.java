@@ -199,6 +199,7 @@ public class CliConverterTest {
   }
 
   @Test
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted(
       final @TempDir File testFolder) throws Exception {
 
@@ -295,15 +296,14 @@ public class CliConverterTest {
   }
 
   @Test
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted(
       final @TempDir File testFolder) throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
-    //noinspection ResultOfMethodCallIgnored
     targetFile1.createNewFile();
-    //noinspection ResultOfMethodCallIgnored
     targetFile2.createNewFile();
 
     converter.convert(
@@ -327,6 +327,7 @@ public class CliConverterTest {
   }
 
   @Test
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted(
       final @TempDir File testFolder) throws Exception {
 

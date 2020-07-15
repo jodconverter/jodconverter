@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Contains tests for the {@link DocumentFormat} class. */
-public class DocumentFormatTest {
+class DocumentFormatTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DocumentFormatTest.class);
 
@@ -40,7 +40,7 @@ public class DocumentFormatTest {
 
   /** Since toString is overridden, ensure that none of the default formats throws an exception. */
   @Test
-  public void toString_ShouldNotThrowException() {
+  void toString_ShouldNotThrowException() {
 
     // If an exception is thrown, the test will automatically fail.
 
@@ -56,7 +56,7 @@ public class DocumentFormatTest {
   }
 
   @Test
-  public void copy_ShouldCreateModifiableCopy() {
+  void copy_ShouldCreateModifiableCopy() {
 
     // If an exception is thrown, the test will automatically fail.
     final DocumentFormat copy = DocumentFormat.copy(DefaultDocumentFormatRegistry.CSV);

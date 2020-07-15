@@ -21,7 +21,6 @@ package org.jodconverter.local.filter.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 
 import java.io.File;
@@ -39,53 +38,14 @@ import org.jodconverter.local.LocalOfficeManagerExtension;
 
 /** Contains tests for the {@link TextReplacerFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class TextReplacerFilterITest {
+class TextReplacerFilterITest {
 
   private static final String SOURCE_FILENAME = "test_replace.doc";
   private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
 
-  /**
-   * Test that the creation of a TextReplacerFilter with a search list and replacement list of
-   * different size throws a IllegalArgumentException.
-   */
   @Test
-  public void create_WithArgumentsSizeNotEqual_ThrowsIllegalArgumentException() {
-
-    assertThatIllegalArgumentException()
-        .isThrownBy(
-            () ->
-                new TextReplacerFilter(
-                    new String[] {"SEARCH_STRING", "ANOTHER_SEARCH_STRING"},
-                    new String[] {"REPLACEMENT_STRING"}));
-  }
-
-  /**
-   * Test that the creation of a TextReplacerFilter with an empty replacement list throws a
-   * IllegalArgumentException.
-   */
-  @Test
-  public void create_WithEmptyReplacementList_ThrowsIllegalArgumentException() {
-
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> new TextReplacerFilter(new String[] {"SEARCH_STRING"}, new String[0]));
-  }
-
-  /**
-   * Test that the creation of a TextReplacerFilter with an empty search list throws a
-   * IllegalArgumentException.
-   */
-  @Test
-  public void create_WithEmptySearchList_ThrowsIllegalArgumentException() {
-
-    assertThatIllegalArgumentException()
-        .isThrownBy(
-            () -> new TextReplacerFilter(new String[0], new String[] {"REPLACEMENT_STRING"}));
-  }
-
-  /** Test the conversion of a document replacing text along the way. */
-  @Test
-  public void doFilter_WithDefaultProperties(
-      final @TempDir File testFolder, final OfficeManager manager) throws IOException {
+  void shouldReplaceWords(final @TempDir File testFolder, final OfficeManager manager)
+      throws IOException {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".txt");
 
@@ -123,39 +83,5 @@ public class TextReplacerFilterITest {
         .doesNotContain("have")
         .contains("most recent common language will be more basic")
         .doesNotContain("new common language will be more simple");
-  }
-
-  /**
-   * Test the conversion of a document which is not a TEXT document. We can't really test the
-   * result, but at least we will test the the conversion doesn't fail (filter does nothing).
-   */
-  @Test
-  public void doFilter_WithBadDocumentType_DoNothing(
-      final @TempDir File testFolder, final OfficeManager manager) {
-
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".badtype.pdf");
-
-    // Create the TextReplacerFilter to test.
-    final TextReplacerFilter filter =
-        new TextReplacerFilter(
-            new String[] {"SEARCH_WORD", "that", "have", "new common language will be more simple"},
-            new String[] {
-              "REPLACEMENT_STRING",
-              "REPLACEMENT_THAT",
-              "REPLACEMENT_HAVE",
-              "most recent common language will be more basic"
-            });
-
-    // Test the filter
-    assertThatCode(
-            () ->
-                LocalConverter.builder()
-                    .officeManager(manager)
-                    .filterChain(filter)
-                    .build()
-                    .convert(documentFile("test.xls"))
-                    .to(targetFile)
-                    .execute())
-        .doesNotThrowAnyException();
   }
 }

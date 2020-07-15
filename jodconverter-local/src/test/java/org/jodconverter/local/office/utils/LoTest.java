@@ -26,30 +26,21 @@ import static org.mockito.Mockito.mock;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.Exception;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests for the {@link Lo} class. */
-@RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(JUnit4.class)
-@PrepareForTest(UnoRuntime.class)
-public class LoTest {
+class LoTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Lo.class);
   }
 
   @Test
-  public void createInstanceMSF_WithUnoException_ThrowWrappedUnoException() throws Exception {
+  void createInstanceMSF_WithUnoException_ThrowWrappedUnoException() throws Exception {
 
     final XMultiServiceFactory sfactory = mock(XMultiServiceFactory.class);
 
@@ -59,7 +50,7 @@ public class LoTest {
   }
 
   @Test
-  public void createInstanceMCF_WithUnoException_ThrowWrappedUnoException() throws Exception {
+  void createInstanceMCF_WithUnoException_ThrowWrappedUnoException() throws Exception {
 
     final XComponentContext context = mock(XComponentContext.class);
     final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);

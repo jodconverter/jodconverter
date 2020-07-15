@@ -27,15 +27,16 @@ import org.junit.jupiter.api.Test;
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests for the {@link OSUtils} class. */
-public class OSUtilsTest {
+@SuppressWarnings("ConstantConditions")
+class OSUtilsTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(OSUtils.class);
   }
 
   @Test
-  public void IS_OS_AIX() {
+  void IS_OS_AIX() {
     assumeTrue(OSUtils.IS_OS_AIX);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -56,7 +57,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_FREE_BSD() {
+  void IS_OS_FREE_BSD() {
     assumeTrue(OSUtils.IS_OS_FREE_BSD);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -77,7 +78,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_HP_UX() {
+  void IS_OS_HP_UX() {
     assumeTrue(OSUtils.IS_OS_HP_UX);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -98,7 +99,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_IRIX() {
+  void IS_OS_IRIX() {
     assumeTrue(OSUtils.IS_OS_IRIX);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -119,7 +120,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_LINUX() {
+  void IS_OS_LINUX() {
     assumeTrue(OSUtils.IS_OS_LINUX);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -140,7 +141,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_MAC() {
+  void IS_OS_MAC() {
     assumeTrue(OSUtils.IS_OS_MAC);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -161,7 +162,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_MAC_OSX() {
+  void IS_OS_MAC_OSX() {
     assumeTrue(OSUtils.IS_OS_MAC_OSX);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -182,7 +183,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_NET_BSD() {
+  void IS_OS_NET_BSD() {
     assumeTrue(OSUtils.IS_OS_NET_BSD);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -203,7 +204,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_OPEN_BSD() {
+  void IS_OS_OPEN_BSD() {
     assumeTrue(OSUtils.IS_OS_OPEN_BSD);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -224,7 +225,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_SOLARIS() {
+  void IS_OS_SOLARIS() {
     assumeTrue(OSUtils.IS_OS_SOLARIS);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -245,7 +246,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_SUN_OS() {
+  void IS_OS_SUN_OS() {
     assumeTrue(OSUtils.IS_OS_SUN_OS);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -266,7 +267,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_UNIX() {
+  void IS_OS_UNIX() {
     assumeTrue(OSUtils.IS_OS_UNIX);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -289,7 +290,7 @@ public class OSUtilsTest {
   }
 
   @Test
-  public void IS_OS_WINDOWS() {
+  void IS_OS_WINDOWS() {
     assumeTrue(OSUtils.IS_OS_WINDOWS);
 
     try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {

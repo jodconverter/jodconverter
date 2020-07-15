@@ -20,135 +20,146 @@
 package org.jodconverter.core.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import org.assertj.core.api.AutoCloseableSoftAssertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.document.DocumentFormat.Builder;
 
 /** Contains tests for the {@link org.jodconverter.core.document.DocumentFormat.Builder} class. */
-public class DocumentFormatBuilderTest {
+class DocumentFormatBuilderTest {
 
-  @Test
-  public void build_ShouldCreateExpectedDocumentFormat() {
+  @Nested
+  class Build {
 
-    final Builder builder =
-        DocumentFormat.builder()
-            .name("Foo Format")
-            .extension("foo")
-            .extension("fii")
-            .mediaType("application/foo")
-            .inputFamily(DocumentFamily.TEXT)
-            .loadProperty("lprops1_name", "lprops1_value")
-            .loadProperty("lprops2_name", 1)
-            .loadProperty("lprops3_toremove", "bla")
-            .loadProperty("lprops3_toremove", null)
-            .storeProperty(DocumentFamily.DRAWING, "sprops1_name", "sprops1_value")
-            .storeProperty(DocumentFamily.DRAWING, "sprops2_name", 2)
-            .storeProperty(DocumentFamily.DRAWING, "sprops3_toremove", "blo")
-            .storeProperty(DocumentFamily.DRAWING, "sprops3_toremove", null);
+    @Test
+    void shouldCreateExpectedDocumentFormat() {
 
-    final DocumentFormat format = builder.build();
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(format.getName()).isEqualTo("Foo Format");
-      softly.assertThat(format.getExtension()).isEqualTo("foo");
-      softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
-      softly.assertThat(format.getMediaType()).isEqualTo("application/foo");
-      softly.assertThat(format.getInputFamily()).isEqualTo(DocumentFamily.TEXT);
-      softly
-          .assertThat(format.getLoadProperties())
-          .hasSize(2)
-          .hasEntrySatisfying("lprops1_name", val -> assertThat(val).isEqualTo("lprops1_value"))
-          .hasEntrySatisfying("lprops2_name", val -> assertThat(val).isEqualTo(1));
-      softly
-          .assertThat(format.getStoreProperties())
-          .hasSize(1)
-          .hasEntrySatisfying(
-              DocumentFamily.DRAWING,
-              props ->
-                  assertThat(props)
-                      .hasSize(2)
-                      .hasEntrySatisfying(
-                          "sprops1_name", val -> assertThat(val).isEqualTo("sprops1_value"))
-                      .hasEntrySatisfying("sprops2_name", val -> assertThat(val).isEqualTo(2)));
+      final Builder builder =
+          DocumentFormat.builder()
+              .name("Foo Format")
+              .extension("foo")
+              .extension("fii")
+              .mediaType("application/foo")
+              .inputFamily(DocumentFamily.TEXT)
+              .loadProperty("lprops1_name", "lprops1_value")
+              .loadProperty("lprops2_name", 1)
+              .loadProperty("lprops3_toremove", "bla")
+              .loadProperty("lprops3_toremove", null)
+              .storeProperty(DocumentFamily.DRAWING, "sprops1_name", "sprops1_value")
+              .storeProperty(DocumentFamily.DRAWING, "sprops2_name", 2)
+              .storeProperty(DocumentFamily.DRAWING, "sprops3_toremove", "blo")
+              .storeProperty(DocumentFamily.DRAWING, "sprops3_toremove", null);
+
+      final DocumentFormat format = builder.build();
+      try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+        softly.assertThat(format.getName()).isEqualTo("Foo Format");
+        softly.assertThat(format.getExtension()).isEqualTo("foo");
+        softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
+        softly.assertThat(format.getMediaType()).isEqualTo("application/foo");
+        softly.assertThat(format.getInputFamily()).isEqualTo(DocumentFamily.TEXT);
+        softly
+            .assertThat(format.getLoadProperties())
+            .hasSize(2)
+            .contains(entry("lprops1_name", "lprops1_value"), entry("lprops2_name", 1));
+        softly
+            .assertThat(format.getStoreProperties())
+            .hasSize(1)
+            .hasEntrySatisfying(
+                DocumentFamily.DRAWING,
+                props ->
+                    assertThat(props)
+                        .hasSize(2)
+                        .contains(
+                            entry("sprops1_name", "sprops1_value"), entry("sprops2_name", 2)));
+      }
+    }
+
+    @Test
+    void withoutLoadStoreProperties_ShouldCreateExpectedDocumentFormat() {
+
+      final Builder builder =
+          DocumentFormat.builder()
+              .name("Foo Format")
+              .extension("foo")
+              .extension("fii")
+              .mediaType("application/foo")
+              .inputFamily(DocumentFamily.TEXT)
+              .loadProperty("lprops1_name", null)
+              .storeProperty(DocumentFamily.DRAWING, "sprops1_name", null);
+
+      final DocumentFormat format = builder.build();
+      try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+        softly.assertThat(format.getName()).isEqualTo("Foo Format");
+        softly.assertThat(format.getExtension()).isEqualTo("foo");
+        softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
+        softly.assertThat(format.getMediaType()).isEqualTo("application/foo");
+        softly.assertThat(format.getInputFamily()).isEqualTo(DocumentFamily.TEXT);
+        softly.assertThat(format.getLoadProperties()).isNull();
+        softly.assertThat(format.getStoreProperties()).isNull();
+      }
+    }
+
+    @Test
+    void removingLoadStoreProperties_ShouldCreateDocumentFormatWithNullLoadStoreProperties() {
+
+      final Builder builder =
+          DocumentFormat.builder()
+              .name("Foo Format")
+              .extension("foo")
+              .extension("fii")
+              .mediaType("application/foo")
+              .inputFamily(DocumentFamily.TEXT)
+              .loadProperty("lprops1_name", "lprops1_value")
+              .loadProperty("lprops1_name", null)
+              .storeProperty(DocumentFamily.DRAWING, "sprops1_name", "sprops1_value")
+              .storeProperty(DocumentFamily.TEXT, "sprops1_name", null)
+              .storeProperty(DocumentFamily.DRAWING, "sprops1_name", null);
+
+      final DocumentFormat format = builder.build();
+      try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+        softly.assertThat(format.getName()).isEqualTo("Foo Format");
+        softly.assertThat(format.getExtension()).isEqualTo("foo");
+        softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
+        softly.assertThat(format.getMediaType()).isEqualTo("application/foo");
+        softly.assertThat(format.getInputFamily()).isEqualTo(DocumentFamily.TEXT);
+        softly.assertThat(format.getLoadProperties()).isNull();
+        softly.assertThat(format.getStoreProperties()).isNull();
+      }
     }
   }
 
-  @Test
-  public void build_WithoutLoadStoreProperties_ShouldCreateExpectedDocumentFormat() {
+  @Nested
+  class LoadProperty {
 
-    final Builder builder =
-        DocumentFormat.builder()
-            .name("Foo Format")
-            .extension("foo")
-            .extension("fii")
-            .mediaType("application/foo")
-            .inputFamily(DocumentFamily.TEXT)
-            .loadProperty("lprops1_name", null)
-            .storeProperty(DocumentFamily.DRAWING, "sprops1_name", null);
+    @Test
+    void withNullValue_ShouldRemoveProperty() {
 
-    final DocumentFormat format = builder.build();
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(format.getName()).isEqualTo("Foo Format");
-      softly.assertThat(format.getExtension()).isEqualTo("foo");
-      softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
-      softly.assertThat(format.getMediaType()).isEqualTo("application/foo");
-      softly.assertThat(format.getInputFamily()).isEqualTo(DocumentFamily.TEXT);
-      softly.assertThat(format.getLoadProperties()).isNull();
-      softly.assertThat(format.getStoreProperties()).isNull();
+      final Builder builder = DocumentFormat.builder().from(DefaultDocumentFormatRegistry.CSV);
+      DocumentFormat csv = builder.build();
+      assertThat(csv.getLoadProperties()).containsKey("FilterOptions");
+      csv = builder.loadProperty("FilterOptions", null).build();
+      assertThat(csv.getLoadProperties()).doesNotContainKey("FilterOptions");
     }
   }
 
-  @Test
-  public void
-      build_RemovingLoadStoreProperties_ShouldCreateDocumentFormatWithNullLoadStoreProperties() {
+  @Nested
+  class StoreProperty {
 
-    final Builder builder =
-        DocumentFormat.builder()
-            .name("Foo Format")
-            .extension("foo")
-            .extension("fii")
-            .mediaType("application/foo")
-            .inputFamily(DocumentFamily.TEXT)
-            .loadProperty("lprops1_name", "lprops1_value")
-            .loadProperty("lprops1_name", null)
-            .storeProperty(DocumentFamily.DRAWING, "sprops1_name", "sprops1_value")
-            .storeProperty(DocumentFamily.TEXT, "sprops1_name", null)
-            .storeProperty(DocumentFamily.DRAWING, "sprops1_name", null);
+    @Test
+    void withNullBValue_ShouldRemoveProperty() {
 
-    final DocumentFormat format = builder.build();
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(format.getName()).isEqualTo("Foo Format");
-      softly.assertThat(format.getExtension()).isEqualTo("foo");
-      softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
-      softly.assertThat(format.getMediaType()).isEqualTo("application/foo");
-      softly.assertThat(format.getInputFamily()).isEqualTo(DocumentFamily.TEXT);
-      softly.assertThat(format.getLoadProperties()).isNull();
-      softly.assertThat(format.getStoreProperties()).isNull();
+      final Builder builder = DocumentFormat.builder().from(DefaultDocumentFormatRegistry.CSV);
+      DocumentFormat csv = builder.build();
+      assertThat(csv.getStoreProperties()).isNotNull();
+      assertThat(csv.getStoreProperties().get(DocumentFamily.SPREADSHEET))
+          .containsKey("FilterOptions");
+      csv = builder.storeProperty(DocumentFamily.SPREADSHEET, "FilterOptions", null).build();
+      assertThat(csv.getStoreProperties()).isNotNull();
+      assertThat(csv.getStoreProperties().get(DocumentFamily.SPREADSHEET))
+          .doesNotContainKey("FilterOptions");
     }
-  }
-
-  @Test
-  public void loadProperty_WithNullValue_ShouldRemoveProperty() {
-
-    final Builder builder = DocumentFormat.builder().from(DefaultDocumentFormatRegistry.CSV);
-    DocumentFormat csv = builder.build();
-    assertThat(csv.getLoadProperties()).containsKey("FilterOptions");
-    csv = builder.loadProperty("FilterOptions", null).build();
-    assertThat(csv.getLoadProperties()).doesNotContainKey("FilterOptions");
-  }
-
-  @Test
-  public void storeProperty_WithNullBValue_ShouldRemoveProperty() {
-
-    final Builder builder = DocumentFormat.builder().from(DefaultDocumentFormatRegistry.CSV);
-    DocumentFormat csv = builder.build();
-    assertThat(csv.getStoreProperties()).isNotNull();
-    assertThat(csv.getStoreProperties().get(DocumentFamily.SPREADSHEET))
-        .containsKey("FilterOptions");
-    csv = builder.storeProperty(DocumentFamily.SPREADSHEET, "FilterOptions", null).build();
-    assertThat(csv.getStoreProperties()).isNotNull();
-    assertThat(csv.getStoreProperties().get(DocumentFamily.SPREADSHEET))
-        .doesNotContainKey("FilterOptions");
   }
 }

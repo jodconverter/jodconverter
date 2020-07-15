@@ -19,7 +19,7 @@
 
 package org.jodconverter.local.office;
 
-import static org.jodconverter.local.office.LocalOfficeUtils.property;
+import static org.jodconverter.local.office.utils.Props.makeProperty;
 
 import java.util.Objects;
 
@@ -62,7 +62,7 @@ public class MockOfficeTask implements OfficeTask {
     final LocalOfficeContext ctx = (LocalOfficeContext) context;
     final XComponentLoader loader = ctx.getComponentLoader();
     try {
-      final PropertyValue[] arguments = {property("Hidden", true)};
+      final PropertyValue[] arguments = {makeProperty("Hidden", true)};
       final XComponent document =
           Objects.requireNonNull(loader)
               .loadComponentFromURL("private:factory/swriter", "_blank", 0, arguments);

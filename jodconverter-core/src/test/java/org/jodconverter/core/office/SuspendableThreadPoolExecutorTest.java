@@ -37,14 +37,15 @@ class SuspendableThreadPoolExecutorTest {
   private TestExecutor executor;
 
   static class TestExecutor extends SuspendableThreadPoolExecutor {
-    AtomicReference<Thread> thread = new AtomicReference<>();
+    final AtomicReference<Thread> thread = new AtomicReference<>();
 
-    TestExecutor(ThreadFactory threadFactory) {
+    TestExecutor(final ThreadFactory threadFactory) {
       super(threadFactory);
     }
 
     @Override
-    protected void beforeExecute(Thread thread, Runnable task) {
+    @SuppressWarnings("NullableProblems")
+    protected void beforeExecute(final Thread thread, final Runnable task) {
       this.thread.set(thread);
       try {
         super.beforeExecute(thread, task);
@@ -54,9 +55,9 @@ class SuspendableThreadPoolExecutorTest {
     }
   }
 
-  private void sleep(final long millis) {
+  private void sleep() {
     try {
-      Thread.sleep(millis);
+      Thread.sleep(250);
     } catch (InterruptedException ignored) {
     }
   }
@@ -74,26 +75,28 @@ class SuspendableThreadPoolExecutorTest {
 
       final AtomicBoolean executed = new AtomicBoolean();
       executor.execute(() -> executed.set(true));
-      sleep(250L);
+      sleep();
       assertThat(executed).isFalse();
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     void whenAvailable_ShouldExecuteTask() {
 
       final AtomicBoolean executed = new AtomicBoolean();
       executor.setAvailable(true);
       executor.execute(() -> executed.set(true));
-      sleep(250L);
+      sleep();
       assertThat(executed).isTrue();
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     void whenSetAvailableTrueWhileWaiting_ShouldExecuteTask() {
 
       final AtomicBoolean executed = new AtomicBoolean();
       executor.execute(() -> executed.set(true));
-      sleep(250L);
+      sleep();
       executor.setAvailable(true);
       assertThat(executed).isTrue();
     }
@@ -103,7 +106,7 @@ class SuspendableThreadPoolExecutorTest {
 
       final AtomicBoolean executed = new AtomicBoolean();
       final Future<?> task = executor.submit(() -> executed.set(true));
-      sleep(250L);
+      sleep();
       Thread.currentThread().interrupt();
       assertThatExceptionOfType(InterruptedException.class).isThrownBy(task::get);
       assertThat(executed).isFalse();

@@ -35,7 +35,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 class AbstractDocumentSpecsTest {
 
   static class TestSpecs extends AbstractDocumentSpecs {
-    TestSpecs(File file) {
+    TestSpecs(final File file) {
       super(file);
     }
   }

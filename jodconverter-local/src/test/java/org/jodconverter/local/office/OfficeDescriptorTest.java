@@ -23,12 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /** Contains tests for the {@link OfficeDescriptor} class. */
-public class OfficeDescriptorTest {
+class OfficeDescriptorTest {
 
-  private static final String[] HELP_OUTPUT = {
+  private static final String[] LO_HELP_OUTPUT = {
     "LibreOffice 6.4.0.3 b0a288ab3d2d4774cb44b62f04d5d28733ac6df8",
     "",
     "Usage: soffice [argument...]",
@@ -185,42 +186,110 @@ public class OfficeDescriptorTest {
     "                       Used only in unit tests and should have two arguments."
   };
 
-  @Test
-  public void fromHelpOutput_WithLibreOfficeHelpOutput_ShouldReturnLibreOfficeVersionAndGnuStyle() {
+  private static final String[] OO_HELP_OUTPUT = {
+    "OpenOffice 4.1.3  413m1(Build:9783)",
+    "",
+    "Usage: soffice [options] [documents...]",
+    "",
+    "Options:",
+    "",
+    "-minimized      keep startup bitmap minimized.",
+    "-invisible      no startup screen, no default document and no UI.",
+    "-norestore      suppress restart/restore after fatal errors.",
+    "-quickstart     starts the quickstart service (only available on windows and OS/2 platform)",
+    "-nologo         don't show startup screen.",
+    "-nolockcheck    don't check for remote instances using the installation",
+    "-nodefault      don't start with an empty document",
+    "-headless       like invisible but no userinteraction at all.",
+    "-conversionmode enable further optimization for document conversion, includes enabled headless mode.",
+    "-help/-h/-?     show this message and exit.",
+    "-writer         create new text document.",
+    "-calc           create new spreadsheet document.",
+    "-draw           create new drawing.",
+    "-impress        create new presentation.",
+    "-base           create new database.",
+    "-math           create new formula.",
+    "-global         create new global document.",
+    "-web            create new HTML document.",
+    "-o              open documents regardless whether they are templates or not.",
+    "-n              always open documents as new files (use as template).",
+    "",
+    "-display <display>",
+    "      Specify X-Display to use in Unix/X11 versions.",
+    "-p <documents...>",
+    "      print the specified documents on the default printer.",
+    "-pt <printer> <documents...>",
+    "      print the specified documents on the specified printer.",
+    "-view <documents...>",
+    "      open the specified documents in viewer-(readonly-)mode.",
+    "-show <presentation>",
+    "      open the specified presentation and start it immediately",
+    "-accept=<accept-string>",
+    "      Specify an UNO connect-string to create an UNO acceptor through which",
+    "      other programs can connect to access the API",
+    "-unaccept=<accept-string>",
+    "      Close an acceptor that was created with -accept=<accept-string>",
+    "      Use -unnaccept=all to close all open acceptors",
+    "Remaining arguments will be treated as filenames or URLs of documents to open."
+  };
 
-    final OfficeDescriptor descr = OfficeDescriptor.fromHelpOutput(Arrays.asList(HELP_OUTPUT));
-    assertThat(descr.getProduct()).isEqualTo("LibreOffice");
-    assertThat(descr.getVersion()).isEqualTo("6.4.0.3"); // NOPMD - This is not an IP address
-    assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(true);
+  @Nested
+  class LibreOffice {
+
+    @Test
+    void fromHelpOutput_ShouldReturnLibreOfficeVersionAndGnuStyle() {
+
+      final OfficeDescriptor descr = OfficeDescriptor.fromHelpOutput(Arrays.asList(LO_HELP_OUTPUT));
+      assertThat(descr.getProduct()).isEqualTo("LibreOffice");
+      assertThat(descr.getVersion()).isEqualTo("6.4.0.3"); // NOPMD - This is not an IP address
+      assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(true);
+    }
+
+    @Test
+    void fromExecutablePath_ShouldReturnLibreOfficeAndGnuStyle() {
+
+      final OfficeDescriptor descr =
+          OfficeDescriptor.fromExecutablePath("C:\\Program Files\\LibreOffice");
+      assertThat(descr.getProduct()).isEqualTo("LibreOffice");
+      assertThat(descr.getVersion()).isEqualTo("???");
+      assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(true);
+    }
   }
 
-  @Test
-  public void fromHelpOutput_FromLibreOfficeExecutablePath_ShouldReturnLibreOfficeAndGnuStyle() {
+  @Nested
+  class OpenOffice {
 
-    final OfficeDescriptor descr =
-        OfficeDescriptor.fromExecutablePath("C:\\Program Files\\LibreOffice");
-    assertThat(descr.getProduct()).isEqualTo("LibreOffice");
-    assertThat(descr.getVersion()).isEqualTo("???");
-    assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(true);
+    @Test
+    void fromHelpOutput_ShouldReturnOpenOffice() {
+
+      final OfficeDescriptor descr = OfficeDescriptor.fromHelpOutput(Arrays.asList(OO_HELP_OUTPUT));
+      assertThat(descr.getProduct()).isEqualTo("OpenOffice");
+      assertThat(descr.getVersion()).isEqualTo("4.1.3");
+      assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(false);
+    }
+
+    @Test
+    void fromExecutablePath_ShouldReturnOpenOffice() {
+
+      final OfficeDescriptor descr =
+          OfficeDescriptor.fromExecutablePath("C:\\Program Files (x86)\\OpenOffice 4");
+      assertThat(descr.getProduct()).isEqualTo("OpenOffice");
+      assertThat(descr.getVersion()).isEqualTo("???");
+      assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(false);
+    }
   }
 
-  @Test
-  public void fromHelpOutput_FromOpenOfficeExecutablePath_ShouldReturnOpenOffice() {
+  @Nested
+  class InvalidExecutablePath {
 
-    final OfficeDescriptor descr =
-        OfficeDescriptor.fromExecutablePath("C:\\Program Files (x86)\\OpenOffice 4");
-    assertThat(descr.getProduct()).isEqualTo("OpenOffice");
-    assertThat(descr.getVersion()).isEqualTo("???");
-    assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(false);
-  }
+    @Test
+    void shouldReturnUnknownInformation() {
 
-  @Test
-  public void fromHelpOutput_FromUnknownExecutablePath_ShouldReturnUnknownInformation() {
-
-    final OfficeDescriptor descr =
-        OfficeDescriptor.fromExecutablePath("C:\\Program Files (x86)\\Foo");
-    assertThat(descr.getProduct()).isEqualTo("???");
-    assertThat(descr.getVersion()).isEqualTo("???");
-    assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(false);
+      final OfficeDescriptor descr =
+          OfficeDescriptor.fromExecutablePath("C:\\Program Files (x86)\\Foo");
+      assertThat(descr.getProduct()).isEqualTo("???");
+      assertThat(descr.getVersion()).isEqualTo("???");
+      assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(false);
+    }
   }
 }

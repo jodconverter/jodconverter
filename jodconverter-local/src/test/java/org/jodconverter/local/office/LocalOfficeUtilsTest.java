@@ -21,168 +21,392 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.sun.star.beans.PropertyValue;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
-import com.sun.star.uno.UnoRuntime;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
+import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.test.util.AssertUtil;
 import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.core.util.StringUtils;
+import org.jodconverter.local.MockUnoRuntimeExtension;
+import org.jodconverter.local.office.utils.Lo;
+import org.jodconverter.local.office.utils.UnoRuntime;
+import org.jodconverter.local.process.FreeBSDProcessManager;
+import org.jodconverter.local.process.MacProcessManager;
+import org.jodconverter.local.process.UnixProcessManager;
+import org.jodconverter.local.process.WindowsProcessManager;
 
 /** Contains tests for the {@link LocalOfficeUtils} class. */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(UnoRuntime.class)
-@PowerMockRunnerDelegate(JUnit4.class)
-public class LocalOfficeUtilsTest {
+@ExtendWith(MockUnoRuntimeExtension.class)
+class LocalOfficeUtilsTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(LocalOfficeUtils.class);
   }
 
-  @Test(expected = OfficeException.class)
-  public void getDocumentFamily_WithoutValidDocument_ThrowOfficeException() throws OfficeException {
+  @Nested
+  class FindBestProcessManager {
 
-    final XServiceInfo serviceInfo = mock(XServiceInfo.class);
-    given(serviceInfo.supportsService(isA(String.class))).willReturn(false);
+    @Test
+    void onMac_ShouldReturnMacProcessManager() {
+      Assumptions.assumeTrue(OSUtils.IS_OS_MAC);
 
-    final XComponent document = mock(XComponent.class);
-    mockStatic(UnoRuntime.class);
-    given(UnoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      assertThat(LocalOfficeUtils.findBestProcessManager())
+          .isEqualTo(MacProcessManager.getDefault());
+    }
 
-    LocalOfficeUtils.getDocumentFamily(document);
+    @Test
+    void onFreeBSD_ShouldReturnFreeBSDProcessManager() {
+      Assumptions.assumeTrue(OSUtils.IS_OS_FREE_BSD);
+
+      assertThat(LocalOfficeUtils.findBestProcessManager())
+          .isEqualTo(FreeBSDProcessManager.getDefault());
+    }
+
+    @Test
+    void onUnix_ShouldReturnUnixProcessManager() {
+      Assumptions.assumeTrue(OSUtils.IS_OS_UNIX);
+
+      assertThat(LocalOfficeUtils.findBestProcessManager())
+          .isEqualTo(UnixProcessManager.getDefault());
+    }
+
+    @Test
+    void onWindows_ShouldReturnWindowsProcessManager() {
+      Assumptions.assumeTrue(OSUtils.IS_OS_WINDOWS);
+
+      assertThat(LocalOfficeUtils.findBestProcessManager())
+          .isEqualTo(WindowsProcessManager.getDefault());
+    }
   }
 
-  /** Tests the LocalOfficeUtils.toUrl function on unix OS. */
-  @Test
-  public void unixToUrl() {
-    assumeTrue(OSUtils.IS_OS_UNIX);
+  @Nested
+  class BuildOfficeUrls {
 
-    assertThat(toUrl(new File("/tmp/document.odt"))).isEqualTo("file:///tmp/document.odt");
-    assertThat(toUrl(new File("/tmp/document with spaces.odt")))
-        .isEqualTo("file:///tmp/document%20with%20spaces.odt");
+    @Test
+    void withNullPortNumberAndNullPipeName_ShouldReturnOfficeUrlWithDefaultPortNumber() {
+
+      assertThat(LocalOfficeUtils.buildOfficeUrls(null, null))
+          .hasSize(1)
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                      .isEqualTo(
+                          new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
+                              .getConnectionAndParametersAsString()));
+    }
+
+    @Test
+    void withNullPortNumberAndEmptyPipeName_ShouldReturnOfficeUrlWithDefaultPortNumber() {
+
+      assertThat(LocalOfficeUtils.buildOfficeUrls(null, new ArrayList<>()))
+          .hasSize(1)
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                      .isEqualTo(
+                          new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
+                              .getConnectionAndParametersAsString()));
+    }
+
+    @Test
+    void withEmptyPortNumberAndEmptyPipeName_ShouldReturnOfficeUrlWithDefaultPortNumber() {
+
+      assertThat(LocalOfficeUtils.buildOfficeUrls(new ArrayList<>(), new ArrayList<>()))
+          .hasSize(1)
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                      .isEqualTo(
+                          new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
+                              .getConnectionAndParametersAsString()));
+    }
+
+    @Test
+    void withEmptyPortNumberAndNullPipeName_ShouldReturnOfficeUrlWithDefaultPortNumber() {
+
+      assertThat(LocalOfficeUtils.buildOfficeUrls(new ArrayList<>(), null))
+          .hasSize(1)
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                      .isEqualTo(
+                          new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
+                              .getConnectionAndParametersAsString()));
+    }
+
+    @Test
+    void withPortNumbersOnly_ShouldReturnOfficeUrlsWithGivenPortNumbers() {
+
+      final List<Integer> portNumbers = Stream.of(2003, 2004, 2005).collect(Collectors.toList());
+      assertThat(LocalOfficeUtils.buildOfficeUrls(portNumbers, null))
+          .hasSize(3)
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                      .isEqualTo(new OfficeUrl(2003).getConnectionAndParametersAsString()))
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(1).getConnectionAndParametersAsString())
+                      .isEqualTo(new OfficeUrl(2004).getConnectionAndParametersAsString()))
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(2).getConnectionAndParametersAsString())
+                      .isEqualTo(new OfficeUrl(2005).getConnectionAndParametersAsString()));
+    }
+
+    @Test
+    void withPipeNamesOnly_ShouldReturnOfficeUrlsWithGivenPipeNames() {
+
+      final List<String> pipeNames = Stream.of("oo1", "oo2", "oo3").collect(Collectors.toList());
+      assertThat(LocalOfficeUtils.buildOfficeUrls(null, pipeNames))
+          .hasSize(3)
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                      .isEqualTo(new OfficeUrl("oo1").getConnectionAndParametersAsString()))
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(1).getConnectionAndParametersAsString())
+                      .isEqualTo(new OfficeUrl("oo2").getConnectionAndParametersAsString()))
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(2).getConnectionAndParametersAsString())
+                      .isEqualTo(new OfficeUrl("oo3").getConnectionAndParametersAsString()));
+    }
   }
 
-  /** Tests the LocalOfficeUtils.toUrl function on Windows OS. */
-  @Test
-  public void windowsToUrl() {
-    assumeTrue(OSUtils.IS_OS_WINDOWS);
+  @Nested
+  class GetDocumentFamilySilently {
 
-    String tempDir = OfficeUtils.getDefaultWorkingDir().getPath();
-    final File tempDirFile = new File(tempDir);
-    tempDir = StringUtils.appendIfMissing(tempDir, File.separator).replace('\\', '/');
+    @Test
+    void withTextDocument_ShouldReturnTextFamily(final UnoRuntime unoRuntime) {
 
-    assertThat(toUrl(new File(tempDirFile, "document.odt")))
-        .isEqualTo("file:///" + tempDir + "document.odt");
-    assertThat(toUrl(new File(tempDirFile, "document with spaces.odt")))
-        .isEqualTo("file:///" + tempDir + "document%20with%20spaces.odt");
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(true);
+
+      assertThat(LocalOfficeUtils.getDocumentFamilySilently(document))
+          .isEqualTo(DocumentFamily.TEXT);
+    }
+
+    @Test
+    void withCalcDocument_ShouldReturnSpreadsheetFamily(final UnoRuntime unoRuntime) {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.CALC_SERVICE)).willReturn(true);
+
+      assertThat(LocalOfficeUtils.getDocumentFamilySilently(document))
+          .isEqualTo(DocumentFamily.SPREADSHEET);
+    }
+
+    @Test
+    void withImpressDocument_ShouldReturnPresentationFamily(final UnoRuntime unoRuntime) {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.IMPRESS_SERVICE)).willReturn(true);
+
+      assertThat(LocalOfficeUtils.getDocumentFamilySilently(document))
+          .isEqualTo(DocumentFamily.PRESENTATION);
+    }
+
+    @Test
+    void withDrawDocument_ShouldReturnDrawingFamily(final UnoRuntime unoRuntime) {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.DRAW_SERVICE)).willReturn(true);
+
+      assertThat(LocalOfficeUtils.getDocumentFamilySilently(document))
+          .isEqualTo(DocumentFamily.DRAWING);
+    }
+
+    @Test
+    void withInvalidDocument_ShouldReturnNull(final UnoRuntime unoRuntime) {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(isA(String.class))).willReturn(false);
+
+      assertThat(LocalOfficeUtils.getDocumentFamilySilently(document)).isNull();
+    }
   }
 
-  /** Tests the validateOfficeHome with non directory file as argument. */
-  @Test
-  public void validateOfficeHome_WithNonDirectoryOfficeHome_ThrowsIllegalStateException()
-      throws IOException {
+  @Nested
+  class GetDocumentFamily {
 
-    final File tempFile = File.createTempFile("LocalOfficeUtilsTest", "tmp");
-    tempFile.deleteOnExit();
-    assertThatIllegalStateException()
-        .isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(tempFile));
+    @Test
+    void withInvalidDocument_ShouldThrowOfficeException(final UnoRuntime unoRuntime) {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(isA(String.class))).willReturn(false);
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> LocalOfficeUtils.getDocumentFamily(document));
+    }
+
+    @Test
+    void withValidDocument_ShouldNotThrowAnyException(final UnoRuntime unoRuntime) {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(isA(String.class))).willReturn(true);
+
+      assertThatCode(() -> LocalOfficeUtils.getDocumentFamily(document)).doesNotThrowAnyException();
+    }
   }
 
-  /** Tests the validateOfficeHome when office bin is not found. */
-  @Test
-  public void validateOfficeHome_WithOfficeBinNotFound_ThrowsIllegalStateException() {
+  @Nested
+  class ToUnoProperties {
 
-    final File tempDir = OfficeUtils.getDefaultWorkingDir();
-    final File officeHome = new File(tempDir, UUID.randomUUID().toString());
-    //noinspection ResultOfMethodCallIgnored
-    officeHome.mkdirs();
-    assertThatIllegalStateException()
-        .isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(officeHome));
+    @Test
+    void shouldRecurseOnMapProperties() {
+
+      final Map<String, Object> properties = new LinkedHashMap<>();
+      properties.put("Prop1", "Value1");
+      final Map<String, Object> embedded = new LinkedHashMap<>();
+      embedded.put("EmbedProp1", "EmbedValue1");
+      embedded.put("EmbedProp2", "EmbedValue2");
+      properties.put("Prop2", embedded);
+
+      final PropertyValue[] unoProps = LocalOfficeUtils.toUnoProperties(properties);
+      assertThat(unoProps).hasSize(2);
+      assertThat(unoProps[0]).extracting("Name", "Value").containsExactly("Prop1", "Value1");
+      assertThat(unoProps[1])
+          .hasFieldOrPropertyWithValue("Name", "Prop2")
+          .extracting("Value")
+          .asInstanceOf(InstanceOfAssertFactories.ARRAY)
+          .hasSize(2)
+          .satisfies(
+              arr -> {
+                assertThat(arr[0])
+                    .extracting("Name", "Value")
+                    .containsExactly("EmbedProp1", "EmbedValue1");
+                assertThat(arr[1])
+                    .extracting("Name", "Value")
+                    .containsExactly("EmbedProp2", "EmbedValue2");
+              });
+    }
   }
 
-  /** Tests the validateOfficeTemplateProfileDirectory with null as argument. */
-  @Test
-  public void validateOfficeTemplateProfileDir_WithNullDir_ValidateSuccessfully() {
+  @Nested
+  class ToUrl {
 
-    assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(null))
-        .doesNotThrowAnyException();
+    @Test
+    void onUnix() {
+      assumeTrue(OSUtils.IS_OS_UNIX);
+
+      assertThat(toUrl(new File("/tmp/document.odt"))).isEqualTo("file:///tmp/document.odt");
+      assertThat(toUrl(new File("/tmp/document with spaces.odt")))
+          .isEqualTo("file:///tmp/document%20with%20spaces.odt");
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void onWindows(final @TempDir File testFolder) {
+      assumeTrue(OSUtils.IS_OS_WINDOWS);
+
+      String tempDir = testFolder.getPath();
+      tempDir = StringUtils.appendIfMissing(tempDir, File.separator).replace('\\', '/');
+
+      assertThat(toUrl(new File(testFolder, "document.odt")))
+          .isEqualTo("file:///" + tempDir + "document.odt");
+      assertThat(toUrl(new File(testFolder, "document with spaces.odt")))
+          .isEqualTo("file:///" + tempDir + "document%20with%20spaces.odt");
+    }
   }
 
-  /** Tests the validateOfficeTemplateProfileDirectory when user sub directory is found. */
-  @Test
-  public void validateOfficeTemplateProfileDir_WithUserDirFound_ValidateSuccessfully() {
+  @Nested
+  class ValidateOfficeHome {
 
-    final File tempDir = OfficeUtils.getDefaultWorkingDir();
-    final File profileDir = new File(tempDir, UUID.randomUUID().toString());
-    //noinspection ResultOfMethodCallIgnored
-    new File(profileDir, "user").mkdirs();
-    assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir))
-        .doesNotThrowAnyException();
+    /** Tests the validateOfficeHome with non directory file as argument. */
+    @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    void whenNotDirectory_ShouldThrowIllegalStateException(final @TempDir File testFolder)
+        throws IOException {
+
+      final File tempFile = new File(testFolder, "tmp");
+      tempFile.createNewFile();
+      assertThatIllegalStateException()
+          .isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(tempFile));
+    }
+
+    @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    void whenOfficeBinNotFound_ShouldThrowIllegalStateException(final @TempDir File testFolder) {
+
+      final File officeHome = new File(testFolder, UUID.randomUUID().toString());
+      officeHome.mkdirs();
+      assertThatIllegalStateException()
+          .isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(officeHome));
+    }
   }
 
-  /** Tests the validateOfficeTemplateProfileDirectory when user sub directory is not found. */
-  @Test
-  public void validateOfficeTemplateProfileDir_WithUserDirNotFound_ThrowsIllegalStateException() {
+  @Nested
+  class ValidateOfficeTemplateProfileDir {
 
-    final File tempDir = OfficeUtils.getDefaultWorkingDir();
-    final File profileDir = new File(tempDir, UUID.randomUUID().toString());
-    //noinspection ResultOfMethodCallIgnored
-    profileDir.mkdirs();
-    assertThatIllegalStateException()
-        .isThrownBy(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir));
-  }
+    @Test
+    void withNull_ValidateSuccessfully() {
 
-  /** Tests the validateOfficeWorkingDirectory with a file as argument. */
-  @Test
-  public void validateOfficeWorkingDirectory_WithFile_ThrowsIllegalStateException()
-      throws IOException {
+      assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(null))
+          .doesNotThrowAnyException();
+    }
 
-    final File tempFile = File.createTempFile("LocalOfficeUtilsTest", "tmp");
-    tempFile.deleteOnExit();
-    assertThatIllegalStateException()
-        .isThrownBy(() -> LocalOfficeUtils.validateOfficeWorkingDirectory(tempFile));
-  }
+    @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    void whenChildUserDirFound_ValidateSuccessfully(final @TempDir File testFolder) {
 
-  /** Tests the validateOfficeWorkingDirectory with an unexisting directory as argument. */
-  @Test
-  public void validateOfficeWorkingDirectory_WithUnexistingDirectory_ThrowsIllegalStateException() {
+      final File profileDir = new File(testFolder, UUID.randomUUID().toString());
+      new File(profileDir, "user").mkdirs();
+      assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir))
+          .doesNotThrowAnyException();
+    }
 
-    final File tempDir = OfficeUtils.getDefaultWorkingDir();
-    final File workingDir = new File(tempDir, UUID.randomUUID().toString());
-    assertThatIllegalStateException()
-        .isThrownBy(() -> LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir));
-  }
+    @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    void whenChildUserDirNotFound_ShouldThrowIllegalStateException(final @TempDir File testFolder) {
 
-  /** Tests the validateOfficeWorkingDirectory with a read only directory as argument fails. */
-  @Test
-  public void validateOfficeWorkingDirectory_WithReadOnlyDirectory_ThrowsIllegalStateException() {
-
-    final File tempDir = OfficeUtils.getDefaultWorkingDir();
-    final File workingDir = new File(tempDir, UUID.randomUUID().toString());
-    //noinspection ResultOfMethodCallIgnored
-    workingDir.setWritable(false);
-    assertThatIllegalStateException()
-        .isThrownBy(() -> LocalOfficeUtils.validateOfficeWorkingDirectory(workingDir));
+      final File profileDir = new File(testFolder, UUID.randomUUID().toString());
+      profileDir.mkdirs();
+      assertThatIllegalStateException()
+          .isThrownBy(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir));
+    }
   }
 }

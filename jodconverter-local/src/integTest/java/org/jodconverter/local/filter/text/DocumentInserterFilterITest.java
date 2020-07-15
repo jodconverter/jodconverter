@@ -38,10 +38,10 @@ import org.jodconverter.local.LocalOfficeManagerExtension;
 
 /** Contains tests for the {@link DocumentInserterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class DocumentInserterFilterITest {
+class DocumentInserterFilterITest {
 
   @Test
-  public void doFilter_With2Filter_TargetShouldContainAllDocuments(
+  void with2Filter_TargetShouldContainAllDocuments(
       final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File sourceFile = documentFile("test.doc");

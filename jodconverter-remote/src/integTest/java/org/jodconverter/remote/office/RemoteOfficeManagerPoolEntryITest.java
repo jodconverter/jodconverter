@@ -21,71 +21,97 @@ package org.jodconverter.remote.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT;
+import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.SimpleOfficeTask;
+import org.jodconverter.core.task.SimpleOfficeTask;
 
 /** Contains tests for the {@link RemoteOfficeManagerPoolEntry} class. */
-public class RemoteOfficeManagerPoolEntryITest {
+class RemoteOfficeManagerPoolEntryITest {
 
-  @Test
-  public void execute_WhenMalformedUrlExceptionCatch_ShouldThrowOfficeException() throws Exception {
+  @Nested
+  class DoExecute {
 
-    final RemoteOfficeManagerPoolEntry manager =
-        new RemoteOfficeManagerPoolEntry("localhost", null, null, null, null);
-    try {
-      manager.start();
+    @Test
+    void whenMalformedUrlExceptionCatch_ShouldThrowOfficeException() throws Exception {
 
-      assertThat(manager.isRunning()).isTrue();
-      assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(() -> manager.execute(new SimpleOfficeTask()))
-          .withCauseExactlyInstanceOf(MalformedURLException.class);
-    } finally {
+      final RemoteOfficeManagerPoolEntry manager =
+          new RemoteOfficeManagerPoolEntry(
+              "localhost",
+              null,
+              DEFAULT_CONNECT_TIMEOUT,
+              DEFAULT_SOCKET_TIMEOUT,
+              DEFAULT_TASK_EXECUTION_TIMEOUT);
+      try {
+        manager.start();
 
-      manager.stop();
-      assertThat(manager.isRunning()).isFalse();
+        assertThat(manager.isRunning()).isTrue();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(() -> manager.execute(new SimpleOfficeTask()))
+            .withCauseExactlyInstanceOf(MalformedURLException.class);
+      } finally {
+
+        manager.stop();
+        assertThat(manager.isRunning()).isFalse();
+      }
+    }
+
+    @Test
+    void whenIOExceptionExceptionCatch_ShouldThrowOfficeException() throws Exception {
+
+      final RemoteOfficeManagerPoolEntry manager =
+          new RemoteOfficeManagerPoolEntry(
+              "http://localhost/",
+              null,
+              DEFAULT_CONNECT_TIMEOUT,
+              DEFAULT_SOCKET_TIMEOUT,
+              DEFAULT_TASK_EXECUTION_TIMEOUT);
+      try {
+        manager.start();
+
+        assertThat(manager.isRunning()).isTrue();
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(() -> manager.execute(new SimpleOfficeTask(new IOException())))
+            .withCauseExactlyInstanceOf(IOException.class);
+      } finally {
+
+        manager.stop();
+        assertThat(manager.isRunning()).isFalse();
+      }
     }
   }
 
-  @Test
-  public void execute_WhenIoExceptionExceptionCatch_ShouldThrowOfficeException() throws Exception {
+  @Nested
+  class BuildUrl {
 
-    final RemoteOfficeManagerPoolEntry manager =
-        new RemoteOfficeManagerPoolEntry("http://localhost/", null, null, null, null);
-    try {
-      manager.start();
+    @Test
+    void withAllValidUrlOptions_ShoulReturnProperUrlWithLoolExtension() throws Exception {
 
-      assertThat(manager.isRunning()).isTrue();
-      assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(() -> manager.execute(new SimpleOfficeTask(new IOException())))
-          .withCauseExactlyInstanceOf(IOException.class);
-    } finally {
+      final RemoteOfficeManagerPoolEntry manager =
+          new RemoteOfficeManagerPoolEntry(
+              "http://localhost/",
+              null,
+              DEFAULT_CONNECT_TIMEOUT,
+              DEFAULT_SOCKET_TIMEOUT,
+              DEFAULT_TASK_EXECUTION_TIMEOUT);
 
-      manager.stop();
-      assertThat(manager.isRunning()).isFalse();
+      String url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/lool/convert-to");
+      assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
+      url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/lool/convert-to/");
+      assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
+      url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost");
+      assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
+      url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/");
+      assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
     }
-  }
-
-  @Test
-  public void buildUrl_WithAllValidUrlOptions_ShoulReturnProperUrlWithLoolExtension()
-      throws Exception {
-
-    final RemoteOfficeManagerPoolEntry manager =
-        new RemoteOfficeManagerPoolEntry("http://localhost/", null, null, null, null);
-
-    String url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/lool/convert-to");
-    assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-    url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/lool/convert-to/");
-    assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-    url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost");
-    assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-    url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/");
-    assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
   }
 }

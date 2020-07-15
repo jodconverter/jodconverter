@@ -20,14 +20,26 @@
 package org.jodconverter.spring;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
 
 import java.io.File;
 import java.util.Collections;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
@@ -45,47 +57,57 @@ public class JodConverterBeanITest {
       assertThat(bean)
           .extracting("officeManager")
           .isInstanceOf(LocalOfficeManager.class)
-          .extracting("workingDir", "taskQueueTimeout")
-          .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
-
-      assertThat(bean)
-          .extracting("officeManager.entries")
-          .asList()
-          .hasSize(1)
-          .element(0)
           .satisfies(
-              o ->
-                  assertThat(o)
-                      .extracting(
-                          "taskExecutionTimeout",
-                          "maxTasksPerProcess",
-                          "officeProcessManager.processTimeout",
-                          "officeProcessManager.processRetryInterval",
-                          "officeProcessManager.disableOpengl",
-                          "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
-                          "officeProcessManager.process.officeHome",
-                          "officeProcessManager.process.processManager",
-                          "officeProcessManager.process.runAsArgs",
-                          "officeProcessManager.process.templateProfileDir",
-                          "officeProcessManager.process.killExistingProcess",
-                          "officeProcessManager.process.instanceProfileDir",
-                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
-                      .containsExactly(
-                          120_000L,
-                          200,
-                          120_000L,
-                          250L,
-                          false,
-                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
-                          LocalOfficeUtils.getDefaultOfficeHome(),
-                          LocalOfficeUtils.findBestProcessManager(),
-                          Collections.EMPTY_LIST,
-                          null,
-                          true,
-                          new File(
-                              OfficeUtils.getDefaultWorkingDir(),
-                              ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
-                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
+              manager -> {
+                assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+                assertThat(manager)
+                    .extracting("tempDir")
+                    .satisfies(
+                        o ->
+                            assertThat(o)
+                                .asInstanceOf(InstanceOfAssertFactories.FILE)
+                                .hasParent(OfficeUtils.getDefaultWorkingDir()));
+                assertThat(manager)
+                    .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+                assertThat(manager)
+                    .extracting("entries")
+                    .asList()
+                    .hasSize(1)
+                    .element(0)
+                    .satisfies(
+                        o ->
+                            assertThat(o)
+                                .extracting(
+                                    "taskExecutionTimeout",
+                                    "maxTasksPerProcess",
+                                    "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                                    "officeProcessManager.officeHome",
+                                    "officeProcessManager.processManager",
+                                    "officeProcessManager.runAsArgs",
+                                    "officeProcessManager.templateProfileDir",
+                                    "officeProcessManager.processTimeout",
+                                    "officeProcessManager.processRetryInterval",
+                                    "officeProcessManager.disableOpengl",
+                                    "officeProcessManager.existingProcessAction",
+                                    "officeProcessManager.startFailFast",
+                                    "officeProcessManager.keepAliveOnShutdown",
+                                    "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                                .containsExactly(
+                                    DEFAULT_TASK_EXECUTION_TIMEOUT,
+                                    DEFAULT_MAX_TASKS_PER_PROCESS,
+                                    "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                                    LocalOfficeUtils.getDefaultOfficeHome(),
+                                    LocalOfficeUtils.findBestProcessManager(),
+                                    Collections.EMPTY_LIST,
+                                    null,
+                                    DEFAULT_PROCESS_TIMEOUT,
+                                    DEFAULT_PROCESS_RETRY_INTERVAL,
+                                    DEFAULT_DISABLE_OPENGL,
+                                    DEFAULT_EXISTING_PROCESS_ACTION,
+                                    DEFAULT_START_FAIL_FAST,
+                                    DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                                    "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
+              });
 
     } finally {
       bean.destroy();
@@ -93,67 +115,88 @@ public class JodConverterBeanITest {
   }
 
   @Test
-  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues()
-      throws OfficeException {
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues(
+      final @TempDir File testFolder) throws OfficeException {
+
+    final File workingDir = new File(testFolder, "temp");
+    workingDir.mkdirs();
+
+    final File templateProfileDir = new File(testFolder, "template");
+    new File(templateProfileDir, "user").mkdirs();
 
     final JodConverterBean bean = new JodConverterBean();
-    bean.setOfficeHome(LocalOfficeUtils.getDefaultOfficeHome().getAbsolutePath());
-    bean.setPortNumbers("2003");
-    bean.setWorkingDir(System.getProperty("java.io.tmpdir"));
-    bean.setTemplateProfileDir("src/integTest/resources/templateProfileDir");
-    bean.setKillExistingProcess(false);
-    bean.setProcessTimeout(40_000L);
-    bean.setProcessRetryInterval(1_000L);
-    bean.setTaskExecutionTimeout(20_000L);
-    bean.setMaxTasksPerProcess(10);
-    bean.setTaskQueueTimeout(1_000L);
+    bean.setWorkingDir(workingDir.getPath());
+    bean.setTaskExecutionTimeout(500L);
+    bean.setTaskQueueTimeout(501L);
+    bean.setPortNumbers("2005");
+    bean.setOfficeHome(LocalOfficeUtils.getDefaultOfficeHome().getPath());
+    bean.setTemplateProfileDir(templateProfileDir.getPath());
+    bean.setTemplateProfileDirOrDefault(templateProfileDir.getPath());
+    bean.setProcessTimeout(120_001L);
+    bean.setProcessRetryInterval(255L);
+    bean.setDisableOpengl(false);
+    bean.setExistingProcessAction(ExistingProcessAction.KILL);
+    bean.setStartFailFast(true);
+    bean.setKeepAliveOnShutdown(false);
+    bean.setMaxTasksPerProcess(99);
+
     try {
       bean.afterPropertiesSet();
 
       assertThat(bean)
           .extracting("officeManager")
           .isInstanceOf(LocalOfficeManager.class)
-          .extracting("workingDir", "taskQueueTimeout")
-          .containsExactly(OfficeUtils.getDefaultWorkingDir(), 1_000L);
-
-      assertThat(bean)
-          .extracting("officeManager.entries")
-          .asList()
-          .hasSize(1)
-          .element(0)
           .satisfies(
-              o ->
-                  assertThat(o)
-                      .extracting(
-                          "taskExecutionTimeout",
-                          "maxTasksPerProcess",
-                          "officeProcessManager.processTimeout",
-                          "officeProcessManager.processRetryInterval",
-                          "officeProcessManager.disableOpengl",
-                          "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
-                          "officeProcessManager.process.officeHome",
-                          "officeProcessManager.process.processManager",
-                          "officeProcessManager.process.runAsArgs",
-                          "officeProcessManager.process.templateProfileDir",
-                          "officeProcessManager.process.killExistingProcess",
-                          "officeProcessManager.process.instanceProfileDir",
-                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
-                      .containsExactly(
-                          20_000L,
-                          10,
-                          40_000L,
-                          1_000L,
-                          false,
-                          "socket,host=127.0.0.1,port=2003,tcpNoDelay=1",
-                          LocalOfficeUtils.getDefaultOfficeHome(),
-                          LocalOfficeUtils.findBestProcessManager(),
-                          Collections.EMPTY_LIST,
-                          new File("src/integTest/resources/templateProfileDir"),
-                          false,
-                          new File(
-                              OfficeUtils.getDefaultWorkingDir(),
-                              ".jodconverter_socket_host-127.0.0.1_port-2003_tcpNoDelay-1"),
-                          "socket,host=127.0.0.1,port=2003,tcpNoDelay=1"));
+              manager -> {
+                assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+                assertThat(manager)
+                    .extracting("tempDir")
+                    .satisfies(
+                        o ->
+                            assertThat(o)
+                                .asInstanceOf(InstanceOfAssertFactories.FILE)
+                                .hasParent(workingDir));
+                assertThat(manager).hasFieldOrPropertyWithValue("taskQueueTimeout", 501L);
+                assertThat(manager)
+                    .extracting("entries")
+                    .asList()
+                    .hasSize(1)
+                    .element(0)
+                    .satisfies(
+                        o ->
+                            assertThat(o)
+                                .extracting(
+                                    "taskExecutionTimeout",
+                                    "maxTasksPerProcess",
+                                    "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                                    "officeProcessManager.officeHome",
+                                    "officeProcessManager.processManager",
+                                    "officeProcessManager.runAsArgs",
+                                    "officeProcessManager.templateProfileDir",
+                                    "officeProcessManager.processTimeout",
+                                    "officeProcessManager.processRetryInterval",
+                                    "officeProcessManager.disableOpengl",
+                                    "officeProcessManager.existingProcessAction",
+                                    "officeProcessManager.startFailFast",
+                                    "officeProcessManager.keepAliveOnShutdown",
+                                    "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                                .containsExactly(
+                                    500L,
+                                    99,
+                                    "socket,host=127.0.0.1,port=2005,tcpNoDelay=1",
+                                    LocalOfficeUtils.getDefaultOfficeHome(),
+                                    LocalOfficeUtils.findBestProcessManager(),
+                                    Collections.EMPTY_LIST,
+                                    templateProfileDir,
+                                    120_001L,
+                                    255L,
+                                    false,
+                                    ExistingProcessAction.KILL,
+                                    true,
+                                    false,
+                                    "socket,host=127.0.0.1,port=2005,tcpNoDelay=1"));
+              });
 
     } finally {
       bean.destroy();
@@ -172,47 +215,57 @@ public class JodConverterBeanITest {
       assertThat(bean)
           .extracting("officeManager")
           .isInstanceOf(LocalOfficeManager.class)
-          .extracting("workingDir", "taskQueueTimeout")
-          .containsExactly(OfficeUtils.getDefaultWorkingDir(), 30_000L);
-
-      assertThat(bean)
-          .extracting("officeManager.entries")
-          .asList()
-          .hasSize(1)
-          .element(0)
           .satisfies(
-              o ->
-                  assertThat(o)
-                      .extracting(
-                          "taskExecutionTimeout",
-                          "maxTasksPerProcess",
-                          "officeProcessManager.processTimeout",
-                          "officeProcessManager.processRetryInterval",
-                          "officeProcessManager.disableOpengl",
-                          "officeProcessManager.process.officeUrl.connectionAndParametersAsString",
-                          "officeProcessManager.process.officeHome",
-                          "officeProcessManager.process.processManager",
-                          "officeProcessManager.process.runAsArgs",
-                          "officeProcessManager.process.templateProfileDir",
-                          "officeProcessManager.process.killExistingProcess",
-                          "officeProcessManager.process.instanceProfileDir",
-                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
-                      .containsExactly(
-                          120_000L,
-                          200,
-                          120_000L,
-                          250L,
-                          false,
-                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
-                          LocalOfficeUtils.getDefaultOfficeHome(),
-                          LocalOfficeUtils.findBestProcessManager(),
-                          Collections.EMPTY_LIST,
-                          null,
-                          true,
-                          new File(
-                              OfficeUtils.getDefaultWorkingDir(),
-                              ".jodconverter_socket_host-127.0.0.1_port-2002_tcpNoDelay-1"),
-                          "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
+              manager -> {
+                assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+                assertThat(manager)
+                    .extracting("tempDir")
+                    .satisfies(
+                        o ->
+                            assertThat(o)
+                                .asInstanceOf(InstanceOfAssertFactories.FILE)
+                                .hasParent(OfficeUtils.getDefaultWorkingDir()));
+                assertThat(manager)
+                    .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+                assertThat(manager)
+                    .extracting("entries")
+                    .asList()
+                    .hasSize(1)
+                    .element(0)
+                    .satisfies(
+                        o ->
+                            assertThat(o)
+                                .extracting(
+                                    "taskExecutionTimeout",
+                                    "maxTasksPerProcess",
+                                    "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                                    "officeProcessManager.officeHome",
+                                    "officeProcessManager.processManager",
+                                    "officeProcessManager.runAsArgs",
+                                    "officeProcessManager.templateProfileDir",
+                                    "officeProcessManager.processTimeout",
+                                    "officeProcessManager.processRetryInterval",
+                                    "officeProcessManager.disableOpengl",
+                                    "officeProcessManager.existingProcessAction",
+                                    "officeProcessManager.startFailFast",
+                                    "officeProcessManager.keepAliveOnShutdown",
+                                    "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                                .containsExactly(
+                                    DEFAULT_TASK_EXECUTION_TIMEOUT,
+                                    DEFAULT_MAX_TASKS_PER_PROCESS,
+                                    "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
+                                    LocalOfficeUtils.getDefaultOfficeHome(),
+                                    LocalOfficeUtils.findBestProcessManager(),
+                                    Collections.EMPTY_LIST,
+                                    null,
+                                    DEFAULT_PROCESS_TIMEOUT,
+                                    DEFAULT_PROCESS_RETRY_INTERVAL,
+                                    DEFAULT_DISABLE_OPENGL,
+                                    DEFAULT_EXISTING_PROCESS_ACTION,
+                                    DEFAULT_START_FAIL_FAST,
+                                    DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                                    "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
+              });
 
     } finally {
       bean.destroy();

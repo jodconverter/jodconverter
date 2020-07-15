@@ -39,7 +39,7 @@ import org.jodconverter.core.util.FileUtils;
 
 /** Contains performance tests. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class PerformanceITest {
+class PerformanceITest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceITest.class);
 
@@ -97,7 +97,7 @@ public class PerformanceITest {
   }
 
   @Test
-  public void runTest(final DocumentConverter converter) {
+  void runTest(final DocumentConverter converter) {
 
     final File dir = new File("src/integTest/resources/performance");
     final File[] files =

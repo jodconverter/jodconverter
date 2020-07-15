@@ -25,32 +25,39 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.sun.star.lang.XComponent;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.office.OfficeContext;
 
 /** Contains tests for the {@link NoopFilter} class. */
-public class NoopFilterTest {
+class NoopFilterTest {
 
-  /** Tests that a NoopFilter.CHAIN is read only. */
-  @Test
-  public void chain_ShouldBeReadOnly() {
+  @Nested
+  class NoopFilterChain {
 
-    assertThatExceptionOfType(UnsupportedOperationException.class)
-        .isThrownBy(() -> NoopFilter.CHAIN.addFilter(NoopFilter.NOOP));
+    @Test
+    void chain_ShouldBeReadOnly() {
+
+      assertThatExceptionOfType(UnsupportedOperationException.class)
+          .isThrownBy(() -> NoopFilter.CHAIN.addFilter(NoopFilter.NOOP));
+    }
   }
 
-  /** Tests that a NoopFilter#doFilter execute the next filter in the chain. */
-  @Test
-  public void doFilter_ShouldCallNextFilter() throws Exception {
+  @Nested
+  class DoFilter {
 
-    final Filter filter = mock(Filter.class);
-    final OfficeContext context = mock(OfficeContext.class);
-    final XComponent document = mock(XComponent.class);
-    final DefaultFilterChain chain = new DefaultFilterChain(NoopFilter.NOOP, filter);
-    chain.doFilter(context, document);
+    @Test
+    void shouldCallNextFilter() throws Exception {
 
-    // Verify that the filter is called.
-    verify(filter, times(1)).doFilter(context, document, chain);
+      final Filter filter = mock(Filter.class);
+      final OfficeContext context = mock(OfficeContext.class);
+      final XComponent document = mock(XComponent.class);
+      final DefaultFilterChain chain = new DefaultFilterChain(NoopFilter.NOOP, filter);
+      chain.doFilter(context, document);
+
+      // Verify that the filter is called.
+      verify(filter, times(1)).doFilter(context, document, chain);
+    }
   }
 }

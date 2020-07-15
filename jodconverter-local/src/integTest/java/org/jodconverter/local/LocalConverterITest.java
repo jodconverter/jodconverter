@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -41,119 +42,132 @@ import org.jodconverter.core.util.FileUtils;
 
 /** Contains tests for the {@link LocalConverter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class LocalConverterITest {
+class LocalConverterITest {
 
   private static final File SOURCE_FILE = documentFile("/test.doc");
 
-  @Test
-  public void convert_FromFileToFile_ShouldSucceeded(
-      final @TempDir File testFolder, final DocumentConverter converter) {
+  @Nested
+  class FromFileToFile {
 
-    final File outputFile = new File(testFolder, "out.pdf");
+    @Test
+    void docToPdf_ShouldSucceed(final @TempDir File testFolder, final DocumentConverter converter) {
 
-    assertThatCode(() -> converter.convert(SOURCE_FILE).to(outputFile).execute())
-        .doesNotThrowAnyException();
+      final File outputFile = new File(testFolder, "out.pdf");
 
-    assertThat(outputFile).isFile();
-    assertThat(outputFile.length()).isGreaterThan(0L);
-  }
-
-  @Test
-  public void convert_FromStreamToFileWithNullInputFormat_ShouldThrowNullPointerException(
-      final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
-
-    final File outputFile = new File(testFolder, "out.pdf");
-
-    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
-      assertThatNullPointerException()
-          .isThrownBy(() -> converter.convert(stream).as(null).to(outputFile).execute());
-    }
-  }
-
-  @Test
-  public void convert_FromStreamToFileWithoutInputFormat_ShouldSucceeded(
-      final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
-
-    final File outputFile = new File(testFolder, "out.pdf");
-    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
-      assertThatCode(() -> converter.convert(stream).to(outputFile).execute())
+      assertThatCode(() -> converter.convert(SOURCE_FILE).to(outputFile).execute())
           .doesNotThrowAnyException();
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
     }
   }
 
-  @Test
-  public void convert_FromStreamToFileWithSupportedInputFormat_ShouldSucceeded(
-      final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
+  @Nested
+  class FromStreamToFile {
 
-    final File outputFile = new File(testFolder, "out.pdf");
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNullInputFormat_ShouldThrowNullPointerException(
+        final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
 
-    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
-      assertThatCode(
-              () ->
-                  converter
-                      .convert(stream)
-                      .as(DefaultDocumentFormatRegistry.DOC)
-                      .to(outputFile)
-                      .execute())
-          .doesNotThrowAnyException();
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+        assertThatNullPointerException()
+            .isThrownBy(() -> converter.convert(stream).as(null).to(outputFile).execute());
+      }
     }
 
-    assertThat(outputFile).isFile();
-    assertThat(outputFile.length()).isGreaterThan(0L);
+    @Test
+    void withoutInputFormat_ShouldSucceed(
+        final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+        assertThatCode(() -> converter.convert(stream).to(outputFile).execute())
+            .doesNotThrowAnyException();
+      }
+    }
+
+    @Test
+    void withSupportedInputFormat_ShouldSucceed(
+        final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+        assertThatCode(
+                () ->
+                    converter
+                        .convert(stream)
+                        .as(DefaultDocumentFormatRegistry.DOC)
+                        .to(outputFile)
+                        .execute())
+            .doesNotThrowAnyException();
+      }
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
   }
 
-  @Test
-  public void convert_FromFileToStreamWithMissingOutputFormat_ShouldThrowNullPointerException(
-      final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
+  @Nested
+  class FromFileToStream {
 
-    final File outputFile = new File(testFolder, "out.pdf");
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withMissingOutputFormat_ShouldThrowNullPointerException(
+        final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
 
-    try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
-      assertThatNullPointerException()
-          .isThrownBy(() -> converter.convert(SOURCE_FILE).to(stream).as(null).execute());
-    }
-  }
+      final File outputFile = new File(testFolder, "out.pdf");
 
-  @Test
-  public void convert_FromFileToStreamWithSupportedOutputFormat_ShouldSucceeded(
-      final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
-
-    final File outputFile = new File(testFolder, "out.pdf");
-
-    try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
-      assertThatCode(
-              () ->
-                  converter
-                      .convert(SOURCE_FILE)
-                      .to(stream)
-                      .as(DefaultDocumentFormatRegistry.PDF)
-                      .execute())
-          .doesNotThrowAnyException();
+      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+        assertThatNullPointerException()
+            .isThrownBy(() -> converter.convert(SOURCE_FILE).to(stream).as(null).execute());
+      }
     }
 
-    assertThat(outputFile).isFile();
-    assertThat(outputFile.length()).isGreaterThan(0L);
-  }
+    @Test
+    void withSupportedOutputFormat_ShouldSucceed(
+        final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
 
-  @Test
-  public void convert_FromFileWithoutExtensionToFile_ShouldSucceeded(
-      final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
+      final File outputFile = new File(testFolder, "out.pdf");
 
-    final File sourceFile = documentFile("test");
-    final File outputFile = new File(testFolder, "out.pdf");
+      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+        assertThatCode(
+                () ->
+                    converter
+                        .convert(SOURCE_FILE)
+                        .to(stream)
+                        .as(DefaultDocumentFormatRegistry.PDF)
+                        .execute())
+            .doesNotThrowAnyException();
+      }
 
-    try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
-      assertThatCode(
-              () ->
-                  converter
-                      .convert(sourceFile)
-                      .to(stream)
-                      .as(DefaultDocumentFormatRegistry.TXT)
-                      .execute())
-          .doesNotThrowAnyException();
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
     }
 
-    final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-    assertThat(content).as("Check content: %s", content).contains("Test document");
+    @Test
+    void withoutExtension_ShouldSucceed(
+        final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
+
+      final File sourceFile = documentFile("test");
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+        assertThatCode(
+                () ->
+                    converter
+                        .convert(sourceFile)
+                        .to(stream)
+                        .as(DefaultDocumentFormatRegistry.TXT)
+                        .execute())
+            .doesNotThrowAnyException();
+      }
+
+      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      assertThat(content).as("Check content: %s", content).contains("Test document");
+    }
   }
 }

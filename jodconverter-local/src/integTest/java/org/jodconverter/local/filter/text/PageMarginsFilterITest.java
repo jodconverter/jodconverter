@@ -34,18 +34,13 @@ import org.jodconverter.local.LocalOfficeManagerExtension;
 
 /** Contains tests for the {@link PageMarginsFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class PageMarginsFilterITest {
+class PageMarginsFilterITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
   private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
 
-  /**
-   * Test the conversion of a document, settings specifics margins. We can't really test the result,
-   * but at least we will test the the conversion doesn't fail.
-   */
   @Test
-  public void doFilter_WithMargins_ShouldConvertDocument(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withMargins(final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".margins.pdf");
 
@@ -62,13 +57,8 @@ public class PageMarginsFilterITest {
         .doesNotThrowAnyException();
   }
 
-  /**
-   * Test the conversion of a document, settings margins to null (no change). We can't really test
-   * the result, but at least we will test the the conversion doesn't fail.
-   */
   @Test
-  public void doFilter_WithNullMargins_ShouldConvertDocument(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withNullMargins(final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".nullmargins.pdf");
 
@@ -80,29 +70,6 @@ public class PageMarginsFilterITest {
                     .filterChain(new PageMarginsFilter(null, null, null, null))
                     .build()
                     .convert(SOURCE_FILE)
-                    .to(targetFile)
-                    .execute())
-        .doesNotThrowAnyException();
-  }
-
-  /**
-   * Test the conversion of a document which is not a TEXT document. We can't really test the
-   * result, but at least we will test the the conversion doesn't fail (filter does nothing).
-   */
-  @Test
-  public void doFilter_WithBadDocumentType_DoNothing(
-      final @TempDir File testFolder, final OfficeManager manager) {
-
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".badtype.pdf");
-
-    // Test the filter
-    assertThatCode(
-            () ->
-                LocalConverter.builder()
-                    .officeManager(manager)
-                    .filterChain(new PageMarginsFilter(null, null, null, null))
-                    .build()
-                    .convert(documentFile("test.xls"))
                     .to(targetFile)
                     .execute())
         .doesNotThrowAnyException();

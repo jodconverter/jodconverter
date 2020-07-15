@@ -38,11 +38,10 @@ import org.jodconverter.local.office.LocalOfficeContext;
 
 /** Contains tests for the {@link Info} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class InfoITest {
+class InfoITest {
 
   @Test
-  public void getInfos_NoExceptionThrown(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void getInfos_NoExceptionThrown(final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
         (context, document, chain) -> {

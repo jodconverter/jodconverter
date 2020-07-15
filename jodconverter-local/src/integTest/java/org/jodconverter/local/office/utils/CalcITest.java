@@ -36,11 +36,10 @@ import org.jodconverter.local.filter.Filter;
 
 /** Contains tests for the {@link Calc} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class CalcITest {
+class CalcITest {
 
   @Test
-  public void isCalcAndGetCalcDoc_WithCalcDocument_NoExceptionThrown(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withCalcDocument_ShouldSucceed(final @TempDir File testFolder, final OfficeManager manager) {
 
     final File sourceFile = documentFile("test.ods");
 
@@ -65,8 +64,7 @@ public class CalcITest {
   }
 
   @Test
-  public void isNotCalcAndGetCalcDoc_WithTextDocument_NoExceptionThrown(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withTextDocument_ShouldSucceed(final @TempDir File testFolder, final OfficeManager manager) {
 
     final File sourceFile = documentFile("test.odt");
 

@@ -20,73 +20,233 @@
 package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
+import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_FAIL_FAST;
+import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_ON_START;
+import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL;
+import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT;
+import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION;
+import static org.jodconverter.local.office.ExternalOfficeManager.MAX_CONNECT_RETRY_INTERVAL;
 
+import java.io.File;
+
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 
 /** Contains tests for the {@link ExternalOfficeManager} class. */
-public class ExternalOfficeManagerTest {
+class ExternalOfficeManagerTest {
 
-  @Test
-  public void install_ShouldSetInstalledOfficeManagerHolder() {
+  @Nested
+  class Make {
 
-    // Ensure we do not replace the current installed manager
-    final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
-    try {
-      final OfficeManager manager = ExternalOfficeManager.install();
-      assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
-    } finally {
-      InstalledOfficeManagerHolder.setInstance(installedManager);
+    @Test
+    void shouldInitializedManagerWithDefaultValues() {
+
+      final OfficeManager manager = ExternalOfficeManager.make();
+
+      assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
+      assertThat(manager)
+          .extracting("tempDir")
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .asInstanceOf(InstanceOfAssertFactories.FILE)
+                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
+      assertThat(manager)
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+      assertThat(manager)
+          .extracting("entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .isInstanceOf(ExternalOfficeManagerPoolEntry.class)
+                      .extracting(
+                          "taskExecutionTimeout",
+                          "connectOnStart",
+                          "maxTasksPerConnection",
+                          "connectionManager.connectTimeout",
+                          "connectionManager.connectRetryInterval",
+                          "connectionManager.connectFailFast",
+                          "connectionManager.connection.officeUrl.connectionAndParametersAsString")
+                      .containsExactly(
+                          DEFAULT_TASK_EXECUTION_TIMEOUT,
+                          DEFAULT_CONNECT_ON_START,
+                          DEFAULT_MAX_TASKS_PER_CONNECTION,
+                          DEFAULT_CONNECT_TIMEOUT,
+                          DEFAULT_CONNECT_RETRY_INTERVAL,
+                          DEFAULT_CONNECT_FAIL_FAST,
+                          new OfficeUrl(2002).getConnectionAndParametersAsString()));
     }
   }
 
-  @Test
-  public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues() {
+  @Nested
+  class Install {
 
-    final OfficeManager manager = ExternalOfficeManager.make();
+    @Test
+    void shouldSetInstalledOfficeManagerHolder() {
 
-    assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
-    assertThat(manager)
-        .extracting(
-            "workingDir",
-            "connectOnStart",
-            "connectTimeout",
-            "retryInterval",
-            "connection.officeUrl.connectionAndParametersAsString")
-        .containsExactly(
-            OfficeUtils.getDefaultWorkingDir(),
-            true,
-            120_000L,
-            250L,
-            "socket,host=127.0.0.1,port=2002,tcpNoDelay=1");
+      // Ensure we do not replace the current installed manager
+      final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
+      try {
+        final OfficeManager manager = ExternalOfficeManager.install();
+        assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
+      } finally {
+        InstalledOfficeManagerHolder.setInstance(installedManager);
+      }
+    }
   }
 
-  @Test
-  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues() {
+  @Nested
+  class Build {
 
-    final OfficeManager manager =
-        ExternalOfficeManager.builder()
-            .connectionProtocol(OfficeConnectionProtocol.PIPE)
-            .pipeName("test")
-            .portNumber(2003)
-            .workingDir(OfficeUtils.getDefaultWorkingDir())
-            .connectOnStart(false)
-            .connectTimeout(5_000L)
-            .retryInterval(1_000L)
-            .build();
+    @Test
+    @SuppressWarnings("RedundantArrayCreation")
+    void withNullValues_ShouldInitializedManagerWithDefaultValues() {
 
-    assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
-    assertThat(manager)
-        .extracting(
-            "workingDir",
-            "connectOnStart",
-            "connectTimeout",
-            "retryInterval",
-            "connection.officeUrl.connectionAndParametersAsString")
-        .containsExactly(
-            OfficeUtils.getDefaultWorkingDir(), false, 5_000L, 1_000L, "pipe,name=test");
+      final OfficeManager manager =
+          ExternalOfficeManager.builder()
+              .workingDir((String) null)
+              .workingDir((File) null)
+              .taskExecutionTimeout(null)
+              .taskQueueTimeout(null)
+              .pipeNames((String[]) null)
+              .pipeNames(new String[] {})
+              .portNumbers((int[]) null)
+              .portNumbers(new int[] {})
+              .connectOnStart(null)
+              .connectTimeout(null)
+              .connectRetryInterval(null)
+              .connectFailFast(null)
+              .maxTasksPerConnection(null)
+              .build();
+
+      assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
+      assertThat(manager)
+          .extracting("tempDir")
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .asInstanceOf(InstanceOfAssertFactories.FILE)
+                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
+      assertThat(manager)
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+      assertThat(manager)
+          .extracting("entries")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .isInstanceOf(ExternalOfficeManagerPoolEntry.class)
+                      .extracting(
+                          "taskExecutionTimeout",
+                          "connectOnStart",
+                          "maxTasksPerConnection",
+                          "connectionManager.connectTimeout",
+                          "connectionManager.connectRetryInterval",
+                          "connectionManager.connectFailFast",
+                          "connectionManager.connection.officeUrl.connectionAndParametersAsString")
+                      .containsExactly(
+                          DEFAULT_TASK_EXECUTION_TIMEOUT,
+                          DEFAULT_CONNECT_ON_START,
+                          DEFAULT_MAX_TASKS_PER_CONNECTION,
+                          DEFAULT_CONNECT_TIMEOUT,
+                          DEFAULT_CONNECT_RETRY_INTERVAL,
+                          DEFAULT_CONNECT_FAIL_FAST,
+                          new OfficeUrl(2002).getConnectionAndParametersAsString()));
+    }
+
+    @Test
+    void withCustomValues_ShouldInitializedManagerWithCustomValues(final @TempDir File testFolder) {
+
+      final OfficeManager manager =
+          ExternalOfficeManager.builder()
+              .workingDir(testFolder.getPath())
+              .taskExecutionTimeout(11_000L)
+              .taskQueueTimeout(12_000L)
+              .pipeNames("test")
+              .portNumbers(2003)
+              .connectOnStart(false)
+              .connectTimeout(5_000L)
+              .connectRetryInterval(1_000L)
+              .connectFailFast(true)
+              .maxTasksPerConnection(99)
+              .build();
+
+      assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
+      assertThat(manager)
+          .extracting("tempDir")
+          .satisfies(
+              o ->
+                  assertThat(o).asInstanceOf(InstanceOfAssertFactories.FILE).hasParent(testFolder));
+      assertThat(manager).hasFieldOrPropertyWithValue("taskQueueTimeout", 12_000L);
+      assertThat(manager)
+          .extracting("entries")
+          .asList()
+          .hasSize(2)
+          .allSatisfy(
+              o ->
+                  assertThat(o)
+                      .isInstanceOf(ExternalOfficeManagerPoolEntry.class)
+                      .extracting(
+                          "taskExecutionTimeout",
+                          "connectOnStart",
+                          "maxTasksPerConnection",
+                          "connectionManager.connectTimeout",
+                          "connectionManager.connectRetryInterval",
+                          "connectionManager.connectFailFast")
+                      .containsExactly(11_000L, false, 99, 5_000L, 1_000L, true))
+          .satisfies(
+              o ->
+                  assertThat(o.get(0))
+                      .hasFieldOrPropertyWithValue(
+                          "connectionManager.connection.officeUrl.connectionAndParametersAsString",
+                          new OfficeUrl(2003).getConnectionAndParametersAsString()))
+          .satisfies(
+              o ->
+                  assertThat(o.get(1))
+                      .hasFieldOrPropertyWithValue(
+                          "connectionManager.connection.officeUrl.connectionAndParametersAsString",
+                          new OfficeUrl("test").getConnectionAndParametersAsString()));
+    }
+
+    @Test
+    void whenInvalidConnectTimeout_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> ExternalOfficeManager.builder().connectTimeout(-1L).build());
+    }
+
+    @Test
+    void whenInvalidConnectRetryInterval_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> ExternalOfficeManager.builder().connectRetryInterval(-1L).build());
+      assertThatIllegalArgumentException()
+          .isThrownBy(
+              () ->
+                  ExternalOfficeManager.builder()
+                      .connectRetryInterval(MAX_CONNECT_RETRY_INTERVAL + 1)
+                      .build());
+    }
+
+    @Test
+    void whenInvalidMaxTasksPerConnection_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> ExternalOfficeManager.builder().maxTasksPerConnection(-1).build());
+    }
   }
 }

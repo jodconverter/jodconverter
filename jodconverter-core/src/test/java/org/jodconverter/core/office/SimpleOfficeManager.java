@@ -34,9 +34,9 @@ public final class SimpleOfficeManager
     extends AbstractOfficeManagerPool<SimpleOfficeManagerPoolEntry> {
 
   // The default size of the pool
-  static final int DEFAULT_POOL_SIZE = 1;
+  private static final int DEFAULT_POOL_SIZE = 1;
   // The maximum size of the pool.
-  static final int MAX_POOL_SIZE = 1000;
+  private static final int MAX_POOL_SIZE = 1000;
 
   /**
    * Creates a new builder instance.
@@ -83,7 +83,7 @@ public final class SimpleOfficeManager
 
   // Change visibility in order to be able to mock the entries
   @Override
-  public void setEntries(List<SimpleOfficeManagerPoolEntry> entries) {
+  public void setEntries(final List<SimpleOfficeManagerPoolEntry> entries) {
     super.setEntries(entries);
   }
 

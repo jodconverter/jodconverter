@@ -36,6 +36,7 @@ class TargetDocumentSpecsFromFileTest {
   class New {
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     void whenFileIsNull_ShouldThrowNullPointerException() {
 
       assertThatNullPointerException().isThrownBy(() -> new TargetDocumentSpecsFromFile(null));

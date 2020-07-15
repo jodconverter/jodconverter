@@ -22,6 +22,7 @@ package org.jodconverter.remote.task;
 import java.io.File;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
@@ -32,18 +33,21 @@ public class AbstractRemoteOfficeTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
-  @Test
-  public void toString_AsExpected() {
+  @Nested
+  class ToString {
 
-    final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
-    final AbstractRemoteOfficeTask obj =
-        new AbstractRemoteOfficeTask(source) {
-          @Override
-          @SuppressWarnings("NullableProblems")
-          public void execute(final OfficeContext context) {
-            // Nothing...
-          }
-        };
-    Assertions.assertThat(obj.toString()).contains("test.txt");
+    @Test
+    void shouldReturnExpectedValue() {
+
+      final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
+      final AbstractRemoteOfficeTask obj =
+          new AbstractRemoteOfficeTask(source) {
+            @Override
+            public void execute(@SuppressWarnings("NullableProblems") final OfficeContext context) {
+              // Nothing...
+            }
+          };
+      Assertions.assertThat(obj.toString()).contains("test.txt");
+    }
   }
 }

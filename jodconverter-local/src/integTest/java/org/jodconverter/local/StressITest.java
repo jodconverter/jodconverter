@@ -63,7 +63,7 @@ public class StressITest {
    * @throws Exception if an error occurs.
    */
   @Test
-  public void runParallelConversions(final @TempDir File testFolder) throws Exception {
+  void runParallelConversions(final @TempDir File testFolder) throws Exception {
 
     final File logFile = new File("build/integTest-results/test.log");
     FileUtils.deleteQuietly(logFile);

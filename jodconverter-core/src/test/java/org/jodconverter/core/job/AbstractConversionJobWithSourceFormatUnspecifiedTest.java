@@ -92,6 +92,7 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
   class As {
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
@@ -125,7 +126,7 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
   }
 
   @Nested
-  class toFile {
+  class ToFile {
 
     @Test
     void whenKnownExtension_ShouldCreateJobWithTargetFormat(@TempDir final File testFolder)
@@ -165,7 +166,7 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
   }
 
   @Nested
-  class convertStream {
+  class ConvertStream {
 
     @Test
     void withDefaultCloseStream_ShouldCreateJobWithCloseStreamSetToTrue(
@@ -220,7 +221,9 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
                 new OfficeManager() {
 
                   @Override
-                  public void execute(final OfficeTask task) {}
+                  public void execute(@SuppressWarnings("NullableProblems") final OfficeTask task) {
+                    // Ignore
+                  }
 
                   @Override
                   public boolean isRunning() {
@@ -228,10 +231,14 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
                   }
 
                   @Override
-                  public void start() {}
+                  public void start() {
+                    // Ignore
+                  }
 
                   @Override
-                  public void stop() {}
+                  public void stop() {
+                    // Ignore
+                  }
                 },
                 DefaultDocumentFormatRegistry.getInstance());
 

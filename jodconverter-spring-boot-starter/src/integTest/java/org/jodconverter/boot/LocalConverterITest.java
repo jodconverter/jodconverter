@@ -98,10 +98,10 @@ public class LocalConverterITest {
   }
 
   @Test
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public void testDocToHtml() throws OfficeException {
 
     final File outputDir = new File(testFolder, "html");
-    //noinspection ResultOfMethodCallIgnored
     outputDir.mkdirs();
     final File outputFile = new File(outputDir, "outputFile.html");
     final File inputFile = new File("src/integTest/resources/documents/test1.doc");
@@ -116,9 +116,9 @@ public class LocalConverterITest {
   }
 
   @Test
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public void testDocToXhtml() throws OfficeException {
     final File outputDir = new File(testFolder, "xhtml");
-    //noinspection ResultOfMethodCallIgnored
     outputDir.mkdirs();
 
     final File outputFile = new File(outputDir, "outputFile.xhtml");

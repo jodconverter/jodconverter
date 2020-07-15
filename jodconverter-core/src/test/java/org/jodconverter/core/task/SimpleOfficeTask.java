@@ -71,8 +71,8 @@ public final class SimpleOfficeTask implements OfficeTask {
   }
 
   @Override
-  @SuppressWarnings("NullableProblems")
-  public void execute(final OfficeContext context) throws OfficeException {
+  public void execute(@SuppressWarnings("NullableProblems") final OfficeContext context)
+      throws OfficeException {
 
     try {
       if (delayTime > NO_DELAY) {

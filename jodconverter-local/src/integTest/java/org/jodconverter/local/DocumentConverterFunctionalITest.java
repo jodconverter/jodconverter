@@ -32,11 +32,10 @@ import org.jodconverter.core.DocumentConverter;
 
 /** Contains tests for the {@link DocumentConverter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class DocumentConverterFunctionalITest {
+class DocumentConverterFunctionalITest {
 
   @Test
-  public void htmlWithImageConversion(
-      final @TempDir File testFolder, final DocumentConverter converter) {
+  void htmlWithImageConversion(final @TempDir File testFolder, final DocumentConverter converter) {
 
     final File source = documentFile("index.html");
     final File target = new File(testFolder, "index.pdf");
@@ -46,8 +45,7 @@ public class DocumentConverterFunctionalITest {
   }
 
   @Test
-  public void testHtmlConversion(
-      final @TempDir File testFolder, final DocumentConverter converter) {
+  void testHtmlConversion(final @TempDir File testFolder, final DocumentConverter converter) {
 
     final File source = documentFile("test.html");
     final File target = new File(testFolder, "test.pdf");
@@ -58,7 +56,7 @@ public class DocumentConverterFunctionalITest {
 
   /** Test the conversion of all the supported documents format. */
   @Test
-  public void runAllPossibleConversions(
+  void runAllPossibleConversions(
       final @TempDir File testFolder, final DocumentConverter converter) {
 
     for (final File sourceFile :

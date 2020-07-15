@@ -26,108 +26,256 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.sun.star.beans.PropertyValue;
+import com.sun.star.beans.XPropertySet;
+import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
+import com.sun.star.lang.XServiceInfo;
 import com.sun.star.uno.Exception;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.jodconverter.core.test.util.AssertUtil;
+import org.jodconverter.local.MockUnoRuntimeExtension;
 
 /** Contains tests for the {@link Info} class. */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(UnoRuntime.class)
-@PowerMockRunnerDelegate(JUnit4.class)
-public class InfoTest {
+@ExtendWith(MockUnoRuntimeExtension.class)
+class InfoTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Info.class);
   }
 
-  @Test
-  public void compareVersions_BothNull_ReturnEquals() {
-    assertThat(Info.compareVersions(null, null, 0)).isEqualTo(0);
+  @Nested
+  class CompareVersions {
+
+    @Test
+    void withBothNull_ReturnEquals() {
+      assertThat(Info.compareVersions(null, null, 0)).isEqualTo(0);
+    }
+
+    @Test
+    void withFirstNull_ReturnFirstLessThanSecond() {
+      assertThat(Info.compareVersions(null, "0.0", 0)).isEqualTo(-1);
+    }
+
+    @Test
+    void withSecondNull_ReturSecondLessThanFirst() {
+      assertThat(Info.compareVersions("0.0", null, 0)).isEqualTo(1);
+    }
+
+    @Test
+    void withFirstEqualsSecond_ReturnFirstEqualsSecond() {
+      assertThat(Info.compareVersions("1.5", "1.5", 0)).isEqualTo(0);
+    }
+
+    @Test
+    void withFirstLessThanSecond_ReturnFirstLessThanSecond() {
+      assertThat(Info.compareVersions("1.5", "1.6", 0)).isEqualTo(-1);
+    }
+
+    @Test
+    void withSecondLessThanSecond_ReturSecondLessThanFirst() {
+      assertThat(Info.compareVersions("1.6", "1.5", 0)).isEqualTo(1);
+    }
   }
 
-  @Test
-  public void compareVersions_FirstNull_ReturnFirstLessThanSecond() {
-    assertThat(Info.compareVersions(null, "0.0", 0)).isEqualTo(-1);
+  @Nested
+  class CompareVersionsNormalizing {
+
+    @Test
+    void withFirstEqualsSecond_ReturnFirstEqualsSecond() {
+      assertThat(Info.compareVersions("1.5.0", "1.5", 4)).isEqualTo(0);
+    }
+
+    @Test
+    void withFirstLessThanSecond_ReturnFirstLessThanSecond() {
+      assertThat(Info.compareVersions("1.5", "1.6.1", 4)).isEqualTo(-1);
+    }
+
+    @Test
+    void withSecondLessThanSecond_ReturSecondLessThanFirst() {
+      assertThat(Info.compareVersions("1.6.1", "1.5", 0)).isEqualTo(1);
+    }
   }
 
-  @Test
-  public void compareVersions_SecondNull_ReturSecondLessThanFirst() {
-    assertThat(Info.compareVersions("0.0", null, 0)).isEqualTo(1);
+  @Nested
+  class IsDocumentType {
+
+    @Test
+    void whenSupportsServiceReturnsTrue_ReturnTrue(final UnoRuntime unoRuntime) {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(true);
+
+      assertThat(Info.isDocumentType(document, Lo.WRITER_SERVICE)).isTrue();
+    }
+
+    @Test
+    void whenSupportsServiceReturnsFalse_ReturnFalse(final UnoRuntime unoRuntime) {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(false);
+
+      assertThat(Info.isDocumentType(document, Lo.WRITER_SERVICE)).isFalse();
+    }
   }
 
-  @Test
-  public void compareVersions_FirstEqualsSecond_ReturnFirstEqualsSecond() {
-    assertThat(Info.compareVersions("1.5", "1.5", 0)).isEqualTo(0);
+  @Nested
+  class IsOpenOffice {
+
+    @Test
+    void whenNameIsOpenOffice_ReturnTrue(final UnoRuntime unoRuntime) throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      setUpConfigTest(unoRuntime, context, "ooName", "OpenOffice");
+      assertThat(Info.isOpenOffice(context)).isTrue();
+    }
+
+    @Test
+    void whenNameIsNotOpenOffice_ReturnTrue(final UnoRuntime unoRuntime) throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      setUpConfigTest(unoRuntime, context, "ooName", "LibreOffice");
+      assertThat(Info.isOpenOffice(context)).isFalse();
+    }
   }
 
-  @Test
-  public void compareVersions_FirstLessThanSecond_ReturnFirstLessThanSecond() {
-    assertThat(Info.compareVersions("1.5", "1.6", 0)).isEqualTo(-1);
+  @Nested
+  class IsLibreOffice {
+
+    @Test
+    void whenNameIsLibreOffice_ReturnTrue(final UnoRuntime unoRuntime) throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      setUpConfigTest(unoRuntime, context, "ooName", "LibreOffice");
+      assertThat(Info.isLibreOffice(context)).isTrue();
+    }
+
+    @Test
+    void whenNameIsNotLibreOffice_ReturnTrue(final UnoRuntime unoRuntime) throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      setUpConfigTest(unoRuntime, context, "ooName", "OpenOffice");
+      assertThat(Info.isLibreOffice(context)).isFalse();
+    }
   }
 
-  @Test
-  public void compareVersions_SecondLessThanSecond_ReturSecondLessThanFirst() {
-    assertThat(Info.compareVersions("1.6", "1.5", 0)).isEqualTo(1);
+  @Nested
+  class GetOfficeName {
+
+    @Test
+    void shouldReturnOONameProperty(final UnoRuntime unoRuntime) throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      setUpConfigTest(unoRuntime, context, "ooName", "foo");
+      assertThat(Info.getOfficeName(context)).isEqualTo("foo");
+    }
+
+    @Test
+    void shortVersion_ShouldReturnOOSetupVersionProperty(final UnoRuntime unoRuntime)
+        throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      setUpConfigTest(unoRuntime, context, "ooSetupVersion", "6.1");
+      assertThat(Info.getOfficeVersionShort(context)).isEqualTo("6.1");
+    }
   }
 
-  @Test
-  public void compareVersionsNormalizing_FirstEqualsSecond_ReturnFirstEqualsSecond() {
-    assertThat(Info.compareVersions("1.5.0", "1.5", 4)).isEqualTo(0);
+  @Nested
+  class GetOfficeVersion {
+
+    @Test
+    void longVersion_ShouldReturnOOSetupVersionAboutBoxProperty(final UnoRuntime unoRuntime)
+        throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      setUpConfigTest(unoRuntime, context, "ooSetupVersionAboutBox", "6.1.0.3");
+      assertThat(Info.getOfficeVersionLong(context)).isEqualTo("6.1.0.3");
+    }
+
+    @Test
+    void shortVersion_ShouldReturnOOSetupVersionProperty(final UnoRuntime unoRuntime)
+        throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      setUpConfigTest(unoRuntime, context, "ooSetupVersion", "6.1");
+      assertThat(Info.getOfficeVersionShort(context)).isEqualTo("6.1");
+    }
   }
 
-  @Test
-  public void compareVersionsNormalizing_FirstLessThanSecond_ReturnFirstLessThanSecond() {
-    assertThat(Info.compareVersions("1.5", "1.6.1", 4)).isEqualTo(-1);
+  @Nested
+  class GetConfig {
+
+    @Test
+    void whenUnoExceptionOccurs_ReturnNull() throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
+      final XMultiServiceFactory sfactory = mock(XMultiServiceFactory.class);
+
+      given(context.getServiceManager()).willReturn(cfactory);
+      given(
+              cfactory.createInstanceWithContext(
+                  "com.sun.star.configuration.ConfigurationProvider", context))
+          .willReturn(sfactory);
+      given(
+              sfactory.createInstanceWithArguments(
+                  eq("com.sun.star.configuration.ConfigurationAccess"), any(PropertyValue[].class)))
+          .willThrow(Exception.class);
+
+      assertThat(Info.getConfig(context, "unknownproperty")).isNull();
+    }
+
+    @Test
+    void whenProviderNotFound_ReturnNull() throws Exception {
+
+      final XComponentContext context = mock(XComponentContext.class);
+      final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
+
+      given(context.getServiceManager()).willReturn(cfactory);
+      given(
+              cfactory.createInstanceWithContext(
+                  "com.sun.star.configuration.ConfigurationProvider", context))
+          .willReturn(null);
+
+      assertThat(Info.getConfig(context, "unknownproperty")).isNull();
+    }
   }
 
-  @Test
-  public void compareVersionsNormalizing_SecondLessThanSecond_ReturSecondLessThanFirst() {
-    assertThat(Info.compareVersions("1.6.1", "1.5", 0)).isEqualTo(1);
-  }
+  private void setUpConfigTest(
+      final UnoRuntime unoRuntime,
+      final XComponentContext context,
+      final String propName,
+      final Object propValue)
+      throws Exception {
 
-  @Test
-  public void getConfig_WithUnoException_ReturnNull() throws Exception {
+    final XMultiComponentFactory contextServiceManager = mock(XMultiComponentFactory.class);
+    final Object provider = mock(Object.class);
+    final XMultiServiceFactory providerServiceFactory = mock(XMultiServiceFactory.class);
+    final Object configAccess = mock(Object.class);
+    final XPropertySet propertySet = mock(XPropertySet.class);
 
-    final XComponentContext context = mock(XComponentContext.class);
-    final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
-    final XMultiServiceFactory sfactory = mock(XMultiServiceFactory.class);
-
-    given(context.getServiceManager()).willReturn(cfactory);
+    given(context.getServiceManager()).willReturn(contextServiceManager);
     given(
-            cfactory.createInstanceWithContext(
+            contextServiceManager.createInstanceWithContext(
                 "com.sun.star.configuration.ConfigurationProvider", context))
-        .willReturn(sfactory);
+        .willReturn(provider);
+    given(unoRuntime.queryInterface(XMultiServiceFactory.class, provider))
+        .willReturn(providerServiceFactory);
+
     given(
-            sfactory.createInstanceWithArguments(
+            providerServiceFactory.createInstanceWithArguments(
                 eq("com.sun.star.configuration.ConfigurationAccess"), any(PropertyValue[].class)))
-        .willThrow(Exception.class);
-
-    assertThat(Info.getConfig(context, "unknownproperty")).isNull();
-  }
-
-  @Test
-  public void getConfig_ProviderNotFound_ReturnNull() throws Exception {
-
-    final XComponentContext context = mock(XComponentContext.class);
-    final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
-
-    given(context.getServiceManager()).willReturn(cfactory);
-    given(
-            cfactory.createInstanceWithContext(
-                "com.sun.star.configuration.ConfigurationProvider", context))
-        .willReturn(null);
-
-    assertThat(Info.getConfig(context, "unknownproperty")).isNull();
+        .willReturn(configAccess);
+    given(unoRuntime.queryInterface(XPropertySet.class, configAccess)).willReturn(propertySet);
+    given(propertySet.getPropertyValue(propName)).willReturn(propValue);
   }
 }

@@ -36,7 +36,7 @@ import org.jodconverter.local.LocalOfficeManagerExtension;
 
 /** Contains tests for the {@link GraphicInserterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class GraphicInserterFilterITest {
+class GraphicInserterFilterITest {
 
   private static final String SOURCE_FILENAME = "test.doc";
   private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
@@ -44,10 +44,8 @@ public class GraphicInserterFilterITest {
   private static final File MULTI_PAGE_FILE = documentFile(MULTI_PAGE_FILENAME);
   private static final File IMAGE_FILE = imageFile("sample-1.jpg");
 
-  /** Test the conversion of a document inserting a graphic along the way on the second page. */
   @Test
-  public void doFilter_WithCustomizedProperties(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withCustomizedProperties(final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
 
@@ -78,10 +76,8 @@ public class GraphicInserterFilterITest {
         .doesNotThrowAnyException();
   }
 
-  /** Test the conversion of a document inserting a graphic along the way. */
   @Test
-  public void doFilter_WithDefaultProperties(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withDefaultProperties(final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".originalsize.pdf");
 
@@ -106,12 +102,8 @@ public class GraphicInserterFilterITest {
         .doesNotThrowAnyException();
   }
 
-  /**
-   * Test the conversion of a document inserting a graphic along the way. The image will be resize
-   * (smaller).
-   */
   @Test
-  public void doFilter_WithDefaultPropertiesAndSmallerSize(
+  void withDefaultPropertiesAndSmallerSize(
       final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".smallersize.pdf");
@@ -139,12 +131,8 @@ public class GraphicInserterFilterITest {
         .doesNotThrowAnyException();
   }
 
-  /**
-   * Test the conversion of a document inserting a graphic along the way on the second page. The
-   * image will be resize (smaller).
-   */
   @Test
-  public void doFilter_WithCustomizedPropertiesAndSmallerSize(
+  void withCustomizedPropertiesAndSmallerSize(
       final @TempDir File testFolder, final OfficeManager manager) {
 
     final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".smallersize.pdf");
@@ -175,47 +163,6 @@ public class GraphicInserterFilterITest {
                   .filterChain(filter)
                   .build()
                   .convert(MULTI_PAGE_FILE)
-                  .to(targetFile)
-                  .execute();
-            })
-        .doesNotThrowAnyException();
-  }
-
-  /**
-   * Test the conversion of a document which is not a TEXT document. We can't really test the
-   * result, but at least we will test the the conversion doesn't fail (filter does nothing).
-   */
-  @Test
-  public void doFilter_WithBadDocumentType_DoNothing(
-      final @TempDir File testFolder, final OfficeManager manager) {
-
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".badtype.pdf");
-
-    // Create the properties of the filter
-    final Map<String, Object> props =
-        GraphicInserterFilter.createDefaultShapeProperties(
-            50, // Horizontal Position, 5 CM
-            100 // Vertical Position, 10 CM
-            );
-
-    // Add a special property to add the image on the second page
-    props.put("AnchorPageNo", (short) 2);
-
-    // Test the filter
-    assertThatCode(
-            () -> {
-              // Create the GraphicInserterFilter to test.
-              final GraphicInserterFilter filter =
-                  new GraphicInserterFilter(
-                      IMAGE_FILE.getPath(),
-                      74, // Image Width // 7.4 CM (half the original size)
-                      56, // Image Height // 5.6 CM (half the original size)
-                      props);
-              LocalConverter.builder()
-                  .officeManager(manager)
-                  .filterChain(filter)
-                  .build()
-                  .convert(documentFile("test.xls"))
                   .to(targetFile)
                   .execute();
             })

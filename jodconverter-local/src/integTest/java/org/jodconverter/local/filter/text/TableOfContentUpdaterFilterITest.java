@@ -38,14 +38,13 @@ import org.jodconverter.local.LocalOfficeManagerExtension;
 
 /** Contains tests for the {@link TableOfContentUpdaterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class TableOfContentUpdaterFilterITest {
+class TableOfContentUpdaterFilterITest {
 
   private static final String SOURCE_FILENAME = "test_toc.odt";
   private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
 
-  /** Test that updating the table of content only will just update the TOC. */
   @Test
-  public void doFilter_UpdateOnly_TableOfContentUpdatedSuccessfully(
+  void withoutLevelChange_ShouldUpdatedTableOfContent(
       final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".updateonly.txt");
@@ -94,12 +93,8 @@ public class TableOfContentUpdaterFilterITest {
                 + "Cross referencing\\s+14");
   }
 
-  /**
-   * Test that updating the table of content and removing level only will update the TOC at the
-   * disired level.
-   */
   @Test
-  public void doFilter_UpdateChangingLevel_TableOfContentUpdatedSuccessfully(
+  void withLevelChange_ShouldUpdatedTableOfContent(
       final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
     final File targetFile = new File(testFolder, SOURCE_FILENAME + ".updatelevel.txt");
@@ -132,28 +127,5 @@ public class TableOfContentUpdaterFilterITest {
                 + "Computer code styles\\s+12.{1,2}"
                 + "Cover pages\\s+13.{1,2}"
                 + "Cross referencing\\s+14");
-  }
-
-  /**
-   * Test the conversion of a document which is not a TEXT document. We can't really test the
-   * result, but at least we will test the the conversion doesn't fail (filter does nothing).
-   */
-  @Test
-  public void doFilter_WithBadDocumentType_DoNothing(
-      final @TempDir File testFolder, final OfficeManager manager) {
-
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".badtype.pdf");
-
-    // Test the filter
-    assertThatCode(
-            () ->
-                LocalConverter.builder()
-                    .officeManager(manager)
-                    .filterChain(new TableOfContentUpdaterFilter(1))
-                    .build()
-                    .convert(documentFile("test.xls"))
-                    .to(targetFile)
-                    .execute())
-        .doesNotThrowAnyException();
   }
 }

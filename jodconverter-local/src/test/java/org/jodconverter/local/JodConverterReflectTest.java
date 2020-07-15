@@ -20,6 +20,7 @@
 package org.jodconverter.local;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -40,12 +41,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
-/** Contains tests for the {@link JodConverter} class. */
+/** Contains tests that use reflection for the {@link JodConverter} class. */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(LocalConverter.class)
-public class JodConverterTest {
+public class JodConverterReflectTest {
 
-  private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
+  private static final File SOURCE_FILE = documentFile("test.txt");
 
   private LocalConverter localConverter;
 

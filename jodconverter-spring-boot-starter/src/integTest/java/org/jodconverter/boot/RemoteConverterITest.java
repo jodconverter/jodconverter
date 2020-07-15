@@ -74,6 +74,7 @@ public class RemoteConverterITest {
                 .httpsPort(8001)
                 .keystorePath(SERVER_KEYSTORE_PATH)
                 .keystorePassword(SERVER_KEYSTORE_PWD)
+                .keyManagerPassword(SERVER_KEYSTORE_PWD)
                 .trustStorePath(SERVER_TRUSTSTORE_PATH)
                 .trustStorePassword(SERVER_TRUSTSTORE_PWD)
                 .needClientAuth(true));

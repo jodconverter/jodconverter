@@ -19,15 +19,92 @@
 
 package org.jodconverter.local.office.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
+import com.sun.star.sheet.XSpreadsheetDocument;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.jodconverter.core.test.util.AssertUtil;
+import org.jodconverter.local.MockUnoRuntimeExtension;
 
 /** Contains tests for the {@link Calc} class. */
-public class CalcTest {
+@ExtendWith(MockUnoRuntimeExtension.class)
+class CalcTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(Calc.class);
+  }
+
+  @Nested
+  class IsCalc {
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNull_ShouldThrowNullPointerException(final UnoRuntime unoRuntime) {
+
+      given(unoRuntime.queryInterface(XServiceInfo.class, null)).willReturn(null);
+
+      assertThatNullPointerException().isThrownBy(() -> Calc.isCalc(null));
+    }
+
+    @Test
+    void withCalcDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.CALC_SERVICE)).willReturn(true);
+
+      assertThat(Calc.isCalc(component)).isTrue();
+    }
+
+    @Test
+    void withoutCalcDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.CALC_SERVICE)).willReturn(false);
+
+      assertThat(Calc.isCalc(component)).isFalse();
+    }
+  }
+
+  @Nested
+  class GetCalcDoc {
+
+    @Test
+    void withNull_ShouldReturnNull() {
+
+      assertThat(Calc.getCalcDoc(null)).isNull();
+    }
+
+    @Test
+    void withCalcDoc_ShouldReturnXSpreadsheetDocument(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XSpreadsheetDocument spreadsheetDocument = mock(XSpreadsheetDocument.class);
+      given(unoRuntime.queryInterface(XSpreadsheetDocument.class, component))
+          .willReturn(spreadsheetDocument);
+
+      assertThat(Calc.getCalcDoc(component)).isEqualTo(spreadsheetDocument);
+    }
+
+    @Test
+    void withoutCalcDoc_ShouldReturnNull(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      given(unoRuntime.queryInterface(XSpreadsheetDocument.class, component)).willReturn(null);
+
+      assertThat(Calc.getCalcDoc(component)).isNull();
+    }
   }
 }

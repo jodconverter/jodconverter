@@ -19,53 +19,74 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.sun.star.lib.uno.helper.UnoUrl;
+import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.Test;
 
 /** Contains tests for the {@link OfficeUrl} class. */
-public class OfficeUrlTest {
+class OfficeUrlTest {
 
   @Test
-  public void ctro_WithPipeName_SameAsOriginalUnoUrl() {
+  void withPipeName_ShouldReturnSameAsOriginalUnoUrl() {
 
     final OfficeUrl pipeUrl = new OfficeUrl("testPipeName");
     final UnoUrl unoPipeUrl = OfficeUrl.pipe("testPipeName");
 
-    assertThat(pipeUrl.getConnection()).isEqualTo(unoPipeUrl.getConnection());
-    assertThat(pipeUrl.getConnectionAndParametersAsString())
-        .isEqualTo(unoPipeUrl.getConnectionAndParametersAsString());
-    assertThat(pipeUrl.getConnectionParametersAsString())
-        .isEqualTo(unoPipeUrl.getConnectionParametersAsString());
-    assertThat(pipeUrl.getConnectionParameters()).isEqualTo(unoPipeUrl.getConnectionParameters());
-    assertThat(pipeUrl.getProtocol()).isEqualTo(unoPipeUrl.getProtocol());
-    assertThat(pipeUrl.getProtocolAndParametersAsString())
-        .isEqualTo(unoPipeUrl.getProtocolAndParametersAsString());
-    assertThat(pipeUrl.getProtocolParametersAsString())
-        .isEqualTo(unoPipeUrl.getProtocolParametersAsString());
-    assertThat(pipeUrl.getProtocolParameters()).isEqualTo(unoPipeUrl.getProtocolParameters());
-    assertThat(pipeUrl.getRootOid()).isEqualTo(unoPipeUrl.getRootOid());
+    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+      softly.assertThat(pipeUrl.getConnection()).isEqualTo(unoPipeUrl.getConnection());
+      softly
+          .assertThat(pipeUrl.getConnectionAndParametersAsString())
+          .isEqualTo(unoPipeUrl.getConnectionAndParametersAsString());
+      softly
+          .assertThat(pipeUrl.getConnectionParametersAsString())
+          .isEqualTo(unoPipeUrl.getConnectionParametersAsString());
+      softly
+          .assertThat(pipeUrl.getConnectionParameters())
+          .isEqualTo(unoPipeUrl.getConnectionParameters());
+      softly.assertThat(pipeUrl.getProtocol()).isEqualTo(unoPipeUrl.getProtocol());
+      softly
+          .assertThat(pipeUrl.getProtocolAndParametersAsString())
+          .isEqualTo(unoPipeUrl.getProtocolAndParametersAsString());
+      softly
+          .assertThat(pipeUrl.getProtocolParametersAsString())
+          .isEqualTo(unoPipeUrl.getProtocolParametersAsString());
+      softly
+          .assertThat(pipeUrl.getProtocolParameters())
+          .isEqualTo(unoPipeUrl.getProtocolParameters());
+      softly.assertThat(pipeUrl.getRootOid()).isEqualTo(unoPipeUrl.getRootOid());
+      // softly.assertThat(pipeUrl.toString()).isEqualTo(unoPipeUrl.toString());
+    }
   }
 
   @Test
-  public void ctro_WithPortNumber_SameAsOriginalUnoUrl() {
+  void withPortNumber_ShouldReturnSameAsOriginalUnoUrl() {
 
     final OfficeUrl pipeUrl = new OfficeUrl(2005);
     final UnoUrl unoPipeUrl = OfficeUrl.socket(2005);
 
-    assertThat(pipeUrl.getConnection()).isEqualTo(unoPipeUrl.getConnection());
-    assertThat(pipeUrl.getConnectionAndParametersAsString())
-        .isEqualTo(unoPipeUrl.getConnectionAndParametersAsString());
-    assertThat(pipeUrl.getConnectionParametersAsString())
-        .isEqualTo(unoPipeUrl.getConnectionParametersAsString());
-    assertThat(pipeUrl.getConnectionParameters()).isEqualTo(unoPipeUrl.getConnectionParameters());
-    assertThat(pipeUrl.getProtocol()).isEqualTo(unoPipeUrl.getProtocol());
-    assertThat(pipeUrl.getProtocolAndParametersAsString())
-        .isEqualTo(unoPipeUrl.getProtocolAndParametersAsString());
-    assertThat(pipeUrl.getProtocolParametersAsString())
-        .isEqualTo(unoPipeUrl.getProtocolParametersAsString());
-    assertThat(pipeUrl.getProtocolParameters()).isEqualTo(unoPipeUrl.getProtocolParameters());
-    assertThat(pipeUrl.getRootOid()).isEqualTo(unoPipeUrl.getRootOid());
+    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+      softly.assertThat(pipeUrl.getConnection()).isEqualTo(unoPipeUrl.getConnection());
+      softly
+          .assertThat(pipeUrl.getConnectionAndParametersAsString())
+          .isEqualTo(unoPipeUrl.getConnectionAndParametersAsString());
+      softly
+          .assertThat(pipeUrl.getConnectionParametersAsString())
+          .isEqualTo(unoPipeUrl.getConnectionParametersAsString());
+      softly
+          .assertThat(pipeUrl.getConnectionParameters())
+          .isEqualTo(unoPipeUrl.getConnectionParameters());
+      softly.assertThat(pipeUrl.getProtocol()).isEqualTo(unoPipeUrl.getProtocol());
+      softly
+          .assertThat(pipeUrl.getProtocolAndParametersAsString())
+          .isEqualTo(unoPipeUrl.getProtocolAndParametersAsString());
+      softly
+          .assertThat(pipeUrl.getProtocolParametersAsString())
+          .isEqualTo(unoPipeUrl.getProtocolParametersAsString());
+      softly
+          .assertThat(pipeUrl.getProtocolParameters())
+          .isEqualTo(unoPipeUrl.getProtocolParameters());
+      softly.assertThat(pipeUrl.getRootOid()).isEqualTo(unoPipeUrl.getRootOid());
+      // softly.assertThat(pipeUrl.toString()).isEqualTo(unoPipeUrl.toString());
+    }
   }
 }

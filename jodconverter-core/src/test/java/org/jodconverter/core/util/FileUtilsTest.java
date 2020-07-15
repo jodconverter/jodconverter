@@ -46,10 +46,11 @@ import org.junit.jupiter.api.io.TempDir;
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests for the {@link FileUtils} class. */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 class FileUtilsTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(FileUtils.class);
   }
 
@@ -60,7 +61,7 @@ class FileUtilsTest {
     class Failure {
 
       @Test
-      public void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
+      void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
           final @TempDir File testFolder) {
 
         final File dir = new File(testFolder, "test");
@@ -72,7 +73,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
+      void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
           final @TempDir File testFolder) {
 
         final File dir = new File(testFolder, "test");
@@ -85,7 +86,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
+      void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
           final @TempDir File testFolder) throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;
@@ -111,8 +112,8 @@ class FileUtilsTest {
     class Success {
 
       @Test
-      public void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(
-          final @TempDir File testFolder) throws IOException {
+      void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(final @TempDir File testFolder)
+          throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;
         final String test = "ABDCEF\nGHIJKL  \nMNOPQRS\n\tTUVWXYZééé^ç^ç^ç^ç^pawewew";
@@ -132,7 +133,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFileAndModifiedDate(
+      void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFileAndModifiedDate(
           final @TempDir File testFolder) throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;
@@ -162,7 +163,7 @@ class FileUtilsTest {
     class Failure {
 
       @Test
-      public void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
+      void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
           final @TempDir File testFolder) {
 
         final File dir = new File(testFolder, "test");
@@ -174,7 +175,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
+      void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
           final @TempDir File testFolder) {
 
         final File dir = new File(testFolder, "test");
@@ -187,14 +188,14 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetIsFile_ShouldThrowIllegalArgumentException(
-          final @TempDir File testFolder) throws IOException {
+      void whenTargetIsFile_ShouldThrowIllegalArgumentException(final @TempDir File testFolder)
+          throws IOException {
 
         final File dir = new File(testFolder, "test");
         dir.mkdir();
-        File from = new File(dir, "from.txt");
+        final File from = new File(dir, "from.txt");
         from.createNewFile();
-        File to = new File(dir, "to.txt");
+        final File to = new File(dir, "to.txt");
         to.createNewFile();
 
         assertThatIllegalArgumentException()
@@ -203,7 +204,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
+      void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
           final @TempDir File testFolder) throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;
@@ -231,8 +232,8 @@ class FileUtilsTest {
     class Success {
 
       @Test
-      public void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(
-          final @TempDir File testFolder) throws IOException {
+      void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(final @TempDir File testFolder)
+          throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;
         final String test = "test";
@@ -254,7 +255,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetHerarchyDoesNotExist_ShouldCopyFileAndModifiedDate(
+      void whenTargetHerarchyDoesNotExist_ShouldCopyFileAndModifiedDate(
           final @TempDir File testFolder) throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;
@@ -276,7 +277,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFileAndModifiedDate(
+      void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFileAndModifiedDate(
           final @TempDir File testFolder) throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;
@@ -308,7 +309,7 @@ class FileUtilsTest {
     class Failure {
 
       @Test
-      public void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
+      void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
           final @TempDir File testFolder) {
 
         final File dir = new File(testFolder, "test");
@@ -321,8 +322,8 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenSourceIsFile_ShouldThrowIllegalArgumentException(
-          final @TempDir File testFolder) throws IOException {
+      void whenSourceIsFile_ShouldThrowIllegalArgumentException(final @TempDir File testFolder)
+          throws IOException {
 
         final File dir = new File(testFolder, "test");
         dir.mkdir();
@@ -335,7 +336,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
+      void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
           final @TempDir File testFolder) {
 
         final File dir = new File(testFolder, "test");
@@ -350,8 +351,8 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetIsFile_ShouldThrowIllegalArgumentException(
-          final @TempDir File testFolder) throws IOException {
+      void whenTargetIsFile_ShouldThrowIllegalArgumentException(final @TempDir File testFolder)
+          throws IOException {
 
         final File dir = new File(testFolder, "test");
         dir.mkdir();
@@ -366,8 +367,8 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetIsChildOfSource_ShouldThrowIllagalArgumentException(
-          final @TempDir File testFolder) throws IOException {
+      void whenTargetIsChildOfSource_ShouldThrowIllagalArgumentException(
+          final @TempDir File testFolder) {
 
         final File dir = new File(testFolder, "test");
         dir.mkdir();
@@ -387,8 +388,8 @@ class FileUtilsTest {
     class Success {
 
       @Test
-      public void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(
-          final @TempDir File testFolder) throws IOException {
+      void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(final @TempDir File testFolder)
+          throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;
 
@@ -422,7 +423,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFilesAndModifiedDate(
+      void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFilesAndModifiedDate(
           final @TempDir File testFolder) throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;
@@ -466,7 +467,7 @@ class FileUtilsTest {
     class Failure {
 
       @Test
-      public void whenIOExceptionOccured_ShouldThrowIOException(final @TempDir File testFolder)
+      void whenIOExceptionOccured_ShouldThrowIOException(final @TempDir File testFolder)
           throws IOException {
 
         // TODO: Find a way to make that test work on non-windows OS.
@@ -480,7 +481,7 @@ class FileUtilsTest {
         try (FileChannel channel = new RandomAccessFile(file, "rw").getChannel()) {
           // Use the file channel to create a lock on the file.
           // This method blocks until it can retrieve the lock.
-          FileLock lock = channel.lock();
+          final FileLock lock = channel.lock();
 
           // Call FileUtils.delete on the root directory. It should throw
           // an exception since we have a lock on the file.
@@ -496,17 +497,17 @@ class FileUtilsTest {
     class Success {
 
       @Test
-      public void withNull_ShouldReturnFalse() throws IOException {
+      void withNull_ShouldReturnFalse() throws IOException {
         assertThat(FileUtils.delete(null)).isFalse();
       }
 
       @Test
-      public void withUnexistingFile_ShouldReturnNull() throws IOException {
+      void withUnexistingFile_ShouldReturnNull() throws IOException {
         assertThat(FileUtils.delete(new File(UUID.randomUUID().toString()))).isFalse();
       }
 
       @Test
-      public void withFolderNotEmpty_ShouldDeleteFolderRecursivelyAndReturnTrue(
+      void withFolderNotEmpty_ShouldDeleteFolderRecursivelyAndReturnTrue(
           final @TempDir File testFolder) throws IOException {
 
         final File root = new File(testFolder, "test");
@@ -549,7 +550,7 @@ class FileUtilsTest {
   class DeleteQuietly {
 
     @Test
-    public void whenIOExceptionOccured_ShouldSwallowIOException(final @TempDir File testFolder)
+    void whenIOExceptionOccured_ShouldSwallowIOException(final @TempDir File testFolder)
         throws IOException {
 
       final File dir = new File(testFolder, "test");
@@ -568,37 +569,37 @@ class FileUtilsTest {
   class GetName {
 
     @Test
-    public void withNull_ShouldReturnNull() {
+    void withNull_ShouldReturnNull() {
       assertThat(FileUtils.getName(null)).isNull();
     }
 
     @Test
-    public void withFullPath_ShouldReturnFileName() {
+    void withFullPath_ShouldReturnFileName() {
       assertThat(FileUtils.getName("a/b/c.txt")).isEqualTo("c.txt");
     }
 
     @Test
-    public void withOnlyFileName_ShouldReturnFileName() {
+    void withOnlyFileName_ShouldReturnFileName() {
       assertThat(FileUtils.getName("c.txt")).isEqualTo("c.txt");
     }
 
     @Test
-    public void withFullPathWithoutExtension_ShouldReturnFileName() {
+    void withFullPathWithoutExtension_ShouldReturnFileName() {
       assertThat(FileUtils.getName("a/b/c")).isEqualTo("c");
     }
 
     @Test
-    public void withOnlyFileNameWithoutExtension_ShouldReturnFileName() {
+    void withOnlyFileNameWithoutExtension_ShouldReturnFileName() {
       assertThat(FileUtils.getName("c")).isEqualTo("c");
     }
 
     @Test
-    public void withFullDirectoryPath_ShouldReturnEmptyString() {
+    void withFullDirectoryPath_ShouldReturnEmptyString() {
       assertThat(FileUtils.getName("a/b/")).isEqualTo("");
     }
 
     @Test
-    public void withSlash_ShouldReturnEmptyString() {
+    void withSlash_ShouldReturnEmptyString() {
       assertThat(FileUtils.getName("/")).isEqualTo("");
     }
   }
@@ -607,37 +608,37 @@ class FileUtilsTest {
   class GetBaseName {
 
     @Test
-    public void withNull_ShouldReturnNull() {
+    void withNull_ShouldReturnNull() {
       assertThat(FileUtils.getBaseName(null)).isNull();
     }
 
     @Test
-    public void withFullPath_ShouldReturnBaseName() {
+    void withFullPath_ShouldReturnBaseName() {
       assertThat(FileUtils.getBaseName("a/b/c.txt")).isEqualTo("c");
     }
 
     @Test
-    public void withOnlyFileName_ShouldReturnBaseName() {
+    void withOnlyFileName_ShouldReturnBaseName() {
       assertThat(FileUtils.getBaseName("c.txt")).isEqualTo("c");
     }
 
     @Test
-    public void withFullPathWithoutExtension_ShouldReturnFileName() {
+    void withFullPathWithoutExtension_ShouldReturnFileName() {
       assertThat(FileUtils.getBaseName("a/b/c")).isEqualTo("c");
     }
 
     @Test
-    public void withOnlyFileNameWithoutExtension_ShouldReturnFileName() {
+    void withOnlyFileNameWithoutExtension_ShouldReturnFileName() {
       assertThat(FileUtils.getBaseName("c")).isEqualTo("c");
     }
 
     @Test
-    public void withFullDirectoryPath_ShouldReturnEmptyString() {
+    void withFullDirectoryPath_ShouldReturnEmptyString() {
       assertThat(FileUtils.getBaseName("a/b/")).isEqualTo("");
     }
 
     @Test
-    public void withSlash_ShouldReturnEmptyString() {
+    void withSlash_ShouldReturnEmptyString() {
       assertThat(FileUtils.getBaseName("/")).isEqualTo("");
     }
   }
@@ -646,57 +647,57 @@ class FileUtilsTest {
   class GetExtension {
 
     @Test
-    public void withNull_ShouldReturnNull() {
+    void withNull_ShouldReturnNull() {
       assertThat(FileUtils.getExtension(null)).isNull();
     }
 
     @Test
-    public void withFullPath_ShouldReturnExtension() {
+    void withFullPath_ShouldReturnExtension() {
       assertThat(FileUtils.getExtension("a/b/c.txt")).isEqualTo("txt");
     }
 
     @Test
-    public void withOnlyFileName_ShouldReturnExtension() {
+    void withOnlyFileName_ShouldReturnExtension() {
       assertThat(FileUtils.getExtension("c.txt")).isEqualTo("txt");
     }
 
     @Test
-    public void withFullPathWithoutExtension_ShouldReturnEmptyString() {
+    void withFullPathWithoutExtension_ShouldReturnEmptyString() {
       assertThat(FileUtils.getExtension("a/b/c")).isEqualTo("");
     }
 
     @Test
-    public void withOnlyFileNameWithoutExtension_ShouldReturnEmptyString() {
+    void withOnlyFileNameWithoutExtension_ShouldReturnEmptyString() {
       assertThat(FileUtils.getExtension("c")).isEqualTo("");
     }
 
     @Test
-    public void withFullDirectoryPath_ShouldReturnEmptyString() {
+    void withFullDirectoryPath_ShouldReturnEmptyString() {
       assertThat(FileUtils.getExtension("a/b/")).isEqualTo("");
     }
 
     @Test
-    public void withSlash_ShouldReturnEmptyString() {
+    void withSlash_ShouldReturnEmptyString() {
       assertThat(FileUtils.getExtension("/")).isEqualTo("");
     }
 
     @Test
-    public void withEmptyString_ShouldReturnEmptyString() {
+    void withEmptyString_ShouldReturnEmptyString() {
       assertThat(FileUtils.getExtension("")).isEqualTo("");
     }
 
     @Test
-    public void withDot_ShouldReturnEmptyString() {
+    void withDot_ShouldReturnEmptyString() {
       assertThat(FileUtils.getExtension(".")).isEqualTo("");
     }
 
     @Test
-    public void withDotButNoExtension_ShouldReturnEmptyString() {
+    void withDotButNoExtension_ShouldReturnEmptyString() {
       assertThat(FileUtils.getExtension("/test/a.")).isEqualTo("");
     }
 
     @Test
-    public void withDotButNoBaseNameNorExtension_ShouldReturnEmptyString() {
+    void withDotButNoBaseNameNorExtension_ShouldReturnEmptyString() {
       assertThat(FileUtils.getExtension("/test/.")).isEqualTo("");
     }
   }
@@ -705,7 +706,7 @@ class FileUtilsTest {
   class GetFullPath {
 
     @Test
-    public void withNull_ShouldReturnNull() {
+    void withNull_ShouldReturnNull() {
       assertThat(FileUtils.getBaseName(null)).isNull();
     }
   }
@@ -717,7 +718,7 @@ class FileUtilsTest {
     class Failure {
 
       @Test
-      public void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
+      void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
           final @TempDir File testFolder) {
 
         final File dir = new File(testFolder, "test");
@@ -729,7 +730,7 @@ class FileUtilsTest {
       }
 
       @Test
-      public void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
+      void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
           final @TempDir File testFolder) {
 
         final File dir = new File(testFolder, "test");
@@ -746,7 +747,7 @@ class FileUtilsTest {
     class Success {
 
       @Test
-      public void withFile_ShouldReturnFilecontentAsString(final @TempDir File testFolder)
+      void withFile_ShouldReturnFilecontentAsString(final @TempDir File testFolder)
           throws IOException {
 
         final Charset encoding = StandardCharsets.UTF_8;

@@ -24,14 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 /** Contains tests for the {@link SimpleDocumentFormatRegistry} class. */
-public class SimpleDocumentFormatRegistryTest {
+class SimpleDocumentFormatRegistryTest {
 
   /**
    * Tests that calling getFormatByExtension with a valid extension will return the expected
    * document format.
    */
   @Test
-  public void getFormatByExtension_WithPdfExtension_ReturnPdfDocumentFormat() {
+  void getFormatByExtension_WithPdfExtension_ReturnPdfDocumentFormat() {
 
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
     final DocumentFormat format = registry.getFormatByExtension("pdf");
@@ -43,7 +43,7 @@ public class SimpleDocumentFormatRegistryTest {
    * format.
    */
   @Test
-  public void getFormatByMediaType_WithPdfMediaType_ReturnPdfDocumentFormat() {
+  void getFormatByMediaType_WithPdfMediaType_ReturnPdfDocumentFormat() {
 
     final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
     final DocumentFormat format = registry.getFormatByMediaType("application/pdf");

@@ -28,145 +28,171 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests for the {@link AssertUtils} class. */
-public class AssertUtilsTest {
+class AssertUtilsTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(AssertUtils.class);
   }
 
-  @Test
-  public void isTrue_WithFalseExpression_ShouldThrowIllegalArgumentsException() {
+  @Nested
+  class IsTrue {
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> AssertUtils.isTrue(false, "expression must be true"));
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withFalseExpression_ShouldThrowIllegalArgumentsException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> AssertUtils.isTrue(false, "expression must be true"));
+    }
+
+    @Test
+    void withTrueExpression_NoExceptionThrown() {
+
+      assertThatCode(() -> AssertUtils.isTrue(true, "expression must be true"))
+          .doesNotThrowAnyException();
+    }
   }
 
-  @Test
-  public void isTrue_WithTrue_NoExceptionThrown() {
+  @Nested
+  class NotBlank {
 
-    assertThatCode(() -> AssertUtils.isTrue(true, "expression must be true"))
-        .doesNotThrowAnyException();
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNullString_ShouldThrowNullPointerException() {
+
+      assertThatNullPointerException()
+          .isThrownBy(() -> AssertUtils.notBlank(null, "string must not be null nor blank"));
+    }
+
+    @Test
+    void withEmptyString_ShouldThrowIllegalArgumentsException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> AssertUtils.notBlank("", "string must not be null nor blank"));
+    }
+
+    @Test
+    void withBlankString_ShouldThrowIllegalArgumentsException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> AssertUtils.notBlank("  ", "string must not be null nor blank"));
+    }
+
+    @Test
+    void withNotBlankString_NoExceptionThrown() {
+
+      assertThatCode(() -> AssertUtils.notBlank("  test  ", "string must not be null nor blank"))
+          .doesNotThrowAnyException();
+    }
   }
 
-  @Test
-  public void notBlank_WithNullString_ShouldThrowNullPointerException() {
+  @Nested
+  class NotEmpty {
 
-    assertThatNullPointerException()
-        .isThrownBy(() -> AssertUtils.notBlank(null, "string must not be null nor blank"));
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNullString_ShouldThrowNullPointerException() {
+
+      assertThatNullPointerException()
+          .isThrownBy(
+              () -> AssertUtils.notEmpty((String) null, "string must not be null nor empty"));
+    }
+
+    @Test
+    void withEmptyString_ShouldThrowIllegalArgumentsException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> AssertUtils.notEmpty("", "string must not be null nor empty"));
+    }
+
+    @Test
+    void withNotEmptyString_NoExceptionThrown() {
+
+      assertThatCode(() -> AssertUtils.notEmpty("  ", "string must not be null nor empty"))
+          .doesNotThrowAnyException();
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNullCollection_ShouldThrowNullPointerException() {
+
+      assertThatNullPointerException()
+          .isThrownBy(
+              () ->
+                  AssertUtils.notEmpty(
+                      (Collection<?>) null, "collection must not be null nor empty"));
+    }
+
+    @Test
+    void withEmptyCollection_ShouldThrowIllegalArgumentsException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(
+              () ->
+                  AssertUtils.notEmpty(new ArrayList<>(), "collection must not be null nor empty"));
+    }
+
+    @Test
+    void withNotEmptyCollection_NoExceptionThrown() {
+
+      assertThatCode(
+              () ->
+                  AssertUtils.notEmpty(
+                      Arrays.stream(new Object[] {""}).collect(Collectors.toList()),
+                      "collection must not be null nor empty"))
+          .doesNotThrowAnyException();
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNullArray_ShouldThrowNullPointerException() {
+
+      assertThatNullPointerException()
+          .isThrownBy(
+              () -> AssertUtils.notEmpty((Object[]) null, "array must not be null nor empty"));
+    }
+
+    @Test
+    void withEmptyArray_ShouldThrowIllegalArgumentsException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(
+              () -> AssertUtils.notEmpty(new Object[] {}, "array must not be null nor empty"));
+    }
+
+    @Test
+    void withNotEmptyArray_NoExceptionThrown() {
+
+      assertThatCode(
+              () -> AssertUtils.notEmpty(new Object[] {""}, "array must not be null nor empty"))
+          .doesNotThrowAnyException();
+    }
   }
 
-  @Test
-  public void notBlank_WithEmptyString_ShouldThrowIllegalArgumentsException() {
+  @Nested
+  class NotNull {
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> AssertUtils.notBlank("", "string must not be null nor blank"));
-  }
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNullObject_ShouldThrowNullPointerException() {
 
-  @Test
-  public void notBlank_WithBlankString_ShouldThrowIllegalArgumentsException() {
+      assertThatNullPointerException()
+          .isThrownBy(() -> AssertUtils.notNull(null, "object must not be null"));
+    }
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> AssertUtils.notBlank("  ", "string must not be null nor blank"));
-  }
+    @Test
+    @SuppressWarnings("ObviousNullCheck")
+    void withNotNullObject_NoExceptionThrown() {
 
-  @Test
-  public void notBlank_WithNotBlankString_NoExceptionThrown() {
-
-    assertThatCode(() -> AssertUtils.notBlank("  test  ", "string must not be null nor blank"))
-        .doesNotThrowAnyException();
-  }
-
-  @Test
-  public void notEmpty_WithNullString_ShouldThrowNullPointerException() {
-
-    assertThatNullPointerException()
-        .isThrownBy(() -> AssertUtils.notEmpty((String) null, "string must not be null nor empty"));
-  }
-
-  @Test
-  public void notEmpty_WithEmptyString_ShouldThrowIllegalArgumentsException() {
-
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> AssertUtils.notEmpty("", "string must not be null nor empty"));
-  }
-
-  @Test
-  public void notEmpty_WithNotEmptyString_NoExceptionThrown() {
-
-    assertThatCode(() -> AssertUtils.notEmpty("  ", "string must not be null nor empty"))
-        .doesNotThrowAnyException();
-  }
-
-  @Test
-  public void notEmpty_WithNullCollection_ShouldThrowNullPointerException() {
-
-    assertThatNullPointerException()
-        .isThrownBy(
-            () ->
-                AssertUtils.notEmpty(
-                    (Collection<?>) null, "collection must not be null nor empty"));
-  }
-
-  @Test
-  public void notEmpty_WithEmptyCollection_ShouldThrowIllegalArgumentsException() {
-
-    assertThatIllegalArgumentException()
-        .isThrownBy(
-            () -> AssertUtils.notEmpty(new ArrayList<>(), "collection must not be null nor empty"));
-  }
-
-  @Test
-  public void notEmpty_WithNotEmptyCollection_NoExceptionThrown() {
-
-    assertThatCode(
-            () ->
-                AssertUtils.notEmpty(
-                    Arrays.stream(new Object[] {""}).collect(Collectors.toList()),
-                    "collection must not be null nor empty"))
-        .doesNotThrowAnyException();
-  }
-
-  @Test
-  public void notEmpty_WithNullArray_ShouldThrowNullPointerException() {
-
-    assertThatNullPointerException()
-        .isThrownBy(
-            () -> AssertUtils.notEmpty((Object[]) null, "array must not be null nor empty"));
-  }
-
-  @Test
-  public void notEmpty_WithEmptyArray_ShouldThrowIllegalArgumentsException() {
-
-    assertThatIllegalArgumentException()
-        .isThrownBy(
-            () -> AssertUtils.notEmpty(new Object[] {}, "array must not be null nor empty"));
-  }
-
-  @Test
-  public void notEmpty_WithNotEmptyArray_NoExceptionThrown() {
-
-    assertThatCode(
-            () -> AssertUtils.notEmpty(new Object[] {""}, "array must not be null nor empty"))
-        .doesNotThrowAnyException();
-  }
-
-  @Test
-  public void notNull_WithNullObject_ShouldThrowNullPointerException() {
-
-    assertThatNullPointerException()
-        .isThrownBy(() -> AssertUtils.notNull(null, "object must not be null"));
-  }
-
-  @Test
-  public void notNull_WithNotNullObject_NoExceptionThrown() {
-
-    assertThatCode(() -> AssertUtils.notNull(new Object(), "object must not be null"))
-        .doesNotThrowAnyException();
+      assertThatCode(() -> AssertUtils.notNull(new Object(), "object must not be null"))
+          .doesNotThrowAnyException();
+    }
   }
 }

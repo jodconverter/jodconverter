@@ -25,26 +25,22 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.SimpleDocumentFormatRegistry;
-import org.jodconverter.core.job.SourceDocumentSpecs;
-import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.task.AbstractOfficeTask;
 
 /** Contains tests for the {@link RemoteConverter} class. */
-public class RemoteConverterTest {
+class RemoteConverterTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
@@ -57,117 +53,101 @@ public class RemoteConverterTest {
     officeManager = mock(OfficeManager.class);
   }
 
-  @Test
-  public void make_WithOfficeManagerInstalled_Success(final @TempDir File testFolder) {
+  @Nested
+  class Make {
 
-    final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
-    InstalledOfficeManagerHolder.setInstance(officeManager);
+    @Test
+    void withOfficeManagerInstalled_ShouldSuccess(final @TempDir File testFolder) {
 
-    try {
-      assertThatCode(
-              () ->
-                  RemoteConverter.make()
-                      .convert(SOURCE_FILE)
-                      .to(new File(testFolder, "test.pdf"))
-                      .execute())
-          .doesNotThrowAnyException();
-    } finally {
-      InstalledOfficeManagerHolder.setInstance(manager);
+      final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
+      InstalledOfficeManagerHolder.setInstance(officeManager);
+
+      final File targetFile = new File(testFolder, "test.pdf");
+      try {
+        assertThatCode(() -> RemoteConverter.make().convert(SOURCE_FILE).to(targetFile).execute())
+            .doesNotThrowAnyException();
+      } finally {
+        InstalledOfficeManagerHolder.setInstance(manager);
+      }
+    }
+
+    @Test
+    void withoutOfficeManagerInstalled_ShouldThrowIllegalStateException(
+        final @TempDir File testFolder) {
+
+      final File targetFile = new File(testFolder, "test.pdf");
+      assertThatIllegalStateException()
+          .isThrownBy(() -> RemoteConverter.make().convert(SOURCE_FILE).to(targetFile).execute());
     }
   }
 
-  @Test
-  public void make_WithoutOfficeManagerInstalled_ThrowsIllegalStateException(
-      final @TempDir File testFolder) {
+  @Nested
+  class Builder {
 
-    assertThatIllegalStateException()
-        .isThrownBy(
-            () ->
-                RemoteConverter.make()
-                    .convert(SOURCE_FILE)
-                    .to(new File(testFolder, "test.pdf"))
-                    .execute());
+    @Test
+    void withCustomFormatRegistry_ShouldUseCustomFormatRegistry() {
+
+      final SimpleDocumentFormatRegistry registry = new SimpleDocumentFormatRegistry();
+      registry.addFormat(DefaultDocumentFormatRegistry.DOC);
+      registry.addFormat(DefaultDocumentFormatRegistry.PDF);
+      final RemoteConverter manager =
+          RemoteConverter.builder().officeManager(officeManager).formatRegistry(registry).build();
+
+      assertThat(manager)
+          .extracting("formatRegistry")
+          .isInstanceOfSatisfying(
+              SimpleDocumentFormatRegistry.class,
+              simpleDocumentFormatRegistry -> {
+                assertThat(simpleDocumentFormatRegistry.getFormatByExtension("txt")).isNull();
+                assertThat(simpleDocumentFormatRegistry.getFormatByExtension("doc"))
+                    .usingRecursiveComparison()
+                    .isEqualTo(DefaultDocumentFormatRegistry.DOC);
+                assertThat(simpleDocumentFormatRegistry.getFormatByExtension("pdf"))
+                    .usingRecursiveComparison()
+                    .isEqualTo(DefaultDocumentFormatRegistry.PDF);
+              });
+    }
   }
 
-  @Test
-  public void build_WithCustomFormatRegistry_ShouldUseCustomFormatRegistry() {
+  @Nested
+  class Convert {
 
-    final SimpleDocumentFormatRegistry registry = new SimpleDocumentFormatRegistry();
-    registry.addFormat(DefaultDocumentFormatRegistry.DOC);
-    registry.addFormat(DefaultDocumentFormatRegistry.PDF);
-    final RemoteConverter manager =
-        RemoteConverter.builder().officeManager(officeManager).formatRegistry(registry).build();
+    @Test
+    void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForInputStream(
+        final @TempDir File testFolder) {
 
-    assertThat(manager)
-        .extracting("formatRegistry")
-        .isInstanceOfSatisfying(
-            SimpleDocumentFormatRegistry.class,
-            simpleDocumentFormatRegistry -> {
-              assertThat(simpleDocumentFormatRegistry.getFormatByExtension("txt")).isNull();
-              assertThat(simpleDocumentFormatRegistry.getFormatByExtension("doc"))
-                  .usingRecursiveComparison()
-                  .isEqualTo(DefaultDocumentFormatRegistry.DOC);
-              assertThat(simpleDocumentFormatRegistry.getFormatByExtension("pdf"))
-                  .usingRecursiveComparison()
-                  .isEqualTo(DefaultDocumentFormatRegistry.PDF);
-            });
-  }
+      final File targetFile = new File(testFolder, "test.pdf");
+      assertThatIllegalStateException()
+          .isThrownBy(
+              () -> {
+                try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+                  RemoteConverter.make(officeManager)
+                      .convert(stream)
+                      .as(DefaultDocumentFormatRegistry.TXT)
+                      .to(targetFile)
+                      .execute();
+                }
+              })
+          .withMessageMatching(".*TemporaryFileMaker.*InputStream.*");
+    }
 
-  @Test
-  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForInputStream(
-      final @TempDir File testFolder) {
+    @Test
+    void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForOutputStream(
+        final @TempDir File testFolder) {
 
-    assertThatIllegalStateException()
-        .isThrownBy(
-            () -> {
-              try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
-                RemoteConverter.make(officeManager)
-                    .convert(stream)
-                    .as(DefaultDocumentFormatRegistry.TXT)
-                    .to(new File(testFolder, "test.pdf"))
-                    .execute();
-              }
-            })
-        .withMessageMatching(".*TemporaryFileMaker.*InputStream.*");
-  }
-
-  @Test
-  public void convert_WithNonTemporaryFileMaker_ThrowsIllegalStateExceptionForOutputStream(
-      final @TempDir File testFolder) {
-
-    assertThatIllegalStateException()
-        .isThrownBy(
-            () -> {
-              try (OutputStream stream =
-                  Files.newOutputStream(new File(testFolder, "test.pdf").toPath())) {
-                RemoteConverter.make(officeManager)
-                    .convert(SOURCE_FILE)
-                    .to(stream)
-                    .as(DefaultDocumentFormatRegistry.PDF)
-                    .execute();
-              }
-            })
-        .withMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
-  }
-
-  @Test
-  public void toString_AsExpected(final @TempDir File testFolder) throws IOException {
-
-    final File file = new File(testFolder, getClass().getName() + ".txt");
-    //noinspection ResultOfMethodCallIgnored
-    file.createNewFile();
-
-    final SourceDocumentSpecs source = new SourceDocumentSpecsFromFile(file);
-
-    final AbstractOfficeTask obj =
-        new AbstractOfficeTask(source) {
-          @Override
-          @SuppressWarnings("NullableProblems")
-          public void execute(final OfficeContext context) {
-            // Do nothing.
-          }
-        };
-
-    assertThat(obj.toString()).startsWith("{source=").endsWith("}");
+      final File targetFile = new File(testFolder, "test.pdf");
+      assertThatIllegalStateException()
+          .isThrownBy(
+              () -> {
+                try (OutputStream stream = Files.newOutputStream(targetFile.toPath())) {
+                  RemoteConverter.make(officeManager)
+                      .convert(SOURCE_FILE)
+                      .to(stream)
+                      .as(DefaultDocumentFormatRegistry.PDF)
+                      .execute();
+                }
+              })
+          .withMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
+    }
   }
 }

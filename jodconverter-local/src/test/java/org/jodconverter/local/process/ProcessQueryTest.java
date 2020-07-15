@@ -23,11 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-/** Contains tests for the {@link ProcessManager} classes */
-public class ProcessQueryTest {
+/** Contains tests for the {@link ProcessQuery} classes */
+class ProcessQueryTest {
 
   @Test
-  public void customProcessManagerNotFound() {
+  void gettersAndToStringShouldUseGivenValues() {
 
     final ProcessQuery query = new ProcessQuery("toto", "tata");
     assertThat(query.toString())

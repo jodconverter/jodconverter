@@ -31,7 +31,6 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -42,7 +41,7 @@ import org.jodconverter.core.test.util.AssertUtil;
 class OfficeUtilsTest {
 
   @Test
-  void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(OfficeUtils.class);
   }
 
@@ -123,13 +122,12 @@ class OfficeUtilsTest {
       final OfficeManager officeManager = mock(OfficeManager.class);
       doThrow(OfficeException.class).when(officeManager).stop();
 
-      Assertions.assertThatCode(() -> OfficeUtils.stopQuietly(officeManager))
-          .doesNotThrowAnyException();
+      assertThatCode(() -> OfficeUtils.stopQuietly(officeManager)).doesNotThrowAnyException();
     }
 
     @Test
     void withNull_ShouldDoNothing() {
-      Assertions.assertThatCode(() -> OfficeUtils.stopQuietly(null)).doesNotThrowAnyException();
+      assertThatCode(() -> OfficeUtils.stopQuietly(null)).doesNotThrowAnyException();
     }
 
     @Test

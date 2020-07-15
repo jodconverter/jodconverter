@@ -34,15 +34,15 @@ import org.junit.jupiter.api.Test;
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests for the {@link DefaultDocumentFormatRegistry} class. */
-public class DefaultDocumentFormatRegistryTest {
+class DefaultDocumentFormatRegistryTest {
 
   @Test
-  public void new_ClassWellDefined() {
+  void classWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(DefaultDocumentFormatRegistry.class);
   }
 
   private void assertExpectedExtensions(
-      SoftAssertions soft, final Set<DocumentFormat> formats, final String... extensions) {
+      final SoftAssertions soft, final Set<DocumentFormat> formats, final String... extensions) {
 
     soft.assertThat(formats).hasSize(extensions.length);
     formats.forEach(format -> soft.assertThat(format.getExtension()).isIn((Object[]) extensions));
@@ -50,13 +50,13 @@ public class DefaultDocumentFormatRegistryTest {
 
   /** Tests all the default output formats are load successfully. */
   @Test
-  public void getInstance_AllOutputFormatsLoadedSuccessfully() {
+  void getInstance_AllOutputFormatsLoadedSuccessfully() {
 
     try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
       // TEXT output format
       assertExpectedExtensions(
           ass,
-          DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.TEXT),
+          getOutputFormats(DocumentFamily.TEXT),
           "doc",
           "docx",
           "html",
@@ -74,7 +74,7 @@ public class DefaultDocumentFormatRegistryTest {
       // SPREADSHEET output format
       assertExpectedExtensions(
           ass,
-          DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.SPREADSHEET),
+          getOutputFormats(DocumentFamily.SPREADSHEET),
           "csv",
           "html",
           "xhtml",
@@ -92,7 +92,7 @@ public class DefaultDocumentFormatRegistryTest {
       // PRESENTATION output format
       assertExpectedExtensions(
           ass,
-          DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.PRESENTATION),
+          getOutputFormats(DocumentFamily.PRESENTATION),
           "gif",
           "html",
           "xhtml",
@@ -112,7 +112,7 @@ public class DefaultDocumentFormatRegistryTest {
       // DRAWING output format
       assertExpectedExtensions(
           ass,
-          DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.DRAWING),
+          getOutputFormats(DocumentFamily.DRAWING),
           "gif",
           "jpg",
           "odg",
@@ -129,12 +129,13 @@ public class DefaultDocumentFormatRegistryTest {
     }
   }
 
-  private void assertByExt(SoftAssertions soft, String ext, DocumentFormat expected) {
-    soft.assertThat(DefaultDocumentFormatRegistry.getFormatByExtension(ext)).isEqualTo(expected);
+  private void assertByExt(
+      final SoftAssertions soft, final String ext, final DocumentFormat expected) {
+    soft.assertThat(getFormatByExtension(ext)).isEqualTo(expected);
   }
 
   @Test
-  public void getFormatByExtension_AllFormatsLoadedSuccessfully() {
+  void getFormatByExtension_AllFormatsLoadedSuccessfully() {
 
     try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
       assertByExt(ass, "pdf", PDF);
@@ -180,13 +181,13 @@ public class DefaultDocumentFormatRegistryTest {
     }
   }
 
-  private void assertByType(SoftAssertions soft, String mediaType, DocumentFormat expected) {
-    soft.assertThat(DefaultDocumentFormatRegistry.getFormatByMediaType(mediaType))
-        .isEqualTo(expected);
+  private void assertByType(
+      final SoftAssertions soft, final String mediaType, final DocumentFormat expected) {
+    soft.assertThat(getFormatByMediaType(mediaType)).isEqualTo(expected);
   }
 
   @Test
-  public void getFormatByMediaType_AllFormatsLoadedSuccessfully() {
+  void getFormatByMediaType_AllFormatsLoadedSuccessfully() {
 
     try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
       assertByType(ass, "application/pdf", PDF);
@@ -233,9 +234,9 @@ public class DefaultDocumentFormatRegistryTest {
   }
 
   @Test
-  public void getFormatX_ReturnReadOnlyFormat() {
+  void getFormatX_ReturnReadOnlyFormat() {
 
-    final DocumentFormat format = DefaultDocumentFormatRegistry.CSV;
+    final DocumentFormat format = CSV;
 
     assertThat(format.getLoadProperties()).isNotNull();
     assertThat(format.getStoreProperties()).isNotNull();
