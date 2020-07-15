@@ -91,7 +91,6 @@ class LocalOfficeProcessManagerTest {
     void whenStartFailFastIsTrueAndCouldNotStart_ShouldThrowOfficeException() {
 
       final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
 
       final LocalOfficeProcessManager manager =
           new LocalOfficeProcessManager(
@@ -101,13 +100,18 @@ class LocalOfficeProcessManagerTest {
               LocalOfficeUtils.findBestProcessManager(),
               new ArrayList<>(),
               null,
-              0L,
-              0L,
+              1000L,
+              1000L,
               DEFAULT_DISABLE_OPENGL,
               DEFAULT_EXISTING_PROCESS_ACTION,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-              connection);
+              new OfficeConnection(url) {
+                @Override
+                public void connect() throws OfficeConnectionException {
+                  throw new OfficeConnectionException("Test", "Test");
+                }
+              });
 
       assertThatExceptionOfType(OfficeException.class).isThrownBy(manager::start);
     }
