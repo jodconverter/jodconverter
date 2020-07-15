@@ -44,12 +44,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.powermock.reflect.Whitebox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.task.SimpleOfficeTask;
 import org.jodconverter.core.util.FileUtils;
 
 /** Contains tests for the {@link AbstractOfficeManagerPool} class. */
 class AbstractOfficeManagerPoolTest {
+
+  static final Logger LOGGER = LoggerFactory.getLogger(AbstractOfficeManagerPoolTest.class);
 
   private static class SleepyOfficeTaskRunner implements Runnable {
 
@@ -68,6 +72,7 @@ class AbstractOfficeManagerPoolTest {
         manager.execute(new SimpleOfficeTask(sleep));
       } catch (OfficeException e) {
         exception = e;
+        LOGGER.error("Error", exception);
       }
     }
   }
