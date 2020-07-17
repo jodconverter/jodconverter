@@ -482,21 +482,21 @@ class AbstractOfficeManagerPoolTest {
         throws OfficeException, InterruptedException {
 
       final SimpleOfficeManager manager =
-          SimpleOfficeManager.builder().taskQueueTimeout(1_000L).build();
+          SimpleOfficeManager.builder().taskQueueTimeout(500L).build();
       try {
         manager.start();
 
         // Create threads that will both execute a task taking more than a seconds to execute.
-        final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 2_000L);
-        final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 1_500L);
+        final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 1_000L);
+        final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 500L);
         final Thread thread1 = new Thread(runnable1);
         final Thread thread2 = new Thread(runnable2);
 
         // Start the threads.
         thread1.start();
-        thread2.start();
+        Thread.sleep(250L);
 
-        // Let the task execution begin.
+        thread2.start();
         Thread.sleep(250L);
 
         // Wait for thread to complete
@@ -507,7 +507,7 @@ class AbstractOfficeManagerPoolTest {
         assertThat(runnable1.exception).isNull();
         assertThat(runnable2.exception)
             .isExactlyInstanceOf(OfficeException.class)
-            .hasMessage("No office manager available after 1000 millisec");
+            .hasMessage("No office manager available after 500 millisec");
 
       } finally {
         manager.stop();
@@ -519,21 +519,21 @@ class AbstractOfficeManagerPoolTest {
         throws OfficeException, InterruptedException {
 
       final SimpleOfficeManager manager =
-          SimpleOfficeManager.builder().taskQueueTimeout(2_500L).build();
+          SimpleOfficeManager.builder().taskQueueTimeout(500L).build();
       try {
         manager.start();
 
         // Create threads that will both execute a task taking more than a seconds to execute.
         final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 1_000L);
-        final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 1_000L);
+        final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 500L);
         final Thread thread1 = new Thread(runnable1);
         final Thread thread2 = new Thread(runnable2);
 
         // Start the threads.
         thread1.start();
-        thread2.start();
+        Thread.sleep(250L);
 
-        // Let the task execution begin.
+        thread2.start();
         Thread.sleep(250L);
 
         // Interrupt the second thread
