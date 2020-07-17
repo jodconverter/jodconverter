@@ -325,8 +325,9 @@ class LocalOfficeProcessManager {
       // +1000L to allows the deletion of the templateProfileDir.
       // But is it really necessary? It is a wild guess...
       final long stopTimeout = processTimeout + 1000L;
-      LOGGER.debug("Waiting for stop task to complete ({}} millisecs)...", stopTimeout);
-      executor.awaitTermination(stopTimeout, TimeUnit.MINUTES);
+      LOGGER.debug("Waiting for stop task to complete ({}) millisecs)...", stopTimeout);
+      executor.awaitTermination(stopTimeout, TimeUnit.MILLISECONDS);
+      LOGGER.debug("Stop task executed successfully.");
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
       throw new OfficeException("Interruption while stopping the office process.", ex);
