@@ -45,7 +45,7 @@ class ExternalOfficeConnectionManager {
 
   // Timeout for the stop task.
   // TODO: Should it be configurable.
-  private static final long STOP_TASK_TIMEOUT = 1_000L;
+  private static final long STOP_TASK_TIMEOUT = 60_000L;
 
   private final OfficeConnection connection;
   private final ExecutorService executor;

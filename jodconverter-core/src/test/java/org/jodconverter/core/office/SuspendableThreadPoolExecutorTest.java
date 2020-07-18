@@ -24,9 +24,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -57,7 +59,7 @@ class SuspendableThreadPoolExecutorTest {
 
   private void sleep() {
     try {
-      Thread.sleep(250);
+      Thread.sleep(300L);
     } catch (InterruptedException ignored) {
     }
   }
@@ -65,6 +67,12 @@ class SuspendableThreadPoolExecutorTest {
   @BeforeEach
   void setup() {
     executor = new TestExecutor(new NamedThreadFactory("TestExecutor"));
+  }
+
+  @AfterEach
+  void tearDown() throws InterruptedException {
+    executor.shutdownNow();
+    executor.awaitTermination(10_000L, TimeUnit.MILLISECONDS);
   }
 
   @Nested

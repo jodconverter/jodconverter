@@ -291,7 +291,7 @@ class ExternalOfficeConnectionManagerTest {
     }
 
     @Test
-    void whenAlreadyConnected_ShouldStayConnected() {
+    void whenAlreadyConnected_ShouldStayConnected() throws OfficeException {
 
       final OfficeUrl url = new OfficeUrl(9999);
       final OfficeConnection connection = TestOfficeConnection.prepareTest(url, true);
@@ -299,6 +299,7 @@ class ExternalOfficeConnectionManagerTest {
       final ExternalOfficeConnectionManager manager =
           new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
+      manager.ensureConnected();
       assertThat(connection.isConnected()).isTrue();
     }
   }
@@ -308,7 +309,6 @@ class ExternalOfficeConnectionManagerTest {
     private final OfficeUrl url;
     private boolean isConnected;
     private boolean throwConnectException;
-    private boolean throwDisconnectException;
 
     static TestOfficeConnection prepareTest(final OfficeUrl url, final boolean isConnected) {
 
@@ -348,9 +348,6 @@ class ExternalOfficeConnectionManagerTest {
 
     @Override
     public void disconnect() {
-      if (throwDisconnectException) {
-        throw new RuntimeException("Could not disconnect.");
-      }
       this.isConnected = false;
     }
   }
