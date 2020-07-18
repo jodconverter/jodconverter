@@ -20,6 +20,7 @@
 package org.jodconverter.spring;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,14 +34,16 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.jodconverter.core.office.OfficeException;
 
 /** Contains tests for the {@link JodConverterBean} class. */
-@ContextConfiguration
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration
+@DirtiesContext(classMode = AFTER_CLASS)
 public class SpringControllerITest {
 
   /* default */ @TempDir File testFolder;
