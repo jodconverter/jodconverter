@@ -63,9 +63,9 @@ class AbstractRetryableTest {
     @Test
     void withInterval_ShouldApplyIntervalDelayAndThrowRetryTimeoutException() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(3, 100L);
+      final SimpleRetryable retryable = new SimpleRetryable(3, 250L);
       assertThatExceptionOfType(RetryTimeoutException.class)
-          .isThrownBy(() -> retryable.execute(100L, 150L));
+          .isThrownBy(() -> retryable.execute(250L, 500L));
       assertThat(retryable.getAttempts()).isEqualTo(2);
     }
 
