@@ -46,17 +46,17 @@ class AbstractRetryableTest {
     @Test
     void withInitialDelay_ShouldApplyInitialDelayAndThrowRetryTimeoutException() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(2, 100L);
+      final SimpleRetryable retryable = new SimpleRetryable(2, 250L);
       assertThatExceptionOfType(RetryTimeoutException.class)
-          .isThrownBy(() -> retryable.execute(100L, NO_SLEEP, 150L));
+          .isThrownBy(() -> retryable.execute(250L, NO_SLEEP, 300L));
       assertThat(retryable.getAttempts()).isEqualTo(1);
     }
 
     @Test
     void withoutInitialDelay_ShouldNotApplyInitialDelay() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(2, 50L);
-      assertThatCode(() -> retryable.execute(NO_SLEEP, 150L)).doesNotThrowAnyException();
+      final SimpleRetryable retryable = new SimpleRetryable(2, 100L);
+      assertThatCode(() -> retryable.execute(NO_SLEEP, 300L)).doesNotThrowAnyException();
       assertThat(retryable.getAttempts()).isEqualTo(2);
     }
 
@@ -72,8 +72,8 @@ class AbstractRetryableTest {
     @Test
     void withNoInterval_ShouldNotApplyIntervalDelay() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(3, 50L);
-      assertThatCode(() -> retryable.execute(NO_SLEEP, 200L)).doesNotThrowAnyException();
+      final SimpleRetryable retryable = new SimpleRetryable(3, 100L);
+      assertThatCode(() -> retryable.execute(NO_SLEEP, 750L)).doesNotThrowAnyException();
       assertThat(retryable.getAttempts()).isEqualTo(3);
     }
   }
