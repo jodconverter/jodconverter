@@ -59,7 +59,7 @@ class SuspendableThreadPoolExecutorTest {
 
   private void sleep() {
     try {
-      Thread.sleep(300L);
+      Thread.sleep(500L);
     } catch (InterruptedException ignored) {
     }
   }
