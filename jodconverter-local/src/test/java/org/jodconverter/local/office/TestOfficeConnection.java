@@ -49,6 +49,8 @@ public class TestOfficeConnection extends OfficeConnection {
   private final AtomicInteger connectCount = new AtomicInteger();
   private final AtomicInteger disconnectCount = new AtomicInteger();
   private final List<OfficeConnectionEventListener> testConnectionEventListeners;
+  private long connectSleep = 0L;
+  private long disconnectSleep = 0L;
 
   static TestOfficeConnection prepareTest(final OfficeUrl url) {
 
@@ -59,6 +61,14 @@ public class TestOfficeConnection extends OfficeConnection {
     super(url);
 
     this.testConnectionEventListeners = new ArrayList<>();
+  }
+
+  public void setConnectSleep(final long sleep) {
+    this.connectSleep = sleep;
+  }
+
+  public void setDisconnectSleep(final long sleep) {
+    this.disconnectSleep = sleep;
   }
 
   public int getConnectCount() {
@@ -85,6 +95,14 @@ public class TestOfficeConnection extends OfficeConnection {
   public void connect() {
     connectCount.incrementAndGet();
 
+    if (connectSleep > 0L) {
+      try {
+        Thread.sleep(connectSleep);
+      } catch (InterruptedException ignore) {
+        // ignore
+      }
+    }
+
     this.connected.set(true);
 
     final OfficeConnectionEvent event = new OfficeConnectionEvent(this);
@@ -94,6 +112,14 @@ public class TestOfficeConnection extends OfficeConnection {
   @Override
   public void disconnect() {
     disconnectCount.incrementAndGet();
+
+    if (disconnectSleep > 0L) {
+      try {
+        Thread.sleep(disconnectSleep);
+      } catch (InterruptedException ignore) {
+        // ignore
+      }
+    }
 
     if (connected.compareAndSet(true, false)) {
       final OfficeConnectionEvent event = new OfficeConnectionEvent(this);

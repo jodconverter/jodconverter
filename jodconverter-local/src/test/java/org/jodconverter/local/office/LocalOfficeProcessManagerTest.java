@@ -277,7 +277,8 @@ class LocalOfficeProcessManagerTest {
     void whenTaskInterrupted_ShouldThrowOfficeException() {
 
       final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
+      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
+      connection.setDisconnectSleep(1500L);
 
       final LocalOfficeProcessManager manager =
           new LocalOfficeProcessManager(

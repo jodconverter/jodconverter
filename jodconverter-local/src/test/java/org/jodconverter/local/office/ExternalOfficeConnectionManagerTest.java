@@ -211,7 +211,8 @@ class ExternalOfficeConnectionManagerTest {
     void whenTaskInterrupted_ShouldThrowOfficeException() {
 
       final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, true);
+      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url, true);
+      connection.setDisconnectSleep(1500L);
 
       final ExternalOfficeConnectionManager manager =
           new ExternalOfficeConnectionManager(1000L, 1000L, false, connection);
@@ -309,6 +310,8 @@ class ExternalOfficeConnectionManagerTest {
     private final OfficeUrl url;
     private boolean isConnected;
     private boolean throwConnectException;
+    private long connectSleep = 0L;
+    private long disconnectSleep = 0L;
 
     static TestOfficeConnection prepareTest(final OfficeUrl url, final boolean isConnected) {
 
@@ -332,6 +335,14 @@ class ExternalOfficeConnectionManagerTest {
       this.url = url;
     }
 
+    public void setConnectSleep(final long sleep) {
+      this.connectSleep = sleep;
+    }
+
+    public void setDisconnectSleep(final long sleep) {
+      this.disconnectSleep = sleep;
+    }
+
     @Override
     public boolean isConnected() {
       return this.isConnected;
@@ -343,11 +354,25 @@ class ExternalOfficeConnectionManagerTest {
         throw new OfficeConnectionException(
             "Could not connect.", url.getConnectionAndParametersAsString());
       }
+      if (connectSleep > 0L) {
+        try {
+          Thread.sleep(connectSleep);
+        } catch (InterruptedException ignore) {
+          // ignore
+        }
+      }
       this.isConnected = true;
     }
 
     @Override
     public void disconnect() {
+      if (disconnectSleep > 0L) {
+        try {
+          Thread.sleep(disconnectSleep);
+        } catch (InterruptedException ignore) {
+          // ignore
+        }
+      }
       this.isConnected = false;
     }
   }
