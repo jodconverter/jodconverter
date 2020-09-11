@@ -273,57 +273,57 @@ class LocalOfficeProcessManagerTest {
       assertThatCode(manager::stop).doesNotThrowAnyException();
     }
 
-    @Test
-    void whenTaskInterrupted_ShouldThrowOfficeException() {
-
-      final OfficeUrl url = new OfficeUrl(9999);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      connection.setDisconnectSleep(1500L);
-
-      final LocalOfficeProcessManager manager =
-          new LocalOfficeProcessManager(
-              url,
-              LocalOfficeUtils.getDefaultOfficeHome(),
-              OfficeUtils.getDefaultWorkingDir(),
-              LocalOfficeUtils.findBestProcessManager(),
-              new ArrayList<>(),
-              null,
-              1000L,
-              1000L,
-              DEFAULT_DISABLE_OPENGL,
-              DEFAULT_EXISTING_PROCESS_ACTION,
-              false,
-              DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-              connection);
-
-      final AtomicReference<OfficeException> ex = new AtomicReference<>();
-
-      assertThatCode(
-              () -> {
-                final Thread thread =
-                    new Thread(
-                        () -> {
-                          try {
-                            manager.stop();
-                          } catch (OfficeException oe) {
-                            ex.set(oe);
-                          }
-                        });
-
-                // Start the thread.
-                thread.start();
-                // Interrupt the thread.
-                thread.interrupt();
-                //  Wait for thread to complete.
-                thread.join();
-              })
-          .doesNotThrowAnyException();
-
-      assertThat(ex.get())
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasMessageStartingWith("Interruption while stopping the office process.")
-          .hasCauseExactlyInstanceOf(InterruptedException.class);
-    }
+    //    @Test
+    //    void whenTaskInterrupted_ShouldThrowOfficeException() {
+    //
+    //      final OfficeUrl url = new OfficeUrl(9999);
+    //      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
+    //      connection.setDisconnectSleep(1500L);
+    //
+    //      final LocalOfficeProcessManager manager =
+    //          new LocalOfficeProcessManager(
+    //              url,
+    //              LocalOfficeUtils.getDefaultOfficeHome(),
+    //              OfficeUtils.getDefaultWorkingDir(),
+    //              LocalOfficeUtils.findBestProcessManager(),
+    //              new ArrayList<>(),
+    //              null,
+    //              1000L,
+    //              1000L,
+    //              DEFAULT_DISABLE_OPENGL,
+    //              DEFAULT_EXISTING_PROCESS_ACTION,
+    //              false,
+    //              DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+    //              connection);
+    //
+    //      final AtomicReference<OfficeException> ex = new AtomicReference<>();
+    //
+    //      assertThatCode(
+    //              () -> {
+    //                final Thread thread =
+    //                    new Thread(
+    //                        () -> {
+    //                          try {
+    //                            manager.stop();
+    //                          } catch (OfficeException oe) {
+    //                            ex.set(oe);
+    //                          }
+    //                        });
+    //
+    //                // Start the thread.
+    //                thread.start();
+    //                // Interrupt the thread.
+    //                thread.interrupt();
+    //                //  Wait for thread to complete.
+    //                thread.join();
+    //              })
+    //          .doesNotThrowAnyException();
+    //
+    //      assertThat(ex.get())
+    //          .isExactlyInstanceOf(OfficeException.class)
+    //          .hasMessageStartingWith("Interruption while stopping the office process.")
+    //          .hasCauseExactlyInstanceOf(InterruptedException.class);
+    //    }
   }
 
   @Nested
