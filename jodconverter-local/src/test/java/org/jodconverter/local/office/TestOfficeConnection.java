@@ -99,7 +99,7 @@ public class TestOfficeConnection extends OfficeConnection {
       try {
         Thread.sleep(connectSleep);
       } catch (InterruptedException ignore) {
-        // ignore
+        Thread.currentThread().interrupt();
       }
     }
 
@@ -116,8 +116,8 @@ public class TestOfficeConnection extends OfficeConnection {
     if (disconnectSleep > 0L) {
       try {
         Thread.sleep(disconnectSleep);
-      } catch (InterruptedException ignore) {
-        // ignore
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
       }
     }
 

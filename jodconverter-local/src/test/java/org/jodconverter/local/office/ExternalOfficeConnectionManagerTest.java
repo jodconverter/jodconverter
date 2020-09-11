@@ -357,8 +357,8 @@ class ExternalOfficeConnectionManagerTest {
       if (connectSleep > 0L) {
         try {
           Thread.sleep(connectSleep);
-        } catch (InterruptedException ignore) {
-          // ignore
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
         }
       }
       this.isConnected = true;
@@ -369,8 +369,8 @@ class ExternalOfficeConnectionManagerTest {
       if (disconnectSleep > 0L) {
         try {
           Thread.sleep(disconnectSleep);
-        } catch (InterruptedException ignore) {
-          // ignore
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
         }
       }
       this.isConnected = false;
