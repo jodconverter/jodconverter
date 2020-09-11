@@ -22,7 +22,7 @@ public class Deps {
   // Latest version -> https://mvnrepository.com/artifact/org.openoffice
   public static final String ooVersion = "4.1.2";
   // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-  public static final String springBootVersion = "2.3.1.RELEASE";
+  public static final String springBootVersion = "2.3.3.RELEASE";
 
   // Test
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~

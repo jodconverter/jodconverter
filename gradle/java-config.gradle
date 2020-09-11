@@ -11,7 +11,7 @@ apply plugin: 'pmd'
 apply plugin: 'checkstyle'
 apply plugin: 'nebula.facet'
 apply plugin: 'jacoco'
-apply plugin: 'com.diffplug.gradle.spotless'
+apply plugin: 'com.diffplug.spotless'
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Integration tests SourceSet configuration
