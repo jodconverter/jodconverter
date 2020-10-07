@@ -93,7 +93,7 @@ class LocalOfficeManagerPoolEntryTest {
                   entry.execute(
                       context -> {
                         try {
-                          Thread.sleep(150L);
+                          Thread.sleep(250L);
                         } catch (InterruptedException ignored) {
                           // ignore
                         }

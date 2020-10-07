@@ -84,7 +84,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     // Wait for completion of the task, (maximum wait time is the
     // configured task execution timeout)
     try {
-      LOGGER.debug("Waiting for task to complete: {}", task);
+      LOGGER.debug("Waiting {} ms for task to complete: {}", taskExecutionTimeout, task);
       currentFuture.get(taskExecutionTimeout, TimeUnit.MILLISECONDS);
       LOGGER.debug("Task executed successfully: {}", task);
 

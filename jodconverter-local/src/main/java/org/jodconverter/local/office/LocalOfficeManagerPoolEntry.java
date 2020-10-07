@@ -114,9 +114,12 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
   @Override
   public void doExecute(final @NonNull OfficeTask task) throws OfficeException {
+    LOGGER.debug("Executing task: {}", task);
 
     // Execute the task.
     task.execute(officeProcessManager.getConnection());
+
+    LOGGER.debug("Task executed successfully: {}", task);
 
     // Increment the task count
     final int count = taskCount.incrementAndGet();
@@ -127,6 +130,11 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       LOGGER.info(
           "Reached limit of {} maximum tasks per process; restarting...", maxTasksPerProcess);
       restart();
+    } else {
+      LOGGER.debug(
+          "Limit of {} maximum tasks per process not reached yet. Task count is {}",
+          maxTasksPerProcess,
+          count);
     }
   }
 
