@@ -92,7 +92,7 @@ class LocalOfficeUtilsTest {
 
     @Test
     void onUnix_ShouldReturnUnixProcessManager() {
-      Assumptions.assumeTrue(OSUtils.IS_OS_UNIX);
+      Assumptions.assumeTrue(OSUtils.IS_OS_UNIX && !OSUtils.IS_OS_MAC);
 
       assertThat(LocalOfficeUtils.findBestProcessManager())
           .isEqualTo(UnixProcessManager.getDefault());
