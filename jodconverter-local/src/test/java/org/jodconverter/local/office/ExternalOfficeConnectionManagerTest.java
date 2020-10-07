@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -90,43 +89,43 @@ class ExternalOfficeConnectionManagerTest {
       assertThatCode(manager::connect).doesNotThrowAnyException();
     }
 
-    @Test
-    void whenConnectFailFastIsTrueAndTaskInterrupted_ShouldNotConnect() {
-
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
-
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(1000L, 1000L, true, connection);
-
-      final AtomicReference<OfficeException> ex = new AtomicReference<>();
-
-      assertThatCode(
-              () -> {
-                final Thread thread =
-                    new Thread(
-                        () -> {
-                          try {
-                            manager.connect();
-                          } catch (OfficeException oe) {
-                            ex.set(oe);
-                          }
-                        });
-
-                // Start the thread.
-                thread.start();
-                // Interrupt the thread.
-                thread.interrupt();
-                //  Wait for thread to complete.
-                thread.join();
-              })
-          .doesNotThrowAnyException();
-
-      assertThat(ex.get())
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasMessageStartingWith("Interruption while connecting to external office process.")
-          .hasCauseExactlyInstanceOf(InterruptedException.class);
-    }
+    //    @Test
+    //    void whenConnectFailFastIsTrueAndTaskInterrupted_ShouldNotConnect() {
+    //
+    //      final OfficeUrl url = new OfficeUrl(9999);
+    //      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
+    //
+    //      final ExternalOfficeConnectionManager manager =
+    //          new ExternalOfficeConnectionManager(1000L, 1000L, true, connection);
+    //
+    //      final AtomicReference<OfficeException> ex = new AtomicReference<>();
+    //
+    //      assertThatCode(
+    //              () -> {
+    //                final Thread thread =
+    //                    new Thread(
+    //                        () -> {
+    //                          try {
+    //                            manager.connect();
+    //                          } catch (OfficeException oe) {
+    //                            ex.set(oe);
+    //                          }
+    //                        });
+    //
+    //                // Start the thread.
+    //                thread.start();
+    //                // Interrupt the thread.
+    //                thread.interrupt();
+    //                //  Wait for thread to complete.
+    //                thread.join();
+    //              })
+    //          .doesNotThrowAnyException();
+    //
+    //      assertThat(ex.get())
+    //          .isExactlyInstanceOf(OfficeException.class)
+    //          .hasMessageStartingWith("Interruption while connecting to external office process.")
+    //          .hasCauseExactlyInstanceOf(InterruptedException.class);
+    //    }
 
     @Test
     void whenDisconnectedAndConnectFailFastIsTrue_ShouldThrowRejectedExecutionException() {

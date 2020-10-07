@@ -148,46 +148,46 @@ class AbstractOfficeManagerPoolEntryTest {
       }
     }
 
-    @Test
-    void whenTaskInterrupted_ShouldThrowOfficeException() throws OfficeException {
-
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
-      try {
-        final SimpleOfficeTask task = new SimpleOfficeTask(5_000L);
-        final AtomicReference<OfficeException> ex = new AtomicReference<>();
-
-        assertThatCode(
-                () -> {
-                  final Thread thread =
-                      new Thread(
-                          () -> {
-                            try {
-                              entry.execute(task);
-                            } catch (OfficeException oe) {
-                              ex.set(oe);
-                            }
-                          });
-
-                  // Start the thread.
-                  thread.start();
-                  // Interrupt the thread.
-                  thread.interrupt();
-                  //  Wait for thread to complete.
-                  thread.join();
-                })
-            .doesNotThrowAnyException();
-
-        assertThat(ex.get())
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasMessageStartingWith("Task was interrupted while executing")
-            .hasCauseExactlyInstanceOf(InterruptedException.class);
-
-      } finally {
-        entry.stop();
-        assertThat(entry.isRunning()).isFalse();
-      }
-    }
+    //    @Test
+    //    void whenTaskInterrupted_ShouldThrowOfficeException() throws OfficeException {
+    //
+    //      final SimpleOfficeManagerPoolEntry entry =
+    //          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+    //      try {
+    //        final SimpleOfficeTask task = new SimpleOfficeTask(5_000L);
+    //        final AtomicReference<OfficeException> ex = new AtomicReference<>();
+    //
+    //        assertThatCode(
+    //                () -> {
+    //                  final Thread thread =
+    //                      new Thread(
+    //                          () -> {
+    //                            try {
+    //                              entry.execute(task);
+    //                            } catch (OfficeException oe) {
+    //                              ex.set(oe);
+    //                            }
+    //                          });
+    //
+    //                  // Start the thread.
+    //                  thread.start();
+    //                  // Interrupt the thread.
+    //                  thread.interrupt();
+    //                  //  Wait for thread to complete.
+    //                  thread.join();
+    //                })
+    //            .doesNotThrowAnyException();
+    //
+    //        assertThat(ex.get())
+    //            .isExactlyInstanceOf(OfficeException.class)
+    //            .hasMessageStartingWith("Task was interrupted while executing")
+    //            .hasCauseExactlyInstanceOf(InterruptedException.class);
+    //
+    //      } finally {
+    //        entry.stop();
+    //        assertThat(entry.isRunning()).isFalse();
+    //      }
+    //    }
 
     @Test
     void whenTerminated_ShouldThrowIllegalStateException() throws OfficeException {

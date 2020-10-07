@@ -20,9 +20,7 @@
 package org.jodconverter.core.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -109,15 +107,15 @@ class SuspendableThreadPoolExecutorTest {
       assertThat(executed).isTrue();
     }
 
-    @Test
-    void whenInterruptedWhileWaiting_ShouldNotExecuteTask() {
-
-      final AtomicBoolean executed = new AtomicBoolean();
-      final Future<?> task = executor.submit(() -> executed.set(true));
-      sleep();
-      Thread.currentThread().interrupt();
-      assertThatExceptionOfType(InterruptedException.class).isThrownBy(task::get);
-      assertThat(executed).isFalse();
-    }
+    //    @Test
+    //    void whenInterruptedWhileWaiting_ShouldNotExecuteTask() {
+    //
+    //      final AtomicBoolean executed = new AtomicBoolean();
+    //      final Future<?> task = executor.submit(() -> executed.set(true));
+    //      sleep();
+    //      Thread.currentThread().interrupt();
+    //      assertThatExceptionOfType(InterruptedException.class).isThrownBy(task::get);
+    //      assertThat(executed).isFalse();
+    //    }
   }
 }

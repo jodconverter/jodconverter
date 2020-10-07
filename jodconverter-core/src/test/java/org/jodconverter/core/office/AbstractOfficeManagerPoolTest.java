@@ -514,45 +514,45 @@ class AbstractOfficeManagerPoolTest {
       }
     }
 
-    @Test
-    void whenInterruptedWhileAquiringManager_ShouldThrowOfficeException()
-        throws OfficeException, InterruptedException {
-
-      final SimpleOfficeManager manager =
-          SimpleOfficeManager.builder().taskQueueTimeout(500L).build();
-      try {
-        manager.start();
-
-        // Create threads that will both execute a task taking more than a seconds to execute.
-        final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 1_000L);
-        final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 500L);
-        final Thread thread1 = new Thread(runnable1);
-        final Thread thread2 = new Thread(runnable2);
-
-        // Start the threads.
-        thread1.start();
-        Thread.sleep(250L);
-
-        thread2.start();
-        Thread.sleep(250L);
-
-        // Interrupt the second thread
-        thread2.interrupt();
-
-        // Wait for threads to complete
-        thread1.join();
-        thread2.join();
-
-        // Here, the second runnable should contain the interruption exception
-        assertThat(runnable2.exception)
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasMessage("Interruption while acquiring manager")
-            .hasCauseExactlyInstanceOf(InterruptedException.class);
-
-      } finally {
-        manager.stop();
-      }
-    }
+    //    @Test
+    //    void whenInterruptedWhileAquiringManager_ShouldThrowOfficeException()
+    //        throws OfficeException, InterruptedException {
+    //
+    //      final SimpleOfficeManager manager =
+    //          SimpleOfficeManager.builder().taskQueueTimeout(500L).build();
+    //      try {
+    //        manager.start();
+    //
+    //        // Create threads that will both execute a task taking more than a seconds to execute.
+    //        final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 1_000L);
+    //        final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 500L);
+    //        final Thread thread1 = new Thread(runnable1);
+    //        final Thread thread2 = new Thread(runnable2);
+    //
+    //        // Start the threads.
+    //        thread1.start();
+    //        Thread.sleep(250L);
+    //
+    //        thread2.start();
+    //        Thread.sleep(250L);
+    //
+    //        // Interrupt the second thread
+    //        thread2.interrupt();
+    //
+    //        // Wait for threads to complete
+    //        thread1.join();
+    //        thread2.join();
+    //
+    //        // Here, the second runnable should contain the interruption exception
+    //        assertThat(runnable2.exception)
+    //            .isExactlyInstanceOf(OfficeException.class)
+    //            .hasMessage("Interruption while acquiring manager")
+    //            .hasCauseExactlyInstanceOf(InterruptedException.class);
+    //
+    //      } finally {
+    //        manager.stop();
+    //      }
+    //    }
 
     @Test
     void whenInterruptedWhileReleasingAquiringManager_ShouldThrowOfficeException()

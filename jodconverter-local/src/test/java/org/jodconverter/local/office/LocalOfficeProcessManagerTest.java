@@ -32,7 +32,6 @@ import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAI
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -116,56 +115,56 @@ class LocalOfficeProcessManagerTest {
       assertThatExceptionOfType(OfficeException.class).isThrownBy(manager::start);
     }
 
-    @Test
-    void whenStartFailFastIsTrueAndTaskInterrupted_ShouldNotConnect() {
-
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
-
-      final LocalOfficeProcessManager manager =
-          new LocalOfficeProcessManager(
-              url,
-              LocalOfficeUtils.getDefaultOfficeHome(),
-              OfficeUtils.getDefaultWorkingDir(),
-              LocalOfficeUtils.findBestProcessManager(),
-              new ArrayList<>(),
-              null,
-              1000L,
-              1000L,
-              DEFAULT_DISABLE_OPENGL,
-              DEFAULT_EXISTING_PROCESS_ACTION,
-              true,
-              DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-              connection);
-
-      final AtomicReference<OfficeException> ex = new AtomicReference<>();
-
-      assertThatCode(
-              () -> {
-                final Thread thread =
-                    new Thread(
-                        () -> {
-                          try {
-                            manager.start();
-                          } catch (OfficeException oe) {
-                            ex.set(oe);
-                          }
-                        });
-
-                // Start the thread.
-                thread.start();
-                // Interrupt the thread.
-                thread.interrupt();
-                //  Wait for thread to complete.
-                thread.join();
-              })
-          .doesNotThrowAnyException();
-
-      assertThat(ex.get())
-          .isExactlyInstanceOf(OfficeException.class)
-          .hasMessageStartingWith("Interruption while starting the office process.")
-          .hasCauseExactlyInstanceOf(InterruptedException.class);
-    }
+    //    @Test
+    //    void whenStartFailFastIsTrueAndTaskInterrupted_ShouldNotConnect() {
+    //
+    //      final OfficeUrl url = new OfficeUrl(9999);
+    //      final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
+    //
+    //      final LocalOfficeProcessManager manager =
+    //          new LocalOfficeProcessManager(
+    //              url,
+    //              LocalOfficeUtils.getDefaultOfficeHome(),
+    //              OfficeUtils.getDefaultWorkingDir(),
+    //              LocalOfficeUtils.findBestProcessManager(),
+    //              new ArrayList<>(),
+    //              null,
+    //              1000L,
+    //              1000L,
+    //              DEFAULT_DISABLE_OPENGL,
+    //              DEFAULT_EXISTING_PROCESS_ACTION,
+    //              true,
+    //              DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+    //              connection);
+    //
+    //      final AtomicReference<OfficeException> ex = new AtomicReference<>();
+    //
+    //      assertThatCode(
+    //              () -> {
+    //                final Thread thread =
+    //                    new Thread(
+    //                        () -> {
+    //                          try {
+    //                            manager.start();
+    //                          } catch (OfficeException oe) {
+    //                            ex.set(oe);
+    //                          }
+    //                        });
+    //
+    //                // Start the thread.
+    //                thread.start();
+    //                // Interrupt the thread.
+    //                thread.interrupt();
+    //                //  Wait for thread to complete.
+    //                thread.join();
+    //              })
+    //          .doesNotThrowAnyException();
+    //
+    //      assertThat(ex.get())
+    //          .isExactlyInstanceOf(OfficeException.class)
+    //          .hasMessageStartingWith("Interruption while starting the office process.")
+    //          .hasCauseExactlyInstanceOf(InterruptedException.class);
+    //    }
 
     @Test
     void whenStoppedAndStartFailFastIsTrue_ShouldThrowRejectedExecutionException() {
