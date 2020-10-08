@@ -144,9 +144,9 @@ public final class ConvertUtil {
 
       // Skip test that doesn't work on all os.
       switch (outputFormat.getExtension()) {
+        case "swf":
         case "sxc":
         case "sxi":
-        case "sxf":
         case "sxw":
           LOGGER.info(
               "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
@@ -158,28 +158,28 @@ public final class ConvertUtil {
       //      if (SystemUtils.IS_OS_WINDOWS) {
       //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
       //          LOGGER.info(
-      //              "Skipping {} to {} test", inputFormat.getExtension(),
+      //              "Skipping {} to {} test", inputFormat.getExtension(),
       // outputFormat.getExtension());
       //          continue;
       //        }
       //      } else if (SystemUtils.IS_OS_FREE_BSD) {
       //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxw")) {
       //          LOGGER.info(
-      //              "Skipping {} to {} test", inputFormat.getExtension(),
+      //              "Skipping {} to {} test", inputFormat.getExtension(),
       // outputFormat.getExtension());
       //          continue;
       //        }
       //      } else if (SystemUtils.IS_OS_MAC) {
       //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
       //          LOGGER.info(
-      //              "Skipping {} to {} test", inputFormat.getExtension(),
+      //              "Skipping {} to {} test", inputFormat.getExtension(),
       // outputFormat.getExtension());
       //          continue;
       //        }
       //      } else if (SystemUtils.IS_OS_UNIX) {
       //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
       //          LOGGER.info(
-      //              "Skipping {} to {} test", inputFormat.getExtension(),
+      //              "Skipping {} to {} test", inputFormat.getExtension(),
       // outputFormat.getExtension());
       //          continue;
       //        }
@@ -210,7 +210,7 @@ public final class ConvertUtil {
       //              "xlsx",
       //              "pptx")) {
       //        LOGGER.info(
-      //            "Skipping {} to {} test", inputFormat.getExtension(),
+      //            "Skipping {} to {} test", inputFormat.getExtension(),
       // outputFormat.getExtension());
       //        continue;
       //      }
