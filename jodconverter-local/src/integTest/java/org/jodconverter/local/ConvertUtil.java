@@ -142,12 +142,14 @@ public final class ConvertUtil {
     // This will create 1 output file per output format.
     for (final DocumentFormat outputFormat : outputFormats) {
 
+      // Skip test that doesn't work on all os.
       switch (outputFormat.getExtension()) {
         case "sxc":
         case "sxi":
+        case "sxf":
         case "sxw":
           LOGGER.info(
-              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
           continue;
         default:
           break;
