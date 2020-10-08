@@ -31,30 +31,26 @@ jobs:
 
     #macos - see https://docs.travis-ci.com/user/reference/osx/#jdk-and-macos
 
-    #macos Java8
+    #macos 9
     - os: osx
-      osx_image: xcode8.3
-      jdk: oraclejdk8
+      osx_image: xcode9.4
+      script:
+        - ./gradlew build -x javadoc --stacktrace
+    #macos 10
+    - os: osx
+      osx_image: xcode10.3
+      script:
+        - ./gradlew build -x javadoc --stacktrace
+    #macos 11
+    - os: osx
+      osx_image: xcode11.6
       script:
        - ./gradlew build -x javadoc --stacktrace
-    #macos Java11
+    #macos 12
     - os: osx
-      osx_image: xcode10.1
-      jdk: openjdk11
+      osx_image: xcode12.2
       script:
-       - ./gradlew build -x javadoc --stacktrace
-    #macos Java12
-    - os: osx
-      osx_image: xcode11
-      jdk: openjdk12
-      script:
-       - ./gradlew build -x javadoc --stacktrace
-    #macos Java13
-    - os: osx
-      osx_image: xcode11.3
-      jdk: openjdk13
-      script:
-       - ./gradlew build -x javadoc --stacktrace
+        - ./gradlew build -x javadoc --stacktrace
 
 before_install:
   - |
