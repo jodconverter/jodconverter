@@ -17,9 +17,9 @@ freebsd_task:
 windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
-  additional_containers:
-    - name: gradle
-      image: gradle:jdk8
+    additional_containers:
+      - name: gradle
+        image: gradle:jdk8
 
 # Avoid build failure caused by the spotless plugin
 #init:
