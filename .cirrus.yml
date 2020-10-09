@@ -2,23 +2,23 @@
 #container:
 #  image: gradle:jdk8
 
-# LINUX SHARDS
-freebsd_task:
-  freebsd_instance:
-    image_family: freebsd-12-1
-  install_gradle_script:
-    - pkg install -y gradle
-  install_libreoffice_script:
-    - pkg install -y libreoffice
-  build_script:
-    - gradle build
+# Free BSD
+#freebsd_task:
+#  freebsd_instance:
+#    image_family: freebsd-12-1
+#  install_gradle_script:
+#    - pkg install -y gradle
+#  install_libreoffice_script:
+#    - pkg install -y libreoffice
+#  build_script:
+#    - gradle build
 
 # WINDOWS SHARDS
 windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
   libreoffice_install_script:
-    - choco install libreoffice
+    - choco install -y libreoffice
   dir_script:
     - set
     - dir "C:\"
@@ -26,9 +26,9 @@ windows_task:
   matrix:
     - name: java8
       java_install_script:
-        - choco install jdk8
+        - choco install -y jdk8
       gradle_install_script:
-        - choco install gradle
+        - choco install -y gradle
       build_script:
         - gradlew.bat assemble -x javadoc
       test_script:
