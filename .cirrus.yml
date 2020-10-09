@@ -19,8 +19,6 @@ windows_task:
     image: cirrusci/windowsservercore:2019
   libreoffice_install_script:
     - choco install libreoffice
-  test_script:
-    - gradlew.bat check -x integTest
   dir_script:
     - set
     - dir "C:\"
