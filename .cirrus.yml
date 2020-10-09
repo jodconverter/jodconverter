@@ -17,7 +17,7 @@
 windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
-  clone_script: |
+  clone_script:
     - git config --global core.autocrlf true
     - |
       if "%CIRRUS_PR%"=="" then (
