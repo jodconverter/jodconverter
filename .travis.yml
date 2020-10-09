@@ -10,47 +10,47 @@ jobs:
         - ./gradlew build --stacktrace
       after_success:
         - ./gradlew coveralls
-    #linux Java11
-    - os: linux
-      dist: trusty
-      jdk: openjdk11
-      script:
-        - ./gradlew build -x javadoc --stacktrace
-    #linux Java12
-    - os: linux
-      dist: trusty
-      jdk: openjdk12
-      script:
-        - ./gradlew build -x javadoc --stacktrace
-    #linux Java13
-    - os: linux
-      dist: trusty
-      jdk: openjdk13
-      script:
-        - ./gradlew build -x javadoc --stacktrace
-
-    #macos - see https://docs.travis-ci.com/user/reference/osx/#jdk-and-macos
-
-    #macos 9
-    - os: osx
-      osx_image: xcode9.4
-      script:
-        - ./gradlew build -x javadoc --stacktrace
-    #macos 10
-    - os: osx
-      osx_image: xcode10.3
-      script:
-        - ./gradlew build -x javadoc --stacktrace
-    #macos 11
-    - os: osx
-      osx_image: xcode11.6
-      script:
-       - ./gradlew build -x javadoc --stacktrace
-    #macos 12
-    - os: osx
-      osx_image: xcode12.2
-      script:
-        - ./gradlew build -x javadoc --stacktrace
+#    #linux Java11
+#    - os: linux
+#      dist: trusty
+#      jdk: openjdk11
+#      script:
+#        - ./gradlew build -x javadoc --stacktrace
+#    #linux Java12
+#    - os: linux
+#      dist: trusty
+#      jdk: openjdk12
+#      script:
+#        - ./gradlew build -x javadoc --stacktrace
+#    #linux Java13
+#    - os: linux
+#      dist: trusty
+#      jdk: openjdk13
+#      script:
+#        - ./gradlew build -x javadoc --stacktrace
+#
+#    #macos - see https://docs.travis-ci.com/user/reference/osx/#jdk-and-macos
+#
+#    #macos 9
+#    - os: osx
+#      osx_image: xcode9.4
+#      script:
+#        - ./gradlew build -x javadoc --stacktrace
+#    #macos 10
+#    - os: osx
+#      osx_image: xcode10.3
+#      script:
+#        - ./gradlew build -x javadoc --stacktrace
+#    #macos 11
+#    - os: osx
+#      osx_image: xcode11.6
+#      script:
+#       - ./gradlew build -x javadoc --stacktrace
+#    #macos 12
+#    - os: osx
+#      osx_image: xcode12.2
+#      script:
+#        - ./gradlew build -x javadoc --stacktrace
 
 before_install:
   - |
