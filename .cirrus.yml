@@ -17,12 +17,14 @@
 windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
-  libreoffice_install_script:
-    - choco install -y libreoffice
+#  libreoffice_install_script:
+#    - choco install -y libreoffice
   matrix:
     - name: java8
       java_install_script:
-        - choco install -y jdk8
+#        - choco install -y jdk8
+        - choco install -y jdk8 -params "installdir=c:\\java8"
+        - set "JAVA_HOME=c:\\java8"
       gradle_install_script:
         - choco install -y gradle
       dir_script:
