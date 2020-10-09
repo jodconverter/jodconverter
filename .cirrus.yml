@@ -17,22 +17,33 @@ freebsd_task:
 windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
-    additional_containers:
-      - name: gradle
-        image: gradle:jdk8
+  libreoffice_install_script:
+    - choco install libreoffice
+  test_script:
+    - gradlew.bat check -x integTest
+  dir_script:
+    - set
+    - dir "C:\"
+    - dir "C:\Program Files\"
+  matrix:
+    - name: java8
+      java_install_script:
+        - choco install jdk8
+      gradle_install_script:
+        - choco install gradle
+      build_script:
+        - gradlew.bat assemble -x javadoc
+      test_script:
+        - gradlew.bat check -x integTest
 
 # Avoid build failure caused by the spotless plugin
 #init:
 #  - git config --global core.autocrlf true
-  dir_script:
-      - set
-      - dir "C:\"
-      - dir "C:\Program Files\"
 
-  # Build artifacts
-  build_script:
-    - gradlew.bat assemble -x javadoc
-
-  # Verify artifacts (without running integration tests)
-  test_script:
-    - gradlew.bat check -x integTest
+#  # Build artifacts
+#  build_script:
+#    - gradlew.bat assemble -x javadoc
+#
+#  # Verify artifacts (without running integration tests)
+#  test_script:
+#    - gradlew.bat check -x integTest
