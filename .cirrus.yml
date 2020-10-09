@@ -2,26 +2,33 @@
 #container:
 #  image: gradle:jdk8
 
-build_task:
+# LINUX SHARDS
+freebsd_task:
   freebsd_instance:
     image_family: freebsd-12-1
-#  gradle_cache:
-#    folder: ~/.gradle/caches
-#   install_zip_script:
-#      pkg install -y zip
-#      cd /usr/ports/archivers/zip
-#      make install clean
-#   install_sdkman_script:
-#    - curl -s "https://get.sdkman.io" | bash
-#    - source "/home/user/.sdkman/bin/sdkman-init.sh"
   install_gradle_script:
-#    #- sdk install gradle
     - pkg install -y gradle
   install_libreoffice_script:
     - pkg install -y libreoffice
   build_script:
     - gradle build
-    #- ./gradlew build --stacktrace
-#  cleanup_before_cache_script:
-#    - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
-#    - find ~/.gradle/caches/ -name "*.lock" -type f -delete
+
+# WINDOWS SHARDS
+windows_task:
+  windows_container:
+    image: cirrusci/windowsservercore:2019
+
+# Avoid build failure caused by the spotless plugin
+#init:
+#  - git config --global core.autocrlf true
+  dir_script:
+      - dir "C:\Program Files\Java\"
+      - set
+
+  # Build artifacts
+  build_script:
+    - gradlew.bat assemble -x javadoc
+
+  # Verify artifacts (without running integration tests)
+  test_script:
+    - gradlew.bat check -x integTest
