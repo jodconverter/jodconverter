@@ -17,24 +17,23 @@
 windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
-#  libreoffice_install_script:
-#    - choco install -y libreoffice
+  libreoffice_install_script:
+    - choco install -y libreoffice
   matrix:
     - name: java8
       env:
-        JAVA_HOME: c:\java8
+        JAVA_HOME: "c:\\java8"
       java_install_script:
 #        - choco install -y jdk8
         - choco install -y jdk8 -params "installdir=c:\\java8"
-#      gradle_install_script:
-#        - choco install -y gradle
+      gradle_install_script:
+        - choco install -y gradle
       dir_script:
-        - set
         - echo %JAVA_HOME%
-#      build_script:
-#        - gradlew.bat assemble -x javadoc
-#      test_script:
-#        - gradlew.bat check -x integTest
+      build_script:
+        - gradlew.bat assemble -x javadoc
+      test_script:
+        - gradlew.bat check -x integTest
 
 # Avoid build failure caused by the spotless plugin
 #init:
