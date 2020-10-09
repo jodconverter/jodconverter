@@ -22,8 +22,8 @@ windows_task:
 #init:
 #  - git config --global core.autocrlf true
   dir_script:
-      - dir "C:\Program Files\Java\"
       - set
+      - dir "C:\Program Files\"
 
   # Build artifacts
   build_script:
