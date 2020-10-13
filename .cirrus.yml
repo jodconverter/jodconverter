@@ -20,7 +20,7 @@ windows_task:
   clone_script:
     - git config --global core.autocrlf true
     - |
-      if "%CIRRUS_PR%"=="" then (
+      cmd /c if "%CIRRUS_PR%"=="" (
         git clone --recursive --branch=%CIRRUS_BRANCH% https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git %CIRRUS_WORKING_DIR%
       ) else (
         git clone --recursive https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git %CIRRUS_WORKING_DIR%
