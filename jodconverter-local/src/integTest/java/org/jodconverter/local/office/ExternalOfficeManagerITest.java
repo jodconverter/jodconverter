@@ -30,106 +30,108 @@ import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_T
 
 import java.util.ArrayList;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
-
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.SimpleOfficeTask;
 import org.jodconverter.core.test.util.TestUtil;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.powermock.reflect.Whitebox;
 
 /** Contains tests for the {@link ExternalOfficeManager} class. */
 public class ExternalOfficeManagerITest {
 
-  private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
-  private static final long START_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
+	private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
+	private static final long START_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
 
-  private static LocalOfficeProcessManager manager;
+	private static LocalOfficeProcessManager manager;
 
-  private static LocalOfficeProcessManager startOfficeProcess() throws OfficeException {
+	private static LocalOfficeProcessManager startOfficeProcess() throws OfficeException {
 
-    final long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 
-    // Starts an office process
-    final OfficeConnection connection = new OfficeConnection(CONNECT_URL);
-    final LocalOfficeProcessManager manager =
-        new LocalOfficeProcessManager(
-            CONNECT_URL,
-            LocalOfficeUtils.getDefaultOfficeHome(),
-            OfficeUtils.getDefaultWorkingDir(),
-            LocalOfficeUtils.findBestProcessManager(),
-            new ArrayList<>(),
-            null,
-            DEFAULT_PROCESS_TIMEOUT,
-            DEFAULT_PROCESS_RETRY_INTERVAL,
-            DEFAULT_DISABLE_OPENGL,
-            DEFAULT_EXISTING_PROCESS_ACTION,
-            true,
-            DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-            connection);
-    manager.start();
-    final OfficeConnection conn = Whitebox.getInternalState(manager, "connection");
-    final long limit = start + START_WAIT_TIMEOUT;
-    while (System.currentTimeMillis() < limit) {
-      if (conn.isConnected()) {
-        break;
-      }
+		// Starts an office process
+		OfficeConnection connection = new OfficeConnection(CONNECT_URL);
+		LocalOfficeProcessManager manager =
+				new LocalOfficeProcessManager(
+						CONNECT_URL,
+						LocalOfficeUtils.getDefaultOfficeHome(),
+						OfficeUtils.getDefaultWorkingDir(),
+						LocalOfficeUtils.findBestProcessManager(),
+						new ArrayList<>(),
+						null,
+						DEFAULT_PROCESS_TIMEOUT,
+						DEFAULT_PROCESS_RETRY_INTERVAL,
+						DEFAULT_DISABLE_OPENGL,
+						DEFAULT_EXISTING_PROCESS_ACTION,
+						true,
+						DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+						connection);
+		manager.start();
+		OfficeConnection conn = Whitebox.getInternalState(manager, "connection");
+		long limit = start + START_WAIT_TIMEOUT;
+		while (System.currentTimeMillis() < limit) {
+			if (conn.isConnected()) {
+				break;
+			}
 
-      // Wait a sec
-      TestUtil.sleepQuietly(1_000L);
-    }
-    return manager;
-  }
+			// Wait a sec
+			TestUtil.sleepQuietly(1_000L);
+		}
+		return manager;
+	}
 
-  @BeforeAll
-  public static void setUp() throws OfficeException {
+	@BeforeAll
+	public static void setUp() throws OfficeException {
 
-    // Starts an office process
-    manager = startOfficeProcess();
-  }
+		// Starts an office process
+		manager = startOfficeProcess();
+	}
 
-  @AfterAll
-  public static void tearDown() throws OfficeException {
+	@AfterAll
+	public static void tearDown() throws OfficeException {
 
-    manager.stop();
-  }
+		manager.stop();
+	}
 
-  @Test
-  public void execute_WhenProcessDoesNotExist_ShouldFailed() {
+	@Test
+	public void execute_WhenProcessDoesNotExist_ShouldFailed() {
 
-    final OfficeManager manager =
-        ExternalOfficeManager.builder()
-            .portNumbers(65_530)
-            .connectTimeout(3_000L)
-            .connectRetryInterval(1_000L)
-            .connectFailFast(true)
-            .build();
+		OfficeManager manager =
+				ExternalOfficeManager.builder()
+						.portNumbers(65_530)
+						.connectTimeout(3_000L)
+						.connectRetryInterval(1_000L)
+						.connectFailFast(true)
+						.build();
 
-    assertThatExceptionOfType(OfficeException.class)
-        .isThrownBy(manager::start)
-        .withMessage("Could not establish connection to external process.");
-  }
+		assertThatExceptionOfType(OfficeException.class)
+				.isThrownBy(manager::start)
+				.withMessage("Could not establish connection to external process.");
+	}
 
-  @Test
-  public void execute_WhenProcessExists_ShouldSucceed() {
+	@ParameterizedTest
+	@ValueSource(strings = { "localhost", "127.0.0.1" })
+	public void execute_WhenProcessExists_ShouldSucceed(String host) {
 
-    final OfficeManager manager =
-        ExternalOfficeManager.builder().portNumbers(2002).connectFailFast(true).build();
+		OfficeManager manager =
+				ExternalOfficeManager.builder().hostName(host).portNumbers(2002).connectFailFast(true).build();
 
-    final SimpleOfficeTask task = new SimpleOfficeTask();
-    assertThatCode(
-            () -> {
-              try {
-                manager.start();
-                manager.execute(task);
-              } finally {
-                manager.stop();
-              }
-            })
-        .doesNotThrowAnyException();
-    assertThat(task.isCompleted()).isTrue();
-  }
+		SimpleOfficeTask task = new SimpleOfficeTask();
+		assertThatCode(
+				() -> {
+					try {
+						manager.start();
+						manager.execute(task);
+					} finally {
+						manager.stop();
+					}
+				})
+				.doesNotThrowAnyException();
+		assertThat(task.isCompleted()).isTrue();
+	}
 }

@@ -22,8 +22,9 @@ package org.jodconverter.local.office;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import com.sun.star.lib.uno.helper.UnoUrl;
 
 /**
  * Wrapper class around an UnoUrl so we are not importing the com.sun.star.lib.uno.helper.UnoUrl
@@ -44,227 +45,252 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 class OfficeUrl {
 
-  private final UnoUrl unoUrl;
+	private static final String DEFAULT_HOST = "127.0.0.1";
+	private final UnoUrl unoUrl;
 
-  /**
-   * Creates an UnoUrl for the specified pipe.
-   *
-   * @param pipeName The pipe name.
-   * @return The created UnoUrl.
-   */
-  /* default */ static UnoUrl pipe(final @NonNull String pipeName) {
+	/**
+	 * Creates an UnoUrl for the specified pipe.
+	 *
+	 * @param pipeName The pipe name.
+	 * @return The created UnoUrl.
+	 */
+	/* default */
+	static UnoUrl pipe(@NonNull String pipeName) {
 
-    // Here we must use a try catch since OpenOffice and LibreOffice doesn't
-    // have the same UnoUrl.parseUnoUrl signature
-    try {
-      return UnoUrl.parseUnoUrl("pipe,name=" + pipeName + ";urp;StarOffice.ServiceManager");
-    } catch (Exception ex) {
-      throw new IllegalArgumentException(ex);
-    }
-  }
+		// Here we must use a try catch since OpenOffice and LibreOffice doesn't
+		// have the same UnoUrl.parseUnoUrl signature
+		try {
+			return UnoUrl.parseUnoUrl("pipe,name=" + pipeName + ";urp;StarOffice.ServiceManager");
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(ex);
+		}
+	}
 
-  /**
-   * Creates an UnoUrl for the specified port.
-   *
-   * @param port The port.
-   * @return The created UnoUrl.
-   */
-  /* default */ static UnoUrl socket(final int port) {
+	/**
+	 * Creates an UnoUrl for the specified port on host 127.0.0.1.
+	 *
+	 * @param port The port.
+	 * @return The created UnoUrl.
+	 */
+	/* default */
+	static UnoUrl socket(int port) {
+		return socket(null, port);
+	}
 
-    // Here we must use a try catch since OpenOffice and LibreOffice doesn't
-    // have the same UnoUrl.parseUnoUrl signature
-    try {
-      return UnoUrl.parseUnoUrl(
-          "socket,host=127.0.0.1,port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
-      //      return UnoUrl.parseUnoUrl(
-      //          "socket,host=localhost,port=" + port + ";urp;StarOffice.ServiceManager");
-    } catch (Exception ex) {
-      throw new IllegalArgumentException(ex);
-    }
-  }
+	/**
+	 * Creates an UnoUrl for the specified port.
+	 *
+	 * @param host The host. Uses 127.0.0.1 if null
+	 * @param port The port.
+	 * @return The created UnoUrl.
+	 */
+	/* default */
+	static UnoUrl socket(String host, int port) {
 
-  /**
-   * Creates an OfficeUrl for the specified pipe.
-   *
-   * @param pipeName The pipe name.
-   */
-  public OfficeUrl(final String pipeName) {
+		String h = host == null ? DEFAULT_HOST : host;
+		// Here we must use a try catch since OpenOffice and LibreOffice doesn't
+		// have the same UnoUrl.parseUnoUrl signature
+		try {
+			return UnoUrl.parseUnoUrl(
+					"socket,host=" + h + ",port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+			//      return UnoUrl.parseUnoUrl(
+			//          "socket,host=localhost,port=" + port + ";urp;StarOffice.ServiceManager");
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(ex);
+		}
+	}
 
-    this.unoUrl = pipe(pipeName);
-  }
+	/**
+	 * Creates an OfficeUrl for the specified pipe.
+	 *
+	 * @param pipeName The pipe name.
+	 */
+	public OfficeUrl(String pipeName) {
 
-  /**
-   * Creates an OfficeUrl for the specified port.
-   *
-   * @param port The port.
-   */
-  public OfficeUrl(final int port) {
+		unoUrl = pipe(pipeName);
+	}
 
-    this.unoUrl = socket(port);
-  }
+	/**
+	 * Creates an OfficeUrl for the specified port on host 127.0.0.1
+	 *
+	 * @param port The port.
+	 */
+	public OfficeUrl(int port) {
+		this(DEFAULT_HOST, port);
+	}
 
-  /**
-   * Returns the name of the connection of this Uno Url. Encoded characters are not allowed.
-   *
-   * @return The connection name as string.
-   */
-  public String getConnection() {
-    return unoUrl.getConnection();
-  }
+	/**
+	 * Creates an OfficeUrl for the specified port.
+	 *
+	 * @param host The host.
+	 * @param port The port.
+	 */
+	public OfficeUrl(String host, int port) {
+		unoUrl = socket(host, port);
+	}
 
-  /**
-   * Returns the name of the protocol of this Uno Url. Encoded characters are not allowed.
-   *
-   * @return The protocol name as string.
-   */
-  public String getProtocol() {
-    return unoUrl.getProtocol();
-  }
+	/**
+	 * Returns the name of the connection of this Uno Url. Encoded characters are not allowed.
+	 *
+	 * @return The connection name as string.
+	 */
+	public String getConnection() {
+		return unoUrl.getConnection();
+	}
 
-  /**
-   * Return the object name. Encoded character are not allowed.
-   *
-   * @return The object name as String.
-   */
-  public String getRootOid() {
-    return unoUrl.getRootOid();
-  }
+	/**
+	 * Returns the name of the protocol of this Uno Url. Encoded characters are not allowed.
+	 *
+	 * @return The protocol name as string.
+	 */
+	public String getProtocol() {
+		return unoUrl.getProtocol();
+	}
 
-  /**
-   * Returns the protocol parameters as a map with key/value pairs. Encoded characters like '%41'
-   * are decoded.
-   *
-   * @return A map with key/value pairs for protocol parameters.
-   */
-  public Map<String, String> getProtocolParameters() {
-    return ((Map<?, ?>) unoUrl.getProtocolParameters())
-        .entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
-  }
+	/**
+	 * Return the object name. Encoded character are not allowed.
+	 *
+	 * @return The object name as String.
+	 */
+	public String getRootOid() {
+		return unoUrl.getRootOid();
+	}
 
-  /**
-   * Returns the connection parameters as a map with key/value pairs. Encoded characters like '%41'
-   * are decoded.
-   *
-   * @return A map with key/value pairs for connection parameters.
-   */
-  public Map<String, String> getConnectionParameters() {
-    return ((Map<?, ?>) unoUrl.getConnectionParameters())
-        .entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
-  }
+	/**
+	 * Returns the protocol parameters as a map with key/value pairs. Encoded characters like '%41'
+	 * are decoded.
+	 *
+	 * @return A map with key/value pairs for protocol parameters.
+	 */
+	public Map<String, String> getProtocolParameters() {
+		return ((Map<?, ?>) unoUrl.getProtocolParameters())
+				.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
+	}
 
-  /**
-   * Returns the raw specification of the protocol parameters. Encoded characters like '%41' are not
-   * decoded.
-   *
-   * @return The uninterpreted protocol parameters as string.
-   */
-  public String getProtocolParametersAsString() {
-    return unoUrl.getProtocolParametersAsString();
-  }
+	/**
+	 * Returns the connection parameters as a map with key/value pairs. Encoded characters like '%41'
+	 * are decoded.
+	 *
+	 * @return A map with key/value pairs for connection parameters.
+	 */
+	public Map<String, String> getConnectionParameters() {
+		return ((Map<?, ?>) unoUrl.getConnectionParameters())
+				.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
+	}
 
-  /**
-   * Returns the raw specification of the connection parameters. Encoded characters like '%41' are
-   * not decoded.
-   *
-   * @return The uninterpreted connection parameters as string.
-   */
-  public String getConnectionParametersAsString() {
-    return unoUrl.getConnectionParametersAsString();
-  }
+	/**
+	 * Returns the raw specification of the protocol parameters. Encoded characters like '%41' are not
+	 * decoded.
+	 *
+	 * @return The uninterpreted protocol parameters as string.
+	 */
+	public String getProtocolParametersAsString() {
+		return unoUrl.getProtocolParametersAsString();
+	}
 
-  /**
-   * Returns the raw specification of the protocol name and parameters. Encoded characters like
-   * '%41' are not decoded.
-   *
-   * @return The uninterpreted protocol name and parameters as string.
-   */
-  public String getProtocolAndParametersAsString() {
-    return unoUrl.getProtocolAndParametersAsString();
-  }
+	/**
+	 * Returns the raw specification of the connection parameters. Encoded characters like '%41' are
+	 * not decoded.
+	 *
+	 * @return The uninterpreted connection parameters as string.
+	 */
+	public String getConnectionParametersAsString() {
+		return unoUrl.getConnectionParametersAsString();
+	}
 
-  /**
-   * Returns the raw specification of the connection name and parameters. Encoded characters like
-   * '%41' are not decoded.
-   *
-   * @return The uninterpreted connection name and parameters as string.
-   */
-  public String getConnectionAndParametersAsString() {
-    return unoUrl.getConnectionAndParametersAsString();
-  }
+	/**
+	 * Returns the raw specification of the protocol name and parameters. Encoded characters like
+	 * '%41' are not decoded.
+	 *
+	 * @return The uninterpreted protocol name and parameters as string.
+	 */
+	public String getProtocolAndParametersAsString() {
+		return unoUrl.getProtocolAndParametersAsString();
+	}
 
-  @Override
-  public String toString() {
-    return unoUrl.toString();
-  }
+	/**
+	 * Returns the raw specification of the connection name and parameters. Encoded characters like
+	 * '%41' are not decoded.
+	 *
+	 * @return The uninterpreted connection name and parameters as string.
+	 */
+	public String getConnectionAndParametersAsString() {
+		return unoUrl.getConnectionAndParametersAsString();
+	}
 
-  //  /**
-  //   * Main entry point of the program used to test this class.
-  //   *
-  //   * @param args program arguments.
-  //   */
-  //  public static void main(final String[] args) {
-  //
-  //    // Here we must use a try catch since OpenOffice and LibreOffice doesn't
-  //    // have the same UnoUrl.parseUnoUrl signature
-  //    try {
-  //      OfficeUrl url = new OfficeUrl(2002);
-  //
-  //      System.out.println("WITH PORT");
-  //      System.out.println(String.format("url.getConnection(): %s", url.getConnection()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getConnectionAndParametersAsString(): %s",
-  //              url.getConnectionAndParametersAsString()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getConnectionParametersAsString(): %s",
-  // url.getConnectionParametersAsString()));
-  //      System.out.println(
-  //          String.format("url.getConnectionParameters(): %s", url.getConnectionParameters()));
-  //      System.out.println(String.format("url.getProtocol(): %s", url.getProtocol()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getProtocolAndParametersAsString(): %s",
-  //              url.getProtocolAndParametersAsString()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getProtocolParametersAsString(): %s", url.getProtocolParametersAsString()));
-  //      System.out.println(
-  //          String.format("url.getProtocolParameters(): %s", url.getProtocolParameters()));
-  //      System.out.println(String.format("url.getRootOid(): %s", url.getRootOid()));
-  //
-  //      System.out.println();
-  //      System.out.println();
-  //
-  //      url = new OfficeUrl("office");
-  //
-  //      System.out.println("WITH PIPE");
-  //      System.out.println(String.format("url.getConnection(): %s", url.getConnection()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getConnectionAndParametersAsString(): %s",
-  //              url.getConnectionAndParametersAsString()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getConnectionParametersAsString(): %s",
-  // url.getConnectionParametersAsString()));
-  //      System.out.println(
-  //          String.format("url.getConnectionParameters(): %s", url.getConnectionParameters()));
-  //      System.out.println(String.format("url.getProtocol(): %s", url.getProtocol()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getProtocolAndParametersAsString(): %s",
-  //              url.getProtocolAndParametersAsString()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getProtocolParametersAsString(): %s", url.getProtocolParametersAsString()));
-  //      System.out.println(
-  //          String.format("url.getProtocolParameters(): %s", url.getProtocolParameters()));
-  //      System.out.println(String.format("url.getRootOid(): %s", url.getRootOid()));
-  //    } catch (Exception ex) {
-  //      throw new IllegalArgumentException(ex);
-  //    }
-  //  }
+	@Override
+	public String toString() {
+		return unoUrl.toString();
+	}
+
+	//  /**
+	//   * Main entry point of the program used to test this class.
+	//   *
+	//   * @param args program arguments.
+	//   */
+	//  public static void main(final String[] args) {
+	//
+	//    // Here we must use a try catch since OpenOffice and LibreOffice doesn't
+	//    // have the same UnoUrl.parseUnoUrl signature
+	//    try {
+	//      OfficeUrl url = new OfficeUrl(2002);
+	//
+	//      System.out.println("WITH PORT");
+	//      System.out.println(String.format("url.getConnection(): %s", url.getConnection()));
+	//      System.out.println(
+	//          String.format(
+	//              "url.getConnectionAndParametersAsString(): %s",
+	//              url.getConnectionAndParametersAsString()));
+	//      System.out.println(
+	//          String.format(
+	//              "url.getConnectionParametersAsString(): %s",
+	// url.getConnectionParametersAsString()));
+	//      System.out.println(
+	//          String.format("url.getConnectionParameters(): %s", url.getConnectionParameters()));
+	//      System.out.println(String.format("url.getProtocol(): %s", url.getProtocol()));
+	//      System.out.println(
+	//          String.format(
+	//              "url.getProtocolAndParametersAsString(): %s",
+	//              url.getProtocolAndParametersAsString()));
+	//      System.out.println(
+	//          String.format(
+	//              "url.getProtocolParametersAsString(): %s", url.getProtocolParametersAsString()));
+	//      System.out.println(
+	//          String.format("url.getProtocolParameters(): %s", url.getProtocolParameters()));
+	//      System.out.println(String.format("url.getRootOid(): %s", url.getRootOid()));
+	//
+	//      System.out.println();
+	//      System.out.println();
+	//
+	//      url = new OfficeUrl("office");
+	//
+	//      System.out.println("WITH PIPE");
+	//      System.out.println(String.format("url.getConnection(): %s", url.getConnection()));
+	//      System.out.println(
+	//          String.format(
+	//              "url.getConnectionAndParametersAsString(): %s",
+	//              url.getConnectionAndParametersAsString()));
+	//      System.out.println(
+	//          String.format(
+	//              "url.getConnectionParametersAsString(): %s",
+	// url.getConnectionParametersAsString()));
+	//      System.out.println(
+	//          String.format("url.getConnectionParameters(): %s", url.getConnectionParameters()));
+	//      System.out.println(String.format("url.getProtocol(): %s", url.getProtocol()));
+	//      System.out.println(
+	//          String.format(
+	//              "url.getProtocolAndParametersAsString(): %s",
+	//              url.getProtocolAndParametersAsString()));
+	//      System.out.println(
+	//          String.format(
+	//              "url.getProtocolParametersAsString(): %s", url.getProtocolParametersAsString()));
+	//      System.out.println(
+	//          String.format("url.getProtocolParameters(): %s", url.getProtocolParameters()));
+	//      System.out.println(String.format("url.getRootOid(): %s", url.getRootOid()));
+	//    } catch (Exception ex) {
+	//      throw new IllegalArgumentException(ex);
+	//    }
+	//  }
 }
