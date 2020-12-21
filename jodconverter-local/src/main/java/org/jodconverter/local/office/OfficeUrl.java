@@ -22,9 +22,8 @@ package org.jodconverter.local.office;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import com.sun.star.lib.uno.helper.UnoUrl;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Wrapper class around an UnoUrl so we are not importing the com.sun.star.lib.uno.helper.UnoUrl
@@ -54,8 +53,7 @@ class OfficeUrl {
    * @param pipeName The pipe name.
    * @return The created UnoUrl.
    */
-  /* default */
-  static UnoUrl pipe(@NonNull String pipeName) {
+  /* default */ static UnoUrl pipe(final @NonNull String pipeName) {
 
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
@@ -73,7 +71,7 @@ class OfficeUrl {
    * @return The created UnoUrl.
    */
   /* default */
-  static UnoUrl socket(int port) {
+  static UnoUrl socket(final int port) {
     return socket(null, port);
   }
 
@@ -85,7 +83,7 @@ class OfficeUrl {
    * @return The created UnoUrl.
    */
   /* default */
-  static UnoUrl socket(String host, int port) {
+  static UnoUrl socket(final String host, final int port) {
 
     String h = host == null ? DEFAULT_HOST : host;
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
@@ -106,7 +104,6 @@ class OfficeUrl {
    * @param pipeName The pipe name.
    */
   public OfficeUrl(String pipeName) {
-
     unoUrl = pipe(pipeName);
   }
 
@@ -125,7 +122,7 @@ class OfficeUrl {
    * @param host The host.
    * @param port The port.
    */
-  public OfficeUrl(String host, int port) {
+  public OfficeUrl(final String host, final int port) {
     unoUrl = socket(host, port);
   }
 

@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
 import org.jodconverter.core.office.AbstractOfficeManagerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
@@ -99,15 +100,15 @@ public final class ExternalOfficeManager
   }
 
   private ExternalOfficeManager(
-      List<OfficeUrl> officeUrls,
-      File workingDir,
-      boolean connectOnStart,
-      long connectTimeout,
-      long connectRetryInterval,
-      boolean connectFailFast,
-      int maxTasksPerConnection,
-      long taskExecutionTimeout,
-      long taskQueueTimeout) {
+      final List<OfficeUrl> officeUrls,
+      final File workingDir,
+      final boolean connectOnStart,
+      final long connectTimeout,
+      final long connectRetryInterval,
+      final boolean connectFailFast,
+      final int maxTasksPerConnection,
+      final long taskExecutionTimeout,
+      final long taskQueueTimeout) {
     super(officeUrls.size(), workingDir, taskQueueTimeout);
 
     setEntries(
@@ -155,9 +156,9 @@ public final class ExternalOfficeManager
       OfficeUtils.validateWorkingDir(workingDir);
 
       // Build the manager
-      ExternalOfficeManager manager =
+      final ExternalOfficeManager manager =
           new ExternalOfficeManager(
-              LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames),
+              LocalOfficeUtils.buildOfficeUrls(portNumbers, pipeNames),
               workingDir,
               connectOnStart,
               connectTimeout,
@@ -179,7 +180,7 @@ public final class ExternalOfficeManager
      * @param pipeNames The pipe names to use.
      * @return This builder instance.
      */
-    public @NonNull Builder pipeNames(@Nullable String... pipeNames) {
+    public @NonNull Builder pipeNames(final @Nullable String... pipeNames) {
 
       if (pipeNames != null && pipeNames.length != 0) {
         this.pipeNames = Arrays.asList(pipeNames);
@@ -194,7 +195,7 @@ public final class ExternalOfficeManager
      * @param portNumbers The port numbers to use.
      * @return This builder instance.
      */
-    public @NonNull Builder portNumbers(int... portNumbers) {
+    public @NonNull Builder portNumbers(final int... portNumbers) {
 
       if (portNumbers != null && portNumbers.length != 0) {
         this.portNumbers = Arrays.stream(portNumbers).boxed().collect(Collectors.toList());
@@ -208,11 +209,10 @@ public final class ExternalOfficeManager
      * @param hostName The host name to use.
      * @return This builder instance.
      */
-    public @NonNull Builder hostName(String hostName) {
+    public @NonNull Builder hostName(final String hostName) {
       this.hostName = hostName;
       return this;
     }
-
     /**
      * Specifies whether a connection must be attempted on {@link #start()}? If <em>false</em>, a
      * connection will only be attempted the first time an {@link OfficeTask} is executed.
@@ -222,7 +222,7 @@ public final class ExternalOfficeManager
      * @param connectOnStart {@code true} to connect on start, {@code false} otherwise.
      * @return This builder instance.
      */
-    public @NonNull Builder connectOnStart(@Nullable Boolean connectOnStart) {
+    public @NonNull Builder connectOnStart(final @Nullable Boolean connectOnStart) {
 
       if (connectOnStart != null) {
         this.connectOnStart = connectOnStart;
@@ -238,7 +238,7 @@ public final class ExternalOfficeManager
      * @param connectTimeout the process timeout, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder connectTimeout(@Nullable Long connectTimeout) {
+    public @NonNull Builder connectTimeout(final @Nullable Long connectTimeout) {
 
       if (connectTimeout != null) {
         AssertUtils.isTrue(
@@ -257,7 +257,7 @@ public final class ExternalOfficeManager
      * @param connectRetryInterval the connect retry interval, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder connectRetryInterval(@Nullable Long connectRetryInterval) {
+    public @NonNull Builder connectRetryInterval(final @Nullable Long connectRetryInterval) {
 
       if (connectRetryInterval != null) {
         AssertUtils.isTrue(
@@ -283,7 +283,7 @@ public final class ExternalOfficeManager
      * @param connectFailFast {@code true} to "fail fast", {@code false} otherwise.
      * @return This builder instance.
      */
-    public @NonNull Builder connectFailFast(@Nullable Boolean connectFailFast) {
+    public @NonNull Builder connectFailFast(final @Nullable Boolean connectFailFast) {
 
       if (connectFailFast != null) {
         this.connectFailFast = connectFailFast;
@@ -300,7 +300,7 @@ public final class ExternalOfficeManager
      * @param maxTasksPerConnection The new maximum number of tasks an office process can execute.
      * @return This builder instance.
      */
-    public @NonNull Builder maxTasksPerConnection(@Nullable Integer maxTasksPerConnection) {
+    public @NonNull Builder maxTasksPerConnection(final @Nullable Integer maxTasksPerConnection) {
 
       if (maxTasksPerConnection != null) {
         AssertUtils.isTrue(
