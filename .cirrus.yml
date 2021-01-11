@@ -1,7 +1,3 @@
-# global default
-#container:
-#  image: gradle:jdk8
-
 # Free BSD
 #freebsd_task:
 #  freebsd_instance:
@@ -37,25 +33,6 @@ windows_task:
       env:
         JAVA_HOME: "c:\\java8"
       java_install_script:
-#        - choco install -y jdk8
         - choco install -y jdk8 -params "installdir=c:\\java8"
-      gradle_install_script:
-        - choco install -y gradle
-      dir_script:
-        - echo %JAVA_HOME%
       build_script:
-        - gradlew.bat assemble -x javadoc
-      test_script:
-        - gradlew.bat check -x integTest
-
-# Avoid build failure caused by the spotless plugin
-#init:
-#  - git config --global core.autocrlf true
-
-#  # Build artifacts
-#  build_script:
-#    - gradlew.bat assemble -x javadoc
-#
-#  # Verify artifacts (without running integration tests)
-#  test_script:
-#    - gradlew.bat check -x integTest
+        - gradlew.bat build -x javadoc --stacktrace
