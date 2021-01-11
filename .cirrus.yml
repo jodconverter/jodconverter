@@ -1,13 +1,18 @@
-# Free BSD
-#freebsd_task:
-#  freebsd_instance:
-#    image_family: freebsd-12-1
-#  install_gradle_script:
-#    - pkg install -y gradle
-#  install_libreoffice_script:
-#    - pkg install -y libreoffice
-#  build_script:
-#    - gradle build
+# UBUNTU SHARDS
+ubuntu_task:
+  container:
+    image: ubuntu:latest
+  install_script:
+    - sudo apt-get -q update
+    - sudo apt-get -y install libreoffice
+  matrix:
+    - name: java8
+      #env:
+      #  JAVA_HOME: "c:\\java8"
+      java_install_script:
+        - sudo apt-get -y install openjdk-8-jdk
+      build_script:
+        - ./gradlew build -x javadoc
 
 # WINDOWS SHARDS
 windows_task:
@@ -26,7 +31,7 @@ windows_task:
       git fetch origin pull/%CIRRUS_PR%/head:pull/%CIRRUS_PR% &
       git reset --hard %CIRRUS_CHANGE_IN_REPO%
     )
-  libreoffice_install_script:
+  install_script:
     - choco install -y libreoffice
   matrix:
     - name: java8
@@ -35,4 +40,15 @@ windows_task:
       java_install_script:
         - choco install -y jdk8 -params "installdir=c:\\java8"
       build_script:
-        - gradlew.bat build -x javadoc --stacktrace
+        - gradlew.bat build -x javadoc
+
+# FREE BSD SHARDS
+freebsd_task:
+  freebsd_instance:
+    image_family: freebsd-12-1
+  #install_gradle_script:
+  #  - pkg install -y gradle
+  install_script:
+    - pkg install -y libreoffice
+  build_script:
+    - ./gradlew build -x javadoc
