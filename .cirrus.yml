@@ -1,8 +1,5 @@
-# LINUX SHARDS
+# Linux
 linux_task:
-  install_script:
-    - apt-get -q update
-    - apt-get -y install libreoffice
   # See https://hub.docker.com/_/openjdk for openjdk versions that could be tested.
   matrix:
     - name: linux_java8
@@ -11,10 +8,18 @@ linux_task:
     - name: linux_java11
       container:
         image: openjdk:11-jdk
+  install_script:
+    # The following uses latest LO version. Without this, the tests would
+    # be executed using an older LO version (4.2.8.2 as of 2020-01-14)
+    #- add-apt-repository -y ppa:libreoffice/libreoffice-5-4
+    #- add-apt-repository -y ppa:libreoffice/libreoffice-4-2
+    #- add-apt-repository -y ppa:libreoffice/ppa
+    #- apt-get -q update
+    - apt-get -y install libreoffice
   build_script:
     - ./gradlew build -x javadoc
 
-# WINDOWS SHARDS
+# Windows
 windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
@@ -47,12 +52,26 @@ windows_task:
   build_script:
     - gradlew.bat build -x javadoc
 
-# FREE BSD SHARDS
+# macOS
+macos_task:
+  # See https://cirrus-ci.org/guide/macOS/#list-of-available-images versions that could be tested.
+  matrix:
+    - name: macos_xcode-11.6
+      macos_instance:
+        image: catalina-xcode-11.6
+    - name: macos_xcode-12.2
+      macos_instance:
+        image: catalina-xcode-12.2
+  install_script:
+    #- brew update
+    - brew cask install libreoffice
+  build_script:
+    - ./gradlew build -x javadoc
+
+# FreeBSD
 freebsd_task:
   freebsd_instance:
     image_family: freebsd-12-1
-  #install_gradle_script:
-  #  - pkg install -y gradle
   install_libreoffice_script:
     - pkg install -y libreoffice
   # See https://www.freebsd.org/java/ for all available openjdk that could be tested.
