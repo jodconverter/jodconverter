@@ -3,19 +3,23 @@ linux_task:
   install_script:
     - apt-get -q update
     - apt-get -y install libreoffice
-  build_script:
-    - ./gradlew build -x javadoc
+  # See https://hub.docker.com/_/openjdk for openjdk versions that could be tested.
   matrix:
     - name: linux_java8
       container:
         image: openjdk:8-jdk
+    - name: linux_java11
+      container:
+        image: openjdk:11-jdk
+  build_script:
+    - ./gradlew build -x javadoc
 
 # WINDOWS SHARDS
 windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
   clone_script:
-    # Use custom cloning to set the autocrlf to true orelse spotless will fail on Windows
+    # Use custom cloning to set the autocrlf to true orelse spotless will fail on Windows.
     CMD.exe /C ECHO ON &
       IF NOT DEFINED CIRRUS_PR (
       git config --global core.autocrlf true &
@@ -27,16 +31,21 @@ windows_task:
       git fetch origin pull/%CIRRUS_PR%/head:pull/%CIRRUS_PR% &
       git reset --hard %CIRRUS_CHANGE_IN_REPO%
     )
-  install_script:
+  install_libreoffice_script:
     - choco install -y libreoffice
   matrix:
     - name: windows_java8
       env:
         JAVA_HOME: "c:\\java8"
-      java_install_script:
+      install_java_script:
         - choco install -y jdk8 -params "installdir=c:\\java8"
-      build_script:
-        - gradlew.bat build -x javadoc
+    - name: windows_java11
+      env:
+        JAVA_HOME: "c:\\java11"
+      install_java_script:
+        - choco install -y jdk11 -params "installdir=c:\\java11"
+  build_script:
+    - gradlew.bat build -x javadoc
 
 # FREE BSD SHARDS
 freebsd_task:
@@ -44,7 +53,15 @@ freebsd_task:
     image_family: freebsd-12-1
   #install_gradle_script:
   #  - pkg install -y gradle
-  install_script:
+  install_libreoffice_script:
     - pkg install -y libreoffice
+  # See https://www.freebsd.org/java/ for all available openjdk that could be tested.
+  matrix:
+      - name: freebsd_java8
+        install_java_script:
+          - pkg install -y openjdk8
+      - name: freebsd_java11
+        install_java_script:
+          - pkg install -y openjdk11
   build_script:
     - ./gradlew build -x javadoc
