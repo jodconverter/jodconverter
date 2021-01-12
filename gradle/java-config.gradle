@@ -127,7 +127,7 @@ test {
     failFast = true
 
     // Uncomment when we want to see the logs while testing
-    testLogging.showStandardStreams = true
+    //testLogging.showStandardStreams = true
 }
 
 integTest {
@@ -137,7 +137,7 @@ integTest {
     failFast = true
 
     // Uncomment when we want to see the logs while testing
-    testLogging.showStandardStreams = true
+    //testLogging.showStandardStreams = true
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
