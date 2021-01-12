@@ -1,23 +1,37 @@
+# Default values to be merged into tasks:
+env:
+  COVERAGE: NO
+
 # Linux
 linux_task:
-  # See https://hub.docker.com/_/openjdk for openjdk versions that could be tested.
-  matrix:
-    - name: linux_java8
-      container:
-        image: openjdk:8-jdk
-    - name: linux_java11
-      container:
-        image: openjdk:11-jdk
   install_script:
     # The following uses latest LO version. Without this, the tests would
     # be executed using an older LO version (4.2.8.2 as of 2020-01-14)
     #- add-apt-repository -y ppa:libreoffice/libreoffice-5-4
     #- add-apt-repository -y ppa:libreoffice/libreoffice-4-2
     #- add-apt-repository -y ppa:libreoffice/ppa
-    #- apt-get -q update
+    - apt-get -q update
     - apt-get -y install libreoffice
-  build_script:
-    - ./gradlew build -x javadoc
+  # See https://hub.docker.com/_/openjdk for openjdk versions that could be tested.
+  matrix:
+    - name: linux_openjdk8
+      env:
+        CI_NAME: "CirrusCI"
+        CI_BUILD_NUMBER: $CIRRUS_TASK_ID
+        CI_BUILD_URL: "https://cirrus-ci.com/task/$CIRRUS_TASK_ID"
+        CI_BRANCH: $CIRRUS_BRANCH
+        CI_PULL_REQUEST: $CIRRUS_PR
+      container:
+        image: openjdk:8-jdk
+      build_script:
+        - ./gradlew build -x javadoc
+      coverage_script:
+        - ./gradlew coveralls
+    - name: linux_openjdk11
+      container:
+        image: openjdk:11-jdk
+      build_script:
+        - ./gradlew build -x javadoc
 
 # Windows
 windows_task:
@@ -39,16 +53,12 @@ windows_task:
   install_libreoffice_script:
     - choco install -y libreoffice
   matrix:
-    - name: windows_java8
-      env:
-        JAVA_HOME: "c:\\java8"
+    - name: windows_openjdk8
       install_java_script:
-        - choco install -y jdk8 -params "installdir=c:\\java8"
-    - name: windows_java11
-      env:
-        JAVA_HOME: "c:\\java11"
+        - choco install -y openjdk8
+    - name: windows_openjdk11
       install_java_script:
-        - choco install -y jdk11 -params "installdir=c:\\java11"
+        - choco install -y openjdk11
   build_script:
     - gradlew.bat build -x javadoc
 
@@ -76,10 +86,10 @@ freebsd_task:
     - pkg install -y libreoffice
   # See https://www.freebsd.org/java/ for all available openjdk that could be tested.
   matrix:
-      - name: freebsd_java8
+      - name: freebsd_openjdk8
         install_java_script:
           - pkg install -y openjdk8
-      - name: freebsd_java11
+      - name: freebsd_openjdk11
         install_java_script:
           - pkg install -y openjdk11
   build_script:
