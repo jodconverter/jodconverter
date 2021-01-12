@@ -10,7 +10,7 @@ linux_task:
     - apt-get -y install libreoffice
   # See https://hub.docker.com/_/openjdk for openjdk versions that could be tested.
   matrix:
-    - name: linux_openjdk8
+    - name: linux:openjdk8
       env:
         CI_NAME: "CirrusCI"
         CI_BUILD_NUMBER: $CIRRUS_TASK_ID
@@ -23,8 +23,8 @@ linux_task:
       build_script:
         - ./gradlew build -x javadoc
       coverage_script:
-        - ./gradlew coveralls
-    - name: linux_openjdk11
+        - ./gradlew coveralls --warning-mode all
+    - name: linux:openjdk11
       container:
         image: openjdk:11-jdk
       build_script:
@@ -50,11 +50,11 @@ windows_task:
       git reset --hard %CIRRUS_CHANGE_IN_REPO%
     )
   matrix:
-    - name: windows_adoptopenjdk8
+    - name: windows:adoptopenjdk8
       env:
         # https://chocolatey.org/packages/adoptopenjdk8
         ADOPTOPENJDK_PACKAGE: adoptopenjdk8
-    - name: windows_adoptopenjdk11
+    - name: windows:adoptopenjdk11
       env:
         # https://chocolatey.org/packages/adoptopenjdk11
         ADOPTOPENJDK_PACKAGE: adoptopenjdk11
@@ -68,7 +68,7 @@ windows_task:
 macos_task:
   # See https://cirrus-ci.org/guide/macOS/#list-of-available-images versions that could be tested.
   matrix:
-    - name: macos_xcode (lts)
+    - name: macos:xcode:lts
       macos_instance:
         image: catalina-xcode
   install_script:
@@ -85,10 +85,10 @@ freebsd_task:
     - pkg install -y libreoffice
   # See https://www.freebsd.org/java/ for all available openjdk that could be tested.
   matrix:
-      - name: freebsd_openjdk8
+      - name: freebsd:openjdk8
         install_java_script:
           - pkg install -y openjdk8
-      - name: freebsd_openjdk11
+      - name: freebsd:openjdk11
         install_java_script:
           - pkg install -y openjdk11
   build_script:
