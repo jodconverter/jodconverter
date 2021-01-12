@@ -1,8 +1,6 @@
 # <img src="https://github.com/sbraconnier/jodconverter/wiki/images/jodconverter_w200.png">&nbsp;<sup>&nbsp;LibreOffice</sup>&nbsp;/&nbsp;<sub>Apache OpenOffice</sub>
 
 [![Build Status](https://api.cirrus-ci.com/github/sbraconnier/jodconverter.svg)](https://cirrus-ci.com/github/sbraconnier/jodconverter)
-[![Build status](https://ci.appveyor.com/api/projects/status/mvn8oqr2m8xorslk?svg=true)](https://ci.appveyor.com/project/sbraconnier/jodconverter)
-[![Build Status](https://travis-ci.org/sbraconnier/jodconverter.svg?branch=master)](https://travis-ci.org/sbraconnier/jodconverter)
 [![Coverage Status](https://coveralls.io/repos/github/sbraconnier/jodconverter/badge.svg?branch=master)](https://coveralls.io/github/sbraconnier/jodconverter?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/20f3adafce26439fb6f38a7767388944)](https://www.codacy.com/app/sbraconnier/jodconverter?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sbraconnier/jodconverter&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
