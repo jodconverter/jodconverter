@@ -1,18 +1,14 @@
-# UBUNTU SHARDS
-ubuntu_task:
-  container:
-    image: ubuntu:latest
+# LINUX SHARDS
+linux_task:
   install_script:
-    - sudo apt-get -q update
-    - sudo apt-get -y install libreoffice
+    - apt-get -q update
+    - apt-get -y install libreoffice
+  build_script:
+    - ./gradlew build -x javadoc
   matrix:
-    - name: java8
-      #env:
-      #  JAVA_HOME: "c:\\java8"
-      java_install_script:
-        - sudo apt-get -y install openjdk-8-jdk
-      build_script:
-        - ./gradlew build -x javadoc
+    - name: linux_java8
+      container:
+        image: openjdk:8-jdk
 
 # WINDOWS SHARDS
 windows_task:
@@ -34,7 +30,7 @@ windows_task:
   install_script:
     - choco install -y libreoffice
   matrix:
-    - name: java8
+    - name: windows_java8
       env:
         JAVA_HOME: "c:\\java8"
       java_install_script:
