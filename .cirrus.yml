@@ -34,6 +34,8 @@ linux_task:
 windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
+  env:
+    JAVA_HOME: C:\Program Files\AdoptOpenJDK
   clone_script:
     # Use custom cloning to set the autocrlf to true orelse spotless will fail on Windows.
     CMD.exe /C ECHO ON &
@@ -58,7 +60,7 @@ windows_task:
         ADOPTOPENJDK_PACKAGE: adoptopenjdk11
   install_script:
     - choco install -y libreoffice
-    - choco install -y %ADOPTOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureEnvironment,FeatureJavaHome /INSTALLDIR=C:\Program Files\AdoptOpenJDK\ /quiet"
+    - choco install -y %ADOPTOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
   build_script:
     - gradlew.bat build -x javadoc
 
