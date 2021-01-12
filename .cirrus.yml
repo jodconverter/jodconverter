@@ -47,17 +47,18 @@ windows_task:
       git fetch origin pull/%CIRRUS_PR%/head:pull/%CIRRUS_PR% &
       git reset --hard %CIRRUS_CHANGE_IN_REPO%
     )
-  install_libreoffice_script:
-    - choco install -y libreoffice
   matrix:
     - name: windows_adoptopenjdk8
-      install_java_script:
+      env:
         # https://chocolatey.org/packages/adoptopenjdk8
-        - choco install -y adoptopenjdk8
+        ADOPTOPENJDK_PACKAGE: adoptopenjdk8
     - name: windows_adoptopenjdk11
-      install_java_script:
+      env:
         # https://chocolatey.org/packages/adoptopenjdk11
-        - choco install -y adoptopenjdk11
+        ADOPTOPENJDK_PACKAGE: adoptopenjdk11
+  install_script:
+    - choco install -y libreoffice
+    - choco install -y %ADOPTOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureEnvironment,FeatureJavaHome /INSTALLDIR=C:\Program Files\AdoptOpenJDK\ /quiet"
   build_script:
     - gradlew.bat build -x javadoc
 
