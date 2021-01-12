@@ -1,7 +1,3 @@
-# Default values to be merged into tasks:
-env:
-  COVERAGE: NO
-
 # Linux
 linux_task:
   install_script:
@@ -21,6 +17,7 @@ linux_task:
         CI_BUILD_URL: "https://cirrus-ci.com/task/$CIRRUS_TASK_ID"
         CI_BRANCH: $CIRRUS_BRANCH
         CI_PULL_REQUEST: $CIRRUS_PR
+        COVERALLS_REPO_TOKEN: ENCRYPTED[9fa0f47af9055f09dc3f3e65c4d126fedff998cbdc4430847762be36c38477f0658d577cd981a6ed8bd5439fa8e4defd]
       container:
         image: openjdk:8-jdk
       build_script:
@@ -53,12 +50,14 @@ windows_task:
   install_libreoffice_script:
     - choco install -y libreoffice
   matrix:
-    - name: windows_openjdk8
+    - name: windows_adoptopenjdk8
       install_java_script:
-        - choco install -y openjdk8
-    - name: windows_openjdk11
+        # https://chocolatey.org/packages/adoptopenjdk8
+        - choco install -y adoptopenjdk8
+    - name: windows_adoptopenjdk11
       install_java_script:
-        - choco install -y openjdk11
+        # https://chocolatey.org/packages/adoptopenjdk11
+        - choco install -y adoptopenjdk11
   build_script:
     - gradlew.bat build -x javadoc
 
@@ -66,12 +65,9 @@ windows_task:
 macos_task:
   # See https://cirrus-ci.org/guide/macOS/#list-of-available-images versions that could be tested.
   matrix:
-    - name: macos_xcode-11.6
+    - name: macos_xcode (lts)
       macos_instance:
-        image: catalina-xcode-11.6
-    - name: macos_xcode-12.2
-      macos_instance:
-        image: catalina-xcode-12.2
+        image: catalina-xcode
   install_script:
     #- brew update
     - brew cask install libreoffice
