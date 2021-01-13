@@ -135,6 +135,7 @@ public final class ExternalOfficeManager
   public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
 
     // OfficeProcessManager
+    private String hostName = "127.0.0.1";
     private List<String> pipeNames;
     private List<Integer> portNumbers;
     private Boolean connectOnStart = DEFAULT_CONNECT_ON_START;
@@ -202,6 +203,16 @@ public final class ExternalOfficeManager
       return this;
     }
 
+    /**
+     * Specifies host name that will be use to communicate with office.
+     *
+     * @param hostName The host name to use.
+     * @return This builder instance.
+     */
+    public @NonNull Builder hostName(final String hostName) {
+      this.hostName = hostName;
+      return this;
+    }
     /**
      * Specifies whether a connection must be attempted on {@link #start()}? If <em>false</em>, a
      * connection will only be attempted the first time an {@link OfficeTask} is executed.

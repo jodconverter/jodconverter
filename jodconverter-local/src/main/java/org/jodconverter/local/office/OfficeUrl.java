@@ -44,6 +44,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 class OfficeUrl {
 
+  private static final String DEFAULT_HOST = "127.0.0.1";
   private final UnoUrl unoUrl;
 
   /**
@@ -64,18 +65,32 @@ class OfficeUrl {
   }
 
   /**
-   * Creates an UnoUrl for the specified port.
+   * Creates an UnoUrl for the specified port on host 127.0.0.1.
    *
    * @param port The port.
    * @return The created UnoUrl.
    */
-  /* default */ static UnoUrl socket(final int port) {
+  /* default */
+  static UnoUrl socket(final int port) {
+    return socket(null, port);
+  }
 
+  /**
+   * Creates an UnoUrl for the specified port.
+   *
+   * @param host The host. Uses 127.0.0.1 if null
+   * @param port The port.
+   * @return The created UnoUrl.
+   */
+  /* default */
+  static UnoUrl socket(final String host, final int port) {
+
+    String h = host == null ? DEFAULT_HOST : host;
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
     try {
       return UnoUrl.parseUnoUrl(
-          "socket,host=127.0.0.1,port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+          "socket,host=" + h + ",port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
       //      return UnoUrl.parseUnoUrl(
       //          "socket,host=localhost,port=" + port + ";urp;StarOffice.ServiceManager");
     } catch (Exception ex) {
@@ -88,19 +103,27 @@ class OfficeUrl {
    *
    * @param pipeName The pipe name.
    */
-  public OfficeUrl(final String pipeName) {
+  public OfficeUrl(String pipeName) {
+    unoUrl = pipe(pipeName);
+  }
 
-    this.unoUrl = pipe(pipeName);
+  /**
+   * Creates an OfficeUrl for the specified port on host 127.0.0.1
+   *
+   * @param port The port.
+   */
+  public OfficeUrl(int port) {
+    this(DEFAULT_HOST, port);
   }
 
   /**
    * Creates an OfficeUrl for the specified port.
    *
+   * @param host The host.
    * @param port The port.
    */
-  public OfficeUrl(final int port) {
-
-    this.unoUrl = socket(port);
+  public OfficeUrl(final String host, final int port) {
+    unoUrl = socket(host, port);
   }
 
   /**
