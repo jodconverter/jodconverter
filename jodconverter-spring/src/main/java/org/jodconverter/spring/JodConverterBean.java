@@ -132,13 +132,22 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
+   * Gets the {@link OfficeManager} created by this bean.
+   *
+   * @return The manager created by this bean.
+   */
+  @NonNull
+  public OfficeManager getManager() {
+    return officeManager;
+  }
+
+  /**
    * Gets the {@link DocumentConverter} created by this bean.
    *
    * @return The converter created by this bean.
    */
   @NonNull
   public DocumentConverter getConverter() {
-
     return documentConverter;
   }
 

@@ -39,6 +39,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.local.LocalConverter;
 
 /** Contains tests for the {@link JodConverterBean} class. */
 @ExtendWith(SpringExtension.class)
@@ -73,6 +74,23 @@ public class SpringControllerITest {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
     }
+  }
+
+  @Test
+  public void testOfficeManager() throws OfficeException {
+
+    final File outputFile = new File(testFolder, "outputFile.txt");
+    LocalConverter.builder()
+        .officeManager(bean.getManager())
+        .build()
+        .convert(inputFileTxt)
+        .to(outputFile)
+        .execute();
+
+    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
+    assertThat(outputFile.length())
+        .as("Check %s file length", outputFile.getName())
+        .isGreaterThan(0L);
   }
 
   @Test
