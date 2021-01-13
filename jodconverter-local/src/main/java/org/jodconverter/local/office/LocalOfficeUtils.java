@@ -186,7 +186,7 @@ public final class LocalOfficeUtils {
    *     single office URL, using the default port number 2002.
    */
   public static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
-      final @Nullable List<@NonNull Integer> portNumbers, 
+      final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames) {
     return buildOfficeUrls(null, portNumbers, pipeNames);
   }
@@ -201,7 +201,7 @@ public final class LocalOfficeUtils {
    *     single office URL, using the default port number 2002.
    */
   public static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
-      final String host,
+      final @Nullable String host,
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames) {
 

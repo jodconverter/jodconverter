@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import com.sun.star.lib.uno.helper.UnoUrl;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Wrapper class around an UnoUrl so we are not importing the com.sun.star.lib.uno.helper.UnoUrl
@@ -45,6 +46,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 class OfficeUrl {
 
   private static final String DEFAULT_HOST = "127.0.0.1";
+
   private final UnoUrl unoUrl;
 
   /**
@@ -78,7 +80,7 @@ class OfficeUrl {
   /**
    * Creates an UnoUrl for the specified port.
    *
-   * @param host The host. Uses 127.0.0.1 if null
+   * @param host The host. Uses 127.0.0.1 if null.
    * @param port The port.
    * @return The created UnoUrl.
    */
@@ -91,8 +93,6 @@ class OfficeUrl {
     try {
       return UnoUrl.parseUnoUrl(
           "socket,host=" + h + ",port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
-      //      return UnoUrl.parseUnoUrl(
-      //          "socket,host=localhost,port=" + port + ";urp;StarOffice.ServiceManager");
     } catch (Exception ex) {
       throw new IllegalArgumentException(ex);
     }
@@ -119,10 +119,10 @@ class OfficeUrl {
   /**
    * Creates an OfficeUrl for the specified port.
    *
-   * @param host The host.
+   * @param host The host, may be null.
    * @param port The port.
    */
-  public OfficeUrl(final String host, final int port) {
+  public OfficeUrl(final @Nullable String host, final int port) {
     unoUrl = socket(host, port);
   }
 

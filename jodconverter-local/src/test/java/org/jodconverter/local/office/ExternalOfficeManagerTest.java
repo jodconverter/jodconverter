@@ -27,6 +27,7 @@ import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNEC
 import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_ON_START;
 import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL;
 import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT;
+import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_HOSTNAME;
 import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION;
 import static org.jodconverter.local.office.ExternalOfficeManager.MAX_CONNECT_RETRY_INTERVAL;
 
@@ -86,7 +87,8 @@ class ExternalOfficeManagerTest {
                           DEFAULT_CONNECT_TIMEOUT,
                           DEFAULT_CONNECT_RETRY_INTERVAL,
                           DEFAULT_CONNECT_FAIL_FAST,
-                          new OfficeUrl(2002).getConnectionAndParametersAsString()));
+                          new OfficeUrl(DEFAULT_HOSTNAME, 2002)
+                              .getConnectionAndParametersAsString()));
     }
   }
 
@@ -122,6 +124,7 @@ class ExternalOfficeManagerTest {
               .taskQueueTimeout(null)
               .pipeNames((String[]) null)
               .pipeNames(new String[] {})
+              .hostName(null)
               .portNumbers((int[]) null)
               .portNumbers(new int[] {})
               .connectOnStart(null)
@@ -165,7 +168,8 @@ class ExternalOfficeManagerTest {
                           DEFAULT_CONNECT_TIMEOUT,
                           DEFAULT_CONNECT_RETRY_INTERVAL,
                           DEFAULT_CONNECT_FAIL_FAST,
-                          new OfficeUrl(2002).getConnectionAndParametersAsString()));
+                          new OfficeUrl(DEFAULT_HOSTNAME, 2002)
+                              .getConnectionAndParametersAsString()));
     }
 
     @Test
@@ -177,6 +181,7 @@ class ExternalOfficeManagerTest {
               .taskExecutionTimeout(11_000L)
               .taskQueueTimeout(12_000L)
               .pipeNames("test")
+              .hostName("localhost")
               .portNumbers(2003)
               .connectOnStart(false)
               .connectTimeout(5_000L)
@@ -213,7 +218,7 @@ class ExternalOfficeManagerTest {
                   assertThat(o.get(0))
                       .hasFieldOrPropertyWithValue(
                           "connectionManager.connection.officeUrl.connectionAndParametersAsString",
-                          new OfficeUrl(2003).getConnectionAndParametersAsString()))
+                          new OfficeUrl("localhost", 2003).getConnectionAndParametersAsString()))
           .satisfies(
               o ->
                   assertThat(o.get(1))

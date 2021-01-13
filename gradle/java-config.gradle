@@ -28,12 +28,12 @@ facets {
 
 dependencies {
     implementation platform(Deps.springBootDependencies)
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.7.0'
 
     compileOnly Deps.checkerQual
 
     testImplementation Deps.assertj
     testImplementation Deps.junitJupiterApi
+    testImplementation Deps.junitJupiterParams
     testImplementation Deps.mockito
 
     testRuntimeOnly Deps.checkerQual // Required by PowerMock
