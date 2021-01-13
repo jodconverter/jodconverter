@@ -188,17 +188,33 @@ public final class LocalOfficeUtils {
   public static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames) {
+    return buildOfficeUrls(null, portNumbers, pipeNames);
+  }
+
+  /**
+   * Builds an array of {@link OfficeUrl} from an array of port numbers and an array of pipe names.
+   *
+   * @param host The host to which open ports belong, may be null.
+   * @param portNumbers The port numbers from which office URLs will be created, may be null.
+   * @param pipeNames The pipe names from which office URLs will be created, may be null.
+   * @return an array of office URL. If both arguments are null, then an array is returned with a
+   *     single office URL, using the default port number 2002.
+   */
+  public static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
+      final @Nullable String host,
+      final @Nullable List<@NonNull Integer> portNumbers,
+      final @Nullable List<@NonNull String> pipeNames) {
 
     // Assign default value if no pipe names or port numbers have been specified.
     if ((portNumbers == null || portNumbers.isEmpty())
         && (pipeNames == null || pipeNames.isEmpty())) {
-      return Collections.singletonList(new OfficeUrl(DEFAULT_PORT));
+      return Collections.singletonList(new OfficeUrl(host, DEFAULT_PORT));
     }
 
     // Build the office URL list and return it
     final List<OfficeUrl> officeUrls = new ArrayList<>();
     if (portNumbers != null) {
-      portNumbers.stream().map(OfficeUrl::new).forEach(officeUrls::add);
+      portNumbers.stream().map(p -> new OfficeUrl(host, p)).forEach(officeUrls::add);
     }
     if (pipeNames != null) {
       pipeNames.stream().map(OfficeUrl::new).forEach(officeUrls::add);

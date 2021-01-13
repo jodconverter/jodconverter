@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.powermock.reflect.Whitebox;
 
 import org.jodconverter.core.office.OfficeException;
@@ -55,6 +57,7 @@ public class ExternalOfficeManagerITest {
 
     // Starts an office process
     final OfficeConnection connection = new OfficeConnection(CONNECT_URL);
+
     final LocalOfficeProcessManager manager =
         new LocalOfficeProcessManager(
             CONNECT_URL,
@@ -113,11 +116,15 @@ public class ExternalOfficeManagerITest {
         .withMessage("Could not establish connection to external process.");
   }
 
-  @Test
-  public void execute_WhenProcessExists_ShouldSucceed() {
-
+  @ParameterizedTest
+  @ValueSource(strings = {"localhost", "127.0.0.1"})
+  public void execute_WhenProcessExists_ShouldSucceed(String host) {
     final OfficeManager manager =
-        ExternalOfficeManager.builder().portNumbers(2002).connectFailFast(true).build();
+        ExternalOfficeManager.builder()
+            .hostName(host)
+            .portNumbers(2002)
+            .connectFailFast(true)
+            .build();
 
     final SimpleOfficeTask task = new SimpleOfficeTask();
     assertThatCode(

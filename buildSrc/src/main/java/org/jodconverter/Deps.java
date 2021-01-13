@@ -88,6 +88,7 @@ public class Deps {
   public static final String assertj = "org.assertj:assertj-core";
   public static final String junitJupiterApi = "org.junit.jupiter:junit-jupiter-api";
   public static final String junitJupiterEngine = "org.junit.jupiter:junit-jupiter-engine";
+  public static final String junitJupiterParams = "org.junit.jupiter:junit-jupiter-params";
   public static final String junitVintageEngine = "org.junit.vintage:junit-vintage-engine";
   public static final String mockito = "org.mockito:mockito-core";
   public static final String powermockJunit =
