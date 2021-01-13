@@ -45,6 +45,6 @@ public class FreeBSDProcessManager extends UnixProcessManager {
   @Override
   protected @NonNull String[] getRunningProcessesCommand(final @NonNull String process) {
 
-    return new String[] {"/bin/ps", "-awx", "-o", "pid,args"};
+    return new String[] {"/bin/ps", "-awwx", "-o", "pid,args"};
   }
 }
