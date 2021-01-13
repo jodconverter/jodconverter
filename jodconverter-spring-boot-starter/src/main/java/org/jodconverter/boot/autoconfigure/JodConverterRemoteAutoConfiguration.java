@@ -62,6 +62,8 @@ public class JodConverterRemoteAutoConfiguration {
     final RemoteOfficeManager.Builder builder =
         RemoteOfficeManager.builder()
             .urlConnection(properties.getUrl())
+            .connectTimeout(properties.getConnectTimeout())
+            .socketTimeout(properties.getSocketTimeout())
             .poolSize(properties.getPoolSize())
             .workingDir(properties.getWorkingDir())
             .taskQueueTimeout(properties.getTaskQueueTimeout())

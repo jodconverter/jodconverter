@@ -43,6 +43,21 @@ public class JodConverterRemoteProperties {
   /** The URL to the LibreOffice Online server. */
   private String url;
 
+  /**
+   * The timeout in milliseconds until a connection is established. A timeout value of zero is
+   * interpreted as an infinite timeout. A negative value is interpreted as undefined (system
+   * default).
+   */
+  private long connectTimeout = 30_000L;
+
+  /**
+   * The socket timeout in milliseconds, which is the timeout for waiting for data or, put
+   * differently, a maximum period inactivity between two consecutive data packets). A timeout value
+   * of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined
+   * (system default).
+   */
+  private long socketTimeout = 60_000L;
+
   /** Pool size of the manager. */
   private int poolSize = 1;
 
@@ -82,6 +97,22 @@ public class JodConverterRemoteProperties {
     this.url = url;
   }
 
+  public long getConnectTimeout() {
+    return connectTimeout;
+  }
+
+  public void setConnectTimeout(final long connectTimeout) {
+    this.connectTimeout = connectTimeout;
+  }
+
+  public long getSocketTimeout() {
+    return socketTimeout;
+  }
+
+  public void setSocketTimeout(final long socketTimeout) {
+    this.socketTimeout = socketTimeout;
+  }
+
   public int getPoolSize() {
     return poolSize;
   }
@@ -98,16 +129,16 @@ public class JodConverterRemoteProperties {
     this.workingDir = workingDir;
   }
 
-  public long getTaskExecutionTimeout() {
-    return taskExecutionTimeout;
-  }
-
   public long getTaskQueueTimeout() {
     return taskQueueTimeout;
   }
 
   public void setTaskQueueTimeout(final long taskQueueTimeout) {
     this.taskQueueTimeout = taskQueueTimeout;
+  }
+
+  public long getTaskExecutionTimeout() {
+    return taskExecutionTimeout;
   }
 
   public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
