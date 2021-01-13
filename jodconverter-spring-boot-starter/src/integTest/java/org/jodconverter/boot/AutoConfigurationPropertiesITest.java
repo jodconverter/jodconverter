@@ -106,6 +106,8 @@ public class AutoConfigurationPropertiesITest {
         .extracting(
             "enabled",
             "url",
+            "connectTimeout",
+            "socketTimeout",
             "workingDir",
             "poolSize",
             "taskExecutionTimeout",
@@ -129,6 +131,8 @@ public class AutoConfigurationPropertiesITest {
         .containsExactly(
             true,
             "https://localhost:8001",
+            30_000L,
+            60_000L,
             "working-dir",
             1,
             70_000L,
