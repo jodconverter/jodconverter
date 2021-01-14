@@ -136,7 +136,7 @@
         <exclude name="AvoidFieldNameMatchingMethodName"/>
         <exclude name="BeanMembersShouldSerialize"/>
         <exclude name="DataflowAnomalyAnalysis"/>
-        <exclude name="DoNotCallSystemExit"/>
+        <exclude name="DoNotTerminateVM"/>
         <exclude name="NullAssignment"/>
     </rule>
     <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">

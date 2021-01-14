@@ -9,27 +9,27 @@ public class Deps {
   // Compile
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-  public static final String checkerVersion = "3.5.0";
+  public static final String checkerVersion = "3.9.1";
 
   // Main
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
   public static final String commonsCliVersion = "1.4";
   // Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
-  public static final String commonsIoVersion = "2.7";
+  public static final String commonsIoVersion = "2.8.0";
   // Latest version -> https://mvnrepository.com/artifact/org.libreoffice
-  public static final String loVersion = "6.4.3";
+  public static final String loVersion = "7.0.4";
   // Latest version -> https://mvnrepository.com/artifact/org.openoffice
   public static final String ooVersion = "4.1.2";
   // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-  public static final String springBootVersion = "2.3.3.RELEASE";
+  public static final String springBootVersion = "2.4.1";
 
   // Test
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2
-  public static final String powermockVersion = "2.0.7";
+  public static final String powermockVersion = "2.0.9";
   // Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
-  public static final String wiremockVersion = "2.27.1";
+  public static final String wiremockVersion = "2.27.2";
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // DEPENDENCIES

@@ -79,7 +79,7 @@ pmd {
     toolVersion = Plugins.pmdVersion
     ruleSetConfig = rootProject.resources.text.fromFile("ruleset.xml")
     ignoreFailures = true
-    rulePriority = 5
+    rulesMinimumPriority = 5
     // Don't use the default gradle rule sets
     ruleSets = []
 }
