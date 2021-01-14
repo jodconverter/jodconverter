@@ -142,12 +142,14 @@ public final class ConvertUtil {
     // This will create 1 output file per output format.
     for (final DocumentFormat outputFormat : outputFormats) {
 
-      // Skip test that doesn't work on all os.
-      switch (outputFormat.getExtension()) {
-        case "swf":
-        case "sxc":
-        case "sxi":
-        case "sxw":
+      // Skip test that doesn't work on all os or with all office installation.
+      switch (inputFormat.getExtension()) {
+        case "odg":
+        case "svg":
+        case "fodg":
+        case "fodp":
+        case "fods":
+        case "fodt":
           LOGGER.info(
               "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
           continue;
@@ -155,65 +157,32 @@ public final class ConvertUtil {
           break;
       }
 
-      //      if (SystemUtils.IS_OS_WINDOWS) {
-      //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
-      //          LOGGER.info(
-      //              "Skipping {} to {} test", inputFormat.getExtension(),
-      // outputFormat.getExtension());
-      //          continue;
-      //        }
-      //      } else if (SystemUtils.IS_OS_FREE_BSD) {
-      //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxw")) {
-      //          LOGGER.info(
-      //              "Skipping {} to {} test", inputFormat.getExtension(),
-      // outputFormat.getExtension());
-      //          continue;
-      //        }
-      //      } else if (SystemUtils.IS_OS_MAC) {
-      //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
-      //          LOGGER.info(
-      //              "Skipping {} to {} test", inputFormat.getExtension(),
-      // outputFormat.getExtension());
-      //          continue;
-      //        }
-      //      } else if (SystemUtils.IS_OS_UNIX) {
-      //        if (StringUtils.equalsAny(outputFormat.getExtension(), "sxc", "sxi", "sxw")) {
-      //          LOGGER.info(
-      //              "Skipping {} to {} test", inputFormat.getExtension(),
-      // outputFormat.getExtension());
-      //          continue;
-      //        }
-      //      }
-
-      //      // Skip conversions that are not supported on all OS.
-      //      if (StringUtils.equalsAny(
-      //              inputFormat.getExtension(), "odg", "svg", "fodg", "fodp", "fods", "fodt")
-      //          || StringUtils.equalsAny(
-      //              outputFormat.getExtension(),
-      //              // Not supported by all office installations
-      //              "png",
-      //              "jpg",
-      //              "jpeg",
-      //              "tif",
-      //              "tiff",
-      //              "gif",
-      //              "sxc",
-      //              "sxw",
-      //              "sxi",
-      //              "fodg",
-      //              "fodp",
-      //              "fods",
-      //              "fodt",
-      //              // AOO Cannot save following extension.
-      //              // See https://forum.openoffice.org/en/forum/viewtopic.php?f=15&t=92508
-      //              "docx",
-      //              "xlsx",
-      //              "pptx")) {
-      //        LOGGER.info(
-      //            "Skipping {} to {} test", inputFormat.getExtension(),
-      // outputFormat.getExtension());
-      //        continue;
-      //      }
+      switch (outputFormat.getExtension()) {
+        case "png":
+        case "jpg":
+        case "jpeg":
+        case "tif":
+        case "tiff":
+        case "gif":
+        case "swf":
+        case "sxc":
+        case "sxi":
+        case "sxw":
+        case "fodg":
+        case "fodp":
+        case "fods":
+        case "fodt":
+        case "docx":
+        case "dotx":
+        case "xlsx":
+        case "pptx":
+        case "xhtml":
+          LOGGER.info(
+              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+          continue;
+        default:
+          break;
+      }
 
       // Create an output file
       final File targetFile =

@@ -19,13 +19,9 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,11 +37,7 @@ class ExitCodeRetryableTest {
     given(process.getExitCode()).willReturn(0);
     final ExitCodeRetryable retryable = new ExitCodeRetryable(process);
 
-    assertThatCode(
-            () -> {
-              retryable.execute(0L, 100L);
-            })
-        .doesNotThrowAnyException();
+    assertThatCode(() -> retryable.execute(0L, 100L)).doesNotThrowAnyException();
 
     verify(process, times(1)).getExitCode();
     assertThat(retryable.getExitCode()).isEqualTo(0);

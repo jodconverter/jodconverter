@@ -36,9 +36,9 @@ public class IntegTestProcessManager implements ProcessManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(IntegTestProcessManager.class);
 
   private final ProcessManager delegate;
-  public AtomicInteger canFindPidCount = new AtomicInteger();
-  public AtomicInteger findPidCount = new AtomicInteger();
-  public AtomicInteger killCount = new AtomicInteger();
+  public final AtomicInteger canFindPidCount = new AtomicInteger();
+  public final AtomicInteger findPidCount = new AtomicInteger();
+  public final AtomicInteger killCount = new AtomicInteger();
 
   /** Creates a new IntegTestProcessManager. */
   public IntegTestProcessManager() {

@@ -37,12 +37,6 @@ import org.jodconverter.local.process.ProcessQuery;
 /** Performs a starts of an office process. */
 class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
 
-  private static class StartProcessResult {
-    VerboseProcess process;
-    long pid = PID_UNKNOWN;
-    Integer exitCode = null;
-  }
-
   // TODO: Make "FIND_PID_*" constants configurable
   private static final int FIND_PID_RETRIES = 10;
   private static final long FIND_PID_DELAY = 2_000L;
@@ -57,6 +51,13 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
   private final OfficeConnection connection;
   private StartProcessResult result;
 
+  /** Private class holding the result of a started process attempt. */
+  private static class StartProcessResult {
+    /* default */ VerboseProcess process;
+    /* default */ long pid = PID_UNKNOWN;
+    /* default */ Integer exitCode;
+  }
+
   /**
    * Creates a new instance of the class.
    *
@@ -65,7 +66,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
    * @param processQuery The process query.
    * @param connection The office connection used to connect.
    */
-  StartProcessAndConnectRetryable(
+  /* default */ StartProcessAndConnectRetryable(
       final ProcessManager processManager,
       final ProcessBuilder processBuilder,
       final ProcessQuery processQuery,

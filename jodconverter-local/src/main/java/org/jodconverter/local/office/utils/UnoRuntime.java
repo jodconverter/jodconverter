@@ -20,6 +20,7 @@
 package org.jodconverter.local.office.utils;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.util.AssertUtils;
 
@@ -56,15 +57,15 @@ public class UnoRuntime {
    * Queries the given UNO object for the given Java class (which must represent a UNO interface
    * type).
    *
+   * @param <T> The Java class representing the UNO interface type.
    * @param zInterface A Java class representing a UNO interface type.
    * @param object A reference to any Java object representing (a facet of) a UNO object; may be
    *     <code>null</code>.
    * @return A reference to the requested UNO interface type if available, otherwise <code>null
    *     </code>.
-   * @param <T> The Java class representing the UNO interface type.
    * @see com.sun.star.uno.UnoRuntime#queryInterface(Class, Object)
    */
-  public <T> T queryInterface(Class<T> zInterface, Object object) {
+  public <T> T queryInterface(final @Nullable Class<T> zInterface, final @Nullable Object object) {
     return com.sun.star.uno.UnoRuntime.queryInterface(zInterface, object);
   }
 }

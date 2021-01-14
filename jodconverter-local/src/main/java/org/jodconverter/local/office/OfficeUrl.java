@@ -72,8 +72,7 @@ class OfficeUrl {
    * @param port The port.
    * @return The created UnoUrl.
    */
-  /* default */
-  static UnoUrl socket(final int port) {
+  /* default */ static UnoUrl socket(final int port) {
     return socket(null, port);
   }
 
@@ -84,10 +83,9 @@ class OfficeUrl {
    * @param port The port.
    * @return The created UnoUrl.
    */
-  /* default */
-  static UnoUrl socket(final String host, final int port) {
+  /* default */ static UnoUrl socket(final String host, final int port) {
 
-    String h = host == null ? DEFAULT_HOST : host;
+    final String h = host == null ? DEFAULT_HOST : host;
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
     try {
@@ -103,7 +101,7 @@ class OfficeUrl {
    *
    * @param pipeName The pipe name.
    */
-  public OfficeUrl(String pipeName) {
+  public OfficeUrl(final @NonNull String pipeName) {
     unoUrl = pipe(pipeName);
   }
 
@@ -112,7 +110,7 @@ class OfficeUrl {
    *
    * @param port The port.
    */
-  public OfficeUrl(int port) {
+  public OfficeUrl(final int port) {
     this(DEFAULT_HOST, port);
   }
 

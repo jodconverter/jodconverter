@@ -67,7 +67,7 @@ class IOUtilsTest {
       try (ByteArrayInputStream in = new ByteArrayInputStream(test.getBytes(encoding));
           ByteArrayOutputStream out = new ByteArrayOutputStream()) {
         IOUtils.copy(in, out);
-        assertThat(new String(out.toByteArray(), encoding)).isEqualTo(test);
+        assertThat(out.toString(encoding.name())).isEqualTo(test);
       }
     }
   }

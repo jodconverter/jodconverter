@@ -28,11 +28,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.job.AbstractConversionJob;
-import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecified;
-import org.jodconverter.core.job.AbstractConverter;
-import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
-import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.job.*;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
@@ -234,7 +230,7 @@ public class LocalConverter extends AbstractConverter {
      * @return This builder instance.
      */
     public @NonNull Builder loadProperties(
-        @NonNull Map<@NonNull String, @NonNull Object> loadProperties) {
+        final @NonNull Map<@NonNull String, @NonNull Object> loadProperties) {
 
       AssertUtils.notNull(loadProperties, "loadProperties must not be null");
       this.loadProperties = loadProperties;

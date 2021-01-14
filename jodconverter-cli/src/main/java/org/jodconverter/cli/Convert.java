@@ -29,12 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -511,15 +506,13 @@ public final class Convert {
 
   private static void printErr(final Object... values) {
 
-    System.err.println // NOPMD - Allow System.err.println
-        (String.format("jodconverter-cli: %s", values));
+    System.err.printf("jodconverter-cli: %s%n", values); // NOPMD - Allow System.out.println
     System.err.flush();
   }
 
   private static void printInfo(final String message, final Object... values) {
 
-    System.out.println // NOPMD - Allow System.out.println
-        (String.format(message, values));
+    System.out.printf(message + "%n", values); // NOPMD - Allow System.out.println
     System.out.flush();
   }
 }

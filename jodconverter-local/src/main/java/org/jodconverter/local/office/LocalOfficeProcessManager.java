@@ -26,11 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.sun.star.beans.XHierarchicalPropertySet;
@@ -325,9 +321,13 @@ class LocalOfficeProcessManager {
       // +1000L to allows the deletion of the templateProfileDir.
       // But is it really necessary? It is a wild guess...
       final long stopTimeout = processTimeout + 1000L;
-      LOGGER.debug("Waiting for stop task to complete ({}) millisecs)...", stopTimeout);
-      executor.awaitTermination(stopTimeout, TimeUnit.MILLISECONDS);
-      LOGGER.debug("Stop task executed successfully.");
+      LOGGER.debug("Waiting for stop task to complete ({} millisecs)...", stopTimeout);
+      if (executor.awaitTermination(stopTimeout, TimeUnit.MILLISECONDS)) {
+        LOGGER.debug("Stop task executed successfully.");
+      } else {
+        // TODO: Should we do something special ?
+        LOGGER.debug("Could not execute stop task within {} millisecs...", stopTimeout);
+      }
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
       throw new OfficeException("Interruption while stopping the office process.", ex);
@@ -532,7 +532,7 @@ class LocalOfficeProcessManager {
     try {
       // Search for an existing process that would prevent us to start a new
       // office process with the same connection string.
-      long pid = processManager.findPid(processQuery);
+      final long pid = processManager.findPid(processQuery);
 
       if (pid > PID_UNKNOWN) {
         switch (existingProcessAction) {

@@ -219,6 +219,26 @@ public final class Info { // NOPMD - Disable utility class name rule violation
     return Lo.qi(XPropertySet.class, configAccess);
   }
 
+  private static Object getConfigAccess(
+      final XComponentContext context, final String serviceSpecifier, final String nodePath) {
+
+    final XMultiServiceFactory provider = getConfigProvider(context);
+    if (provider == null) {
+      LOGGER.debug("Could not create configuration provider");
+      return null;
+    }
+
+    // Specifies the location of the view root in the configuration.
+    try {
+      return provider.createInstanceWithArguments(
+          serviceSpecifier, Props.makeProperties("nodepath", nodePath));
+    } catch (Exception ex) {
+      LOGGER.debug("Could not access config for: " + nodePath, ex);
+    }
+
+    return null;
+  }
+
   /**
    * Gets the read-only configuration access for the specified path.
    *
@@ -255,26 +275,6 @@ public final class Info { // NOPMD - Disable utility class name rule violation
     }
 
     return String.join(".", numbers);
-  }
-
-  private static Object getConfigAccess(
-      final XComponentContext context, final String serviceSpecifier, final String nodePath) {
-
-    final XMultiServiceFactory provider = getConfigProvider(context);
-    if (provider == null) {
-      LOGGER.debug("Could not create configuration provider");
-      return null;
-    }
-
-    // Specifies the location of the view root in the configuration.
-    try {
-      return provider.createInstanceWithArguments(
-          serviceSpecifier, Props.makeProperties("nodepath", nodePath));
-    } catch (Exception ex) {
-      LOGGER.debug("Could not access config for: " + nodePath, ex);
-    }
-
-    return null;
   }
 
   /**

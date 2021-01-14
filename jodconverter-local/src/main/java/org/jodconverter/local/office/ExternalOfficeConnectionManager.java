@@ -135,11 +135,14 @@ class ExternalOfficeConnectionManager {
 
     // Await for task termination. This is required if we don't want to let garbage on disk.
     try {
-      // TODO: Add <stop> configuration option for this ?
       // Wait 1 minute max for termination. It seems a safe and reasonable amount of time.
       LOGGER.debug("Waiting for stop task to complete ({}) millisecs)...", STOP_TASK_TIMEOUT);
-      executor.awaitTermination(STOP_TASK_TIMEOUT, TimeUnit.MILLISECONDS);
-      LOGGER.debug("Stop task executed successfully.");
+      if (executor.awaitTermination(STOP_TASK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+        LOGGER.debug("Stop task executed successfully.");
+      } else {
+        // TODO: Should we do something special ?
+        LOGGER.debug("Could not execute stop task within {} millisecs...", STOP_TASK_TIMEOUT);
+      }
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
       throw new OfficeException(

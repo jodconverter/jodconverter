@@ -102,11 +102,9 @@ public class JodConverterLocalAutoConfiguration {
 
     try (InputStream in =
         // Load the json resource containing default document formats.
-        (StringUtils.isBlank(properties.getDocumentFormatRegistry())
+        StringUtils.isBlank(properties.getDocumentFormatRegistry())
             ? resourceLoader.getResource("classpath:document-formats.json").getInputStream()
-            : resourceLoader
-                .getResource(properties.getDocumentFormatRegistry())
-                .getInputStream())) {
+            : resourceLoader.getResource(properties.getDocumentFormatRegistry()).getInputStream()) {
 
       // Create the registry
       final DocumentFormatRegistry registry =

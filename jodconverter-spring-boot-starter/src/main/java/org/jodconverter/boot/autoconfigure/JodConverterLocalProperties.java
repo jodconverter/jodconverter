@@ -46,7 +46,7 @@ public class JodConverterLocalProperties {
    * office instances is equal to the number of ports, since 1 office process will be launched for
    * each port number.
    */
-  private int[] portNumbers = new int[] {2002};
+  private int[] portNumbers = {2002};
 
   /**
    * Directory where temporary office profiles will be created. If not set, it defaults to the
@@ -89,7 +89,7 @@ public class JodConverterLocalProperties {
    * done if OpenGL is already disabled according to the user profile used with the office process.
    * If the options is changed, then office will be restarted.
    */
-  private boolean disableOpengl = false;
+  private boolean disableOpengl;
 
   /**
    * Controls whether the manager will "fail fast" if an office process cannot be started or the
@@ -100,7 +100,7 @@ public class JodConverterLocalProperties {
    * connecting to it will be submitted and will return immediately, meaning a faster starting
    * process. Only error logs will be produced if anything goes wrong.
    */
-  private boolean startFailFast = false;
+  private boolean startFailFast;
 
   /**
    * Controls whether the manager will keep the office process alive on shutdown. If set to {@code
@@ -108,7 +108,7 @@ public class JodConverterLocalProperties {
    * set to {@code false}, the office process will be stopped gracefully (or killed if could not
    * been stopped gracefully).
    */
-  private boolean keepAliveOnShutdown = false;
+  private boolean keepAliveOnShutdown;
 
   /**
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue

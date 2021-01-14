@@ -95,10 +95,8 @@ public class Deps {
       "org.powermock:powermock-module-junit4:" + powermockVersion;
   public static final String powermockMockito =
       "org.powermock:powermock-api-mockito2:" + powermockVersion;
-  // We now have to use the wiremock standalone version since jetty dependency
-  // is provided by spring boot
-  //  public static final String  wiremock =
-  //  "com.github.tomakehurst:wiremock:" + wiremockVersion;
+  // We now have to use the wiremock standalone version since
+  // jetty dependency is provided by spring boot
   public static final String wiremock =
       "com.github.tomakehurst:wiremock-standalone:" + wiremockVersion;
 }

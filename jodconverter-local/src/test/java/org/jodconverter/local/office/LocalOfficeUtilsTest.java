@@ -19,23 +19,16 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,7 +36,6 @@ import com.sun.star.beans.PropertyValue;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,7 +68,7 @@ class LocalOfficeUtilsTest {
 
     @Test
     void onMac_ShouldReturnMacProcessManager() {
-      Assumptions.assumeTrue(OSUtils.IS_OS_MAC);
+      assumeTrue(OSUtils.IS_OS_MAC);
 
       assertThat(LocalOfficeUtils.findBestProcessManager())
           .isEqualTo(MacProcessManager.getDefault());
@@ -84,7 +76,7 @@ class LocalOfficeUtilsTest {
 
     @Test
     void onFreeBSD_ShouldReturnFreeBSDProcessManager() {
-      Assumptions.assumeTrue(OSUtils.IS_OS_FREE_BSD);
+      assumeTrue(OSUtils.IS_OS_FREE_BSD);
 
       assertThat(LocalOfficeUtils.findBestProcessManager())
           .isEqualTo(FreeBSDProcessManager.getDefault());
@@ -92,7 +84,7 @@ class LocalOfficeUtilsTest {
 
     @Test
     void onUnix_ShouldReturnUnixProcessManager() {
-      Assumptions.assumeTrue(OSUtils.IS_OS_UNIX && !OSUtils.IS_OS_MAC && !OSUtils.IS_OS_FREE_BSD);
+      assumeTrue(OSUtils.IS_OS_UNIX && !OSUtils.IS_OS_MAC && !OSUtils.IS_OS_FREE_BSD);
 
       assertThat(LocalOfficeUtils.findBestProcessManager())
           .isEqualTo(UnixProcessManager.getDefault());
@@ -100,7 +92,7 @@ class LocalOfficeUtilsTest {
 
     @Test
     void onWindows_ShouldReturnWindowsProcessManager() {
-      Assumptions.assumeTrue(OSUtils.IS_OS_WINDOWS);
+      assumeTrue(OSUtils.IS_OS_WINDOWS);
 
       assertThat(LocalOfficeUtils.findBestProcessManager())
           .isEqualTo(WindowsProcessManager.getDefault());

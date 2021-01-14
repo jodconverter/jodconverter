@@ -118,7 +118,7 @@ public class ExternalOfficeManagerITest {
 
   @ParameterizedTest
   @ValueSource(strings = {"localhost", "127.0.0.1"})
-  public void execute_WhenProcessExists_ShouldSucceed(String host) {
+  public void execute_WhenProcessExists_ShouldSucceed(final String host) {
     final OfficeManager manager =
         ExternalOfficeManager.builder()
             .hostName(host)

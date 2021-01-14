@@ -56,19 +56,19 @@ public final class ExternalOfficeManager
     extends AbstractOfficeManagerPool<ExternalOfficeManagerPoolEntry> {
 
   // The default value for hostName.
-  static final String DEFAULT_HOSTNAME = "127.0.0.1";
+  /* default */ static final String DEFAULT_HOSTNAME = "127.0.0.1";
   // The default value for connection on start.
-  static final boolean DEFAULT_CONNECT_ON_START = true;
+  /* default */ static final boolean DEFAULT_CONNECT_ON_START = true;
   // The default timeout when connecting to office.
-  static final long DEFAULT_CONNECT_TIMEOUT = 120_000L; // 2 minutes
+  /* default */ static final long DEFAULT_CONNECT_TIMEOUT = 120_000L; // 2 minutes
   // The default delay between each try to connect.
-  static final long DEFAULT_CONNECT_RETRY_INTERVAL = 250L; // 0.25 secs.
+  /* default */ static final long DEFAULT_CONNECT_RETRY_INTERVAL = 250L; // 0.25 secs.
   // The default "fail fast" behavior when a connect attempt is made.
-  public static final boolean DEFAULT_CONNECT_FAIL_FAST = false;
+  /* default */ static final boolean DEFAULT_CONNECT_FAIL_FAST = false;
   // The maximum value for the delay between each try to connect.
-  static final long MAX_CONNECT_RETRY_INTERVAL = 10_000L; // 10 sec.
+  /* default */ static final long MAX_CONNECT_RETRY_INTERVAL = 10_000L; // 10 sec.
   // The default maximum number of tasks an office process can execute before reconnecting.
-  static final int DEFAULT_MAX_TASKS_PER_CONNECTION = 1_000;
+  /* default */ static final int DEFAULT_MAX_TASKS_PER_CONNECTION = 1_000;
 
   /**
    * Creates a new builder instance.
