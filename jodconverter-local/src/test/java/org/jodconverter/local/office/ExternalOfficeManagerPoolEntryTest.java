@@ -106,7 +106,7 @@ class ExternalOfficeManagerPoolEntryTest {
           new ExternalOfficeManagerPoolEntry(
               DEFAULT_CONNECT_ON_START,
               DEFAULT_MAX_TASKS_PER_CONNECTION,
-              100L,
+              250L,
               new ExternalOfficeConnectionManager(
                   DEFAULT_CONNECT_TIMEOUT, DEFAULT_CONNECT_RETRY_INTERVAL, true, connection));
       entry.start();
@@ -117,14 +117,14 @@ class ExternalOfficeManagerPoolEntryTest {
                   entry.execute(
                       context -> {
                         try {
-                          Thread.sleep(150L);
+                          Thread.sleep(500L);
                         } catch (InterruptedException ignored) {
                           // ignore
                         }
                       }));
 
       // Wait a bit since reconnect use "Executor.execute"
-      Thread.sleep(100L);
+      Thread.sleep(250L);
 
       assertThat(connection.getConnectCount()).isEqualTo(2); // Initial and reconnect
     }
