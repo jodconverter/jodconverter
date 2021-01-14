@@ -21,14 +21,14 @@ linux_task:
       container:
         image: openjdk:8-jdk
       build_script:
-        - ./gradlew build -x javadoc
+        - ./gradlew build -x javadoc --stacktrace
       coverage_script:
         - ./gradlew coveralls --warning-mode all
     - name: linux:openjdk11
       container:
         image: openjdk:11-jdk
       build_script:
-        - ./gradlew build -x javadoc
+        - ./gradlew build -x javadoc --stacktrace
 
 # Windows
 windows_task:
@@ -62,7 +62,7 @@ windows_task:
     - choco install -y libreoffice
     - choco install -y %ADOPTOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
   build_script:
-    - gradlew.bat build -x javadoc
+    - gradlew.bat build -x javadoc --stacktrace
 
 # macOS
 macos_task:
@@ -75,7 +75,7 @@ macos_task:
     #- brew update
     - brew cask install libreoffice
   build_script:
-    - ./gradlew build -x javadoc
+    - ./gradlew build -x javadoc --stacktrace
 
 # FreeBSD
 freebsd_task:
@@ -92,4 +92,4 @@ freebsd_task:
         install_java_script:
           - pkg install -y openjdk11
   build_script:
-    - ./gradlew build -x javadoc
+    - ./gradlew build -x javadoc --stacktrace
