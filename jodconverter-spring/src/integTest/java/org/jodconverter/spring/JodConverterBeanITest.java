@@ -125,7 +125,7 @@ public class JodConverterBeanITest {
     bean.setWorkingDir(workingDir.getPath());
     bean.setTaskExecutionTimeout(500L);
     bean.setTaskQueueTimeout(501L);
-    bean.setPortNumbers("2005");
+    bean.setPortNumbers("2006");
     bean.setOfficeHome(LocalOfficeUtils.getDefaultOfficeHome().getPath());
     bean.setTemplateProfileDir(templateProfileDir.getPath());
     bean.setTemplateProfileDirOrDefault(templateProfileDir.getPath());
@@ -182,7 +182,7 @@ public class JodConverterBeanITest {
                                 .containsExactly(
                                     500L,
                                     99,
-                                    "socket,host=127.0.0.1,port=2005,tcpNoDelay=1",
+                                    "socket,host=127.0.0.1,port=2006,tcpNoDelay=1",
                                     LocalOfficeUtils.getDefaultOfficeHome(),
                                     LocalOfficeUtils.findBestProcessManager(),
                                     Collections.EMPTY_LIST,
@@ -194,7 +194,7 @@ public class JodConverterBeanITest {
                                     true,
                                     false,
                                     true,
-                                    "socket,host=127.0.0.1,port=2005,tcpNoDelay=1"));
+                                    "socket,host=127.0.0.1,port=2006,tcpNoDelay=1"));
               });
 
     } finally {
