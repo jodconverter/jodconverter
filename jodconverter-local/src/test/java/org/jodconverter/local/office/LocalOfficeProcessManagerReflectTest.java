@@ -19,15 +19,8 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+import static org.assertj.core.api.Assertions.*;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
@@ -108,10 +101,11 @@ public class LocalOfficeProcessManagerReflectTest {
             null,
             DEFAULT_PROCESS_TIMEOUT,
             DEFAULT_PROCESS_RETRY_INTERVAL,
-            DEFAULT_DISABLE_OPENGL,
+            DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            DEFAULT_DISABLE_OPENGL,
             connection);
 
     assertThatExceptionOfType(OfficeException.class)
@@ -151,10 +145,11 @@ public class LocalOfficeProcessManagerReflectTest {
             null,
             DEFAULT_PROCESS_TIMEOUT,
             DEFAULT_PROCESS_RETRY_INTERVAL,
-            DEFAULT_DISABLE_OPENGL,
+            DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            DEFAULT_DISABLE_OPENGL,
             connection);
 
     final File instanceProfileDir = Whitebox.getInternalState(manager, "instanceProfileDir");
@@ -193,10 +188,11 @@ public class LocalOfficeProcessManagerReflectTest {
             null,
             DEFAULT_PROCESS_TIMEOUT,
             DEFAULT_PROCESS_RETRY_INTERVAL,
-            DEFAULT_DISABLE_OPENGL,
+            DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            DEFAULT_DISABLE_OPENGL,
             connection);
 
     final File instanceProfileDir = Whitebox.getInternalState(manager, "instanceProfileDir");
@@ -230,10 +226,11 @@ public class LocalOfficeProcessManagerReflectTest {
             null,
             DEFAULT_PROCESS_TIMEOUT,
             DEFAULT_PROCESS_RETRY_INTERVAL,
-            DEFAULT_DISABLE_OPENGL,
+            DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            DEFAULT_DISABLE_OPENGL,
             connection);
 
     // TODO: Check that the error message if properly logged.
@@ -262,10 +259,11 @@ public class LocalOfficeProcessManagerReflectTest {
             null,
             DEFAULT_PROCESS_TIMEOUT,
             DEFAULT_PROCESS_RETRY_INTERVAL,
-            DEFAULT_DISABLE_OPENGL,
+            DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            DEFAULT_DISABLE_OPENGL,
             connection);
 
     assertThatCode(() -> Whitebox.invokeMethod(manager, "forciblyTerminateProcess"))

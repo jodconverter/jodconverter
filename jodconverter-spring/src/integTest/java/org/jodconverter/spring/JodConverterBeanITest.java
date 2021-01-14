@@ -22,13 +22,7 @@ package org.jodconverter.spring;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.io.File;
 import java.util.Collections;
@@ -87,10 +81,11 @@ public class JodConverterBeanITest {
                                     "officeProcessManager.templateProfileDir",
                                     "officeProcessManager.processTimeout",
                                     "officeProcessManager.processRetryInterval",
-                                    "officeProcessManager.disableOpengl",
+                                    "officeProcessManager.afterStartProcessDelay",
                                     "officeProcessManager.existingProcessAction",
                                     "officeProcessManager.startFailFast",
                                     "officeProcessManager.keepAliveOnShutdown",
+                                    "officeProcessManager.disableOpengl",
                                     "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
                                 .containsExactly(
                                     DEFAULT_TASK_EXECUTION_TIMEOUT,
@@ -102,10 +97,11 @@ public class JodConverterBeanITest {
                                     null,
                                     DEFAULT_PROCESS_TIMEOUT,
                                     DEFAULT_PROCESS_RETRY_INTERVAL,
-                                    DEFAULT_DISABLE_OPENGL,
+                                    DEFAULT_AFTER_START_PROCESS_DELAY,
                                     DEFAULT_EXISTING_PROCESS_ACTION,
                                     DEFAULT_START_FAIL_FAST,
                                     DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                                    DEFAULT_DISABLE_OPENGL,
                                     "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
               });
 
@@ -135,10 +131,11 @@ public class JodConverterBeanITest {
     bean.setTemplateProfileDirOrDefault(templateProfileDir.getPath());
     bean.setProcessTimeout(120_001L);
     bean.setProcessRetryInterval(255L);
-    bean.setDisableOpengl(false);
+    bean.setAfterStartProcessDelay(10L);
     bean.setExistingProcessAction(ExistingProcessAction.KILL);
     bean.setStartFailFast(true);
     bean.setKeepAliveOnShutdown(false);
+    bean.setDisableOpengl(true);
     bean.setMaxTasksPerProcess(99);
 
     try {
@@ -176,10 +173,11 @@ public class JodConverterBeanITest {
                                     "officeProcessManager.templateProfileDir",
                                     "officeProcessManager.processTimeout",
                                     "officeProcessManager.processRetryInterval",
-                                    "officeProcessManager.disableOpengl",
+                                    "officeProcessManager.afterStartProcessDelay",
                                     "officeProcessManager.existingProcessAction",
                                     "officeProcessManager.startFailFast",
                                     "officeProcessManager.keepAliveOnShutdown",
+                                    "officeProcessManager.disableOpengl",
                                     "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
                                 .containsExactly(
                                     500L,
@@ -191,10 +189,11 @@ public class JodConverterBeanITest {
                                     templateProfileDir,
                                     120_001L,
                                     255L,
-                                    false,
+                                    10L,
                                     ExistingProcessAction.KILL,
                                     true,
                                     false,
+                                    true,
                                     "socket,host=127.0.0.1,port=2005,tcpNoDelay=1"));
               });
 
@@ -245,10 +244,11 @@ public class JodConverterBeanITest {
                                     "officeProcessManager.templateProfileDir",
                                     "officeProcessManager.processTimeout",
                                     "officeProcessManager.processRetryInterval",
-                                    "officeProcessManager.disableOpengl",
+                                    "officeProcessManager.afterStartProcessDelay",
                                     "officeProcessManager.existingProcessAction",
                                     "officeProcessManager.startFailFast",
                                     "officeProcessManager.keepAliveOnShutdown",
+                                    "officeProcessManager.disableOpengl",
                                     "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
                                 .containsExactly(
                                     DEFAULT_TASK_EXECUTION_TIMEOUT,
@@ -260,10 +260,11 @@ public class JodConverterBeanITest {
                                     null,
                                     DEFAULT_PROCESS_TIMEOUT,
                                     DEFAULT_PROCESS_RETRY_INTERVAL,
-                                    DEFAULT_DISABLE_OPENGL,
+                                    DEFAULT_AFTER_START_PROCESS_DELAY,
                                     DEFAULT_EXISTING_PROCESS_ACTION,
                                     DEFAULT_START_FAIL_FAST,
                                     DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                                    DEFAULT_DISABLE_OPENGL,
                                     "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
               });
 

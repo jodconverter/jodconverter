@@ -38,8 +38,8 @@ import org.jodconverter.local.process.ProcessQuery;
 class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
 
   // TODO: Make "FIND_PID_*" constants configurable
+  private static final long FREEBSD_FIND_PID_DELAY = 2_000L;
   private static final int FIND_PID_RETRIES = 10;
-  private static final long FIND_PID_DELAY = 2_000L;
   private static final long FIND_PID_INTERVAL = 250L;
   private static final Integer EXIT_CODE_81 = 81;
   private static final Logger LOGGER =
@@ -48,6 +48,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
   private final ProcessManager processManager;
   private final ProcessBuilder processBuilder;
   private final ProcessQuery processQuery;
+  private final long afterStartProcessDelay;
   private final OfficeConnection connection;
   private StartProcessResult result;
 
@@ -64,18 +65,22 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
    * @param processManager The office process manager used to find the process id.
    * @param processBuilder The builder used to build the start the process.
    * @param processQuery The process query.
+   * @param afterStartProcessDelay The delay after an attempt to start a process before doing
+   *     anything else.
    * @param connection The office connection used to connect.
    */
   /* default */ StartProcessAndConnectRetryable(
       final ProcessManager processManager,
       final ProcessBuilder processBuilder,
       final ProcessQuery processQuery,
+      final long afterStartProcessDelay,
       final OfficeConnection connection) {
     super();
 
     this.processManager = processManager;
     this.processBuilder = processBuilder;
     this.processQuery = processQuery;
+    this.afterStartProcessDelay = afterStartProcessDelay;
     this.connection = connection;
   }
 
@@ -171,15 +176,15 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
     // Start the process.
     result.process = new VerboseProcess(processBuilder.start());
 
-    // Try to retrieve the PID.
-
-    // Add an initial delay for FreeBSD. Without this delay, on FreeBSD only, the
-    // OfficeConnection.connect() will hang for more than 5 minutes before throwing
-    // a timeout exception, we do not know why.
-    // TODO: Investigate FreeBSD.
-    if (OSUtils.IS_OS_FREE_BSD) {
+    // Wait an initial delay is required. On FreeBSD, which is the only OS to date
+    // that we know this delay is required, we will set it ourselves if no one has
+    // been set.
+    if (afterStartProcessDelay > 0L) {
+      LOGGER.debug("Waiting for process to start...");
+      sleep(afterStartProcessDelay);
+    } else if (OSUtils.IS_OS_FREE_BSD) {
       LOGGER.debug("Waiting for process to start on FreeBSD...");
-      sleep(FIND_PID_DELAY);
+      sleep(FREEBSD_FIND_PID_DELAY);
     }
 
     // Try to retrieve the PID.

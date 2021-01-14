@@ -23,15 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
-import static org.jodconverter.local.office.LocalOfficeManager.MAX_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.MIN_PROCESS_RETRY_INTERVAL;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,30 +91,32 @@ class LocalOfficeManagerTest {
                           "maxTasksPerProcess",
                           "officeProcessManager.officeUrl.connectionAndParametersAsString",
                           "officeProcessManager.officeHome",
-                          "officeProcessManager.processManager",
+                          "officeProcessManager.processManager.class.name",
                           "officeProcessManager.runAsArgs",
                           "officeProcessManager.templateProfileDir",
                           "officeProcessManager.processTimeout",
                           "officeProcessManager.processRetryInterval",
-                          "officeProcessManager.disableOpengl",
+                          "officeProcessManager.afterStartProcessDelay",
                           "officeProcessManager.existingProcessAction",
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
+                          "officeProcessManager.disableOpengl",
                           "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
                       .containsExactly(
                           DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
                           new OfficeUrl(2002).getConnectionAndParametersAsString(),
                           LocalOfficeUtils.getDefaultOfficeHome(),
-                          LocalOfficeUtils.findBestProcessManager(),
+                          LocalOfficeUtils.findBestProcessManager().getClass().getName(),
                           Collections.EMPTY_LIST,
                           null,
                           DEFAULT_PROCESS_TIMEOUT,
                           DEFAULT_PROCESS_RETRY_INTERVAL,
-                          DEFAULT_DISABLE_OPENGL,
+                          DEFAULT_AFTER_START_PROCESS_DELAY,
                           DEFAULT_EXISTING_PROCESS_ACTION,
                           DEFAULT_START_FAIL_FAST,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                          DEFAULT_DISABLE_OPENGL,
                           new OfficeUrl(2002).getConnectionAndParametersAsString()));
     }
   }
@@ -174,10 +168,11 @@ class LocalOfficeManagerTest {
               .templateProfileDirOrDefault((File) null)
               .processTimeout(null)
               .processRetryInterval(null)
-              .disableOpengl(null)
+              .afterStartProcessDelay(null)
               .existingProcessAction(null)
               .startFailFast(null)
               .keepAliveOnShutdown(null)
+              .disableOpengl(null)
               .maxTasksPerProcess(null)
               .build();
 
@@ -205,30 +200,32 @@ class LocalOfficeManagerTest {
                           "maxTasksPerProcess",
                           "officeProcessManager.officeUrl.connectionAndParametersAsString",
                           "officeProcessManager.officeHome",
-                          "officeProcessManager.processManager",
+                          "officeProcessManager.processManager.class.name",
                           "officeProcessManager.runAsArgs",
                           "officeProcessManager.templateProfileDir",
                           "officeProcessManager.processTimeout",
                           "officeProcessManager.processRetryInterval",
-                          "officeProcessManager.disableOpengl",
+                          "officeProcessManager.afterStartProcessDelay",
                           "officeProcessManager.existingProcessAction",
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
+                          "officeProcessManager.disableOpengl",
                           "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
                       .containsExactly(
                           DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
                           new OfficeUrl(2002).getConnectionAndParametersAsString(),
                           LocalOfficeUtils.getDefaultOfficeHome(),
-                          LocalOfficeUtils.findBestProcessManager(),
+                          LocalOfficeUtils.findBestProcessManager().getClass().getName(),
                           Collections.EMPTY_LIST,
                           null,
                           DEFAULT_PROCESS_TIMEOUT,
                           DEFAULT_PROCESS_RETRY_INTERVAL,
-                          DEFAULT_DISABLE_OPENGL,
+                          DEFAULT_AFTER_START_PROCESS_DELAY,
                           DEFAULT_EXISTING_PROCESS_ACTION,
                           DEFAULT_START_FAIL_FAST,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                          DEFAULT_DISABLE_OPENGL,
                           new OfficeUrl(2002).getConnectionAndParametersAsString()));
     }
 
@@ -254,7 +251,7 @@ class LocalOfficeManagerTest {
       new File(templateProfileDir, "user").mkdirs();
 
       final OfficeManager manager =
-          LocalOfficeManager.builder()
+          builder()
               .workingDir(workingDir.getPath())
               .taskExecutionTimeout(500L)
               .taskQueueTimeout(501L)
@@ -269,10 +266,11 @@ class LocalOfficeManagerTest {
               .templateProfileDirOrDefault(templateProfileDir.getPath())
               .processTimeout(502L)
               .processRetryInterval(503L)
-              .disableOpengl(false)
+              .afterStartProcessDelay(10L)
               .existingProcessAction(ExistingProcessAction.CONNECT)
               .startFailFast(true)
               .keepAliveOnShutdown(true)
+              .disableOpengl(true)
               .maxTasksPerProcess(99)
               .build();
 
@@ -298,24 +296,28 @@ class LocalOfficeManagerTest {
                         "taskExecutionTimeout",
                         "maxTasksPerProcess",
                         "officeProcessManager.officeHome",
+                        "officeProcessManager.processManager.class.name",
                         "officeProcessManager.runAsArgs",
                         "officeProcessManager.templateProfileDir",
                         "officeProcessManager.processTimeout",
                         "officeProcessManager.processRetryInterval",
-                        "officeProcessManager.disableOpengl",
+                        "officeProcessManager.afterStartProcessDelay",
                         "officeProcessManager.existingProcessAction",
                         "officeProcessManager.startFailFast",
-                        "officeProcessManager.keepAliveOnShutdown")
+                        "officeProcessManager.keepAliveOnShutdown",
+                        "officeProcessManager.disableOpengl")
                     .containsExactly(
                         500L,
                         99,
                         ooHome,
+                        TestProcessManager.class.getName(),
                         Stream.of("sudo").collect(Collectors.toList()),
                         templateProfileDir,
                         502L,
                         503L,
-                        false,
+                        10L,
                         ExistingProcessAction.CONNECT,
+                        true,
                         true,
                         true);
               })

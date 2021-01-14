@@ -50,14 +50,16 @@ public final class LocalOfficeManager
   public static final long DEFAULT_PROCESS_TIMEOUT = 120_000L; // 2 minutes
   // The default delay between each try when executing a process call (start/terminate).
   public static final long DEFAULT_PROCESS_RETRY_INTERVAL = 250L; // 0.25 secs.
-  // The default behavior when an office process is started regarding to OpenGL usage.
-  public static final boolean DEFAULT_DISABLE_OPENGL = false;
+  // The default delay after an attempt to start an office process before doing anything else.
+  public static final long DEFAULT_AFTER_START_PROCESS_DELAY = 0L; // No delay.
   // The default behavior when we want to start an office process and a process with
   // the same URL already exists.
   public static final ExistingProcessAction DEFAULT_EXISTING_PROCESS_ACTION =
       ExistingProcessAction.KILL;
   // The default "fail fast" behavior when an office process is started.
   public static final boolean DEFAULT_START_FAIL_FAST = false;
+  // The default behavior when an office process is started regarding to OpenGL usage.
+  public static final boolean DEFAULT_DISABLE_OPENGL = false;
   // The default "keep process alive" behavior on shutdown.
   public static final boolean DEFAULT_KEEP_ALIVE_ON_SHUTDOWN = false;
   // The default maximum number of tasks an office process can execute before restarting.
@@ -68,6 +70,10 @@ public final class LocalOfficeManager
   // The maximum value for the delay between each try when executing a process call
   // (start/terminate).
   public static final long MAX_PROCESS_RETRY_INTERVAL = 10_000L; // 10 sec.
+  // The minimum value for the delay after a start process attempt.
+  public static final long MIN_AFTER_START_PROCESS_DELAY = 0L; // No delay.
+  // The maximum value for the delay after a start process attempt.
+  public static final long MAX_AFTER_START_PROCESS_DELAY = 10_000L; // 10 sec.
 
   /**
    * Creates a new builder instance.
@@ -109,10 +115,11 @@ public final class LocalOfficeManager
       final File templateProfileDir,
       final long processTimeout,
       final long processRetryInterval,
-      final boolean disableOpengl,
+      final long afterStartProcessDelay,
       final ExistingProcessAction existingProcessAction,
       final boolean startFailFast,
       final boolean keepAliveOnShutdown,
+      final boolean disableOpengl,
       final int maxTasksPerProcess,
       final long taskExecutionTimeout,
       final long taskQueueTimeout) {
@@ -134,10 +141,11 @@ public final class LocalOfficeManager
                             templateProfileDir,
                             processTimeout,
                             processRetryInterval,
-                            disableOpengl,
+                            afterStartProcessDelay,
                             existingProcessAction,
                             startFailFast,
                             keepAliveOnShutdown,
+                            disableOpengl,
                             new OfficeConnection(officeUrl))))
             .collect(Collectors.toList()));
   }
@@ -158,10 +166,11 @@ public final class LocalOfficeManager
     private boolean useDefaultOnInvalidTemplateProfileDir;
     private long processTimeout = DEFAULT_PROCESS_TIMEOUT;
     private long processRetryInterval = DEFAULT_PROCESS_RETRY_INTERVAL;
-    private boolean disableOpengl = DEFAULT_DISABLE_OPENGL;
+    private long afterStartProcessDelay = DEFAULT_AFTER_START_PROCESS_DELAY;
     private ExistingProcessAction existingProcessAction = DEFAULT_EXISTING_PROCESS_ACTION;
     private boolean startFailFast = DEFAULT_START_FAIL_FAST;
     private boolean keepAliveOnShutdown = DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+    private boolean disableOpengl = DEFAULT_DISABLE_OPENGL;
     private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
     // Private constructor so only LocalOfficeManager can initialize an instance of this builder.
@@ -198,10 +207,11 @@ public final class LocalOfficeManager
               templateProfileDir,
               processTimeout,
               processRetryInterval,
-              disableOpengl,
+              afterStartProcessDelay,
               existingProcessAction,
               startFailFast,
               keepAliveOnShutdown,
+              disableOpengl,
               maxTasksPerProcess,
               taskExecutionTimeout,
               taskQueueTimeout);
@@ -424,19 +434,29 @@ public final class LocalOfficeManager
     }
 
     /**
-     * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
-     * done if OpenGL is already disabled according to the user profile used with the office
-     * process. If the options is changed, then office will be restarted.
+     * Specifies the delay, in milliseconds, after an attempt to start an office process before
+     * doing anything else. It is required on some OS to avoid an attempt to connect to the started
+     * process that will hang for more than 5 minutes before throwing a timeout exception, we do not
+     * know why.
      *
-     * <p>&nbsp; <b><i>Default</i></b>: false
+     * <p>&nbsp; <b><i>Default</i></b>: 0 (no delay). On FreeBSD, which is a known OS needing this,
+     * it default to 2000 (2 seconds).
      *
-     * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
+     * @param afterStartProcessDelay The delay, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder disableOpengl(final @Nullable Boolean disableOpengl) {
+    public @NonNull Builder afterStartProcessDelay(final @Nullable Long afterStartProcessDelay) {
 
-      if (disableOpengl != null) {
-        this.disableOpengl = disableOpengl;
+      if (afterStartProcessDelay != null) {
+        AssertUtils.isTrue(
+            processRetryInterval >= MIN_AFTER_START_PROCESS_DELAY
+                && processRetryInterval <= MAX_AFTER_START_PROCESS_DELAY,
+            String.format(
+                "afterStartProcessDelay %s must be in the inclusive range of %s to %s",
+                afterStartProcessDelay,
+                MIN_AFTER_START_PROCESS_DELAY,
+                MAX_AFTER_START_PROCESS_DELAY));
+        this.afterStartProcessDelay = afterStartProcessDelay;
       }
       return this;
     }
@@ -496,6 +516,24 @@ public final class LocalOfficeManager
 
       if (keepAliveOnShutdown != null) {
         this.keepAliveOnShutdown = keepAliveOnShutdown;
+      }
+      return this;
+    }
+
+    /**
+     * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
+     * done if OpenGL is already disabled according to the user profile used with the office
+     * process. If the options is changed, then office will be restarted.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: false
+     *
+     * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
+     * @return This builder instance.
+     */
+    public @NonNull Builder disableOpengl(final @Nullable Boolean disableOpengl) {
+
+      if (disableOpengl != null) {
+        this.disableOpengl = disableOpengl;
       }
       return this;
     }

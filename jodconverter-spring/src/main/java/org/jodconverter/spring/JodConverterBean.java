@@ -21,13 +21,7 @@ package org.jodconverter.spring;
 
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -78,10 +72,11 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   private Boolean useDefaultOnInvalidTemplateProfileDir;
   private Long processTimeout = DEFAULT_PROCESS_TIMEOUT;
   private Long processRetryInterval = DEFAULT_PROCESS_RETRY_INTERVAL;
-  private Boolean disableOpengl = DEFAULT_DISABLE_OPENGL;
+  private Long afterStartProcessDelay = DEFAULT_AFTER_START_PROCESS_DELAY;
   private ExistingProcessAction existingProcessAction = DEFAULT_EXISTING_PROCESS_ACTION;
   private Boolean startFailFast = DEFAULT_START_FAIL_FAST;
   private Boolean keepAliveOnShutdown = DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+  private Boolean disableOpengl = DEFAULT_DISABLE_OPENGL;
   private Integer maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
   private OfficeManager officeManager;
@@ -114,10 +109,11 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
         .processManager(processManagerClass)
         .processTimeout(processTimeout)
         .processRetryInterval(processRetryInterval)
-        .disableOpengl(disableOpengl)
+        .afterStartProcessDelay(afterStartProcessDelay)
         .existingProcessAction(existingProcessAction)
         .startFailFast(startFailFast)
         .keepAliveOnShutdown(keepAliveOnShutdown)
+        .disableOpengl(disableOpengl)
         .maxTasksPerProcess(maxTasksPerProcess);
     if (Boolean.TRUE.equals(useDefaultOnInvalidTemplateProfileDir)) {
       builder.templateProfileDirOrDefault(templateProfileDir);
@@ -296,16 +292,17 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
-   * done if OpenGL is already disabled according to the user profile used with the office process.
-   * If the options is changed, then office must be restarted.
+   * Specifies the delay, in milliseconds, after an attempt to start an office process before doing
+   * anything else. It is required on some OS to avoid an attempt to connect to the started process
+   * that will hang for more than 5 minutes before throwing a timeout exception, we do not know why.
    *
-   * <p>&nbsp; <b><i>Default</i></b>: false
+   * <p>&nbsp; <b><i>Default</i></b>: 0 (no delay). On FreeBSD, which is a known OS needing this, it
+   * default to 2000 (2 seconds).
    *
-   * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
+   * @param afterStartProcessDelay The delay, in milliseconds.
    */
-  public void setDisableOpengl(final @Nullable Boolean disableOpengl) {
-    this.disableOpengl = disableOpengl;
+  public void setAfterStartProcessDelay(final @Nullable Long afterStartProcessDelay) {
+    this.afterStartProcessDelay = afterStartProcessDelay;
   }
 
   /**
@@ -350,6 +347,19 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    */
   public void setKeepAliveOnShutdown(final @Nullable Boolean keepAliveOnShutdown) {
     this.keepAliveOnShutdown = keepAliveOnShutdown;
+  }
+
+  /**
+   * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
+   * done if OpenGL is already disabled according to the user profile used with the office process.
+   * If the options is changed, then office must be restarted.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: false
+   *
+   * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
+   */
+  public void setDisableOpengl(final @Nullable Boolean disableOpengl) {
+    this.disableOpengl = disableOpengl;
   }
 
   /**

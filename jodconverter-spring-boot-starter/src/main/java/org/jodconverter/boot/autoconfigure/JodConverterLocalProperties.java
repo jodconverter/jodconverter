@@ -67,12 +67,6 @@ public class JodConverterLocalProperties {
   private String processManagerClass;
 
   /**
-   * Specifies the action the must be taken when starting a new office process and there already is
-   * a existing running process for the same connection string.
-   */
-  private ExistingProcessAction existingProcessAction = ExistingProcessAction.KILL;
-
-  /**
    * Process timeout (milliseconds). Used when trying to execute an office process call
    * (start/connect/terminate).
    */
@@ -84,12 +78,14 @@ public class JodConverterLocalProperties {
    */
   private long processRetryInterval = 250L;
 
+  /** Specifies the delay after an attempt to start an office process before doing anything else. */
+  private long afterStartProcessDelay = 0L;
+
   /**
-   * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
-   * done if OpenGL is already disabled according to the user profile used with the office process.
-   * If the options is changed, then office will be restarted.
+   * Specifies the action the must be taken when starting a new office process and there already is
+   * a existing running process for the same connection string.
    */
-  private boolean disableOpengl;
+  private ExistingProcessAction existingProcessAction = ExistingProcessAction.KILL;
 
   /**
    * Controls whether the manager will "fail fast" if an office process cannot be started or the
@@ -109,6 +105,13 @@ public class JodConverterLocalProperties {
    * been stopped gracefully).
    */
   private boolean keepAliveOnShutdown;
+
+  /**
+   * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
+   * done if OpenGL is already disabled according to the user profile used with the office process.
+   * If the options is changed, then office will be restarted.
+   */
+  private boolean disableOpengl;
 
   /**
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
@@ -179,15 +182,6 @@ public class JodConverterLocalProperties {
     this.processManagerClass = processManagerClass;
   }
 
-  public @Nullable ExistingProcessAction getExistingProcessAction() {
-    return existingProcessAction;
-  }
-
-  public void setExistingProcessAction(
-      final @Nullable ExistingProcessAction existingProcessAction) {
-    this.existingProcessAction = existingProcessAction;
-  }
-
   public long getProcessTimeout() {
     return processTimeout;
   }
@@ -204,12 +198,21 @@ public class JodConverterLocalProperties {
     this.processRetryInterval = procesRetryInterval;
   }
 
-  public boolean isDisableOpengl() {
-    return disableOpengl;
+  public long getAfterStartProcessDelay() {
+    return afterStartProcessDelay;
   }
 
-  public void setDisableOpengl(final boolean disableOpengl) {
-    this.disableOpengl = disableOpengl;
+  public void setAfterStartProcessDelay(final long afterStartProcessDelay) {
+    this.afterStartProcessDelay = afterStartProcessDelay;
+  }
+
+  public @Nullable ExistingProcessAction getExistingProcessAction() {
+    return existingProcessAction;
+  }
+
+  public void setExistingProcessAction(
+      final @Nullable ExistingProcessAction existingProcessAction) {
+    this.existingProcessAction = existingProcessAction;
   }
 
   public boolean isStartFailFast() {
@@ -226,6 +229,14 @@ public class JodConverterLocalProperties {
 
   public void setKeepAliveOnShutdown(final boolean keepAliveOnShutdown) {
     this.keepAliveOnShutdown = keepAliveOnShutdown;
+  }
+
+  public boolean isDisableOpengl() {
+    return disableOpengl;
+  }
+
+  public void setDisableOpengl(final boolean disableOpengl) {
+    this.disableOpengl = disableOpengl;
   }
 
   public long getTaskQueueTimeout() {

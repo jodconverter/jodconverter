@@ -22,12 +22,7 @@ package org.jodconverter.cli;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.io.File;
 import java.util.Collections;
@@ -46,11 +41,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.powermock.reflect.Whitebox;
 
-import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
-import org.jodconverter.cli.util.ExitException;
-import org.jodconverter.cli.util.NoExitExtension;
-import org.jodconverter.cli.util.ResetExitExceptionExtension;
-import org.jodconverter.cli.util.SystemLogHandler;
+import org.jodconverter.cli.util.*;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.LocalConverter;
@@ -205,30 +196,32 @@ class ConvertTest {
                           "maxTasksPerProcess",
                           "officeProcessManager.officeUrl.connectionAndParametersAsString",
                           "officeProcessManager.officeHome",
-                          "officeProcessManager.processManager",
+                          "officeProcessManager.processManager.class.name",
                           "officeProcessManager.runAsArgs",
                           "officeProcessManager.templateProfileDir",
                           "officeProcessManager.processTimeout",
                           "officeProcessManager.processRetryInterval",
-                          "officeProcessManager.disableOpengl",
+                          "officeProcessManager.afterStartProcessDelay",
                           "officeProcessManager.existingProcessAction",
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
+                          "officeProcessManager.disableOpengl",
                           "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
                       .containsExactly(
                           DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
                           "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
                           LocalOfficeUtils.getDefaultOfficeHome(),
-                          LocalOfficeUtils.findBestProcessManager(),
+                          LocalOfficeUtils.findBestProcessManager().getClass().getName(),
                           Collections.EMPTY_LIST,
                           null,
                           DEFAULT_PROCESS_TIMEOUT,
                           DEFAULT_PROCESS_RETRY_INTERVAL,
-                          DEFAULT_DISABLE_OPENGL,
+                          DEFAULT_AFTER_START_PROCESS_DELAY,
                           DEFAULT_EXISTING_PROCESS_ACTION,
                           true,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                          DEFAULT_DISABLE_OPENGL,
                           "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
     }
 
@@ -298,10 +291,11 @@ class ConvertTest {
                           "officeProcessManager.templateProfileDir",
                           "officeProcessManager.processTimeout",
                           "officeProcessManager.processRetryInterval",
-                          "officeProcessManager.disableOpengl",
+                          "officeProcessManager.afterStartProcessDelay",
                           "officeProcessManager.existingProcessAction",
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
+                          "officeProcessManager.disableOpengl",
                           "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
                       .containsExactly(
                           30_000L,
@@ -313,10 +307,11 @@ class ConvertTest {
                           new File("src/test/resources/templateProfileDir"),
                           DEFAULT_PROCESS_TIMEOUT,
                           DEFAULT_PROCESS_RETRY_INTERVAL,
-                          true,
+                          DEFAULT_AFTER_START_PROCESS_DELAY,
                           ExistingProcessAction.KILL,
                           true,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                          true,
                           "socket,host=127.0.0.1,port=2003,tcpNoDelay=1"));
     }
 

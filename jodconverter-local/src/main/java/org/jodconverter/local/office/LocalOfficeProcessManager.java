@@ -81,10 +81,11 @@ class LocalOfficeProcessManager {
   private final File templateProfileDir;
   private final long processTimeout;
   private final long processRetryInterval;
-  private final boolean disableOpengl;
+  private final long afterStartProcessDelay;
   private final ExistingProcessAction existingProcessAction;
   private final boolean startFailFast;
   private final boolean keepAliveOnShutdown;
+  private final boolean disableOpengl;
 
   /**
    * Creates a new manager with the specified configuration.
@@ -100,9 +101,8 @@ class LocalOfficeProcessManager {
    *     call (start/terminate).
    * @param processRetryInterval The delay, in milliseconds, between each try when trying to execute
    *     an office process call (start/terminate).
-   * @param disableOpengl Indicates whether OpenGL must be disabled when starting a new office
-   *     process. Nothing will be done if OpenGL is already disabled according to the user profile
-   *     used with the office process. If the options is changed, then office must be restarted.
+   * @param afterStartProcessDelay The delay, in milliseconds, after the start of an office process
+   *     before doing anything else.
    * @param existingProcessAction Represents the action to take when starting a new office process
    *     and there already is a process running with the same connection string.
    * @param startFailFast Controls whether the manager will "fail fast" if the office process cannot
@@ -114,6 +114,9 @@ class LocalOfficeProcessManager {
    *     shutdown. If set to {@code true}, the {@link #stop()} will only disconnect from the office
    *     process, which will stay alive. If set to {@code false}, the office process will be stopped
    *     gracefully (or killed if could not been stopped gracefully).
+   * @param disableOpengl Indicates whether OpenGL must be disabled when starting a new office
+   *     process. Nothing will be done if OpenGL is already disabled according to the user profile
+   *     used with the office process. If the options is changed, then office must be restarted.
    * @param connection The object that will managed the connection to the office process.
    */
   /* default */ LocalOfficeProcessManager(
@@ -125,10 +128,11 @@ class LocalOfficeProcessManager {
       final File templateProfileDir,
       final long processTimeout,
       final long processRetryInterval,
-      final boolean disableOpengl,
+      final long afterStartProcessDelay,
       final ExistingProcessAction existingProcessAction,
       final boolean startFailFast,
       final boolean keepAliveOnShutdown,
+      final boolean disableOpengl,
       final OfficeConnection connection) {
 
     this.officeUrl = officeUrl;
@@ -138,10 +142,11 @@ class LocalOfficeProcessManager {
     this.templateProfileDir = templateProfileDir;
     this.processTimeout = processTimeout;
     this.processRetryInterval = processRetryInterval;
-    this.disableOpengl = disableOpengl;
+    this.afterStartProcessDelay = afterStartProcessDelay;
     this.existingProcessAction = existingProcessAction;
     this.startFailFast = startFailFast;
     this.keepAliveOnShutdown = keepAliveOnShutdown;
+    this.disableOpengl = disableOpengl;
     this.connection = connection;
 
     executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("jodconverter-offprocmng"));
@@ -396,7 +401,7 @@ class LocalOfficeProcessManager {
       // Start the process.
       final StartProcessAndConnectRetryable retryable =
           new StartProcessAndConnectRetryable(
-              processManager, processBuilder, processQuery, connection);
+              processManager, processBuilder, processQuery, afterStartProcessDelay, connection);
       retryable.execute(processRetryInterval, processTimeout);
       process = retryable.getProcess();
       pid = retryable.getProcessId();

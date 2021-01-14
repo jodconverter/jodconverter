@@ -22,13 +22,7 @@ package org.jodconverter.spring;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.io.File;
 
@@ -59,10 +53,11 @@ public class SpringControllerTest {
             "useDefaultOnInvalidTemplateProfileDir",
             "processTimeout",
             "processRetryInterval",
-            "disableOpengl",
+            "afterStartProcessDelay",
             "existingProcessAction",
             "startFailFast",
             "keepAliveOnShutdown",
+            "disableOpengl",
             "maxTasksPerProcess")
         .containsExactly(
             null,
@@ -75,10 +70,11 @@ public class SpringControllerTest {
             null,
             DEFAULT_PROCESS_TIMEOUT,
             DEFAULT_PROCESS_RETRY_INTERVAL,
-            DEFAULT_DISABLE_OPENGL,
+            DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            DEFAULT_DISABLE_OPENGL,
             DEFAULT_MAX_TASKS_PER_PROCESS);
   }
 
@@ -97,10 +93,11 @@ public class SpringControllerTest {
         new File(testFolder, "templateProfileDirOrDefault").getPath());
     bean.setProcessTimeout(503L);
     bean.setProcessRetryInterval(504L);
-    bean.setDisableOpengl(true);
+    bean.setAfterStartProcessDelay(10L);
     bean.setExistingProcessAction(ExistingProcessAction.CONNECT);
     bean.setStartFailFast(true);
     bean.setKeepAliveOnShutdown(true);
+    bean.setDisableOpengl(true);
     bean.setMaxTasksPerProcess(99);
 
     assertThat(bean)
@@ -115,10 +112,11 @@ public class SpringControllerTest {
             "useDefaultOnInvalidTemplateProfileDir",
             "processTimeout",
             "processRetryInterval",
-            "disableOpengl",
+            "afterStartProcessDelay",
             "existingProcessAction",
             "startFailFast",
             "keepAliveOnShutdown",
+            "disableOpengl",
             "maxTasksPerProcess")
         .containsExactly(
             new File(testFolder, "workingDir").getPath(),
@@ -131,8 +129,9 @@ public class SpringControllerTest {
             true,
             503L,
             504L,
-            true,
+            10L,
             ExistingProcessAction.CONNECT,
+            true,
             true,
             true,
             99);
