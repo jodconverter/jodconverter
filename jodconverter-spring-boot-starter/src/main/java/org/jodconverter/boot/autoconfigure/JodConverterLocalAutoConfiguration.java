@@ -67,6 +67,7 @@ public class JodConverterLocalAutoConfiguration {
     final LocalOfficeManager.Builder builder =
         LocalOfficeManager.builder()
             .officeHome(properties.getOfficeHome())
+            .hostName(properties.getHostName())
             .portNumbers(properties.getPortNumbers())
             .workingDir(properties.getWorkingDir())
             .templateProfileDir(properties.getTemplateProfileDir())

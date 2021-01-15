@@ -68,6 +68,7 @@ public class AutoConfigurationPropertiesITest {
         .extracting(
             "enabled",
             "officeHome",
+            "hostName",
             "portNumbers",
             "workingDir",
             "templateProfileDir",
@@ -85,6 +86,7 @@ public class AutoConfigurationPropertiesITest {
         .containsExactly(
             true,
             "office-home",
+            "localhost",
             new int[] {2005, 2006},
             "working-dir",
             "template-profile-dir",

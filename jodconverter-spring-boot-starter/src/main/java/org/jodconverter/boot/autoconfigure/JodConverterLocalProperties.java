@@ -42,6 +42,13 @@ public class JodConverterLocalProperties {
   private String officeHome;
 
   /**
+   * Host name that will be use in the --accept argument when starting an office process. Most of
+   * the time, the default will work. But if it doesn't work (unable to connect to the started
+   * process), using 'localhost' as host name instead may work.
+   */
+  private String hostName = "127.0.0.1";
+
+  /**
    * List of ports, separated by commas, used by each JODConverter processing thread. The number of
    * office instances is equal to the number of ports, since 1 office process will be launched for
    * each port number.
@@ -148,6 +155,14 @@ public class JodConverterLocalProperties {
 
   public void setOfficeHome(final @Nullable String officeHome) {
     this.officeHome = officeHome;
+  }
+
+  public @Nullable String getHostName() {
+    return hostName;
+  }
+
+  public void setHostName(final @Nullable String hostName) {
+    this.hostName = hostName;
   }
 
   public int[] getPortNumbers() {

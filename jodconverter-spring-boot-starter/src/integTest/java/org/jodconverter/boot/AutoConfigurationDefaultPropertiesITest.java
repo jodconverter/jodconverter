@@ -68,6 +68,7 @@ public class AutoConfigurationDefaultPropertiesITest {
         .extracting(
             "enabled",
             "officeHome",
+            "hostName",
             "portNumbers",
             "workingDir",
             "templateProfileDir",
@@ -85,6 +86,7 @@ public class AutoConfigurationDefaultPropertiesITest {
         .containsExactly(
             true,
             null,
+            "127.0.0.1",
             new int[] {2002},
             null,
             null,

@@ -153,6 +153,7 @@ class LocalOfficeManagerTest {
               .taskQueueTimeout(null)
               .pipeNames((String[]) null)
               .pipeNames(new String[] {})
+              .hostName(null)
               .portNumbers((int[]) null)
               .portNumbers(new int[] {})
               .officeHome((String) null)
@@ -256,6 +257,7 @@ class LocalOfficeManagerTest {
               .taskExecutionTimeout(500L)
               .taskQueueTimeout(501L)
               .pipeNames("test")
+              .hostName("localhost")
               .portNumbers(2003)
               .officeHome(ooHome.getPath())
               .officeHome((File) null)
@@ -329,8 +331,8 @@ class LocalOfficeManagerTest {
                           "officeProcessManager.officeUrl.connectionAndParametersAsString",
                           "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
                       .containsExactly(
-                          new OfficeUrl(2003).getConnectionAndParametersAsString(),
-                          new OfficeUrl(2003).getConnectionAndParametersAsString()))
+                          new OfficeUrl("localhost", 2003).getConnectionAndParametersAsString(),
+                          new OfficeUrl("localhost", 2003).getConnectionAndParametersAsString()))
           .satisfies(
               o ->
                   assertThat(o.get(1))

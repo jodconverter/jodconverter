@@ -65,6 +65,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   private Long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
   private Long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
 
+  private String hostName = DEFAULT_HOSTNAME;
   private String portNumbers;
   private String officeHome;
   private String processManagerClass;
@@ -102,6 +103,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
     }
 
     builder
+        .hostName(hostName)
         .workingDir(workingDir)
         .taskExecutionTimeout(taskExecutionTimeout)
         .taskQueueTimeout(taskQueueTimeout)
@@ -209,6 +211,17 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    */
   public void setTaskQueueTimeout(final @Nullable Long taskQueueTimeout) {
     this.taskQueueTimeout = taskQueueTimeout;
+  }
+
+  /**
+   * Sets the host name that will be use in the --accept argument when starting an office process.
+   * Most of the time, the default will work. But if it doesn't work (unable to connect to the
+   * started process), using {@code localhost} instead may work.
+   *
+   * @param hostName the host name to use.
+   */
+  public void setHostName(final @Nullable String hostName) {
+    this.hostName = hostName;
   }
 
   /**

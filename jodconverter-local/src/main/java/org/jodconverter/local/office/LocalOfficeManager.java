@@ -46,6 +46,8 @@ public final class LocalOfficeManager
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeManager.class);
 
+  // The default value for hostName.
+  public static final String DEFAULT_HOSTNAME = "127.0.0.1";
   // The default timeout when executing a process call (start/terminate).
   public static final long DEFAULT_PROCESS_TIMEOUT = 120_000L; // 2 minutes
   // The default delay between each try when executing a process call (start/terminate).
@@ -158,6 +160,7 @@ public final class LocalOfficeManager
   public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
 
     private List<String> pipeNames;
+    private String hostName = DEFAULT_HOSTNAME;
     private List<Integer> portNumbers;
     private File officeHome = LocalOfficeUtils.getDefaultOfficeHome();
     private ProcessManager processManager = LocalOfficeUtils.findBestProcessManager();
@@ -199,7 +202,7 @@ public final class LocalOfficeManager
       // Build the office URLs
       final LocalOfficeManager manager =
           new LocalOfficeManager(
-              LocalOfficeUtils.buildOfficeUrls(portNumbers, pipeNames),
+              LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames),
               officeHome,
               workingDir,
               processManager,
@@ -233,6 +236,21 @@ public final class LocalOfficeManager
       if (pipeNames != null && pipeNames.length != 0) {
         this.pipeNames = Arrays.asList(pipeNames);
       }
+      return this;
+    }
+
+    /**
+     * Specifies host name that will be use in the --accept argument when starting an office
+     * process. Most of the time, the default will work. But if it doesn't work (unable to connect
+     * to the started process), using {@code localhost} instead may work.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: 127.0.0.1
+     *
+     * @param hostName The host name to use.
+     * @return This builder instance.
+     */
+    public @NonNull Builder hostName(final String hostName) {
+      this.hostName = hostName;
       return this;
     }
 
