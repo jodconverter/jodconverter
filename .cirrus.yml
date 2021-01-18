@@ -68,9 +68,9 @@ windows_task:
 macos_task:
   # See https://cirrus-ci.org/guide/macOS/#list-of-available-images versions that could be tested.
   matrix:
-    - name: macos:xcode:lts
+    - name: macos:xcode:12.2
       macos_instance:
-        image: catalina-xcode
+        image: catalina-xcode-12.2
   install_script:
     #- brew update
     - brew cask install libreoffice
