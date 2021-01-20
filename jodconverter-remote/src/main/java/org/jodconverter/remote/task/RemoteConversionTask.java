@@ -20,6 +20,7 @@
 package org.jodconverter.remote.task;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 
@@ -112,7 +113,11 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
 
         // See https://github.com/LibreOffice/online/blob/master/wsd/reference.txt
         final HttpEntity entity =
-            MultipartEntityBuilder.create().addPart("data", new FileBody(sourceFile)).build();
+            MultipartEntityBuilder.create()
+                .setLaxMode()
+                .setCharset(StandardCharsets.UTF_8)
+                .addPart("data", new FileBody(sourceFile))
+                .build();
 
         // Use the fluent API to post the file and save the response into the target file.
         final RequestConfig requestConfig = remoteContext.getRequestConfig();
