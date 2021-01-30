@@ -467,8 +467,8 @@ public final class LocalOfficeManager
 
       if (afterStartProcessDelay != null) {
         AssertUtils.isTrue(
-            processRetryInterval >= MIN_AFTER_START_PROCESS_DELAY
-                && processRetryInterval <= MAX_AFTER_START_PROCESS_DELAY,
+            afterStartProcessDelay >= MIN_AFTER_START_PROCESS_DELAY
+                && afterStartProcessDelay <= MAX_AFTER_START_PROCESS_DELAY,
             String.format(
                 "afterStartProcessDelay %s must be in the inclusive range of %s to %s",
                 afterStartProcessDelay,
