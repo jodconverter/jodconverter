@@ -19,6 +19,7 @@
 
 package org.jodconverter.core.document;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +29,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -38,11 +47,39 @@ import org.jodconverter.core.util.AssertUtils;
 public class DocumentFormat {
 
   private final String name;
+  // Be backward compatible. Former json file doesn't support multiple document format extensions.
+  @SerializedName(
+      value = "extensions",
+      alternate = {"extension"})
+  @JsonAdapter(ExtensionsAdapter.class)
   private final List<String> extensions;
+
   private final String mediaType;
   private final DocumentFamily inputFamily;
   private final Map<String, Object> loadProperties;
+  // Be backward compatible. storePropertiesByFamily has been renamed storeProperties
+  @SerializedName(
+      value = "storeProperties",
+      alternate = {"storePropertiesByFamily"})
   private final Map<DocumentFamily, Map<String, Object>> storeProperties;
+
+  /**
+   * Special adapter used to support backward compatibility when loading a document format json
+   * file. Former json file doesn't support multiple document format extensions.
+   */
+  private static class ExtensionsAdapter implements JsonDeserializer<List<String>> {
+
+    @Override
+    public List<String> deserialize(
+        final JsonElement json, final Type type, final JsonDeserializationContext cxt) {
+
+      if (json.isJsonArray()) {
+        final Type listType = new TypeToken<List<String>>() {}.getType();
+        return cxt.deserialize(json, listType);
+      }
+      return Stream.of(json.getAsString()).collect(Collectors.toList());
+    }
+  }
 
   /**
    * Creates a new builder instance.
