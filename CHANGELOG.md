@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.4.1](https://github.com/sbraconnier/jodconverter/tree/v4.4.1) (2021-02-10)
+
+[Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.4.0...v4.4.1)
+
+**Fixed bugs:**
+
+- regression: document-formats with singular extension field are not supported anymore. [\#248](https://github.com/sbraconnier/jodconverter/issues/248)
+- LocalOfficeManager\#afterStartProcessDelay is not validated properly. [\#246](https://github.com/sbraconnier/jodconverter/issues/246)
+
+**Merged pull requests:**
+
+- bugfix filename contains CJK characters cause error, change to UTF-8 encoding [\#245](https://github.com/sbraconnier/jodconverter/pull/245) ([chunlinyao](https://github.com/chunlinyao))
+
 ## [v4.4.0](https://github.com/sbraconnier/jodconverter/tree/v4.4.0) (2021-01-15)
 
 [Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.3.0...v4.4.0)
@@ -7,15 +20,15 @@
 **Implemented enhancements:**
 
 - Add the ability to wait after an attempt to start an office process before trying to connect. [\#244](https://github.com/sbraconnier/jodconverter/issues/244)
-- Add dotx conversion out of the box [\#213](https://github.com/sbraconnier/jodconverter/issues/213)
-- Add ability to attach OfficeManager to already running Process [\#203](https://github.com/sbraconnier/jodconverter/issues/203)
-- JODConverterBean, expose office manager to add filters support [\#201](https://github.com/sbraconnier/jodconverter/issues/201)
+- Issues converting dotx [\#213](https://github.com/sbraconnier/jodconverter/issues/213)
+- Attaching OfficeManager to already running Process [\#203](https://github.com/sbraconnier/jodconverter/issues/203)
+- JoDConverterBean: How to add filter [\#201](https://github.com/sbraconnier/jodconverter/issues/201)
 - Make office process management asynchronous \(start, restart, etc\). [\#200](https://github.com/sbraconnier/jodconverter/issues/200)
 - Remove unnecessary dependencies. [\#198](https://github.com/sbraconnier/jodconverter/issues/198)
-- Allow conversions on remote host with LibreOffice directly (ExternalOfficeManager) [\#195](https://github.com/sbraconnier/jodconverter/issues/195)
+- Do conversions on remote host with LibreOffice directly \(not with LibreOffice online, not through spring boot\) [\#195](https://github.com/sbraconnier/jodconverter/issues/195)
 - Use ExternalOfficeManager with a pool of processes [\#191](https://github.com/sbraconnier/jodconverter/issues/191)
 - Allow process restart to be asynchronous [\#171](https://github.com/sbraconnier/jodconverter/issues/171)
-- Add ability to reuse already running libreoffice instances [\#72](https://github.com/sbraconnier/jodconverter/issues/72)
+- Patching library to be able reuse already running libreoffice instances \>\> killExistingProcess\(false\) [\#72](https://github.com/sbraconnier/jodconverter/issues/72)
 
 **Fixed bugs:**
 
@@ -27,10 +40,11 @@
 - DocUpdateMode not working? [\#227](https://github.com/sbraconnier/jodconverter/issues/227)
 - Depending on the operating system, /tmp is getting regularly cleaned [\#220](https://github.com/sbraconnier/jodconverter/issues/220)
 - Temporary file name added in CSV -\> PDF conversion [\#219](https://github.com/sbraconnier/jodconverter/issues/219)
-- Wiki page for LibreOffice Online example code should be RemoteOfficeManager [\#216](https://github.com/sbraconnier/jodconverter/issues/216)
+- wiki page for LibreOffice Online example code shoule be RemoteOfficeManager [\#216](https://github.com/sbraconnier/jodconverter/issues/216)
 - Wiki page for LibreOffice Online still references "jodconverter-online" [\#214](https://github.com/sbraconnier/jodconverter/issues/214)
-- How to disable AutoCalculate? [\#207](https://github.com/sbraconnier/jodconverter/issues/207)
-- JODConverter Reached limit Tasks and Restart  [\#196](https://github.com/sbraconnier/jodconverter/issues/196)
+- Jodconverter randomly fails. [\#204](https://github.com/sbraconnier/jodconverter/issues/204)
+- I have an issue when I try to convert MS 97-2003 .DOC file to PDF [\#202](https://github.com/sbraconnier/jodconverter/issues/202)
+- Jod-Converter Reached limit Tasks and Restart  [\#196](https://github.com/sbraconnier/jodconverter/issues/196)
 
 **Merged pull requests:**
 
