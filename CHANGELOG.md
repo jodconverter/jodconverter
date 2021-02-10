@@ -1,13 +1,24 @@
 # Changelog
 
-## [4.4.1](https://github.com/sbraconnier/jodconverter/tree/v4.4.1) (2021-02-10)
+## [v4.4.2](https://github.com/sbraconnier/jodconverter/tree/v4.4.2) (2021-02-10)
+
+[Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.4.1...v4.4.2)
+
+**Fixed bugs:**
+
+- DocumentFormat.input family should be optional. [\#249](https://github.com/sbraconnier/jodconverter/issues/249)
+
+## [v4.4.1](https://github.com/sbraconnier/jodconverter/tree/v4.4.1) (2021-02-10)
 
 [Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.4.0...v4.4.1)
 
 **Fixed bugs:**
 
-- regression: document-formats with singular extension field are not supported anymore. [\#248](https://github.com/sbraconnier/jodconverter/issues/248)
 - LocalOfficeManager\#afterStartProcessDelay is not validated properly. [\#246](https://github.com/sbraconnier/jodconverter/issues/246)
+
+**Closed issues:**
+
+- 2 concurrent calls to  LocalConvertor-\>convert\(\)  return the same PDF file. [\#243](https://github.com/sbraconnier/jodconverter/issues/243)
 
 **Merged pull requests:**
 
