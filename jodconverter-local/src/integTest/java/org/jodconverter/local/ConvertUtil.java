@@ -22,6 +22,7 @@ package org.jodconverter.local;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -136,7 +137,9 @@ public final class ConvertUtil {
 
     // Get all supported output formats
     final Set<DocumentFormat> outputFormats =
-        DefaultDocumentFormatRegistry.getOutputFormats(inputFormat.getInputFamily());
+        inputFormat.getInputFamily() == null
+            ? new HashSet<>()
+            : DefaultDocumentFormatRegistry.getOutputFormats(inputFormat.getInputFamily());
 
     // Convert the input file into all the supported output formats.
     // This will create 1 output file per output format.

@@ -20,15 +20,7 @@
 package org.jodconverter.core.document;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -138,7 +130,6 @@ public class DocumentFormat {
     AssertUtils.notBlank(name, "name must not be null nor blank");
     AssertUtils.notNull(extensions, "extensions must not be null");
     AssertUtils.notBlank(mediaType, "mediaType must not be null nor blank");
-    AssertUtils.notNull(inputFamily, "inputFamily must not be null");
 
     this.name = name;
     this.extensions = new ArrayList<>(extensions);
@@ -192,7 +183,7 @@ public class DocumentFormat {
    *
    * @return The input DocumentFamily of the document format.
    */
-  public @NonNull DocumentFamily getInputFamily() {
+  public @Nullable DocumentFamily getInputFamily() {
     return inputFamily;
   }
 
@@ -348,13 +339,12 @@ public class DocumentFormat {
      * Specifies the input (when a document is loaded) DocumentFamily associated with the document
      * format.
      *
-     * @param inputFamily The DocumentFamily, cannot be null.
+     * @param inputFamily The DocumentFamily, may be null.
      * @return This builder instance.
      */
     @NonNull
-    public Builder inputFamily(@NonNull final DocumentFamily inputFamily) {
+    public Builder inputFamily(@Nullable final DocumentFamily inputFamily) {
 
-      AssertUtils.notNull(inputFamily, "inputFamily must not be null");
       this.inputFamily = inputFamily;
       return this;
     }

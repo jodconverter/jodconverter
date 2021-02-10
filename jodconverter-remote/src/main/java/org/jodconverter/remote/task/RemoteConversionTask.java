@@ -23,6 +23,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.fluent.Executor;
@@ -34,6 +35,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.job.TargetDocumentSpecs;
 import org.jodconverter.core.office.OfficeContext;
@@ -132,12 +134,14 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
 
         // We suppose that the server supports custom store properties, but LibreOffice Online
         // does not support custom store properties, only the sample web service do.
-        addPropertiesToBuilder(
-            uriBuilder,
-            STORE_PROPERTIES_PREFIX_PARAM,
-            target
-                .getFormat()
-                .getStoreProperties(Objects.requireNonNull(source.getFormat()).getInputFamily()));
+        Optional.ofNullable(source.getFormat())
+            .map(DocumentFormat::getInputFamily)
+            .ifPresent(
+                family ->
+                    addPropertiesToBuilder(
+                        uriBuilder,
+                        STORE_PROPERTIES_PREFIX_PARAM,
+                        target.getFormat().getStoreProperties(family)));
 
         Executor.newInstance(remoteContext.getHttpClient())
             .execute(
