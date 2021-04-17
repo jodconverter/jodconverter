@@ -30,7 +30,7 @@ import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
-import com.sun.star.task.ErrorCodeIOException;
+import com.sun.star.task.*;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -107,6 +107,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       throws OfficeException {
 
     final XComponentLoader loader = context.getComponentLoader();
+
     AssertUtils.notNull(loader, "Context component loader must not be null");
 
     try {
@@ -114,7 +115,9 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
           loader.loadComponentFromURL(
               toUrl(sourceFile), "_blank", 0, toUnoProperties(getLoadProperties()));
 
-      // The document cannot be null
+        handlePasswordProtection(document);
+
+        // The document cannot be null
       AssertUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
       return document;
 
@@ -127,7 +130,30 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
     }
   }
 
-  // Closes the specified document.
+    /**
+     * if the interaction handler detects a password request, we will recognize here
+     * @param document
+     * @throws OfficeException a new officeexception with errorcode 999 if the document could not be converted because of an password
+     */
+    private void handlePasswordProtection(XComponent document) throws OfficeException {
+        PasswordRequest passwordRequest = LocalConverter.handler.passwordRequests.get();
+        if (document == null && passwordRequest != null){
+            String documentPath ="n.a.";
+            if(passwordRequest instanceof DocumentPasswordRequest){
+                documentPath = ((DocumentPasswordRequest) passwordRequest).Name;
+            }
+
+            if(passwordRequest instanceof DocumentMSPasswordRequest){
+                documentPath = ((DocumentMSPasswordRequest) passwordRequest).Name;
+            }
+
+            LocalConverter.handler.passwordRequests.remove();
+
+            throw new OfficeException("Document password requested for "+documentPath,passwordRequest, 999);
+        }
+    }
+
+    // Closes the specified document.
   protected void closeDocument(final @Nullable XComponent document) {
 
     if (document != null) {

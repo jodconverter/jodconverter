@@ -36,6 +36,7 @@ import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
+import org.jodconverter.local.interaction.PasswordInteractionHandler;
 import org.jodconverter.local.task.LocalConversionTask;
 
 /**
@@ -52,6 +53,7 @@ public class LocalConverter extends AbstractConverter {
    * The properties which are applied by default when loading a document if not manually overridden.
    */
   public static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
+  public static final PasswordInteractionHandler handler;
 
   private final Map<String, Object> loadProperties;
   private final FilterChain filterChain;
@@ -62,6 +64,11 @@ public class LocalConverter extends AbstractConverter {
     loadProperties.put("Hidden", true);
     loadProperties.put("ReadOnly", true);
     loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
+
+    // register an interaction handler for opening documents
+    handler = new PasswordInteractionHandler();
+    loadProperties.put( "InteractionHandler", handler );
+
     DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
   }
 
