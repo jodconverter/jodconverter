@@ -19,51 +19,76 @@
 
 package org.jodconverter.local;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.jodconverter.local.ResourceUtil.documentFile;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.Objects;
 
+import org.assertj.core.api.AbstractThrowableAssert;
+import org.jodconverter.core.office.OfficeException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
 
-/** Contains tests for the {@link DocumentConverter} class. */
+/**
+ * Contains tests for the {@link DocumentConverter} class.
+ */
 @ExtendWith(LocalOfficeManagerExtension.class)
 class DocumentConverterFunctionalITest {
 
-  @Test
-  void htmlWithImageConversion(final @TempDir File testFolder, final DocumentConverter converter) {
+    @Test
+    void htmlWithImageConversion(final @TempDir File testFolder, final DocumentConverter converter) {
 
-    final File source = documentFile("index.html");
-    final File target = new File(testFolder, "index.pdf");
+        final File source = documentFile("index.html");
+        final File target = new File(testFolder, "index.pdf");
 
-    // Convert the file to PDF
-    converter.convert(source).to(target);
-  }
-
-  @Test
-  void testHtmlConversion(final @TempDir File testFolder, final DocumentConverter converter) {
-
-    final File source = documentFile("test.html");
-    final File target = new File(testFolder, "test.pdf");
-
-    // Convert the file to PDF
-    converter.convert(source).to(target);
-  }
-
-  /** Test the conversion of all the supported documents format. */
-  @Test
-  void runAllPossibleConversions(
-      final @TempDir File testFolder, final DocumentConverter converter) {
-
-    for (final File sourceFile :
-        Objects.requireNonNull(
-            new File("src/integTest/resources/documents")
-                .listFiles((dir, name) -> name.startsWith("test.")))) {
-      ConvertUtil.convertFileToSupportedFormats(sourceFile, testFolder, converter);
+        // Convert the file to PDF
+        converter.convert(source).to(target);
     }
-  }
+
+    @Test
+    void testHtmlConversion(final @TempDir File testFolder, final DocumentConverter converter) {
+
+        final File source = documentFile("test.html");
+        final File target = new File(testFolder, "test.pdf");
+
+        // Convert the file to PDF
+        converter.convert(source).to(target);
+    }
+
+    @Test
+    void testPasswordProtectedFiles(final @TempDir File testFolder, final DocumentConverter converter) {
+
+        final File source = documentFile("test_password.odt");
+
+        // Convert the file to PDF
+        Throwable throwable = catchThrowable(() -> {
+            ConvertUtil.convertFileToSupportedFormats(source, testFolder, converter);
+        });
+
+        assertThat(throwable).isNotNull();
+        assertThat(throwable).hasCauseInstanceOf(OfficeException.class);
+        assertThat(throwable).hasMessageContaining("Document password requested for");
+
+    }
+
+    /**
+     * Test the conversion of all the supported documents format.
+     */
+    @Test
+    void runAllPossibleConversions(
+            final @TempDir File testFolder, final DocumentConverter converter) {
+
+        for (final File sourceFile :
+                Objects.requireNonNull(
+                        new File("src/integTest/resources/documents")
+                                .listFiles((dir, name) -> name.startsWith("test.")))) {
+            ConvertUtil.convertFileToSupportedFormats(sourceFile, testFolder, converter);
+        }
+    }
 }

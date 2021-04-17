@@ -24,6 +24,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 /** An exception that provides information on an error while dealing with office. */
 public class OfficeException extends Exception {
   private static final long serialVersionUID = -1360754252407765922L;
+  private final int errorCode;
 
   /**
    * Constructs a new office exception with the specified detail message. The cause is not
@@ -34,6 +35,7 @@ public class OfficeException extends Exception {
    */
   public OfficeException(final @NonNull String message) {
     super(message);
+    errorCode = -1;
   }
 
   /**
@@ -50,5 +52,34 @@ public class OfficeException extends Exception {
    */
   public OfficeException(final @NonNull String message, final @NonNull Throwable cause) {
     super(message, cause);
+    errorCode = -1;
   }
+
+  /**
+   * Constructs a new office exception with the specified detail message and cause.
+   *
+   * <p>Note that the detail message associated with {@code cause} is <i>not</i> automatically
+   * incorporated in this exception's detail message.
+   *
+   * @param message The detail message (which is saved for later retrieval by the {@link
+   *     #getMessage()} method).
+   * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method).
+   *     (A {@code null} value is permitted, and indicates that the cause is nonexistent or
+   *     unknown.)
+   * @param errorCode the errorcode for this specific expection. Currently only used for document password protection
+   */
+  public OfficeException(final @NonNull String message, final @NonNull Throwable cause, final int errorCode) {
+    super(message, cause);
+    this.errorCode = errorCode;
+  }
+
+  /**
+   * the error code for this specific exception
+   *
+   * @return the errorcode
+   */
+  public int getErrorCode() {
+    return errorCode;
+  }
+
 }
