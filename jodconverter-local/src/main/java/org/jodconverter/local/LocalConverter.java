@@ -53,6 +53,7 @@ public class LocalConverter extends AbstractConverter {
    * The properties which are applied by default when loading a document if not manually overridden.
    */
   public static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
+
   public static final PasswordInteractionHandler handler;
 
   private final Map<String, Object> loadProperties;
@@ -67,7 +68,7 @@ public class LocalConverter extends AbstractConverter {
 
     // register an interaction handler for opening documents
     handler = new PasswordInteractionHandler();
-    loadProperties.put( "InteractionHandler", handler );
+    loadProperties.put("InteractionHandler", handler);
 
     DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
   }

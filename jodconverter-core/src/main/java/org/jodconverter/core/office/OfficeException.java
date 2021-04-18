@@ -66,9 +66,11 @@ public class OfficeException extends Exception {
    * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method).
    *     (A {@code null} value is permitted, and indicates that the cause is nonexistent or
    *     unknown.)
-   * @param errorCode the errorcode for this specific expection. Currently only used for document password protection
+   * @param errorCode the errorcode for this specific expection. Currently only used for document
+   *     password protection
    */
-  public OfficeException(final @NonNull String message, final @NonNull Throwable cause, final int errorCode) {
+  public OfficeException(
+      final @NonNull String message, final @NonNull Throwable cause, final int errorCode) {
     super(message, cause);
     this.errorCode = errorCode;
   }
@@ -81,5 +83,4 @@ public class OfficeException extends Exception {
   public int getErrorCode() {
     return errorCode;
   }
-
 }
