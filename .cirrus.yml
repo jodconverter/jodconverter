@@ -72,7 +72,7 @@ macos_task:
       macos_instance:
         image: catalina-xcode-12.2
   install_script:
-    #- brew update
+    - brew update
     - brew install --cask libreoffice
   build_script:
     - ./gradlew build -x javadoc --stacktrace
