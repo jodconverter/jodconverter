@@ -115,9 +115,9 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
           loader.loadComponentFromURL(
               toUrl(sourceFile), "_blank", 0, toUnoProperties(getLoadProperties()));
 
-        handlePasswordProtection(document);
+      handlePasswordProtection(document);
 
-        // The document cannot be null
+      // The document cannot be null
       AssertUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
       return document;
 
@@ -130,30 +130,33 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
     }
   }
 
-    /**
-     * if the interaction handler detects a password request, we will recognize here
-     * @param document
-     * @throws OfficeException a new officeexception with errorcode 999 if the document could not be converted because of an password
-     */
-    private void handlePasswordProtection(XComponent document) throws OfficeException {
-        PasswordRequest passwordRequest = LocalConverter.handler.passwordRequests.get();
-        if (document == null && passwordRequest != null){
-            String documentPath ="n.a.";
-            if(passwordRequest instanceof DocumentPasswordRequest){
-                documentPath = ((DocumentPasswordRequest) passwordRequest).Name;
-            }
+  /**
+   * if the interaction handler detects a password request, we will recognize here
+   *
+   * @param document
+   * @throws OfficeException a new officeexception with errorcode 999 if the document could not be
+   *     converted because of an password
+   */
+  private void handlePasswordProtection(XComponent document) throws OfficeException {
+    PasswordRequest passwordRequest = LocalConverter.handler.passwordRequests.get();
+    if (document == null && passwordRequest != null) {
+      String documentPath = "n.a.";
+      if (passwordRequest instanceof DocumentPasswordRequest) {
+        documentPath = ((DocumentPasswordRequest) passwordRequest).Name;
+      }
 
-            if(passwordRequest instanceof DocumentMSPasswordRequest){
-                documentPath = ((DocumentMSPasswordRequest) passwordRequest).Name;
-            }
+      if (passwordRequest instanceof DocumentMSPasswordRequest) {
+        documentPath = ((DocumentMSPasswordRequest) passwordRequest).Name;
+      }
 
-            LocalConverter.handler.passwordRequests.remove();
+      LocalConverter.handler.passwordRequests.remove();
 
-            throw new OfficeException("Document password requested for "+documentPath,passwordRequest, 999);
-        }
+      throw new OfficeException(
+          "Document password requested for " + documentPath, passwordRequest, 999);
     }
+  }
 
-    // Closes the specified document.
+  // Closes the specified document.
   protected void closeDocument(final @Nullable XComponent document) {
 
     if (document != null) {
