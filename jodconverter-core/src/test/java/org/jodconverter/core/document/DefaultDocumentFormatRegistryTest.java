@@ -88,7 +88,8 @@ class DefaultDocumentFormatRegistryTest {
           "sxc",
           "tsv",
           "xls",
-          "xlsx");
+          "xlsx",
+          "xltx");
 
       // PRESENTATION output format
       assertExpectedExtensions(
