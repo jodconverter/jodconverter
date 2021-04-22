@@ -220,6 +220,19 @@
     }
   },
   {
+    "name": "Microsoft Excel 2007-2013 XML Template",
+    "extensions": [
+      "xltx"
+    ],
+    "mediaType": "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+    "inputFamily": "SPREADSHEET",
+    "storeProperties": {
+      "SPREADSHEET": {
+        "FilterName": "Calc MS Excel 2007 XML"
+      }
+    }
+  },
+  {
     "name": "Microsoft Excel 97-2003",
     "extensions": [
       "xls"
