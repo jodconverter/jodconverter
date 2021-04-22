@@ -26,6 +26,7 @@ import static org.jodconverter.local.ResourceUtil.documentFile;
 import java.io.File;
 import java.util.Objects;
 
+import org.jodconverter.core.office.PasswordProtectionException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -71,8 +72,8 @@ class DocumentConverterFunctionalITest {
             });
 
     assertThat(throwable).isNotNull();
-    assertThat(throwable).hasCauseInstanceOf(OfficeException.class);
-    assertThat(throwable).hasMessageContaining("Document password requested for");
+    assertThat(throwable).hasCauseInstanceOf(PasswordProtectionException.class);
+    assertThat(throwable).hasMessageContaining("Document could not be converted due to a password protection");
   }
 
   /** Test the conversion of all the supported documents format. */

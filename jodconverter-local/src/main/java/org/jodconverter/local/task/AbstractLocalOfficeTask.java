@@ -38,6 +38,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.PasswordProtectionException;
 import org.jodconverter.core.task.AbstractOfficeTask;
 import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.LocalConverter;
@@ -131,11 +132,12 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   }
 
   /**
-   * if the interaction handler detects a password request, we will recognize here
+   * if the interaction handler detects a password request, we will recognize here because of an existing
+   * password request.
    *
-   * @param document
-   * @throws OfficeException a new officeexception with errorcode 999 if the document could not be
-   *     converted because of an password
+   * @param document the document instance which should be converted
+   * @throws PasswordProtectionException a new specific exception if the document could not be
+   *     converted because of a password protection
    */
   private void handlePasswordProtection(XComponent document) throws OfficeException {
     PasswordRequest passwordRequest = LocalConverter.handler.passwordRequests.get();
@@ -151,8 +153,8 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
 
       LocalConverter.handler.passwordRequests.remove();
 
-      throw new OfficeException(
-          "Document password requested for " + documentPath, passwordRequest, 999);
+      throw new PasswordProtectionException(
+          "Document could not be converted due to a password protection - document path is " + documentPath, passwordRequest);
     }
   }
 
