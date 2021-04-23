@@ -26,13 +26,12 @@ import static org.jodconverter.local.ResourceUtil.documentFile;
 import java.io.File;
 import java.util.Objects;
 
-import org.jodconverter.core.office.PasswordProtectionException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
-import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.PasswordProtectionException;
 
 /** Contains tests for the {@link DocumentConverter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
@@ -73,7 +72,8 @@ class DocumentConverterFunctionalITest {
 
     assertThat(throwable).isNotNull();
     assertThat(throwable).hasCauseInstanceOf(PasswordProtectionException.class);
-    assertThat(throwable).hasMessageContaining("Document could not be converted due to a password protection");
+    assertThat(throwable)
+        .hasMessageContaining("Document could not be converted due to a password protection");
   }
 
   /** Test the conversion of all the supported documents format. */

@@ -132,8 +132,8 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   }
 
   /**
-   * if the interaction handler detects a password request, we will recognize here because of an existing
-   * password request.
+   * if the interaction handler detects a password request, we will recognize here because of an
+   * existing password request.
    *
    * @param document the document instance which should be converted
    * @throws PasswordProtectionException a new specific exception if the document could not be
@@ -154,7 +154,9 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       LocalConverter.handler.passwordRequests.remove();
 
       throw new PasswordProtectionException(
-          "Document could not be converted due to a password protection - document path is " + documentPath, passwordRequest);
+          "Document could not be converted due to a password protection - document path is "
+              + documentPath,
+          passwordRequest);
     }
   }
 
