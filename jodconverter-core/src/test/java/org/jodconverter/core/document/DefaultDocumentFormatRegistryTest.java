@@ -88,7 +88,8 @@ class DefaultDocumentFormatRegistryTest {
           "sxc",
           "tsv",
           "xls",
-          "xlsx");
+          "xlsx",
+          "xltx");
 
       // PRESENTATION output format
       assertExpectedExtensions(
@@ -159,6 +160,7 @@ class DefaultDocumentFormatRegistryTest {
       assertByExt(ass, "sxc", SXC);
       assertByExt(ass, "xls", XLS);
       assertByExt(ass, "xlsx", XLSX);
+      assertByExt(ass, "xltx", XLTX);
       assertByExt(ass, "csv", CSV);
       assertByExt(ass, "tsv", TSV);
       assertByExt(ass, "odp", ODP);
@@ -214,6 +216,8 @@ class DefaultDocumentFormatRegistryTest {
       assertByType(ass, "application/vnd.sun.xml.calc", SXC);
       assertByType(ass, "application/vnd.ms-excel", XLS);
       assertByType(ass, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", XLSX);
+      assertByType(
+          ass, "application/vnd.openxmlformats-officedocument.spreadsheetml.template", XLTX);
       assertByType(ass, "text/csv", CSV);
       assertByType(ass, "text/tab-separated-values", TSV);
       assertByType(ass, "application/vnd.oasis.opendocument.presentation", ODP);
