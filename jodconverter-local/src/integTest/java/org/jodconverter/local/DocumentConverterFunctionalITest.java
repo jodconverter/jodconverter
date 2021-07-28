@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
-import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.local.office.PasswordProtectedException;
 
 /** Contains tests for the {@link DocumentConverter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
@@ -66,13 +66,12 @@ class DocumentConverterFunctionalITest {
     // Convert the file to PDF
     Throwable throwable =
         catchThrowable(
-            () -> {
-              ConvertUtil.convertFileToSupportedFormats(source, testFolder, converter);
-            });
+            () -> ConvertUtil.convertFileToSupportedFormats(source, testFolder, converter));
 
-    assertThat(throwable).isNotNull();
-    assertThat(throwable).hasCauseInstanceOf(OfficeException.class);
-    assertThat(throwable).hasMessageContaining("Document password requested for");
+    assertThat(throwable)
+        .isNotNull()
+        .hasCauseInstanceOf(PasswordProtectedException.class)
+        .hasMessageContaining("Document password requested for");
   }
 
   /** Test the conversion of all the supported documents format. */

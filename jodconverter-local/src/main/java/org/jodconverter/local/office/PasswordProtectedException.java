@@ -17,27 +17,18 @@
  * limitations under the License.
  */
 
-package org.jodconverter.core.office;
+package org.jodconverter.local.office;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-/** An exception that provides information on an error while dealing with office. */
-public class OfficeException extends Exception {
-  private static final long serialVersionUID = -1360754252407765922L;
+import org.jodconverter.core.office.OfficeException;
+
+/** Exceptions thrown when a password protected file cannot be opened. */
+public class PasswordProtectedException extends OfficeException {
+  private static final long serialVersionUID = -9200513745869729664L;
 
   /**
-   * Constructs a new office exception with the specified detail message. The cause is not
-   * initialized, and may subsequently be initialized by a call to {@link #initCause}.
-   *
-   * @param message The detail message. The detail message is saved for later retrieval by the
-   *     {@link #getMessage()} method.
-   */
-  public OfficeException(final @NonNull String message) {
-    super(message);
-  }
-
-  /**
-   * Constructs a new office exception with the specified detail message and cause.
+   * Constructs a new exception with the specified detail message and cause.
    *
    * <p>Note that the detail message associated with {@code cause} is <i>not</i> automatically
    * incorporated in this exception's detail message.
@@ -48,7 +39,7 @@ public class OfficeException extends Exception {
    *     (A {@code null} value is permitted, and indicates that the cause is nonexistent or
    *     unknown.)
    */
-  public OfficeException(final @NonNull String message, final @NonNull Throwable cause) {
+  public PasswordProtectedException(final @NonNull String message, final @NonNull Throwable cause) {
     super(message, cause);
   }
 }

@@ -87,7 +87,7 @@ class AbstractLocalOfficeTaskTest {
       customProps.put("Key", "Val");
       final FooOfficeTask task = new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE), customProps);
 
-      assertThat(task.getLoadProperties()).hasSize(1).contains(entry("Key", "Val"));
+      assertThat(task.getLoadProperties()).contains(entry("Key", "Val"));
     }
 
     @Test
@@ -110,7 +110,7 @@ class AbstractLocalOfficeTaskTest {
       customProps.put("Key", "Val");
       final FooOfficeTask task = new FooOfficeTask(new NullSourceSpecs(SOURCE_FILE), customProps);
 
-      assertThat(task.getLoadProperties()).hasSize(1).contains(entry("Key", "Val"));
+      assertThat(task.getLoadProperties()).contains(entry("Key", "Val"));
     }
 
     @Test
@@ -136,7 +136,6 @@ class AbstractLocalOfficeTaskTest {
       final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), customProps);
 
       assertThat(task.getLoadProperties())
-          .hasSize(3)
           .contains(
               entry("Key", "Val"),
               entry("FilterName", "Text (encoded)"),
