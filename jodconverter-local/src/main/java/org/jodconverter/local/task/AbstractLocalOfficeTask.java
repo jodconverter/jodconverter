@@ -30,11 +30,13 @@ import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
-import com.sun.star.task.ErrorCodeIOException;
+import com.sun.star.task.*;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.office.OfficeException;
@@ -42,6 +44,7 @@ import org.jodconverter.core.task.AbstractOfficeTask;
 import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeContext;
+import org.jodconverter.local.office.PasswordProtectedException;
 import org.jodconverter.local.office.utils.Lo;
 
 /**
@@ -51,8 +54,63 @@ import org.jodconverter.local.office.utils.Lo;
  */
 public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLocalOfficeTask.class);
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
   protected final Map<String, Object> loadProperties;
+
+  private static class PasswordInteractionHandler implements XInteractionHandler {
+
+    private PasswordRequest passwordRequest;
+    private String documentPath;
+
+    /**
+     * Gets the password interaction request that has been made, if any.
+     *
+     * @return The password interaction request that has been made, ot null if no password
+     *     interaction request was made.
+     */
+    public PasswordRequest getPasswordRequest() {
+      return passwordRequest;
+    }
+
+    /**
+     * Gets whether a password interaction request has been made.
+     *
+     * @return {@code true} if a password interaction request was made, {@code false} otherwise.
+     */
+    public boolean hasPasswordInteractionRequest() {
+      return passwordRequest != null;
+    }
+
+    /**
+     * Gets the document path of the document for which the request was made.
+     *
+     * @return The document path of the document for which the request was made, null {@code false}
+     *     if no password interaction request was made, or "NA" if an interaction was made, but the
+     *     document pas is unknown.
+     */
+    public String getDocumentPath() {
+      return documentPath;
+    }
+
+    @Override
+    public void handle(final XInteractionRequest xInteractionRequest) {
+      LOGGER.debug("Interaction detected with request {}", xInteractionRequest.getRequest());
+
+      final Object request = xInteractionRequest.getRequest();
+
+      if (request instanceof PasswordRequest) {
+        passwordRequest = (PasswordRequest) request;
+        documentPath = "NA";
+        if (request instanceof DocumentPasswordRequest) {
+          documentPath = ((DocumentPasswordRequest) request).Name;
+        } else if (request instanceof DocumentMSPasswordRequest) {
+          documentPath = ((DocumentMSPasswordRequest) request).Name;
+        }
+        LOGGER.debug("Password interaction detected for {}", documentPath);
+      }
+    }
+  }
 
   protected static void appendProperties(
       final @NonNull Map<@NonNull String, @NonNull Object> properties,
@@ -98,6 +156,10 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       appendProperties(loadProps, source.getFormat().getLoadProperties());
     }
 
+    // Register a PasswordInteractionHandler handler for opening documents, but only
+    // if no interaction handler has been put into the load properties.
+    loadProps.putIfAbsent("InteractionHandler", new PasswordInteractionHandler());
+
     return loadProps;
   }
 
@@ -107,12 +169,16 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       throws OfficeException {
 
     final XComponentLoader loader = context.getComponentLoader();
+
     AssertUtils.notNull(loader, "Context component loader must not be null");
 
     try {
+      final Map<String, Object> loadProps = getLoadProperties();
       final XComponent document =
-          loader.loadComponentFromURL(
-              toUrl(sourceFile), "_blank", 0, toUnoProperties(getLoadProperties()));
+          loader.loadComponentFromURL(toUrl(sourceFile), "_blank", 0, toUnoProperties(loadProps));
+
+      // Handle password protection request to throw a meaningful exception, if required.
+      handlePasswordProtection(document, loadProps);
 
       // The document cannot be null
       AssertUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
@@ -148,6 +214,22 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
           closeable.close(true);
         } catch (CloseVetoException ignored) {
           // whoever raised the veto should close the document
+        }
+      }
+    }
+  }
+
+  private void handlePasswordProtection(
+      final XComponent document, final Map<String, Object> loadProps) throws OfficeException {
+
+    if (document == null) {
+      final Object handler = loadProps.get("InteractionHandler");
+      if (handler instanceof PasswordInteractionHandler) {
+        final PasswordInteractionHandler pHandler = (PasswordInteractionHandler) handler;
+        if (pHandler.hasPasswordInteractionRequest()) {
+          throw new PasswordProtectedException(
+              "Document password requested for " + pHandler.getDocumentPath(),
+              pHandler.getPasswordRequest());
         }
       }
     }

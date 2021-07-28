@@ -72,7 +72,8 @@ class AbstractLocalOfficeTaskTest {
 
       final FooOfficeTask task = new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE));
       assertThat(task.getLoadProperties())
-          .hasSize(3)
+          .hasSize(4)
+          .containsKey("InteractionHandler")
           .contains(
               entry("Hidden", true),
               entry("ReadOnly", true),
@@ -86,7 +87,7 @@ class AbstractLocalOfficeTaskTest {
       customProps.put("Key", "Val");
       final FooOfficeTask task = new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE), customProps);
 
-      assertThat(task.getLoadProperties()).hasSize(1).contains(entry("Key", "Val"));
+      assertThat(task.getLoadProperties()).contains(entry("Key", "Val"));
     }
 
     @Test
@@ -94,7 +95,8 @@ class AbstractLocalOfficeTaskTest {
 
       final FooOfficeTask task = new FooOfficeTask(new NullSourceSpecs(SOURCE_FILE));
       assertThat(task.getLoadProperties())
-          .hasSize(3)
+          .hasSize(4)
+          .containsKey("InteractionHandler")
           .contains(
               entry("Hidden", true),
               entry("ReadOnly", true),
@@ -108,7 +110,7 @@ class AbstractLocalOfficeTaskTest {
       customProps.put("Key", "Val");
       final FooOfficeTask task = new FooOfficeTask(new NullSourceSpecs(SOURCE_FILE), customProps);
 
-      assertThat(task.getLoadProperties()).hasSize(1).contains(entry("Key", "Val"));
+      assertThat(task.getLoadProperties()).contains(entry("Key", "Val"));
     }
 
     @Test
@@ -116,7 +118,8 @@ class AbstractLocalOfficeTaskTest {
 
       final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThat(task.getLoadProperties())
-          .hasSize(5)
+          .hasSize(6)
+          .containsKey("InteractionHandler")
           .contains(
               entry("Hidden", true),
               entry("ReadOnly", true),
@@ -133,7 +136,6 @@ class AbstractLocalOfficeTaskTest {
       final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), customProps);
 
       assertThat(task.getLoadProperties())
-          .hasSize(3)
           .contains(
               entry("Key", "Val"),
               entry("FilterName", "Text (encoded)"),

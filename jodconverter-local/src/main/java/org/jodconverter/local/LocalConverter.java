@@ -62,6 +62,7 @@ public class LocalConverter extends AbstractConverter {
     loadProperties.put("Hidden", true);
     loadProperties.put("ReadOnly", true);
     loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
+
     DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
   }
 

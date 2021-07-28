@@ -19,6 +19,8 @@
 
 package org.jodconverter.local;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 
 import java.io.File;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.local.office.PasswordProtectedException;
 
 /** Contains tests for the {@link DocumentConverter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
@@ -52,6 +55,23 @@ class DocumentConverterFunctionalITest {
 
     // Convert the file to PDF
     converter.convert(source).to(target);
+  }
+
+  @Test
+  void testPasswordProtectedFiles(
+      final @TempDir File testFolder, final DocumentConverter converter) {
+
+    final File source = documentFile("test_password.odt");
+
+    // Convert the file to PDF
+    Throwable throwable =
+        catchThrowable(
+            () -> ConvertUtil.convertFileToSupportedFormats(source, testFolder, converter));
+
+    assertThat(throwable)
+        .isNotNull()
+        .hasCauseInstanceOf(PasswordProtectedException.class)
+        .hasMessageContaining("Document password requested for");
   }
 
   /** Test the conversion of all the supported documents format. */
