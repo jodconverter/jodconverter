@@ -337,6 +337,16 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
   public static final @NonNull DocumentFormat PPTX = byExtension("pptx");
 
   /**
+   * Microsoft PowerPoint 2007-2013 XML template.
+   *
+   * <ul>
+   *   <li>Extension: potx
+   *   <li>Media Type: application/vnd.openxmlformats-officedocument.presentationml.template
+   * </ul>
+   */
+  public static final @NonNull DocumentFormat POTX = byExtension("potx");
+
+  /**
    * OpenDocument Drawing.
    *
    * <ul>

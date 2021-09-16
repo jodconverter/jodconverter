@@ -347,6 +347,19 @@
     }
   },
   {
+    "name": "Microsoft PowerPoint 2007-2013 XML Template",
+    "extensions": [
+      "potx"
+    ],
+    "mediaType": "application/vnd.openxmlformats-officedocument.presentationml.template",
+    "inputFamily": "PRESENTATION",
+    "storeProperties": {
+      "PRESENTATION": {
+        "FilterName": "Impress MS PowerPoint 2007 XML"
+      }
+    }
+  },
+  {
     "name": "Microsoft PowerPoint 97-2003",
     "extensions": [
       "ppt"
