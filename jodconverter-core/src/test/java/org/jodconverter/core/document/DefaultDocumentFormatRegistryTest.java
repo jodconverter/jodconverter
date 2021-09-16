@@ -106,6 +106,7 @@ class DefaultDocumentFormatRegistryTest {
           "png",
           "ppt",
           "pptx",
+          "potx",
           "swf",
           "sxi",
           "tif",
@@ -227,6 +228,8 @@ class DefaultDocumentFormatRegistryTest {
       assertByType(ass, "application/vnd.ms-powerpoint", PPT);
       assertByType(
           ass, "application/vnd.openxmlformats-officedocument.presentationml.presentation", PPTX);
+      assertByType(
+          ass, "application/vnd.openxmlformats-officedocument.presentationml.template", POTX);
       assertByType(ass, "application/vnd.oasis.opendocument.graphics", ODG);
       assertByType(ass, "application/vnd.oasis.opendocument.graphics-template", OTG);
       assertByType(ass, "application/vnd.oasis.opendocument.graphics-flat-xml", FODG);
