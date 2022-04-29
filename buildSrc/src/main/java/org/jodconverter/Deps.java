@@ -51,7 +51,7 @@ public class Deps {
       "org.springframework.boot:spring-boot-dependencies:" + springBootVersion;
   public static final String springBootStarter = "org.springframework.boot:spring-boot-starter";
   public static final String springBootConfigurationProcessor =
-      "org.springframework.boot:spring-boot-configuration-processor";
+      "org.springframework.boot:spring-boot-configuration-processor:" + springBootVersion;
   public static final String springBootStarterTest =
       "org.springframework.boot:spring-boot-starter-test";
 
