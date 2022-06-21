@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
@@ -218,9 +218,9 @@ class LocalOfficeProcessManagerITest {
                 throw new OfficeConnectionException("Test", "Test");
               } else if (attempt == 2) {
                 // Also change the setting for connection after the kill.
-                Whitebox.setInternalState(
+                ReflectionTestUtils.setField(
                     managerRef.get(), "processTimeout", DEFAULT_PROCESS_TIMEOUT);
-                Whitebox.setInternalState(
+                ReflectionTestUtils.setField(
                     managerRef.get(), "processRetryInterval", DEFAULT_PROCESS_RETRY_INTERVAL);
                 throw new OfficeConnectionException("Test", "Test");
               }
@@ -287,7 +287,8 @@ class LocalOfficeProcessManagerITest {
         assertStartedAndConnected(manager);
 
         // Check the profile dir existence
-        final File instanceProfileDir = Whitebox.getInternalState(manager, "instanceProfileDir");
+        final File instanceProfileDir =
+            (File) ReflectionTestUtils.getField(manager, "instanceProfileDir");
         assertThat(new File(instanceProfileDir, "user/customFile")).isFile();
 
       } finally {

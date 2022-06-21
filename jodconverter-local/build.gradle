@@ -9,40 +9,22 @@ dependencies {
     // We cannot use LibreOffice libraries by default.
     // See:
     // https://github.com/sbraconnier/jodconverter/issues/113
-//    if (project.hasProperty("useOpenOffice")) {
+//    if (project.hasProperty("useLibreOffice")) {
+//        api Deps.libreoffice
+//    } else {
 //        api Deps.ooJuh
 //        api Deps.ooJurt
 //        api Deps.ooRidl
 //        api Deps.ooUnoil
-//    } else {
-//        api Deps.loJuh
-//        api Deps.loJurt
-//        api Deps.loRidl
-//        api Deps.loUnoil
 //    }
-    if (project.hasProperty("useLibreOffice")) {
-        api Deps.loJuh
-        api Deps.loJurt
-        api Deps.loRidl
-        api Deps.loUnoil
-    } else {
-        api Deps.ooJuh
-        api Deps.ooJurt
-        api Deps.ooRidl
-        api Deps.ooUnoil
-    }
+    api Deps.libreoffice
 
     implementation Deps.slf4jApi
 
     testImplementation Deps.slf4jLog4j
+    testImplementation Deps.mockitoInline
+    testImplementation Deps.springTest
     testImplementation project(path: ":jodconverter-core", configuration: "tests")
-
-    // We still need junit 4 for powermock until the following issue is resolved.
-    // https://github.com/powermock/powermock/issues/830
-    //testImplementation libraries.junit
-    testRuntimeOnly Deps.junitVintageEngine
-    testImplementation Deps.powermockJunit
-    testImplementation Deps.powermockMockito
 }
 
 integTest {

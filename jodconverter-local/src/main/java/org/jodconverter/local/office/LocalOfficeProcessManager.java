@@ -155,7 +155,7 @@ class LocalOfficeProcessManager {
             workingDir,
             ".jodconverter_"
                 + officeUrl
-                    .getConnectionAndParametersAsString()
+                    .getConnectString()
                     .replace(',', '_')
                     .replace('=', '-'));
   }
@@ -365,19 +365,14 @@ class LocalOfficeProcessManager {
     detectOfficeDescriptor();
 
     // Build the accept argument (connection string).
-    final String acceptString =
-        officeUrl.getConnectionAndParametersAsString()
-            + ";"
-            + officeUrl.getProtocolAndParametersAsString()
-            + ";"
-            + officeUrl.getRootOid();
+    final String acceptString = officeUrl.getAcceptString();
 
     // Search for an existing process.
     final ProcessQuery processQuery = new ProcessQuery("soffice", acceptString);
     pid = checkForExistingProcess(processQuery);
 
     // If we already have a PID, it means that the process is already started and that
-    // the configuration didn't told us to kill the process.
+    // the configuration didn't tell us to kill the process.
     if (pid > PID_UNKNOWN) {
       return null;
     }
@@ -620,7 +615,7 @@ class LocalOfficeProcessManager {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("ProcessBuilder command: {}", String.join(" ", command));
     }
-    return new ProcessBuilder(command);
+    return new ProcessBuilder(command).inheritIO();
   }
 
   /**
@@ -685,7 +680,7 @@ class LocalOfficeProcessManager {
 
     LOGGER.info(
         "Trying to forcibly terminate process: '{}'; pid: {}",
-        officeUrl.getConnectionParametersAsString(),
+        officeUrl.getAcceptString(),
         pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
 
     try {

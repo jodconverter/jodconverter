@@ -44,6 +44,11 @@ dependencies {
 // Compile
 
 java {
+    //toolchain {
+    //    languageVersion = JavaLanguageVersion.of(8)
+    //}
+    //println("Configuring Java: " + baselineJavaVersion)
+    //println("Current Java: " + JavaVersion.current())
     sourceCompatibility = baselineJavaVersion
     targetCompatibility = baselineJavaVersion
 }
@@ -97,8 +102,8 @@ checkstyle {
 
 tasks.withType(Checkstyle) {
     reports {
-        xml.enabled false
-        html.enabled true
+        xml.required.set(false)
+        html.required.set(true)
     }
 }
 
@@ -152,9 +157,9 @@ jacocoTestReport {
 
     dependsOn tasks.withType(Test)
     reports {
-        html.enabled = true
-        xml.enabled = false
-        csv.enabled = false
+        html.required.set(true)
+        xml.required.set(false)
+        csv.required.set(false)
     }
 }
 check.dependsOn jacocoTestReport

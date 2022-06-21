@@ -46,12 +46,10 @@ import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.Props;
 import org.jodconverter.local.office.utils.Write;
 
-/** This filter is used to insert a graphics into a document. */
+/** This filter is used to embed linked images while converting a document. */
 public class LinkedImagesEmbedderFilter implements Filter {
 
-  // This class has been inspired by these examples:
-  // http://api.libreoffice.org/examples/java/Text/GraphicsInserter.java
-  // https://forum.openoffice.org/en/forum/viewtopic.php?t=50114#p252402
+  // See: https://github.com/sbraconnier/jodconverter/issues/110
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LinkedImagesEmbedderFilter.class);
 

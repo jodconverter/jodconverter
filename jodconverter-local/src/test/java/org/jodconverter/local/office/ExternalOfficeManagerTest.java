@@ -79,7 +79,7 @@ class ExternalOfficeManagerTest {
                           "connectionManager.connectTimeout",
                           "connectionManager.connectRetryInterval",
                           "connectionManager.connectFailFast",
-                          "connectionManager.connection.officeUrl.connectionAndParametersAsString")
+                          "connectionManager.connection.officeUrl.connectString")
                       .containsExactly(
                           DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_CONNECT_ON_START,
@@ -88,7 +88,7 @@ class ExternalOfficeManagerTest {
                           DEFAULT_CONNECT_RETRY_INTERVAL,
                           DEFAULT_CONNECT_FAIL_FAST,
                           new OfficeUrl(DEFAULT_HOSTNAME, 2002)
-                              .getConnectionAndParametersAsString()));
+                              .getConnectString()));
     }
   }
 
@@ -160,7 +160,7 @@ class ExternalOfficeManagerTest {
                           "connectionManager.connectTimeout",
                           "connectionManager.connectRetryInterval",
                           "connectionManager.connectFailFast",
-                          "connectionManager.connection.officeUrl.connectionAndParametersAsString")
+                          "connectionManager.connection.officeUrl.connectString")
                       .containsExactly(
                           DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_CONNECT_ON_START,
@@ -169,7 +169,7 @@ class ExternalOfficeManagerTest {
                           DEFAULT_CONNECT_RETRY_INTERVAL,
                           DEFAULT_CONNECT_FAIL_FAST,
                           new OfficeUrl(DEFAULT_HOSTNAME, 2002)
-                              .getConnectionAndParametersAsString()));
+                              .getConnectString()));
     }
 
     @Test
@@ -217,14 +217,14 @@ class ExternalOfficeManagerTest {
               o ->
                   assertThat(o.get(0))
                       .hasFieldOrPropertyWithValue(
-                          "connectionManager.connection.officeUrl.connectionAndParametersAsString",
-                          new OfficeUrl("localhost", 2003).getConnectionAndParametersAsString()))
+                          "connectionManager.connection.officeUrl.connectString",
+                          new OfficeUrl("localhost", 2003).getConnectString()))
           .satisfies(
               o ->
                   assertThat(o.get(1))
                       .hasFieldOrPropertyWithValue(
-                          "connectionManager.connection.officeUrl.connectionAndParametersAsString",
-                          new OfficeUrl("test").getConnectionAndParametersAsString()));
+                          "connectionManager.connection.officeUrl.connectString",
+                          new OfficeUrl("test").getConnectString()));
     }
 
     @Test

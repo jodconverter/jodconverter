@@ -89,7 +89,7 @@ class LocalOfficeManagerTest {
                       .extracting(
                           "taskExecutionTimeout",
                           "maxTasksPerProcess",
-                          "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                          "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.officeHome",
                           "officeProcessManager.processManager.class.name",
                           "officeProcessManager.runAsArgs",
@@ -101,11 +101,11 @@ class LocalOfficeManagerTest {
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
                           "officeProcessManager.disableOpengl",
-                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                          "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
                           DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
-                          new OfficeUrl(2002).getConnectionAndParametersAsString(),
+                          new OfficeUrl(2002).getConnectString(),
                           LocalOfficeUtils.getDefaultOfficeHome(),
                           LocalOfficeUtils.findBestProcessManager().getClass().getName(),
                           Collections.EMPTY_LIST,
@@ -117,7 +117,7 @@ class LocalOfficeManagerTest {
                           DEFAULT_START_FAIL_FAST,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                           DEFAULT_DISABLE_OPENGL,
-                          new OfficeUrl(2002).getConnectionAndParametersAsString()));
+                          new OfficeUrl(2002).getConnectString()));
     }
   }
 
@@ -199,7 +199,7 @@ class LocalOfficeManagerTest {
                       .extracting(
                           "taskExecutionTimeout",
                           "maxTasksPerProcess",
-                          "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                          "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.officeHome",
                           "officeProcessManager.processManager.class.name",
                           "officeProcessManager.runAsArgs",
@@ -211,11 +211,11 @@ class LocalOfficeManagerTest {
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
                           "officeProcessManager.disableOpengl",
-                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                          "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
                           DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
-                          new OfficeUrl(2002).getConnectionAndParametersAsString(),
+                          new OfficeUrl(2002).getConnectString(),
                           LocalOfficeUtils.getDefaultOfficeHome(),
                           LocalOfficeUtils.findBestProcessManager().getClass().getName(),
                           Collections.EMPTY_LIST,
@@ -227,7 +227,7 @@ class LocalOfficeManagerTest {
                           DEFAULT_START_FAIL_FAST,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                           DEFAULT_DISABLE_OPENGL,
-                          new OfficeUrl(2002).getConnectionAndParametersAsString()));
+                          new OfficeUrl(2002).getConnectString()));
     }
 
     @Test
@@ -328,21 +328,21 @@ class LocalOfficeManagerTest {
                   assertThat(o.get(0))
                       .isInstanceOf(LocalOfficeManagerPoolEntry.class)
                       .extracting(
-                          "officeProcessManager.officeUrl.connectionAndParametersAsString",
-                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                          "officeProcessManager.officeUrl.connectString",
+                          "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
-                          new OfficeUrl("localhost", 2003).getConnectionAndParametersAsString(),
-                          new OfficeUrl("localhost", 2003).getConnectionAndParametersAsString()))
+                          new OfficeUrl("localhost", 2003).getConnectString(),
+                          new OfficeUrl("localhost", 2003).getConnectString()))
           .satisfies(
               o ->
                   assertThat(o.get(1))
                       .isInstanceOf(LocalOfficeManagerPoolEntry.class)
                       .extracting(
-                          "officeProcessManager.officeUrl.connectionAndParametersAsString",
-                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                          "officeProcessManager.officeUrl.connectString",
+                          "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
-                          new OfficeUrl("test").getConnectionAndParametersAsString(),
-                          new OfficeUrl("test").getConnectionAndParametersAsString()));
+                          new OfficeUrl("test").getConnectString(),
+                          new OfficeUrl("test").getConnectString()));
     }
 
     @Test

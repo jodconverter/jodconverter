@@ -19,15 +19,12 @@
 
 package org.jodconverter.local.office;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.sun.star.lib.uno.helper.UnoUrl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Wrapper class around an UnoUrl so we are not importing the com.sun.star.lib.uno.helper.UnoUrl
+ * Wrapper class around an UnoUrl, so we are not importing the com.sun.star.lib.uno.helper.UnoUrl
  * package everywhere. UnoUrl are used to deal with UNO Interprocess Connection type and parameters.
  *
  * <p>OpenOffice.org supports two connection types: TCP sockets and named pipes. Named pipes are
@@ -89,8 +86,10 @@ class OfficeUrl {
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
     try {
+      //return UnoUrl.parseUnoUrl(
+      //    "socket,host=" + h + ",port=" + port + ";urp;StarOffice.ServiceManager");
       return UnoUrl.parseUnoUrl(
-          "socket,host=" + h + ",port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+              "socket,host=" + h + ",port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
     } catch (Exception ex) {
       throw new IllegalArgumentException(ex);
     }
@@ -125,84 +124,24 @@ class OfficeUrl {
   }
 
   /**
-   * Returns the name of the connection of this Uno Url. Encoded characters are not allowed.
+   * Return the wrapped {@code UnoUrl}.
    *
-   * @return The connection name as string.
+   * @return The created {@code UnoUrl} for this wrapper.
    */
-  public String getConnection() {
-    return unoUrl.getConnection();
+  public UnoUrl getUnoUrl() {
+    return unoUrl;
   }
 
   /**
-   * Returns the name of the protocol of this Uno Url. Encoded characters are not allowed.
-   *
-   * @return The protocol name as string.
+   * Returns the string that should be used as --accept argument when an office process is launched.
+   * @return The accept string.
    */
-  public String getProtocol() {
-    return unoUrl.getProtocol();
-  }
-
-  /**
-   * Return the object name. Encoded character are not allowed.
-   *
-   * @return The object name as String.
-   */
-  public String getRootOid() {
-    return unoUrl.getRootOid();
-  }
-
-  /**
-   * Returns the protocol parameters as a map with key/value pairs. Encoded characters like '%41'
-   * are decoded.
-   *
-   * @return A map with key/value pairs for protocol parameters.
-   */
-  public Map<String, String> getProtocolParameters() {
-    return ((Map<?, ?>) unoUrl.getProtocolParameters())
-        .entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
-  }
-
-  /**
-   * Returns the connection parameters as a map with key/value pairs. Encoded characters like '%41'
-   * are decoded.
-   *
-   * @return A map with key/value pairs for connection parameters.
-   */
-  public Map<String, String> getConnectionParameters() {
-    return ((Map<?, ?>) unoUrl.getConnectionParameters())
-        .entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
-  }
-
-  /**
-   * Returns the raw specification of the protocol parameters. Encoded characters like '%41' are not
-   * decoded.
-   *
-   * @return The uninterpreted protocol parameters as string.
-   */
-  public String getProtocolParametersAsString() {
-    return unoUrl.getProtocolParametersAsString();
-  }
-
-  /**
-   * Returns the raw specification of the connection parameters. Encoded characters like '%41' are
-   * not decoded.
-   *
-   * @return The uninterpreted connection parameters as string.
-   */
-  public String getConnectionParametersAsString() {
-    return unoUrl.getConnectionParametersAsString();
-  }
-
-  /**
-   * Returns the raw specification of the protocol name and parameters. Encoded characters like
-   * '%41' are not decoded.
-   *
-   * @return The uninterpreted protocol name and parameters as string.
-   */
-  public String getProtocolAndParametersAsString() {
-    return unoUrl.getProtocolAndParametersAsString();
+  public String getAcceptString() {
+    return unoUrl.getConnectionAndParametersAsString()
+            + ";"
+            + unoUrl.getProtocolAndParametersAsString()
+            + ";"
+            + unoUrl.getRootOid();
   }
 
   /**
@@ -211,7 +150,7 @@ class OfficeUrl {
    *
    * @return The uninterpreted connection name and parameters as string.
    */
-  public String getConnectionAndParametersAsString() {
+  public String getConnectString() {
     return unoUrl.getConnectionAndParametersAsString();
   }
 

@@ -19,17 +19,14 @@
 
 package org.jodconverter.cli;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
-import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
 import org.jodconverter.cli.util.NoExitExtension;
@@ -441,7 +438,14 @@ public class CliConverterTest {
     given(dir.canWrite()).willReturn(false);
 
     assertThatExceptionOfType(OfficeException.class)
-        .isThrownBy(() -> Whitebox.invokeMethod(converter, "prepareOutputDir", dir))
+        .isThrownBy(
+            () -> {
+              try {
+                ReflectionTestUtils.invokeMethod(converter, "prepareOutputDir", dir);
+              } catch (UndeclaredThrowableException e) {
+                throw e.getUndeclaredThrowable();
+              }
+            })
         .withCauseExactlyInstanceOf(IOException.class)
         .satisfies(
             e ->
@@ -457,7 +461,7 @@ public class CliConverterTest {
     assertThat(dir).doesNotExist();
 
     try {
-      Whitebox.invokeMethod(converter, "prepareOutputDir", dir);
+      ReflectionTestUtils.invokeMethod(converter, "prepareOutputDir", dir);
       assertThat(dir).exists();
     } finally {
       FileUtils.deleteQuietly(dir);
@@ -472,7 +476,9 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      final boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
+      final boolean valid =
+          Boolean.TRUE.equals(
+              ReflectionTestUtils.invokeMethod(converter, "validateInputFile", file));
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();
@@ -489,7 +495,9 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      final boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
+      final boolean valid =
+          Boolean.TRUE.equals(
+              ReflectionTestUtils.invokeMethod(converter, "validateInputFile", file));
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();
@@ -507,7 +515,9 @@ public class CliConverterTest {
 
     try {
       SystemLogHandler.startCapture();
-      final boolean valid = Whitebox.invokeMethod(converter, "validateInputFile", file);
+      final boolean valid =
+          Boolean.TRUE.equals(
+              ReflectionTestUtils.invokeMethod(converter, "validateInputFile", file));
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();
@@ -523,7 +533,9 @@ public class CliConverterTest {
     given(outputFile.exists()).willReturn(false);
 
     final boolean valid =
-        Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, false);
+        Boolean.TRUE.equals(
+            ReflectionTestUtils.invokeMethod(
+                converter, "validateOutputFile", inputFile, outputFile, false));
     assertThat(valid).isTrue();
   }
 
@@ -539,7 +551,9 @@ public class CliConverterTest {
     try {
       SystemLogHandler.startCapture();
       final boolean valid =
-          Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, false);
+          Boolean.TRUE.equals(
+              ReflectionTestUtils.invokeMethod(
+                  converter, "validateOutputFile", inputFile, outputFile, false));
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();
@@ -561,7 +575,9 @@ public class CliConverterTest {
     try {
       SystemLogHandler.startCapture();
       final boolean valid =
-          Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, false);
+          Boolean.TRUE.equals(
+              ReflectionTestUtils.invokeMethod(
+                  converter, "validateOutputFile", inputFile, outputFile, false));
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();
@@ -583,7 +599,9 @@ public class CliConverterTest {
     given(outputFile.delete()).willReturn(true);
 
     final boolean valid =
-        Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, true);
+        Boolean.TRUE.equals(
+            ReflectionTestUtils.invokeMethod(
+                converter, "validateOutputFile", inputFile, outputFile, true));
     assertThat(valid).isTrue();
   }
 
@@ -601,7 +619,9 @@ public class CliConverterTest {
     try {
       SystemLogHandler.startCapture();
       final boolean valid =
-          Whitebox.invokeMethod(converter, "validateOutputFile", inputFile, outputFile, true);
+          Boolean.TRUE.equals(
+              ReflectionTestUtils.invokeMethod(
+                  converter, "validateOutputFile", inputFile, outputFile, true));
       assertThat(valid).isFalse();
     } finally {
       final String capturedlog = SystemLogHandler.stopCapture();

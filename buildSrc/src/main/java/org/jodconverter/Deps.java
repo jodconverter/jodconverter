@@ -9,20 +9,20 @@ public class Deps {
   // Compile
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-  public static final String checkerVersion = "3.9.1";
+  public static final String checkerVersion = "3.22.1";
 
   // Main
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
-  public static final String commonsCliVersion = "1.4";
+  public static final String commonsCliVersion = "1.5.0";
   // Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
-  public static final String commonsIoVersion = "2.8.0";
+  public static final String commonsIoVersion = "2.11.0";
   // Latest version -> https://mvnrepository.com/artifact/org.libreoffice
-  public static final String loVersion = "7.0.4";
+  public static final String loVersion = "7.3.3";
   // Latest version -> https://mvnrepository.com/artifact/org.openoffice
   public static final String ooVersion = "4.1.2";
   // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-  public static final String springBootVersion = "2.4.1";
+  public static final String springBootVersion = "2.7.0";
 
   // Test
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -55,10 +55,7 @@ public class Deps {
   public static final String springBootStarterTest =
       "org.springframework.boot:spring-boot-starter-test";
 
-  public static final String loJuh = "org.libreoffice:juh:" + loVersion;
-  public static final String loJurt = "org.libreoffice:jurt:" + loVersion;
-  public static final String loRidl = "org.libreoffice:ridl:" + loVersion;
-  public static final String loUnoil = "org.libreoffice:unoil:" + loVersion;
+  public static final String libreoffice = "org.libreoffice:libreoffice:" + loVersion;
 
   public static final String ooJuh = "org.openoffice:juh:" + ooVersion;
   public static final String ooJurt = "org.openoffice:jurt:" + ooVersion;
@@ -91,6 +88,7 @@ public class Deps {
   public static final String junitJupiterParams = "org.junit.jupiter:junit-jupiter-params";
   public static final String junitVintageEngine = "org.junit.vintage:junit-vintage-engine";
   public static final String mockito = "org.mockito:mockito-core";
+  public static final String mockitoInline = "org.mockito:mockito-inline";
   public static final String powermockJunit =
       "org.powermock:powermock-module-junit4:" + powermockVersion;
   public static final String powermockMockito =

@@ -23,22 +23,17 @@ import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.office.LocalOfficeManager.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.doThrow;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
@@ -47,33 +42,7 @@ import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.ProcessQuery;
 
 /** Contains tests that use reflection for the {@link LocalOfficeProcessManager} class. */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(FileUtils.class)
 public class LocalOfficeProcessManagerReflectTest {
-
-  @ClassRule public static TemporaryFolder testFolder = new TemporaryFolder();
-
-  /**
-   * Creates the test folder.
-   *
-   * @throws IOException If an IO error occurs.
-   */
-  @BeforeClass
-  public static void setUpClass() throws IOException {
-
-    // PowerMock reloads a test class with custom class loader
-    // it is done after jUnit applies @ClassRule, so we have to
-    // do this.
-    // See https://github.com/powermock/powermock/issues/687
-    testFolder.create();
-  }
-
-  /** Deletes the test folder. */
-  @AfterClass
-  public static void tearDownClass() {
-
-    testFolder.delete();
-  }
 
   @Test
   public void checkForExistingProcess_WhenIOExceptionCatched_ShouldTrowOfficeException() {
@@ -110,11 +79,16 @@ public class LocalOfficeProcessManagerReflectTest {
 
     assertThatExceptionOfType(OfficeException.class)
         .isThrownBy(
-            () ->
-                Whitebox.invokeMethod(
+            () -> {
+              try {
+                ReflectionTestUtils.invokeMethod(
                     manager,
                     "checkForExistingProcess",
-                    new ProcessQuery("command", "acceptString")))
+                    new ProcessQuery("command", "acceptString"));
+              } catch (UndeclaredThrowableException e) {
+                throw e.getUndeclaredThrowable();
+              }
+            })
         .withMessage(
             "Could not check if there is already an existing process with --accept 'acceptString'")
         .withCauseExactlyInstanceOf(IOException.class);
@@ -122,88 +96,93 @@ public class LocalOfficeProcessManagerReflectTest {
 
   @Test
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public void deleteProfileDir_WhenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory()
-      throws Exception {
-
-    mockStatic(FileUtils.class);
+  public void deleteProfileDir_WhenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory(
+      final @TempDir File testFolder) throws Exception {
 
     final File workingDir =
-        testFolder.newFolder(
+        new File(
+            testFolder,
             "deleteProfileDir_WhenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory");
+    workingDir.mkdirs();
 
-    doThrow(new IOException()).when(FileUtils.class, "delete", isA(File.class));
+    try (MockedStatic<FileUtils> utils = Mockito.mockStatic(FileUtils.class)) {
+      utils.when(() -> FileUtils.delete(isA(File.class))).thenThrow(IOException.class);
 
-    final OfficeUrl url = new OfficeUrl(9999);
-    final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
-    final LocalOfficeProcessManager manager =
-        new LocalOfficeProcessManager(
-            url,
-            LocalOfficeUtils.getDefaultOfficeHome(),
-            workingDir,
-            LocalOfficeUtils.findBestProcessManager(),
-            new ArrayList<>(),
-            null,
-            DEFAULT_PROCESS_TIMEOUT,
-            DEFAULT_PROCESS_RETRY_INTERVAL,
-            DEFAULT_AFTER_START_PROCESS_DELAY,
-            DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
-            DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-            DEFAULT_DISABLE_OPENGL,
-            connection);
+      final OfficeUrl url = new OfficeUrl(9999);
+      final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
+      final LocalOfficeProcessManager manager =
+          new LocalOfficeProcessManager(
+              url,
+              LocalOfficeUtils.getDefaultOfficeHome(),
+              workingDir,
+              LocalOfficeUtils.findBestProcessManager(),
+              new ArrayList<>(),
+              null,
+              DEFAULT_PROCESS_TIMEOUT,
+              DEFAULT_PROCESS_RETRY_INTERVAL,
+              DEFAULT_AFTER_START_PROCESS_DELAY,
+              DEFAULT_EXISTING_PROCESS_ACTION,
+              DEFAULT_START_FAIL_FAST,
+              DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              DEFAULT_DISABLE_OPENGL,
+              connection);
 
-    final File instanceProfileDir = Whitebox.getInternalState(manager, "instanceProfileDir");
-    instanceProfileDir.mkdirs();
-    Whitebox.invokeMethod(manager, "deleteInstanceProfileDir");
+      final File instanceProfileDir =
+          (File) ReflectionTestUtils.getField(manager, "instanceProfileDir");
+      instanceProfileDir.mkdirs();
+      ReflectionTestUtils.invokeMethod(manager, "deleteInstanceProfileDir");
 
-    assertThat(
-            workingDir.listFiles(
-                pathname ->
-                    pathname.isDirectory()
-                        && pathname.getName().startsWith(instanceProfileDir.getName() + ".old.")))
-        .hasSize(1);
-
-    FileUtils.deleteQuietly(workingDir);
+      assertThat(
+              workingDir.listFiles(
+                  pathname ->
+                      pathname.isDirectory()
+                          && pathname.getName().startsWith(instanceProfileDir.getName() + ".old.")))
+          .hasSize(1);
+    }
   }
 
   @Test
-  public void deleteProfileDir_WhenCannotBeDeleted_ShouldIgnoreOperation() throws Exception {
-
-    mockStatic(FileUtils.class);
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  public void deleteProfileDir_WhenCannotBeDeleted_ShouldIgnoreOperation(
+      final @TempDir File testFolder) throws Exception {
 
     final File workingDir =
-        testFolder.newFolder("deleteProfileDir_WhenCannotBeDeleted_ShouldIgnoreOperation");
+        new File(testFolder, "deleteProfileDir_WhenCannotBeDeleted_ShouldIgnoreOperation");
+    workingDir.mkdirs();
 
-    doThrow(new IOException()).when(FileUtils.class, "delete", isA(File.class));
+    try (MockedStatic<FileUtils> utils = Mockito.mockStatic(FileUtils.class)) {
+      utils.when(() -> FileUtils.delete(isA(File.class))).thenThrow(IOException.class);
 
-    final OfficeUrl url = new OfficeUrl(9999);
-    final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
-    final LocalOfficeProcessManager manager =
-        new LocalOfficeProcessManager(
-            url,
-            LocalOfficeUtils.getDefaultOfficeHome(),
-            workingDir,
-            LocalOfficeUtils.findBestProcessManager(),
-            null,
-            null,
-            DEFAULT_PROCESS_TIMEOUT,
-            DEFAULT_PROCESS_RETRY_INTERVAL,
-            DEFAULT_AFTER_START_PROCESS_DELAY,
-            DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
-            DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-            DEFAULT_DISABLE_OPENGL,
-            connection);
+      final OfficeUrl url = new OfficeUrl(9999);
+      final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
+      final LocalOfficeProcessManager manager =
+          new LocalOfficeProcessManager(
+              url,
+              LocalOfficeUtils.getDefaultOfficeHome(),
+              workingDir,
+              LocalOfficeUtils.findBestProcessManager(),
+              null,
+              null,
+              DEFAULT_PROCESS_TIMEOUT,
+              DEFAULT_PROCESS_RETRY_INTERVAL,
+              DEFAULT_AFTER_START_PROCESS_DELAY,
+              DEFAULT_EXISTING_PROCESS_ACTION,
+              DEFAULT_START_FAIL_FAST,
+              DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              DEFAULT_DISABLE_OPENGL,
+              connection);
 
-    final File instanceProfileDir = Whitebox.getInternalState(manager, "instanceProfileDir");
-    Whitebox.invokeMethod(manager, "deleteInstanceProfileDir");
+      final File instanceProfileDir =
+          (File) ReflectionTestUtils.getField(manager, "instanceProfileDir");
+      ReflectionTestUtils.invokeMethod(manager, "deleteInstanceProfileDir");
 
-    assertThat(
-            workingDir.listFiles(
-                pathname ->
-                    pathname.isDirectory()
-                        && pathname.getName().startsWith(instanceProfileDir.getName() + ".old.")))
-        .isNullOrEmpty();
+      assertThat(
+              workingDir.listFiles(
+                  pathname ->
+                      pathname.isDirectory()
+                          && pathname.getName().startsWith(instanceProfileDir.getName() + ".old.")))
+          .isNullOrEmpty();
+    }
   }
 
   @Test
@@ -237,9 +216,9 @@ public class LocalOfficeProcessManagerReflectTest {
     assertThatCode(
             () -> {
               final VerboseProcess verboseProcess = mock(VerboseProcess.class);
-              Whitebox.setInternalState(manager, "pid", 0L);
-              Whitebox.setInternalState(manager, "process", verboseProcess);
-              Whitebox.invokeMethod(manager, "forciblyTerminateProcess");
+              ReflectionTestUtils.setField(manager, "pid", 0L);
+              ReflectionTestUtils.setField(manager, "process", verboseProcess);
+              ReflectionTestUtils.invokeMethod(manager, "forciblyTerminateProcess");
             })
         .doesNotThrowAnyException();
   }
@@ -266,7 +245,7 @@ public class LocalOfficeProcessManagerReflectTest {
             DEFAULT_DISABLE_OPENGL,
             connection);
 
-    assertThatCode(() -> Whitebox.invokeMethod(manager, "forciblyTerminateProcess"))
+    assertThatCode(() -> ReflectionTestUtils.invokeMethod(manager, "forciblyTerminateProcess"))
         .doesNotThrowAnyException();
   }
 }

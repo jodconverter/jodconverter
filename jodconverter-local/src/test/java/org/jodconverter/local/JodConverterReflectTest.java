@@ -21,43 +21,23 @@ package org.jodconverter.local;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.local.ResourceUtil.documentFile;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests that use reflection for the {@link JodConverter} class. */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(LocalConverter.class)
 public class JodConverterReflectTest {
 
   private static final File SOURCE_FILE = documentFile("test.txt");
-
-  private LocalConverter localConverter;
-
-  /** Setup the office manager before each test. */
-  @Before
-  public void setUp() {
-
-    mockStatic(LocalConverter.class);
-    localConverter = mock(LocalConverter.class);
-    given(LocalConverter.make()).willReturn(localConverter);
-  }
 
   @Test
   public void new_ClassWellDefined() {
@@ -67,24 +47,33 @@ public class JodConverterReflectTest {
   @Test
   public void convert_FromFile_CallForwardToLocalConverter() {
 
-    JodConverter.convert(SOURCE_FILE);
+    try (MockedStatic<LocalConverter> staticMock = mockStatic(LocalConverter.class)) {
+      final LocalConverter localConverter = mock(LocalConverter.class);
+      staticMock.when(LocalConverter::make).thenReturn(localConverter);
 
-    final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
-    verify(localConverter, times(1)).convert(arg.capture());
-    final File file = arg.getValue();
-    assertThat(file).isEqualTo(SOURCE_FILE);
+      JodConverter.convert(SOURCE_FILE);
+
+      final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
+      verify(localConverter, times(1)).convert(arg.capture());
+      final File file = arg.getValue();
+      assertThat(file).isEqualTo(SOURCE_FILE);
+    }
   }
 
   @Test
   public void convert_FromStream_CallForwardToLocalConverter() throws IOException {
 
     try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      try (MockedStatic<LocalConverter> staticMock = mockStatic(LocalConverter.class)) {
+        final LocalConverter localConverter = mock(LocalConverter.class);
+        staticMock.when(LocalConverter::make).thenReturn(localConverter);
 
-      JodConverter.convert(stream);
+        JodConverter.convert(stream);
 
-      final ArgumentCaptor<InputStream> arg = ArgumentCaptor.forClass(InputStream.class);
-      verify(localConverter, times(1)).convert(arg.capture());
-      assertThat(arg.getValue()).isEqualTo(stream);
+        final ArgumentCaptor<InputStream> arg = ArgumentCaptor.forClass(InputStream.class);
+        verify(localConverter, times(1)).convert(arg.capture());
+        assertThat(arg.getValue()).isEqualTo(stream);
+      }
     }
   }
 
@@ -93,12 +82,17 @@ public class JodConverterReflectTest {
 
     try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
 
-      JodConverter.convert(stream, false);
+      try (MockedStatic<LocalConverter> staticMock = mockStatic(LocalConverter.class)) {
+        final LocalConverter localConverter = mock(LocalConverter.class);
+        staticMock.when(LocalConverter::make).thenReturn(localConverter);
 
-      final ArgumentCaptor<InputStream> arg = ArgumentCaptor.forClass(InputStream.class);
-      final ArgumentCaptor<Boolean> boolArg = ArgumentCaptor.forClass(Boolean.class);
-      verify(localConverter, times(1)).convert(arg.capture(), boolArg.capture());
-      assertThat(arg.getValue()).isEqualTo(stream);
+        JodConverter.convert(stream, false);
+
+        final ArgumentCaptor<InputStream> arg = ArgumentCaptor.forClass(InputStream.class);
+        final ArgumentCaptor<Boolean> boolArg = ArgumentCaptor.forClass(Boolean.class);
+        verify(localConverter, times(1)).convert(arg.capture(), boolArg.capture());
+        assertThat(arg.getValue()).isEqualTo(stream);
+      }
     }
   }
 }

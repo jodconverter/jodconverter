@@ -4,14 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- Creation of all the required filters we want to add to the filter chain. -->
-	<bean id="textInserterFilter" class="org.jodconverter.local.filter.text.TextInserterFilter">
-		<!-- Text to insert -->
-		<constructor-arg value="text to insert" />
-		<!-- Arguments related to the added box size and position -->
-		<constructor-arg value="100" /> <!-- Width, 10 CM -->
-		<constructor-arg value="10" />  <!-- Height, 1 CM -->
-		<constructor-arg value="50" />  <!-- Horizontal Position, 5 CM -->
-		<constructor-arg value="100" /> <!-- Vertical Position, 10 CM -->
+	<bean id="noopFilter1" class="org.jodconverter.local.filter.NoopFilter">
 	</bean>
 	<bean id="graphicInserterFilter" class="org.jodconverter.local.filter.text.GraphicInserterFilter">
 		<!-- Path to the image -->
@@ -20,19 +13,7 @@
 		<constructor-arg value="50" />  <!-- Horizontal Position, 5 CM -->
 		<constructor-arg value="111" /> <!-- Vertical Position, 11.1 CM (just under text box) -->
 	</bean>
-	<bean id="textReplacerFilter" class="org.jodconverter.local.filter.text.TextReplacerFilter">
-		<constructor-arg name="searchList">
-			<list>
-				<value>text</value>
-				<value>to insert</value>
-			</list>
-		</constructor-arg>
-		<constructor-arg name="replacementList">
-			<list>
-				<value>Text</value>
-				<value>describing the image below</value>
-			</list>
-		</constructor-arg>
+	<bean id="noopFilter2" class="org.jodconverter.local.filter.NoopFilter">
 	</bean>
 
 	<!-- Configure the filter chain that will be used while converting a document. 
@@ -42,9 +23,9 @@
 	<bean id="filterChain" class="org.jodconverter.local.filter.DefaultFilterChain">
 		<constructor-arg>
 			<list>
-				<ref bean="textInserterFilter" />
+				<ref bean="noopFilter1" />
 				<ref bean="graphicInserterFilter" />
-				<ref bean="textReplacerFilter" />
+				<ref bean="noopFilter2" />
 			</list>
 		</constructor-arg>
 	</bean>

@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.cli.util.*;
 import org.jodconverter.core.office.OfficeManager;
@@ -168,11 +168,11 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {"output1.pdf", "input2.txt"});
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       assertThat(officeManager).isInstanceOf(LocalOfficeManager.class);
       assertThat(officeManager)
           .extracting("tempDir")
@@ -194,7 +194,7 @@ class ConvertTest {
                       .extracting(
                           "taskExecutionTimeout",
                           "maxTasksPerProcess",
-                          "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                          "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.officeHome",
                           "officeProcessManager.processManager.class.name",
                           "officeProcessManager.runAsArgs",
@@ -206,7 +206,7 @@ class ConvertTest {
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
                           "officeProcessManager.disableOpengl",
-                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                          "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
                           DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
@@ -243,7 +243,7 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {
                     "-g",
                     "-i",
@@ -263,7 +263,7 @@ class ConvertTest {
                   });
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       assertThat(officeManager)
           .extracting("tempDir")
           .satisfies(
@@ -284,7 +284,7 @@ class ConvertTest {
                       .extracting(
                           "taskExecutionTimeout",
                           "maxTasksPerProcess",
-                          "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                          "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.officeHome",
                           "officeProcessManager.processManager.class.name",
                           "officeProcessManager.runAsArgs",
@@ -296,7 +296,7 @@ class ConvertTest {
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
                           "officeProcessManager.disableOpengl",
-                          "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                          "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
                           30_000L,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
@@ -321,13 +321,13 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {
                     "-x", ExistingProcessAction.FAIL.toString(), "input1.txt", "output1.pdf"
                   });
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
 
       assertThat(officeManager)
           .extracting("entries")
@@ -349,13 +349,13 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {
                     "-x", ExistingProcessAction.CONNECT.toString(), "input1.txt", "output1.pdf"
                   });
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
 
       assertThat(officeManager)
           .extracting("entries")
@@ -377,7 +377,7 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {
                     "-x",
                     ExistingProcessAction.CONNECT_OR_KILL.toString(),
@@ -386,7 +386,7 @@ class ConvertTest {
                   });
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
 
       assertThat(officeManager)
           .extracting("entries")
@@ -411,15 +411,16 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {"-lPassword=myPassword", "output1.pdf", "input2.txt"});
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       final CliConverter cliConverter =
-          Whitebox.invokeMethod(
+          ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
+      final LocalConverter localConverter =
+          (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
 
       final Map<String, Object> expectedLoadProperties =
           new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
@@ -433,15 +434,16 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {"-sFDPageRange=2-2", "output1.pdf", "input2.txt"});
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       final CliConverter cliConverter =
-          Whitebox.invokeMethod(
+          ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
+      final LocalConverter localConverter =
+          (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
 
       final Map<String, Object> expectedFilterData = new HashMap<>();
       expectedFilterData.put("PageRange", "2-2");
@@ -456,15 +458,16 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {"-sOverwrite=true", "output1.pdf", "input2.txt"});
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       final CliConverter cliConverter =
-          Whitebox.invokeMethod(
+          ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
+      final LocalConverter localConverter =
+          (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
 
       final Map<String, Object> expectedStoreProperties = new HashMap<>();
       expectedStoreProperties.put("Overwrite", true);
@@ -478,7 +481,7 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {
                     "-sOverwrite=true",
                     "-sReadOnly=false",
@@ -490,11 +493,12 @@ class ConvertTest {
                   });
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       final CliConverter cliConverter =
-          Whitebox.invokeMethod(
+          ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
+      final LocalConverter localConverter =
+          (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
 
       final Map<String, Object> expectedFilterData = new HashMap<>();
       expectedFilterData.put("PageRange", "2-4");
@@ -513,15 +517,16 @@ class ConvertTest {
       final CommandLine commandLine =
           new DefaultParser()
               .parse(
-                  (Options) Whitebox.getField(Convert.class, "OPTIONS").get(null),
+                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {"-lPassword", "output1.pdf", "input2.txt"});
 
       final OfficeManager officeManager =
-          Whitebox.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       final CliConverter cliConverter =
-          Whitebox.invokeMethod(
+          ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
-      final LocalConverter localConverter = Whitebox.getInternalState(cliConverter, "converter");
+      final LocalConverter localConverter =
+          (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
 
       assertThat(localConverter).extracting("loadProperties").isEqualTo(null);
     }

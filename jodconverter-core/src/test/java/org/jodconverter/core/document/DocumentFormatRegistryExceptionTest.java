@@ -23,35 +23,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.RETURNS_SMART_NULLS;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.mockito.Mockito.mockStatic;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 /** Contains tests for the {@link DocumentFormatRegistryException} class. */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(JsonDocumentFormatRegistry.class)
 public class DocumentFormatRegistryExceptionTest {
 
   @Test
-  public void create_IoExceptionThrownWhileLoading_ShouldThrowDocumentFormatRegistryException()
-      throws Exception {
+  public void create_IoExceptionThrownWhileLoading_ShouldThrowDocumentFormatRegistryException() {
 
-    mockStatic(JsonDocumentFormatRegistry.class, RETURNS_SMART_NULLS);
-    when(JsonDocumentFormatRegistry.create(isA(InputStream.class))).thenThrow(IOException.class);
-
-    assertThatExceptionOfType(ExceptionInInitializerError.class)
-        .isThrownBy(DefaultDocumentFormatRegistry::getInstance)
-        .satisfies(
-            e ->
-                assertThat(e.getException())
-                    .isExactlyInstanceOf(DocumentFormatRegistryException.class)
-                    .hasCauseExactlyInstanceOf(IOException.class));
+    DefaultDocumentFormatRegistryInstanceHolder.setInstance(null);
+    try (MockedStatic<JsonDocumentFormatRegistry> registry =
+        mockStatic(JsonDocumentFormatRegistry.class, RETURNS_SMART_NULLS)) {
+      registry
+          .when(() -> JsonDocumentFormatRegistry.create(isA(InputStream.class)))
+          .thenThrow(IOException.class);
+      assertThatExceptionOfType(Throwable.class)
+          .isThrownBy(DefaultDocumentFormatRegistry::getInstance)
+          .satisfies(
+              e ->
+                  assertThat(e)
+                      .isInstanceOfAny(
+                          ExceptionInInitializerError.class, DocumentFormatRegistryException.class)
+                      .hasRootCauseExactlyInstanceOf(IOException.class));
+    }
   }
 }

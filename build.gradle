@@ -193,8 +193,8 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     executionData jacocoMerge.destinationFile
 
     reports {
-        html.enabled = true // human readable
-        xml.enabled = true // required by coveralls
+        html.required.set(true) // human readable
+        xml.required.set(true) // required by coveralls
     }
 }
 

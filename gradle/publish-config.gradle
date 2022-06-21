@@ -1,7 +1,6 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-
 signing {
     // TODO: Check this issue from time to time to use the commented instructions instead.
     // https://github.com/gradle/gradle/issues/11387
@@ -46,7 +45,7 @@ def customizePom(pom, p) {
 
         // Add all items necessary for maven central publication
         root.children().last() + {
-            resolveStrategy = Closure.DELEGATE_FIRST
+            resolveStrategy = DELEGATE_FIRST
 
             name p.hasProperty('moduleName') ? p.moduleName : p.name
             description p.hasProperty('moduleDescription') ? p.moduleDescription : p.description

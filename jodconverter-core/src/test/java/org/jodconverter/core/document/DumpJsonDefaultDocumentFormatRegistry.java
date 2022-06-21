@@ -24,9 +24,9 @@ import java.util.TreeMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /** Executable class that dumps a JSON version of the DefaultDocumentFormatRegistry. */
 final class DumpJsonDefaultDocumentFormatRegistry {
@@ -45,7 +45,8 @@ final class DumpJsonDefaultDocumentFormatRegistry {
     @SuppressWarnings("unchecked")
     final TreeMap<String, DocumentFormat> formats =
         new TreeMap<>(
-            (Map<String, DocumentFormat>) Whitebox.getInternalState(registry, "fmtsByExtension"));
+            (Map<String, DocumentFormat>)
+                ReflectionTestUtils.getField(registry, "fmtsByExtension"));
 
     final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     LOGGER.info(gson.toJson(formats.values()));

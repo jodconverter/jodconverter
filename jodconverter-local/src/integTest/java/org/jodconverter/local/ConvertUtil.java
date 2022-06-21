@@ -178,7 +178,9 @@ public final class ConvertUtil {
         case "docx":
         case "dotx":
         case "xlsx":
+        case "xltx":
         case "pptx":
+        case "potx":
         case "xhtml":
           LOGGER.info(
               "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());

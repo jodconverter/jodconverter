@@ -109,10 +109,10 @@ class LocalOfficeUtilsTest {
           .hasSize(1)
           .satisfies(
               urls ->
-                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                  assertThat(urls.get(0).getConnectString())
                       .isEqualTo(
                           new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
-                              .getConnectionAndParametersAsString()));
+                              .getConnectString()));
     }
 
     @Test
@@ -122,10 +122,10 @@ class LocalOfficeUtilsTest {
           .hasSize(1)
           .satisfies(
               urls ->
-                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                  assertThat(urls.get(0).getConnectString())
                       .isEqualTo(
                           new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
-                              .getConnectionAndParametersAsString()));
+                              .getConnectString()));
     }
 
     @Test
@@ -135,10 +135,10 @@ class LocalOfficeUtilsTest {
           .hasSize(1)
           .satisfies(
               urls ->
-                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                  assertThat(urls.get(0).getConnectString())
                       .isEqualTo(
                           new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
-                              .getConnectionAndParametersAsString()));
+                              .getConnectString()));
     }
 
     @Test
@@ -148,10 +148,10 @@ class LocalOfficeUtilsTest {
           .hasSize(1)
           .satisfies(
               urls ->
-                  assertThat(urls.get(0).getConnectionAndParametersAsString())
+                  assertThat(urls.get(0).getConnectString())
                       .isEqualTo(
                           new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
-                              .getConnectionAndParametersAsString()));
+                              .getConnectString()));
     }
 
     @Test
@@ -162,16 +162,16 @@ class LocalOfficeUtilsTest {
           .hasSize(3)
           .satisfies(
               urls ->
-                  assertThat(urls.get(0).getConnectionAndParametersAsString())
-                      .isEqualTo(new OfficeUrl(2003).getConnectionAndParametersAsString()))
+                  assertThat(urls.get(0).getConnectString())
+                      .isEqualTo(new OfficeUrl(2003).getConnectString()))
           .satisfies(
               urls ->
-                  assertThat(urls.get(1).getConnectionAndParametersAsString())
-                      .isEqualTo(new OfficeUrl(2004).getConnectionAndParametersAsString()))
+                  assertThat(urls.get(1).getConnectString())
+                      .isEqualTo(new OfficeUrl(2004).getConnectString()))
           .satisfies(
               urls ->
-                  assertThat(urls.get(2).getConnectionAndParametersAsString())
-                      .isEqualTo(new OfficeUrl(2005).getConnectionAndParametersAsString()));
+                  assertThat(urls.get(2).getConnectString())
+                      .isEqualTo(new OfficeUrl(2005).getConnectString()));
     }
 
     @Test
@@ -182,16 +182,16 @@ class LocalOfficeUtilsTest {
           .hasSize(3)
           .satisfies(
               urls ->
-                  assertThat(urls.get(0).getConnectionAndParametersAsString())
-                      .isEqualTo(new OfficeUrl("oo1").getConnectionAndParametersAsString()))
+                  assertThat(urls.get(0).getConnectString())
+                      .isEqualTo(new OfficeUrl("oo1").getConnectString()))
           .satisfies(
               urls ->
-                  assertThat(urls.get(1).getConnectionAndParametersAsString())
-                      .isEqualTo(new OfficeUrl("oo2").getConnectionAndParametersAsString()))
+                  assertThat(urls.get(1).getConnectString())
+                      .isEqualTo(new OfficeUrl("oo2").getConnectString()))
           .satisfies(
               urls ->
-                  assertThat(urls.get(2).getConnectionAndParametersAsString())
-                      .isEqualTo(new OfficeUrl("oo3").getConnectionAndParametersAsString()));
+                  assertThat(urls.get(2).getConnectString())
+                      .isEqualTo(new OfficeUrl("oo3").getConnectString()));
     }
   }
 

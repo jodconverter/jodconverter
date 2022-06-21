@@ -74,7 +74,7 @@ public class JodConverterBeanITest {
                                 .extracting(
                                     "taskExecutionTimeout",
                                     "maxTasksPerProcess",
-                                    "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                                    "officeProcessManager.officeUrl.connectString",
                                     "officeProcessManager.officeHome",
                                     "officeProcessManager.processManager",
                                     "officeProcessManager.runAsArgs",
@@ -86,7 +86,7 @@ public class JodConverterBeanITest {
                                     "officeProcessManager.startFailFast",
                                     "officeProcessManager.keepAliveOnShutdown",
                                     "officeProcessManager.disableOpengl",
-                                    "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                                    "officeProcessManager.connection.officeUrl.connectString")
                                 .containsExactly(
                                     DEFAULT_TASK_EXECUTION_TIMEOUT,
                                     DEFAULT_MAX_TASKS_PER_PROCESS,
@@ -167,7 +167,7 @@ public class JodConverterBeanITest {
                                 .extracting(
                                     "taskExecutionTimeout",
                                     "maxTasksPerProcess",
-                                    "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                                    "officeProcessManager.officeUrl.connectString",
                                     "officeProcessManager.officeHome",
                                     "officeProcessManager.processManager",
                                     "officeProcessManager.runAsArgs",
@@ -179,7 +179,7 @@ public class JodConverterBeanITest {
                                     "officeProcessManager.startFailFast",
                                     "officeProcessManager.keepAliveOnShutdown",
                                     "officeProcessManager.disableOpengl",
-                                    "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                                    "officeProcessManager.connection.officeUrl.connectString")
                                 .containsExactly(
                                     500L,
                                     99,
@@ -238,7 +238,7 @@ public class JodConverterBeanITest {
                                 .extracting(
                                     "taskExecutionTimeout",
                                     "maxTasksPerProcess",
-                                    "officeProcessManager.officeUrl.connectionAndParametersAsString",
+                                    "officeProcessManager.officeUrl.connectString",
                                     "officeProcessManager.officeHome",
                                     "officeProcessManager.processManager",
                                     "officeProcessManager.runAsArgs",
@@ -250,7 +250,7 @@ public class JodConverterBeanITest {
                                     "officeProcessManager.startFailFast",
                                     "officeProcessManager.keepAliveOnShutdown",
                                     "officeProcessManager.disableOpengl",
-                                    "officeProcessManager.connection.officeUrl.connectionAndParametersAsString")
+                                    "officeProcessManager.connection.officeUrl.connectString")
                                 .containsExactly(
                                     DEFAULT_TASK_EXECUTION_TIMEOUT,
                                     DEFAULT_MAX_TASKS_PER_PROCESS,

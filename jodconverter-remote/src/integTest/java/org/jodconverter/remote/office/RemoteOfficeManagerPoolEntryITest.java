@@ -30,7 +30,7 @@ import java.net.MalformedURLException;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.SimpleOfficeTask;
@@ -104,13 +104,16 @@ class RemoteOfficeManagerPoolEntryITest {
               DEFAULT_SOCKET_TIMEOUT,
               DEFAULT_TASK_EXECUTION_TIMEOUT);
 
-      String url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/lool/convert-to");
+      String url =
+          ReflectionTestUtils.invokeMethod(manager, "buildUrl", "http://localhost/lool/convert-to");
       assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-      url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/lool/convert-to/");
+      url =
+          ReflectionTestUtils.invokeMethod(
+              manager, "buildUrl", "http://localhost/lool/convert-to/");
       assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-      url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost");
+      url = ReflectionTestUtils.invokeMethod(manager, "buildUrl", "http://localhost");
       assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-      url = Whitebox.invokeMethod(manager, "buildUrl", "http://localhost/");
+      url = ReflectionTestUtils.invokeMethod(manager, "buildUrl", "http://localhost/");
       assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
     }
   }

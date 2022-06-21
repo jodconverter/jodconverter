@@ -24,19 +24,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
@@ -50,9 +44,9 @@ class LocalOfficeManagerPoolEntryITest {
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long START_INITIAL_WAIT = 2_000L; // 2 Seconds.
-  private static final long START_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
+  private static final long START_WAIT_TIMEOUT = 30_000L; // 30 Seconds.
   private static final long STOP_INITIAL_WAIT = 2_000L; // 2 Seconds.
-  private static final long STOP_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
+  private static final long STOP_WAIT_TIMEOUT = 30_000L; // 30 Seconds.
 
   @Nested
   class Execute {
@@ -132,7 +126,7 @@ class LocalOfficeManagerPoolEntryITest {
 
           // Simulate crash
           final VerboseProcess verboseProcess =
-              Whitebox.getInternalState(processManager, "process");
+              (VerboseProcess) ReflectionTestUtils.getField(processManager, "process");
           final Process underlyingProcess = verboseProcess.getProcess();
           assertThat(underlyingProcess).isNotNull();
           LOGGER.debug("Simulating the crash");
@@ -266,9 +260,9 @@ class LocalOfficeManagerPoolEntryITest {
 
     final long start = System.currentTimeMillis();
 
-    TestUtil.sleepQuietly(STOP_INITIAL_WAIT);
+    TestUtil.sleepQuietly(START_INITIAL_WAIT);
 
-    final long limit = start + STOP_WAIT_TIMEOUT;
+    final long limit = start + START_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (manager.isRunning()) {
         return;
@@ -287,9 +281,9 @@ class LocalOfficeManagerPoolEntryITest {
 
     final long start = System.currentTimeMillis();
 
-    TestUtil.sleepQuietly(START_INITIAL_WAIT);
+    TestUtil.sleepQuietly(STOP_INITIAL_WAIT);
 
-    final long limit = start + START_WAIT_TIMEOUT;
+    final long limit = start + STOP_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (!manager.isRunning()) {
         return;

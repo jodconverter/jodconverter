@@ -7,13 +7,10 @@ dependencies {
     implementation Deps.gson
     implementation Deps.slf4jApi
 
-    testRuntimeOnly Deps.slf4jLog4j
+    testImplementation Deps.mockitoInline
+    testImplementation Deps.springTest
 
-    // We still need junit 4 for powermock until the following issue is resolved.
-    // https://github.com/powermock/powermock/issues/830
-    testRuntimeOnly Deps.junitVintageEngine
-    testImplementation Deps.powermockJunit
-    testImplementation Deps.powermockMockito
+    testRuntimeOnly Deps.slf4jLog4j
 }
 
 // --- test setup -----------------------------------------------------------

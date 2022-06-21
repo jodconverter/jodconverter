@@ -19,21 +19,14 @@
 
 package org.jodconverter.core.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.spi.FileSystemProvider;
@@ -43,9 +36,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
-import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.task.SimpleOfficeTask;
 import org.jodconverter.core.util.FileUtils;
@@ -268,7 +261,7 @@ class AbstractOfficeManagerPoolTest {
 
       final SimpleOfficeManager manager = SimpleOfficeManager.make();
       try {
-        final File tempDir = Whitebox.getInternalState(manager, "tempDir");
+        final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
         assertThat(tempDir).doesNotExist();
         manager.start();
         assertThat(tempDir).isDirectory();
@@ -284,7 +277,7 @@ class AbstractOfficeManagerPoolTest {
 
       final SimpleOfficeManager manager = SimpleOfficeManager.make();
       try {
-        final File tempDir = Whitebox.getInternalState(manager, "tempDir");
+        final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
         tempDir.mkdirs();
         final File tempFile = new File(tempDir, "test.txt");
         assertThat(tempFile.createNewFile()).isTrue();
@@ -304,7 +297,7 @@ class AbstractOfficeManagerPoolTest {
       final File mockDir = mock(File.class);
       final SimpleOfficeManager manager = SimpleOfficeManager.make();
       try {
-        Whitebox.setInternalState(manager, "tempDir", mockDir);
+        ReflectionTestUtils.setField(manager, "tempDir", mockDir);
         when(mockDir.exists()).thenAnswer(invocation -> false);
         when(mockDir.mkdirs()).thenAnswer(invocation -> true);
         when(mockDir.isDirectory()).thenAnswer(invocation -> false);
@@ -356,8 +349,8 @@ class AbstractOfficeManagerPoolTest {
 
       final File mockDir = mock(File.class);
       final Path mockPath = mock(Path.class);
-      final File tempDir = Whitebox.getInternalState(manager, "tempDir");
-      Whitebox.setInternalState(manager, "tempDir", mockDir);
+      final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+      ReflectionTestUtils.setField(manager, "tempDir", mockDir);
       when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
       when(mockDir.getName()).thenAnswer(invocation -> tempDir.getName());
       when(mockDir.getParentFile()).thenAnswer(invocation -> tempDir.getParentFile());
@@ -399,8 +392,8 @@ class AbstractOfficeManagerPoolTest {
 
       final File mockDir = mock(File.class);
       final Path mockPath = mock(Path.class);
-      final File tempDir = Whitebox.getInternalState(manager, "tempDir");
-      Whitebox.setInternalState(manager, "tempDir", mockDir);
+      final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+      ReflectionTestUtils.setField(manager, "tempDir", mockDir);
       when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
       when(mockDir.getName()).thenAnswer(invocation -> tempDir.getName());
       when(mockDir.getParentFile()).thenAnswer(invocation -> tempDir.getParentFile());
@@ -563,7 +556,7 @@ class AbstractOfficeManagerPoolTest {
       try {
         manager.start();
 
-        final AtomicReference<Exception> ex = new AtomicReference<>();
+        final AtomicReference<Throwable> ex = new AtomicReference<>();
 
         assertThatCode(
                 () -> {
@@ -572,12 +565,12 @@ class AbstractOfficeManagerPoolTest {
                           () -> {
                             try {
                               // Try to release a fake entry while there is no place in the manager
-                              Whitebox.invokeMethod(
+                              ReflectionTestUtils.invokeMethod(
                                   manager,
                                   "releaseManager",
                                   new SimpleOfficeManagerPoolEntry(1_000L));
-                            } catch (Exception e) {
-                              ex.set(e);
+                            } catch (UndeclaredThrowableException e) {
+                              ex.set(e.getUndeclaredThrowable());
                             }
                           });
 

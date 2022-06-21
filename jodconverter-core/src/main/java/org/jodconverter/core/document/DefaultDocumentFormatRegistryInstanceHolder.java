@@ -61,7 +61,7 @@ class DefaultDocumentFormatRegistryInstanceHolder { // NOPMD - Disable class nam
    *
    * @param registry The default {@link DocumentFormatRegistry}.
    */
-  public static void setInstance(final @NonNull DocumentFormatRegistry registry) {
+  public static void setInstance(final DocumentFormatRegistry registry) {
     synchronized (DocumentFormatRegistry.class) {
       instance = registry;
     }

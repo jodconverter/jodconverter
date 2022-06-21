@@ -352,7 +352,7 @@ class ExternalOfficeConnectionManagerTest {
     public void connect() throws OfficeConnectionException {
       if (throwConnectException) {
         throw new OfficeConnectionException(
-            "Could not connect.", url.getConnectionAndParametersAsString());
+            "Could not connect.", url.getConnectString());
       }
       if (connectSleep > 0L) {
         try {

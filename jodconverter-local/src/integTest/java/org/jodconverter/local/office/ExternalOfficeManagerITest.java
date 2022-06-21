@@ -29,7 +29,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
@@ -69,7 +69,8 @@ public class ExternalOfficeManagerITest {
             DEFAULT_DISABLE_OPENGL,
             connection);
     manager.start();
-    final OfficeConnection conn = Whitebox.getInternalState(manager, "connection");
+    final OfficeConnection conn =
+        (OfficeConnection) ReflectionTestUtils.getField(manager, "connection");
     final long limit = start + START_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (conn.isConnected()) {

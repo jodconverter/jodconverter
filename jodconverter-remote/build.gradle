@@ -14,7 +14,8 @@ dependencies {
     implementation Deps.httpcomponentsFluenthc
 
     testImplementation Deps.slf4jLog4j
-    testImplementation Deps.powermockMockito
+    testImplementation Deps.mockitoInline
+    testImplementation Deps.springTest
     testImplementation Deps.wiremock
     testImplementation project(path: ":jodconverter-core", configuration: "tests")
 }

@@ -93,7 +93,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
   public void connect() throws OfficeConnectionException {
 
     synchronized (this) {
-      final String connectPart = officeUrl.getConnectionAndParametersAsString();
+      final String connectPart = officeUrl.getConnectString();
       LOGGER.debug("Connecting with connectString '{}'", connectPart);
       try {
         // Create default local component context.
@@ -102,7 +102,15 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
         // Get the initial service manager.
         final XMultiComponentFactory localServiceManager = localContext.getServiceManager();
 
-        // Instantiate a connector service.
+        // Instantiate a XConnector. We use a XConnector over a XUnoUrlResolver
+        // because The usage of the UnoUrlResolver has certain disadvantages.
+        // You cannot:
+        // - be notified when the bridge terminates for whatever reasons
+        // - close the underlying interprocess connection
+        // - offer a local object as an initial object to the remote process
+        // See:
+        // https://wiki.documentfoundation.org/Documentation/DevGuide/Professional_UNO#Importing_a_UNO_Object
+        // https://wiki.documentfoundation.org/Documentation/DevGuide/Professional_UNO#Opening_a_Connection
         final XConnector connector =
             Lo.qi(
                 XConnector.class,
@@ -125,7 +133,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
         final XBridge bridge =
             bridgeFactory.createBridge(
                 "jodconverter_" + BRIDGE_INDEX.getAndIncrement(),
-                officeUrl.getProtocolAndParametersAsString(),
+                officeUrl.getUnoUrl().getProtocolAndParametersAsString(),
                 connection,
                 null);
 
@@ -135,7 +143,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
         bridgeComponent.addEventListener(this);
 
         // Get the remote instance
-        final String rootOid = officeUrl.getRootOid();
+        final String rootOid = officeUrl.getUnoUrl().getRootOid();
         final Object bridgeInstance = bridge.getInstance(rootOid);
         // Did the remote server export this object ?
         if (bridgeInstance == null) {
@@ -197,7 +205,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
 
     synchronized (this) {
       if (bridgeComponent != null) {
-        LOGGER.debug("Disconnecting from '{}'", officeUrl.getConnectionAndParametersAsString());
+        LOGGER.debug("Disconnecting from '{}'", officeUrl.getConnectString());
 
         // Dispose of the bridge
         bridgeComponent.dispose();
@@ -218,7 +226,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
       desktopService = null;
       bridgeComponent = null;
 
-      LOGGER.info("Disconnected from '{}'", officeUrl.getConnectionAndParametersAsString());
+      LOGGER.info("Disconnected from '{}'", officeUrl.getConnectString());
 
       // Inform listeners. Must be done at the end since a listener may recreated the bridge
       final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);

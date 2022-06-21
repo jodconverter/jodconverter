@@ -14,7 +14,8 @@ dependencies {
 
     runtimeOnly Deps.slf4jLog4j // Runtime so it is included in the distribution
 
-    testImplementation Deps.powermockMockito
+    testImplementation Deps.mockitoInline
+    testImplementation Deps.springTest
     testImplementation Deps.wiremock
 }
 
