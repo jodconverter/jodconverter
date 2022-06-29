@@ -53,14 +53,14 @@ windows_task:
     - name: windows:temurinjdk8
       env:
         # https://community.chocolatey.org/packages/Temurin8
-        ADOPTOPENJDK_PACKAGE: temurin8
+        TEMURINOPENJDK_PACKAGE: temurin8
     - name: windows:temurinjdk11
       env:
         # https://community.chocolatey.org/packages/Temurin11
-        ADOPTOPENJDK_PACKAGE: temurin11
+        TEMURINOPENJDK_PACKAGE: temurin11
   install_script:
     - choco install -y libreoffice
-    - choco install -y %ADOPTOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
+    - choco install -y %TEMURINOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
   build_script:
     - gradlew.bat build -x javadoc --stacktrace
 
