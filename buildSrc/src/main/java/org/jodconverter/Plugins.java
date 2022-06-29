@@ -2,7 +2,9 @@ package org.jodconverter;
 
 public class Plugins {
   // Latest version -> https://github.com/checkstyle/checkstyle/releases/
-  public static final String checkstyleVersion = "10.3.1";
+  // 9.3 is the latest supporting java8, so stay with it until we set the minimal version to 11
+  public static final String checkstyleVersion = "9.3";
+  //public static final String checkstyleVersion = "10.3.1";
   // Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
   public static final String coverallsVersion = "2.12.0";
   // Latest version -> https://plugins.gradle.org/plugin/nebula.integtest
