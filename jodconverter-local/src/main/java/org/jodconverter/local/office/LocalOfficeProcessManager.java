@@ -153,11 +153,7 @@ class LocalOfficeProcessManager {
     instanceProfileDir =
         new File(
             workingDir,
-            ".jodconverter_"
-                + officeUrl
-                    .getConnectString()
-                    .replace(',', '_')
-                    .replace('=', '-'));
+            ".jodconverter_" + officeUrl.getConnectString().replace(',', '_').replace('=', '-'));
   }
 
   /**

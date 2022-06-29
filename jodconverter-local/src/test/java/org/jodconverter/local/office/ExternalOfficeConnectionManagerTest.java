@@ -351,8 +351,7 @@ class ExternalOfficeConnectionManagerTest {
     @Override
     public void connect() throws OfficeConnectionException {
       if (throwConnectException) {
-        throw new OfficeConnectionException(
-            "Could not connect.", url.getConnectString());
+        throw new OfficeConnectionException("Could not connect.", url.getConnectString());
       }
       if (connectSleep > 0L) {
         try {

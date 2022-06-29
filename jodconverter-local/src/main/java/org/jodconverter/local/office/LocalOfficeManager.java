@@ -19,23 +19,24 @@
 
 package org.jodconverter.local.office;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jodconverter.core.office.AbstractOfficeManagerPool;
-import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.core.util.AssertUtils;
-import org.jodconverter.core.util.StringUtils;
-import org.jodconverter.local.process.ProcessManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.jodconverter.core.office.AbstractOfficeManagerPool;
+import org.jodconverter.core.office.InstalledOfficeManagerHolder;
+import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.StringUtils;
+import org.jodconverter.local.process.ProcessManager;
 
 /**
  * Default {@link org.jodconverter.core.office.OfficeManager} implementation that uses a pool of

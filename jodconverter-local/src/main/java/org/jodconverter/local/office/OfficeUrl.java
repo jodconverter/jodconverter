@@ -86,10 +86,10 @@ class OfficeUrl {
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
     try {
-      //return UnoUrl.parseUnoUrl(
+      // return UnoUrl.parseUnoUrl(
       //    "socket,host=" + h + ",port=" + port + ";urp;StarOffice.ServiceManager");
       return UnoUrl.parseUnoUrl(
-              "socket,host=" + h + ",port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
+          "socket,host=" + h + ",port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
     } catch (Exception ex) {
       throw new IllegalArgumentException(ex);
     }
@@ -134,14 +134,15 @@ class OfficeUrl {
 
   /**
    * Returns the string that should be used as --accept argument when an office process is launched.
+   *
    * @return The accept string.
    */
   public String getAcceptString() {
     return unoUrl.getConnectionAndParametersAsString()
-            + ";"
-            + unoUrl.getProtocolAndParametersAsString()
-            + ";"
-            + unoUrl.getRootOid();
+        + ";"
+        + unoUrl.getProtocolAndParametersAsString()
+        + ";"
+        + unoUrl.getRootOid();
   }
 
   /**

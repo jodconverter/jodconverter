@@ -87,8 +87,7 @@ class ExternalOfficeManagerTest {
                           DEFAULT_CONNECT_TIMEOUT,
                           DEFAULT_CONNECT_RETRY_INTERVAL,
                           DEFAULT_CONNECT_FAIL_FAST,
-                          new OfficeUrl(DEFAULT_HOSTNAME, 2002)
-                              .getConnectString()));
+                          new OfficeUrl(DEFAULT_HOSTNAME, 2002).getConnectString()));
     }
   }
 
@@ -168,8 +167,7 @@ class ExternalOfficeManagerTest {
                           DEFAULT_CONNECT_TIMEOUT,
                           DEFAULT_CONNECT_RETRY_INTERVAL,
                           DEFAULT_CONNECT_FAIL_FAST,
-                          new OfficeUrl(DEFAULT_HOSTNAME, 2002)
-                              .getConnectString()));
+                          new OfficeUrl(DEFAULT_HOSTNAME, 2002).getConnectString()));
     }
 
     @Test

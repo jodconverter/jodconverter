@@ -110,9 +110,7 @@ class LocalOfficeUtilsTest {
           .satisfies(
               urls ->
                   assertThat(urls.get(0).getConnectString())
-                      .isEqualTo(
-                          new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
-                              .getConnectString()));
+                      .isEqualTo(new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT).getConnectString()));
     }
 
     @Test
@@ -123,9 +121,7 @@ class LocalOfficeUtilsTest {
           .satisfies(
               urls ->
                   assertThat(urls.get(0).getConnectString())
-                      .isEqualTo(
-                          new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
-                              .getConnectString()));
+                      .isEqualTo(new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT).getConnectString()));
     }
 
     @Test
@@ -136,9 +132,7 @@ class LocalOfficeUtilsTest {
           .satisfies(
               urls ->
                   assertThat(urls.get(0).getConnectString())
-                      .isEqualTo(
-                          new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
-                              .getConnectString()));
+                      .isEqualTo(new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT).getConnectString()));
     }
 
     @Test
@@ -149,9 +143,7 @@ class LocalOfficeUtilsTest {
           .satisfies(
               urls ->
                   assertThat(urls.get(0).getConnectString())
-                      .isEqualTo(
-                          new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT)
-                              .getConnectString()));
+                      .isEqualTo(new OfficeUrl(LocalOfficeUtils.DEFAULT_PORT).getConnectString()));
     }
 
     @Test
