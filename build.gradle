@@ -203,13 +203,13 @@ coveralls {
     jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 }
 
-tasks.coveralls {
-    group = 'Coverage reports'
-    description = 'Uploads the aggregated coverage report to Coveralls'
-
-    dependsOn jacocoRootReport
-    onlyIf { System.env.'CI' }
-}
+//tasks.coveralls {
+//    group = 'Coverage reports'
+//    description = 'Uploads the aggregated coverage report to Coveralls'
+//
+//    dependsOn jacocoRootReport
+//    onlyIf { System.env.'CI' }
+//}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Utilities
