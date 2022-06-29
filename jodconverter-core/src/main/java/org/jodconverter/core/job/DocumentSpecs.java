@@ -45,6 +45,5 @@ public interface DocumentSpecs {
    *
    * @return The document format.
    */
-  @Nullable
-  DocumentFormat getFormat();
+  @Nullable DocumentFormat getFormat();
 }
