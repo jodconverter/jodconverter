@@ -37,7 +37,8 @@ public interface DocumentFormatRegistry {
    * @return The found document format, or {@code null} if no document format exists for the
    *     specified extension.
    */
-  @Nullable DocumentFormat getFormatByExtension(@NonNull String extension);
+  @Nullable
+  DocumentFormat getFormatByExtension(@NonNull String extension);
 
   /**
    * Gets a document format for the specified media type.
@@ -46,7 +47,8 @@ public interface DocumentFormatRegistry {
    * @return The found document format, or {@code null} if no document format exists for the
    *     specified media type.
    */
-  @Nullable DocumentFormat getFormatByMediaType(@NonNull String mediaType);
+  @Nullable
+  DocumentFormat getFormatByMediaType(@NonNull String mediaType);
 
   /**
    * Gets all the {@link DocumentFormat}s of a given family.

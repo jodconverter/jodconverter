@@ -221,9 +221,8 @@ public class DocumentFormat {
    * @return A DocumentFamily/Map pairs containing the properties to apply when storing a document
    *     of this format, by DocumentFamily.
    */
-  public @Nullable
-      Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
-          getStoreProperties() {
+  public @Nullable Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
+      getStoreProperties() {
     return storeProperties;
   }
 

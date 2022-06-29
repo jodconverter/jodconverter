@@ -114,7 +114,9 @@ spotless {
 
     java {
         // Format code using google java format
-        googleJavaFormat()
+        // Since we are running Spotless on JVM 8 (must support JVM 8), we are limited to google-java-format 1.7.
+        // Remove the version when we set the minimal JVM to 11.
+        googleJavaFormat('1.7')
 
         // Import order
         importOrderFile "$rootDir/spotless.importorder"

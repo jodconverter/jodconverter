@@ -35,26 +35,30 @@ public interface LocalOfficeContext extends OfficeContext {
    *
    * @return The {@link com.sun.star.frame.XComponentLoader}.
    */
-  @Nullable XComponentLoader getComponentLoader();
+  @Nullable
+  XComponentLoader getComponentLoader();
 
   /**
    * Gets the ComponentContext interface of the remote component context.
    *
    * @return The {@link com.sun.star.uno.XComponentContext}.
    */
-  @Nullable XComponentContext getComponentContext();
+  @Nullable
+  XComponentContext getComponentContext();
 
   /**
    * Gets the MultiComponentFactory interface of the remote service manager.
    *
    * @return The {@link com.sun.star.lang.XMultiComponentFactory}.
    */
-  @Nullable XMultiComponentFactory getServiceManager();
+  @Nullable
+  XMultiComponentFactory getServiceManager();
 
   /**
    * Gets the Desktop interface of the desktop service.
    *
    * @return The {@link com.sun.star.frame.XDesktop}.
    */
-  @Nullable XDesktop getDesktop();
+  @Nullable
+  XDesktop getDesktop();
 }
