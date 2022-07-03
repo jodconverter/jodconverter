@@ -48,7 +48,9 @@ public final class OfficeDescriptor {
 
     final OfficeDescriptor desc = new OfficeDescriptor();
 
-    LOGGER.debug("Building {} from help output lines", OfficeDescriptor.class.getName());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Building {} from help output lines", OfficeDescriptor.class.getName());
+    }
 
     String productLine = null;
     for (final String line : lines) {
@@ -97,7 +99,10 @@ public final class OfficeDescriptor {
 
     // Version cannot be known from the installation path.
 
-    LOGGER.info("soffice info (from exec path): {}", desc.toString());
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info("soffice info (from exec path): {}", desc);
+    }
+
     return desc;
   }
 

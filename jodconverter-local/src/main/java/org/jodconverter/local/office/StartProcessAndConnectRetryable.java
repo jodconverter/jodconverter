@@ -203,9 +203,11 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
       }
 
       if (!processManager.canFindPid()) {
-        LOGGER.debug(
-            "The current process manager does not support finding the pid: {}",
-            processManager.getClass().getName());
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug(
+              "The current process manager does not support finding the pid: {}",
+              processManager.getClass().getName());
+        }
         return result;
       }
 

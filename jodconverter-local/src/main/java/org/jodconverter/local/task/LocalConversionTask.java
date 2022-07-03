@@ -90,16 +90,18 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   @Override
   public void execute(final @NonNull OfficeContext context) throws OfficeException {
 
-    LOGGER.info(
-        "Executing local conversion task [{} -> {}]...",
-        Optional.of(source)
-            .map(DocumentSpecs::getFormat)
-            .map(DocumentFormat::getExtension)
-            .orElse("?"),
-        Optional.of(target)
-            .map(DocumentSpecs::getFormat)
-            .map(DocumentFormat::getExtension)
-            .orElse("?"));
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info(
+          "Executing local conversion task [{} -> {}]...",
+          Optional.of(source)
+              .map(DocumentSpecs::getFormat)
+              .map(DocumentFormat::getExtension)
+              .orElse("?"),
+          Optional.of(target)
+              .map(DocumentSpecs::getFormat)
+              .map(DocumentFormat::getExtension)
+              .orElse("?"));
+    }
     final LocalOfficeContext localContext = (LocalOfficeContext) context;
 
     // Obtain a source file that can be loaded by office. If the source

@@ -674,10 +674,12 @@ class LocalOfficeProcessManager {
       return;
     }
 
-    LOGGER.info(
-        "Trying to forcibly terminate process: '{}'; pid: {}",
-        officeUrl.getAcceptString(),
-        pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info(
+          "Trying to forcibly terminate process: '{}'; pid: {}",
+          officeUrl.getAcceptString(),
+          pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
+    }
 
     try {
       processManager.kill(process == null ? null : process.getProcess(), pid);
@@ -804,7 +806,9 @@ class LocalOfficeProcessManager {
               instanceProfileDir.getParentFile(),
               instanceProfileDir.getName() + ".old." + System.currentTimeMillis());
       if (instanceProfileDir.renameTo(oldProfileDir)) {
-        LOGGER.warn("Could not delete profileDir; renamed it to '" + oldProfileDir + "'", ioEx);
+        if (LOGGER.isWarnEnabled()) {
+          LOGGER.warn("Could not delete profileDir; renamed it to '" + oldProfileDir + "'", ioEx);
+        }
       } else {
         LOGGER.error("Could not delete profileDir", ioEx);
       }

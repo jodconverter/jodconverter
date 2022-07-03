@@ -205,7 +205,9 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
 
     synchronized (this) {
       if (bridgeComponent != null) {
-        LOGGER.debug("Disconnecting from '{}'", officeUrl.getConnectString());
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Disconnecting from '{}'", officeUrl.getConnectString());
+        }
 
         // Dispose of the bridge
         bridgeComponent.dispose();

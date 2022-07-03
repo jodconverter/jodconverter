@@ -36,7 +36,7 @@ public interface TargetDocumentSpecs extends DocumentSpecs {
    *
    * @param file The file to which the conversion result was written.
    */
-  default void onComplete(@NonNull File file) {
+  default void onComplete(final @NonNull File file) {
     // Default behavior is to do nothing
   }
 
@@ -46,7 +46,7 @@ public interface TargetDocumentSpecs extends DocumentSpecs {
    * @param file The file to which the conversion result was supposed to be written.
    * @param exception An exception representing the reason for the failed conversion.
    */
-  default void onFailure(@NonNull File file, @NonNull Exception exception) {
+  default void onFailure(final @NonNull File file, final @NonNull Exception exception) {
     // Ensure the created file is deleted
     FileUtils.deleteQuietly(file);
   }

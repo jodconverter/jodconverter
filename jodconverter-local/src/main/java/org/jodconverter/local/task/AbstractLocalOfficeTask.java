@@ -95,7 +95,9 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
 
     @Override
     public void handle(final XInteractionRequest xInteractionRequest) {
-      LOGGER.debug("Interaction detected with request {}", xInteractionRequest.getRequest());
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Interaction detected with request {}", xInteractionRequest.getRequest());
+      }
 
       final Object request = xInteractionRequest.getRequest();
 

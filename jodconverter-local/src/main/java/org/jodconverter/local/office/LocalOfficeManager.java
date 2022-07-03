@@ -194,7 +194,9 @@ public final class LocalOfficeManager
         } catch (IllegalStateException ex) {
           // Use default
           templateProfileDir = null;
-          LOGGER.warn("Falling back to default templateProfileDir. Cause: {}", ex.getMessage());
+          if (LOGGER.isWarnEnabled()) {
+            LOGGER.warn("Falling back to default templateProfileDir. Cause: {}", ex.getMessage());
+          }
         }
       } else {
         LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);

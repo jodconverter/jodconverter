@@ -49,7 +49,7 @@ public interface ProcessManager {
    *     implementation is unable to find out
    * @throws IOException If an IO error occurs.
    */
-  default long findPid(@NonNull ProcessQuery query) throws IOException {
+  default long findPid(final @NonNull ProcessQuery query) throws IOException {
     return PID_UNKNOWN;
   }
 
@@ -60,7 +60,7 @@ public interface ProcessManager {
    * @param pid The id of the process to kill.
    * @throws IOException If an IO error occurs.
    */
-  default void kill(@Nullable Process process, long pid) throws IOException {
+  default void kill(final @Nullable Process process, final long pid) throws IOException {
     AssertUtils.notNull(process, "process must not be null");
     process.destroy();
   }

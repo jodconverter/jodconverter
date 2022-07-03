@@ -233,7 +233,9 @@ public final class Info { // NOPMD - Disable utility class name rule violation
       return provider.createInstanceWithArguments(
           serviceSpecifier, Props.makeProperties("nodepath", nodePath));
     } catch (Exception ex) {
-      LOGGER.debug("Could not access config for: " + nodePath, ex);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Could not access config for: " + nodePath, ex);
+      }
     }
 
     return null;

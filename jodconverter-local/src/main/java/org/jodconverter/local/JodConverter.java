@@ -21,10 +21,16 @@ package org.jodconverter.local;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.job.ConversionJobWithOptionalSourceFormatUnspecified;
+import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.local.filter.text.LinkedImagesHtmlEncodingFilter;
+import org.jodconverter.local.office.LocalOfficeManager;
 
 /**
  * Helper class that will create a {@link LocalConverter} using the previously installed {@link
@@ -35,6 +41,32 @@ import org.jodconverter.core.job.ConversionJobWithOptionalSourceFormatUnspecifie
  * @see org.jodconverter.core.office.InstalledOfficeManagerHolder
  */
 public final class JodConverter { // NOPMD - Disable utility class name rule violation
+
+  public static void main(String[] args) throws OfficeException, UnsupportedEncodingException {
+    //    File inputFile = new File("C:\\tmp\\jodc\\in\\test.odt");
+    //    File outputFile = new File("C:\\tmp\\jodc\\out\\accenté_+.html");
+
+    File inputFile = new File("C:\\tmp\\jodc\\out\\accenté_+.html");
+    File outputFile = new File("C:\\tmp\\jodc\\out2\\accenté_+.html");
+
+    // DocumentFormat fmt = DocumentFormat.copy(DefaultDocumentFormatRegistry.HTML);
+    System.out.println(
+        URLDecoder.decode("accent%C3%A9_+_html_7bab8e0.png", StandardCharsets.UTF_8.toString()));
+
+    LocalOfficeManager.Builder config = LocalOfficeManager.builder();
+    LocalOfficeManager officeManager = config.build();
+    try {
+      officeManager.start();
+      LocalConverter localConverter =
+          LocalConverter.builder()
+              .filterChain(new LinkedImagesHtmlEncodingFilter())
+              .officeManager(officeManager)
+              .build();
+      localConverter.convert(inputFile).to(outputFile).execute();
+    } finally {
+      officeManager.stop();
+    }
+  }
 
   /**
    * Converts a source file that is stored on the local file system.
