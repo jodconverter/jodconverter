@@ -61,7 +61,7 @@ public final class LocalOfficeManager
       ExistingProcessAction.KILL;
   // The default "fail fast" behavior when an office process is started.
   public static final boolean DEFAULT_START_FAIL_FAST = false;
-  // The default behavior when an office process is started regarding to OpenGL usage.
+  // The default behavior when an office process is started regarding OpenGL usage.
   public static final boolean DEFAULT_DISABLE_OPENGL = false;
   // The default "keep process alive" behavior on shutdown.
   public static final boolean DEFAULT_KEEP_ALIVE_ON_SHUTDOWN = false;

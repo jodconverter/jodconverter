@@ -57,7 +57,7 @@ class ConvertITest {
       "src/integTest/resources/documents/test_multi_page.doc";
 
   @Nested
-  class Convert_ {
+  class ConvertTests {
 
     @Test
     void withCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf(final @TempDir File testFolder) {
@@ -239,10 +239,10 @@ class ConvertITest {
   }
 
   @Nested
-  class Main {
+  class MainTests {
 
     @Test
-    public void withAllCustomizableOption_ShouldExecuteAndExitWithCode0() {
+    void withAllCustomizableOption_ShouldExecuteAndExitWithCode0() {
 
       assertThatExceptionOfType(ExitException.class)
           .isThrownBy(

@@ -102,83 +102,16 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
         // Get the initial service manager.
         final XMultiComponentFactory localServiceManager = localContext.getServiceManager();
 
-        // Instantiate a XConnector. We use a XConnector over a XUnoUrlResolver
-        // because The usage of the UnoUrlResolver has certain disadvantages.
-        // You cannot:
-        // - be notified when the bridge terminates for whatever reasons
-        // - close the underlying interprocess connection
-        // - offer a local object as an initial object to the remote process
-        // See:
-        // https://wiki.documentfoundation.org/Documentation/DevGuide/Professional_UNO#Importing_a_UNO_Object
-        // https://wiki.documentfoundation.org/Documentation/DevGuide/Professional_UNO#Opening_a_Connection
-        final XConnector connector =
-            Lo.qi(
-                XConnector.class,
-                localServiceManager.createInstanceWithContext(
-                    "com.sun.star.connection.Connector", localContext));
+        // Connect to the already started office process.
+        final XConnection connection =
+            createConnection(connectPart, localContext, localServiceManager);
 
-        // Connect using the connection string part of the uno-url only.
-        LOGGER.trace("Connector created successfully, trying to connect...");
-        final XConnection connection = connector.connect(connectPart);
-
-        // Instantiate a bridge factory.
+        // Create an interprocess bridge.
         LOGGER.trace("Connection done successfully, creating bridge...");
-        final XBridgeFactory bridgeFactory =
-            Lo.qi(
-                XBridgeFactory.class,
-                localServiceManager.createInstanceWithContext(
-                    "com.sun.star.bridge.BridgeFactory", localContext));
+        final XBridge bridge = createBridge(connection, localContext, localServiceManager);
 
-        // Create a remote bridge with no instance provider using the urp protocol.
-        final XBridge bridge =
-            bridgeFactory.createBridge(
-                "jodconverter_" + BRIDGE_INDEX.getAndIncrement(),
-                officeUrl.getUnoUrl().getProtocolAndParametersAsString(),
-                connection,
-                null);
-
-        // Query for the XComponent interface and add this as event listener.
-        LOGGER.trace("Bridge created successfully, creating desktop...");
-        bridgeComponent = Lo.qi(XComponent.class, bridge);
-        bridgeComponent.addEventListener(this);
-
-        // Get the remote instance
-        final String rootOid = officeUrl.getUnoUrl().getRootOid();
-        final Object bridgeInstance = bridge.getInstance(rootOid);
-        // Did the remote server export this object ?
-        if (bridgeInstance == null) {
-          throw new OfficeConnectionException(
-              "Server didn't provide an instance for '" + rootOid + "'", connectPart);
-        }
-
-        // Query the initial object for its main factory interface.
-        final XMultiComponentFactory officeMultiComponentFactory =
-            Lo.qi(XMultiComponentFactory.class, bridgeInstance);
-
-        // Retrieve the office component context (it's not yet exported from office)
-
-        // Query for the XPropertySet interface.
-        final XPropertySet properties = Lo.qi(XPropertySet.class, officeMultiComponentFactory);
-
-        // Query for the interface XComponentContext using the default context
-        // from the office server.
-        componentContext =
-            Lo.qi(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
-
-        // Initialise the service manager.
-        serviceManager = componentContext.getServiceManager();
-
-        // Now create the desktop service that handles application windows and documents.
-        // NOTE: use the office component context here !
-        desktopService =
-            officeMultiComponentFactory.createInstanceWithContext(
-                "com.sun.star.frame.Desktop", componentContext);
-        componentLoader =
-            Lo.qiOptional(XComponentLoader.class, desktopService)
-                .orElseThrow(
-                    () ->
-                        new OfficeConnectionException(
-                            "Could not create a desktop service", connectPart));
+        LOGGER.trace("Bridge created successfully, initializing...");
+        initialize(connectPart, bridge);
 
         // We are now connected
         connected.set(true);
@@ -269,5 +202,93 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
    */
   public boolean isConnected() {
     return connected.get();
+  }
+
+  private XConnection createConnection(
+      final String connectPart,
+      final XComponentContext context,
+      final XMultiComponentFactory factory)
+      throws Exception {
+
+    // Instantiate a XConnector. We use a XConnector over a XUnoUrlResolver
+    // because The usage of the UnoUrlResolver has certain disadvantages.
+    // You cannot:
+    // - be notified when the bridge terminates for whatever reasons
+    // - close the underlying interprocess connection
+    // - offer a local object as an initial object to the remote process
+    // See:
+    // https://wiki.documentfoundation.org/Documentation/DevGuide/Professional_UNO#Importing_a_UNO_Object
+    // https://wiki.documentfoundation.org/Documentation/DevGuide/Professional_UNO#Opening_a_Connection
+    final XConnector connector =
+        Lo.qi(
+            XConnector.class,
+            factory.createInstanceWithContext("com.sun.star.connection.Connector", context));
+
+    // Connect using the connection string part of the uno-url only.
+    LOGGER.trace("Connector created successfully, trying to connect...");
+    return connector.connect(connectPart);
+  }
+
+  private XBridge createBridge(
+      final XConnection connection,
+      final XComponentContext context,
+      final XMultiComponentFactory factory)
+      throws Exception {
+
+    final XBridgeFactory bridgeFactory =
+        Lo.qi(
+            XBridgeFactory.class,
+            factory.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", context));
+
+    // Create a remote bridge with no instance provider using the urp protocol.
+    return bridgeFactory.createBridge(
+        "jodconverter_" + BRIDGE_INDEX.getAndIncrement(),
+        officeUrl.getUnoUrl().getProtocolAndParametersAsString(),
+        connection,
+        null);
+  }
+
+  private void initialize(final String connectPart, final XBridge bridge) throws Exception {
+
+    // Query for the XComponent interface and add this as event listener.
+    bridgeComponent = Lo.qi(XComponent.class, bridge);
+    bridgeComponent.addEventListener(this);
+
+    // Get the remote instance
+    final String rootOid = officeUrl.getUnoUrl().getRootOid();
+    final Object bridgeInstance = bridge.getInstance(rootOid);
+    // Did the remote server export this object ?
+    if (bridgeInstance == null) {
+      throw new OfficeConnectionException(
+          "Server didn't provide an instance for '" + rootOid + "'", connectPart);
+    }
+
+    // Query the initial object for its main factory interface.
+    final XMultiComponentFactory officeMultiComponentFactory =
+        Lo.qi(XMultiComponentFactory.class, bridgeInstance);
+
+    // Retrieve the office component context (it's not yet exported from office).
+
+    // Query for the XPropertySet interface.
+    final XPropertySet properties = Lo.qi(XPropertySet.class, officeMultiComponentFactory);
+
+    // Query for the interface XComponentContext using the default context from the office server.
+    componentContext =
+        Lo.qi(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
+
+    // Initialise the service manager.
+    serviceManager = componentContext.getServiceManager();
+
+    // Now create the desktop service that handles application windows and documents.
+    // NOTE: use the office component context here !
+    desktopService =
+        officeMultiComponentFactory.createInstanceWithContext(
+            "com.sun.star.frame.Desktop", componentContext);
+    componentLoader =
+        Lo.qiOptional(XComponentLoader.class, desktopService)
+            .orElseThrow(
+                () ->
+                    new OfficeConnectionException(
+                        "Could not create a desktop service", connectPart));
   }
 }

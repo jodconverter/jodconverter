@@ -127,7 +127,7 @@ public class DocumentFormat {
       final Map<DocumentFamily, Map<String, Object>> storeProperties,
       final boolean unmodifiable) {
 
-    AssertUtils.notBlank(name, "name must not be null nor blank");
+    checkName(name);
     AssertUtils.notNull(extensions, "extensions must not be null");
     AssertUtils.notBlank(mediaType, "mediaType must not be null nor blank");
 
@@ -361,7 +361,7 @@ public class DocumentFormat {
     @NonNull
     public Builder loadProperty(@NonNull final String name, final @Nullable Object value) {
 
-      AssertUtils.notBlank(name, "name must not be null nor blank");
+      checkName(name);
 
       if (value == null) {
         // Remove the property if the value is null.
@@ -405,7 +405,7 @@ public class DocumentFormat {
     @NonNull
     public Builder name(@NonNull final String name) {
 
-      AssertUtils.notBlank(name, "name must not be null nor blank");
+      checkName(name);
       this.name = name;
       return this;
     }
@@ -442,7 +442,7 @@ public class DocumentFormat {
         final @Nullable Object value) {
 
       AssertUtils.notNull(documentFamily, "documentFamily must not be null");
-      AssertUtils.notBlank(name, "name must not be null nor blank");
+      checkName(name);
 
       if (value == null) {
         // Remove the property if the value is null.
@@ -468,5 +468,9 @@ public class DocumentFormat {
 
       return this;
     }
+  }
+
+  private static void checkName(final String name) {
+    AssertUtils.notBlank(name, "name must not be null nor blank");
   }
 }

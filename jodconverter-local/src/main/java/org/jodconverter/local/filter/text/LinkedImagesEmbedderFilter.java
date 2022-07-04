@@ -73,14 +73,19 @@ public class LinkedImagesEmbedderFilter implements Filter {
   private static void convertLinkedImagesToEmbedded(
       final XComponentContext context, final XComponent document) throws Exception {
 
-    // Create a GraphicProvider.
-    final XGraphicProvider graphicProvider =
-        Lo.createInstanceMCF(
-            context, XGraphicProvider.class, "com.sun.star.graphic.GraphicProvider");
     final XIndexAccess indexAccess =
         Lo.qi(
             XIndexAccess.class,
             Lo.qi(XTextGraphicObjectsSupplier.class, document).getGraphicObjects());
+    final boolean useGraphic =
+        Info.isLibreOffice(context)
+            && Info.compareVersions(Info.getOfficeVersionShort(context), "6.1", 2) >= 0;
+    // Create a GraphicProvider if required.
+    final XGraphicProvider graphicProvider =
+        useGraphic
+            ? Lo.createInstanceMCF(
+                context, XGraphicProvider.class, "com.sun.star.graphic.GraphicProvider")
+            : null;
     for (int i = 0; i < indexAccess.getCount(); i++) {
       final Any xImageAny = (Any) indexAccess.getByIndex(i);
       final Object xImageObject = xImageAny.getObject();
@@ -88,41 +93,48 @@ public class LinkedImagesEmbedderFilter implements Filter {
       final XServiceInfo xInfo = Lo.qi(XServiceInfo.class, xImage);
       if (xInfo.supportsService("com.sun.star.text.TextGraphicObject")) {
         final XPropertySet xPropSet = Lo.qi(XPropertySet.class, xImage);
-        if (Info.isLibreOffice(context)
-            && Info.compareVersions(Info.getOfficeVersionShort(context), "6.1", 2) >= 0) {
-          final XGraphic xGraphic =
-              (XGraphic)
-                  AnyConverter.toObject(XGraphic.class, xPropSet.getPropertyValue("Graphic"));
-          // Only ones that are not embedded
-          final XPropertySet xGraphicPropSet = Lo.qi(XPropertySet.class, xGraphic);
-          final boolean linked = (boolean) xGraphicPropSet.getPropertyValue("Linked");
-          if (linked) {
-            // Since 6.1, we must use "Graphic" instead of "GraphicURL"
-            Objects.requireNonNull(graphicProvider);
-            xPropSet.setPropertyValue(
-                "Graphic",
-                graphicProvider.queryGraphic(
-                    Props.makeProperties(
-                        "URL",
-                        xGraphicPropSet.getPropertyValue("OriginURL").toString(),
-                        "LoadAsLink",
-                        false)));
-          }
+        if (useGraphic) {
+          embedImageUsingGraphic(graphicProvider, xPropSet);
         } else {
-          final String name = xPropSet.getPropertyValue("LinkDisplayName").toString();
-          final String graphicUrl = xPropSet.getPropertyValue("GraphicURL").toString();
-          // Only ones that are not embedded
-          if (!graphicUrl.contains("vnd.sun.")) {
-            // Creating bitmap container service
-            final XNameContainer bitmapContainer =
-                Lo.createInstanceMSF(
-                    document, XNameContainer.class, "com.sun.star.drawing.BitmapTable");
-            if (!bitmapContainer.hasByName(name)) {
-              bitmapContainer.insertByName(name, graphicUrl);
-              xPropSet.setPropertyValue("GraphicURL", bitmapContainer.getByName(name).toString());
-            }
-          }
+          embedImageUsingGraphicUrl(document, xPropSet);
         }
+      }
+    }
+  }
+
+  private static void embedImageUsingGraphic(
+      final XGraphicProvider graphicProvider, final XPropertySet xPropSet) throws Exception {
+    final XGraphic xGraphic =
+        (XGraphic) AnyConverter.toObject(XGraphic.class, xPropSet.getPropertyValue("Graphic"));
+    // Only ones that are not embedded
+    final XPropertySet xGraphicPropSet = Lo.qi(XPropertySet.class, xGraphic);
+    final boolean linked = (boolean) xGraphicPropSet.getPropertyValue("Linked");
+    if (linked) {
+      // Since 6.1, we must use "Graphic" instead of "GraphicURL"
+      Objects.requireNonNull(graphicProvider);
+      xPropSet.setPropertyValue(
+          "Graphic",
+          graphicProvider.queryGraphic(
+              Props.makeProperties(
+                  "URL",
+                  xGraphicPropSet.getPropertyValue("OriginURL").toString(),
+                  "LoadAsLink",
+                  false)));
+    }
+  }
+
+  private static void embedImageUsingGraphicUrl(
+      final XComponent document, final XPropertySet xPropSet) throws Exception {
+    final String name = xPropSet.getPropertyValue("LinkDisplayName").toString();
+    final String graphicUrl = xPropSet.getPropertyValue("GraphicURL").toString();
+    // Only ones that are not embedded
+    if (!graphicUrl.contains("vnd.sun.")) {
+      // Creating bitmap container service
+      final XNameContainer bitmapContainer =
+          Lo.createInstanceMSF(document, XNameContainer.class, "com.sun.star.drawing.BitmapTable");
+      if (!bitmapContainer.hasByName(name)) {
+        bitmapContainer.insertByName(name, graphicUrl);
+        xPropSet.setPropertyValue("GraphicURL", bitmapContainer.getByName(name).toString());
       }
     }
   }

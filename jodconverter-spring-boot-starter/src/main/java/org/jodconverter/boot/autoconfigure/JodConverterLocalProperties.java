@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import org.jodconverter.core.document.DocumentFormatProperties;
 import org.jodconverter.local.office.ExistingProcessAction;
+import org.jodconverter.local.office.LocalOfficeManager;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter.local")
@@ -46,7 +47,7 @@ public class JodConverterLocalProperties {
    * the time, the default will work. But if it doesn't work (unable to connect to the started
    * process), using 'localhost' as host name instead may work.
    */
-  private String hostName = "127.0.0.1";
+  private String hostName = LocalOfficeManager.DEFAULT_HOSTNAME;
 
   /**
    * List of ports, separated by commas, used by each JODConverter processing thread. The number of
@@ -77,22 +78,23 @@ public class JodConverterLocalProperties {
    * Process timeout (milliseconds). Used when trying to execute an office process call
    * (start/connect/terminate).
    */
-  private long processTimeout = 120_000L;
+  private long processTimeout = LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
 
   /**
    * Process retry interval (milliseconds). Used for waiting between office process call tries
    * (start/connect/terminate).
    */
-  private long processRetryInterval = 250L;
+  private long processRetryInterval = LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
 
   /** Specifies the delay after an attempt to start an office process before doing anything else. */
-  private long afterStartProcessDelay = 0L;
+  private long afterStartProcessDelay = LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
 
   /**
    * Specifies the action the must be taken when starting a new office process and there already is
    * a existing running process for the same connection string.
    */
-  private ExistingProcessAction existingProcessAction = ExistingProcessAction.KILL;
+  private ExistingProcessAction existingProcessAction =
+      LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
 
   /**
    * Controls whether the manager will "fail fast" if an office process cannot be started or the
@@ -103,7 +105,7 @@ public class JodConverterLocalProperties {
    * connecting to it will be submitted and will return immediately, meaning a faster starting
    * process. Only error logs will be produced if anything goes wrong.
    */
-  private boolean startFailFast;
+  private boolean startFailFast = LocalOfficeManager.DEFAULT_START_FAIL_FAST;
 
   /**
    * Controls whether the manager will keep the office process alive on shutdown. If set to {@code
@@ -111,29 +113,29 @@ public class JodConverterLocalProperties {
    * set to {@code false}, the office process will be stopped gracefully (or killed if could not
    * been stopped gracefully).
    */
-  private boolean keepAliveOnShutdown;
+  private boolean keepAliveOnShutdown = LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
 
   /**
    * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
    * done if OpenGL is already disabled according to the user profile used with the office process.
    * If the options is changed, then office will be restarted.
    */
-  private boolean disableOpengl;
+  private boolean disableOpengl = LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
 
   /**
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
    * if the waiting time is longer than this timeout.
    */
-  private long taskQueueTimeout = 30_000L;
+  private long taskQueueTimeout = LocalOfficeManager.DEFAULT_TASK_QUEUE_TIMEOUT;
 
   /**
    * Maximum time allowed to process a task. If the processing time of a task is longer than this
    * timeout, this task will be aborted and the next task is processed.
    */
-  private long taskExecutionTimeout = 120_000L;
+  private long taskExecutionTimeout = LocalOfficeManager.DEFAULT_TASK_EXECUTION_TIMEOUT;
 
   /** Maximum number of tasks an office process can execute before restarting. */
-  private int maxTasksPerProcess = 200;
+  private int maxTasksPerProcess = LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
 
   /** Path to the registry which contains the document formats that will be supported by default. */
   private String documentFormatRegistry;

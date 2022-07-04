@@ -160,7 +160,7 @@ public final class FileUtils {
    * @param file File or directory to delete, can be {@code null}.
    * @return {@code true} If the file or directory is deleted, {@code false} otherwise. The file or
    *     directory is considered deleted if it does not exist when the function ends, meaning that a
-   *     {@code null} input file or a file that does not exist will also returns {@code false}.
+   *     {@code null} input file or a file that does not exist will also return {@code false}.
    * @throws IOException If an IO error occurs.
    */
   public static boolean delete(final @Nullable File file) throws IOException {
@@ -182,7 +182,7 @@ public final class FileUtils {
                     throw new UncheckedIOException(ex);
                   }
                 });
-      } catch (UncheckedIOException ex) {
+      } catch (UncheckedIOException ex) { // NOPMD - Only cause is relevant
         throw ex.getCause();
       }
     } else {

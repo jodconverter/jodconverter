@@ -86,7 +86,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   @Override
   public void afterPropertiesSet() throws OfficeException {
 
-    final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
+    final Builder builder = LocalOfficeManager.builder();
 
     if (!StringUtils.isBlank(portNumbers)) {
       builder.portNumbers(

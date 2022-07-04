@@ -74,18 +74,17 @@ public final class CliConverter {
     AssertUtils.notEmpty(filenames, "filenames must not be null nor empty");
     AssertUtils.notEmpty(outputFormat, "outputFormat must not be null nor empty");
 
-    // Prepare the output directory
+    // Prepare the output directory.
     final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
     prepareOutputDir(outputDir);
 
     // For all the filenames... Note that a filename may contains wildcards.
     for (final String filename : filenames) {
 
-      // Create a file instance with the argument and also get the parent directory
+      // Create a file instance with the argument and also get the parent directory.
       final File inputFile = new File(filename);
 
-      // If the filename is a file, we will have only 1
-      // file to convert for this loop iteration
+      // If the filename is a file, we will have only 1 file to convert for this loop iteration.
       if (inputFile.isFile()) {
 
         // Convert the file
@@ -97,24 +96,10 @@ public final class CliConverter {
 
       } else {
 
-        // If the filename is not a file, check if it has wildcards
-        // to match multiple files
+        // If the filename is not a file, check if it has wildcards to match multiple files.
         final File inputFileParent = inputFile.getParentFile();
         if (inputFileParent.isDirectory()) {
-          final String wildcard = FilenameUtils.getBaseName(filename);
-          final File[] files =
-              inputFileParent.listFiles((FileFilter) new WildcardFileFilter(wildcard));
-          if (files != null) {
-            for (final File file : files) {
-
-              // Convert the file
-              convertFile(
-                  file,
-                  outputDir == null ? inputFile.getParentFile() : outputDir,
-                  FilenameUtils.getBaseName(file.getName()) + "." + outputFormat,
-                  overwrite);
-            }
-          }
+          convertFiles(inputFileParent, filename, outputDir, outputFormat, overwrite);
         } else {
           printInfo("Skipping filename '%s' since it doesn't match an existing file...", inputFile);
         }
@@ -204,6 +189,29 @@ public final class CliConverter {
 
         // We can now convert the document
         convert(inputFile, outputFile);
+      }
+    }
+  }
+
+  private void convertFiles(
+      final File inputDir,
+      final String filename,
+      final File outputDir,
+      final String outputFormat,
+      final boolean overwrite)
+      throws OfficeException {
+
+    final String wildcard = FilenameUtils.getBaseName(filename);
+    final File[] files = inputDir.listFiles((FileFilter) new WildcardFileFilter(wildcard));
+    if (files != null) {
+      for (final File file : files) {
+
+        // Convert the file
+        convertFile(
+            file,
+            outputDir == null ? inputDir : outputDir,
+            FilenameUtils.getBaseName(file.getName()) + "." + outputFormat,
+            overwrite);
       }
     }
   }

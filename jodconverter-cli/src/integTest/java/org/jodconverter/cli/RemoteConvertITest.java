@@ -60,7 +60,7 @@ class RemoteConvertITest {
   private static final String SERVER_KEYSTORE_PWD = "serverkeystore";
 
   @Nested
-  class Convert_ {
+  class ConvertTests {
 
     @Test
     void withCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf(final @TempDir File testFolder) {

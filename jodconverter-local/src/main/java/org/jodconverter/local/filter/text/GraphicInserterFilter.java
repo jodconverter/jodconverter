@@ -65,7 +65,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GraphicInserterFilter.class);
 
-  private final File imageFile;
+  private File imageFile;
 
   // Detect the size of an image without loading it into memory
   // See http://stackoverflow.com/a/1560052
@@ -118,10 +118,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       throws OfficeException {
     super(horizontalPosition, verticalPosition);
 
-    AssertUtils.notBlank(imagePath, "imagePath must not be null nor blank");
-    this.imageFile = new File(imagePath);
-    AssertUtils.isTrue(imageFile.exists(), "imagePath must be the path of an existing file");
-
+    setImageFile(imagePath);
     setRectSize(getImageSize(this.imageFile));
   }
 
@@ -147,9 +144,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       final int verticalPosition) {
     super(new Dimension(width, height), horizontalPosition, verticalPosition);
 
-    AssertUtils.notBlank(imagePath, "imagePath must not be null nor blank");
-    this.imageFile = new File(imagePath);
-    AssertUtils.isTrue(imageFile.exists(), "imagePath must be the path of an existing file");
+    setImageFile(imagePath);
   }
 
   /**
@@ -169,10 +164,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       throws OfficeException {
     super(shapeProperties);
 
-    AssertUtils.notBlank(imagePath, "imagePath must not be null nor blank");
-    this.imageFile = new File(imagePath);
-    AssertUtils.isTrue(imageFile.exists(), "imagePath must be the path of an existing file");
-
+    setImageFile(imagePath);
     setRectSize(getImageSize(this.imageFile));
   }
 
@@ -197,9 +189,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super(new Dimension(width, height), shapeProperties);
 
-    AssertUtils.notBlank(imagePath, "imagePath must not be null nor blank");
-    this.imageFile = new File(imagePath);
-    AssertUtils.isTrue(imageFile.exists(), "imagePath must be the path of an existing file");
+    setImageFile(imagePath);
   }
 
   @Override
@@ -217,6 +207,12 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
     // Invoke the next filter in the chain
     chain.doFilter(context, document);
+  }
+
+  private void setImageFile(final String imagePath) {
+    AssertUtils.notBlank(imagePath, "imagePath must not be null nor blank");
+    this.imageFile = new File(imagePath);
+    AssertUtils.isTrue(imageFile.exists(), "imagePath must be the path of an existing file");
   }
 
   private void insertGraphic(final XComponentContext context, final XComponent document)

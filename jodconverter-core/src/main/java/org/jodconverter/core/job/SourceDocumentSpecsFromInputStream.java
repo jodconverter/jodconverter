@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Optional;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -63,21 +65,16 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
   @Override
   public @NonNull File getFile() {
 
-    // Write the InputStream to the temp file
+    // Write the InputStream to the temp file.
     final File tempFile =
         Optional.ofNullable(getFormat())
             .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
             .orElse(fileMaker.makeTemporaryFile());
-    try {
-      final FileOutputStream outputStream = new FileOutputStream(tempFile);
-      outputStream.getChannel().lock();
-      try {
-        IOUtils.copy(inputStream, outputStream);
-        return tempFile;
-      } finally {
-        // Note: This will implicitly release the file lock.
-        outputStream.close();
-      }
+    try (FileOutputStream outputStream = new FileOutputStream(tempFile);
+        FileChannel channel = outputStream.getChannel();
+        FileLock ignored = channel.lock()) {
+      IOUtils.copy(inputStream, outputStream);
+      return tempFile;
     } catch (IOException ex) {
       throw new DocumentSpecsIOException(
           String.format("Could not write stream to file '%s'", tempFile), ex);

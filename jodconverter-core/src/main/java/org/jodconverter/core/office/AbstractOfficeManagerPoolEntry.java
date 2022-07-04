@@ -19,11 +19,7 @@
 
 package org.jodconverter.core.office;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -67,10 +63,10 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   @Override
   public final void execute(final @NonNull OfficeTask task) throws OfficeException {
 
-    // No need to check if the manager if running here.
+    // No need to check if the manager is running here.
     // This check is already done in the pool.
 
-    // TODO: Maybe will should check if the taskExecutor was made available
+    // TODO: Maybe we should check if the taskExecutor was made available
     // at least once, meaning that the entry has been started.
 
     // Submit the task to the executor
@@ -81,8 +77,14 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
               return null;
             });
 
-    // Wait for completion of the task, (maximum wait time is the
-    // configured task execution timeout)
+    // Wait for completion of the task.
+    waitTaskCompletion(task);
+  }
+
+  private void waitTaskCompletion(final OfficeTask task) throws OfficeException {
+
+    // Wait for completion of the task, (maximum wait time is the configured task execution
+    // timeout).
     try {
       LOGGER.debug("Waiting {} ms for task to complete: {}", taskExecutionTimeout, task);
       currentFuture.get(taskExecutionTimeout, TimeUnit.MILLISECONDS);
