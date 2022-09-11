@@ -36,7 +36,12 @@ dependencies {
     testImplementation Deps.junitJupiterParams
     testImplementation Deps.mockito
 
-    testRuntimeOnly Deps.checkerQual // Required by PowerMock
+    // Required for Mockito to avoid NullPointerException
+    // Mockito disclaimer:
+    // You are seeing this disclaimer because Mockito is configured to create inlined mocks.
+    // You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
+    testRuntimeOnly Deps.checkerQual
+
     testRuntimeOnly Deps.junitJupiterEngine
 }
 

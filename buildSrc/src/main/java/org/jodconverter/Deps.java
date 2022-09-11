@@ -5,7 +5,7 @@ public class Deps {
   // Compile
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-  public static final String checkerQual = "org.checkerframework:checker-qual:3.22.1";
+  public static final String checkerQual = "org.checkerframework:checker-qual:3.25.0";
 
   // Main
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -18,7 +18,7 @@ public class Deps {
 
   // Spring Boot libraries
   // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-  public static final String springBootVersion = "2.7.0";
+  public static final String springBootVersion = "2.7.3";
   public static final String springBootDependencies =
       "org.springframework.boot:spring-boot-dependencies:" + springBootVersion;
   public static final String springBootStarter = "org.springframework.boot:spring-boot-starter";
@@ -28,7 +28,7 @@ public class Deps {
       "org.springframework.boot:spring-boot-starter-test";
 
   // Latest version -> https://mvnrepository.com/artifact/org.libreoffice
-  public static final String loVersion = "7.3.3";
+  public static final String loVersion = "7.4.0";
   public static final String libreoffice = "org.libreoffice:libreoffice:" + loVersion;
 
   // Latest version -> https://mvnrepository.com/artifact/org.openoffice
