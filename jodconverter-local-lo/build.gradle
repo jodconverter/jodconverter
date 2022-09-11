@@ -1,0 +1,13 @@
+import org.jodconverter.Deps
+
+ext.moduleName = 'JODConverter Local - LO'
+ext.moduleDescription = 'Module required in order to process local conversions for the Java OpenDocument Converter (JODConverter) project.'
+
+apply plugin: 'java'
+
+dependencies {
+    implementation (project(':jodconverter-local')) {
+        exclude group: 'org.openoffice'
+    }
+    api Deps.libreoffice
+}

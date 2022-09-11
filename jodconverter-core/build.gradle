@@ -1,7 +1,7 @@
 import org.jodconverter.Deps
 
 ext.moduleName = 'JODConverter Core'
-description = 'Core JODConverter abstractions, used by JODConverter implementations, such as JODConverter Local or JODConverter Remote, used to convert office documents using LibreOffice or Apache OpenOffice.'
+ext.moduleDescription = 'Core JODConverter abstractions, used by JODConverter implementations, such as JODConverter Local or JODConverter Remote, used to convert office documents using LibreOffice or Apache OpenOffice.'
 
 dependencies {
     implementation Deps.gson

@@ -176,9 +176,8 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
     // Start the process.
     result.process = new VerboseProcess(processBuilder.start());
 
-    // Wait an initial delay is required. On FreeBSD, which is the only OS to date
-    // that we know this delay is required, we will set it ourselves if no one has
-    // been set.
+    // Wait an initial delay is required. On FreeBSD, which is the only OS to date that
+    // we know this delay is required, we will set it ourselves if none was set.
     if (afterStartProcessDelay > 0L) {
       LOGGER.debug("Waiting for process to start...");
       sleep(afterStartProcessDelay);

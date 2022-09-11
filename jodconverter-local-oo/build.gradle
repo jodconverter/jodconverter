@@ -1,0 +1,8 @@
+ext.moduleName = 'JODConverter Local - OO'
+ext.moduleDescription = 'Module required in order to process local conversions for the Java OpenDocument Converter (JODConverter) project.'
+
+apply plugin: 'java'
+
+dependencies {
+    implementation project(":jodconverter-local")
+}

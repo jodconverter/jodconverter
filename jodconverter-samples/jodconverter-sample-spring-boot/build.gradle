@@ -3,14 +3,14 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'war'
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'org.springframework.boot' version '2.7.3'
 }
 
 group = 'org.jodconverter'
 description = 'JODConverter - Sample Spring Boot Web Application'
 
 ext {
-    commonsIoVersion = '2.6'
+    commonsIoVersion = '2.11.0'
 }
 
 java {

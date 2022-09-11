@@ -1,7 +1,7 @@
 import org.jodconverter.Deps
 
 ext.moduleName = 'JODConverter Spring Boot Starter'
-description = 'Spring Boot integration module of the Java OpenDocument Converter (JODConverter) project.'
+ext.moduleDescription = 'Spring Boot integration module of the Java OpenDocument Converter (JODConverter) project.'
 
 dependencies {
     compileOnly project(":jodconverter-local")

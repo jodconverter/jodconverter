@@ -10,8 +10,8 @@ group = 'org.jodconverter'
 description = 'JODConverter - Sample Rest Web Api'
 
 ext {
-    commonsIoVersion = '2.6'
-    swaggerVersion = '2.9.2'
+    commonsIoVersion = '2.11.0'
+    swaggerVersion = '3.0.0'
 }
 
 java {

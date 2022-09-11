@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'war'
-    id 'com.bmuschko.tomcat' version '2.5'
+    id 'com.bmuschko.tomcat' version '2.7.0'
 }
 
 group = 'org.jodconverter'
@@ -11,7 +11,7 @@ description = 'JODConverter - Sample Web Application'
 
 ext {
     commonsFileUploadVersion = '1.4'
-    springBootVersion = '2.2.4.RELEASE'
+    springBootVersion = '2.7.3'
 }
 
 java {
