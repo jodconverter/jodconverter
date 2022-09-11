@@ -1,15 +1,9 @@
-JODConverter - Local - LibreOffice
-==================================
+Copyright (c) 2004 - 2012; Mirko Nasato and contributors
+              2016 - present; Simon Braconnier and contributors
+All rights reserved.
+https://jodconverter.org
 
-This is the module required to process local conversions for
-the Java OpenDocument Converter (JODConverter) project, using
-as dependencies the LibreOffice libraries.
-
-JODConverter automates conversions between office
-document formats using LibreOffice or Apache OpenOffice.
-
-Licensing
----------
+JODConverter - Java OpenDocument Converter.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -9,15 +9,14 @@ dependencies {
     // We cannot use LibreOffice libraries by default.
     // See:
     // https://github.com/sbraconnier/jodconverter/issues/113
-//    if (project.hasProperty("useLibreOffice")) {
-//        api Deps.libreoffice
-//    } else {
-//        api Deps.ooJuh
-//        api Deps.ooJurt
-//        api Deps.ooRidl
-//        api Deps.ooUnoil
-//    }
-    api Deps.libreoffice
+    if (project.hasProperty("useLibreOffice")) {
+        api Deps.libreoffice
+    } else {
+        api Deps.ooJuh
+        api Deps.ooJurt
+        api Deps.ooRidl
+        api Deps.ooUnoil
+    }
 
     implementation Deps.slf4jApi
 

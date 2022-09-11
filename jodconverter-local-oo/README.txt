@@ -1,8 +1,9 @@
-JODConverter - Local
-====================
+JODConverter - Local - OpenOffice
+=================================
 
 This is the module required to process local conversions for
-the Java OpenDocument Converter (JODConverter) project.
+the Java OpenDocument Converter (JODConverter) project, using
+as dependencies the OpenOffice libraries.
 
 JODConverter automates conversions between office
 document formats using LibreOffice or Apache OpenOffice.
