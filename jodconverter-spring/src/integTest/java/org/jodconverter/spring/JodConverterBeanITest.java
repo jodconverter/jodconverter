@@ -132,7 +132,7 @@ public class JodConverterBeanITest {
     bean.setTemplateProfileDirOrDefault(templateProfileDir.getPath());
     bean.setProcessTimeout(120_001L);
     bean.setProcessRetryInterval(255L);
-    bean.setAfterStartProcessDelay(10L);
+    bean.setAfterStartProcessDelay(3000L); // Avoid failure on FreeBSD
     bean.setExistingProcessAction(ExistingProcessAction.KILL);
     bean.setStartFailFast(true);
     bean.setKeepAliveOnShutdown(false);
@@ -190,7 +190,7 @@ public class JodConverterBeanITest {
                                     templateProfileDir,
                                     120_001L,
                                     255L,
-                                    10L,
+                                    3000L,
                                     ExistingProcessAction.KILL,
                                     true,
                                     false,
