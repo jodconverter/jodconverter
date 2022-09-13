@@ -68,7 +68,7 @@ public class SpringBootRestApplication {
           "JODConverter REST API for Remote conversion. JODConverter automates conversions between office document formats using LibreOffice or Apache OpenOffice.",
           "0.1",
           "Terms of service",
-          new Contact("John Doe", "www.jodconverter.org", "johndoe@company.com"),
+          new Contact("John Doe", "www.johndoe.org", "johndoe@company.com"),
           "Apache License Version 2.0",
           "https://www.apache.org/licenses/LICENSE-2.0",
           Collections.emptyList());

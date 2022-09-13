@@ -43,16 +43,21 @@ def customizePom(pom, p) {
     pom.withXml {
         def root = asNode()
 
+        // eliminate test-scoped dependencies (no need in maven central POMs)
+        root.dependencies.removeAll { dep ->
+            dep.scope == 'test'
+        }
+
         // Add all items necessary for maven central publication
         root.children().last() + {
-            resolveStrategy = DELEGATE_FIRST
+            resolveStrategy = Closure.DELEGATE_FIRST
 
             name p.hasProperty('moduleName') ? p.moduleName : p.name
             description p.hasProperty('moduleDescription') ? p.moduleDescription : p.description
-            url 'http://jodconverter.org'
+            url 'https://github.com/sbraconnier/jodconverter'
             organization {
                 name 'JODConverter'
-                url 'http://jodconverter.org'
+                url 'https://github.com/sbraconnier/jodconverter'
             }
             scm {
                 url 'https://github.com/sbraconnier/jodconverter.git'
