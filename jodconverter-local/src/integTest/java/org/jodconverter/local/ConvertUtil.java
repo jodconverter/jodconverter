@@ -153,6 +153,12 @@ public final class ConvertUtil {
         case "fodp":
         case "fods":
         case "fodt":
+        case "docx":
+        case "dotx":
+        case "xlsx":
+        case "xltx":
+        case "pptx":
+        case "potx":
           LOGGER.info(
               "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
           continue;
