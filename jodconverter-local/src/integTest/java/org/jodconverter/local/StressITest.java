@@ -39,7 +39,7 @@ import org.jodconverter.local.ConvertUtil.ConvertRunner;
 import org.jodconverter.local.office.LocalOfficeManager;
 
 /** Contain a stress test. */
-public class StressITest {
+class StressITest {
 
   private static final Logger LOGGER = Logger.getLogger(StressITest.class);
 

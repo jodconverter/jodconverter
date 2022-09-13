@@ -43,12 +43,12 @@ import org.jodconverter.local.office.utils.Lo;
 
 /** Test the {@link AbstractLocalOfficeTask} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-public class AbstractLocalOfficeTaskITest {
+class AbstractLocalOfficeTaskITest {
 
   private static final File SOURCE_FILE = documentFile("test.txt");
 
   @Test
-  public void close_WhenVetoCloseExceptionCatch_DocumentNotClosed(final OfficeManager manager)
+  void close_WhenVetoCloseExceptionCatch_DocumentNotClosed(final OfficeManager manager)
       throws OfficeException {
 
     final VetoCloseOfficeTask task = new VetoCloseOfficeTask(new FooSourceSpecs(SOURCE_FILE));

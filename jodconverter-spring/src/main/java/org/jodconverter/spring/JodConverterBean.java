@@ -44,7 +44,6 @@ import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExistingProcessAction;
-import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.process.ProcessManager;
 
 /**
@@ -86,7 +85,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   @Override
   public void afterPropertiesSet() throws OfficeException {
 
-    final Builder builder = LocalOfficeManager.builder();
+    final Builder builder = builder();
 
     if (!StringUtils.isBlank(portNumbers)) {
       builder.portNumbers(

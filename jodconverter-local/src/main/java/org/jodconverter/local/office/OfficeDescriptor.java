@@ -74,7 +74,9 @@ public final class OfficeDescriptor {
       }
     }
 
-    LOGGER.info("soffice info (from help output): {}", desc.toString());
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info("soffice info (from help output): {}", desc);
+    }
     return desc;
   }
 

@@ -36,7 +36,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jodconverter.core.util.AssertUtils;
 
 /** Contains the required information used to deal with a specific document format . */
-public class DocumentFormat {
+public final class DocumentFormat {
 
   private final String name;
   // Be backward compatible. Former json file doesn't support multiple document format extensions.

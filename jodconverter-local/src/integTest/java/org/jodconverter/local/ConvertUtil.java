@@ -159,8 +159,10 @@ public final class ConvertUtil {
         case "xltx":
         case "pptx":
         case "potx":
-          LOGGER.info(
-              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+          if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(
+                "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+          }
           continue;
         default:
           break;
@@ -188,8 +190,10 @@ public final class ConvertUtil {
         case "pptx":
         case "potx":
         case "xhtml":
-          LOGGER.info(
-              "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+          if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(
+                "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+          }
           continue;
         default:
           break;

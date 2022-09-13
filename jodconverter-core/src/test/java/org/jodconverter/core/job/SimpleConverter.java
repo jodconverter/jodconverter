@@ -26,7 +26,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.SimpleOfficeManager;
 import org.jodconverter.core.task.SimpleOfficeTask;
 
-public class SimpleConverter extends AbstractConverter {
+public final class SimpleConverter extends AbstractConverter {
 
   public static Builder builder() {
     return new Builder();

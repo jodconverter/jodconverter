@@ -38,10 +38,10 @@ import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
 /** Contains tests for the {@link JodConverterBean} class with default values. */
-public class JodConverterBeanITest {
+class JodConverterBeanITest {
 
   @Test
-  public void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues()
+  void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues()
       throws OfficeException {
 
     final JodConverterBean bean = new JodConverterBean();
@@ -112,7 +112,7 @@ public class JodConverterBeanITest {
 
   @Test
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues(
+  void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues(
       final @TempDir File testFolder) throws OfficeException {
 
     final File workingDir = new File(testFolder, "temp");
@@ -204,7 +204,7 @@ public class JodConverterBeanITest {
   }
 
   @Test
-  public void build_WithBadPortNumber_ShouldInitializedOfficeManagerWithDefaultValues()
+  void build_WithBadPortNumber_ShouldInitializedOfficeManagerWithDefaultValues()
       throws OfficeException {
 
     final JodConverterBean bean = new JodConverterBean();

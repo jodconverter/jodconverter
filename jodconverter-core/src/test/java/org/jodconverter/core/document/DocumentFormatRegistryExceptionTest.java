@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 /** Contains tests for the {@link DocumentFormatRegistryException} class. */
-public class DocumentFormatRegistryExceptionTest {
+class DocumentFormatRegistryExceptionTest {
 
   @Test
-  public void create_IoExceptionThrownWhileLoading_ShouldThrowDocumentFormatRegistryException() {
+  void create_IoExceptionThrownWhileLoading_ShouldThrowDocumentFormatRegistryException() {
 
     DefaultDocumentFormatRegistryInstanceHolder.setInstance(null);
     try (MockedStatic<JsonDocumentFormatRegistry> registry =

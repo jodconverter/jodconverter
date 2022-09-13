@@ -43,14 +43,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** {@link OfficeConnection} implementation for testing purposes. */
-public class TestOfficeConnection extends OfficeConnection {
+public final class TestOfficeConnection extends OfficeConnection {
 
   private final AtomicBoolean connected = new AtomicBoolean();
   private final AtomicInteger connectCount = new AtomicInteger();
   private final AtomicInteger disconnectCount = new AtomicInteger();
   private final List<OfficeConnectionEventListener> testConnectionEventListeners;
-  private long connectSleep = 0L;
-  private long disconnectSleep = 0L;
+  private long connectSleep;
+  private long disconnectSleep;
 
   static TestOfficeConnection prepareTest(final OfficeUrl url) {
 
@@ -80,7 +80,8 @@ public class TestOfficeConnection extends OfficeConnection {
   }
 
   @Override
-  public void addConnectionEventListener(OfficeConnectionEventListener connectionEventListener) {
+  public void addConnectionEventListener(
+      final OfficeConnectionEventListener connectionEventListener) {
     super.addConnectionEventListener(connectionEventListener);
 
     testConnectionEventListeners.add(connectionEventListener);

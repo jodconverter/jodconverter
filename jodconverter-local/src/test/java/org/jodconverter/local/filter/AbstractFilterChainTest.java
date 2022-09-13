@@ -212,7 +212,7 @@ class AbstractFilterChainTest {
 
   static class TestFilter implements Filter {
 
-    private int executeCount = 0;
+    private int executeCount;
 
     @Override
     @SuppressWarnings("NullableProblems")

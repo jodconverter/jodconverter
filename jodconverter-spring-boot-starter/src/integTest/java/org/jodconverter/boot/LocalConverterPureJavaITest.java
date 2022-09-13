@@ -35,12 +35,12 @@ import org.jodconverter.local.process.PureJavaProcessManager;
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @TestPropertySource(locations = "classpath:config/application-local-purejava.properties")
-public class LocalConverterPureJavaITest {
+class LocalConverterPureJavaITest {
 
   @Autowired private LocalOfficeManager manager;
 
   @Test
-  public void testProcessManagerProperty() {
+  void testProcessManagerProperty() {
 
     assertThat(manager)
         .extracting("entries")

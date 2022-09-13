@@ -310,8 +310,8 @@ class ExternalOfficeConnectionManagerTest {
     private final OfficeUrl url;
     private boolean isConnected;
     private boolean throwConnectException;
-    private long connectSleep = 0L;
-    private long disconnectSleep = 0L;
+    private long connectSleep;
+    private long disconnectSleep;
 
     static TestOfficeConnection prepareTest(final OfficeUrl url, final boolean isConnected) {
 

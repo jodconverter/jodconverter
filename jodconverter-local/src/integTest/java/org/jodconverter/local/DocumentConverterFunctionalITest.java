@@ -64,7 +64,7 @@ class DocumentConverterFunctionalITest {
     final File source = documentFile("test_password.odt");
 
     // Convert the file to PDF
-    Throwable throwable =
+    final Throwable throwable =
         catchThrowable(
             () -> ConvertUtil.convertFileToSupportedFormats(source, testFolder, converter));
 

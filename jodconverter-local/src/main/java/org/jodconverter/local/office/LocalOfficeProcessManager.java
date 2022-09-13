@@ -345,9 +345,9 @@ class LocalOfficeProcessManager {
    *     the instance profile directory is already created. To recreate the instance profile
    *     directory, {@code restart} should be set to {@code false}.
    * @param checkOpengl Indicates whether we must check to change the OpenGL setting.
+   * @return {@code null}. So it could be used in a {@link java.util.concurrent.Callable}.
    * @throws OfficeException If the office process cannot be started or we are unable to connectr to
    *     the started process.
-   * @return {@code null}. So it could be used in a {@link java.util.concurrent.Callable}.
    */
   @SuppressWarnings("SameReturnValue")
   private Void startProcessAndConnect(final boolean restart, final boolean checkOpengl)
@@ -360,7 +360,7 @@ class LocalOfficeProcessManager {
     // Detect office version
     detectOfficeDescriptor();
 
-    // Build the accept argument (connection string).
+    // Build the 'accept' argument (connection string).
     final String acceptString = officeUrl.getAcceptString();
 
     // Search for an existing process.
@@ -477,10 +477,12 @@ class LocalOfficeProcessManager {
   private void killExistingProcess(final long pid, final ProcessQuery processQuery)
       throws IOException, OfficeException {
 
-    LOGGER.warn(
-        "A process with --accept '{}' is already running; pid {}; trying to kill it...",
-        processQuery.getArgument(),
-        pid);
+    if (LOGGER.isWarnEnabled()) {
+      LOGGER.warn(
+          "A process with --accept '{}' is already running; pid {}; trying to kill it...",
+          processQuery.getArgument(),
+          pid);
+    }
     processManager.kill(null, pid);
     // Wait a sec...
     try {

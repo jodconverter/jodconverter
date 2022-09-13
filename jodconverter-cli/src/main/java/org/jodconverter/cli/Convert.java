@@ -51,9 +51,12 @@ import org.jodconverter.remote.ssl.SslConfig;
 @SuppressWarnings("PMD.UseUtilityClass")
 public final class Convert {
 
+  /** Status returned when the program runs without errors. */
   public static final int STATUS_OK = 0;
   // public static final int STATUS_MISSING_INPUT_FILE = 1;
+  /** Status returned an error occurred while running the program. */
   public static final int STATUS_ERROR = 2;
+  /** Status returned when the program arguments are invalid. */
   public static final int STATUS_INVALID_ARGUMENTS = 255;
 
   private static final Option OPT_APPLICATION_CONTEXT =

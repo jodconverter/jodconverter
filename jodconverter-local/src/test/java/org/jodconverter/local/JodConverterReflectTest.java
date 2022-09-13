@@ -35,17 +35,17 @@ import org.mockito.MockedStatic;
 import org.jodconverter.core.test.util.AssertUtil;
 
 /** Contains tests that use reflection for the {@link JodConverter} class. */
-public class JodConverterReflectTest {
+class JodConverterReflectTest {
 
   private static final File SOURCE_FILE = documentFile("test.txt");
 
   @Test
-  public void new_ClassWellDefined() {
+  void new_ClassWellDefined() {
     AssertUtil.assertUtilityClassWellDefined(JodConverter.class);
   }
 
   @Test
-  public void convert_FromFile_CallForwardToLocalConverter() {
+  void convert_FromFile_CallForwardToLocalConverter() {
 
     try (MockedStatic<LocalConverter> staticMock = mockStatic(LocalConverter.class)) {
       final LocalConverter localConverter = mock(LocalConverter.class);
@@ -61,7 +61,7 @@ public class JodConverterReflectTest {
   }
 
   @Test
-  public void convert_FromStream_CallForwardToLocalConverter() throws IOException {
+  void convert_FromStream_CallForwardToLocalConverter() throws IOException {
 
     try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
       try (MockedStatic<LocalConverter> staticMock = mockStatic(LocalConverter.class)) {
@@ -78,7 +78,7 @@ public class JodConverterReflectTest {
   }
 
   @Test
-  public void convert_FromStreamWithCloseArgument_CallForwardToLocalConverter() throws IOException {
+  void convert_FromStreamWithCloseArgument_CallForwardToLocalConverter() throws IOException {
 
     try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
 

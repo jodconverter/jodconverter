@@ -58,6 +58,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
   protected final Map<String, Object> loadProperties;
 
+  /** Handler used to detect password-protected file. */
   private static class PasswordInteractionHandler implements XInteractionHandler {
 
     private PasswordRequest passwordRequest;

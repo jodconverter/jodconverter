@@ -32,12 +32,12 @@ import org.junit.jupiter.api.io.TempDir;
 import org.jodconverter.local.office.ExistingProcessAction;
 
 /** Contains tests for the {@link JodConverterBean} class. */
-public class SpringControllerTest {
+class SpringControllerTest {
 
   /* default */ @TempDir File testFolder;
 
   @Test
-  public void withDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues() {
+  void withDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues() {
 
     final JodConverterBean bean = new JodConverterBean();
 
@@ -79,7 +79,7 @@ public class SpringControllerTest {
   }
 
   @Test
-  public void withSpecifiedValues_ShouldInitializedOfficeManagerWithSpecifiedValues() {
+  void withSpecifiedValues_ShouldInitializedOfficeManagerWithSpecifiedValues() {
 
     final JodConverterBean bean = new JodConverterBean();
     bean.setWorkingDir(new File(testFolder, "workingDir").getPath());

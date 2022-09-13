@@ -41,7 +41,7 @@ import org.jodconverter.remote.office.RemoteOfficeManager;
  */
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-props-default.properties")
-public class AutoConfigurationDefaultPropertiesITest {
+class AutoConfigurationDefaultPropertiesITest {
 
   @Autowired private JodConverterLocalProperties localProps;
   @Autowired private JodConverterRemoteProperties remoteProps;
@@ -62,7 +62,7 @@ public class AutoConfigurationDefaultPropertiesITest {
   }
 
   @Test
-  public void testLocalProperties() {
+  void testLocalProperties() {
 
     assertThat(localProps)
         .extracting(
@@ -104,7 +104,7 @@ public class AutoConfigurationDefaultPropertiesITest {
   }
 
   @Test
-  public void testRemoteProperties() {
+  void testRemoteProperties() {
 
     assertThat(remoteProps)
         .extracting(

@@ -247,7 +247,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
   public static final @NonNull DocumentFormat XLSX = byExtension("xlsx");
 
   /**
-   * Microsoft Excel 2007-2013 XML Spreadsheet template
+   * Microsoft Excel 2007-2013 XML Spreadsheet template.
    *
    * <ul>
    *   <li>Extension: xltx

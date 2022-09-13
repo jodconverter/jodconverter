@@ -38,7 +38,7 @@ import org.jodconverter.core.task.SimpleOfficeTask;
 import org.jodconverter.core.test.util.TestUtil;
 
 /** Contains tests for the {@link ExternalOfficeManager} class. */
-public class ExternalOfficeManagerITest {
+class ExternalOfficeManagerITest {
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long START_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
@@ -97,7 +97,7 @@ public class ExternalOfficeManagerITest {
   }
 
   @Test
-  public void execute_WhenProcessDoesNotExist_ShouldFailed() {
+  void execute_WhenProcessDoesNotExist_ShouldFailed() {
 
     final OfficeManager manager =
         ExternalOfficeManager.builder()
@@ -114,7 +114,7 @@ public class ExternalOfficeManagerITest {
 
   @ParameterizedTest
   @ValueSource(strings = {"localhost", "127.0.0.1"})
-  public void execute_WhenProcessExists_ShouldSucceed(final String host) {
+  void execute_WhenProcessExists_ShouldSucceed(final String host) {
     final OfficeManager manager =
         ExternalOfficeManager.builder()
             .hostName(host)

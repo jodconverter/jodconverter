@@ -65,7 +65,7 @@ class LocalOfficeManagerTest {
     @Test
     void shouldInitializedManagerWithDefaultValues() {
 
-      final OfficeManager manager = LocalOfficeManager.make();
+      final OfficeManager manager = make();
 
       assertThat(manager).isInstanceOf(LocalOfficeManager.class);
       assertThat(manager)
@@ -130,7 +130,7 @@ class LocalOfficeManagerTest {
       // Ensure we do not replace the current installed manager
       final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
       try {
-        final OfficeManager manager = LocalOfficeManager.install();
+        final OfficeManager manager = install();
         assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
       } finally {
         InstalledOfficeManagerHolder.setInstance(installedManager);
@@ -146,7 +146,7 @@ class LocalOfficeManagerTest {
     void withNullValues_ShouldInitializedManagerWithDefaultValues() {
 
       final OfficeManager manager =
-          LocalOfficeManager.builder()
+          builder()
               .workingDir((String) null)
               .workingDir((File) null)
               .taskExecutionTimeout(null)
@@ -349,38 +349,29 @@ class LocalOfficeManagerTest {
     void whenInvalidProcessManager_ShouldThrowIllegalArgumentException() {
 
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> LocalOfficeManager.builder().processManager("jod.Foo").build());
+          .isThrownBy(() -> builder().processManager("jod.Foo").build());
     }
 
     @Test
     void whenInvalidProcessTimeout_ShouldThrowIllegalArgumentException() {
 
-      assertThatIllegalArgumentException()
-          .isThrownBy(() -> LocalOfficeManager.builder().processTimeout(-1L).build());
+      assertThatIllegalArgumentException().isThrownBy(() -> builder().processTimeout(-1L).build());
     }
 
     @Test
     void whenInvalidProcessRetryInterval_ShouldThrowIllegalArgumentException() {
 
       assertThatIllegalArgumentException()
-          .isThrownBy(
-              () ->
-                  LocalOfficeManager.builder()
-                      .processRetryInterval(MIN_PROCESS_RETRY_INTERVAL - 1)
-                      .build());
+          .isThrownBy(() -> builder().processRetryInterval(MIN_PROCESS_RETRY_INTERVAL - 1).build());
       assertThatIllegalArgumentException()
-          .isThrownBy(
-              () ->
-                  LocalOfficeManager.builder()
-                      .processRetryInterval(MAX_PROCESS_RETRY_INTERVAL + 1)
-                      .build());
+          .isThrownBy(() -> builder().processRetryInterval(MAX_PROCESS_RETRY_INTERVAL + 1).build());
     }
 
     @Test
     void whenInvalidMaxTasksPerProcess_ShouldThrowIllegalArgumentException() {
 
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> LocalOfficeManager.builder().maxTasksPerProcess(-1).build());
+          .isThrownBy(() -> builder().maxTasksPerProcess(-1).build());
     }
 
     @Test
@@ -389,9 +380,7 @@ class LocalOfficeManagerTest {
       final File templateProfileDir = new File(testFolder, "template");
 
       final OfficeManager manager =
-          LocalOfficeManager.builder()
-              .templateProfileDirOrDefault(templateProfileDir.getPath())
-              .build();
+          builder().templateProfileDirOrDefault(templateProfileDir.getPath()).build();
 
       assertThat(manager).isInstanceOf(LocalOfficeManager.class);
       assertThat(manager)

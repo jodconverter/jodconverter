@@ -171,7 +171,7 @@ class DefaultFilterChainTest {
 
   static class TestFilter implements Filter {
 
-    int executeCount = 0;
+    int executeCount;
 
     @Override
     @SuppressWarnings("NullableProblems")
@@ -187,7 +187,7 @@ class DefaultFilterChainTest {
   static class TestFilterChain extends DefaultFilterChain {
 
     final boolean endsWithRefreshFilter;
-    int lastRefreshFilterExecutedCount = 0;
+    int lastRefreshFilterExecutedCount;
 
     TestFilterChain(final boolean endsWithRefreshFilter, final Filter... filters) {
       super(endsWithRefreshFilter, filters);
@@ -207,7 +207,7 @@ class DefaultFilterChainTest {
         final Filter filter, final OfficeContext context, final XComponent document)
         throws OfficeException {
 
-      if (filter == RefreshFilter.LAST_REFRESH) {
+      if (RefreshFilter.LAST_REFRESH.equals(filter)) {
         lastRefreshFilterExecutedCount++;
       }
       super.doFilter(filter, context, document);

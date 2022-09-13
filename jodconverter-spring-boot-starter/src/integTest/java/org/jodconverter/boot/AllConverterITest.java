@@ -44,7 +44,7 @@ import org.jodconverter.core.util.FileUtils;
 /** Tests that an application can use both an remote converter and a local converter. */
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-all.properties")
-public class AllConverterITest {
+class AllConverterITest {
 
   private static final String RESOURCES_PATH = "src/integTest/resources/";
   private static final String SOURCE_FILE_PATH = RESOURCES_PATH + "documents/test1.doc";
@@ -56,7 +56,7 @@ public class AllConverterITest {
   private DocumentConverter remoteConverter;
 
   @Test
-  public void execute_UsingLocalConverter_TargetShouldContaingExpectedResult(
+  void execute_UsingLocalConverter_TargetShouldContaingExpectedResult(
       final @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
@@ -76,7 +76,7 @@ public class AllConverterITest {
   }
 
   @Test
-  public void execute_UsingRemoteConverter_TargetShouldContaingExpectedResult(
+  void execute_UsingRemoteConverter_TargetShouldContaingExpectedResult(
       final @TempDir File testFolder) throws Exception {
 
     final File inputFile = new File(SOURCE_FILE_PATH);

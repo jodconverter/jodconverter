@@ -39,8 +39,7 @@ import org.jodconverter.local.filter.Filter;
 class DrawITest {
 
   @Test
-  public void withDrawDocument_ShouldSucceed(
-      final @TempDir File testFolder, final OfficeManager manager) {
+  void withDrawDocument_ShouldSucceed(final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =
         (context, document, chain) -> {
@@ -63,7 +62,7 @@ class DrawITest {
   }
 
   @Test
-  public void withImpressDocument_ShouldSucceed(
+  void withImpressDocument_ShouldSucceed(
       final @TempDir File testFolder, final OfficeManager manager) {
 
     final Filter filter =

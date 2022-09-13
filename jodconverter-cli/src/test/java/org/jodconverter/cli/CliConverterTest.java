@@ -55,7 +55,7 @@ import org.jodconverter.local.task.LocalConversionTask;
   NoExitExtension.class,
   ResetExitExceptionExtension.class
 })
-public class CliConverterTest {
+class CliConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
   private static final String SOURCE_DIR = "src/test/resources/documents/";
@@ -84,7 +84,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void main_WithWrongInputOutputFilenamesLengthMismatch_ThrowsIllegalArgumentException(
+  void main_WithWrongInputOutputFilenamesLengthMismatch_ThrowsIllegalArgumentException(
       final @TempDir File testFolder) {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
@@ -103,7 +103,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void main_WithNullOutputDir_TaskExecutedIgnoringOutputDir() throws Exception {
+  void main_WithNullOutputDir_TaskExecutedIgnoringOutputDir() throws Exception {
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()}, "pdf", null, false);
@@ -123,15 +123,14 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_DirnamesToTarget_NoTaskExecuted() throws Exception {
+  void convert_DirnamesToTarget_NoTaskExecuted() throws Exception {
 
     converter.convert(new String[] {SOURCE_DIR}, new String[] {TARGET_FILENAME_1}, null, false);
     verify(officeManager, times(0)).execute(isA(LocalConversionTask.class));
   }
 
   @Test
-  public void convert_FilenamesToDirnames_NoTaskExecuted(final @TempDir File testFolder)
-      throws Exception {
+  void convert_FilenamesToDirnames_NoTaskExecuted(final @TempDir File testFolder) throws Exception {
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
@@ -142,8 +141,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFilenames_TasksExecuted(final @TempDir File testFolder)
-      throws Exception {
+  void convert_FilenamesToFilenames_TasksExecuted(final @TempDir File testFolder) throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -169,8 +167,8 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFilenamesAllowingOverwrite_TasksExecuted(
-      final @TempDir File testFolder) throws Exception {
+  void convert_FilenamesToFilenamesAllowingOverwrite_TasksExecuted(final @TempDir File testFolder)
+      throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -197,8 +195,8 @@ public class CliConverterTest {
 
   @Test
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted(
-      final @TempDir File testFolder) throws Exception {
+  void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted(final @TempDir File testFolder)
+      throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -216,8 +214,8 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted(
-      final @TempDir File testFolder) throws Exception {
+  void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted(final @TempDir File testFolder)
+      throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -243,7 +241,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFormat_TasksExecuted() throws Exception {
+  void convert_FilenamesToFormat_TasksExecuted() throws Exception {
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
@@ -266,7 +264,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_FilenamesToFormatWithOutputDir_TasksExecuted(final @TempDir File testFolder)
+  void convert_FilenamesToFormatWithOutputDir_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
@@ -294,8 +292,8 @@ public class CliConverterTest {
 
   @Test
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted(
-      final @TempDir File testFolder) throws Exception {
+  void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted(final @TempDir File testFolder)
+      throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -325,8 +323,8 @@ public class CliConverterTest {
 
   @Test
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted(
-      final @TempDir File testFolder) throws Exception {
+  void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted(final @TempDir File testFolder)
+      throws Exception {
 
     final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
     final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
@@ -344,7 +342,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_DirWithWildcard_TasksExecuted() throws Exception {
+  void convert_DirWithWildcard_TasksExecuted() throws Exception {
 
     converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", null, false);
 
@@ -371,7 +369,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_DirWithWildcardAndOutputDir_TasksExecuted(final @TempDir File testFolder)
+  void convert_DirWithWildcardAndOutputDir_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
     converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", testFolder.getPath(), false);
@@ -402,7 +400,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_UnexistingDirWithWildcard_TasksNotExecutedWithExpectedLog() {
+  void convert_UnexistingDirWithWildcard_TasksNotExecutedWithExpectedLog() {
 
     try {
       SystemLogHandler.startCapture();
@@ -415,7 +413,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void convert_WithOutputDirAlreadyExistingAsFile_ThrowsOfficeException() {
+  void convert_WithOutputDirAlreadyExistingAsFile_ThrowsOfficeException() {
 
     assertThatExceptionOfType(OfficeException.class)
         .isThrownBy(
@@ -430,7 +428,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void prepareOutputDir_WithOutputDirThatCannotBeWrittenTo_ThrowsOfficeException() {
+  void prepareOutputDir_WithOutputDirThatCannotBeWrittenTo_ThrowsOfficeException() {
 
     final File dir = mock(File.class);
     given(dir.exists()).willReturn(true);
@@ -454,7 +452,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void prepareOutputDir_WithUnexistingOutputDir_OutputDirCreated() throws Exception {
+  void prepareOutputDir_WithUnexistingOutputDir_OutputDirCreated() throws Exception {
 
     final File dir =
         new File(TEST_OUTPUT_DIR, CliConverterTest.class.getSimpleName() + "_prepareTest");
@@ -469,7 +467,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void validateInputFile_WithInputFileThatDoesNotExists_ReturnsFalse() throws Exception {
+  void validateInputFile_WithInputFileThatDoesNotExists_ReturnsFalse() throws Exception {
 
     final File file = mock(File.class);
     given(file.exists()).willReturn(false);
@@ -487,7 +485,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void validateInputFile_WithInputFileThatExistsAsDirectory_ReturnsFalse() throws Exception {
+  void validateInputFile_WithInputFileThatExistsAsDirectory_ReturnsFalse() throws Exception {
 
     final File file = mock(File.class);
     given(file.exists()).willReturn(true);
@@ -506,7 +504,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void validateInputFile_WithInputFileThatCannotBeReadFrom_ReturnsFalse() throws Exception {
+  void validateInputFile_WithInputFileThatCannotBeReadFrom_ReturnsFalse() throws Exception {
 
     final File file = mock(File.class);
     given(file.exists()).willReturn(true);
@@ -526,7 +524,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void validateOutputFile_WithOutputFileThatDoesNotExists_ReturnsTrue() throws Exception {
+  void validateOutputFile_WithOutputFileThatDoesNotExists_ReturnsTrue() throws Exception {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);
@@ -540,8 +538,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void validateOutputFile_WithOutputFileThatExistsAsDirectory_ReturnsFalse()
-      throws Exception {
+  void validateOutputFile_WithOutputFileThatExistsAsDirectory_ReturnsFalse() throws Exception {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);
@@ -564,8 +561,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void validateOutputFile_WithOutputFileThatExistsAndOverwriteOff_ReturnsFalse()
-      throws Exception {
+  void validateOutputFile_WithOutputFileThatExistsAndOverwriteOff_ReturnsFalse() throws Exception {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);
@@ -589,8 +585,7 @@ public class CliConverterTest {
   }
 
   @Test
-  public void validateOutputFile_WithOutputFileThatExistsAndOverwriteOn_ReturnsTrue()
-      throws Exception {
+  void validateOutputFile_WithOutputFileThatExistsAndOverwriteOn_ReturnsTrue() throws Exception {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);
@@ -606,9 +601,8 @@ public class CliConverterTest {
   }
 
   @Test
-  public void
-      validateOutputFile_WithOutputFileThatExistsButCannotBeDeletedAndOverwriteOn_ReturnsFalse()
-          throws Exception {
+  void validateOutputFile_WithOutputFileThatExistsButCannotBeDeletedAndOverwriteOn_ReturnsFalse()
+      throws Exception {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);

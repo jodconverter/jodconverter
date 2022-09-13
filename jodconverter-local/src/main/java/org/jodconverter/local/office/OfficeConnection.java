@@ -161,9 +161,11 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
       desktopService = null;
       bridgeComponent = null;
 
-      LOGGER.info("Disconnected from '{}'", officeUrl.getConnectString());
+      if (LOGGER.isInfoEnabled()) {
+        LOGGER.info("Disconnected from '{}'", officeUrl.getConnectString());
+      }
 
-      // Inform listeners. Must be done at the end since a listener may recreated the bridge
+      // Inform listeners. Must be done at the end since a listener may recreate the bridge
       final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
       connectionEventListeners.forEach(listener -> listener.disconnected(connectionEvent));
     }

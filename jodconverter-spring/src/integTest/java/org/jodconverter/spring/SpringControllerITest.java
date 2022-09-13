@@ -45,7 +45,7 @@ import org.jodconverter.local.LocalConverter;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
 @DirtiesContext(classMode = AFTER_CLASS)
-public class SpringControllerITest {
+class SpringControllerITest {
 
   /* default */ @TempDir File testFolder;
   private File inputFileTxt;
@@ -67,7 +67,7 @@ public class SpringControllerITest {
   }
 
   @BeforeEach
-  public void setUp() throws IOException {
+  void setUp() throws IOException {
 
     inputFileTxt = new File(testFolder, "inputFile.txt");
     try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
@@ -77,7 +77,7 @@ public class SpringControllerITest {
   }
 
   @Test
-  public void testOfficeManager() throws OfficeException {
+  void testOfficeManager() throws OfficeException {
 
     final File outputFile = new File(testFolder, "outputFile.txt");
     LocalConverter.builder()
@@ -94,7 +94,7 @@ public class SpringControllerITest {
   }
 
   @Test
-  public void testTxtToRtf() throws OfficeException {
+  void testTxtToRtf() throws OfficeException {
 
     final File outputFile = new File(testFolder, "outputFile.rtf");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
@@ -106,7 +106,7 @@ public class SpringControllerITest {
   }
 
   @Test
-  public void testTxtToDoc() throws OfficeException {
+  void testTxtToDoc() throws OfficeException {
 
     final File outputFile = new File(testFolder, "outputFile.doc");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
@@ -118,7 +118,7 @@ public class SpringControllerITest {
   }
 
   @Test
-  public void testTxtToPdf() throws OfficeException {
+  void testTxtToPdf() throws OfficeException {
 
     final File outputFile = new File(testFolder, "outputFile.pdf");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
@@ -130,7 +130,7 @@ public class SpringControllerITest {
   }
 
   @Test
-  public void testLogAvailableFormats() {
+  void testLogAvailableFormats() {
 
     bean.logAvailableFormats();
   }

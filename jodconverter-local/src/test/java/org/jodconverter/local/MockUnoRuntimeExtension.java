@@ -68,6 +68,7 @@ public class MockUnoRuntimeExtension implements AfterEachCallback, ParameterReso
     return getStore(context).getOrComputeIfAbsent(UnoRuntimeResource.class).get();
   }
 
+  /** UnoRuntime resource. */
   private static class UnoRuntimeResource {
 
     private final UnoRuntime unoRuntime;

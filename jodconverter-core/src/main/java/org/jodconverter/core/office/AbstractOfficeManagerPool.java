@@ -252,8 +252,11 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
           new File(
               tempDir.getParentFile(), tempDir.getName() + ".old." + System.currentTimeMillis());
       if (tempDir.renameTo(oldDir)) {
-        LOGGER.warn(
-            String.format("Could not delete temporary directory; renamed it to '%s'", oldDir), ex);
+        if (LOGGER.isWarnEnabled()) {
+          LOGGER.warn(
+              String.format("Could not delete temporary directory; renamed it to '%s'", oldDir),
+              ex);
+        }
       } else {
         LOGGER.error("Could not delete temporary", ex);
       }
@@ -271,7 +274,7 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
         tempDir,
         "tempfile_"
             + tempFileCounter.getAndIncrement()
-            + (StringUtils.isBlank(extension) ? "" : ("." + extension)));
+            + (StringUtils.isBlank(extension) ? "" : "." + extension));
   }
 
   /**

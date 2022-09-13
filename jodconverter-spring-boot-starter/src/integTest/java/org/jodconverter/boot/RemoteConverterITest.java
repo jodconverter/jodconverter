@@ -47,7 +47,7 @@ import org.jodconverter.remote.RemoteConverter;
 /** Contains tests for the {@link RemoteConverter} class. */
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-remote.properties")
-public class RemoteConverterITest {
+class RemoteConverterITest {
 
   private static final String RESOURCES_PATH = "src/integTest/resources/";
   private static final String SOURCE_FILE_PATH = RESOURCES_PATH + "documents/test1.doc";
@@ -61,7 +61,7 @@ public class RemoteConverterITest {
   @Autowired private DocumentConverter converter;
 
   @Test
-  public void execute_FromFileToFileReturning200OK_TargetShouldContaingExpectedResult(
+  void execute_FromFileToFileReturning200OK_TargetShouldContaingExpectedResult(
       final @TempDir File testFolder) throws OfficeException, IOException {
 
     final File inputFile = new File(SOURCE_FILE_PATH);
@@ -92,7 +92,7 @@ public class RemoteConverterITest {
       final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
 
-      // Verify that a it is actually the remote converter that did the conversion.
+      // Verify that it is actually the remote converter that did the conversion.
       configureFor(wireMockServer.port());
       verify(postRequestedFor(urlPathEqualTo("/lool/convert-to/txt")));
     } finally {

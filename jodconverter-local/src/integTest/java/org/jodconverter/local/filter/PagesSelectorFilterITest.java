@@ -277,7 +277,7 @@ class PagesSelectorFilterITest {
     }
 
     @Test
-    public void withPageOutOfRange_ShouldIgnoreNonexistentPages(
+    void withPageOutOfRange_ShouldIgnoreNonexistentPages(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
       final File targetFile = new File(testFolder, TEXT_FILENAME + ".page2Only.txt");

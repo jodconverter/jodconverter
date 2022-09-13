@@ -41,7 +41,7 @@ import org.jodconverter.remote.task.RemoteConversionTask;
  * @see org.jodconverter.core.DocumentConverter
  * @see RemoteOfficeManager
  */
-public class RemoteConverter extends AbstractConverter {
+public final class RemoteConverter extends AbstractConverter {
 
   /**
    * Creates a new builder instance.

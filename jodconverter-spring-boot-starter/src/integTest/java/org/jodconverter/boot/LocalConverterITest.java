@@ -44,7 +44,7 @@ import org.jodconverter.core.office.OfficeException;
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @TestPropertySource(locations = "classpath:config/application-local.properties")
-public class LocalConverterITest {
+class LocalConverterITest {
 
   /* default */ @TempDir File testFolder;
   private File inputFileTxt;
@@ -52,7 +52,7 @@ public class LocalConverterITest {
   @Autowired private DocumentConverter converter;
 
   @BeforeEach
-  public void setUp() throws IOException {
+  void setUp() throws IOException {
 
     inputFileTxt = new File(testFolder, "inputFile.txt");
     try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
@@ -62,7 +62,7 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testTxtToRtf() throws OfficeException {
+  void testTxtToRtf() throws OfficeException {
 
     final File outputFile = new File(testFolder, "outputFile.rtf");
     converter.convert(inputFileTxt).to(outputFile).execute();
@@ -74,7 +74,7 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testTxtToDoc() throws OfficeException {
+  void testTxtToDoc() throws OfficeException {
 
     final File outputFile = new File(testFolder, "outputFile.doc");
     converter.convert(inputFileTxt).to(outputFile).execute();
@@ -86,7 +86,7 @@ public class LocalConverterITest {
   }
 
   @Test
-  public void testTxtToPdf() throws OfficeException {
+  void testTxtToPdf() throws OfficeException {
 
     final File outputFile = new File(testFolder, "outputFile.pdf");
     converter.convert(inputFileTxt).to(outputFile).execute();
@@ -99,7 +99,7 @@ public class LocalConverterITest {
 
   @Test
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public void testDocToHtml() throws OfficeException {
+  void testDocToHtml() throws OfficeException {
 
     final File outputDir = new File(testFolder, "html");
     outputDir.mkdirs();
@@ -118,7 +118,7 @@ public class LocalConverterITest {
   // The following test fails on Apache Open Office.
   //  @Test
   //  @SuppressWarnings("ResultOfMethodCallIgnored")
-  //  public void testDocToXhtml() throws OfficeException {
+  //  void testDocToXhtml() throws OfficeException {
   //    final File outputDir = new File(testFolder, "xhtml");
   //    outputDir.mkdirs();
   //
@@ -135,7 +135,7 @@ public class LocalConverterITest {
 
   /** Test custom properties. */
   @Test
-  public void testCustomProperties() {
+  void testCustomProperties() {
 
     assertThat(
             Objects.requireNonNull(

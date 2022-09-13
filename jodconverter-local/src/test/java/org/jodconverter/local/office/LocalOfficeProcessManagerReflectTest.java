@@ -42,10 +42,10 @@ import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.ProcessQuery;
 
 /** Contains tests that use reflection for the {@link LocalOfficeProcessManager} class. */
-public class LocalOfficeProcessManagerReflectTest {
+class LocalOfficeProcessManagerReflectTest {
 
   @Test
-  public void checkForExistingProcess_WhenIOExceptionCatched_ShouldTrowOfficeException() {
+  void checkForExistingProcess_WhenIOExceptionCatched_ShouldTrowOfficeException() {
 
     final OfficeUrl url = new OfficeUrl(9999);
     final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
@@ -96,7 +96,7 @@ public class LocalOfficeProcessManagerReflectTest {
 
   @Test
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public void deleteProfileDir_WhenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory(
+  void deleteProfileDir_WhenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory(
       final @TempDir File testFolder) throws Exception {
 
     final File workingDir =
@@ -143,8 +143,8 @@ public class LocalOfficeProcessManagerReflectTest {
 
   @Test
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public void deleteProfileDir_WhenCannotBeDeleted_ShouldIgnoreOperation(
-      final @TempDir File testFolder) throws Exception {
+  void deleteProfileDir_WhenCannotBeDeleted_ShouldIgnoreOperation(final @TempDir File testFolder)
+      throws Exception {
 
     final File workingDir =
         new File(testFolder, "deleteProfileDir_WhenCannotBeDeleted_ShouldIgnoreOperation");
@@ -186,7 +186,7 @@ public class LocalOfficeProcessManagerReflectTest {
   }
 
   @Test
-  public void forciblyTerminateProcess_WhenIoExceptionCatched_ShouldLogError() {
+  void forciblyTerminateProcess_WhenIoExceptionCatched_ShouldLogError() {
 
     final OfficeUrl url = new OfficeUrl(9999);
     final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
@@ -224,7 +224,7 @@ public class LocalOfficeProcessManagerReflectTest {
   }
 
   @Test
-  public void forciblyTerminateProcess_WhenNotStarted_ShouldDoNothing() {
+  void forciblyTerminateProcess_WhenNotStarted_ShouldDoNothing() {
 
     final OfficeUrl url = new OfficeUrl(9999);
     final OfficeConnection connection = TestOfficeConnection.prepareTest(url);

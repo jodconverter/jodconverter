@@ -130,7 +130,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
    * @param task The task to execute.
    * @throws OfficeException If any errors occurs during the conversion.
    */
-  protected abstract void doExecute(final @NonNull OfficeTask task) throws OfficeException;
+  protected abstract void doExecute(@NonNull OfficeTask task) throws OfficeException;
 
   /**
    * Handles a timeout exception raised while executing a task.
