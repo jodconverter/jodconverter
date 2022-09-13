@@ -179,7 +179,7 @@ task copyLicense(type: Copy) {
     into file("$projectDir/src/main/resources/META-INF/")
 }
 
-jar {
+processResources {
     dependsOn copyLicense
 }
 
@@ -214,7 +214,7 @@ jar {
             attributes(
                     "Automatic-Module-Name": project.name.replace("-", "."),
                     "Build-Jdk-Spec": baselineJavaVersion,
-                    "Built-By": "jodconverter.org",
+                    "Built-By": "JODConverter",
                     "Bundle-License": "https://github.com/sbraconnier/jodconverter/wiki/LICENSE",
                     "Bundle-Vendor": "JODConverter",
                     "Bundle-DocURL": "https://github.com/sbraconnier/jodconverter/wiki",
