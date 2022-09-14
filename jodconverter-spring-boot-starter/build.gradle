@@ -6,8 +6,7 @@ ext.moduleDescription = 'Spring Boot integration module of the Java OpenDocument
 dependencies {
     compileOnly project(":jodconverter-local")
     compileOnly project(":jodconverter-remote")
-
-    compileOnly Deps.springBootConfigurationProcessor
+    annotationProcessor Deps.springBootConfigurationProcessor
 
     implementation Deps.springBootStarter
 
