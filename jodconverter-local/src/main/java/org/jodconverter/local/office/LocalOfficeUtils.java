@@ -86,11 +86,12 @@ public final class LocalOfficeUtils {
             findOfficeHome(
                 EXECUTABLE_WINDOWS,
                 programFiles64 + File.separator + "LibreOffice",
+                programFiles32 + File.separator + "LibreOffice",
                 programFiles64 + File.separator + "LibreOffice 5",
                 programFiles32 + File.separator + "LibreOffice 5",
-                programFiles32 + File.separator + "OpenOffice 4",
                 programFiles64 + File.separator + "LibreOffice 4",
                 programFiles32 + File.separator + "LibreOffice 4",
+                programFiles32 + File.separator + "OpenOffice 4",
                 programFiles64 + File.separator + "LibreOffice 3",
                 programFiles32 + File.separator + "LibreOffice 3",
                 programFiles32 + File.separator + "OpenOffice.org 3");
@@ -245,9 +246,11 @@ public final class LocalOfficeUtils {
     AssertUtils.notNull(document, "document must not be null");
 
     final XServiceInfo serviceInfo = Lo.qi(XServiceInfo.class, document);
-    if (serviceInfo.supportsService(Lo.WRITER_SERVICE)) {
-      // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
-      // but this further distinction doesn't seem to matter for conversions
+    // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument.
+    // So we must test for WebDocument first.
+    if (serviceInfo.supportsService(Lo.WEB_SERVICE)) {
+      return DocumentFamily.WEB;
+    } else if (serviceInfo.supportsService(Lo.WRITER_SERVICE)) {
       return DocumentFamily.TEXT;
     } else if (serviceInfo.supportsService(Lo.CALC_SERVICE)) {
       return DocumentFamily.SPREADSHEET;
