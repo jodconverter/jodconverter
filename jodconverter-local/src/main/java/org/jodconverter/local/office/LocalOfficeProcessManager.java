@@ -393,9 +393,14 @@ class LocalOfficeProcessManager {
       final StartProcessAndConnectRetryable retryable =
           new StartProcessAndConnectRetryable(
               processManager, processBuilder, processQuery, afterStartProcessDelay, connection);
-      retryable.execute(processRetryInterval, processTimeout);
-      process = retryable.getProcess();
-      pid = retryable.getProcessId();
+      try {
+        retryable.execute(processRetryInterval, processTimeout);
+      } finally {
+        // We must keep these even on connect failure in order to be able to kill the process if
+        // required.
+        process = retryable.getProcess();
+        pid = retryable.getProcessId();
+      }
 
       LOGGER.info(
           "Started process; pid: {}",
@@ -434,7 +439,7 @@ class LocalOfficeProcessManager {
    * Stops the office process managed by this manager.
    *
    * <p>This function is always called into tasks that are executed by a single thread {@link
-   * ExecutorService} and thus, the function must managed its own exception handling.
+   * ExecutorService} and thus, the function must manage its own exception handling.
    *
    * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
    *     deleted. We don't always want to delete the instance profile directory on restart since it
@@ -588,6 +593,7 @@ class LocalOfficeProcessManager {
 
     // LibreOffice:
     // https://help.libreoffice.org/Common/Starting_the_Software_With_Parameters
+    // https://help.libreoffice.org/7.4/en-US/text/shared/guide/start_parameters.html
     //
     // Apache OpenOffice:
     // https://wiki.openoffice.org/wiki/Framework/Article/Command_Line_Arguments

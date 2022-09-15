@@ -23,7 +23,6 @@ import static org.jodconverter.local.process.ProcessManager.PID_UNKNOWN;
 
 import java.io.IOException;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,8 +155,8 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
    *
    * @return The started process.
    */
-  public @NonNull VerboseProcess getProcess() {
-    return result.process;
+  public VerboseProcess getProcess() {
+    return result == null ? null : result.process;
   }
 
   /**
@@ -166,7 +165,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
    * @return The started process id.
    */
   public long getProcessId() {
-    return result.pid;
+    return result == null ? PID_UNKNOWN : result.pid;
   }
 
   private StartProcessResult startProcess() throws IOException {

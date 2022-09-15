@@ -33,6 +33,7 @@ import org.junit.platform.commons.JUnitException;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.LocalOfficeManager;
 
@@ -96,10 +97,15 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
                   .toArray();
       // TODO: Add support for custom configuration.
       final LocalOfficeManager mng =
-          LocalOfficeManager.builder().portNumbers(portNumbers).maxTasksPerProcess(1000).build();
+          LocalOfficeManager.builder()
+              .portNumbers(portNumbers)
+              .startFailFast(true)
+              .maxTasksPerProcess(100)
+              .build();
       try {
         mng.start();
       } catch (OfficeException ex) {
+        OfficeUtils.stopQuietly(mng);
         throw new JUnitException("Could not start an office process for the test suite", ex);
       }
       this.manager = mng;
