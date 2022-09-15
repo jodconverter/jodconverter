@@ -105,6 +105,7 @@ public class PagesSelectorFilter implements Filter {
 
       switch (family) {
         case TEXT:
+        case WEB:
           LOGGER.debug("Applying the PagesSelectorFilter for a Text document");
 
           // We must process from the start to the end.

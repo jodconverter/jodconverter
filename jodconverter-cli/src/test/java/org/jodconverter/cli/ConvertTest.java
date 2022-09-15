@@ -528,7 +528,9 @@ class ConvertTest {
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
 
-      assertThat(localConverter).extracting("loadProperties").isEqualTo(null);
+      assertThat(localConverter)
+          .extracting("loadProperties")
+          .isEqualTo(LocalConverter.DEFAULT_LOAD_PROPERTIES);
     }
   }
 }

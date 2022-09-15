@@ -38,11 +38,14 @@ import org.jodconverter.core.util.AssertUtils;
  */
 public final class Lo { // NOPMD - Disable utility class name rule violation
 
-  // Document types service names
+  // Document types service names.
+  // See here for document hierarchy:
+  // https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
   // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
   // but this further distinction doesn't seem to matter for conversions
   // public static final String WRITER_SERVICE = "com.sun.star.text.TextDocument";
   public static final String WRITER_SERVICE = "com.sun.star.text.GenericTextDocument";
+  public static final String WEB_SERVICE = "com.sun.star.text.WebDocument";
   public static final String CALC_SERVICE = "com.sun.star.sheet.SpreadsheetDocument";
   public static final String DRAW_SERVICE = "com.sun.star.drawing.DrawingDocument";
   public static final String IMPRESS_SERVICE = "com.sun.star.presentation.PresentationDocument";

@@ -152,12 +152,13 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   // Gets the office properties to apply when the input file will be loaded.
   protected @NonNull Map<@NonNull String, @NonNull Object> getLoadProperties() {
 
-    final Map<String, Object> loadProps =
-        new HashMap<>(
-            loadProperties == null ? LocalConverter.DEFAULT_LOAD_PROPERTIES : loadProperties);
+    final Map<String, Object> loadProps = new HashMap<>();
     if (source.getFormat() != null) {
       appendProperties(loadProps, source.getFormat().getLoadProperties());
     }
+    appendProperties(
+        loadProps,
+        loadProperties == null ? LocalConverter.DEFAULT_LOAD_PROPERTIES : loadProperties);
 
     // Register a PasswordInteractionHandler handler for opening documents, but only
     // if no interaction handler has been put into the load properties.

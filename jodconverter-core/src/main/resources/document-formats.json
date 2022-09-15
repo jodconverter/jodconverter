@@ -9,6 +9,9 @@
     "storeProperties": {
       "TEXT": {
         "FilterName": "writer8"
+      },
+      "WEB": {
+        "FilterName": "writerweb8_writer"
       }
     }
   },
@@ -22,6 +25,9 @@
     "storeProperties": {
       "TEXT": {
         "FilterName": "writer8_template"
+      },
+      "WEB": {
+        "FilterName": "writerweb8_writer_template"
       }
     }
   },
@@ -83,7 +89,7 @@
       "html"
     ],
     "mediaType": "text/html",
-    "inputFamily": "TEXT",
+    "inputFamily": "WEB",
     "storeProperties": {
       "SPREADSHEET": {
         "FilterName": "HTML (StarCalc)"
@@ -443,6 +449,9 @@
       },
       "TEXT": {
         "FilterName": "writer_pdf_Export"
+      },
+      "WEB": {
+        "FilterName": "writer_web_pdf_Export"
       }
     }
   },
@@ -540,6 +549,9 @@
       },
       "TEXT": {
         "FilterName": "writer_jpg_Export"
+      },
+      "WEB": {
+        "FilterName": "writer_web_jpg_Export"
       }
     }
   },
@@ -562,6 +574,9 @@
       },
       "TEXT": {
         "FilterName": "writer_png_Export"
+      },
+      "WEB": {
+        "FilterName": "writer_web_png_Export"
       }
     }
   },
@@ -575,6 +590,18 @@
     "storeProperties": {
       "DRAWING": {
         "FilterName": "draw_svg_Export"
+      },
+      "SPREADSHEET": {
+        "FilterName": "calc_svg_Export"
+      },
+      "PRESENTATION": {
+        "FilterName": "impress_svg_Export"
+      },
+      "TEXT": {
+        "FilterName": "writer_svg_Export"
+      },
+      "WEB": {
+        "FilterName": "writer_svg_Export"
       }
     }
   },

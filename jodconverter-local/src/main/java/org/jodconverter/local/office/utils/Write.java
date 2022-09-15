@@ -43,6 +43,16 @@ public final class Write { // NOPMD - Disable utility class name rule violation
   }
 
   /**
+   * Gets whether the given document is a Web document.
+   *
+   * @param document The document to test.
+   * @return {@code true} if the document is a Web document, {@code false} otherwise.
+   */
+  public static boolean isWeb(final @NonNull XComponent document) {
+    return Info.isDocumentType(document, Lo.WEB_SERVICE);
+  }
+
+  /**
    * Casts the given document into a {@link XTextDocument}.
    *
    * @param document The document to cast.

@@ -48,6 +48,9 @@ import org.jodconverter.local.task.LocalConversionTask;
  */
 public class LocalConverter extends AbstractConverter {
 
+  /** The default behavior regarding the usage of the default load properties. */
+  public static final boolean DEFAULT_APPLY_DEFAULT_LOAD_PROPERTIES = true;
+
   /**
    * The properties which are applied by default when loading a document if not manually overridden.
    */
@@ -158,6 +161,7 @@ public class LocalConverter extends AbstractConverter {
    */
   public static final class Builder extends AbstractConverterBuilder<Builder> {
 
+    private boolean applyDefaultLoadProperties = DEFAULT_APPLY_DEFAULT_LOAD_PROPERTIES;
     private Map<String, Object> loadProperties;
     private FilterChain filterChain;
     private Map<String, Object> storeProperties;
@@ -180,6 +184,14 @@ public class LocalConverter extends AbstractConverter {
         }
       }
 
+      final Map<String, Object> loadProperties = new HashMap<>();
+      if (applyDefaultLoadProperties) {
+        loadProperties.putAll(DEFAULT_LOAD_PROPERTIES);
+      }
+      if (this.loadProperties != null) {
+        loadProperties.putAll(this.loadProperties);
+      }
+
       // Create the converter
       return new LocalConverter(
           manager,
@@ -187,6 +199,64 @@ public class LocalConverter extends AbstractConverter {
           loadProperties,
           filterChain,
           storeProperties);
+    }
+
+    /**
+     * Specifies whether the default load properties must be applied or not.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: true
+     *
+     * @param applyDefaultLoadProperties {@code true} to apply the default load properties {@code
+     *     false} otherwise.
+     * @return This builder instance.
+     */
+    public @NonNull Builder applyDefaultLoadProperties(final boolean applyDefaultLoadProperties) {
+
+      this.applyDefaultLoadProperties = applyDefaultLoadProperties;
+      return this;
+    }
+
+    /**
+     * Specifies a property, for this converter, that will be applied when a document is loaded
+     * during a conversion task, regardless of the input format of the document.
+     *
+     * <p>The property will be appended to the default load properties map if {@link
+     * #applyDefaultLoadProperties(boolean)} is set to true, which is the default behavior.
+     *
+     * @param name The property name.
+     * @param value The property value.
+     * @return This builder instance.
+     */
+    public @NonNull Builder loadProperty(final @NonNull String name, final @NonNull Object value) {
+
+      AssertUtils.notNull(name, "name must not be null");
+      AssertUtils.notNull(value, "value must not be null");
+      if (this.loadProperties == null) {
+        this.loadProperties = new HashMap<>();
+      }
+      this.loadProperties.put(name, value);
+      return this;
+    }
+
+    /**
+     * Specifies properties, for this converter, that will be applied when a document is loaded
+     * during a conversion task, regardless of the input format of the document.
+     *
+     * <p>The properties will be appended to the default load properties map if {@link
+     * #applyDefaultLoadProperties(boolean)} is set to true, which is the default behavior.
+     *
+     * @param loadProperties A map containing the properties to apply when loading a document.
+     * @return This builder instance.
+     */
+    public @NonNull Builder loadProperties(
+        final @NonNull Map<@NonNull String, @NonNull Object> loadProperties) {
+
+      AssertUtils.notNull(loadProperties, "loadProperties must not be null");
+      if (this.loadProperties == null) {
+        this.loadProperties = new HashMap<>();
+      }
+      this.loadProperties.putAll(loadProperties);
+      return this;
     }
 
     /**
@@ -222,28 +292,35 @@ public class LocalConverter extends AbstractConverter {
     }
 
     /**
-     * Specifies the load properties, for this converter, that will be applied when a document is
-     * loaded during a conversion task, regardless of the input format of the document.
+     * Specifies a property, for this converter, that will be applied when a document is stored
+     * during a conversion task, regardless of the output format of the document.
      *
-     * <p>Using this function will replace the default load properties map.
+     * <p>Custom properties are applied after the store properties of the target {@link
+     * org.jodconverter.core.document.DocumentFormat}, so any property set here will override the
+     * property with the same name from the document format.
      *
-     * @param loadProperties A map containing the properties to apply when loading a document.
+     * @param name The property name.
+     * @param value The property value.
      * @return This builder instance.
      */
-    public @NonNull Builder loadProperties(
-        final @NonNull Map<@NonNull String, @NonNull Object> loadProperties) {
+    public @NonNull Builder storeProperty(final @NonNull String name, final @NonNull Object value) {
 
-      AssertUtils.notNull(loadProperties, "loadProperties must not be null");
-      this.loadProperties = loadProperties;
+      AssertUtils.notNull(name, "name must not be null");
+      AssertUtils.notNull(value, "value must not be null");
+      if (this.storeProperties == null) {
+        this.storeProperties = new HashMap<>();
+      }
+      this.storeProperties.put(name, value);
       return this;
     }
 
     /**
      * Specifies the properties that will be applied when a document is stored during the conversion
-     * task.
+     * task, regardless of the output format of the document.
      *
      * <p>Custom properties are applied after the store properties of the target {@link
-     * org.jodconverter.core.document.DocumentFormat}.
+     * org.jodconverter.core.document.DocumentFormat}, so any property set here will override the
+     * property with the same name from the document format.
      *
      * @param storeProperties A map containing the custom properties to apply when storing a
      *     document.
@@ -253,7 +330,10 @@ public class LocalConverter extends AbstractConverter {
         final @NonNull Map<@NonNull String, @NonNull Object> storeProperties) {
 
       AssertUtils.notNull(storeProperties, "storeProperties must not be null");
-      this.storeProperties = storeProperties;
+      if (this.storeProperties == null) {
+        this.storeProperties = new HashMap<>();
+      }
+      this.storeProperties.putAll(storeProperties);
       return this;
     }
   }

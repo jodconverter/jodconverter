@@ -169,6 +169,7 @@ public final class ConvertUtil {
       }
 
       switch (outputFormat.getExtension()) {
+        case "svg":
         case "png":
         case "jpg":
         case "jpeg":

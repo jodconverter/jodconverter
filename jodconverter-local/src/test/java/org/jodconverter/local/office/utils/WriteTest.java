@@ -79,6 +79,41 @@ class WriteTest {
   }
 
   @Nested
+  class IsWeb {
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void withNull_ShouldThrowNullPointerException(final UnoRuntime unoRuntime) {
+
+      given(unoRuntime.queryInterface(XServiceInfo.class, null)).willReturn(null);
+
+      assertThatNullPointerException().isThrownBy(() -> Write.isWeb(null));
+    }
+
+    @Test
+    void withWebDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.WEB_SERVICE)).willReturn(true);
+
+      assertThat(Write.isWeb(component)).isTrue();
+    }
+
+    @Test
+    void withoutWebDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
+
+      final XComponent component = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.WEB_SERVICE)).willReturn(false);
+
+      assertThat(Write.isWeb(component)).isFalse();
+    }
+  }
+
+  @Nested
   class GetTextDoc {
 
     @Test

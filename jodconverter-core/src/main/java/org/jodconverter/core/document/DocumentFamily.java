@@ -25,6 +25,9 @@ public enum DocumentFamily {
   /** Text documents (odt, doc, docx, rtf, etc.) */
   TEXT,
 
+  /** Web documents (html, etc.) */
+  WEB,
+
   /** Spreadsheet documents (ods, xls, xlsx, csv, etc.) */
   SPREADSHEET,
 

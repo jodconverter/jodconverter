@@ -53,6 +53,7 @@ public class PageCounterFilter implements Filter {
 
       switch (family) {
         case TEXT:
+        case WEB:
           LOGGER.debug("Applying the PageCounterFilter for a Text document");
           pageCount =
               (Integer)

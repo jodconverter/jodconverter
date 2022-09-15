@@ -476,10 +476,7 @@ public final class Convert {
     final Map<String, Object> loadProperties =
         buildProperties(commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
     if (loadProperties != null) {
-      // Ensure the default properties will be applied.
-      final Map<String, Object> props = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
-      props.putAll(loadProperties);
-      builder.loadProperties(props);
+      builder.loadProperties(loadProperties);
     }
 
     // Specify custom store properties if required

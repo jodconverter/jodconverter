@@ -191,6 +191,18 @@ class LocalOfficeUtilsTest {
   class GetDocumentFamilySilently {
 
     @Test
+    void withWebDocument_ShouldReturnWebamily(final UnoRuntime unoRuntime) {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.WEB_SERVICE)).willReturn(true);
+
+      assertThat(LocalOfficeUtils.getDocumentFamilySilently(document))
+          .isEqualTo(DocumentFamily.WEB);
+    }
+
+    @Test
     void withTextDocument_ShouldReturnTextFamily(final UnoRuntime unoRuntime) {
 
       final XComponent document = mock(XComponent.class);

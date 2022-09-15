@@ -240,9 +240,13 @@ class LocalConverterTest {
         final @TempDir File testFolder) throws OfficeException {
 
       final Map<String, Object> loadProperties = new HashMap<>();
-      loadProperties.put("Hidden", false);
       loadProperties.put("ReadOnly", true);
       loadProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
+
+      final Map<String, Object> expectedProperties = new HashMap<>();
+      expectedProperties.put("Hidden", true);
+      expectedProperties.put("ReadOnly", true);
+      expectedProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
 
       final File targetFile = new File(testFolder, "test.pdf");
 
@@ -261,7 +265,93 @@ class LocalConverterTest {
       final ArgumentCaptor<LocalConversionTask> arg =
           ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
+    }
+
+    @Test
+    void withCustomLoadProperty_ShouldCreateConverterWithExpectedLoadProperties(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final Map<String, Object> expectedProperties =
+          new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      expectedProperties.put("Hidden", false);
+      expectedProperties.put("Password", "myPassword");
+
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .loadProperty("Hidden", false)
+                      .loadProperty("Password", "myPassword")
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
+    }
+
+    @Test
+    void withCustomLoadPropertiesWithoutDefault_ShouldCreateConverterWithExpectedLoadProperties(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final Map<String, Object> loadProperties = new HashMap<>();
+      loadProperties.put("Hidden", false);
+
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .applyDefaultLoadProperties(false)
+                      .loadProperties(loadProperties)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(loadProperties);
+    }
+
+    @Test
+    void withCustomLoadPropertyWithoutDefault_ShouldCreateConverterWithExpectedLoadProperties(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final Map<String, Object> expectedProperties = new HashMap<>();
+      expectedProperties.put("Hidden", false);
+
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .applyDefaultLoadProperties(false)
+                      .loadProperty("Hidden", false)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
     }
 
     @Test
@@ -279,6 +369,34 @@ class LocalConverterTest {
                   LocalConverter.builder()
                       .officeManager(officeManager)
                       .storeProperties(storeProperties)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("storeProperties").isEqualTo(storeProperties);
+    }
+
+    @Test
+    void withCustomStoreProperty_ShouldCreateConverterWithExpectedStoreProperties(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final Map<String, Object> filterData = new HashMap<>();
+      filterData.put("PageRange", "1");
+      final Map<String, Object> storeProperties = new HashMap<>();
+      storeProperties.put("FilterData", filterData);
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .storeProperty("FilterData", filterData)
                       .build()
                       .convert(SOURCE_FILE)
                       .to(targetFile)

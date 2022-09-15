@@ -35,6 +35,10 @@ import org.jodconverter.core.util.AssertUtils;
  * Filters Documentation</a>
  *
  * <p>See <a
+ * href="https://help.libreoffice.org/7.4/en-US/text/shared/guide/convertfilters.html">File
+ * Conversion Filter Names</a>
+ *
+ * <p>See <a
  * href="http://opengrok.libreoffice.org/xref/core/filter/source/config/fragments/filters">LibreOffice
  * Filters</a> and <a
  * href="https://svn.apache.org/repos/asf/openoffice/trunk/main/filter/source/config/fragments/filters">OpenOffice

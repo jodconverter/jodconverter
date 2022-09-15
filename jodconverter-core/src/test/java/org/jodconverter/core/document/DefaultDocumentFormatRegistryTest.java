@@ -57,78 +57,85 @@ class DefaultDocumentFormatRegistryTest {
       assertExpectedExtensions(
           ass,
           getOutputFormats(DocumentFamily.TEXT),
-          "doc",
-          "docx",
-          "dotx",
-          "html",
-          "xhtml",
-          "jpg",
           "odt",
           "ott",
           "fodt",
-          "pdf",
-          "png",
+          "docx",
+          "dotx",
+          "doc",
+          "html",
+          "xhtml",
           "rtf",
+          "txt",
           "sxw",
-          "txt");
+          "pdf",
+          "jpg",
+          "png",
+          "svg");
 
       // SPREADSHEET output format
       assertExpectedExtensions(
           ass,
           getOutputFormats(DocumentFamily.SPREADSHEET),
-          "csv",
           "html",
           "xhtml",
-          "jpg",
           "ods",
           "ots",
           "fods",
-          "pdf",
-          "png",
-          "sxc",
-          "tsv",
-          "xls",
           "xlsx",
-          "xltx");
+          "xltx",
+          "xls",
+          "csv",
+          "tsv",
+          "sxc",
+          "pdf",
+          "jpg",
+          "png",
+          "svg");
 
       // PRESENTATION output format
       assertExpectedExtensions(
           ass,
           getOutputFormats(DocumentFamily.PRESENTATION),
-          "gif",
           "html",
           "xhtml",
-          "jpg",
           "odp",
           "otp",
           "fodp",
-          "pdf",
-          "png",
-          "ppt",
           "pptx",
           "potx",
-          "swf",
+          "ppt",
           "sxi",
-          "tif",
-          "bmp");
+          "pdf",
+          "swf",
+          "bmp",
+          "gif",
+          "jpg",
+          "png",
+          "svg",
+          "tif");
 
       // DRAWING output format
       assertExpectedExtensions(
           ass,
           getOutputFormats(DocumentFamily.DRAWING),
-          "gif",
-          "jpg",
           "odg",
           "otg",
           "fodg",
           "pdf",
+          "swf",
+          "vsdx",
+          "vsd",
+          "bmp",
+          "gif",
+          "jpg",
           "png",
           "svg",
-          "swf",
-          "tif",
-          "vsd",
-          "vsdx",
-          "bmp");
+          "tif");
+
+      // WEB output format
+      assertExpectedExtensions(
+          ass, getOutputFormats(DocumentFamily.WEB), "odt", "ott", "pdf", "jpg", "png", "svg");
     }
   }
 
