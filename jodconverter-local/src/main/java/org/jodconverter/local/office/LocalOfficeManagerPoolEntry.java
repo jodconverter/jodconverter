@@ -167,7 +167,7 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // From here on, any disconnection from an office process is expected.
     disconnectExpected.set(true);
 
-    // Now we can stopped the running office process
+    // Now we can stop the running office process
     officeProcessManager.stop();
   }
 

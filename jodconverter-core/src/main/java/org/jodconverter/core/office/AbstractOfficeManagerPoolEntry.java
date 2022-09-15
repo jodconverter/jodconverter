@@ -117,7 +117,9 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
       // The task did not complete within the configured timeout...
       handleExecuteTimeoutException(ex);
       throw new OfficeException(
-          String.format("Task did not complete within timeout: %s", task), ex);
+          String.format(
+              "Task did not complete within timeout (%s ms): %s", taskExecutionTimeout, task),
+          ex);
 
     } finally {
       currentFuture = null;

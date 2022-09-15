@@ -175,7 +175,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
 
     final Map<String, Object> storeProps = getStoreProperties(document);
 
-    // FilterName must be specify.
+    // FilterName must be specified.
     AssertUtils.isTrue(storeProps.containsKey("FilterName"), "Unsupported conversion");
 
     try {
