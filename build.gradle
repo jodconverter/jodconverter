@@ -93,26 +93,27 @@ configure(releasedProjects) {
     }
 }
 
-// Copy all the distributions of the subprojects to the root project
-task distZip(type: Zip) {
-    description 'Create full distribution zip'
-    group 'Distribution'
-    archiveBaseName.set(project.name)
-
-    //from releasedProjects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
-    from releasedProjects.collect { it.distZip }
-}
-project.tasks["distZip"].dependsOn releasedProjects*.distZip
-//project.tasks["distZip"].dependsOn releasedProjects*.assembleDist
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Project
 
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'jacoco'
+apply plugin: 'distribution'
 apply plugin: 'com.github.kt3k.coveralls'
 apply plugin: 'io.codearte.nexus-staging'
+
+// Configure the distribution task by copying all the distributions of the subprojects to the root project.
+project.tasks["distZip"].configure {
+    description 'Create full distribution zip'
+    group 'Distribution'
+
+    archiveBaseName.set(project.name)
+
+    //from releasedProjects.collect { it.tasks.matching { it.name == 'distZip' || it.name == 'distTar' } }
+    from releasedProjects.collect { it.distZip }
+}
+project.tasks["distZip"].dependsOn releasedProjects*.distZip
 
 nexusStaging {
     username = findProperty('ossrhUsername')
