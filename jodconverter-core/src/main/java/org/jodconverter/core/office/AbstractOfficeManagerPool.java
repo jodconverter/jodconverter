@@ -20,7 +20,6 @@
 package org.jodconverter.core.office;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.util.AssertUtils;
-import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.StringUtils;
 
 /**
@@ -84,7 +82,7 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
     this.taskQueueTimeout = taskQueueTimeout;
 
     // Initialize the temp directory
-    tempDir = new File(workingDir, ".jodconverter_" + UUID.randomUUID().toString());
+    tempDir = new File(workingDir, ".jodconverter_" + UUID.randomUUID());
 
     // Initialize the temp file counter
     tempFileCounter = new AtomicLong(0);
@@ -243,24 +241,8 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
 
   /** Deletes the profile directory of the office process. */
   private void deleteTempDir() {
-
-    LOGGER.debug("Deleting temporary directory '{}'", tempDir);
-    try {
-      FileUtils.delete(tempDir);
-    } catch (IOException ex) {
-      final File oldDir =
-          new File(
-              tempDir.getParentFile(), tempDir.getName() + ".old." + System.currentTimeMillis());
-      if (tempDir.renameTo(oldDir)) {
-        if (LOGGER.isWarnEnabled()) {
-          LOGGER.warn(
-              String.format("Could not delete temporary directory; renamed it to '%s'", oldDir),
-              ex);
-        }
-      } else {
-        LOGGER.error("Could not delete temporary", ex);
-      }
-    }
+    // TODO: Should we use retry feature?
+    OfficeUtils.deleteOrRenameFile(tempDir, 0L, 0L);
   }
 
   @Override

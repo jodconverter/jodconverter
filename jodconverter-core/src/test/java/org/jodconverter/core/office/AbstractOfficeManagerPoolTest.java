@@ -20,28 +20,22 @@
 package org.jodconverter.core.office;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
-import java.nio.file.spi.FileSystemProvider;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.task.SimpleOfficeTask;
-import org.jodconverter.core.util.FileUtils;
 
 /** Contains tests for the {@link AbstractOfficeManagerPool} class. */
 class AbstractOfficeManagerPoolTest {
@@ -338,85 +332,6 @@ class AbstractOfficeManagerPoolTest {
                       .isInstanceOf(SimpleOfficeManagerPoolEntry.class)
                       .extracting("taskExecutor.available")
                       .isEqualTo(false));
-    }
-
-    @Test
-    @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
-    void whenTempDirCannotBeDeleted_ShouldRenameTempDir() throws OfficeException, IOException {
-
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
-      manager.start();
-
-      final File mockDir = mock(File.class);
-      final Path mockPath = mock(Path.class);
-      final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
-      ReflectionTestUtils.setField(manager, "tempDir", mockDir);
-      when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
-      when(mockDir.getName()).thenAnswer(invocation -> tempDir.getName());
-      when(mockDir.getParentFile()).thenAnswer(invocation -> tempDir.getParentFile());
-      when(mockDir.toPath()).thenAnswer(invocation -> mockPath);
-      when(mockDir.renameTo(isA(File.class)))
-          .thenAnswer(
-              invocation -> {
-                invocation.getArgument(0, File.class).createNewFile();
-                return true;
-              });
-
-      final FileSystem mockFileSystem = mock(FileSystem.class);
-      final FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
-      when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
-      when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
-      when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
-          .thenThrow(new IOException("So that Files.isDirectory(mockPath) return false"));
-      doThrow(new IOException("You can't do that bud!"))
-          .when(mockFileSystemProvider)
-          .delete(isA(Path.class));
-
-      manager.stop();
-      final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
-      verify(mockDir, times(1)).renameTo(arg.capture());
-      assertThat(arg.getValue()).exists();
-      assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
-      assertThat(tempDir).exists();
-      FileUtils.delete(tempDir);
-      FileUtils.delete(arg.getValue());
-    }
-
-    @Test
-    @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
-    void whenTempDirCannotBeDeletedNorRenamed_ShouldNotRenameTempDir()
-        throws OfficeException, IOException {
-
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
-      manager.start();
-
-      final File mockDir = mock(File.class);
-      final Path mockPath = mock(Path.class);
-      final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
-      ReflectionTestUtils.setField(manager, "tempDir", mockDir);
-      when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
-      when(mockDir.getName()).thenAnswer(invocation -> tempDir.getName());
-      when(mockDir.getParentFile()).thenAnswer(invocation -> tempDir.getParentFile());
-      when(mockDir.toPath()).thenAnswer(invocation -> mockPath);
-      when(mockDir.renameTo(isA(File.class))).thenAnswer(invocation -> false);
-
-      final FileSystem mockFileSystem = mock(FileSystem.class);
-      final FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
-      when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
-      when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
-      when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
-          .thenThrow(new IOException("So that Files.isDirectory(mockPath) return false"));
-      doThrow(new IOException("You can't do that bud!"))
-          .when(mockFileSystemProvider)
-          .delete(isA(Path.class));
-
-      manager.stop();
-      final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
-      verify(mockDir, times(1)).renameTo(arg.capture());
-      assertThat(arg.getValue()).doesNotExist();
-      assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
-      assertThat(tempDir).exists();
-      FileUtils.delete(tempDir);
     }
   }
 

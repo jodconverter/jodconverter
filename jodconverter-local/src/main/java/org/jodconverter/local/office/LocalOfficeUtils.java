@@ -43,12 +43,7 @@ import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.Props;
-import org.jodconverter.local.process.FreeBSDProcessManager;
-import org.jodconverter.local.process.MacProcessManager;
-import org.jodconverter.local.process.ProcessManager;
-import org.jodconverter.local.process.PureJavaProcessManager;
-import org.jodconverter.local.process.UnixProcessManager;
-import org.jodconverter.local.process.WindowsProcessManager;
+import org.jodconverter.local.process.*;
 
 /** Provides helper functions for local office. */
 public final class LocalOfficeUtils {

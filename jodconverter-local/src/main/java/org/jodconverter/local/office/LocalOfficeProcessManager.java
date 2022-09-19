@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.NamedThreadFactory;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.OSUtils;
@@ -610,6 +611,8 @@ class LocalOfficeProcessManager {
     command.add(prefix + "nolockcheck");
     command.add(prefix + "nologo");
     command.add(prefix + "norestore");
+    // command.add(prefix + "safe-mode"); // Add this to debug connection error (always work with
+    // this argument)
     command.add("-env:UserInstallation=" + LocalOfficeUtils.toUrl(instanceProfileDir));
 
     // It could be interesting to use the LibreOffice pidfile switch
@@ -804,22 +807,7 @@ class LocalOfficeProcessManager {
 
   /** Deletes the profile directory of the office process. */
   private void deleteInstanceProfileDir() {
-
-    LOGGER.debug("Deleting instance profile directory '{}'", instanceProfileDir);
-    try {
-      FileUtils.delete(instanceProfileDir);
-    } catch (IOException ioEx) {
-      final File oldProfileDir =
-          new File(
-              instanceProfileDir.getParentFile(),
-              instanceProfileDir.getName() + ".old." + System.currentTimeMillis());
-      if (instanceProfileDir.renameTo(oldProfileDir)) {
-        if (LOGGER.isWarnEnabled()) {
-          LOGGER.warn("Could not delete profileDir; renamed it to '" + oldProfileDir + "'", ioEx);
-        }
-      } else {
-        LOGGER.error("Could not delete profileDir", ioEx);
-      }
-    }
+    // TODO: Should the timeout be configurable?
+    OfficeUtils.deleteOrRenameFile(instanceProfileDir, 250L, 1_000L);
   }
 }

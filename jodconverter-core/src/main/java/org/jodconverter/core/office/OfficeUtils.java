@@ -20,12 +20,18 @@
 package org.jodconverter.core.office;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.jodconverter.core.util.FileUtils;
 
 /** Provides helper functions for office. */
 public final class OfficeUtils {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OfficeUtils.class);
 
   /**
    * Gets the default working directory, which is the java.io.tmpdir system property.
@@ -92,8 +98,69 @@ public final class OfficeUtils {
     }
   }
 
+  /**
+   * Deletes a file with a fallback (renaming) on deletion failure. If file is a directory, delete
+   * it and all sub-directories, with a .
+   *
+   * @param file File or directory to delete, can be {@code null}.
+   * @param interval The interval between each deletion attempt.
+   * @param timeout The timeout after which we won't try again to execute the deletion.
+   */
+  public static void deleteOrRenameFile(
+      final @NonNull File file, final long interval, final long timeout) {
+
+    if (!file.exists()) {
+      return;
+    }
+
+    LOGGER.debug("Deleting '{}'", file);
+    try {
+      final DeleteFileRetryable retryable = new DeleteFileRetryable(file);
+      retryable.execute(interval, timeout);
+    } catch (RetryTimeoutException deleteEx) {
+      final File oldFile =
+          new File(file.getParentFile(), file.getName() + ".old." + System.currentTimeMillis());
+      if (file.renameTo(oldFile)) {
+        if (LOGGER.isWarnEnabled()) {
+          LOGGER.warn("Could not delete '" + file + "'; renamed it to '" + oldFile + "'", deleteEx);
+        }
+      } else {
+        LOGGER.error("Could not delete '" + file + "'", deleteEx);
+      }
+    }
+  }
+
   // Suppresses default constructor, ensuring non-instantiability.
   private OfficeUtils() {
     throw new AssertionError("Utility class must not be instantiated");
+  }
+
+  /** Delete a file or directory (retryable). */
+  private static class DeleteFileRetryable extends AbstractRetryable<RuntimeException> {
+    private final File file;
+
+    /**
+     * Creates a new instance of the class for the specified file.
+     *
+     * @param file The file to delete.
+     */
+    private DeleteFileRetryable(final File file) {
+      this.file = file;
+    }
+
+    @Override
+    protected void attempt() throws TemporaryException {
+
+      try {
+        // Try to delete the file
+        FileUtils.delete(file);
+        if (file.exists()) {
+          throw new TemporaryException("The file still exists");
+        }
+      } catch (IOException ex) {
+        // Throw a TemporaryException
+        throw new TemporaryException(ex);
+      }
+    }
   }
 }

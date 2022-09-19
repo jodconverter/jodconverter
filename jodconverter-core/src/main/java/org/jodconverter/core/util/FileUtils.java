@@ -23,14 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
-import java.nio.file.CopyOption;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -158,9 +151,10 @@ public final class FileUtils {
    * Deletes a file. If file is a directory, delete it and all sub-directories.
    *
    * @param file File or directory to delete, can be {@code null}.
-   * @return {@code true} If the file or directory is deleted, {@code false} otherwise. The file or
-   *     directory is considered deleted if it does not exist when the function ends, meaning that a
-   *     {@code null} input file or a file that does not exist will also return {@code false}.
+   * @return {@code true} If the file or directory was deleted, {@code false} otherwise. The file or
+   *     directory is considered deleted if it exists entering the function and if it does not exist
+   *     when the function ends, meaning that a {@code null} input file or a file that does not
+   *     exist will return {@code false}.
    * @throws IOException If an IO error occurs.
    */
   public static boolean delete(final @Nullable File file) throws IOException {

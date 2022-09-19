@@ -502,7 +502,7 @@ class FileUtilsTest {
       }
 
       @Test
-      void withUnexistingFile_ShouldReturnNull() throws IOException {
+      void withUnexistingFile_ShouldReturnFalse() throws IOException {
         assertThat(FileUtils.delete(new File(UUID.randomUUID().toString()))).isFalse();
       }
 

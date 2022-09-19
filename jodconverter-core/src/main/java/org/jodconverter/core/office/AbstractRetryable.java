@@ -19,6 +19,9 @@
 
 package org.jodconverter.core.office;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Object that will attempt to execute a task until it succeeds or that a specific timeout is
  * reached.
@@ -26,6 +29,8 @@ package org.jodconverter.core.office;
 public abstract class AbstractRetryable<T extends Throwable> {
 
   private static final long NO_SLEEP = 0L;
+
+  private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
   /** Initializes a new instance of the class. */
   protected AbstractRetryable() {
@@ -67,21 +72,30 @@ public abstract class AbstractRetryable<T extends Throwable> {
       throws RetryTimeoutException, T {
 
     final long start = System.currentTimeMillis();
+    int attempt = 0;
 
     if (delay > NO_SLEEP) {
       sleep(delay);
     }
 
     while (true) {
+      attempt++;
       try {
+        LOGGER.debug("Execution attempt #{}", attempt);
         attempt();
+        LOGGER.debug("Execution succeeded on attempt #{}", attempt);
         return;
       } catch (TemporaryException temporaryException) {
         if (System.currentTimeMillis() - start < timeout) {
           if (interval > NO_SLEEP) {
+            LOGGER.debug(
+                "Execution attempt #{} failed, retrying after sleep of {} ms", attempt, interval);
             sleep(interval);
+          } else {
+            LOGGER.debug("Execution attempt #{} failed, retrying without sleep", attempt);
           }
         } else {
+          LOGGER.debug("Execution failed on attempt #{}", attempt);
           throw new RetryTimeoutException( // NOPMD - Only cause is relevant
               temporaryException.getCause());
         }

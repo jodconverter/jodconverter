@@ -19,23 +19,26 @@
 
 package org.jodconverter.core.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
+import java.nio.file.spi.FileSystemProvider;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.test.util.AssertUtil;
+import org.jodconverter.core.util.FileUtils;
 
 /** Contains tests for the {@link OfficeUtils} class. */
 class OfficeUtilsTest {
@@ -123,6 +126,136 @@ class OfficeUtilsTest {
       doThrow(OfficeException.class).when(officeManager).stop();
 
       assertThatCode(() -> OfficeUtils.stopQuietly(officeManager)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void withNull_ShouldDoNothing() {
+      assertThatCode(() -> OfficeUtils.stopQuietly(null)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void withNotNull_ShouldCallClose() throws OfficeException {
+
+      final OfficeManager officeManager = mock(OfficeManager.class);
+      OfficeUtils.stopQuietly(officeManager);
+      verify(officeManager, times(1)).stop();
+    }
+  }
+
+  @Nested
+  class deleteOrRename {
+    @Test
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
+    void whenCannotBeDeleted_ShouldRename() throws OfficeException, IOException {
+
+      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      manager.start();
+
+      final File mockDir = mock(File.class);
+      final Path mockPath = mock(Path.class);
+      final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+      ReflectionTestUtils.setField(manager, "tempDir", mockDir);
+      when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
+      when(mockDir.getName()).thenAnswer(invocation -> tempDir.getName());
+      when(mockDir.getParentFile()).thenAnswer(invocation -> tempDir.getParentFile());
+      when(mockDir.toPath()).thenAnswer(invocation -> mockPath);
+      when(mockDir.renameTo(isA(File.class)))
+          .thenAnswer(
+              invocation -> {
+                invocation.getArgument(0, File.class).createNewFile();
+                return true;
+              });
+
+      final FileSystem mockFileSystem = mock(FileSystem.class);
+      final FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
+      when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
+      when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
+      when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
+          .thenThrow(new IOException("So that Files.isDirectory(mockPath) return false"));
+      doThrow(new IOException("You can't do that bud!"))
+          .when(mockFileSystemProvider)
+          .delete(isA(Path.class));
+
+      manager.stop();
+      final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
+      verify(mockDir, times(1)).renameTo(arg.capture());
+      assertThat(arg.getValue()).exists();
+      assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
+      assertThat(tempDir).exists();
+      FileUtils.delete(tempDir);
+      FileUtils.delete(arg.getValue());
+    }
+
+    @Test
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
+    void whenCannotBeDeletedNorRenamed_ShouldNotRename() throws OfficeException, IOException {
+
+      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      manager.start();
+
+      final File mockDir = mock(File.class);
+      final Path mockPath = mock(Path.class);
+      final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+      ReflectionTestUtils.setField(manager, "tempDir", mockDir);
+      when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
+      when(mockDir.getName()).thenAnswer(invocation -> tempDir.getName());
+      when(mockDir.getParentFile()).thenAnswer(invocation -> tempDir.getParentFile());
+      when(mockDir.toPath()).thenAnswer(invocation -> mockPath);
+      when(mockDir.renameTo(isA(File.class))).thenAnswer(invocation -> false);
+
+      final FileSystem mockFileSystem = mock(FileSystem.class);
+      final FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
+      when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
+      when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
+      when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
+          .thenThrow(new IOException("So that Files.isDirectory(mockPath) return false"));
+      doThrow(new IOException("You can't do that bud!"))
+          .when(mockFileSystemProvider)
+          .delete(isA(Path.class));
+
+      manager.stop();
+      final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
+      verify(mockDir, times(1)).renameTo(arg.capture());
+      assertThat(arg.getValue()).doesNotExist();
+      assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
+      assertThat(tempDir).exists();
+      FileUtils.delete(tempDir);
+    }
+
+    @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    void whenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory(final @TempDir File testFolder)
+        throws Exception {
+
+      final File workingDir =
+          new File(testFolder, "delete_WhenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory");
+      workingDir.mkdirs();
+      final File dirToDelete =
+          new File(workingDir, "delete_WhenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory");
+      dirToDelete.mkdirs();
+      File.createTempFile("test1_", ".tmp", dirToDelete);
+      File.createTempFile("test2_", ".tmp", dirToDelete);
+      File.createTempFile("test3_", ".tmp", dirToDelete);
+      File.createTempFile("test4_", ".tmp", dirToDelete);
+      final File subDirToDelete = new File(dirToDelete, "foo");
+      subDirToDelete.mkdirs();
+      File.createTempFile("test1_", ".tmp", subDirToDelete);
+      File.createTempFile("test2_", ".tmp", subDirToDelete);
+      File.createTempFile("test3_", ".tmp", subDirToDelete);
+      File.createTempFile("test4_", ".tmp", subDirToDelete);
+
+      try (MockedStatic<FileUtils> utils = Mockito.mockStatic(FileUtils.class)) {
+        utils.when(() -> FileUtils.delete(isA(File.class))).thenThrow(IOException.class);
+
+        OfficeUtils.deleteOrRenameFile(dirToDelete, 0L, 0L);
+
+        assertThat(
+                workingDir.listFiles(
+                    pathname ->
+                        pathname.isDirectory()
+                            && pathname.getName().startsWith(dirToDelete.getName() + ".old.")))
+            .hasSize(1);
+      }
     }
 
     @Test
