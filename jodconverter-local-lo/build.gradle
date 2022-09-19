@@ -6,7 +6,7 @@ ext.moduleDescription = 'Module required in order to process local conversions f
 apply plugin: 'java'
 
 dependencies {
-    implementation (project(':jodconverter-local')) {
+    api (project(':jodconverter-local')) {
         exclude group: 'org.openoffice'
     }
     api Deps.libreoffice
