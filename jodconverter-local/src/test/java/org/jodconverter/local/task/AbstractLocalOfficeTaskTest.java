@@ -77,7 +77,7 @@ class AbstractLocalOfficeTaskTest {
           .contains(
               entry("Hidden", true),
               entry("ReadOnly", true),
-              entry("UpdateDocMode", UpdateDocMode.QUIET_UPDATE));
+              entry("UpdateDocMode", UpdateDocMode.NO_UPDATE));
     }
 
     @Test
@@ -100,7 +100,7 @@ class AbstractLocalOfficeTaskTest {
           .contains(
               entry("Hidden", true),
               entry("ReadOnly", true),
-              entry("UpdateDocMode", UpdateDocMode.QUIET_UPDATE));
+              entry("UpdateDocMode", UpdateDocMode.NO_UPDATE));
     }
 
     @Test
@@ -123,7 +123,7 @@ class AbstractLocalOfficeTaskTest {
           .contains(
               entry("Hidden", true),
               entry("ReadOnly", true),
-              entry("UpdateDocMode", UpdateDocMode.QUIET_UPDATE),
+              entry("UpdateDocMode", UpdateDocMode.NO_UPDATE),
               entry("FilterName", "Text (encoded)"),
               entry("FilterOptions", "utf8"));
     }

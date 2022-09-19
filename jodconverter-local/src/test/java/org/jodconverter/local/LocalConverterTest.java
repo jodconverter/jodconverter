@@ -19,15 +19,9 @@
 
 package org.jodconverter.local;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.ResourceUtil.documentFile;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -446,6 +440,64 @@ class LocalConverterTest {
                 }
               })
           .withMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
+    }
+
+    @Test
+    void withoutUseUnsafeQuietMode_ShouldCreateConverterWithExpectedLoadProperties(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final Map<String, Object> expectedProperties = new HashMap<>();
+      expectedProperties.put("Hidden", true);
+      expectedProperties.put("ReadOnly", true);
+      expectedProperties.put("UpdateDocMode", UpdateDocMode.NO_UPDATE);
+
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .useUnsafeQuietUpdate(false)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
+    }
+
+    @Test
+    void withUseUnsafeQuietMode_ShouldCreateConverterWithExpectedLoadProperties(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final Map<String, Object> expectedProperties = new HashMap<>();
+      expectedProperties.put("Hidden", true);
+      expectedProperties.put("ReadOnly", true);
+      expectedProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
+
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .useUnsafeQuietUpdate(true)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
     }
   }
 }

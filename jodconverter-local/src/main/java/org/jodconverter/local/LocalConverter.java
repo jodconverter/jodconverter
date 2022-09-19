@@ -52,6 +52,13 @@ public class LocalConverter extends AbstractConverter {
   public static final boolean DEFAULT_APPLY_DEFAULT_LOAD_PROPERTIES = true;
 
   /**
+   * The default behavior regarding the default load property {@code UpdateDocMode}, which has been
+   * changed from {@code UpdateDocMode.QUIET_UPDATE} to {@code UpdateDocMode.NO_UPDATE} for security
+   * reason.
+   */
+  public static final boolean DEFAULT_USE_UNSAFE_QUIET_UPDATE = false;
+
+  /**
    * The properties which are applied by default when loading a document if not manually overridden.
    */
   public static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
@@ -64,7 +71,7 @@ public class LocalConverter extends AbstractConverter {
     final Map<String, Object> loadProperties = new HashMap<>();
     loadProperties.put("Hidden", true);
     loadProperties.put("ReadOnly", true);
-    loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
+    loadProperties.put("UpdateDocMode", UpdateDocMode.NO_UPDATE);
 
     DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
   }
@@ -162,6 +169,7 @@ public class LocalConverter extends AbstractConverter {
   public static final class Builder extends AbstractConverterBuilder<Builder> {
 
     private boolean applyDefaultLoadProperties = DEFAULT_APPLY_DEFAULT_LOAD_PROPERTIES;
+    private boolean useUnsafeQuietUpdate = DEFAULT_USE_UNSAFE_QUIET_UPDATE;
     private Map<String, Object> loadProperties;
     private FilterChain filterChain;
     private Map<String, Object> storeProperties;
@@ -187,6 +195,9 @@ public class LocalConverter extends AbstractConverter {
       final Map<String, Object> loadProperties = new HashMap<>();
       if (applyDefaultLoadProperties) {
         loadProperties.putAll(DEFAULT_LOAD_PROPERTIES);
+        if (useUnsafeQuietUpdate) {
+          loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
+        }
       }
       if (this.loadProperties != null) {
         loadProperties.putAll(this.loadProperties);
@@ -202,9 +213,24 @@ public class LocalConverter extends AbstractConverter {
     }
 
     /**
-     * Specifies whether the default load properties must be applied or not.
+     * Specifies this converter will apply the default load properties when loading a source
+     * document.
      *
      * <p>&nbsp; <b><i>Default</i></b>: true
+     *
+     * <p>Default load properties are:
+     *
+     * <ul>
+     *   <li><b>Hidden</b>: true
+     *   <li><b>ReadOnly</b>: true
+     *   <li><b>UpdateDocMode</b>: UpdateDocMode.NO_UPDATE
+     * </ul>
+     *
+     * <p>When building the load properties map that will be used to load a source document, the
+     * load properties of the input {@link org.jodconverter.core.document.DocumentFormat}, if any,
+     * are put in the map first. Then, the {@link #DEFAULT_LOAD_PROPERTIES}, if required, are added
+     * to the map. Finally, any properties specified in the {@link #loadProperty(String, Object)} or
+     * {@link #loadProperties(Map)} are put in the map.
      *
      * @param applyDefaultLoadProperties {@code true} to apply the default load properties {@code
      *     false} otherwise.
@@ -217,11 +243,38 @@ public class LocalConverter extends AbstractConverter {
     }
 
     /**
+     * Specifies whether this converter will use the unsafe {@code UpdateDocMode.QUIET_UPDATE} as
+     * default for the {@code UpdateDocMode} load property, which was the default until JODConverter
+     * version 4.4.4.
+     *
+     * <p>See this article for more detail;s about the security issue:
+     *
+     * <p><a
+     * href="https://buer.haus/2019/10/18/a-tale-of-exploitation-in-spreadsheet-file-conversions/">A
+     * Tale of Exploitation in Spreadsheet File Conversions</a>
+     *
+     * @param useUnsafeQuietUpdate {@code true} to use the unsafe quiet update property, {@code
+     *     false} otherwise.
+     * @return This builder instance.
+     */
+    public @NonNull Builder useUnsafeQuietUpdate(final boolean useUnsafeQuietUpdate) {
+
+      this.useUnsafeQuietUpdate = useUnsafeQuietUpdate;
+      return this;
+    }
+
+    /**
      * Specifies a property, for this converter, that will be applied when a document is loaded
      * during a conversion task, regardless of the input format of the document.
      *
-     * <p>The property will be appended to the default load properties map if {@link
-     * #applyDefaultLoadProperties(boolean)} is set to true, which is the default behavior.
+     * <p>When building the load properties map that will be used to load a source document, the
+     * load properties of the input {@link org.jodconverter.core.document.DocumentFormat}, if any,
+     * are put in the map first. Then, the {@link #DEFAULT_LOAD_PROPERTIES}, if required, are added
+     * to the map. Finally, any properties specified in the {@link #loadProperty(String, Object)} or
+     * {@link #loadProperties(Map)} are put in the map.
+     *
+     * <p>Any property set here will override the property with the same name from the input
+     * document format or the default load properties.
      *
      * @param name The property name.
      * @param value The property value.
@@ -242,8 +295,14 @@ public class LocalConverter extends AbstractConverter {
      * Specifies properties, for this converter, that will be applied when a document is loaded
      * during a conversion task, regardless of the input format of the document.
      *
-     * <p>The properties will be appended to the default load properties map if {@link
-     * #applyDefaultLoadProperties(boolean)} is set to true, which is the default behavior.
+     * <p>When building the load properties map that will be used to load a source document, the
+     * load properties of the input {@link org.jodconverter.core.document.DocumentFormat}, if any,
+     * are put in the map first. Then, the {@link #DEFAULT_LOAD_PROPERTIES}, if required, are added
+     * to the map. Finally, any properties specified in the {@link #loadProperty(String, Object)} or
+     * {@link #loadProperties(Map)} are put in the map.
+     *
+     * <p>Any property set here will override the property with the same name from the input
+     * document format or the default load properties.
      *
      * @param loadProperties A map containing the properties to apply when loading a document.
      * @return This builder instance.
