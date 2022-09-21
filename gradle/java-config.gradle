@@ -150,6 +150,12 @@ integTest {
     }
     failFast = true
 
+    // If you experience connection issue on windows 10, you may have to set a project property
+    // pointing to a templateProfileDir where OpenGL is disabled by default. Read here to know
+    // how to desable OpenGL:
+    // https://wiki.documentfoundation.org/OpenGL#:~:text=LibreOffice%205.3%20and%20newer%3A,Click%20%22Apply%20Changes%20and%20Restart%22
+    systemProperty "org.jodconverter.local.manager.templateProfileDir", project.findProperty("org.jodconverter.local.manager.templateProfileDir")
+
     // Uncomment when we want to see the logs while testing
     //testLogging.showStandardStreams = true
 }

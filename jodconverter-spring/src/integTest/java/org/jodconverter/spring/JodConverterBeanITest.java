@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
@@ -114,6 +116,10 @@ class JodConverterBeanITest {
   @SuppressWarnings("ResultOfMethodCallIgnored")
   void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues(
       final @TempDir File testFolder) throws OfficeException {
+
+    // Don't do this test on windows (won't work on windows 10 and 11,
+    // since we have to disable OpenGL).
+    assumeTrue(!OSUtils.IS_OS_WINDOWS);
 
     final File workingDir = new File(testFolder, "temp");
     workingDir.mkdirs();
