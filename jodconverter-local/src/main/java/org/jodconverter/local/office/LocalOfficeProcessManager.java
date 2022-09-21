@@ -46,6 +46,7 @@ import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.OSUtils;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.utils.Info;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.process.LinesPumpStreamHandler;
@@ -796,9 +797,22 @@ class LocalOfficeProcessManager {
       LOGGER.warn("Profile dir '{}' already exists; deleting", instanceProfileDir);
       deleteInstanceProfileDir();
     }
-    if (templateProfileDir != null) {
+
+    // Allow the templateProfileDir to be set using a System property for development purposes.
+    // Using Windows 10 and Windows 11, using a templateProfileDir to disable OpenGL and skia is
+    // mandatory orelse we won't be able to connect to the LibreOffice instance (connection
+    // refused).
+    File templateDir = templateProfileDir;
+    if (templateDir == null) {
+      final String property =
+          System.getProperty("org.jodconverter.local.manager.templateProfileDir");
+      if (StringUtils.isNotBlank(property)) {
+        templateDir = new File(property);
+      }
+    }
+    if (templateDir != null) {
       try {
-        FileUtils.copyDirectory(templateProfileDir, instanceProfileDir);
+        FileUtils.copyDirectory(templateDir, instanceProfileDir);
       } catch (IOException ioEx) {
         throw new OfficeException("Failed to create the instance profile directory", ioEx);
       }

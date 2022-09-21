@@ -22,6 +22,7 @@ package org.jodconverter.local.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.jodconverter.local.office.LocalOfficeManager.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.test.util.TestUtil;
+import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.process.IntegTestProcessManager;
 
 /** Contains tests for the {@link LocalOfficeProcessManager} class. */
@@ -264,6 +266,10 @@ class LocalOfficeProcessManagerITest {
 
     @Test
     void withCustomProfileDir_ShouldCopyProfileDirToWorkingDir() throws OfficeException {
+
+      // Don't do this test on windows (won't work on windows 10 and 11,
+      // since we have to disable OpenGL).
+      assumeTrue(!OSUtils.IS_OS_WINDOWS);
 
       final OfficeConnection connection = new OfficeConnection(CONNECT_URL);
       final LocalOfficeProcessManager manager =

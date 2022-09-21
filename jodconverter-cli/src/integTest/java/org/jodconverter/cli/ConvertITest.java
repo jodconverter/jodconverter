@@ -21,6 +21,7 @@ package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import org.jodconverter.cli.util.NoExitExtension;
 import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.util.FileUtils;
+import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
@@ -243,6 +245,10 @@ class ConvertITest {
 
     @Test
     void withAllCustomizableOption_ShouldExecuteAndExitWithCode0() {
+
+      // Don't do this test on windows (won't work on windows 10 and 11,
+      // since we have to disable OpenGL).
+      assumeTrue(!OSUtils.IS_OS_WINDOWS);
 
       assertThatExceptionOfType(ExitException.class)
           .isThrownBy(
