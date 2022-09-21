@@ -83,6 +83,16 @@ public final class DocumentFormat {
   }
 
   /**
+   * Creates a new builder instance from the specified format.
+   *
+   * @param sourceFormat The source document format.
+   * @return A new builder instance.
+   */
+  public static @NonNull Builder builder(final @NonNull DocumentFormat sourceFormat) {
+    return new Builder().from(sourceFormat);
+  }
+
+  /**
    * Creates a new modifiable {@link DocumentFormat} from the specified format.
    *
    * @param sourceFormat The source document format.
@@ -90,7 +100,7 @@ public final class DocumentFormat {
    *     are.
    */
   public static @NonNull DocumentFormat copy(final @NonNull DocumentFormat sourceFormat) {
-    return new Builder().from(sourceFormat).unmodifiable(false).build();
+    return builder(sourceFormat).unmodifiable(false).build();
   }
 
   /**
@@ -102,7 +112,7 @@ public final class DocumentFormat {
    */
   public static @NonNull DocumentFormat unmodifiableCopy(
       final @NonNull DocumentFormat sourceFormat) {
-    return new Builder().from(sourceFormat).unmodifiable(true).build();
+    return builder(sourceFormat).unmodifiable(true).build();
   }
 
   /**
@@ -383,6 +393,34 @@ public final class DocumentFormat {
     }
 
     /**
+     * Sets the {@code FilterName} property to the builder that will be applied when loading (open)
+     * a document of this format.
+     *
+     * @param value The {@code FilterName} value, may be null. If null, it will REMOVE the {@code
+     *     FilterName} from the map.
+     * @return This builder instance.
+     */
+    @NonNull
+    public Builder loadFilterName(final @Nullable String value) {
+
+      return loadProperty("FilterName", value);
+    }
+
+    /**
+     * Sets the {@code FilterOptions} property to the builder that will be applied when loading
+     * (open) a document of this format.
+     *
+     * @param value The {@code FilterOptions} value, may be null. If null, it will REMOVE the {@code
+     *     FilterName} from the map.
+     * @return This builder instance.
+     */
+    @NonNull
+    public Builder loadFilterOptions(final @Nullable String value) {
+
+      return loadProperty("FilterOptions", value);
+    }
+
+    /**
      * Specifies the media (mime) type of the document format.
      *
      * @param mediaType A string that represents the media type, cannot be null.
@@ -467,6 +505,38 @@ public final class DocumentFormat {
       }
 
       return this;
+    }
+
+    /**
+     * Sets the {@code FilterName} property that will be applied when storing (save) a document to
+     * this format from a document of the specified family.
+     *
+     * @param documentFamily The document family of the source (loaded) document, cannot be null.
+     * @param value The {@code FilterName} value, may be null. If null, it will REMOVE the property
+     *     from the map.
+     * @return This builder instance.
+     */
+    @NonNull
+    public Builder storeFilterName(
+        @NonNull final DocumentFamily documentFamily, final @Nullable String value) {
+
+      return storeProperty(documentFamily, "FilterName", value);
+    }
+
+    /**
+     * Sets the {@code FilterOptions} property that will be applied when storing (save) a document
+     * to this format from a document of the specified family.
+     *
+     * @param documentFamily The document family of the source (loaded) document, cannot be null.
+     * @param value The {@code FilterOptions} value, may be null. If null, it will REMOVE the
+     *     property from the map.
+     * @return This builder instance.
+     */
+    @NonNull
+    public Builder storeFilterOptions(
+        @NonNull final DocumentFamily documentFamily, final @Nullable String value) {
+
+      return storeProperty(documentFamily, "FilterOptions", value);
     }
   }
 

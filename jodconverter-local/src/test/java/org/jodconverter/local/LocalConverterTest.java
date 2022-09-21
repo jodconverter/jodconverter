@@ -21,6 +21,7 @@ package org.jodconverter.local;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.ResourceUtil.documentFile;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
@@ -31,13 +32,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.document.DocumentFamily;
+import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.document.SimpleDocumentFormatRegistry;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
@@ -45,9 +52,12 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
+import org.jodconverter.local.office.utils.Lo;
+import org.jodconverter.local.office.utils.UnoRuntime;
 import org.jodconverter.local.task.LocalConversionTask;
 
 /** Contains tests for the {@link LocalConverter} class. */
+@ExtendWith(MockUnoRuntimeExtension.class)
 class LocalConverterTest {
 
   private static final File SOURCE_FILE = documentFile("test.txt");
@@ -402,6 +412,63 @@ class LocalConverterTest {
           ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("storeProperties").isEqualTo(storeProperties);
+    }
+
+    @Test
+    void withCustomFilterNames_ShouldCreateConverterWithExpectedFilterNames(
+        final @TempDir File testFolder, final UnoRuntime unoRuntime) throws OfficeException {
+
+      final XComponent document = mock(XComponent.class);
+      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
+      given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(true);
+
+      final DocumentFormat sourceFormat =
+          DocumentFormat.builder(DefaultDocumentFormatRegistry.TXT)
+              .loadFilterName("Text Filter")
+              .build();
+      final DocumentFormat targetFormat =
+          DocumentFormat.builder(DefaultDocumentFormatRegistry.PDF)
+              .storeFilterName(DocumentFamily.TEXT, "PDF Filter")
+              .build();
+
+      final Map<String, Object> expectedLoadProperties = new HashMap<>();
+      expectedLoadProperties.put("Hidden", true);
+      expectedLoadProperties.put("ReadOnly", true);
+      expectedLoadProperties.put("UpdateDocMode", UpdateDocMode.NO_UPDATE);
+      expectedLoadProperties.put("FilterName", "Text Filter");
+      expectedLoadProperties.put("FilterOptions", "utf8");
+
+      final Map<String, Object> expectedStoreProperties = new HashMap<>();
+      expectedStoreProperties.put("FilterName", "PDF Filter");
+
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .as(sourceFormat)
+                      .to(targetFile)
+                      .as(targetFormat)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+
+      final Map<String, Object> loadProperties =
+          ReflectionTestUtils.invokeMethod(
+              arg.getValue(), arg.getValue().getClass(), "getLoadProperties");
+      final Map<String, Object> storeProperties =
+          ReflectionTestUtils.invokeMethod(
+              arg.getValue(), arg.getValue().getClass(), "getStoreProperties", document);
+      assertThat(loadProperties).containsAllEntriesOf(expectedLoadProperties);
+      assertThat(storeProperties).isEqualTo(expectedStoreProperties);
     }
 
     @Test

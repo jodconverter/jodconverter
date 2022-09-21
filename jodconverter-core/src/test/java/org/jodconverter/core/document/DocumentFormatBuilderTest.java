@@ -48,10 +48,14 @@ class DocumentFormatBuilderTest {
               .loadProperty("lprops2_name", 1)
               .loadProperty("lprops3_toremove", "bla")
               .loadProperty("lprops3_toremove", null)
+              .loadFilterName("Text Filter")
+              .loadFilterOptions("12345")
               .storeProperty(DocumentFamily.DRAWING, "sprops1_name", "sprops1_value")
               .storeProperty(DocumentFamily.DRAWING, "sprops2_name", 2)
               .storeProperty(DocumentFamily.DRAWING, "sprops3_toremove", "blo")
-              .storeProperty(DocumentFamily.DRAWING, "sprops3_toremove", null);
+              .storeProperty(DocumentFamily.DRAWING, "sprops3_toremove", null)
+              .storeFilterName(DocumentFamily.SPREADSHEET, "Text Filter 6")
+              .storeFilterOptions(DocumentFamily.SPREADSHEET, "123456");
 
       final DocumentFormat format = builder.build();
       try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -62,8 +66,12 @@ class DocumentFormatBuilderTest {
         softly.assertThat(format.getInputFamily()).isEqualTo(DocumentFamily.TEXT);
         softly
             .assertThat(format.getLoadProperties())
-            .hasSize(2)
-            .contains(entry("lprops1_name", "lprops1_value"), entry("lprops2_name", 1));
+            .hasSize(4)
+            .contains(
+                entry("lprops1_name", "lprops1_value"),
+                entry("lprops2_name", 1),
+                entry("FilterName", "Text Filter"),
+                entry("FilterOptions", "12345"));
         softly
             .assertThat(format.getStoreProperties())
             .hasSize(1)
@@ -72,8 +80,15 @@ class DocumentFormatBuilderTest {
                 props ->
                     assertThat(props)
                         .hasSize(2)
+                        .contains(entry("sprops1_name", "sprops1_value"), entry("sprops2_name", 2)))
+            .hasEntrySatisfying(
+                DocumentFamily.SPREADSHEET,
+                props ->
+                    assertThat(props)
+                        .hasSize(2)
                         .contains(
-                            entry("sprops1_name", "sprops1_value"), entry("sprops2_name", 2)));
+                            entry("FilterName", "Text Filter 6"),
+                            entry("FilterOptions", "123456")));
       }
     }
 
