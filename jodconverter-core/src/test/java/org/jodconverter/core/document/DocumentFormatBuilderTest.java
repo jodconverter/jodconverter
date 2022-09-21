@@ -74,7 +74,7 @@ class DocumentFormatBuilderTest {
                 entry("FilterOptions", "12345"));
         softly
             .assertThat(format.getStoreProperties())
-            .hasSize(1)
+            .hasSize(2)
             .hasEntrySatisfying(
                 DocumentFamily.DRAWING,
                 props ->
