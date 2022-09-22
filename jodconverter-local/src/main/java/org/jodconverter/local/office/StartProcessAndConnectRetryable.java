@@ -41,6 +41,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
   private static final int FIND_PID_RETRIES = 10;
   private static final long FIND_PID_INTERVAL = 250L;
   private static final Integer EXIT_CODE_81 = 81;
+  private static final long NO_DELAY = 0L;
   private static final Logger LOGGER =
       LoggerFactory.getLogger(StartProcessAndConnectRetryable.class);
 
@@ -92,61 +93,26 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
       // Try to start the process
       result = startProcess();
 
-      if (result.exitCode != null) {
-        // The process has died.
+      // Check if the process is alive if he already died.
+      checkProcessAlive();
 
-        if (result.exitCode.equals(EXIT_CODE_81)) {
-          result = null; // In order to restart the process
-
-          // Restart and retry later.
-          // see http://code.google.com/p/jodconverter/issues/detail?id=84
-          LOGGER.warn("Office process died with exit code 81; restarting it");
-          throw new TemporaryException("Office process died with exit code 81");
-        }
-
-        throw new OfficeException("Office process died with exit code: " + result.exitCode);
-      }
-
-      if (processManager.canFindPid() && result.pid <= PID_UNKNOWN) {
-
-        // The pid could not be found.
-        try {
-          result.process.getProcess().destroy();
-        } catch (Exception ex) {
-          LOGGER.warn("Could not destroy the process", ex);
-        }
-        result = null; // In order to restart the process
-        throw new TemporaryException(
-            String.format(
-                "A process with --accept '%s' started but its pid could not be found; restarting it",
-                processQuery.getArgument()));
-      }
+      // Check if the process id was found.
+      checkProcessId();
     }
 
     // Now, try to connect.
     try {
       connection.connect();
+
       // SUCCESS
+      LOGGER.trace("An attempt to connect to an office process succeeded");
+
     } catch (OfficeConnectionException ex) {
+
+      // FAILURE
       LOGGER.trace("An attempt to connect to an office process has failed", ex);
 
-      // Here, we can get the exit code of the process
-      final Integer exitCode = result.process.getExitCode();
-      if (exitCode == null) {
-        // Process is still running; we must retry to reconnect only.
-        throw new TemporaryException(ex);
-      } else if (exitCode.equals(EXIT_CODE_81)) {
-        result = null; // In order to restart the process
-
-        // Restart and retry later
-        // see http://code.google.com/p/jodconverter/issues/detail?id=84
-        LOGGER.warn("Office process died with exit code 81; restarting it");
-        throw new TemporaryException(ex);
-
-      } else {
-        // Process has died trying to connect.
-        throw new OfficeException("Office process died with exit code " + exitCode, ex);
-      }
+      handleConnectionFailure(ex);
     }
   }
 
@@ -170,14 +136,14 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
 
   private StartProcessResult startProcess() throws IOException {
 
-    final StartProcessResult result = new StartProcessResult();
+    final StartProcessResult attemptResult = new StartProcessResult();
 
     // Start the process.
-    result.process = new VerboseProcess(processBuilder.start());
+    attemptResult.process = new VerboseProcess(processBuilder.start());
 
     // Wait an initial delay is required. On FreeBSD, which is the only OS to date that
     // we know this delay is required, we will set it ourselves if none was set.
-    if (afterStartProcessDelay > 0L) {
+    if (afterStartProcessDelay > NO_DELAY) {
       LOGGER.debug("Waiting for process to start...");
       sleep(afterStartProcessDelay);
     } else if (OSUtils.IS_OS_FREE_BSD) {
@@ -191,34 +157,100 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
       tryCount++;
       LOGGER.debug("Trying to find pid, attempt #{}", tryCount);
 
-      // Return if the process is already dead.
-      try {
-        result.exitCode = result.process.getProcess().exitValue();
-        // Process is already dead, no need to wait longer...
-        return result;
-      } catch (IllegalThreadStateException ignored) {
-        // Process is still up.
-      }
-
-      if (!processManager.canFindPid()) {
-        if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug(
-              "The current process manager does not support finding the pid: {}",
-              processManager.getClass().getName());
-        }
-        return result;
-      }
-
-      // Try to find the PID.
-      result.pid = processManager.findPid(processQuery);
-
-      // Return if the PID was found or if we have reached the maximum try count.
-      if (result.pid > PID_UNKNOWN || tryCount == FIND_PID_RETRIES) {
-        return result;
+      if (findPid(attemptResult, tryCount)) {
+        return attemptResult;
       }
 
       // Wait a bit before retrying.
       sleep(FIND_PID_INTERVAL);
+    }
+  }
+
+  // This function return true if we must stop trying to find the pid,
+  // or true if we must keep going.
+  private boolean findPid(final StartProcessResult attemptResult, final int tryCount)
+      throws IOException {
+
+    // Return if the process is already dead.
+    try {
+      attemptResult.exitCode = attemptResult.process.getProcess().exitValue();
+      // Process is already dead, no need to wait longer...
+      return true;
+    } catch (IllegalThreadStateException ignored) {
+      // Process is still up.
+    }
+
+    if (!processManager.canFindPid()) {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(
+            "The current process manager does not support finding the pid: {}",
+            processManager.getClass().getName());
+      }
+      return true;
+    }
+
+    // Try to find the PID.
+    attemptResult.pid = processManager.findPid(processQuery);
+
+    // Return if the PID was found or if we have reached the maximum try count.
+    return attemptResult.pid > PID_UNKNOWN || tryCount == FIND_PID_RETRIES;
+  }
+
+  private void checkProcessAlive() throws TemporaryException, OfficeException {
+
+    if (result.exitCode != null) {
+      // The process has died.
+
+      if (result.exitCode.equals(EXIT_CODE_81)) {
+
+        // Restart and retry later.
+        // see http://code.google.com/p/jodconverter/issues/detail?id=84
+        LOGGER.warn("Office process died with exit code 81; restarting it");
+
+        result = null; // In order to restart the process
+        throw new TemporaryException("Office process died with exit code 81");
+      }
+
+      throw new OfficeException("Office process died with exit code: " + result.exitCode);
+    }
+  }
+
+  private void checkProcessId() throws TemporaryException {
+
+    if (processManager.canFindPid() && result.pid <= PID_UNKNOWN) {
+      // The pid could not be found.
+      try {
+        result.process.getProcess().destroy();
+      } catch (Exception ex) {
+        LOGGER.warn("Could not destroy the process", ex);
+      }
+      result = null; // In order to restart the process
+      throw new TemporaryException(
+          String.format(
+              "A process with --accept '%s' started but its pid could not be found; restarting",
+              processQuery.getArgument()));
+    }
+  }
+
+  private void handleConnectionFailure(final OfficeConnectionException ex)
+      throws TemporaryException, OfficeException {
+
+    // Here, we can get the exit code of the process.
+    final Integer exitCode = result.process.getExitCode();
+    if (exitCode == null) {
+      // Process is still running; we must retry to reconnect only.
+      throw new TemporaryException(ex);
+    } else if (exitCode.equals(EXIT_CODE_81)) {
+      result = null; // In order to restart the process
+
+      // Restart and retry later
+      // see http://code.google.com/p/jodconverter/issues/detail?id=84
+      LOGGER.warn("Office process died with exit code 81; restarting it");
+      throw new TemporaryException(ex);
+
+    } else {
+      // Process has died trying to connect.
+      throw new OfficeException("Office process died with exit code " + exitCode, ex);
     }
   }
 

@@ -30,7 +30,12 @@ import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
-import com.sun.star.task.*;
+import com.sun.star.task.DocumentMSPasswordRequest;
+import com.sun.star.task.DocumentPasswordRequest;
+import com.sun.star.task.ErrorCodeIOException;
+import com.sun.star.task.PasswordRequest;
+import com.sun.star.task.XInteractionHandler;
+import com.sun.star.task.XInteractionRequest;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -95,12 +100,12 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
     }
 
     @Override
-    public void handle(final XInteractionRequest xInteractionRequest) {
+    public void handle(final XInteractionRequest interactionRequest) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Interaction detected with request {}", xInteractionRequest.getRequest());
+        LOGGER.debug("Interaction detected with request {}", interactionRequest.getRequest());
       }
 
-      final Object request = xInteractionRequest.getRequest();
+      final Object request = interactionRequest.getRequest();
 
       if (request instanceof PasswordRequest) {
         passwordRequest = (PasswordRequest) request;

@@ -32,6 +32,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
 
+/** Web context. */
 @SuppressWarnings("PMD")
 public class WebappContext {
 

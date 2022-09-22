@@ -108,8 +108,6 @@ public abstract class AbstractFilterChain implements FilterChain {
 
     try {
       filter.doFilter(context, document, this);
-    } catch (OfficeException ex) {
-      throw ex;
     } catch (Exception ex) {
       throw new OfficeException("Could not apply filter " + filter.getClass().getName() + ".", ex);
     }

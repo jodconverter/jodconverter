@@ -94,7 +94,7 @@ class RemoteOfficeManagerPoolEntryITest {
   class BuildUrl {
 
     @Test
-    void withAllValidUrlOptions_ShoulReturnProperUrlWithLoolExtension() throws Exception {
+    void withAllValidUrlOptions_ShoulReturnProperUrlWithLoolExtension() {
 
       final RemoteOfficeManagerPoolEntry manager =
           new RemoteOfficeManagerPoolEntry(

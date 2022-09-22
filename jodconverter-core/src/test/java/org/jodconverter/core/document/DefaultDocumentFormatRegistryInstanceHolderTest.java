@@ -19,6 +19,7 @@
 
 package org.jodconverter.core.document;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.assertj.core.api.Assertions;
@@ -54,7 +55,7 @@ class DefaultDocumentFormatRegistryInstanceHolderTest {
           @Override
           @SuppressWarnings("NullableProblems")
           public Set<DocumentFormat> getOutputFormats(final DocumentFamily family) {
-            return null;
+            return new HashSet<>();
           }
 
           @Override

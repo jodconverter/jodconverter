@@ -19,9 +19,17 @@
 
 package org.jodconverter.core.office;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -143,7 +151,7 @@ class OfficeUtilsTest {
   }
 
   @Nested
-  class deleteOrRename {
+  class DeleteOrRename {
     @Test
     @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
     void whenCannotBeDeleted_ShouldRename() throws OfficeException, IOException {

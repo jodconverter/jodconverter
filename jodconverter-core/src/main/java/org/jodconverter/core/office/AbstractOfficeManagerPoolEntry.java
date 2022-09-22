@@ -19,7 +19,11 @@
 
 package org.jodconverter.core.office;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -97,13 +101,8 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
 
     } catch (ExecutionException ex) {
 
-      // Rethrow the original (cause) exception
-      if (ex.getCause() instanceof OfficeException) {
-        throw (OfficeException) ex.getCause();
-      }
-
-      throw new OfficeException( // NOPMD - Only cause is relevant
-          String.format("Task did not complete: %s", task), ex.getCause());
+      // An error occurred while executing the task...
+      throw handleTaskExecutionException(task, ex);
 
     } catch (InterruptedException ex) {
 
@@ -124,6 +123,18 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     } finally {
       currentFuture = null;
     }
+  }
+
+  private OfficeException handleTaskExecutionException(
+      final OfficeTask task, final ExecutionException executionException) {
+
+    // Rethrow the original (cause) exception
+    if (executionException.getCause() instanceof OfficeException) {
+      return (OfficeException) executionException.getCause();
+    }
+
+    return new OfficeException(
+        String.format("Task did not complete: %s", task), executionException.getCause());
   }
 
   /**

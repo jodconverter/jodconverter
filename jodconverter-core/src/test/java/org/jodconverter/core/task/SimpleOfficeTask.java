@@ -86,8 +86,6 @@ public final class SimpleOfficeTask implements OfficeTask {
 
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
-    } catch (OfficeException | RuntimeException ex) {
-      throw ex; // NOPMD - Better this than checking in the other catch statement
     } catch (Exception ex) {
       throw new OfficeException("Failed to execute task", ex);
     }

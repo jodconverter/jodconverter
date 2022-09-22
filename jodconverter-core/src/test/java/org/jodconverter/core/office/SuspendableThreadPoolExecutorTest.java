@@ -86,7 +86,6 @@ class SuspendableThreadPoolExecutorTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void whenAvailable_ShouldExecuteTask() {
 
       final AtomicBoolean executed = new AtomicBoolean();
@@ -97,7 +96,6 @@ class SuspendableThreadPoolExecutorTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void whenSetAvailableTrueWhileWaiting_ShouldExecuteTask() {
 
       final AtomicBoolean executed = new AtomicBoolean();

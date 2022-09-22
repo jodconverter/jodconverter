@@ -59,7 +59,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * @return The command execution output.
    * @throws IOException If an I/O error occurs.
    */
-  protected @NonNull List<@NonNull String> execute(final @NonNull String[] cmdarray)
+  protected @NonNull List<@NonNull String> execute(final @NonNull String... cmdarray)
       throws IOException {
 
     final Process process = Runtime.getRuntime().exec(cmdarray);

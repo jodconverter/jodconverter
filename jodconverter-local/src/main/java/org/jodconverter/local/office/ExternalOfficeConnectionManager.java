@@ -200,13 +200,8 @@ class ExternalOfficeConnectionManager {
 
     } catch (ExecutionException ex) {
 
-      // Rethrow the original (cause) exception
-      if (ex.getCause() instanceof OfficeException) {
-        throw (OfficeException) ex.getCause();
-      }
-
-      throw new OfficeException( // NOPMD - Only cause is relevant
-          "Connect task did not complete", ex.getCause());
+      // An error occurred while executing the connection task...
+      throw handleConnectTaskExecutionException(ex);
 
     } catch (InterruptedException ex) {
       LOGGER.debug("Connect task interrupted.");
@@ -250,5 +245,16 @@ class ExternalOfficeConnectionManager {
     }
 
     return null;
+  }
+
+  private OfficeException handleConnectTaskExecutionException(
+      final ExecutionException executionException) {
+
+    // Rethrow the original (cause) exception
+    if (executionException.getCause() instanceof OfficeException) {
+      return (OfficeException) executionException.getCause();
+    }
+
+    return new OfficeException("Connect task did not complete", executionException.getCause());
   }
 }

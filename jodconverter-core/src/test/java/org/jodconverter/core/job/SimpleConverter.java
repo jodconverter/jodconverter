@@ -26,12 +26,15 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.SimpleOfficeManager;
 import org.jodconverter.core.task.SimpleOfficeTask;
 
+/** Converter for testing purposes. */
 public final class SimpleConverter extends AbstractConverter {
 
+  /** Builder for our simple converter. */
   public static Builder builder() {
     return new Builder();
   }
 
+  /** Make for our simple converter with default values. */
   public static SimpleConverter make() {
     return new Builder()
         .officeManager(SimpleOfficeManager.make())
@@ -55,6 +58,7 @@ public final class SimpleConverter extends AbstractConverter {
   public static class SimpleConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
 
+    /** Job constructor. */
     public SimpleConversionJobWithSourceFormatUnspecified(
         final AbstractSourceDocumentSpecs source,
         final OfficeManager officeManager,
@@ -68,10 +72,12 @@ public final class SimpleConverter extends AbstractConverter {
     }
   }
 
+  /** Job for testing purposes. */
   public static class SimpleConversionJob extends AbstractConversionJob {
 
     private final OfficeManager officeManager;
 
+    /** Create a new job. */
     public SimpleConversionJob(
         final OfficeManager officeManager,
         final AbstractSourceDocumentSpecs source,
@@ -90,6 +96,7 @@ public final class SimpleConverter extends AbstractConverter {
     }
   }
 
+  /** Builder for our simple converter. */
   public static final class Builder extends AbstractConverterBuilder<Builder> {
 
     private Builder() {

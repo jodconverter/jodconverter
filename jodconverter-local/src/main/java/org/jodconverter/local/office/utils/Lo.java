@@ -117,7 +117,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  public static <T> @NonNull T createInstanceMSF(
+  public static <T> @NonNull T createInstance(
       final @NonNull XComponent component,
       final @NonNull Class<T> type,
       final @NonNull String serviceName) {
@@ -140,7 +140,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  public static <T> @NonNull T createInstanceMSF(
+  public static <T> @NonNull T createInstance(
       final @NonNull XMultiServiceFactory factory,
       final @NonNull Class<T> type,
       final @NonNull String serviceName) {
@@ -167,7 +167,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
    *     the {@link WrappedUnoException}.
    */
-  public static <T> @Nullable T createInstanceMCF(
+  public static <T> @Nullable T createInstance(
       final @NonNull XComponentContext context,
       final @NonNull Class<T> type,
       final @NonNull String serviceName) {
@@ -182,6 +182,71 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
     } catch (Exception ex) {
       throw new WrappedUnoException(ex);
     }
+  }
+
+  /**
+   * Create an interface object of the given class from the given named service; uses given
+   * XComponent and 'old' XMultiServiceFactory, so a document must have been already loaded/created.
+   *
+   * @param <T> The requested UNO interface type.
+   * @param component The component.
+   * @param type A Java class representing a UNO interface type.
+   * @param serviceName The service name.
+   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
+   * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
+   *     the {@link WrappedUnoException}.
+   * @deprecated Use {@link #createInstance(XComponent, Class, String)} instead.
+   */
+  public static <T> @NonNull T createInstanceMSF(
+      final @NonNull XComponent component,
+      final @NonNull Class<T> type,
+      final @NonNull String serviceName) {
+
+    // Create service component using the specified factory.
+    // Then uses bridge to obtain proxy to remote interface inside service;
+    // implements casting across process boundaries
+    return createInstanceMSF(getServiceFactory(component), type, serviceName);
+  }
+
+  /**
+   * Create an interface object of the given class from the given named service; uses given 'old'
+   * XMultiServiceFactory, so a document must have been already loaded/created.
+   *
+   * @param <T> The requested UNO interface type.
+   * @param factory The service factory.
+   * @param type A Java class representing a UNO interface type.
+   * @param serviceName The service name.
+   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
+   * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
+   *     the {@link WrappedUnoException}.
+   * @deprecated Use {@link #createInstance(XMultiServiceFactory, Class, String)} instead.
+   */
+  public static <T> @NonNull T createInstanceMSF(
+      final @NonNull XMultiServiceFactory factory,
+      final @NonNull Class<T> type,
+      final @NonNull String serviceName) {
+    return createInstance(factory, type, serviceName);
+  }
+
+  /**
+   * Create an interface object of the given class from the given named service; uses given
+   * XComponentContext and 'new' XMultiComponentFactory so only a bridge to office is needed.
+   *
+   * @param <T> The requested UNO interface type.
+   * @param context The component context.
+   * @param type A Java class representing a UNO interface type.
+   * @param serviceName The service name.
+   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
+   * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
+   *     the {@link WrappedUnoException}.
+   * @deprecated Use {@link #createInstance(XComponentContext, Class, String)} instead.
+   */
+  @Deprecated
+  public static <T> @Nullable T createInstanceMCF(
+      final @NonNull XComponentContext context,
+      final @NonNull Class<T> type,
+      final @NonNull String serviceName) {
+    return createInstance(context, type, serviceName);
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

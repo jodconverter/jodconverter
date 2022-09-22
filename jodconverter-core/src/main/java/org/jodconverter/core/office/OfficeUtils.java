@@ -125,13 +125,17 @@ public final class OfficeUtils {
           LOGGER.warn("Could not delete '" + file + "'; renamed it to '" + oldFile + "'", deleteEx);
         }
       } else {
-        LOGGER.error("Could not delete '" + file + "'", deleteEx);
+        if (LOGGER.isErrorEnabled()) {
+          LOGGER.error("Could not delete '" + file + "'", deleteEx);
+        }
       }
     }
   }
 
   // Suppresses default constructor, ensuring non-instantiability.
   private OfficeUtils() {
+    super();
+
     throw new AssertionError("Utility class must not be instantiated");
   }
 
@@ -145,6 +149,8 @@ public final class OfficeUtils {
      * @param file The file to delete.
      */
     private DeleteFileRetryable(final File file) {
+      super();
+
       this.file = file;
     }
 

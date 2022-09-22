@@ -45,12 +45,16 @@ public class ConverterServlet extends HttpServlet {
 
   @Override
   public void init() {
-    LOGGER.info("Servlet {} has started", this.getServletName());
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info("Servlet {} has started", this.getServletName());
+    }
   }
 
   @Override
   public void destroy() {
-    LOGGER.info("Servlet {} has stopped", this.getServletName());
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info("Servlet {} has stopped", this.getServletName());
+    }
   }
 
   @Override
@@ -105,10 +109,16 @@ public class ConverterServlet extends HttpServlet {
           "Content-Disposition", "attachment; filename=" + baseName + "." + outputExtension);
       sendFile(outputFile, response);
     } catch (Exception exception) {
-      LOGGER.error(
-          String.format(
-              "Failed conversion: %s [%db] to %s; %s; input file: %s",
-              inputExtension, inputFile.length(), outputExtension, exception, inputFile.getName()));
+      if (LOGGER.isErrorEnabled()) {
+        LOGGER.error(
+            String.format(
+                "Failed conversion: %s [%db] to %s; %s; input file: %s",
+                inputExtension,
+                inputFile.length(),
+                outputExtension,
+                exception,
+                inputFile.getName()));
+      }
       throw new ServletException("Conversion failed", exception);
     } finally {
       FileUtils.deleteQuietly(outputFile);

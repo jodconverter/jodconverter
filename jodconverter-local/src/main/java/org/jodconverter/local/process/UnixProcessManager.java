@@ -60,7 +60,7 @@ public class UnixProcessManager extends AbstractProcessManager {
   }
 
   @Override
-  protected @NonNull List<@NonNull String> execute(final @NonNull String[] cmdarray)
+  protected @NonNull List<@NonNull String> execute(final @NonNull String... cmdarray)
       throws IOException {
 
     if (runAsArgs == null) {
@@ -102,7 +102,7 @@ public class UnixProcessManager extends AbstractProcessManager {
    *
    * @param runAsArgs The sudo command arguments.
    */
-  public void setRunAsArgs(final @NonNull String[] runAsArgs) {
+  public void setRunAsArgs(final @NonNull String... runAsArgs) {
     this.runAsArgs = Arrays.copyOf(runAsArgs, runAsArgs.length);
   }
 }

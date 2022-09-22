@@ -31,6 +31,11 @@ public final class OfficeDescriptor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OfficeDescriptor.class);
 
+  private static final String LIBRE_OFFICE = "LibreOffice";
+  private static final String OPEN_OFFICE = "OpenOffice";
+  private static final String LIBRE_OFFICE_LCASE = "libreoffice";
+  private static final String OPEN_OFFICE_LCASE = "openoffice";
+
   private String product = "???";
   private String version = "???";
   private boolean useLongOptionNameGnuStyle;
@@ -52,25 +57,11 @@ public final class OfficeDescriptor {
       LOGGER.debug("Building {} from help output lines", OfficeDescriptor.class.getName());
     }
 
-    String productLine = null;
     for (final String line : lines) {
       if (line.contains("--help")) {
         desc.useLongOptionNameGnuStyle = true;
       } else {
-        final String lowerLine = line.trim().toLowerCase(Locale.ROOT);
-        if (lowerLine.startsWith("openoffice") || lowerLine.startsWith("libreoffice")) {
-          productLine = line.trim();
-        }
-      }
-    }
-
-    if (productLine != null) {
-      final String[] parts = productLine.split(" ");
-      if (parts.length > 0) {
-        desc.product = parts[0];
-      }
-      if (parts.length > 1) {
-        desc.version = parts[1];
+        fromLine(desc, line);
       }
     }
 
@@ -78,6 +69,20 @@ public final class OfficeDescriptor {
       LOGGER.info("soffice info (from help output): {}", desc);
     }
     return desc;
+  }
+
+  private static void fromLine(final OfficeDescriptor desc, final String line) {
+    final String lowerLine = line.trim().toLowerCase(Locale.ROOT);
+    if (lowerLine.startsWith(OPEN_OFFICE_LCASE) || lowerLine.startsWith(LIBRE_OFFICE_LCASE)) {
+      final String productLine = line.trim();
+      final String[] parts = productLine.split(" ");
+      if (parts.length > 0) {
+        desc.product = parts[0];
+        if (parts.length > 1) {
+          desc.version = parts[1];
+        }
+      }
+    }
   }
 
   /**
@@ -91,11 +96,11 @@ public final class OfficeDescriptor {
     final OfficeDescriptor desc = new OfficeDescriptor();
 
     final String lowerPath = path.toLowerCase(Locale.ROOT);
-    if (lowerPath.contains("libreoffice")) {
-      desc.product = "LibreOffice";
+    if (lowerPath.contains(LIBRE_OFFICE_LCASE)) {
+      desc.product = LIBRE_OFFICE;
       desc.useLongOptionNameGnuStyle = true;
-    } else if (lowerPath.contains("openoffice")) {
-      desc.product = "OpenOffice";
+    } else if (lowerPath.contains(OPEN_OFFICE_LCASE)) {
+      desc.product = OPEN_OFFICE;
       desc.useLongOptionNameGnuStyle = false;
     }
 

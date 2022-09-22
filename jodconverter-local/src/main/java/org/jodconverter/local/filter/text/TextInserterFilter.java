@@ -19,7 +19,7 @@
 
 package org.jodconverter.local.filter.text;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.Map;
 
 import com.sun.star.beans.XPropertySet;
@@ -121,7 +121,7 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
     // Use the document's factory to create a new text frame and
     // immediately access its XTextFrame interface
     final XTextFrame textFrame =
-        Lo.createInstanceMSF(document, XTextFrame.class, "com.sun.star.text.TextFrame");
+        Lo.createInstance(document, XTextFrame.class, "com.sun.star.text.TextFrame");
 
     // Access the XShape interface of the TextFrame
     final XShape shape = Lo.qi(XShape.class, textFrame);

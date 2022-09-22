@@ -21,7 +21,13 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.jodconverter.local.office.LocalOfficeManager.*;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
@@ -48,6 +54,7 @@ class LocalOfficeProcessManagerITest {
   private static final long START_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
   private static final long STOP_INITIAL_WAIT = 2_000L; // 2 Seconds.
   private static final long STOP_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
+  private static final int TRY_COUNT = 2;
 
   @Nested
   class Start {
@@ -216,9 +223,9 @@ class LocalOfficeProcessManagerITest {
               // According to our setting, the number of tries would be 2
               // (counting the initial try).
               final int attempt = connectAttempt.getAndIncrement();
-              if (attempt < 2) {
+              if (attempt < TRY_COUNT) {
                 throw new OfficeConnectionException("Test", "Test");
-              } else if (attempt == 2) {
+              } else if (attempt == TRY_COUNT) {
                 // Also change the setting for connection after the kill.
                 ReflectionTestUtils.setField(
                     managerRef.get(), "processTimeout", DEFAULT_PROCESS_TIMEOUT);

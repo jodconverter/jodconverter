@@ -58,14 +58,15 @@ public class UnoRuntime {
    * type).
    *
    * @param <T> The Java class representing the UNO interface type.
-   * @param zInterface A Java class representing a UNO interface type.
+   * @param unoInterface A Java class representing a UNO interface type.
    * @param object A reference to any Java object representing (a facet of) a UNO object; may be
    *     <code>null</code>.
    * @return A reference to the requested UNO interface type if available, otherwise <code>null
    *     </code>.
    * @see com.sun.star.uno.UnoRuntime#queryInterface(Class, Object)
    */
-  public <T> T queryInterface(final @Nullable Class<T> zInterface, final @Nullable Object object) {
-    return com.sun.star.uno.UnoRuntime.queryInterface(zInterface, object);
+  public <T> T queryInterface(
+      final @Nullable Class<T> unoInterface, final @Nullable Object object) {
+    return com.sun.star.uno.UnoRuntime.queryInterface(unoInterface, object);
   }
 }

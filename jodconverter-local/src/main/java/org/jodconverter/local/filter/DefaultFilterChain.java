@@ -89,10 +89,11 @@ public class DefaultFilterChain extends AbstractFilterChain {
     if (pos == filters.size() && endsWithRefreshFilter) {
       if (pos == 0) {
         doFilter(RefreshFilter.LAST_REFRESH, context, document);
-      } else
-      // Do not execute a final refresh filter if already done by the last executed filter.
-      if (!(filters.get(pos - 1) instanceof RefreshFilter)) {
-        doFilter(RefreshFilter.LAST_REFRESH, context, document);
+      } else {
+        // Do not execute a final refresh filter if already done by the last executed filter.
+        if (!(filters.get(pos - 1) instanceof RefreshFilter)) {
+          doFilter(RefreshFilter.LAST_REFRESH, context, document);
+        }
       }
     } else {
       super.doFilter(context, document);

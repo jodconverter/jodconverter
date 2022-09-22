@@ -287,7 +287,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
    */
   private static @Nullable XMultiServiceFactory getConfigProvider(
       final @NonNull XComponentContext context) {
-    return Lo.createInstanceMCF(
+    return Lo.createInstance(
         context, XMultiServiceFactory.class, "com.sun.star.configuration.ConfigurationProvider");
   }
 

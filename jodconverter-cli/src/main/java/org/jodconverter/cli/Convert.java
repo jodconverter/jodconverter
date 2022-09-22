@@ -26,10 +26,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -186,12 +192,7 @@ public final class Convert {
     // If the URL is present, we will use the remote office manager and thus,
     // an office installation won't be required locally.
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
-      final String connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
-      assert connectionUrl != null;
-      return RemoteOfficeManager.builder()
-          .urlConnection(connectionUrl)
-          .sslConfig(context == null ? null : context.getBean(SslConfig.class))
-          .build();
+      return createRemoteOfficeManager(commandLine, context);
     }
 
     // Not remote conversion...
@@ -200,54 +201,54 @@ public final class Convert {
 
     // Always fail fast!!
     builder.startFailFast(true);
-
-    if (commandLine.hasOption(OPT_OFFICE_HOME.getOpt())) {
-      builder.officeHome(commandLine.getOptionValue(OPT_OFFICE_HOME.getOpt()));
-    }
-
+    applyOption(OPT_OFFICE_HOME, commandLine, builder::officeHome);
     builder.disableOpengl(commandLine.hasOption(OPT_DISABLE_OPENGL.getOpt()));
-
-    if (commandLine.hasOption(OPT_PROCESS_MANAGER.getOpt())) {
-      builder.processManager(commandLine.getOptionValue(OPT_PROCESS_MANAGER.getOpt()));
-    }
-
-    if (commandLine.hasOption(OPT_PORT.getOpt())) {
-      builder.portNumbers(Integer.parseInt(commandLine.getOptionValue(OPT_PORT.getOpt())));
-    }
-
-    if (commandLine.hasOption(OPT_TIMEOUT.getOpt())) {
-      builder.taskExecutionTimeout(
-          Long.parseLong(commandLine.getOptionValue(OPT_TIMEOUT.getOpt())) * 1000L);
-    }
-
-    if (commandLine.hasOption(OPT_USER_PROFILE.getOpt())) {
-      builder.templateProfileDir(new File(commandLine.getOptionValue(OPT_USER_PROFILE.getOpt())));
-    }
-
-    if (commandLine.hasOption(OPT_EXISTING_PROCESS_ACTION.getOpt())) {
-      switch (commandLine
-          .getOptionValue(OPT_EXISTING_PROCESS_ACTION.getOpt())
-          .toLowerCase(Locale.ROOT)
-          .replace('-', '_')) {
-        case "fail":
-          builder.existingProcessAction(ExistingProcessAction.FAIL);
-          break;
-        case "kill":
-          builder.existingProcessAction(ExistingProcessAction.KILL);
-          break;
-        case "connect":
-          builder.existingProcessAction(ExistingProcessAction.CONNECT);
-          break;
-        case "connect_or_kill":
-          builder.existingProcessAction(ExistingProcessAction.CONNECT_OR_KILL);
-          break;
-        default:
-          // Ignore
-          break;
-      }
-    }
+    applyOption(OPT_PROCESS_MANAGER, commandLine, builder::processManager);
+    applyOption(OPT_PORT, commandLine, opt -> builder.portNumbers(Integer.parseInt(opt)));
+    applyOption(
+        OPT_TIMEOUT, commandLine, opt -> builder.taskExecutionTimeout(Long.parseLong(opt) * 1000L));
+    applyOption(OPT_USER_PROFILE, commandLine, builder::templateProfileDir);
+    applyOption(
+        OPT_EXISTING_PROCESS_ACTION,
+        commandLine,
+        opt -> {
+          switch (opt.toLowerCase(Locale.ROOT).replace('-', '_')) {
+            case "fail":
+              return builder.existingProcessAction(ExistingProcessAction.FAIL);
+            case "kill":
+              return builder.existingProcessAction(ExistingProcessAction.KILL);
+            case "connect":
+              return builder.existingProcessAction(ExistingProcessAction.CONNECT);
+            case "connect_or_kill":
+              return builder.existingProcessAction(ExistingProcessAction.CONNECT_OR_KILL);
+            default:
+              return builder.existingProcessAction(
+                  LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION);
+          }
+        });
 
     return builder.install().build();
+  }
+
+  private static void applyOption(
+      final Option option,
+      final CommandLine commandLine,
+      final Function<String, LocalOfficeManager.Builder> fn) {
+
+    if (commandLine.hasOption(option.getOpt())) {
+      fn.apply(commandLine.getOptionValue(option.getOpt()));
+    }
+  }
+
+  private static OfficeManager createRemoteOfficeManager(
+      final CommandLine commandLine, final AbstractApplicationContext context) {
+
+    final String connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
+    assert connectionUrl != null;
+    return RemoteOfficeManager.builder()
+        .urlConnection(connectionUrl)
+        .sslConfig(context == null ? null : context.getBean(SslConfig.class))
+        .build();
   }
 
   private static AbstractApplicationContext getApplicationContextOption(
@@ -399,7 +400,7 @@ public final class Convert {
   private static Map<String, Object> toMap(final String... options) {
 
     if (options.length % 2 != 0) {
-      return null;
+      return new HashMap<>();
     }
 
     return IntStream.range(0, options.length)
@@ -427,12 +428,12 @@ public final class Convert {
   private static Map<String, Object> buildProperties(final String... args) {
 
     if (args == null || args.length == 0) {
-      return null;
+      return new HashMap<>();
     }
 
     final Map<String, Object> argsMap = toMap(args);
-    if (argsMap == null) {
-      return null;
+    if (argsMap.isEmpty()) {
+      return new HashMap<>();
     }
 
     final Map<String, Object> properties = new HashMap<>();

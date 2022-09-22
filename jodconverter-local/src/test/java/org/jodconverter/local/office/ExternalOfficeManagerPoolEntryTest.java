@@ -219,7 +219,6 @@ class ExternalOfficeManagerPoolEntryTest {
   class Misc {
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void whenUnexpectedDisconnection_ShouldCancelCurrentTaskAndReconnect()
         throws OfficeException, InterruptedException {
 

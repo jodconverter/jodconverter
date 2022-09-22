@@ -45,6 +45,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** {@link OfficeConnection} implementation for testing purposes. */
 public final class TestOfficeConnection extends OfficeConnection {
 
+  private static final long NO_SLEEP = 0L;
+
   private final AtomicBoolean connected = new AtomicBoolean();
   private final AtomicInteger connectCount = new AtomicInteger();
   private final AtomicInteger disconnectCount = new AtomicInteger();
@@ -96,7 +98,7 @@ public final class TestOfficeConnection extends OfficeConnection {
   public void connect() {
     connectCount.incrementAndGet();
 
-    if (connectSleep > 0L) {
+    if (connectSleep > NO_SLEEP) {
       try {
         Thread.sleep(connectSleep);
       } catch (InterruptedException ignore) {
@@ -114,7 +116,7 @@ public final class TestOfficeConnection extends OfficeConnection {
   public void disconnect() {
     disconnectCount.incrementAndGet();
 
-    if (disconnectSleep > 0L) {
+    if (disconnectSleep > NO_SLEEP) {
       try {
         Thread.sleep(disconnectSleep);
       } catch (InterruptedException ignore) {

@@ -30,7 +30,7 @@ public abstract class AbstractRetryable<T extends Throwable> {
 
   private static final long NO_SLEEP = 0L;
 
-  private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   /** Initializes a new instance of the class. */
   protected AbstractRetryable() {
@@ -81,21 +81,21 @@ public abstract class AbstractRetryable<T extends Throwable> {
     while (true) {
       attempt++;
       try {
-        LOGGER.debug("Execution attempt #{}", attempt);
+        logger.debug("Execution attempt #{}", attempt);
         attempt();
-        LOGGER.debug("Execution succeeded on attempt #{}", attempt);
+        logger.debug("Execution succeeded on attempt #{}", attempt);
         return;
       } catch (TemporaryException temporaryException) {
         if (System.currentTimeMillis() - start < timeout) {
           if (interval > NO_SLEEP) {
-            LOGGER.debug(
+            logger.debug(
                 "Execution attempt #{} failed, retrying after sleep of {} ms", attempt, interval);
             sleep(interval);
           } else {
-            LOGGER.debug("Execution attempt #{} failed, retrying without sleep", attempt);
+            logger.debug("Execution attempt #{} failed, retrying without sleep", attempt);
           }
         } else {
-          LOGGER.debug("Execution failed on attempt #{}", attempt);
+          logger.debug("Execution failed on attempt #{}", attempt);
           throw new RetryTimeoutException( // NOPMD - Only cause is relevant
               temporaryException.getCause());
         }

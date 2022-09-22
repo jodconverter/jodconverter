@@ -19,7 +19,7 @@
 
 package org.jodconverter.local.filter.text;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -242,7 +242,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
       // Create a GraphicProvider at the global service manager.
       final XGraphicProvider graphicProvider =
-          Lo.createInstanceMCF(
+          Lo.createInstance(
               context, XGraphicProvider.class, "com.sun.star.graphic.GraphicProvider");
       Objects.requireNonNull(graphicProvider);
 
@@ -254,7 +254,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
     } else {
       // Creating bitmap container service
       final XNameContainer bitmapContainer =
-          Lo.createInstanceMSF(
+          Lo.createInstance(
               serviceFactory, XNameContainer.class, "com.sun.star.drawing.BitmapTable");
 
       LOGGER.debug("Embedding image to the bitmap container '{}'", strUrl);

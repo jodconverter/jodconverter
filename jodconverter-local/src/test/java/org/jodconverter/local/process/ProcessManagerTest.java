@@ -156,7 +156,7 @@ class ProcessManagerTest {
       final UnixProcessManager manager =
           new UnixProcessManager() {
             @Override
-            protected List<String> execute(final String[] cmdarray) {
+            protected List<String> execute(final String... cmdarray) {
               executed.set(true);
               return new ArrayList<>();
             }
@@ -173,7 +173,7 @@ class ProcessManagerTest {
       final UnixProcessManager manager =
           new UnixProcessManager() {
             @Override
-            protected List<String> execute(final String[] cmdarray) {
+            protected List<String> execute(final String... cmdarray) {
               executed.set(true);
               return new ArrayList<>();
             }
@@ -281,7 +281,7 @@ class ProcessManagerTest {
       final WindowsProcessManager manager =
           new WindowsProcessManager() {
             @Override
-            protected List<String> execute(final String[] cmdarray) throws IOException {
+            protected List<String> execute(final String... cmdarray) throws IOException {
               throw new IOException();
             }
           };
@@ -294,7 +294,7 @@ class ProcessManagerTest {
       final WindowsProcessManager manager =
           new WindowsProcessManager() {
             @Override
-            protected List<String> execute(final String[] cmdarray) {
+            protected List<String> execute(final String... cmdarray) {
               return new ArrayList<>();
             }
           };
@@ -308,7 +308,7 @@ class ProcessManagerTest {
       final WindowsProcessManager manager =
           new WindowsProcessManager() {
             @Override
-            protected List<String> execute(final String[] cmdarray) {
+            protected List<String> execute(final String... cmdarray) {
               executed.set(true);
               return new ArrayList<>();
             }
@@ -325,7 +325,7 @@ class ProcessManagerTest {
       final WindowsProcessManager manager =
           new WindowsProcessManager() {
             @Override
-            protected List<String> execute(final String[] cmdarray) {
+            protected List<String> execute(final String... cmdarray) {
               executed.set(true);
               return new ArrayList<>();
             }

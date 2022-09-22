@@ -19,6 +19,7 @@
 
 package org.jodconverter.core.office;
 
+/** Retryable for testing purposes. */
 public final class SimpleRetryable extends AbstractRetryable<Exception> {
 
   private static final long NO_SLEEP = 0L;
@@ -27,10 +28,12 @@ public final class SimpleRetryable extends AbstractRetryable<Exception> {
   private final long sleepms;
   private final int maxAttempts;
 
+  /** Retryable ctor. */
   public SimpleRetryable(final int maxAttempts) {
     this(maxAttempts, NO_SLEEP);
   }
 
+  /** Retryable ctor. */
   public SimpleRetryable(final int maxAttempts, final long sleepms) {
     super();
 
@@ -42,7 +45,7 @@ public final class SimpleRetryable extends AbstractRetryable<Exception> {
   protected void attempt() throws Exception {
 
     attempts++;
-    if (sleepms > 0L) {
+    if (sleepms > NO_SLEEP) {
       Thread.sleep(sleepms);
     }
     if (attempts >= maxAttempts) {

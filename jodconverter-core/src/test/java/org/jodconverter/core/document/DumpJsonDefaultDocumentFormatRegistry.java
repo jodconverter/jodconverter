@@ -49,7 +49,9 @@ final class DumpJsonDefaultDocumentFormatRegistry {
                 ReflectionTestUtils.getField(registry, "fmtsByExtension"));
 
     final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    LOGGER.info(gson.toJson(formats.values()));
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info(gson.toJson(formats.values()));
+    }
   }
 
   // Private constructor.

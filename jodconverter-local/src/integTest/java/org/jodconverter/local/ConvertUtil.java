@@ -22,7 +22,9 @@ package org.jodconverter.local;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -38,6 +40,20 @@ import org.jodconverter.core.util.FileUtils;
 public final class ConvertUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConvertUtil.class);
+
+  // Input format to be skipped when testing al possible conversion.
+  // They may fail on some OS or LO/OO version.
+  private static final List<String> SKIPPED_INPUT_FORMAT =
+      Arrays.asList(
+          "odg", "svg", "fodg", "fodp", "fods", "fodt", "docx", "dotx", "xlsx", "xltx", "pptx",
+          "potx");
+
+  // Output formats to be skipped when testing al possible conversion.
+  // They may fail on some OS or LO/OO version.
+  private static final List<String> SKIPPED_OUTPUT_FORMAT =
+      Arrays.asList(
+          "svg", "png", "jpg", "jpeg", "tif", "tiff", "gif", "swf", "sxc", "sxi", "sxw", "fodg",
+          "fodp", "fods", "fodt", "docx", "dotx", "xlsx", "xltx", "pptx", "potx", "xhtml");
 
   /**
    * Runnable used to convert a document. This kind of runner is useful when a conversion must be
@@ -146,58 +162,8 @@ public final class ConvertUtil {
     for (final DocumentFormat outputFormat : outputFormats) {
 
       // Skip test that doesn't work on all os or with all office installation.
-      switch (inputFormat.getExtension()) {
-        case "odg":
-        case "svg":
-        case "fodg":
-        case "fodp":
-        case "fods":
-        case "fodt":
-        case "docx":
-        case "dotx":
-        case "xlsx":
-        case "xltx":
-        case "pptx":
-        case "potx":
-          if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(
-                "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
-          }
-          continue;
-        default:
-          break;
-      }
-
-      switch (outputFormat.getExtension()) {
-        case "svg":
-        case "png":
-        case "jpg":
-        case "jpeg":
-        case "tif":
-        case "tiff":
-        case "gif":
-        case "swf":
-        case "sxc":
-        case "sxi":
-        case "sxw":
-        case "fodg":
-        case "fodp":
-        case "fods":
-        case "fodt":
-        case "docx":
-        case "dotx":
-        case "xlsx":
-        case "xltx":
-        case "pptx":
-        case "potx":
-        case "xhtml":
-          if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(
-                "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
-          }
-          continue;
-        default:
-          break;
+      if (checkSkipConversion(inputFormat, outputFormat)) {
+        continue;
       }
 
       // Create an output file
@@ -211,6 +177,19 @@ public final class ConvertUtil {
       // Convert the file to the desired format
       new ConvertRunner(sourceFile, targetFile, converter).run();
     }
+  }
+
+  private static boolean checkSkipConversion(
+      final DocumentFormat inputFormat, final DocumentFormat outputFormat) {
+    if (SKIPPED_INPUT_FORMAT.contains(inputFormat.getExtension())
+        || SKIPPED_OUTPUT_FORMAT.contains(outputFormat.getExtension())) {
+      if (LOGGER.isInfoEnabled()) {
+        LOGGER.info(
+            "Skipping {} to {} test", inputFormat.getExtension(), outputFormat.getExtension());
+      }
+      return true;
+    }
+    return false;
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

@@ -28,7 +28,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.job.*;
+import org.jodconverter.core.job.AbstractConversionJob;
+import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecified;
+import org.jodconverter.core.job.AbstractConverter;
+import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
+import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
@@ -46,10 +50,10 @@ import org.jodconverter.local.task.LocalConversionTask;
  * @see org.jodconverter.core.DocumentConverter
  * @see org.jodconverter.core.office.OfficeManager
  */
-public class LocalConverter extends AbstractConverter {
+public final class LocalConverter extends AbstractConverter {
 
   /** The default behavior regarding the usage of the default load properties. */
-  public static final boolean DEFAULT_APPLY_DEFAULT_LOAD_PROPERTIES = true;
+  public static final boolean DEFAULT_APPLY_DEFAULT_LOAD_PROPS = true;
 
   /**
    * The default behavior regarding the default load property {@code UpdateDocMode}, which has been
@@ -168,7 +172,7 @@ public class LocalConverter extends AbstractConverter {
    */
   public static final class Builder extends AbstractConverterBuilder<Builder> {
 
-    private boolean applyDefaultLoadProperties = DEFAULT_APPLY_DEFAULT_LOAD_PROPERTIES;
+    private boolean applyDefaultLoadProperties = DEFAULT_APPLY_DEFAULT_LOAD_PROPS;
     private boolean useUnsafeQuietUpdate = DEFAULT_USE_UNSAFE_QUIET_UPDATE;
     private Map<String, Object> loadProperties;
     private FilterChain filterChain;

@@ -20,7 +20,15 @@
 package org.jodconverter.core.document;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -484,24 +492,32 @@ public final class DocumentFormat {
 
       if (value == null) {
         // Remove the property if the value is null.
-        if (storeProperties != null) {
-          final Map<String, Object> props = storeProperties.get(documentFamily);
-          if (props != null) {
-            props.remove(name);
-            if (props.isEmpty()) {
-              storeProperties.remove(documentFamily);
-            }
-            if (storeProperties.isEmpty()) {
-              storeProperties = null;
-            }
+        return removeStoreProperty(documentFamily, name);
+      }
+
+      // Add the property if a value is given.
+      if (storeProperties == null) {
+        storeProperties = new EnumMap<>(DocumentFamily.class);
+      }
+      storeProperties.computeIfAbsent(documentFamily, key -> new HashMap<>()).put(name, value);
+
+      return this;
+    }
+
+    private Builder removeStoreProperty(final DocumentFamily documentFamily, final String name) {
+
+      // Remove the property if the value is null.
+      if (storeProperties != null) {
+        final Map<String, Object> props = storeProperties.get(documentFamily);
+        if (props != null) {
+          props.remove(name);
+          if (props.isEmpty()) {
+            storeProperties.remove(documentFamily);
+          }
+          if (storeProperties.isEmpty()) {
+            storeProperties = null;
           }
         }
-      } else {
-        // Add the property if a value is given.
-        if (storeProperties == null) {
-          storeProperties = new EnumMap<>(DocumentFamily.class);
-        }
-        storeProperties.computeIfAbsent(documentFamily, key -> new HashMap<>()).put(name, value);
       }
 
       return this;

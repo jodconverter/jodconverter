@@ -117,8 +117,9 @@ class AbstractOfficeManagerPoolEntryTest {
         final SimpleOfficeTask task = new SimpleOfficeTask(exception);
         assertThatExceptionOfType(OfficeException.class)
             .isThrownBy(() -> entry.execute(task))
-            .withNoCause()
-            .withMessage("This is a test");
+            .withMessage("Failed to execute task")
+            .withCauseExactlyInstanceOf(OfficeException.class)
+            .satisfies(e -> assertThat(e.getCause()).hasMessage("This is a test"));
 
       } finally {
         entry.stop();

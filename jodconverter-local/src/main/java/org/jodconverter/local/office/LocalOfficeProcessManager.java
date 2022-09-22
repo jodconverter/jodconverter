@@ -26,7 +26,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.sun.star.beans.XHierarchicalPropertySet;
@@ -193,13 +197,8 @@ class LocalOfficeProcessManager {
 
       } catch (ExecutionException ex) {
 
-        // Rethrow the original (cause) exception
-        if (ex.getCause() instanceof OfficeException) {
-          throw (OfficeException) ex.getCause();
-        }
-
-        throw new OfficeException( // NOPMD - Only cause is relevant
-            "Start task did not complete", ex.getCause());
+        // An error occurred while executing the start and connect task...
+        throw handleStartTaskExecutionException(ex);
 
       } catch (InterruptedException ex) {
         Thread.currentThread().interrupt(); // ignore/reset
@@ -216,6 +215,17 @@ class LocalOfficeProcessManager {
             }
           });
     }
+  }
+
+  private OfficeException handleStartTaskExecutionException(
+      final ExecutionException executionException) {
+
+    // Rethrow the original (cause) exception
+    if (executionException.getCause() instanceof OfficeException) {
+      return (OfficeException) executionException.getCause();
+    }
+
+    return new OfficeException("Start task did not complete", executionException.getCause());
   }
 
   /**
@@ -380,16 +390,34 @@ class LocalOfficeProcessManager {
       prepareInstanceProfileDir();
     }
 
+    // Launch the office process and connect.
+    launchOffice(acceptString, processQuery);
+
+    if (pid == PID_NOT_FOUND) {
+      throw new OfficeException(
+          String.format(
+              "A process with --accept '%s' started but its pid could not be found", acceptString));
+    }
+
+    // Handle OpenGL deactivation restart.
+    handleOpenGlRestart(checkOpengl);
+
+    return null;
+  }
+
+  private void launchOffice(final String acceptString, final ProcessQuery processQuery)
+      throws OfficeException {
+
     // Create the builder used to launch the office process
     final ProcessBuilder processBuilder = prepareProcessBuilder(acceptString);
 
-    // Launch the process.
     LOGGER.debug("OFFICE HOME: {}", officeHome);
     LOGGER.info(
         "Starting process with --accept '{}' and profileDir '{}'",
         acceptString,
         instanceProfileDir);
 
+    // Launch the process.
     try {
       // Start the process.
       final StartProcessAndConnectRetryable retryable =
@@ -408,19 +436,14 @@ class LocalOfficeProcessManager {
           "Started process; pid: {}",
           pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
 
-    } catch (OfficeException officeEx) {
-      throw officeEx;
     } catch (Exception ex) {
       throw new OfficeException(
           String.format("An error prevents us to start a process with --accept '%s'", acceptString),
           ex);
     }
+  }
 
-    if (pid == PID_NOT_FOUND) {
-      throw new OfficeException(
-          String.format(
-              "A process with --accept '%s' started but its pid could not be found", acceptString));
-    }
+  private void handleOpenGlRestart(final boolean checkOpengl) throws OfficeException {
 
     // Here a connection has been made successfully to a newly started office process.
     // Check to disable the usage of OpenGL. Some file won't load properly if OpenGL is
@@ -433,8 +456,6 @@ class LocalOfficeProcessManager {
       // This will cause unexpected disconnection and subsequent restart.
       executor.execute(this::forciblyTerminateProcess);
     }
-
-    return null;
   }
 
   /**
@@ -537,40 +558,44 @@ class LocalOfficeProcessManager {
     try {
       // Search for an existing process that would prevent us to start a new
       // office process with the same connection string.
-      final long pid = processManager.findPid(processQuery);
+      long pid = processManager.findPid(processQuery);
 
-      if (pid > PID_UNKNOWN) {
-        switch (existingProcessAction) {
-          case FAIL:
-            // Throw an exception if the kill switch is off.
-            throw new OfficeException(
-                String.format(
-                    "A process with --accept '%s' is already running; pid %d", accept, pid));
-          case KILL:
-            // Kill any running process with the same connection string if the kill switch is on.
-            killExistingProcess(pid, processQuery);
-            return PID_UNKNOWN;
-          case CONNECT:
-            // Connect to the existing office process.
-            connectToExistingProcess(pid, accept);
-            break;
-          case CONNECT_OR_KILL:
-            // Try to connect to the existing office process.
-            try {
-              connectToExistingProcess(pid, accept);
-            } catch (OfficeException ex) {
-              // Could not establish connection. Kill the process.
-              killExistingProcess(pid, processQuery);
-              return PID_UNKNOWN;
-            }
-            break;
-        }
-
-      } else {
+      if (pid <= PID_UNKNOWN) {
+        // No process was found.
         LOGGER.debug(
             "Checking existing process done; no process running with --accept '{}'", accept);
+        return pid;
       }
 
+      // A process was found!
+      switch (existingProcessAction) {
+        case FAIL:
+          // Throw an exception if the kill switch is off.
+          throw new OfficeException(
+              String.format(
+                  "A process with --accept '%s' is already running; pid %d", accept, pid));
+        case KILL:
+          // Kill any running process with the same connection string if the kill switch is on.
+          killExistingProcess(pid, processQuery);
+          pid = PID_UNKNOWN;
+          break;
+        case CONNECT:
+          // Connect to the existing office process.
+          connectToExistingProcess(pid, accept);
+          break;
+        case CONNECT_OR_KILL:
+          // Try to connect to the existing office process.
+          try {
+            connectToExistingProcess(pid, accept);
+          } catch (OfficeException ex) {
+            // Could not establish connection. Kill the process.
+            killExistingProcess(pid, processQuery);
+            pid = PID_UNKNOWN;
+          }
+          break;
+      }
+
+      // Return the pid.
       return pid;
 
     } catch (IOException ioEx) {
@@ -738,7 +763,7 @@ class LocalOfficeProcessManager {
    * Checks if we must disable OpenGL.
    *
    * @param context The office context.
-   * @return {@code true} if OpenGL has been desabled and a restart is required; {@code false}
+   * @return {@code true} if OpenGL has been disabled and a restart is required; {@code false}
    *     otherwise.
    * @throws OfficeException If the verification fails.
    */

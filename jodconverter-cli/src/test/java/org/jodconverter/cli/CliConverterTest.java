@@ -19,10 +19,15 @@
 
 package org.jodconverter.cli;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.io.IOException;
@@ -452,7 +457,7 @@ class CliConverterTest {
   }
 
   @Test
-  void prepareOutputDir_WithUnexistingOutputDir_OutputDirCreated() throws Exception {
+  void prepareOutputDir_WithUnexistingOutputDir_OutputDirCreated() {
 
     final File dir =
         new File(TEST_OUTPUT_DIR, CliConverterTest.class.getSimpleName() + "_prepareTest");
@@ -467,7 +472,7 @@ class CliConverterTest {
   }
 
   @Test
-  void validateInputFile_WithInputFileThatDoesNotExists_ReturnsFalse() throws Exception {
+  void validateInputFile_WithInputFileThatDoesNotExists_ReturnsFalse() {
 
     final File file = mock(File.class);
     given(file.exists()).willReturn(false);
@@ -485,7 +490,7 @@ class CliConverterTest {
   }
 
   @Test
-  void validateInputFile_WithInputFileThatExistsAsDirectory_ReturnsFalse() throws Exception {
+  void validateInputFile_WithInputFileThatExistsAsDirectory_ReturnsFalse() {
 
     final File file = mock(File.class);
     given(file.exists()).willReturn(true);
@@ -504,7 +509,7 @@ class CliConverterTest {
   }
 
   @Test
-  void validateInputFile_WithInputFileThatCannotBeReadFrom_ReturnsFalse() throws Exception {
+  void validateInputFile_WithInputFileThatCannotBeReadFrom_ReturnsFalse() {
 
     final File file = mock(File.class);
     given(file.exists()).willReturn(true);
@@ -524,7 +529,7 @@ class CliConverterTest {
   }
 
   @Test
-  void validateOutputFile_WithOutputFileThatDoesNotExists_ReturnsTrue() throws Exception {
+  void validateOutputFile_WithOutputFileThatDoesNotExists_ReturnsTrue() {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);
@@ -538,7 +543,7 @@ class CliConverterTest {
   }
 
   @Test
-  void validateOutputFile_WithOutputFileThatExistsAsDirectory_ReturnsFalse() throws Exception {
+  void validateOutputFile_WithOutputFileThatExistsAsDirectory_ReturnsFalse() {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);
@@ -561,7 +566,7 @@ class CliConverterTest {
   }
 
   @Test
-  void validateOutputFile_WithOutputFileThatExistsAndOverwriteOff_ReturnsFalse() throws Exception {
+  void validateOutputFile_WithOutputFileThatExistsAndOverwriteOff_ReturnsFalse() {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);
@@ -585,7 +590,7 @@ class CliConverterTest {
   }
 
   @Test
-  void validateOutputFile_WithOutputFileThatExistsAndOverwriteOn_ReturnsTrue() throws Exception {
+  void validateOutputFile_WithOutputFileThatExistsAndOverwriteOn_ReturnsTrue() {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);
@@ -601,8 +606,7 @@ class CliConverterTest {
   }
 
   @Test
-  void validateOutputFile_WithOutputFileThatExistsButCannotBeDeletedAndOverwriteOn_ReturnsFalse()
-      throws Exception {
+  void validateOutputFile_WithOutputFileThatExistsButCannotBeDeletedAndOverwriteOn_ReturnsFalse() {
 
     final File inputFile = mock(File.class);
     final File outputFile = mock(File.class);

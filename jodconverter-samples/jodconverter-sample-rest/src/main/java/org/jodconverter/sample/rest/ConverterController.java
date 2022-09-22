@@ -134,7 +134,7 @@ public class ConverterController {
     return convert(inputFile, convertToFormat, parameters);
   }
 
-  private void addFilterDataProperty(
+  private void addProperty(
       final String paramName,
       final Map.Entry<String, String> param,
       final Map<String, Object> properties) {
@@ -156,6 +156,16 @@ public class ConverterController {
     }
   }
 
+  private void addProperty(
+      final String key,
+      final String prefix,
+      final Map.Entry<String, String> param,
+      final Map<String, Object> properties) {
+    if (key.startsWith(prefix)) {
+      addProperty(key, param, properties);
+    }
+  }
+
   private void decodeParameters(
       final Map<String, String> parameters,
       final Map<String, Object> loadProperties,
@@ -169,15 +179,10 @@ public class ConverterController {
     final Map<String, Object> storeFilterDataProperties = new HashMap<>();
     for (final Map.Entry<String, String> param : parameters.entrySet()) {
       final String key = param.getKey().toLowerCase(Locale.ROOT);
-      if (key.startsWith(LOAD_FILTER_DATA_PREFIX_PARAM)) {
-        addFilterDataProperty(LOAD_FILTER_DATA_PREFIX_PARAM, param, loadFilterDataProperties);
-      } else if (key.startsWith(LOAD_PROPERTIES_PREFIX_PARAM)) {
-        addFilterDataProperty(LOAD_PROPERTIES_PREFIX_PARAM, param, loadProperties);
-      } else if (key.startsWith(STORE_FILTER_DATA_PREFIX_PARAM)) {
-        addFilterDataProperty(STORE_FILTER_DATA_PREFIX_PARAM, param, storeFilterDataProperties);
-      } else if (key.startsWith(STORE_PROPERTIES_PREFIX_PARAM)) {
-        addFilterDataProperty(STORE_PROPERTIES_PREFIX_PARAM, param, storeProperties);
-      }
+      addProperty(key, LOAD_FILTER_DATA_PREFIX_PARAM, param, loadFilterDataProperties);
+      addProperty(key, LOAD_PROPERTIES_PREFIX_PARAM, param, loadProperties);
+      addProperty(key, STORE_FILTER_DATA_PREFIX_PARAM, param, storeFilterDataProperties);
+      addProperty(key, STORE_PROPERTIES_PREFIX_PARAM, param, storeProperties);
     }
 
     if (!loadFilterDataProperties.isEmpty()) {

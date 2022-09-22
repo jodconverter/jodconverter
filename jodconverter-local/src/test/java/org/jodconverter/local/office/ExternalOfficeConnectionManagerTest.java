@@ -33,6 +33,8 @@ import org.jodconverter.core.office.OfficeException;
 /** Contains tests for the {@link ExternalOfficeConnectionManager} class. */
 class ExternalOfficeConnectionManagerTest {
 
+  private static final long NO_SLEEP = 0L;
+
   @Nested
   class GetConnection {
 
@@ -353,7 +355,7 @@ class ExternalOfficeConnectionManagerTest {
       if (throwConnectException) {
         throw new OfficeConnectionException("Could not connect.", url.getConnectString());
       }
-      if (connectSleep > 0L) {
+      if (connectSleep > NO_SLEEP) {
         try {
           Thread.sleep(connectSleep);
         } catch (InterruptedException ignore) {
@@ -365,7 +367,7 @@ class ExternalOfficeConnectionManagerTest {
 
     @Override
     public void disconnect() {
-      if (disconnectSleep > 0L) {
+      if (disconnectSleep > NO_SLEEP) {
         try {
           Thread.sleep(disconnectSleep);
         } catch (InterruptedException ignore) {
