@@ -1,5 +1,14 @@
 # Changelog
 
+## [v4.4.4](https://github.com/sbraconnier/jodconverter/tree/v4.4.4) (2022-09-22)
+
+[Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.4.3...v4.4.4)
+
+**Implemented enhancements:**
+
+- Change default UpdateDocMode behavior and add new option to keep old behavior.
+- Added FilterData and FilterOption do DocumentFormat builder.
+
 ## [v4.4.3](https://github.com/sbraconnier/jodconverter/tree/v4.4.3) (2022-09-15)
 
 [Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.4.2...v4.4.3)

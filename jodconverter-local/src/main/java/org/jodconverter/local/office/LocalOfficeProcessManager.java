@@ -405,8 +405,8 @@ class LocalOfficeProcessManager {
     return null;
   }
 
-  private void executeStartProcessAndConnect(final String acceptString, final ProcessQuery processQuery)
-      throws OfficeException {
+  private void executeStartProcessAndConnect(
+      final String acceptString, final ProcessQuery processQuery) throws OfficeException {
 
     // Create the builder used to launch the office process
     final ProcessBuilder processBuilder = prepareProcessBuilder(acceptString);
