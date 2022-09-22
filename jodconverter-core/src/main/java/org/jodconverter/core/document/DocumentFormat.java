@@ -19,6 +19,16 @@
 
 package org.jodconverter.core.document;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jodconverter.core.util.AssertUtils;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,17 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /** Contains the required information used to deal with a specific document format . */
 public final class DocumentFormat {
@@ -239,8 +238,9 @@ public final class DocumentFormat {
    * @return A DocumentFamily/Map pairs containing the properties to apply when storing a document
    *     of this format, by DocumentFamily.
    */
-  public @Nullable Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
-      getStoreProperties() {
+  public @Nullable
+      Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
+          getStoreProperties() {
     return storeProperties;
   }
 
@@ -404,6 +404,10 @@ public final class DocumentFormat {
      * Sets the {@code FilterName} property to the builder that will be applied when loading (open)
      * a document of this format.
      *
+     * <p>See <a
+     * href="https://help.libreoffice.org/7.4/en-US/text/shared/guide/convertfilters.html?&DbPAR=SHARED&System=WIN">File
+     * Conversion Filter Names</a>
+     *
      * @param value The {@code FilterName} value, may be null. If null, it will REMOVE the {@code
      *     FilterName} from the map.
      * @return This builder instance.
@@ -526,6 +530,10 @@ public final class DocumentFormat {
     /**
      * Sets the {@code FilterName} property that will be applied when storing (save) a document to
      * this format from a document of the specified family.
+     *
+     * <p>See <a
+     * href="https://help.libreoffice.org/7.4/en-US/text/shared/guide/convertfilters.html?&DbPAR=SHARED&System=WIN">File
+     * Conversion Filter Names</a>
      *
      * @param documentFamily The document family of the source (loaded) document, cannot be null.
      * @param value The {@code FilterName} value, may be null. If null, it will REMOVE the property

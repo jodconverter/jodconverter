@@ -391,7 +391,7 @@ class LocalOfficeProcessManager {
     }
 
     // Launch the office process and connect.
-    launchOffice(acceptString, processQuery);
+    executeStartProcessAndConnect(acceptString, processQuery);
 
     if (pid == PID_NOT_FOUND) {
       throw new OfficeException(
@@ -405,7 +405,7 @@ class LocalOfficeProcessManager {
     return null;
   }
 
-  private void launchOffice(final String acceptString, final ProcessQuery processQuery)
+  private void executeStartProcessAndConnect(final String acceptString, final ProcessQuery processQuery)
       throws OfficeException {
 
     // Create the builder used to launch the office process
