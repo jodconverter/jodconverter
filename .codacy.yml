@@ -1,5 +1,6 @@
 exclude_paths:
   - "**.md"
-  - "*/test/**"
+  - "**/test/**"
   - "**/integTest/**"
+  - "buildSrc/**"
   - "jodconverter-samples/**"
