@@ -23,9 +23,33 @@ I created this fork years ago because I had to do some changes to the original p
 
 ### Usage for local conversions
 
+Build default, JODConverter is built using the OpenOffice libraries. See [here](https://github.com/sbraconnier/jodconverter/issues/113) to know why. But you can now decide whether you want to use JODConverter with the LibreOffice libraries or the OpenOffice libraries. 
+
+#### With LibreOffice libraries:
+
 #### Gradle:
 ```Shell
-compile 'org.jodconverter:jodconverter-local:4.4.3'
+implementation 'org.jodconverter:jodconverter-local-lo:4.4.3'
+```
+
+#### Maven:
+```Shell
+<dependency>
+  <groupId>org.jodconverter</groupId>
+  <artifactId>jodconverter-local-lo</artifactId>
+  <version>4.4.3</version>
+</dependency>
+```
+
+#### With OpenOffice libraries:
+
+#### Gradle:
+```Shell
+implementation 'org.jodconverter:jodconverter-local:4.4.3'
+```
+or
+```Shell
+implementation 'org.jodconverter:jodconverter-local-oo:4.4.3'
 ```
 
 #### Maven:
@@ -36,19 +60,17 @@ compile 'org.jodconverter:jodconverter-local:4.4.3'
   <version>4.4.3</version>
 </dependency>
 ```
+or
+<dependency>
+  <groupId>org.jodconverter</groupId>
+  <artifactId>jodconverter-local-oo</artifactId>
+  <version>4.4.3</version>
+</dependency>
 
 ### Building the Project
 
-Build default, JODConverter is built using the OpenOffice libraries. See [here](https://github.com/sbraconnier/jodconverter/issues/113) to know why. But you can build the project using the LibreOffice libraries with the `useLibreOffice` argument.
-
-#### With OpenOffice libraries:
 ```Shell
 gradlew clean build -x test
-```
-
-#### With LibreOffice libraries:
-```Shell
-gradlew clean build -x test -PuseLibreOffice
 ```
 
 ### Building Cli Executable
@@ -74,13 +96,7 @@ JODConverter Gitter Community [![Join the chat at https://gitter.im/jodconverter
 
 Here are my favorite/inspiration forks/projects:
 
-- [XWiki fork](https://github.com/xwiki/jodconverter): Nice choice if you can afford using the SIGAR tools (which I couldn't sadly). The **filter** package is strongly inspired by this project.
-- [Nuxeo fork](https://github.com/nuxeo/jodconverter): Nice choice if you don't want to use SIGAR and don't came across an unresponsive office process following a timeout exception that drives you crazy.
 - [documents4j project](https://github.com/documents4j/documents4j): Nice choice if you want 100% perfect conversion using MS Office. But work only on Windows out of the box (Local implementation) and not totally free (since MS Office is not free). The new "job" package is strongly inspired by this project.
-
-### :sparkles: A special thanks to :
-
-[@michelole](https://github.com/michelole) who created a pull request in these two forks with a [stress test](https://github.com/sbraconnier/jodconverter/blob/master/jodconverter-local/src/integTest/java/org/jodconverter/StressITest.java) that made my office process to crash every times! My first commit was when I was able to build my things with his stress test on!!  
 
 ## Original JODConverter
 
