@@ -61,11 +61,13 @@ implementation 'org.jodconverter:jodconverter-local-oo:4.4.3'
 </dependency>
 ```
 or
+```Shell
 <dependency>
   <groupId>org.jodconverter</groupId>
   <artifactId>jodconverter-local-oo</artifactId>
   <version>4.4.3</version>
 </dependency>
+```
 
 ### Building the Project
 
