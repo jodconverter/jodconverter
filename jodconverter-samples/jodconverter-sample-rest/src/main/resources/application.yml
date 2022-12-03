@@ -9,6 +9,16 @@ spring:
   application:
     name: JODConverter Sample Rest Api
 
+springdoc:
+  show-actuator: false
+  api-docs:
+    path: /rest/api
+    groups:
+      enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
 jodconverter:
   local:
     enabled: true

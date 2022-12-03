@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'war'
-    id 'org.springframework.boot' version '2.7.3'
+    id 'org.springframework.boot' version '2.7.6'
 }
 
 group = 'org.jodconverter'

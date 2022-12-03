@@ -26,4 +26,10 @@ Once started, use your favorite browser and visit this page:
 http://localhost:8080/swagger-ui.html
 ```
 
+You can also ge the openapi specs from 
+
+```
+http://localhost:8080/rest/api
+```
+
 Happy conversions!!
