@@ -25,11 +25,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -61,7 +60,6 @@ import org.jodconverter.local.LocalConverter;
  */
 @Controller
 @RequestMapping("/lool/convert-to")
-@Api("Conversion Operations which emulate a LibreOffice Online server conversion capabilities.")
 public class ConverterController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConverterController.class);
@@ -88,46 +86,60 @@ public class ConverterController {
     this.officeManager = officeManager;
   }
 
-  @ApiOperation(
-      "Converts the incoming document to the specified format (provided as request param)"
-          + " and returns the converted document.")
+  @Operation(
+      summary =
+          "Converts the incoming document to the specified format (provided as request param)"
+              + " and returns the converted document.")
   @ApiResponses(
       value = {
-        @ApiResponse(code = 200, message = "Document converted successfully."),
-        @ApiResponse(code = 400, message = "The input document or output format is missing."),
-        @ApiResponse(code = 500, message = "An unexpected error occurred.")
+        @ApiResponse(responseCode = "200", description = "Document converted successfully."),
+        @ApiResponse(
+            responseCode = "400",
+            description = "The input document or output format is missing."),
+        @ApiResponse(responseCode = "500", description = "An unexpected error occurred.")
       })
   @PostMapping(produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   /* default */ Object convertToUsingParam(
-      @ApiParam(value = "The input document to convert.", required = true) @RequestParam("data")
+      @Parameter(description = "The input document to convert.", required = true)
+          @RequestParam("data")
           final MultipartFile inputFile,
-      @ApiParam(value = "The document format to convert the input document to.", required = true)
+      @Parameter(
+              description = "The document format to convert the input document to.",
+              required = true)
           @RequestParam(name = "format")
           final String convertToFormat,
-      @ApiParam("The custom options to apply to the conversion.") @RequestParam(required = false)
+      @Parameter(description = "The custom options to apply to the conversion.")
+          @RequestParam(required = false)
           final Map<String, String> parameters) {
 
     LOGGER.debug("convertUsingRequestParam > Converting file to {}", convertToFormat);
     return convert(inputFile, convertToFormat, parameters);
   }
 
-  @ApiOperation(
-      "Converts the incoming document to the specified format (provided as path param)"
-          + " and returns the converted document.")
+  @Operation(
+      summary =
+          "Converts the incoming document to the specified format (provided as path param)"
+              + " and returns the converted document.")
   @ApiResponses(
       value = {
-        @ApiResponse(code = 200, message = "Document converted successfully."),
-        @ApiResponse(code = 400, message = "The input document or output format is missing."),
-        @ApiResponse(code = 500, message = "An unexpected error occurred.")
+        @ApiResponse(responseCode = "200", description = "Document converted successfully."),
+        @ApiResponse(
+            responseCode = "400",
+            description = "The input document or output format is missing."),
+        @ApiResponse(responseCode = "500", description = "An unexpected error occurred.")
       })
   @PostMapping(value = "/{format}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   /* default */ Object convertToUsingPath(
-      @ApiParam(value = "The input document to convert.", required = true) @RequestParam("data")
+      @Parameter(description = "The input document to convert.", required = true)
+          @RequestParam("data")
           final MultipartFile inputFile,
-      @ApiParam(value = "The document format to convert the input document to.", required = true)
+      @Parameter(
+              description = "The document format to convert the input document to.",
+              required = true)
           @PathVariable(name = "format")
           final String convertToFormat,
-      @ApiParam("The custom options to apply to the conversion.") @RequestParam(required = false)
+      @Parameter(description = "The custom options to apply to the conversion.")
+          @RequestParam(required = false)
           final Map<String, String> parameters) {
 
     LOGGER.debug("convertUsingPathVariable > Converting file to {}", convertToFormat);

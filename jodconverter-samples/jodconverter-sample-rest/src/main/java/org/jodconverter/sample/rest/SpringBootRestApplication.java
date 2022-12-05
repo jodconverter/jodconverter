@@ -19,19 +19,15 @@
 
 package org.jodconverter.sample.rest;
 
-import java.util.Collections;
+import java.util.*;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.*;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /** Main application. */
 @SpringBootApplication
@@ -46,32 +42,31 @@ public class SpringBootRestApplication {
     SpringApplication.run(SpringBootRestApplication.class, args);
   }
 
-  /** Swagger configuration. */
   @Configuration
-  @EnableSwagger2
-  /* default */ static class SwaggerConfig {
+  static class OpenApiConfig {
 
     @Bean
-    /* default */ Docket api() {
-      return new Docket(DocumentationType.SWAGGER_2)
-          .useDefaultResponseMessages(false)
-          .select()
-          .apis(RequestHandlerSelectors.basePackage("org.jodconverter.sample.rest"))
-          .paths(PathSelectors.regex("/lool/convert-to.*"))
-          .build()
-          .apiInfo(apiInfo());
-    }
+    public OpenAPI openAPI() {
+      final Info info =
+          new Info()
+              .title("JODConverter REST API")
+              .description(
+                  "JODConverter REST API for Remote conversion. JODConverter automates conversions between office document formats using LibreOffice or Apache OpenOffice.")
+              .version("0.1")
+              .termsOfService("Terms of service")
+              .license(
+                  new License()
+                      .name("Apache License Version 2.0")
+                      .url("https://www.apache.org/licenses/LICENSE-2.0"));
 
-    private ApiInfo apiInfo() {
-      return new ApiInfo(
-          "JODConverter REST API",
-          "JODConverter REST API for Remote conversion. JODConverter automates conversions between office document formats using LibreOffice or Apache OpenOffice.",
-          "0.1",
-          "Terms of service",
-          new Contact("John Doe", "www.johndoe.org", "johndoe@company.com"),
-          "Apache License Version 2.0",
-          "https://www.apache.org/licenses/LICENSE-2.0",
-          Collections.emptyList());
+      Server apiServer = new Server();
+      apiServer.setDescription("local");
+      apiServer.setUrl("/");
+
+      List<Server> servers = new ArrayList<>();
+      servers.add(apiServer);
+
+      return new OpenAPI().servers(servers).info(info);
     }
   }
 }
