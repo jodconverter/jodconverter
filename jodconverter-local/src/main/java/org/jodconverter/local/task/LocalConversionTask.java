@@ -108,11 +108,17 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     // is an input stream, then a temporary file will be created from the
     // stream. The temporary file will be deleted once the task is done.
     final File sourceFile = source.getFile();
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace("Local conversion source file: {}", sourceFile.getAbsolutePath());
+    }
     try {
 
       // Get the target file (which is a temporary file if the
       // output target is an output stream).
       final File targetFile = target.getFile();
+      if (LOGGER.isTraceEnabled()) {
+        LOGGER.trace("Local conversion target file: {}", targetFile.getAbsolutePath());
+      }
 
       XComponent document = null;
       try {
