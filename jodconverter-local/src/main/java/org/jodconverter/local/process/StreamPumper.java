@@ -22,7 +22,7 @@ package org.jodconverter.local.process;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.Channels;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
@@ -76,8 +76,7 @@ public class StreamPumper extends Thread {
   public void run() {
 
     try (BufferedReader bufferedReader =
-        new BufferedReader(
-            Channels.newReader(Channels.newChannel(stream), Charset.defaultCharset().name()))) {
+        new BufferedReader(new InputStreamReader(stream, Charset.defaultCharset()))) {
       String line = bufferedReader.readLine();
       while (line != null) {
         consumer.consume(line);
