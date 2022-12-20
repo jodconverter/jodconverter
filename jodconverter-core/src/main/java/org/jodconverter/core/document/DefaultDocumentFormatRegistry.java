@@ -19,12 +19,11 @@
 
 package org.jodconverter.core.document;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Default {@code DocumentFormat} registry. It contains the list of {@code DocumentFormat} that
@@ -460,6 +459,15 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    */
   public static final @NonNull DocumentFormat BMP = byExtension("bmp");
 
+  // NOOP format that is used to ensure that all the static formats will have
+  // a non-null value even when using a custom document-formats.json file.
+  private static final DocumentFormat NOOP =
+      DocumentFormat.builder()
+          .name("NOOP")
+          .extension("noop")
+          .mediaType("jodconverter/noop")
+          .build();
+
   /**
    * Gets the default instance of the class.
    *
@@ -470,9 +478,7 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
   }
 
   private static DocumentFormat byExtension(final String extension) {
-    final DocumentFormat fmt = getInstance().getFormatByExtension(extension);
-    AssertUtils.notNull(fmt, "byExtension(extension) must not be null");
-    return fmt;
+    return Optional.ofNullable(getInstance().getFormatByExtension(extension)).orElse(NOOP);
   }
 
   /**
