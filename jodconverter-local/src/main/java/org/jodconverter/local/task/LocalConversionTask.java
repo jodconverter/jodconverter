@@ -81,8 +81,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     super(source, loadProperties);
 
     this.target = target;
-    this.filterChain =
-        Optional.ofNullable(filterChain).map(FilterChain::copy).orElse(RefreshFilter.CHAIN);
+    this.filterChain = Optional.ofNullable(filterChain).orElse(RefreshFilter.CHAIN).copy();
     this.storeProperties = storeProperties;
   }
 
