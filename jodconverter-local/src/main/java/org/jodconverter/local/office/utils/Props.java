@@ -20,9 +20,7 @@
 package org.jodconverter.local.office.utils;
 
 import com.sun.star.beans.PropertyValue;
-import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
-import com.sun.star.lang.WrappedTargetException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -63,7 +61,7 @@ public final class Props { // NOPMD - Disable utility class name rule violation
 
     try {
       return props.getPropertyValue(propName);
-    } catch (UnknownPropertyException | WrappedTargetException ex) {
+    } catch (com.sun.star.uno.Exception ex) {
       throw new WrappedUnoException(ex.getMessage(), ex);
     }
   }

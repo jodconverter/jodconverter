@@ -27,7 +27,6 @@ import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.lang.XServiceInfo;
-import com.sun.star.uno.Exception;
 import com.sun.star.uno.XComponentContext;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -232,7 +231,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
     try {
       return provider.createInstanceWithArguments(
           serviceSpecifier, Props.makeProperties("nodepath", nodePath));
-    } catch (Exception ex) {
+    } catch (com.sun.star.uno.Exception ex) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Could not access config for: " + nodePath, ex);
       }

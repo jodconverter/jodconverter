@@ -27,8 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.star.frame.XComponentLoader;
-import com.sun.star.io.IOException;
-import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.DocumentMSPasswordRequest;
 import com.sun.star.task.DocumentPasswordRequest;
@@ -197,7 +195,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       throw new OfficeException(
           ERROR_MESSAGE_LOAD + sourceFile.getName() + "; errorCode: " + exception.ErrCode,
           exception);
-    } catch (IllegalArgumentException | IOException exception) {
+    } catch (com.sun.star.uno.Exception exception) {
       throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
     }
   }

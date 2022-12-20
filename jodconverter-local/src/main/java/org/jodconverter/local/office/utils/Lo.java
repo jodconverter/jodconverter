@@ -23,7 +23,6 @@ import java.util.Optional;
 
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
-import com.sun.star.uno.Exception;
 import com.sun.star.uno.XComponentContext;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -150,7 +149,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
     // implements casting across process boundaries
     try {
       return qi(type, factory.createInstance(serviceName));
-    } catch (Exception ex) {
+    } catch (com.sun.star.uno.Exception ex) {
       throw new WrappedUnoException(ex.getMessage(), ex);
     }
   }
@@ -179,7 +178,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
       return qiOptional(
               type, context.getServiceManager().createInstanceWithContext(serviceName, context))
           .orElse(null);
-    } catch (Exception ex) {
+    } catch (com.sun.star.uno.Exception ex) {
       throw new WrappedUnoException(ex);
     }
   }

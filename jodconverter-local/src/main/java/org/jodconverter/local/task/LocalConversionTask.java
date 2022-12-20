@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.sun.star.frame.XStorable;
-import com.sun.star.io.IOException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -190,7 +189,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       throw new OfficeException(
           ERROR_MESSAGE_STORE + targetFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
           errorCodeIoEx);
-    } catch (IOException ioEx) {
+    } catch (com.sun.star.uno.Exception ioEx) {
       throw new OfficeException(ERROR_MESSAGE_STORE + targetFile.getName(), ioEx);
     }
   }

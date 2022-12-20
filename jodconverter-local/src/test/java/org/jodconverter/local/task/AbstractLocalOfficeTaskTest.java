@@ -39,7 +39,6 @@ import com.sun.star.beans.PropertyValue;
 import com.sun.star.document.UpdateDocMode;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
-import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.util.CloseVetoException;
@@ -148,7 +147,7 @@ class AbstractLocalOfficeTaskTest {
 
     @Test
     void whenIllegalArgumentExceptionCatched_ShouldThrowOfficeException()
-        throws IOException, IllegalArgumentException {
+        throws com.sun.star.uno.Exception {
 
       final XComponentLoader loader = mock(XComponentLoader.class);
       final LocalOfficeContext context = mock(LocalOfficeContext.class);
@@ -166,7 +165,7 @@ class AbstractLocalOfficeTaskTest {
 
     @Test
     void whenErrorCodeIOExceptionCatched_ShouldThrowOfficeException()
-        throws IOException, IllegalArgumentException {
+        throws com.sun.star.uno.Exception {
 
       final XComponentLoader loader = mock(XComponentLoader.class);
       final LocalOfficeContext context = mock(LocalOfficeContext.class);
@@ -183,8 +182,7 @@ class AbstractLocalOfficeTaskTest {
     }
 
     @Test
-    void whenIOExceptionCatched_ShouldThrowOfficeException()
-        throws IOException, IllegalArgumentException {
+    void whenIOExceptionCatched_ShouldThrowOfficeException() throws com.sun.star.uno.Exception {
 
       final XComponentLoader loader = mock(XComponentLoader.class);
       final LocalOfficeContext context = mock(LocalOfficeContext.class);
