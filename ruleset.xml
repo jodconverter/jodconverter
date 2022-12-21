@@ -134,7 +134,7 @@
     <!-- Use the 'errorprone' category -->
     <rule ref="category/java/errorprone.xml">
         <exclude name="AvoidFieldNameMatchingMethodName"/>
-        <exclude name="BeanMembersShouldSerialize"/>
+        <exclude name="NonSerializableClass"/>
         <exclude name="DataflowAnomalyAnalysis"/>
         <exclude name="DoNotTerminateVM"/>
         <exclude name="NullAssignment"/>
