@@ -58,10 +58,10 @@ windows_task:
       env:
         # https://community.chocolatey.org/packages/Temurin11
         TEMURINOPENJDK_PACKAGE: temurin11
-    - name: windows:temurinjdk17
-      env:
-        # https://community.chocolatey.org/packages/Temurin17
-        TEMURINOPENJDK_PACKAGE: temurin17
+    #- name: windows:temurinjdk17
+    #  env:
+    #    # https://community.chocolatey.org/packages/Temurin17
+    #    TEMURINOPENJDK_PACKAGE: temurin17
   install_script:
     - choco install -y libreoffice
     - choco install -y %TEMURINOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
