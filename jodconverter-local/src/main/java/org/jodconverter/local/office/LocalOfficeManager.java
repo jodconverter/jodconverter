@@ -228,7 +228,7 @@ public final class LocalOfficeManager
     }
 
     /**
-     * Specifies the pipe names that will be use to communicate with office. An instance of office
+     * Specifies the pipe names that will be used to communicate with office. An instance of office
      * will be launched for each pipe name.
      *
      * @param pipeNames The pipe names to use.
@@ -258,8 +258,8 @@ public final class LocalOfficeManager
     }
 
     /**
-     * Specifies the port numbers that will be use to communicate with office. An instance of office
-     * will be launched for each port number.
+     * Specifies the port numbers that will be used to communicate with office. An instance of
+     * office will be launched for each port number.
      *
      * @param portNumbers The port numbers to use.
      * @return This builder instance.
@@ -467,7 +467,7 @@ public final class LocalOfficeManager
      * know why.
      *
      * <p>&nbsp; <b><i>Default</i></b>: 0 (no delay). On FreeBSD, which is a known OS needing this,
-     * it default to 2000 (2 seconds).
+     * it defaults to 2000 (2 seconds).
      *
      * @param afterStartProcessDelay The delay, in milliseconds.
      * @return This builder instance.

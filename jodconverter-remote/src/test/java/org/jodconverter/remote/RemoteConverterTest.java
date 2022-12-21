@@ -46,7 +46,7 @@ class RemoteConverterTest {
 
   private OfficeManager officeManager;
 
-  /** Setup the office manager before each test. */
+  /** Set up the office manager before each test. */
   @BeforeEach
   public void setUp() {
 

@@ -82,7 +82,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
     props.put("VertOrientPosition", verticalPosition * 100);
     props.put("VertOrientRelation", RelOrientation.PAGE_FRAME);
 
-    // Setting the the wrap behavior
+    // Setting the wrap behavior
     props.put("Surround", WrapTextMode.THROUGHT);
 
     return props;

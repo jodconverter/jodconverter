@@ -93,7 +93,7 @@ public class JodConverterLocalProperties {
 
   /**
    * Specifies the action the must be taken when starting a new office process and there already is
-   * a existing running process for the same connection string.
+   * an existing running process for the same connection string.
    */
   private ExistingProcessAction existingProcessAction =
       LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;

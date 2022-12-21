@@ -19,7 +19,7 @@ I created this fork years ago because I had to do some changes to the original p
   * [jodconverter-remote](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-remote) module dependencies.
   * [jodconverter-spring](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-spring) module dependencies.
   * [jodconverter-spring-boot-starter](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-spring-boot-starter) module dependencies.
-- **Tests**: JODConverter is supposed to work just fine on recent versions of Windows, MacOS and Unix/Linux. Any confirmation would be welcome so we could build a list of official supported OS distributions.
+- **Tests**: JODConverter is supposed to work just fine on recent versions of Windows, MacOS and Unix/Linux. Any confirmation would be welcome, so we could build a list of official supported OS distributions.
 
 ### Usage for local conversions
 
@@ -109,6 +109,6 @@ including some [wiki pages](https://code.google.com/archive/p/jodconverter/wikis
 
 ## Donations
 
-If this project helps you, please consider a donation. I have to pay for the jodconverter web site (domain and hosting) every year. I also sit on my chair in front of a monitor a lot instead of being outside drinking a :beer: to improve this project :smiley:. Thanks!! :heart:
+If this project helps you, please consider a donation. I have to pay for the jodconverter website (domain and hosting) every year. I also sit on my chair in front of a monitor a lot instead of being outside drinking a :beer: to improve this project :smiley:. Thanks!! :heart:
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)

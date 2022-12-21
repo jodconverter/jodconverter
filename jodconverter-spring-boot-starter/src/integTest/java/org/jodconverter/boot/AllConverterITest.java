@@ -41,7 +41,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.util.FileUtils;
 
-/** Tests that an application can use both an remote converter and a local converter. */
+/** Tests that an application can use both a remote converter and a local converter. */
 @SpringBootTest
 @TestPropertySource(locations = "classpath:config/application-all.properties")
 class AllConverterITest {
@@ -96,7 +96,7 @@ class AllConverterITest {
       final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
 
-      // Verify that a it is actually the remote converter that did the conversion.
+      // Verify that it is actually the remote converter that did the conversion.
       configureFor(wireMockServer.port());
       verify(postRequestedFor(urlPathEqualTo("/lool/convert-to/txt")));
     } finally {

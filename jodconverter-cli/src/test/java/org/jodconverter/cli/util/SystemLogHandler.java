@@ -29,7 +29,7 @@ import java.util.Stack;
 
 /**
  * This helper class may be used to do sophisticated redirection of System.out and System.err on a
- * per Thread basis.
+ * per-thread basis.
  *
  * <p>A stack is implemented per Thread so that nested startCapture and stopCapture can be used.
  *

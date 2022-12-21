@@ -284,7 +284,7 @@ public final class LocalOfficeUtils {
    * Gets the office executable within an office installation.
    *
    * @param officeHome The root (home) directory of the office installation.
-   * @return A instance of the executable file.
+   * @return Aninstance of the executable file.
    */
   public static @NonNull File getOfficeExecutable(final @NonNull File officeHome) {
 
@@ -332,9 +332,9 @@ public final class LocalOfficeUtils {
   }
 
   /**
-   * Constructs an URL from the specified file as expected by office.
+   * Constructs a URL from the specified file as expected by office.
    *
-   * @param file The file for which an URL will be constructed.
+   * @param file The file for which a URL will be constructed.
    * @return A valid office URL.
    */
   public static @NonNull String toUrl(final @NonNull File file) {

@@ -180,7 +180,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
    *     undefined (system default).
    * @param socketTimeout The socket timeout ({@code SO_TIMEOUT}) in milliseconds, which is the
    *     timeout for waiting for data or, put differently, a maximum period inactivity between two
-   *     consecutive data packets). A timeout value of zero is interpreted as an infinite timeout. A
+   *     consecutive data packets. A timeout value of zero is interpreted as an infinite timeout. A
    *     negative value is interpreted as undefined (system default).
    * @param taskExecutionTimeout The maximum time allowed to process a task. If the processing time
    *     of a task is longer than this timeout, this task will be aborted and the next task is

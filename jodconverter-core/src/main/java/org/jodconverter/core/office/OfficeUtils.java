@@ -100,7 +100,7 @@ public final class OfficeUtils {
 
   /**
    * Deletes a file with a fallback (renaming) on deletion failure. If file is a directory, delete
-   * it and all sub-directories, with a .
+   * it and all subdirectories, with a .
    *
    * @param file File or directory to delete, can be {@code null}.
    * @param interval The interval between each deletion attempt.

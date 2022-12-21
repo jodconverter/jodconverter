@@ -24,7 +24,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * Extension providing a way to prevent a call to System.exit to actually shutdown the VM. Instead,
+ * Extension providing a way to prevent a call to System.exit to actually shut down the VM. Instead,
  * a ExitException is thrown.
  */
 public class NoExitExtension implements BeforeAllCallback, AfterAllCallback {

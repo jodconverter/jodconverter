@@ -18,6 +18,6 @@
  */
 
 /**
- * This package contains helper classes that can ne used to interact with a running office instance.
+ * This package contains helper classes that can be used to interact with a running office instance.
  */
 package org.jodconverter.local.office.utils;

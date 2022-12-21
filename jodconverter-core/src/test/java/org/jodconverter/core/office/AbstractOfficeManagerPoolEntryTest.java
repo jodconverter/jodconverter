@@ -132,7 +132,7 @@ class AbstractOfficeManagerPoolEntryTest {
         throws OfficeException {
 
       // If the entry has not been started, the SuspendableThreadPoolExecutor of the
-      // entry would never has been made available. So, a task execution timeout will
+      // entry would have never been made available. So, a task execution timeout will
       // occur.
 
       final SimpleOfficeManagerPoolEntry entry = new SimpleOfficeManagerPoolEntry(500L);

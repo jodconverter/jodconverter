@@ -29,7 +29,7 @@ public class DocumentSpecsIOException extends RuntimeException {
   private static final long serialVersionUID = -6559172184207148592L;
 
   /**
-   * Constructs a exception with the specified detail message and cause.
+   * Constructs an exception with the specified detail message and cause.
    *
    * @param message the detail message.
    * @param cause the cause.

@@ -40,7 +40,7 @@ public class DefaultFilterChain extends AbstractFilterChain {
   }
 
   /**
-   * Creates a FilterChain that will contains the specified filters and will always apply a {@link
+   * Creates a FilterChain that will contain the specified filters and will always apply a {@link
    * RefreshFilter} at the end of the chain.
    *
    * @param filters The filters to add to the chain.
@@ -63,7 +63,7 @@ public class DefaultFilterChain extends AbstractFilterChain {
   }
 
   /**
-   * Creates a FilterChain that will contains the specified filters.
+   * Creates a FilterChain that will contain the specified filters.
    *
    * @param endsWithRefreshFilter If {@code true}, a {@link RefreshFilter} will always be applied at
    *     the end of the chain.

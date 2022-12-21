@@ -45,7 +45,7 @@ public final class CliConverter {
   /**
    * Creates a new instance of the class that will use the specified manager.
    *
-   * @param converter The converter responsible of the conversion.
+   * @param converter The converter responsible for the conversion.
    */
   public CliConverter(final DocumentConverter converter) {
 
@@ -78,7 +78,7 @@ public final class CliConverter {
     final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
     prepareOutputDir(outputDir);
 
-    // For all the filenames... Note that a filename may contains wildcards.
+    // For all the filenames... Note that a filename may contain wildcards.
     for (final String filename : filenames) {
 
       // Create a file instance with the argument and also get the parent directory.
@@ -136,7 +136,7 @@ public final class CliConverter {
     AssertUtils.isTrue(
         inputLength == outputLength,
         String.format(
-            "input filenames array length [%d] and output filenames array length [%d] don't match",
+            "input filenames array length [%d] and output filenames array length [%d] don't match",
             inputLength, outputLength));
 
     // Prepare the output directory

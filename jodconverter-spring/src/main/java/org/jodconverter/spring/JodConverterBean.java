@@ -62,7 +62,7 @@ import org.jodconverter.local.process.ProcessManager;
  * provide the functionality of the PocessPoolOfficeManager.
  *
  * <p>The Controller shall launch the OO processes. The Controller shall stop the OO processes when
- * it´s time to shutdown the application
+ * it´s time to shut down the application
  *
  * @author Jose Luis López López
  */
@@ -319,7 +319,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    * that will hang for more than 5 minutes before throwing a timeout exception, we do not know why.
    *
    * <p>&nbsp; <b><i>Default</i></b>: 0 (no delay). On FreeBSD, which is a known OS needing this, it
-   * default to 2000 (2 seconds).
+   * defaults to 2000 (2 seconds).
    *
    * @param afterStartProcessDelay The delay, in milliseconds.
    */
@@ -329,7 +329,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
 
   /**
    * Specifies the action the must be taken when starting a new office process and there already is
-   * a existing running process for the same connection string.
+   * an existing running process for the same connection string.
    *
    * <p>&nbsp; <b><i>Default</i></b>: ExistingProcessAction.KILL
    *

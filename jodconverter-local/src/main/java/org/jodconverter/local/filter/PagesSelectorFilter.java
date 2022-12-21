@@ -219,7 +219,7 @@ public class PagesSelectorFilter implements Filter {
     tc.gotoStart(false);
     vc.gotoStart(false);
 
-    // Jump to the and of the last copied page and move the text cursor to
+    // Jump to the end of the last copied page and move the text cursor to
     // the beginning of this page, while selecting text in between.
     pc.jumpToPage((short) lastPage);
     // tc.gotoRange(vc.getStart(), true);

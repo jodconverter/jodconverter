@@ -135,7 +135,7 @@ class OfficeUrl {
   /**
    * Returns the string that should be used as --accept argument when an office process is launched.
    *
-   * @return The accept string.
+   * @return The "accept" string.
    */
   public String getAcceptString() {
     return unoUrl.getConnectionAndParametersAsString()

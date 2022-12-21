@@ -123,7 +123,7 @@ class LocalOfficeProcessManager {
    * @param disableOpengl Indicates whether OpenGL must be disabled when starting a new office
    *     process. Nothing will be done if OpenGL is already disabled according to the user profile
    *     used with the office process. If the options is changed, then office must be restarted.
-   * @param connection The object that will managed the connection to the office process.
+   * @param connection The object that will manage the connection to the office process.
    */
   /* default */ LocalOfficeProcessManager(
       final OfficeUrl officeUrl,
@@ -179,7 +179,7 @@ class LocalOfficeProcessManager {
    * that we cannot connect to the started process. If set to {@code false}, the operation will
    * submit the task and return immediately, meaning a faster operation.
    *
-   * @throws OfficeException If the office process cannot be started or we are unable to connect to
+   * @throws OfficeException If the office process cannot be started, or we are unable to connect to
    *     the started process.
    */
   /* default */ void start() throws OfficeException {
@@ -358,8 +358,8 @@ class LocalOfficeProcessManager {
    *     directory, {@code restart} should be set to {@code false}.
    * @param checkOpengl Indicates whether we must check to change the OpenGL setting.
    * @return {@code null}. So it could be used in a {@link java.util.concurrent.Callable}.
-   * @throws OfficeException If the office process cannot be started or we are unable to connectr to
-   *     the started process.
+   * @throws OfficeException If the office process cannot be started, or we are unable to connectr
+   *     to the started process.
    */
   @SuppressWarnings("SameReturnValue")
   private Void startProcessAndConnect(final boolean restart, final boolean checkOpengl)
@@ -665,7 +665,7 @@ class LocalOfficeProcessManager {
 
     descriptor = OfficeDescriptor.fromExecutablePath(execPath);
 
-    // On windows, we can't try the help option.
+    // On Windows, we can't try the help option.
     // See https://bugs.documentfoundation.org/show_bug.cgi?id=100826
     if (OSUtils.IS_OS_WINDOWS) {
       return;
@@ -729,7 +729,7 @@ class LocalOfficeProcessManager {
    * Ensures that the process exited.
    *
    * <p>This function is always called into tasks that are executed by a single thread {@link
-   * ExecutorService} and thus, the function must managed its own exception handling.
+   * ExecutorService} and thus, the function must manage its own exception handling.
    *
    * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
    *     deleted. We don't always want to delete the instance profile directory on restart since it

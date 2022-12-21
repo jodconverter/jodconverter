@@ -324,7 +324,7 @@ public final class Convert {
     try {
       final CommandLine commandLine = new DefaultParser().parse(OPTIONS, arguments);
 
-      // Check if the command line contains arguments that is suppose
+      // Check if the command line contains arguments that is supposed
       // to print some info and then exit.
       checkPrintInfoAndExit(commandLine);
 
@@ -476,16 +476,12 @@ public final class Convert {
     // Specify custom load properties if required
     final Map<String, Object> loadProperties =
         buildProperties(commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
-    if (loadProperties != null) {
-      builder.loadProperties(loadProperties);
-    }
+    builder.loadProperties(loadProperties);
 
     // Specify custom store properties if required
     final Map<String, Object> storeProperties =
         buildProperties(commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt()));
-    if (storeProperties != null) {
-      builder.storeProperties(storeProperties);
-    }
+    builder.storeProperties(storeProperties);
 
     // Specify a filter chain if required
     final FilterChain filterChain = getFilterChain(context);

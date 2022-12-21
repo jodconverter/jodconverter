@@ -45,7 +45,7 @@ public class JodConverterRemoteAutoConfiguration {
   private final JodConverterRemoteProperties properties;
 
   /**
-   * Creates the remote auto configuration.
+   * Creates the remote autoconfiguration.
    *
    * @param properties The remote properties.
    */

@@ -149,7 +149,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
 
     } finally {
 
-      // Here the source file is no longer required so we can delete
+      // Here the source file is no longer required, so we can delete
       // any temporary file that has been created if required.
       source.onConsumed(sourceFile);
     }

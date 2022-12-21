@@ -35,7 +35,7 @@ import org.jodconverter.core.util.IOUtils;
 
 /**
  * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office
- * that has been loaded loaded from a JSON source.
+ * that has been loaded from a JSON source.
  */
 public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 

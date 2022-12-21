@@ -124,7 +124,7 @@ class JodConverterBeanITest {
   void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues(
       final @TempDir File testFolder) throws OfficeException {
 
-    // Don't do this test on windows (won't work on windows 10 and 11,
+    // Don't do this test on Windows (won't work on Windows 10 and 11,
     // since we have to disable OpenGL).
     assumeTrue(!OSUtils.IS_OS_WINDOWS);
 

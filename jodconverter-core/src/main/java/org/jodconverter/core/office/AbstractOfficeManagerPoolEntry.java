@@ -34,7 +34,7 @@ import org.jodconverter.core.task.OfficeTask;
 /**
  * Base class for all office manager pool entry implementations.
  *
- * <p>An important note here is to keep in mind that sub classes are responsible to manage the
+ * <p>An important note here is to keep in mind that subclasses are responsible to manage the
  * availability of the task executor. This abstract class never set the availability to true. Only
  * when the manager is stopped that the availability is set to false.
  *

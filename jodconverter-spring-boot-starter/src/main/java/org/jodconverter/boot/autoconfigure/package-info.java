@@ -17,5 +17,5 @@
  * limitations under the License.
  */
 
-/** Auto-configuration for JODConverter concerns. */
+/** Autoconfiguration for JODConverter concerns. */
 package org.jodconverter.boot.autoconfigure;

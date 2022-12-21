@@ -64,7 +64,7 @@ class ExternalOfficeConnectionManager {
    *     task to be completed, and will throw an exception if we cannot connect to the office
    *     process. If set to {@code false}, the {@link #connect()} operation will submit the task and
    *     return immediately, meaning a faster operation.
-   * @param connection The object that will managed the connection to the office process.
+   * @param connection The object that will manage the connection to the office process.
    */
   /* default */ ExternalOfficeConnectionManager(
       final long connectTimeout,
@@ -103,7 +103,7 @@ class ExternalOfficeConnectionManager {
     if (connectFailFast) {
       connectAndWait();
     } else {
-      // Submit a connect task to the executor and return immediately.
+      // Submit the connection task to the executor and return immediately.
       executor.execute(
           () -> {
             try {
@@ -188,7 +188,7 @@ class ExternalOfficeConnectionManager {
    */
   private void connectAndWait() throws OfficeException {
 
-    // Submit the connect task to the executor.
+    // Submit the connection task to the executor.
     LOGGER.debug("Submitting connect task...");
     final Future<Void> future = executor.submit(this::connect0);
 

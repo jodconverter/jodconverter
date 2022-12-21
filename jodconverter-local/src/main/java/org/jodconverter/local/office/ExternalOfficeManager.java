@@ -63,7 +63,7 @@ public final class ExternalOfficeManager
   /* default */ static final long DEFAULT_CONNECT_TIMEOUT = 120_000L; // 2 minutes
   // The default delay between each try to connect.
   /* default */ static final long DEFAULT_CONNECT_RETRY_INTERVAL = 250L; // 0.25 secs.
-  // The default "fail fast" behavior when a connect attempt is made.
+  // The default "fail fast" behavior when a connection attempt is made.
   /* default */ static final boolean DEFAULT_CONNECT_FAIL_FAST = false;
   // The maximum value for the delay between each try to connect.
   /* default */ static final long MAX_CONNECT_RETRY_INTERVAL = 10_000L; // 10 sec.
@@ -176,7 +176,7 @@ public final class ExternalOfficeManager
     }
 
     /**
-     * Specifies the pipe names that will be use to communicate with office. An instance of office
+     * Specifies the pipe names that will be used to communicate with office. An instance of office
      * will be launched for each pipe name.
      *
      * @param pipeNames The pipe names to use.
@@ -191,7 +191,7 @@ public final class ExternalOfficeManager
     }
 
     /**
-     * Specifies host name that will be use to communicate with office.
+     * Specifies host name that will be used to communicate with office.
      *
      * @param hostName The host name to use.
      * @return This builder instance.
@@ -202,8 +202,8 @@ public final class ExternalOfficeManager
     }
 
     /**
-     * Specifies the port numbers that will be use to communicate with office. An instance of office
-     * will be launched for each port number.
+     * Specifies the port numbers that will be used to communicate with office. An instance of
+     * office will be launched for each port number.
      *
      * @param portNumbers The port numbers to use.
      * @return This builder instance.
@@ -257,7 +257,7 @@ public final class ExternalOfficeManager
      *
      * <p>&nbsp; <b><i>Default</i></b>: 250 (0.25 seconds)
      *
-     * @param connectRetryInterval the connect retry interval, in milliseconds.
+     * @param connectRetryInterval the connection retry interval, in milliseconds.
      * @return This builder instance.
      */
     public @NonNull Builder connectRetryInterval(final @Nullable Long connectRetryInterval) {

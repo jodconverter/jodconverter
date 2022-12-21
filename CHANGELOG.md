@@ -77,7 +77,7 @@
 - Do conversions on remote host with LibreOffice directly \(not with LibreOffice online, not through spring boot\) [\#195](https://github.com/sbraconnier/jodconverter/issues/195)
 - Use ExternalOfficeManager with a pool of processes [\#191](https://github.com/sbraconnier/jodconverter/issues/191)
 - Allow process restart to be asynchronous [\#171](https://github.com/sbraconnier/jodconverter/issues/171)
-- Patching library to be able reuse already running libreoffice instances \>\> killExistingProcess\(false\) [\#72](https://github.com/sbraconnier/jodconverter/issues/72)
+- Patching library to be able to reuse already running libreoffice instances \>\> killExistingProcess\(false\) [\#72](https://github.com/sbraconnier/jodconverter/issues/72)
 
 **Fixed bugs:**
 
@@ -177,7 +177,7 @@
 - Create a filter to embed linked images into output document. [\#117](https://github.com/sbraconnier/jodconverter/issues/117)
 - ExternalOfficeManager can't convert streams [\#116](https://github.com/sbraconnier/jodconverter/issues/116)
 - Filter chain should be reusable without reset [\#112](https://github.com/sbraconnier/jodconverter/issues/112)
--  static JodConverter.convert methods dont work with ExternalOfficeManagerBuilder\(\) [\#111](https://github.com/sbraconnier/jodconverter/issues/111)
+-  static JodConverter.convert methods don't work with ExternalOfficeManagerBuilder\(\) [\#111](https://github.com/sbraconnier/jodconverter/issues/111)
 
 **Fixed bugs:**
 

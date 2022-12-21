@@ -47,7 +47,7 @@ class AutoConfigurationDefaultPropertiesITest {
   @Autowired private JodConverterLocalProperties localProps;
   @Autowired private JodConverterRemoteProperties remoteProps;
 
-  // Provided valid OfficeManager beans so we will be able to test the Autowired properties.
+  // Provided valid OfficeManager beans, so we will be able to test the Autowired properties.
   @TestConfiguration
   /* default */ static class TestConfig {
 

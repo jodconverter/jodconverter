@@ -26,7 +26,7 @@ import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 
 /**
- * A FilterChain is an object that is responsible to managed an invocation chain of filters. Filters
+ * A FilterChain is an object that is responsible to manage an invocation chain of filters. Filters
  * use the FilterChain to invoke the next filter in the chain, or if the calling filter is the last
  * filter in the chain, to end the invocation chain.
  */

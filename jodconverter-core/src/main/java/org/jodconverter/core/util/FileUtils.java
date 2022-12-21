@@ -155,7 +155,7 @@ public final class FileUtils {
   }
 
   /**
-   * Deletes a file. If file is a directory, delete it and all sub-directories.
+   * Deletes a file. If file is a directory, delete it and all subdirectories.
    *
    * @param file File or directory to delete, can be {@code null}.
    * @return {@code true} If the file or directory was deleted, {@code false} otherwise. The file or
@@ -195,7 +195,7 @@ public final class FileUtils {
 
   /**
    * Deletes a file, never throwing an exception. If file is a directory, delete it and all
-   * sub-directories.
+   * subdirectories.
    *
    * @param file File or directory to delete, can be {@code null}.
    * @return {@code true} If the file or directory is deleted, {@code false} otherwise.

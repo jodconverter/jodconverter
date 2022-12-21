@@ -26,7 +26,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class UnmodifiableFilterChain extends AbstractFilterChain {
 
   /**
-   * Creates an unmodifiable FilterChain that will contains the specified filters.
+   * Creates an unmodifiable FilterChain that will contain the specified filters.
    *
    * @param filters The filters to add to the chain.
    */

@@ -19,14 +19,9 @@
 
 package org.jodconverter.local;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.job.AbstractConversionJob;
@@ -44,6 +39,10 @@ import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.office.ExternalOfficeManager;
 import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.local.task.LocalConversionTask;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Default implementation of a document converter. This implementation will use a provided office
@@ -132,7 +131,6 @@ public final class LocalConverter extends AbstractConverter {
     this.loadProperties = loadProperties;
     this.storeProperties = storeProperties;
     this.filterChain = filterChain;
-    ;
   }
 
   @Override
@@ -169,10 +167,10 @@ public final class LocalConverter extends AbstractConverter {
     public void doExecute() throws OfficeException {
 
       // Determine whether we must use stream adapters.
-      boolean useStreamAdapters =
+      final boolean useStreamAdapters =
           loadDocumentMode == LoadDocumentMode.REMOTE
-              || (loadDocumentMode == LoadDocumentMode.AUTO
-                  && officeManager instanceof ExternalOfficeManager);
+              || loadDocumentMode == LoadDocumentMode.AUTO
+                  && officeManager instanceof ExternalOfficeManager;
 
       // Create a conversion task and execute it.
       final LocalConversionTask task =

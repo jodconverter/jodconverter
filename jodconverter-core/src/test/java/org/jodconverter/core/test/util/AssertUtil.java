@@ -31,7 +31,7 @@ import java.util.Arrays;
 public final class AssertUtil {
 
   /**
-   * Verifies that a utility class is well defined.
+   * Verifies that a utility class is well-defined.
    *
    * @param clazz Utility class to verify.
    */

@@ -339,7 +339,7 @@ class ProcessManagerTest {
   class Custom {
 
     /**
-     * Tests that using an custom process manager that does not appear in the classpath will fail
+     * Tests that using a custom process manager that does not appear in the classpath will fail
      * with an IllegalArgumentException.
      */
     @Test

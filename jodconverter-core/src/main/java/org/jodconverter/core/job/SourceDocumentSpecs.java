@@ -30,8 +30,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public interface SourceDocumentSpecs extends DocumentSpecs {
 
   /**
-   * Called when the file was consumed and is not longer required by the converter. The file must
-   * not be removed from the file system before this method is called.
+   * Called when the file was consumed and is no longer required by the converter. The file must not
+   * be removed from the file system before this method is called.
    *
    * @param file The file that was consumed.
    */

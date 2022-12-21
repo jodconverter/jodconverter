@@ -23,7 +23,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.OfficeException;
 
-/** Exceptions thrown when a password protected file cannot be opened. */
+/** Exceptions thrown when a password-protected file cannot be opened. */
 public class PasswordProtectedException extends OfficeException {
   private static final long serialVersionUID = -9200513745869729664L;
 

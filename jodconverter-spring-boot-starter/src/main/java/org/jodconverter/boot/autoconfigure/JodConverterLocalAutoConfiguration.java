@@ -56,7 +56,7 @@ public class JodConverterLocalAutoConfiguration {
   private final JodConverterLocalProperties properties;
 
   /**
-   * Creates the local auto-configuration.
+   * Creates the local autoconfiguration.
    *
    * @param properties The local properties.
    */

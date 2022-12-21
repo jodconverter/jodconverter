@@ -319,18 +319,18 @@ public class SslConfig {
   }
 
   /**
-   * Gets whether hostname should be verify during SSL handshake. If not set, it defaults to true.
+   * Gets whether hostname should be verified during SSL handshake. If not set, it defaults to true.
    *
-   * @return {@code true} if the hostname should be verify, {@code false} otherwise.
+   * @return {@code true} if the hostname should be verified, {@code false} otherwise.
    */
   public boolean isVerifyHostname() {
     return this.verifyHostname;
   }
 
   /**
-   * Sets whether hostname should be verify during SSL handshake.
+   * Sets whether hostname should be verified during SSL handshake.
    *
-   * @param verifyHostname {@code true} if the hostname should be verify, {@code false} otherwise.
+   * @param verifyHostname {@code true} if the hostname should be verified, {@code false} otherwise.
    */
   public void setVerifyHostname(final boolean verifyHostname) {
     this.verifyHostname = verifyHostname;

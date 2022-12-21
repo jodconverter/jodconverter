@@ -44,7 +44,7 @@ import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.remote.office.RemoteOfficeContext;
 import org.jodconverter.remote.office.RequestConfig;
 
-/** Represents the default behavior for an remote conversion task. */
+/** Represents the default behavior for a remote conversion task. */
 public class RemoteConversionTask extends AbstractRemoteOfficeTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RemoteConversionTask.class);
@@ -166,7 +166,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
 
     } finally {
 
-      // Here the source file is no longer required so we can delete
+      // Here the source file is no longer required, so we can delete
       // any temporary file that has been created if required.
       source.onConsumed(sourceFile);
     }

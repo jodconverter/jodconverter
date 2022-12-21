@@ -77,7 +77,7 @@ class CliConverterTest {
   private OfficeManager officeManager;
   private CliConverter converter;
 
-  /** Setup the office manager once before each tests. */
+  /** Set up the office manager once before each test. */
   @BeforeEach
   public void setUp() {
 

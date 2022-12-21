@@ -37,7 +37,7 @@ public final class ExitException extends SecurityException {
   }
 
   /**
-   * Sets the exit status. If the exit code was already set, it won't changed.
+   * Sets the exit status. If the exit code was already set, it won't change.
    *
    * @param status the exit status.
    */

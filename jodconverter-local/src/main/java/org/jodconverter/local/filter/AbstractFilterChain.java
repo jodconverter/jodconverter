@@ -45,7 +45,7 @@ public abstract class AbstractFilterChain implements FilterChain {
   }
 
   /**
-   * Creates a FilterChain that will contains the specified filters.
+   * Creates a FilterChain that will contain the specified filters.
    *
    * @param filters The filters to add to the chain.
    */
@@ -54,7 +54,7 @@ public abstract class AbstractFilterChain implements FilterChain {
   }
 
   /**
-   * Creates a FilterChain that will contains the specified filters.
+   * Creates a FilterChain that will contain the specified filters.
    *
    * @param readOnly {@code true} If the chain must be read-only (which means that no other filter
    *     can be added to the chain), {@code false} otherwise.
