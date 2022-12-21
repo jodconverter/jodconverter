@@ -1,13 +1,33 @@
 # Changelog
 
-## [v4.4.4](https://github.com/sbraconnier/jodconverter/tree/v4.4.4) (2022-09-22)
+## [Unreleased](https://github.com/sbraconnier/jodconverter/tree/HEAD)
 
-[Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.4.3...v4.4.4)
+[Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.4.4...HEAD)
 
 **Implemented enhancements:**
 
-- Change default UpdateDocMode behavior and add new option to keep old behavior.
-- Added FilterData and FilterOption do DocumentFormat builder.
+- ExternalOfficeManager does not work [\#278](https://github.com/sbraconnier/jodconverter/issues/278)
+- The address www.jodconverter.org redirects to malware [\#266](https://github.com/sbraconnier/jodconverter/issues/266)
+
+**Fixed bugs:**
+
+- java.lang.NullPointerException: byExtension\(extension\) must not be null [\#319](https://github.com/sbraconnier/jodconverter/issues/319)
+- Failed to start bean 'documentationPluginsBootstrapper' when starting rest version [\#315](https://github.com/sbraconnier/jodconverter/issues/315)
+- IndexOutOfBoundsException: Index: 1, Size: 1  when Run multiple tasks in concurrent. [\#310](https://github.com/sbraconnier/jodconverter/issues/310)
+- Got error when using org.jodconverter:jodconverter-local-lo [\#309](https://github.com/sbraconnier/jodconverter/issues/309)
+
+**Closed issues:**
+
+- With 4.4.3+ i get an exception missing classes for the DefaultDocumentFormatRegistry [\#317](https://github.com/sbraconnier/jodconverter/issues/317)
+- how can I use jodconverter-remote connect openOffice? old version 2.2.1 can do it  \#260 [\#312](https://github.com/sbraconnier/jodconverter/issues/312)
+
+**Merged pull requests:**
+
+- Migrate to swagger v3 / openapi - fixes \#317 [\#318](https://github.com/sbraconnier/jodconverter/pull/318) ([EugenMayer](https://github.com/EugenMayer))
+
+## [v4.4.4](https://github.com/sbraconnier/jodconverter/tree/v4.4.4) (2022-09-22)
+
+[Full Changelog](https://github.com/sbraconnier/jodconverter/compare/v4.4.3...v4.4.4)
 
 ## [v4.4.3](https://github.com/sbraconnier/jodconverter/tree/v4.4.3) (2022-09-15)
 
@@ -18,17 +38,37 @@
 - Provide builds of both OpenOffice and LibreOffice dependencies in the maven center [\#273](https://github.com/sbraconnier/jodconverter/issues/273)
 - support keepAliveOnShutdown through CLI [\#269](https://github.com/sbraconnier/jodconverter/issues/269)
 - Issues converting potx and xltx [\#259](https://github.com/sbraconnier/jodconverter/issues/259)
+- HTML conversion: image URL encoding [\#125](https://github.com/sbraconnier/jodconverter/issues/125)
 
 **Fixed bugs:**
 
-- gradle build fail~~~~ with libreoffice 7.1.5 [\#271](https://github.com/sbraconnier/jodconverter/issues/271)
+- gradle build faild with libreoffice 7.1.5 [\#271](https://github.com/sbraconnier/jodconverter/issues/271)
 
 **Closed issues:**
 
+- jodconverter not able to open Libre office connection in Linux environment \( org.artofsolving.jodconverter.office.OfficeException: could not establish connection\)  [\#308](https://github.com/sbraconnier/jodconverter/issues/308)
 - Task :distZip FAILED [\#303](https://github.com/sbraconnier/jodconverter/issues/303)
-- Added WEB document family [\#297](https://github.com/sbraconnier/jodconverter/issues/297)
+- Conversion from \(X\)HTML to ODT does not produce 'real' ODT documents, but HTML documents that don't behave like 'regular' ODT documents in LibreOffice [\#297](https://github.com/sbraconnier/jodconverter/issues/297)
 - Spring configuration metadata json not generated [\#295](https://github.com/sbraconnier/jodconverter/issues/295)
+- linux+docker+libreoffice，spring-boot + jodconverter，Could not start the office process. [\#292](https://github.com/sbraconnier/jodconverter/issues/292)
+- 转pdf异常，Caused by: com.sun.star.io.IOException: SfxBaseModel::impl\_store \<file:///D:/officedest/home/data/localpath/servicecenter/20210817/20210817094906679504091671043/Unit%201%20B%20Read%20and%20write基于深度学习的教学课件.pdf\> failed: 0x11b\(Error Area:Io Class:Abort Code:27\) [\#287](https://github.com/sbraconnier/jodconverter/issues/287)
+- Docx does not recognize the password [\#286](https://github.com/sbraconnier/jodconverter/issues/286)
+- "Unspecified Application Error" occurs from specific PPTX document [\#272](https://github.com/sbraconnier/jodconverter/issues/272)
+- org.jodconverter.office.OfficeException: Office process died with exit code 333 [\#268](https://github.com/sbraconnier/jodconverter/issues/268)
+- No response for pdf converter when more requests [\#267](https://github.com/sbraconnier/jodconverter/issues/267)
+- Blank PDF when trying to convert any document type to PDF on mac OS [\#265](https://github.com/sbraconnier/jodconverter/issues/265)
+- how can I use jodconverter-remote connect openOffice? old version 2.2.1 can do it [\#260](https://github.com/sbraconnier/jodconverter/issues/260)
+- LibreOffice Portable  [\#254](https://github.com/sbraconnier/jodconverter/issues/254)
+- conversion stalling on stopQuietly [\#247](https://github.com/sbraconnier/jodconverter/issues/247)
+- org.jodconverter.core.office.OfficeException: Could not store document:  errorCode: 2074 [\#239](https://github.com/sbraconnier/jodconverter/issues/239)
+- Error while converting document from ODS to PDF Format  [\#236](https://github.com/sbraconnier/jodconverter/issues/236)
+- Question of convert pdf limitation [\#234](https://github.com/sbraconnier/jodconverter/issues/234)
 - Specific Exception for Password Protected files [\#233](https://github.com/sbraconnier/jodconverter/issues/233)
+- LibreOffice conversion on .odt file to pdf is timing out on Ubuntu and succeeding on MacOS [\#231](https://github.com/sbraconnier/jodconverter/issues/231)
+- How to change font when converting docx to pdf [\#222](https://github.com/sbraconnier/jodconverter/issues/222)
+- JodConverter Not able to start LibreOffice process on AmazonCorretto  [\#206](https://github.com/sbraconnier/jodconverter/issues/206)
+- Cannot export HTML to ODT [\#173](https://github.com/sbraconnier/jodconverter/issues/173)
+- Issue while converting \" from word to pdf on weblogic server. [\#167](https://github.com/sbraconnier/jodconverter/issues/167)
 
 **Merged pull requests:**
 
@@ -77,7 +117,7 @@
 - Do conversions on remote host with LibreOffice directly \(not with LibreOffice online, not through spring boot\) [\#195](https://github.com/sbraconnier/jodconverter/issues/195)
 - Use ExternalOfficeManager with a pool of processes [\#191](https://github.com/sbraconnier/jodconverter/issues/191)
 - Allow process restart to be asynchronous [\#171](https://github.com/sbraconnier/jodconverter/issues/171)
-- Patching library to be able to reuse already running libreoffice instances \>\> killExistingProcess\(false\) [\#72](https://github.com/sbraconnier/jodconverter/issues/72)
+- Patching library to be able reuse already running libreoffice instances \>\> killExistingProcess\(false\) [\#72](https://github.com/sbraconnier/jodconverter/issues/72)
 
 **Fixed bugs:**
 
@@ -177,7 +217,7 @@
 - Create a filter to embed linked images into output document. [\#117](https://github.com/sbraconnier/jodconverter/issues/117)
 - ExternalOfficeManager can't convert streams [\#116](https://github.com/sbraconnier/jodconverter/issues/116)
 - Filter chain should be reusable without reset [\#112](https://github.com/sbraconnier/jodconverter/issues/112)
--  static JodConverter.convert methods don't work with ExternalOfficeManagerBuilder\(\) [\#111](https://github.com/sbraconnier/jodconverter/issues/111)
+-  static JodConverter.convert methods dont work with ExternalOfficeManagerBuilder\(\) [\#111](https://github.com/sbraconnier/jodconverter/issues/111)
 
 **Fixed bugs:**
 
