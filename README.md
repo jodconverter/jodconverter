@@ -57,7 +57,7 @@ implementation 'org.jodconverter:jodconverter-local-oo:4.4.5'
 <dependency>
   <groupId>org.jodconverter</groupId>
   <artifactId>jodconverter-local</artifactId>
-  <version>4.4.~~~~5</version>
+  <version>4.4.5</version>
 </dependency>
 ```
 or
