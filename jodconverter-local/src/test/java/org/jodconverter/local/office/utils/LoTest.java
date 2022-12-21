@@ -1,6 +1,7 @@
 /*
- * Copyright 2004 - 2012 Mirko Nasato and contributors
- *           2016 - 2020 Simon Braconnier and contributors
+ * Copyright (c) 2004 - 2012; Mirko Nasato and contributors
+ *               2016 - 2022; Simon Braconnier and contributors
+ *               2022 - present; JODConverter
  *
  * This file is part of JODConverter - Java OpenDocument Converter.
  *
