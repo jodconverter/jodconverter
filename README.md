@@ -2,7 +2,7 @@
 
 [![Build Status](https://api.cirrus-ci.com/github/jodconverter/jodconverter.svg)](https://cirrus-ci.com/github/jodconverter/jodconverter)
 [![Coverage Status](https://coveralls.io/repos/github/jodconverter/jodconverter/badge.svg?branch=master)](https://coveralls.io/github/jodconverter/jodconverter?branch=master)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ea060b9c1ff04e188c9265ed4f1b7bef)](https://www.codacy.com/gh/jodconverter/jodconverter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jodconverter/jodconverter&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/90c9707226c6406abbea2353274ac773)](https://www.codacy.com/gh/jodconverter/jodconverter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jodconverter/jodconverter&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local)
 [![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-local.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-local)
