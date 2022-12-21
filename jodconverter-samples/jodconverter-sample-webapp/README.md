@@ -4,7 +4,7 @@ This is a sample web application that uses the local module of the Java OpenDocu
 
 ### Running the Project using gradle
 
-First, [build the entire jodconverter project](https://github.com/sbraconnier/jodconverter#building-the-project)
+First, [build the entire jodconverter project](https://github.com/jodconverter/jodconverter#building-the-project)
 
 Then, run
 

@@ -8,7 +8,7 @@ dependencies {
 
     // We cannot use LibreOffice libraries by default.
     // See:
-    // https://github.com/sbraconnier/jodconverter/issues/113
+    // https://github.com/jodconverter/jodconverter/issues/113
     if (project.hasProperty("useLibreOffice")) {
         api Deps.libreoffice
     } else {

@@ -143,7 +143,7 @@ task javadocAll(type: Javadoc) {
         windowTitle = "JODConverter API Documentation"
         docTitle = "JODConverter $project.version API Documentation"
         header = "JODConverter $project.version API"
-        bottom = 'Copyright &#169; 2016 - present; <a href="https://github.com/sbraconnier/jodconverter">JODConverter</a>. All rights reserved.'
+        bottom = 'Copyright &#169; 2022 - present; <a href="https://github.com/jodconverter/jodconverter">JODConverter</a>. All rights reserved.'
 
         //author = false
         //breakIterator = true

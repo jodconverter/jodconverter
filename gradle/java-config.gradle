@@ -221,14 +221,14 @@ jar {
                     "Automatic-Module-Name": project.name.replace("-", "."),
                     "Build-Jdk-Spec": baselineJavaVersion,
                     "Built-By": "JODConverter",
-                    "Bundle-License": "https://github.com/sbraconnier/jodconverter/wiki/LICENSE",
+                    "Bundle-License": "https://github.com/jodconverter/jodconverter/wiki/LICENSE",
                     "Bundle-Vendor": "JODConverter",
-                    "Bundle-DocURL": "https://github.com/sbraconnier/jodconverter/wiki",
+                    "Bundle-DocURL": "https://github.com/jodconverter/jodconverter/wiki",
                     "Implementation-Title": moduleName,
                     "Implementation-Version": project.version,
                     "Implementation-Vendor": "JODConverter Team",
                     "Implementation-Vendor-Id": "org.jodconverter",
-                    "Implementation-Url": "http://jodconverter.org",
+                    "Implementation-Url": "https://github.com/jodconverter/jodconverter",
                     "Specification-Title": moduleName,
                     "Specification-Version": project.version,
                     "Specification-Vendor": "JODConverter Team",
@@ -248,7 +248,7 @@ javadoc {
     //source = sourceSets.main.allJava
 
     options.with {
-        bottom = 'Copyright &#169; 2016 - present; <a href="http://jodconverter.org">JODConverter.org</a>. All rights reserved.'
+        bottom = 'Copyright &#169; 2022 - present; <a href="https://github.com/jodconverter">JODConverter</a>. All rights reserved.'
 
         //author = false
         //breakIterator = true

@@ -54,15 +54,15 @@ def customizePom(pom, p) {
 
             name p.hasProperty('moduleName') ? p.moduleName : p.name
             description p.hasProperty('moduleDescription') ? p.moduleDescription : p.description
-            url 'https://github.com/sbraconnier/jodconverter'
+            url 'https://github.com/jodconverter/jodconverter'
             organization {
                 name 'JODConverter'
-                url 'https://github.com/sbraconnier/jodconverter'
+                url 'https://github.com/jodconverter'
             }
             scm {
-                url 'https://github.com/sbraconnier/jodconverter.git'
-                connection 'scm:git:https://github.com/sbraconnier/jodconverter.git'
-                developerConnection 'scm:git:git@https://github.com/sbraconnier/jodconverter.git'
+                url 'https://github.com/jodconverter/jodconverter.git'
+                connection 'scm:git:https://github.com/jodconverter/jodconverter.git'
+                developerConnection 'scm:git:git@https://github.com/jodconverter/jodconverter.git'
             }
             developers {
                 developer {
@@ -74,7 +74,7 @@ def customizePom(pom, p) {
             }
             issueManagement {
                 system 'GitHub'
-                url 'https://github.com/sbraconnier/jodconverter/issues'
+                url 'https://github.com/jodconverter/jodconverter/issues'
             }
             licenses {
                 license {

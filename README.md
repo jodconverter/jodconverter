@@ -1,8 +1,8 @@
-# <img src="https://github.com/sbraconnier/jodconverter/wiki/images/jodconverter_w200.png">&nbsp;<sup>&nbsp;LibreOffice</sup>&nbsp;/&nbsp;<sub>Apache OpenOffice</sub>
+# <img src="https://github.com/jodconverter/jodconverter/wiki/images/jodconverter_w200.png">&nbsp;<sup>&nbsp;LibreOffice</sup>&nbsp;/&nbsp;<sub>Apache OpenOffice</sub>
 
-[![Build Status](https://api.cirrus-ci.com/github/sbraconnier/jodconverter.svg)](https://cirrus-ci.com/github/sbraconnier/jodconverter)
-[![Coverage Status](https://coveralls.io/repos/github/sbraconnier/jodconverter/badge.svg?branch=master)](https://coveralls.io/github/sbraconnier/jodconverter?branch=master)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ea060b9c1ff04e188c9265ed4f1b7bef)](https://www.codacy.com/gh/sbraconnier/jodconverter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sbraconnier/jodconverter&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://api.cirrus-ci.com/github/jodconverter/jodconverter.svg)](https://cirrus-ci.com/github/jodconverter/jodconverter)
+[![Coverage Status](https://coveralls.io/repos/github/jodconverter/jodconverter/badge.svg?branch=master)](https://coveralls.io/github/jodconverter/jodconverter?branch=master)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ea060b9c1ff04e188c9265ed4f1b7bef)](https://www.codacy.com/gh/jodconverter/jodconverter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jodconverter/jodconverter&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local)
 [![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-local.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-local)
@@ -13,9 +13,9 @@ I created this fork years ago because I had to do some changes to the original p
 
 ### What you want to know...
 
-- **Documentation**: The JODConverter documentation (work in progress) can be found [here](https://github.com/sbraconnier/jodconverter/wiki).
+- **Documentation**: The JODConverter documentation (work in progress) can be found [here](https://github.com/jodconverter/jodconverter/wiki).
 - **Dependencies**:
-  * [jodconverter-local](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local) module dependencies. This fork does not depend on SIGAR. JODConverter only needs to retrieve office processes (PIDs) and kill office processes (using PID). It should work just fine without SIGAR with the actual [process managers](https://github.com/sbraconnier/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/process) created from an older version of JODConverter. But I added the ability to use any process manager you would like to implement if none of the provided managers can be used. See the [processManager](https://github.com/sbraconnier/jodconverter/wiki/Configuration#capital_abcdprocessmanager) configuration option.
+  * [jodconverter-local](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local) module dependencies. This fork does not depend on SIGAR. JODConverter only needs to retrieve office processes (PIDs) and kill office processes (using PID). It should work just fine without SIGAR with the actual [process managers](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/process) created from an older version of JODConverter. But I added the ability to use any process manager you would like to implement if none of the provided managers can be used. See the [processManager](https://github.com/jodconverter/jodconverter/wiki/Configuration#capital_abcdprocessmanager) configuration option.
   * [jodconverter-remote](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-remote) module dependencies.
   * [jodconverter-spring](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-spring) module dependencies.
   * [jodconverter-spring-boot-starter](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-spring-boot-starter) module dependencies.
@@ -23,7 +23,7 @@ I created this fork years ago because I had to do some changes to the original p
 
 ### Usage for local conversions
 
-Build default, JODConverter is built using the OpenOffice libraries. See [here](https://github.com/sbraconnier/jodconverter/issues/113) to know why. But you can now decide whether you want to use JODConverter with the LibreOffice libraries or the OpenOffice libraries. 
+Build default, JODConverter is built using the OpenOffice libraries. See [here](https://github.com/jodconverter/jodconverter/issues/113) to know why. But you can now decide whether you want to use JODConverter with the LibreOffice libraries or the OpenOffice libraries. 
 
 #### With LibreOffice libraries:
 
@@ -83,11 +83,11 @@ gradlew clean build -x test distZip
 
 #### Support <sup><sup>:speech_balloon:</sup></sup>
 
-JODConverter Gitter Community [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge), growing [FAQ](https://github.com/sbraconnier/jodconverter/wiki/FAQ).
+JODConverter Gitter Community [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge), growing [FAQ](https://github.com/jodconverter/jodconverter/wiki/FAQ).
 
 ### How to contribute
 
-1. Check for [open issues](https://github.com/sbraconnier/jodconverter/issues), or open a new issue to start a discussion around a feature idea or a bug.
+1. Check for [open issues](https://github.com/jodconverter/jodconverter/issues), or open a new issue to start a discussion around a feature idea or a bug.
 2. If you feel uncomfortable or uncertain about an issue or your changes, feel free to contact me on Gitter using the link above.
 3. [Fork this repository](https://help.github.com/articles/fork-a-repo/) on GitHub to start making your changes.
 4. Write a test showing that the bug was fixed or that the feature works as expected.

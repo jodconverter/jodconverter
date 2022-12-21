@@ -49,7 +49,7 @@ import org.jodconverter.local.office.utils.Write;
 /** This filter is used to embed linked images while converting a document. */
 public class LinkedImagesEmbedderFilter implements Filter {
 
-  // See: https://github.com/sbraconnier/jodconverter/issues/110
+  // See: https://github.com/jodconverter/jodconverter/issues/110
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LinkedImagesEmbedderFilter.class);
 

@@ -12,7 +12,7 @@ See [here](https://github.com/EugenMayer/converter) for an improved version, mea
 
 ### Running the Project using gradle
 
-First, [build the entire jodconverter project](https://github.com/sbraconnier/jodconverter#building-the-project)
+First, [build the entire jodconverter project](https://github.com/jodconverter/jodconverter#building-the-project)
 
 Then, run
 
