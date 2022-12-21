@@ -8,7 +8,7 @@ linux_task:
     #- add-apt-repository -y ppa:libreoffice/ppa
     - apt-get -q update
     - apt-get -y install libreoffice
-  # See https://hub.docker.com/_/openjdk for openjdk versions that could be tested.
+  # See https://hub.docker.com/_/eclipse-temurin for openjdk versions that could be tested.
   matrix:
     - name: linux:openjdk8
       env:
@@ -17,7 +17,7 @@ linux_task:
         CI_BUILD_URL: "https://cirrus-ci.com/task/$CIRRUS_TASK_ID"
         CI_BRANCH: $CIRRUS_BRANCH
         CI_PULL_REQUEST: $CIRRUS_PR
-        COVERALLS_REPO_TOKEN: ENCRYPTED[9fa0f47af9055f09dc3f3e65c4d126fedff998cbdc4430847762be36c38477f0658d577cd981a6ed8bd5439fa8e4defd]
+        COVERALLS_REPO_TOKEN: ENCRYPTED[55c5e5bd0d9ed1c86ce1fd9928a909d245e703ec48e593bf49c2cfeb5711c711a6ac841c8b9d11296993389dc2cbb0b3]
       container:
         image: eclipse-temurin:8
       build_script:
