@@ -490,7 +490,7 @@ public final class LocalOfficeManager
 
     /**
      * Specifies the action that must be taken when starting a new office process and there already
-     * is a existing running process for the same connection string.
+     * is an existing running process for the same connection string.
      *
      * <p>&nbsp; <b><i>Default</i></b>: ExistingProcessAction.KILL
      *

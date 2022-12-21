@@ -50,5 +50,5 @@ public enum ExistingProcessAction {
    * starting a new office process and there already is a process running with the same connection
    * string. If the connection fails, then the manager must kill the existing office process.
    */
-  CONNECT_OR_KILL,
+  CONNECT_OR_KILL
 }

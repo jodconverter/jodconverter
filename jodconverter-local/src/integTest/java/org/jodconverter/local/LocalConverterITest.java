@@ -38,7 +38,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.util.FileUtils;
+import org.jodconverter.local.task.LoadDocumentMode;
 
 /** Contains tests for the {@link LocalConverter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
@@ -55,6 +57,69 @@ class LocalConverterITest {
       final File outputFile = new File(testFolder, "out.pdf");
 
       assertThatCode(() -> converter.convert(SOURCE_FILE).to(outputFile).execute())
+          .doesNotThrowAnyException();
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withLoadDocumentModeLocal_ShouldSucceed(
+        final @TempDir File testFolder, final OfficeManager manager) {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(manager)
+                      .loadDocumentMode(LoadDocumentMode.LOCAL)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(outputFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withLoadDocumentModeRemote_ShouldSucceed(
+        final @TempDir File testFolder, final OfficeManager manager) {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(manager)
+                      .loadDocumentMode(LoadDocumentMode.REMOTE)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(outputFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withLoadDocumentModeAuto_ShouldSucceed(
+        final @TempDir File testFolder, final OfficeManager manager) {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(manager)
+                      .loadDocumentMode(LoadDocumentMode.AUTO)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(outputFile)
+                      .execute())
           .doesNotThrowAnyException();
 
       assertThat(outputFile).isFile();
@@ -101,6 +166,75 @@ class LocalConverterITest {
                     converter
                         .convert(stream)
                         .as(DefaultDocumentFormatRegistry.DOC)
+                        .to(outputFile)
+                        .execute())
+            .doesNotThrowAnyException();
+      }
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withLoadDocumentModeLocal_ShouldSucceed(
+        final @TempDir File testFolder, final OfficeManager manager) throws IOException {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+        assertThatCode(
+                () ->
+                    LocalConverter.builder()
+                        .officeManager(manager)
+                        .loadDocumentMode(LoadDocumentMode.LOCAL)
+                        .build()
+                        .convert(stream)
+                        .to(outputFile)
+                        .execute())
+            .doesNotThrowAnyException();
+      }
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withLoadDocumentModeRemote_ShouldSucceed(
+        final @TempDir File testFolder, final OfficeManager manager) throws IOException {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+        assertThatCode(
+                () ->
+                    LocalConverter.builder()
+                        .officeManager(manager)
+                        .loadDocumentMode(LoadDocumentMode.REMOTE)
+                        .build()
+                        .convert(stream)
+                        .to(outputFile)
+                        .execute())
+            .doesNotThrowAnyException();
+      }
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withLoadDocumentModeAuto_ShouldSucceed(
+        final @TempDir File testFolder, final OfficeManager manager) throws IOException {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+        assertThatCode(
+                () ->
+                    LocalConverter.builder()
+                        .officeManager(manager)
+                        .loadDocumentMode(LoadDocumentMode.AUTO)
+                        .build()
+                        .convert(stream)
                         .to(outputFile)
                         .execute())
             .doesNotThrowAnyException();
@@ -168,6 +302,78 @@ class LocalConverterITest {
 
       final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
+    }
+
+    @Test
+    void withLoadDocumentModeLocal_ShouldSucceed(
+        final @TempDir File testFolder, final OfficeManager manager) throws IOException {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+        assertThatCode(
+                () ->
+                    LocalConverter.builder()
+                        .officeManager(manager)
+                        .loadDocumentMode(LoadDocumentMode.LOCAL)
+                        .build()
+                        .convert(SOURCE_FILE)
+                        .to(stream)
+                        .as(DefaultDocumentFormatRegistry.PDF)
+                        .execute())
+            .doesNotThrowAnyException();
+      }
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withLoadDocumentModeRemote_ShouldSucceed(
+        final @TempDir File testFolder, final OfficeManager manager) throws IOException {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+        assertThatCode(
+                () ->
+                    LocalConverter.builder()
+                        .officeManager(manager)
+                        .loadDocumentMode(LoadDocumentMode.REMOTE)
+                        .build()
+                        .convert(SOURCE_FILE)
+                        .to(stream)
+                        .as(DefaultDocumentFormatRegistry.PDF)
+                        .execute())
+            .doesNotThrowAnyException();
+      }
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withLoadDocumentModeAuto_ShouldSucceed(
+        final @TempDir File testFolder, final OfficeManager manager) throws IOException {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+        assertThatCode(
+                () ->
+                    LocalConverter.builder()
+                        .officeManager(manager)
+                        .loadDocumentMode(LoadDocumentMode.AUTO)
+                        .build()
+                        .convert(SOURCE_FILE)
+                        .to(stream)
+                        .as(DefaultDocumentFormatRegistry.PDF)
+                        .execute())
+            .doesNotThrowAnyException();
+      }
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
     }
   }
 }

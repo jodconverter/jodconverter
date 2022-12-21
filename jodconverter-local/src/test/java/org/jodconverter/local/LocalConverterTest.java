@@ -58,8 +58,10 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
+import org.jodconverter.local.office.ExternalOfficeManager;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.UnoRuntime;
+import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.local.task.LocalConversionTask;
 
 /** Contains tests for the {@link LocalConverter} class. */
@@ -418,6 +420,103 @@ class LocalConverterTest {
           ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("storeProperties").isEqualTo(storeProperties);
+    }
+
+    @Test
+    void withLoadDocumentModeLocal_ShouldCreateTaskWithUseStreamAdaptersFalse(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .loadDocumentMode(LoadDocumentMode.LOCAL)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("useStreamAdapters").isEqualTo(false);
+    }
+
+    @Test
+    void withLoadDocumentModeRemote_ShouldCreateTaskWithUseStreamAdaptersTrue(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .loadDocumentMode(LoadDocumentMode.REMOTE)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("useStreamAdapters").isEqualTo(true);
+    }
+
+    @Test
+    void
+        withLoadDocumentModeAutoAndNotExternalOfficeManager_ShouldCreateTaskWithUseStreamAdaptersFalse(
+            final @TempDir File testFolder) throws OfficeException {
+
+      final File targetFile = new File(testFolder, "test.pdf");
+
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(officeManager)
+                      .loadDocumentMode(LoadDocumentMode.AUTO)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("useStreamAdapters").isEqualTo(false);
+    }
+
+    @Test
+    void withLoadDocumentModeAutoAndExternalOfficeManager_ShouldCreateTaskWithUseStreamAdaptersTrue(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final File targetFile = new File(testFolder, "test.pdf");
+      final ExternalOfficeManager externalOfficeManager = mock(ExternalOfficeManager.class);
+      assertThatCode(
+              () ->
+                  LocalConverter.builder()
+                      .officeManager(externalOfficeManager)
+                      .loadDocumentMode(LoadDocumentMode.AUTO)
+                      .build()
+                      .convert(SOURCE_FILE)
+                      .to(targetFile)
+                      .execute())
+          .doesNotThrowAnyException();
+
+      // Verify that the office manager has executed a task with the expected properties.
+      final ArgumentCaptor<LocalConversionTask> arg =
+          ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(externalOfficeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("useStreamAdapters").isEqualTo(true);
     }
 
     @Test

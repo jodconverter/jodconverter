@@ -23,12 +23,15 @@ import static org.jodconverter.local.office.LocalOfficeUtils.toUnoProperties;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import com.sun.star.frame.XStorable;
 import com.sun.star.lang.XComponent;
+import com.sun.star.lib.uno.adapter.OutputStreamToXOutputStreamAdapter;
 import com.sun.star.task.ErrorCodeIOException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -64,21 +67,23 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
    *
    * @param source The source specifications for the conversion.
    * @param target The target specifications for the conversion.
+   * @param useStreamAdapters Indicates whether document are loaded/stored using stream adapters.
    * @param loadProperties The load properties to be applied when loading the document. These
    *     properties are added after the load properties of the document format specified in the
    *     {@code source} arguments.
-   * @param filterChain The filter chain to use with this task.
    * @param storeProperties The store properties to be applied when storing the document. These
    *     properties are added after the store properties of the document format specified in the
    *     {@code target} arguments.
+   * @param filterChain The filter chain to use with this task.
    */
   public LocalConversionTask(
       final @NonNull SourceDocumentSpecs source,
       final @NonNull TargetDocumentSpecs target,
+      final boolean useStreamAdapters,
       final @Nullable Map<@NonNull String, @NonNull Object> loadProperties,
-      final @Nullable FilterChain filterChain,
-      final @Nullable Map<@NonNull String, @NonNull Object> storeProperties) {
-    super(source, loadProperties);
+      final @Nullable Map<@NonNull String, @NonNull Object> storeProperties,
+      final @Nullable FilterChain filterChain) {
+    super(source, useStreamAdapters, loadProperties);
 
     this.target = target;
     this.filterChain = Optional.ofNullable(filterChain).orElse(RefreshFilter.CHAIN).copy();
@@ -183,13 +188,29 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     AssertUtils.isTrue(storeProps.containsKey("FilterName"), "Unsupported conversion");
 
     try {
-      Lo.qi(XStorable.class, document).storeToURL(toUrl(targetFile), toUnoProperties(storeProps));
+      storeDocumentToURL(Lo.qi(XStorable.class, document), targetFile, storeProps);
     } catch (ErrorCodeIOException errorCodeIoEx) {
       throw new OfficeException(
           ERROR_MESSAGE_STORE + targetFile.getName() + "; errorCode: " + errorCodeIoEx.ErrCode,
           errorCodeIoEx);
     } catch (com.sun.star.uno.Exception ioEx) {
       throw new OfficeException(ERROR_MESSAGE_STORE + targetFile.getName(), ioEx);
+    }
+  }
+
+  private void storeDocumentToURL(
+      final XStorable storable, final File targetFile, final Map<String, Object> storeProps)
+      throws com.sun.star.uno.Exception, OfficeException {
+
+    if (useStreamAdapters) {
+      try (FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+        storeProps.put("OutputStream", new OutputStreamToXOutputStreamAdapter(outputStream));
+        storable.storeToURL("private:stream", toUnoProperties(storeProps));
+      } catch (IOException exception) {
+        throw new OfficeException(ERROR_MESSAGE_STORE + targetFile.getName(), exception);
+      }
+    } else {
+      storable.storeToURL(toUrl(targetFile), toUnoProperties(storeProps));
     }
   }
 
@@ -205,6 +226,8 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
         + target
         + ", storeProperties="
         + storeProperties
+        + ", useStreamAdapters="
+        + useStreamAdapters
         + '}';
   }
 }

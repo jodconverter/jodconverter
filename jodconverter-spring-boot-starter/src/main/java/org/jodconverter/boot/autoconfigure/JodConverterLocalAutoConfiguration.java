@@ -20,7 +20,10 @@
 package org.jodconverter.boot.autoconfigure;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -53,7 +56,7 @@ public class JodConverterLocalAutoConfiguration {
   private final JodConverterLocalProperties properties;
 
   /**
-   * Creates the local auto configuration.
+   * Creates the local auto-configuration.
    *
    * @param properties The local properties.
    */
@@ -136,9 +139,19 @@ public class JodConverterLocalAutoConfiguration {
   /* default */ DocumentConverter localDocumentConverter(
       final OfficeManager localOfficeManager, final DocumentFormatRegistry documentFormatRegistry) {
 
+    final Map<String, Object> loadProperties = new HashMap<>();
+    if (properties.isApplyDefaultLoadProperties()) {
+      loadProperties.putAll(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      if (properties.isUseUnsafeQuietUpdate()) {
+        loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
+      }
+    }
+
     return LocalConverter.builder()
         .officeManager(localOfficeManager)
         .formatRegistry(documentFormatRegistry)
+        .loadDocumentMode(properties.getLoadDocumentMode())
+        .loadProperties(loadProperties)
         .build();
   }
 }

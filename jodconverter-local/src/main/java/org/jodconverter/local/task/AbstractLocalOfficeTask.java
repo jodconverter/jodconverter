@@ -23,11 +23,14 @@ import static org.jodconverter.local.office.LocalOfficeUtils.toUnoProperties;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.lang.XComponent;
+import com.sun.star.lib.uno.adapter.ByteArrayToXInputStreamAdapter;
 import com.sun.star.task.DocumentMSPasswordRequest;
 import com.sun.star.task.DocumentPasswordRequest;
 import com.sun.star.task.ErrorCodeIOException;
@@ -60,12 +63,13 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLocalOfficeTask.class);
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
   protected final Map<String, Object> loadProperties;
+  protected final boolean useStreamAdapters;
 
   /** Handler used to detect password-protected file. */
   private static class PasswordInteractionHandler implements XInteractionHandler {
 
     private PasswordRequest passwordRequest;
-    private String documentPath;
+    private String documentName;
 
     /**
      * Gets the password interaction request that has been made, if any.
@@ -87,14 +91,15 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
     }
 
     /**
-     * Gets the document path of the document for which the request was made.
+     * Gets name of the document (more properly, the URL of the document), for which the request was
+     * made.
      *
-     * @return The document path of the document for which the request was made, null {@code false}
-     *     if no password interaction request was made, or "NA" if an interaction was made, but the
+     * @return The name of the document for which the request was made, null {@code false} if no
+     *     password interaction request was made, or "NA" if an interaction was made, but the
      *     document pas is unknown.
      */
-    public String getDocumentPath() {
-      return documentPath;
+    public String getDocumentName() {
+      return documentName;
     }
 
     @Override
@@ -107,13 +112,13 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
 
       if (request instanceof PasswordRequest) {
         passwordRequest = (PasswordRequest) request;
-        documentPath = "NA";
+        documentName = "NA";
         if (request instanceof DocumentPasswordRequest) {
-          documentPath = ((DocumentPasswordRequest) request).Name;
+          documentName = ((DocumentPasswordRequest) request).Name;
         } else if (request instanceof DocumentMSPasswordRequest) {
-          documentPath = ((DocumentMSPasswordRequest) request).Name;
+          documentName = ((DocumentMSPasswordRequest) request).Name;
         }
-        LOGGER.debug("Password interaction detected for {}", documentPath);
+        LOGGER.debug("Password interaction detected for {}", documentName);
       }
     }
   }
@@ -133,22 +138,36 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
    * @param source The source specifications of the document.
    */
   public AbstractLocalOfficeTask(final @NonNull SourceDocumentSpecs source) {
-    this(source, null);
+    this(source, false);
   }
 
   /**
    * Creates a new task with the specified source document.
    *
    * @param source The source specifications of the document.
+   * @param useStreamAdapters Indicates whether document are loaded/stored using stream adapters.
+   */
+  public AbstractLocalOfficeTask(
+      final @NonNull SourceDocumentSpecs source, final boolean useStreamAdapters) {
+    this(source, useStreamAdapters, null);
+  }
+
+  /**
+   * Creates a new task with the specified source document.
+   *
+   * @param source The source specifications of the document.
+   * @param useStreamAdapters Indicates whether document are loaded/stored using stream adapters.
    * @param loadProperties The load properties to be applied when loading the document. These
    *     properties are added before the load properties of the document format specified in the
    *     {@code source} arguments.
    */
   public AbstractLocalOfficeTask(
       final @NonNull SourceDocumentSpecs source,
+      final boolean useStreamAdapters,
       final @Nullable Map<@NonNull String, @NonNull Object> loadProperties) {
     super(source);
 
+    this.useStreamAdapters = useStreamAdapters;
     this.loadProperties = loadProperties;
   }
 
@@ -181,14 +200,14 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
 
     try {
       final Map<String, Object> loadProps = getLoadProperties();
-      final XComponent document =
-          loader.loadComponentFromURL(toUrl(sourceFile), "_blank", 0, toUnoProperties(loadProps));
+      final XComponent document = loadDocumentFromURL(loader, sourceFile, loadProps);
 
       // Handle password protection request to throw a meaningful exception, if required.
       handlePasswordProtection(document, loadProps);
 
       // The document cannot be null
       AssertUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
+
       return document;
 
     } catch (ErrorCodeIOException exception) {
@@ -198,6 +217,26 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
     } catch (com.sun.star.uno.Exception exception) {
       throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
     }
+  }
+
+  private XComponent loadDocumentFromURL(
+      XComponentLoader loader, File sourceFile, Map<String, Object> loadProps)
+      throws com.sun.star.uno.Exception, OfficeException {
+
+    if (useStreamAdapters) {
+      try {
+        byte[] bytes = Files.readAllBytes(sourceFile.toPath());
+        loadProps.put("InputStream", new ByteArrayToXInputStreamAdapter(bytes));
+
+        return loader.loadComponentFromURL(
+            "private:stream", "_blank", 0, toUnoProperties(loadProps));
+
+      } catch (IOException exception) {
+        throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
+      }
+    }
+
+    return loader.loadComponentFromURL(toUrl(sourceFile), "_blank", 0, toUnoProperties(loadProps));
   }
 
   // Closes the specified document.
@@ -235,7 +274,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
         final PasswordInteractionHandler pHandler = (PasswordInteractionHandler) handler;
         if (pHandler.hasPasswordInteractionRequest()) {
           throw new PasswordProtectedException(
-              "Document password requested for " + pHandler.getDocumentPath(),
+              "Document password requested for " + pHandler.getDocumentName(),
               pHandler.getPasswordRequest());
         }
       }
@@ -250,6 +289,8 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
         + source
         + ", loadProperties="
         + loadProperties
+        + ", useStreamAdapters="
+        + useStreamAdapters
         + '}';
   }
 }

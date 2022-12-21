@@ -33,6 +33,7 @@ import org.jodconverter.boot.autoconfigure.JodConverterRemoteProperties;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
 /**
@@ -82,7 +83,10 @@ class AutoConfigurationDefaultPropertiesITest {
             "taskQueueTimeout",
             "taskExecutionTimeout",
             "maxTasksPerProcess",
-            "documentFormatRegistry")
+            "documentFormatRegistry",
+            "applyDefaultLoadProperties",
+            "useUnsafeQuietUpdate",
+            "loadDocumentMode")
         .containsExactly(
             true,
             null,
@@ -100,7 +104,10 @@ class AutoConfigurationDefaultPropertiesITest {
             30_000L,
             120_000L,
             200,
-            null);
+            null,
+            true,
+            false,
+            LoadDocumentMode.AUTO);
   }
 
   @Test

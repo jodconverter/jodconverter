@@ -26,8 +26,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import org.jodconverter.core.document.DocumentFormatProperties;
+import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.task.LoadDocumentMode;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter.local")
@@ -142,6 +144,25 @@ public class JodConverterLocalProperties {
 
   /** Custom properties required to load(open) and store(save) documents. */
   private Map<String, DocumentFormatProperties> formatOptions;
+
+  /**
+   * Specifies this converter will apply the default load properties when loading a source document.
+   */
+  private boolean applyDefaultLoadProperties = LocalConverter.DEFAULT_APPLY_DEFAULT_LOAD_PROPS;
+
+  /**
+   * Specifies whether this converter will use the unsafe {@code UpdateDocMode.QUIET_UPDATE} as
+   * default for the {@code UpdateDocMode} load property, which was the default until JODConverter
+   * version 4.4.4.
+   */
+  private boolean useUnsafeQuietUpdate = LocalConverter.DEFAULT_USE_UNSAFE_QUIET_UPDATE;
+
+  /**
+   * Specifies how a document is loaded/stored when converting a document, whether it is loaded
+   * assuming the office process has access to the file on disk or not. If not, the conversion
+   * process will use stream adapters.
+   */
+  private LoadDocumentMode loadDocumentMode = LocalConverter.DEFAULT_LOAD_DOCUMENT_MODE;
 
   public boolean isEnabled() {
     return enabled;
@@ -295,5 +316,29 @@ public class JodConverterLocalProperties {
   public void setFormatOptions(
       final @Nullable Map<@NonNull String, @NonNull DocumentFormatProperties> formatOptions) {
     this.formatOptions = formatOptions;
+  }
+
+  public boolean isApplyDefaultLoadProperties() {
+    return applyDefaultLoadProperties;
+  }
+
+  public void setApplyDefaultLoadProperties(final boolean applyDefaultLoadProperties) {
+    this.applyDefaultLoadProperties = applyDefaultLoadProperties;
+  }
+
+  public boolean isUseUnsafeQuietUpdate() {
+    return useUnsafeQuietUpdate;
+  }
+
+  public void setUseUnsafeQuietUpdate(final boolean useUnsafeQuietUpdate) {
+    this.useUnsafeQuietUpdate = useUnsafeQuietUpdate;
+  }
+
+  public @Nullable LoadDocumentMode getLoadDocumentMode() {
+    return loadDocumentMode;
+  }
+
+  public void setLoadDocumentMode(final @Nullable LoadDocumentMode loadDocumentMode) {
+    this.loadDocumentMode = loadDocumentMode;
   }
 }

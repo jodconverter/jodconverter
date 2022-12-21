@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
@@ -40,6 +41,8 @@ import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
+import org.jodconverter.local.office.ExternalOfficeManager;
+import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.local.task.LocalConversionTask;
 
 /**
@@ -62,14 +65,18 @@ public final class LocalConverter extends AbstractConverter {
    */
   public static final boolean DEFAULT_USE_UNSAFE_QUIET_UPDATE = false;
 
+  /** The default behavior regarding the loading of a document. */
+  public static final LoadDocumentMode DEFAULT_LOAD_DOCUMENT_MODE = LoadDocumentMode.AUTO;
+
   /**
    * The properties which are applied by default when loading a document if not manually overridden.
    */
   public static final Map<String, Object> DEFAULT_LOAD_PROPERTIES;
 
+  private final LoadDocumentMode loadDocumentMode;
   private final Map<String, Object> loadProperties;
-  private final FilterChain filterChain;
   private final Map<String, Object> storeProperties;
+  private final FilterChain filterChain;
 
   static {
     final Map<String, Object> loadProperties = new HashMap<>();
@@ -115,14 +122,17 @@ public final class LocalConverter extends AbstractConverter {
   private LocalConverter(
       final OfficeManager officeManager,
       final DocumentFormatRegistry formatRegistry,
+      final LoadDocumentMode loadDocumentMode,
       final Map<String, Object> loadProperties,
-      final FilterChain filterChain,
-      final Map<String, Object> storeProperties) {
+      final Map<String, Object> storeProperties,
+      final FilterChain filterChain) {
     super(officeManager, formatRegistry);
 
+    this.loadDocumentMode = loadDocumentMode;
     this.loadProperties = loadProperties;
-    this.filterChain = filterChain;
     this.storeProperties = storeProperties;
+    this.filterChain = filterChain;
+    ;
   }
 
   @Override
@@ -158,9 +168,16 @@ public final class LocalConverter extends AbstractConverter {
     @Override
     public void doExecute() throws OfficeException {
 
-      // Create a default conversion task and execute it
+      // Determine whether we must use stream adapters.
+      boolean useStreamAdapters =
+          loadDocumentMode == LoadDocumentMode.REMOTE
+              || (loadDocumentMode == LoadDocumentMode.AUTO
+                  && officeManager instanceof ExternalOfficeManager);
+
+      // Create a conversion task and execute it.
       final LocalConversionTask task =
-          new LocalConversionTask(source, target, loadProperties, filterChain, storeProperties);
+          new LocalConversionTask(
+              source, target, useStreamAdapters, loadProperties, storeProperties, filterChain);
       officeManager.execute(task);
     }
   }
@@ -174,8 +191,9 @@ public final class LocalConverter extends AbstractConverter {
 
     private boolean applyDefaultLoadProperties = DEFAULT_APPLY_DEFAULT_LOAD_PROPS;
     private boolean useUnsafeQuietUpdate = DEFAULT_USE_UNSAFE_QUIET_UPDATE;
-    private Map<String, Object> loadProperties;
+    private LoadDocumentMode loadDocumentMode = DEFAULT_LOAD_DOCUMENT_MODE;
     private FilterChain filterChain;
+    private Map<String, Object> loadProperties;
     private Map<String, Object> storeProperties;
 
     // Private constructor so only LocalConverter can create an instance of this builder.
@@ -211,9 +229,10 @@ public final class LocalConverter extends AbstractConverter {
       return new LocalConverter(
           manager,
           formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry,
+          loadDocumentMode,
           loadProperties,
-          filterChain,
-          storeProperties);
+          storeProperties,
+          filterChain);
     }
 
     /**
@@ -264,6 +283,24 @@ public final class LocalConverter extends AbstractConverter {
     public @NonNull Builder useUnsafeQuietUpdate(final boolean useUnsafeQuietUpdate) {
 
       this.useUnsafeQuietUpdate = useUnsafeQuietUpdate;
+      return this;
+    }
+
+    /**
+     * Specifies how a document is loaded/stored when converting a document, whether it is loaded
+     * assuming the office process has access to the file on disk or not. If not, the conversion
+     * process will use stream adapters
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: LoadDocumentMode.AUTO
+     *
+     * @param loadDocumentMode The load document mode.
+     * @return This builder instance.
+     */
+    public @NonNull Builder loadDocumentMode(final @Nullable LoadDocumentMode loadDocumentMode) {
+
+      if (loadDocumentMode != null) {
+        this.loadDocumentMode = loadDocumentMode;
+      }
       return this;
     }
 

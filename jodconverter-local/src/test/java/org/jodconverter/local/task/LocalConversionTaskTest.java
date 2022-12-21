@@ -79,6 +79,7 @@ class LocalConversionTaskTest {
           new LocalConversionTask(
               new FooSourceSpecs(SOURCE_FILE),
               new FooTargetSpecsWithoutFilterFormat(targetFile),
+              false,
               null,
               null,
               null);
@@ -106,7 +107,12 @@ class LocalConversionTaskTest {
       final File targetFile = new File(testFolder, TARGET_FILENAME);
       final LocalConversionTask task =
           new LocalConversionTask(
-              new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null, null);
+              new FooSourceSpecs(SOURCE_FILE),
+              new FooTargetSpecs(targetFile),
+              false,
+              null,
+              null,
+              null);
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> task.storeDocument(document, targetFile))
           .withCauseExactlyInstanceOf(ErrorCodeIOException.class);
@@ -131,7 +137,12 @@ class LocalConversionTaskTest {
       final File targetFile = new File(testFolder, TARGET_FILENAME);
       final LocalConversionTask task =
           new LocalConversionTask(
-              new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null, null);
+              new FooSourceSpecs(SOURCE_FILE),
+              new FooTargetSpecs(targetFile),
+              false,
+              null,
+              null,
+              null);
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> task.storeDocument(document, targetFile))
           .withCauseExactlyInstanceOf(IOException.class);
@@ -168,7 +179,12 @@ class LocalConversionTaskTest {
       final File targetFile = new File(testFolder, TARGET_FILENAME);
       final LocalConversionTask task =
           new LocalConversionTask(
-              new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null, null);
+              new FooSourceSpecs(SOURCE_FILE),
+              new FooTargetSpecs(targetFile),
+              false,
+              null,
+              null,
+              null);
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> task.execute(context))
           .withCauseExactlyInstanceOf(IOException.class);
@@ -201,7 +217,12 @@ class LocalConversionTaskTest {
       final File targetFile = new File(testFolder, TARGET_FILENAME);
       final LocalConversionTask task =
           new LocalConversionTask(
-              new FooSourceSpecs(SOURCE_FILE), new FooTargetSpecs(targetFile), null, null, null);
+              new FooSourceSpecs(SOURCE_FILE),
+              new FooTargetSpecs(targetFile),
+              false,
+              null,
+              null,
+              null);
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> task.execute(context))
           .withCauseExactlyInstanceOf(RuntimeException.class);
@@ -223,7 +244,7 @@ class LocalConversionTaskTest {
       storeProps.put("Key2", "Val2");
 
       final LocalConversionTask task =
-          new LocalConversionTask(sourceSpecs, targetSpecs, loadProps, null, storeProps);
+          new LocalConversionTask(sourceSpecs, targetSpecs, true, loadProps, storeProps, null);
       assertThat(task.toString())
           .isEqualTo(
               "LocalConversionTask{"
@@ -235,6 +256,8 @@ class LocalConversionTaskTest {
                   + targetSpecs
                   + ", storeProperties="
                   + storeProps
+                  + ", useStreamAdapters="
+                  + true
                   + '}');
     }
   }

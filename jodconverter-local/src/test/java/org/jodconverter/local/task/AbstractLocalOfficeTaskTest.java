@@ -39,7 +39,6 @@ import com.sun.star.beans.PropertyValue;
 import com.sun.star.document.UpdateDocMode;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
-import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.util.CloseVetoException;
@@ -85,7 +84,8 @@ class AbstractLocalOfficeTaskTest {
 
       final Map<String, Object> customProps = new HashMap<>();
       customProps.put("Key", "Val");
-      final FooOfficeTask task = new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE), customProps);
+      final FooOfficeTask task =
+          new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE), false, customProps);
 
       assertThat(task.getLoadProperties()).contains(entry("Key", "Val"));
     }
@@ -108,7 +108,8 @@ class AbstractLocalOfficeTaskTest {
 
       final Map<String, Object> customProps = new HashMap<>();
       customProps.put("Key", "Val");
-      final FooOfficeTask task = new FooOfficeTask(new NullSourceSpecs(SOURCE_FILE), customProps);
+      final FooOfficeTask task =
+          new FooOfficeTask(new NullSourceSpecs(SOURCE_FILE), false, customProps);
 
       assertThat(task.getLoadProperties()).contains(entry("Key", "Val"));
     }
@@ -133,7 +134,8 @@ class AbstractLocalOfficeTaskTest {
 
       final Map<String, Object> customProps = new HashMap<>();
       customProps.put("Key", "Val");
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), customProps);
+      final FooOfficeTask task =
+          new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), false, customProps);
 
       assertThat(task.getLoadProperties())
           .contains(
@@ -147,7 +149,7 @@ class AbstractLocalOfficeTaskTest {
   class LoadDocument {
 
     @Test
-    void whenIllegalArgumentExceptionCatched_ShouldThrowOfficeException()
+    void whenUnoExceptionExceptionCatched_ShouldThrowOfficeException()
         throws com.sun.star.uno.Exception {
 
       final XComponentLoader loader = mock(XComponentLoader.class);
@@ -155,13 +157,13 @@ class AbstractLocalOfficeTaskTest {
       given(
               loader.loadComponentFromURL(
                   isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class)))
-          .willThrow(IllegalArgumentException.class);
+          .willThrow(com.sun.star.lang.IllegalArgumentException.class);
       given(context.getComponentLoader()).willReturn(loader);
 
       final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
-          .withCauseExactlyInstanceOf(IllegalArgumentException.class);
+          .withCauseExactlyInstanceOf(com.sun.star.lang.IllegalArgumentException.class);
     }
 
     @Test
@@ -260,10 +262,18 @@ class AbstractLocalOfficeTaskTest {
       final TxtSourceSpecs sourceSpecs = new TxtSourceSpecs(SOURCE_FILE);
       final Map<String, Object> customProps = new HashMap<>();
       customProps.put("Key", "Val");
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), customProps);
+      final FooOfficeTask task =
+          new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), true, customProps);
       assertThat(task.toString())
           .isEqualTo(
-              "FooOfficeTask{" + "source=" + sourceSpecs + ", loadProperties=" + customProps + '}');
+              "FooOfficeTask{"
+                  + "source="
+                  + sourceSpecs
+                  + ", loadProperties="
+                  + customProps
+                  + ", useStreamAdapters="
+                  + true
+                  + '}');
     }
   }
 
@@ -273,9 +283,15 @@ class AbstractLocalOfficeTaskTest {
       super(source);
     }
 
+    public FooOfficeTask(final SourceDocumentSpecs source, final boolean useStreamAdapters) {
+      super(source, useStreamAdapters);
+    }
+
     public FooOfficeTask(
-        final SourceDocumentSpecs source, final Map<String, Object> loadProperties) {
-      super(source, loadProperties);
+        final SourceDocumentSpecs source,
+        final boolean useStreamAdapters,
+        final Map<String, Object> loadProperties) {
+      super(source, useStreamAdapters, loadProperties);
     }
 
     @Override
