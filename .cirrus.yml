@@ -19,14 +19,14 @@ linux_task:
         CI_PULL_REQUEST: $CIRRUS_PR
         COVERALLS_REPO_TOKEN: ENCRYPTED[9fa0f47af9055f09dc3f3e65c4d126fedff998cbdc4430847762be36c38477f0658d577cd981a6ed8bd5439fa8e4defd]
       container:
-        image: openjdk:8-jdk
+        image: eclipse-temurin:8
       build_script:
         - ./gradlew build -x javadoc --stacktrace
       coverage_script:
         - ./gradlew jacocoRootReport coveralls --warning-mode all
     - name: linux:openjdk11
       container:
-        image: openjdk:11-jdk
+        image: eclipse-temurin:11
       build_script:
         - ./gradlew build -x javadoc --stacktrace
 
@@ -58,6 +58,10 @@ windows_task:
       env:
         # https://community.chocolatey.org/packages/Temurin11
         TEMURINOPENJDK_PACKAGE: temurin11
+    - name: windows:temurinjdk17
+      env:
+        # https://community.chocolatey.org/packages/Temurin17
+        TEMURINOPENJDK_PACKAGE: temurin17
   install_script:
     - choco install -y libreoffice
     - choco install -y %TEMURINOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
