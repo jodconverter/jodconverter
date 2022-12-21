@@ -19,6 +19,15 @@
 
 package org.jodconverter.local.task;
 
+import static org.jodconverter.local.office.LocalOfficeUtils.toUnoProperties;
+import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lib.uno.adapter.ByteArrayToXInputStreamAdapter;
@@ -32,6 +41,9 @@ import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.AbstractOfficeTask;
@@ -40,17 +52,6 @@ import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeContext;
 import org.jodconverter.local.office.PasswordProtectedException;
 import org.jodconverter.local.office.utils.Lo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.jodconverter.local.office.LocalOfficeUtils.toUnoProperties;
-import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 
 /**
  * Base class for all local office tasks implementation.

@@ -19,10 +19,10 @@
 
 package org.jodconverter.sample.rest;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
 class SpringBootRestApplicationTest {
