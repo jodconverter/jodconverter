@@ -5,7 +5,7 @@ public class Plugins {
   // 9.3 is the latest supporting java8, so stay with it until we set the minimal version to 11
   public static final String checkstyleVersion = "9.3";
   // Latest version -> https://pmd.github.io
-  public static final String pmdVersion = "6.47.0";
+  public static final String pmdVersion = "6.52.0";
 
   // Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
   public static final String coveralls =
@@ -19,5 +19,5 @@ public class Plugins {
       "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0";
   // Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
   public static final String spotless =
-      "com.diffplug.spotless:spotless-plugin-gradle:6.7.2";
+      "com.diffplug.spotless:spotless-plugin-gradle:6.12.0";
 }
