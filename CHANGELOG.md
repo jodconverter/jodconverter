@@ -18,7 +18,7 @@
 
 **Merged pull requests:**
 
-- Migrate to swagger v3 / openapi - fixes \#317 [\#318](https://github.com/sbraconnie~~~~r/jodconverter/pull/318) ([EugenMayer](https://github.com/EugenMayer))
+- Migrate to swagger v3 / openapi - fixes \#317 [\#318](https://github.com/sbraconnier/jodconverter/pull/318) ([EugenMayer](https://github.com/EugenMayer))
 
 ## [v4.4.4](https://github.com/sbraconnier/jodconverter/tree/v4.4.4) (2022-09-22)
 
