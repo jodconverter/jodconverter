@@ -9,13 +9,11 @@
 [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)
 
-I created this fork years ago because I had to do some changes to the original project and decided to share my work with the community.
-
 ### What you want to know...
 
 - **Documentation**: The JODConverter documentation (work in progress) can be found [here](https://github.com/jodconverter/jodconverter/wiki).
 - **Dependencies**:
-  * [jodconverter-local](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local) module dependencies. This fork does not depend on SIGAR. JODConverter only needs to retrieve office processes (PIDs) and kill office processes (using PID). It should work just fine without SIGAR with the actual [process managers](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/process) created from an older version of JODConverter. But I added the ability to use any process manager you would like to implement if none of the provided managers can be used. See the [processManager](https://github.com/jodconverter/jodconverter/wiki/Configuration#capital_abcdprocessmanager) configuration option.
+  * [jodconverter-local](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local) module dependencies.
   * [jodconverter-remote](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-remote) module dependencies.
   * [jodconverter-spring](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-spring) module dependencies.
   * [jodconverter-spring-boot-starter](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-spring-boot-starter) module dependencies.
