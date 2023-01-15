@@ -1,0 +1,2 @@
+org.jodconverter.boot.autoconfigure.JodConverterLocalAutoConfiguration
+org.jodconverter.boot.autoconfigure.JodConverterRemoteAutoConfiguration

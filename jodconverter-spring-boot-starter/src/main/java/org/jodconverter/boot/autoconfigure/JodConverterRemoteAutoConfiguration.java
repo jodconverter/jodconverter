@@ -21,6 +21,7 @@
 package org.jodconverter.boot.autoconfigure;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -37,7 +38,7 @@ import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter remote module. */
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(RemoteConverter.class)
 @ConditionalOnProperty(prefix = "jodconverter.remote", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(JodConverterRemoteProperties.class)

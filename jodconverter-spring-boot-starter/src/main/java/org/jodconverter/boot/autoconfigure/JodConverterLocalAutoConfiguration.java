@@ -26,6 +26,7 @@ import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -48,7 +49,7 @@ import org.jodconverter.local.office.LocalOfficeUtils;
 import org.jodconverter.local.process.ProcessManager;
 
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter local module. */
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(LocalConverter.class)
 @ConditionalOnProperty(prefix = "jodconverter.local", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(JodConverterLocalProperties.class)
