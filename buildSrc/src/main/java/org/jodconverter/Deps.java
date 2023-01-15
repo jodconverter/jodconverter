@@ -18,7 +18,7 @@ public class Deps {
 
   // Spring Boot libraries
   // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-  public static final String springBootVersion = "3.0.1";
+  public static final String springBootVersion = "2.7.7";
   public static final String springBootDependencies =
       "org.springframework.boot:spring-boot-dependencies:" + springBootVersion;
   public static final String springBootStarter = "org.springframework.boot:spring-boot-starter";

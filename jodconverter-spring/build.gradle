@@ -2,10 +2,6 @@ import org.jodconverter.Deps
 
 ext.moduleName = 'JODConverter Spring'
 ext.moduleDescription = 'Spring integration module of the Java OpenDocument Converter (JODConverter) project.'
-
-sourceCompatibility = 17
-targetCompatibility = 17
-
 dependencies {
     implementation project(":jodconverter-local")
 
