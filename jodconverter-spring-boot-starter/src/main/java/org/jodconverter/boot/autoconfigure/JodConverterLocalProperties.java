@@ -31,9 +31,14 @@ import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.task.LoadDocumentMode;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter.local")
+@ConfigurationPropertiesScan
 public class JodConverterLocalProperties {
 
   /** Enable JODConverter, which means that office instances will be launched. */
@@ -129,13 +134,13 @@ public class JodConverterLocalProperties {
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
    * if the waiting time is longer than this timeout.
    */
-  private long taskQueueTimeout = LocalOfficeManager.DEFAULT_TASK_QUEUE_TIMEOUT;
+  private long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
 
   /**
    * Maximum time allowed to process a task. If the processing time of a task is longer than this
    * timeout, this task will be aborted and the next task is processed.
    */
-  private long taskExecutionTimeout = LocalOfficeManager.DEFAULT_TASK_EXECUTION_TIMEOUT;
+  private long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
 
   /** Maximum number of tasks an office process can execute before restarting. */
   private int maxTasksPerProcess = LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
