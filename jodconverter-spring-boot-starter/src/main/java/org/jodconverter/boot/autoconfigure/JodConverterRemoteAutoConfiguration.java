@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeManager;
@@ -51,7 +50,8 @@ public class JodConverterRemoteAutoConfiguration {
    *
    * @param properties The remote properties.
    */
-  public JodConverterRemoteAutoConfiguration(final @NonNull JodConverterRemoteProperties properties) {
+  public JodConverterRemoteAutoConfiguration(
+      final @NonNull JodConverterRemoteProperties properties) {
     this.properties = properties;
   }
 
