@@ -18,7 +18,7 @@ public class Deps {
 
   // Spring Boot libraries
   // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-  public static final String springBootVersion = "2.7.6";
+  public static final String springBootVersion = "2.7.7";
   public static final String springBootDependencies =
       "org.springframework.boot:spring-boot-dependencies:" + springBootVersion;
   public static final String springBootStarter = "org.springframework.boot:spring-boot-starter";
@@ -42,6 +42,8 @@ public class Deps {
   public static final String springCore = "org.springframework:spring-core";
   public static final String springContext = "org.springframework:spring-context";
   public static final String springTest = "org.springframework:spring-test";
+
+  public static final String javaxAnnotations = "javax.annotation:javax.annotation-api:1.3.2";
 
   // HTTP Components libraries
   public static final String httpcomponentsHttpcore = "org.apache.httpcomponents:httpcore";

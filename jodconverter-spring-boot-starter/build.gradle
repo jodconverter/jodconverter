@@ -15,4 +15,5 @@ dependencies {
 
     testImplementation Deps.wiremock
     testImplementation Deps.springBootStarterTest
+    testImplementation Deps.javaxAnnotations
 }
