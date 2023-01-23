@@ -135,6 +135,8 @@ spotless {
 // Test
 
 test {
+    jvmArgs = defaultJvmArgs
+
     useJUnitPlatform {
         includeEngines "junit-jupiter", "junit-vintage"
     }
@@ -145,6 +147,8 @@ test {
 }
 
 integTest {
+    jvmArgs = defaultJvmArgs
+
     useJUnitPlatform {
         includeEngines "junit-jupiter", "junit-vintage"
     }

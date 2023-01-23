@@ -36,14 +36,25 @@ ext {
     sourceEncoding = "UTF-8"
 
     // Set up different sub-project lists for individual configuration
-    ext.javaProjects = subprojects.findAll {
+    javaProjects = subprojects.findAll {
         new File(it.projectDir, 'src/main/java').directory
     }
-    ext.releasedProjects = javaProjects.findAll {
+    releasedProjects = javaProjects.findAll {
         !it.name.contains('jodconverter-sample')
     }
-    ext.librariesProjects = releasedProjects.findAll {
+    librariesProjects = releasedProjects.findAll {
         !it.name.contains('jodconverter-cli')
+    }
+
+    defaultJvmArgs = []
+    // "JEP 403: Strongly Encapsulate JDK Internals" causes some tests to
+    // fail when they try to access internals (often via mocking libraries).à
+    // We use `--add-opens` as a workaround for now.
+    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
+        defaultJvmArgs.addAll(
+                "--add-opens=java.base/java.io=ALL-UNNAMED",
+                "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED"
+        )
     }
 }
 
