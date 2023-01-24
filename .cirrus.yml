@@ -72,9 +72,9 @@ windows_task:
 macos_task:
   # See https://cirrus-ci.org/guide/macOS/#list-of-available-images for images that could be tested.
   matrix:
-    - name: macos:xcode:12.2
+    - name: macos:xcode:latest
       macos_instance:
-        image: ghcr.io/cirruslabs/macos-ventura-base:latest
+        image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   install_script:
     - brew update
     - brew install --cask libreoffice
