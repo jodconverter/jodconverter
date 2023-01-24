@@ -74,7 +74,7 @@ macos_task:
   matrix:
     - name: macos:xcode:12.2
       macos_instance:
-        image: catalina-xcode-12.2
+        image: ghcr.io/cirruslabs/macos-ventura-base:latest
   install_script:
     - brew update
     - brew install --cask libreoffice
