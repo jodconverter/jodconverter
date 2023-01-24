@@ -27,6 +27,47 @@ import org.junit.jupiter.api.Test;
 /** Contains tests for the {@link SimpleDocumentFormatRegistry} class. */
 class SimpleDocumentFormatRegistryTest {
 
+  /** Tests that calling addRegistry with a null registry does nothing. */
+  @Test
+  void addRegistry_WithNullRegistry_DoNothing() {
+
+    final SimpleDocumentFormatRegistry sourceRegistry = new SimpleDocumentFormatRegistry();
+    sourceRegistry.addFormat(
+        DefaultDocumentFormatRegistry.getInstance().getFormatByExtension("pdf"));
+    sourceRegistry.addRegistry(null);
+
+    final DocumentFormat testFormat = sourceRegistry.getFormatByExtension("test");
+    assertThat(testFormat).isNull();
+    final DocumentFormat pdfFormat = sourceRegistry.getFormatByExtension("pdf");
+    assertThat(pdfFormat).isNotNull().hasFieldOrPropertyWithValue("extension", "pdf");
+    assertThat(pdfFormat.getStoreProperties()).isNotEmpty();
+  }
+
+  /** Tests that calling addRegistry with a null registry does nothing. */
+  @Test
+  void addRegistry_WithCustomRegitry_DocumentFormatsFromCustomRegistryAdded() {
+
+    final SimpleDocumentFormatRegistry sourceRegistry = new SimpleDocumentFormatRegistry();
+    sourceRegistry.addFormat(
+        DefaultDocumentFormatRegistry.getInstance().getFormatByExtension("pdf"));
+    final SimpleDocumentFormatRegistry toAdd = new SimpleDocumentFormatRegistry();
+    toAdd.addFormat(
+        DocumentFormat.builder()
+            .name("TestName")
+            .extension("test")
+            .mediaType("application/test")
+            .build());
+    toAdd.addFormat(
+        DocumentFormat.builder().name("Pdf").extension("pdf").mediaType("application/pdf").build());
+    sourceRegistry.addRegistry(toAdd);
+
+    final DocumentFormat testFormat = sourceRegistry.getFormatByExtension("pdf");
+    assertThat(testFormat).isNotNull().hasFieldOrPropertyWithValue("extension", "pdf");
+    final DocumentFormat pdfFormat = sourceRegistry.getFormatByExtension("pdf");
+    assertThat(pdfFormat).isNotNull().hasFieldOrPropertyWithValue("extension", "pdf");
+    assertThat(pdfFormat.getStoreProperties()).isNullOrEmpty();
+  }
+
   /**
    * Tests that calling getFormatByExtension with a valid extension will return the expected
    * document format.

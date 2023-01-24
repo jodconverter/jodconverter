@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import org.jodconverter.core.DocumentConverter;
@@ -112,11 +113,18 @@ public class JodConverterLocalAutoConfiguration {
             ? resourceLoader.getResource("classpath:document-formats.json").getInputStream()
             : resourceLoader.getResource(properties.getDocumentFormatRegistry()).getInputStream()) {
 
-      // Create the registry
-      final DocumentFormatRegistry registry =
+      // Create the registry.
+      final JsonDocumentFormatRegistry registry =
           properties.getFormatOptions() == null
               ? JsonDocumentFormatRegistry.create(in)
               : JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
+
+      // Load the custom formats, if any.
+      final Resource resource =
+          resourceLoader.getResource("classpath:custom-document-formats.json");
+      if (resource.exists()) {
+        registry.addRegistry(JsonDocumentFormatRegistry.create(resource.getInputStream()));
+      }
 
       // Set as default.
       DefaultDocumentFormatRegistryInstanceHolder.setInstance(registry);

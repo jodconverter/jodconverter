@@ -43,14 +43,19 @@ class DefaultDocumentFormatRegistryInstanceHolder { // NOPMD - Disable class nam
   public static @NonNull DocumentFormatRegistry getInstance() {
     synchronized (DocumentFormatRegistry.class) {
       if (instance == null) {
-        try (InputStream input =
-            DefaultDocumentFormatRegistryInstanceHolder.class.getResourceAsStream(
-                "/document-formats.json")) {
-          instance = JsonDocumentFormatRegistry.create(input);
-        } catch (IOException ex) {
+        final JsonDocumentFormatRegistry defaultRegistry = loadRegistry("/document-formats.json");
+        if (defaultRegistry == null) {
+          // It should never happen since the core module is shipped
+          // with a default document-formats.json file.
           throw new DocumentFormatRegistryException(
-              "Could not load the default document-formats.json configuration file", ex);
+              "Could not load the default document-formats.json configuration file");
         }
+
+        // Now load the custom document formats, if any.
+        defaultRegistry.addRegistry(loadRegistry("/custom-document-formats.json"));
+
+        // Set the static instance.
+        instance = defaultRegistry;
       }
 
       return instance;
@@ -62,10 +67,24 @@ class DefaultDocumentFormatRegistryInstanceHolder { // NOPMD - Disable class nam
    *
    * @param registry The default {@link DocumentFormatRegistry}.
    */
-  public static void setInstance(final DocumentFormatRegistry registry) {
+  public static void setInstance(DocumentFormatRegistry registry) {
     synchronized (DocumentFormatRegistry.class) {
       instance = registry;
     }
+  }
+
+  private static JsonDocumentFormatRegistry loadRegistry(final String name) {
+
+    try (InputStream input =
+        DefaultDocumentFormatRegistryInstanceHolder.class.getResourceAsStream(name)) {
+      if (input != null) {
+        return JsonDocumentFormatRegistry.create(input);
+      }
+    } catch (IOException ex) {
+      throw new DocumentFormatRegistryException(
+          "Could not load the configuration file: " + name, ex);
+    }
+    return null;
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

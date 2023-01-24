@@ -33,6 +33,15 @@ public class DocumentFormatRegistryException extends RuntimeException {
    * Constructs an exception with the specified detail message and cause.
    *
    * @param message the detail message.
+   */
+  public DocumentFormatRegistryException(final @NonNull String message) {
+    super(message);
+  }
+
+  /**
+   * Constructs an exception with the specified detail message and cause.
+   *
+   * @param message the detail message.
    * @param cause the cause.
    */
   public DocumentFormatRegistryException(

@@ -26,8 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.util.Map;
 import java.util.Objects;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -39,6 +41,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFamily;
+import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
 
 /** Contains tests for the {@link org.jodconverter.local.LocalConverter} class. */
@@ -138,21 +141,30 @@ class LocalConverterITest {
   @Test
   void testCustomProperties() {
 
-    assertThat(
-            Objects.requireNonNull(
-                    Objects.requireNonNull(
-                            converter.getFormatRegistry().getFormatByExtension("txt"))
-                        .getLoadProperties())
-                .get("FilterOptions"))
-        .isEqualTo("utf16");
+    final DocumentFormat format = converter.getFormatRegistry().getFormatByExtension("txt");
+    assertThat(format).isNotNull();
 
-    assertThat(
-            Objects.requireNonNull(
-                    Objects.requireNonNull(
-                            converter.getFormatRegistry().getFormatByExtension("txt"))
-                        .getStoreProperties())
-                .get(DocumentFamily.TEXT)
-                .get("FilterOptions"))
-        .isEqualTo("utf16");
+    final Map<String, Object> loadProperties = format.getLoadProperties();
+    assertThat(loadProperties).isNotNull();
+    assertThat(loadProperties).containsEntry("FilterOptions", "utf16");
+
+    final Map<String, Object> StoreProperties = format.getStoreProperties(DocumentFamily.TEXT);
+    assertThat(StoreProperties).isNotNull();
+    assertThat(StoreProperties).containsEntry("FilterOptions", "utf16");
+  }
+
+  /** Test custom registry. */
+  @Test
+  void testCustomRegistry() {
+
+    final DocumentFormat format = converter.getFormatRegistry().getFormatByExtension("html");
+    assertThat(format).isNotNull();
+
+    final Map<String, Object> properties = format.getStoreProperties(DocumentFamily.PRESENTATION);
+    assertThat(properties).isNotNull();
+
+    final Object filterData = properties.get("FilterData");
+    assertThat(filterData).isNotNull();
+    assertThat(filterData).asInstanceOf(InstanceOfAssertFactories.MAP).containsKey("PublishMode");
   }
 }

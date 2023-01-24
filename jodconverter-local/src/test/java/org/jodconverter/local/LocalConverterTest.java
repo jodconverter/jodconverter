@@ -122,10 +122,10 @@ class LocalConverterTest {
       final SimpleDocumentFormatRegistry registry = new SimpleDocumentFormatRegistry();
       registry.addFormat(DefaultDocumentFormatRegistry.DOC);
       registry.addFormat(DefaultDocumentFormatRegistry.PDF);
-      final LocalConverter manager =
+      final LocalConverter converter =
           LocalConverter.builder().officeManager(officeManager).formatRegistry(registry).build();
 
-      assertThat(manager)
+      assertThat(converter)
           .extracting("formatRegistry")
           .isInstanceOfSatisfying(
               SimpleDocumentFormatRegistry.class,

@@ -21,17 +21,22 @@
 package org.jodconverter.local;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Objects;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DocumentFamily;
+import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.local.office.PasswordProtectedException;
 
 /** Contains tests for the {@link DocumentConverter} class. */
@@ -56,6 +61,31 @@ class DocumentConverterFunctionalITest {
 
     // Convert the file to PDF
     converter.convert(source).to(target);
+  }
+
+  @Test
+  void testCustomDocumentFormats(
+      final @TempDir File testFolder, final DocumentConverter converter) {
+
+    // This test is done to ensure that the custom-document-formats.json is loaded properly.
+    final DocumentFormat format = converter.getFormatRegistry().getFormatByExtension("html");
+    assertThat(format).isNotNull();
+
+    final Map<String, Object> properties = format.getStoreProperties(DocumentFamily.PRESENTATION);
+    assertThat(properties).isNotNull();
+
+    final Object filterData = properties.get("FilterData");
+    assertThat(filterData).isNotNull();
+    assertThat(filterData).asInstanceOf(InstanceOfAssertFactories.MAP).containsKey("PublishMode");
+
+    final File inputFile = documentFile("/test_custom_formats.odp");
+    final File outputFile = new File(testFolder, "test_out.html");
+
+    assertThatCode(() -> converter.convert(inputFile).to(outputFile).execute())
+        .doesNotThrowAnyException();
+
+    assertThat(outputFile).isFile();
+    assertThat(testFolder.list()).hasSizeGreaterThan(1);
   }
 
   @Test

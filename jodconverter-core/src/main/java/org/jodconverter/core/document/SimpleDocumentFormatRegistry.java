@@ -50,6 +50,18 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
     fmtsByMediaType.put(documentFormat.getMediaType().toLowerCase(Locale.ROOT), documentFormat);
   }
 
+  /**
+   * Add all the formats from a registry to this registry, overwriting the existing entry.
+   *
+   * @param registry The registry to add to this registry.
+   */
+  public void addRegistry(final @Nullable SimpleDocumentFormatRegistry registry) {
+
+    if (registry != null) {
+      registry.fmtsByMediaType.values().forEach(this::addFormat);
+    }
+  }
+
   @Override
   public @Nullable DocumentFormat getFormatByExtension(final @NonNull String extension) {
 

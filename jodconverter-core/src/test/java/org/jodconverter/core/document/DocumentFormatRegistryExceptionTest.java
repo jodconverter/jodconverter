@@ -23,7 +23,6 @@ package org.jodconverter.core.document;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.RETURNS_SMART_NULLS;
 import static org.mockito.Mockito.mockStatic;
 
 import java.io.IOException;
@@ -36,12 +35,30 @@ import org.mockito.MockedStatic;
 class DocumentFormatRegistryExceptionTest {
 
   @Test
+  void create_NoRegistryWhileLoading_ShouldThrowDocumentFormatRegistryException() {
+
+    DefaultDocumentFormatRegistryInstanceHolder.setInstance(null);
+    try (MockedStatic<JsonDocumentFormatRegistry> staticMock =
+        mockStatic(JsonDocumentFormatRegistry.class)) {
+      staticMock
+          .when(() -> JsonDocumentFormatRegistry.create(isA(InputStream.class)))
+          .thenReturn(null);
+      assertThatExceptionOfType(Throwable.class)
+          .isThrownBy(DefaultDocumentFormatRegistry::getInstance)
+          .satisfies(
+              e ->
+                  assertThat(e)
+                      .hasStackTraceContaining(DocumentFormatRegistryException.class.getName()));
+    }
+  }
+
+  @Test
   void create_IoExceptionThrownWhileLoading_ShouldThrowDocumentFormatRegistryException() {
 
     DefaultDocumentFormatRegistryInstanceHolder.setInstance(null);
-    try (MockedStatic<JsonDocumentFormatRegistry> registry =
-        mockStatic(JsonDocumentFormatRegistry.class, RETURNS_SMART_NULLS)) {
-      registry
+    try (MockedStatic<JsonDocumentFormatRegistry> staticMock =
+        mockStatic(JsonDocumentFormatRegistry.class)) {
+      staticMock
           .when(() -> JsonDocumentFormatRegistry.create(isA(InputStream.class)))
           .thenThrow(IOException.class);
       assertThatExceptionOfType(Throwable.class)
@@ -49,9 +66,7 @@ class DocumentFormatRegistryExceptionTest {
           .satisfies(
               e ->
                   assertThat(e)
-                      .isInstanceOfAny(
-                          ExceptionInInitializerError.class, DocumentFormatRegistryException.class)
-                      .hasRootCauseExactlyInstanceOf(IOException.class));
+                      .hasStackTraceContaining(DocumentFormatRegistryException.class.getName()));
     }
   }
 }
