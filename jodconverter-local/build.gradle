@@ -33,6 +33,6 @@ integrationTest {
         excludeTestsMatching "*.Sandbox*"
 
         // Macos build failure investigation
-        excludeTestsMatching "org.jodconverter.local.filter.*"
+        //excludeTestsMatching "org.jodconverter.local.filter.*"
     }
 }
