@@ -9,19 +9,9 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'pmd'
 apply plugin: 'checkstyle'
-apply plugin: 'nebula.facet'
 apply plugin: 'jacoco'
 apply plugin: 'com.diffplug.spotless'
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Integration tests SourceSet configuration
-
-facets {
-    integTest {
-        parentSourceSet = 'test'
-        //includeInCheckLifecycle = false
-    }
-}
+apply plugin: 'com.netflix.nebula.integtest'
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Dependencies
@@ -143,10 +133,10 @@ test {
     failFast = true
 
     // Uncomment when we want to see the logs while testing
-    testLogging.showStandardStreams = true
+    //testLogging.showStandardStreams = true
 }
 
-integTest {
+integrationTest {
     jvmArgs = defaultJvmArgs
 
     useJUnitPlatform {
@@ -161,7 +151,7 @@ integTest {
     systemProperty "org.jodconverter.local.manager.templateProfileDir", project.findProperty("org.jodconverter.local.manager.templateProfileDir")
 
     // Uncomment when we want to see the logs while testing
-    //testLogging.showStandardStreams = true
+    testLogging.showStandardStreams = true
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

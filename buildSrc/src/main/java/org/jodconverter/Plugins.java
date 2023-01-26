@@ -13,9 +13,9 @@ public class Plugins {
   public static final String coveralls =
       "gradle.plugin.org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.12.0";
   // public static final String checkstyleVersion = "10.3.1";
-  // Latest version -> https://plugins.gradle.org/plugin/nebula.integtest
-  public static final String nebulaProject =
-      "com.netflix.nebula:nebula-project-plugin:9.6.3";
+  // Latest version -> https://plugins.gradle.org/plugin/com.netflix.nebula.integtest
+  public static final String nebulaIntegTest =
+      "com.netflix.nebula:nebula-project-plugin:10.1.2";
   // Latest version -> https://plugins.gradle.org/plugin/io.codearte.nexus-staging
   public static final String nexusStaging =
       "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0";

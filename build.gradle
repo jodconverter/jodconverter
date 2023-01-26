@@ -13,7 +13,7 @@ buildscript {
 
     dependencies {
         classpath Plugins.coveralls
-        classpath Plugins.nebulaProject
+        classpath Plugins.nebulaIntegTest
         classpath Plugins.nexusStaging
         classpath Plugins.spotless
     }
@@ -197,7 +197,7 @@ task jacocoMerge(type: JacocoMerge) {
 // Code coverage report for all the sub (java) projects
 task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     description = 'Generates an aggregate report from all subprojects'
-    dependsOn releasedProjects.test, releasedProjects.integTest, jacocoMerge
+    dependsOn releasedProjects.test, releasedProjects.integrationTest, jacocoMerge
 
     additionalSourceDirs.setFrom(files(releasedProjects.sourceSets.main.allSource.srcDirs))
     sourceDirectories.setFrom(files(releasedProjects.sourceSets.main.allSource.srcDirs))
