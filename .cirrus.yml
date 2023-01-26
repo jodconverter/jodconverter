@@ -1,3 +1,76 @@
+# Linux
+linux_task:
+  install_script:
+    # The following uses latest LO version. Without this, the tests would
+    # be executed using an older LO version (4.2.8.2 as of 2020-01-14)
+    #- add-apt-repository -y ppa:libreoffice/libreoffice-5-4
+    #- add-apt-repository -y ppa:libreoffice/libreoffice-4-2
+    #- add-apt-repository -y ppa:libreoffice/ppa
+    - apt-get -q update
+    - apt-get -y install libreoffice
+  # See https://hub.docker.com/_/eclipse-temurin for openjdk versions that could be tested.
+  matrix:
+    - name: linux:temurinjdk8
+      env:
+        CI_NAME: "CirrusCI"
+        CI_BUILD_NUMBER: $CIRRUS_TASK_ID
+        CI_BUILD_URL: "https://cirrus-ci.com/task/$CIRRUS_TASK_ID"
+        CI_BRANCH: $CIRRUS_BRANCH
+        CI_PULL_REQUEST: $CIRRUS_PR
+        COVERALLS_REPO_TOKEN: ENCRYPTED[55c5e5bd0d9ed1c86ce1fd9928a909d245e703ec48e593bf49c2cfeb5711c711a6ac841c8b9d11296993389dc2cbb0b3]
+      container:
+        image: eclipse-temurin:8
+      build_script:
+        - ./gradlew build -x javadoc --stacktrace
+      coverage_script:
+        - ./gradlew jacocoRootReport coveralls --warning-mode all
+    - name: linux:temurinjdk11
+      container:
+        image: eclipse-temurin:11
+    - name: linux:temurinjdk17
+      container:
+        image: eclipse-temurin:17
+      build_script:
+        - ./gradlew build -x javadoc --stacktrace
+
+# Windows
+windows_task:
+  windows_container:
+    image: cirrusci/windowsservercore:2019
+  env:
+    JAVA_HOME: C:\ProgramFiles\EclipseAdoptium\
+  clone_script:
+    # Use custom cloning to set the autocrlf to true orelse spotless will fail on Windows.
+    CMD.exe /C ECHO ON &
+    IF NOT DEFINED CIRRUS_PR (
+    git config --global core.autocrlf true &
+    git clone --recursive --branch=%CIRRUS_BRANCH% https://x-access-token:%CIRRUS_REPO_CLONE_TOKEN%@github.com/%CIRRUS_REPO_FULL_NAME%.git %CIRRUS_WORKING_DIR% &
+    git reset --hard %CIRRUS_CHANGE_IN_REPO%
+    ) ELSE (
+    git config --global core.autocrlf true &
+    git clone --recursive https://x-access-token:%CIRRUS_REPO_CLONE_TOKEN%@github.com/%CIRRUS_REPO_FULL_NAME%.git %CIRRUS_WORKING_DIR% &
+    git fetch origin pull/%CIRRUS_PR%/head:pull/%CIRRUS_PR% &
+    git reset --hard %CIRRUS_CHANGE_IN_REPO%
+    )
+  matrix:
+    - name: windows:temurinjdk8
+      env:
+        # https://community.chocolatey.org/packages/Temurin8
+        TEMURINOPENJDK_PACKAGE: temurin8
+    - name: windows:temurinjdk11
+      env:
+        # https://community.chocolatey.org/packages/Temurin11
+        TEMURINOPENJDK_PACKAGE: temurin11
+    - name: windows:temurinjdk17
+      env:
+        # https://community.chocolatey.org/packages/Temurin17
+        TEMURINOPENJDK_PACKAGE: temurin17
+  install_script:
+    - choco install -y libreoffice
+    - choco install -y %TEMURINOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
+  build_script:
+    - gradlew.bat build -x javadoc --stacktrace
+
 # macOS
 macos_task:
   # See https://cirrus-ci.org/guide/macOS/#list-of-available-images for images that could be tested.
@@ -9,4 +82,22 @@ macos_task:
     - brew update
     - brew install --cask libreoffice
   build_script:
-    - ./gradlew :jodconverter-local:test --stacktrace
+    - ./gradlew build -x javadoc --stacktrace
+
+# FreeBSD
+freebsd_task:
+  freebsd_instance:
+    # See https://cirrus-ci.org/guide/FreeBSD/#list-of-available-image-families for images that could be tested.
+    image_family: freebsd-13-0
+  # See https://www.freebsd.org/java/ for all available openjdk that could be tested.
+  matrix:
+    - name: freebsd:openjdk8
+      install_java_script:
+        - pkg install -y openjdk8
+    - name: freebsd:openjdk11
+      install_java_script:
+        - pkg install -y openjdk11
+  install_lo_script:
+    - pkg install -y libreoffice
+  build_script:
+    - ./gradlew build -x javadoc --stacktrace
