@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.jodconverter.local.ResourceUtil.documentFile;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.File;
 import java.util.Map;
@@ -70,7 +70,7 @@ class DocumentConverterFunctionalITest {
       final @TempDir File testFolder, final DocumentConverter converter) {
 
     // TODO: This test does not work on macos (cirrus-ci). Find out why.
-    assumeTrue(OSUtils.IS_OS_MAC);
+    assumeFalse(OSUtils.IS_OS_MAC);
 
     // This test is done to ensure that the custom-document-formats.json is loaded properly.
     final DocumentFormat format = converter.getFormatRegistry().getFormatByExtension("html");
