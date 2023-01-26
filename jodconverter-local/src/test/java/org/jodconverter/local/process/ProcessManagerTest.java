@@ -207,16 +207,11 @@ class ProcessManagerTest {
 
       // In Mac OS X, sleep command does nt work with quantifiers
       // and takes argument num just as num seconds.
-      // final Process process = Runtime.getRuntime().exec("sleep 5s");
-      final Process process = execute("sleep 5");
+      final Process process = Runtime.getRuntime().exec("sleep 5s");
       final ProcessQuery query = new ProcessQuery("sleep", "5");
 
       final long pid = processManager.findPid(query);
       assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-      //      assertThat(process)
-      //          .extracting("pid")
-      //          .isInstanceOfSatisfying(
-      //              Number.class, number -> assertThat(number.longValue()).isEqualTo(pid));
 
       processManager.kill(process, pid);
       assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
@@ -227,49 +222,6 @@ class ProcessManagerTest {
 
       // Ignore empty lines
       return lines.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("\n"));
-    }
-
-    protected Process execute(final String cmd) throws IOException {
-
-      try {
-        final Process process = Runtime.getRuntime().exec(cmd);
-
-        final LinesPumpStreamHandler streamsHandler =
-            new LinesPumpStreamHandler(process.getInputStream(), process.getErrorStream());
-
-        streamsHandler.start();
-        try {
-          process.waitFor();
-          streamsHandler.stop();
-        } catch (InterruptedException ex) {
-
-          // Log the interruption
-          LOGGER.warn(
-              "The current thread was interrupted while waiting for command execution output.", ex);
-          // Restore the interrupted status
-          Thread.currentThread().interrupt();
-        }
-
-        final List<String> outLines = streamsHandler.getOutputPumper().getLines();
-
-        if (LOGGER.isTraceEnabled()) {
-          final String out = buildOutput(outLines);
-          final String err = buildOutput(streamsHandler.getErrorPumper().getLines());
-
-          if (!StringUtils.isBlank(out)) {
-            LOGGER.trace("Command Output: {}", out);
-          }
-
-          if (!StringUtils.isBlank(err)) {
-            LOGGER.trace("Command Error: {}", err);
-          }
-        }
-
-        return process;
-      } catch (IOException e) {
-        LOGGER.error("Error", e);
-        throw e;
-      }
     }
 
     @Test
