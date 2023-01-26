@@ -27,6 +27,8 @@ linux_task:
     - name: linux:temurinjdk11
       container:
         image: eclipse-temurin:11
+      build_script:
+        - ./gradlew build -x javadoc --stacktrace
     - name: linux:temurinjdk17
       container:
         image: eclipse-temurin:17
