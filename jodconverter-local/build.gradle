@@ -26,11 +26,11 @@ dependencies {
     testImplementation project(path: ":jodconverter-core", configuration: "tests")
 }
 
-integTest {
+integrationTest {
     filter {
-        excludeTest "org.jodconverter.local.StressITest"
-        excludeTest "org.jodconverter.local.PerformanceITest"
-        excludeTest "org.jodconverter.local.SandboxITest"
+        excludeTestsMatching "*.Stress*"
+        excludeTestsMatching "*.Performance*"
+        excludeTestsMatching "*.Sandbox*"
 
         // Macos build failure investigation
         excludeTestsMatching "org.jodconverter.local.filter.*"
