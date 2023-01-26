@@ -227,42 +227,47 @@ class ProcessManagerTest {
       return lines.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("\n"));
     }
 
-    protected Process execute(final String... cmdarray) throws IOException {
+    protected Process execute(final String cmd) throws IOException {
 
-      final Process process = Runtime.getRuntime().exec(cmdarray);
-
-      final LinesPumpStreamHandler streamsHandler =
-          new LinesPumpStreamHandler(process.getInputStream(), process.getErrorStream());
-
-      streamsHandler.start();
       try {
-        process.waitFor();
-        streamsHandler.stop();
-      } catch (InterruptedException ex) {
+        final Process process = Runtime.getRuntime().exec(cmd);
 
-        // Log the interruption
-        LOGGER.warn(
-            "The current thread was interrupted while waiting for command execution output.", ex);
-        // Restore the interrupted status
-        Thread.currentThread().interrupt();
-      }
+        final LinesPumpStreamHandler streamsHandler =
+            new LinesPumpStreamHandler(process.getInputStream(), process.getErrorStream());
 
-      final List<String> outLines = streamsHandler.getOutputPumper().getLines();
+        streamsHandler.start();
+        try {
+          process.waitFor();
+          streamsHandler.stop();
+        } catch (InterruptedException ex) {
 
-      if (LOGGER.isTraceEnabled()) {
-        final String out = buildOutput(outLines);
-        final String err = buildOutput(streamsHandler.getErrorPumper().getLines());
-
-        if (!StringUtils.isBlank(out)) {
-          LOGGER.trace("Command Output: {}", out);
+          // Log the interruption
+          LOGGER.warn(
+              "The current thread was interrupted while waiting for command execution output.", ex);
+          // Restore the interrupted status
+          Thread.currentThread().interrupt();
         }
 
-        if (!StringUtils.isBlank(err)) {
-          LOGGER.trace("Command Error: {}", err);
-        }
-      }
+        final List<String> outLines = streamsHandler.getOutputPumper().getLines();
 
-      return process;
+        if (LOGGER.isTraceEnabled()) {
+          final String out = buildOutput(outLines);
+          final String err = buildOutput(streamsHandler.getErrorPumper().getLines());
+
+          if (!StringUtils.isBlank(out)) {
+            LOGGER.trace("Command Output: {}", out);
+          }
+
+          if (!StringUtils.isBlank(err)) {
+            LOGGER.trace("Command Error: {}", err);
+          }
+        }
+
+        return process;
+      } catch (IOException e) {
+        LOGGER.error("Error", e);
+        throw e;
+      }
     }
 
     @Test

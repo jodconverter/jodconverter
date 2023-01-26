@@ -9,4 +9,4 @@ macos_task:
     - brew update
     - brew install --cask libreoffice
   build_script:
-    - ./gradlew build -x javadoc --stacktrace
+    - ./gradlew :jodconverter-local:test --stacktrace
