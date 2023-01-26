@@ -1,3 +1,4 @@
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.jodconverter.Deps
 
 ext.moduleName = 'JODConverter Local'
@@ -32,7 +33,13 @@ integrationTest {
         excludeTestsMatching "*.Performance*"
         excludeTestsMatching "*.Sandbox*"
 
-        // Macos build failure investigation
-        //excludeTestsMatching "org.jodconverter.local.filter.*"
+        // Exclude filter tests on macos. LibreOffice seems to crash frequently on macos. See:
+        // https://ask.libreoffice.org/t/libreoffice-crashing-on-change-window-focus-macos-ventura/83415
+        // https://ask.libreoffice.org/t/on-mac-libreoffice-keeps-crashing/74751/36?page=2
+        //
+        // Ignore those tests for now until LO is more stable on macos.
+        if (Os.isFamily(Os.FAMILY_MAC)) {
+            excludeTestsMatching "org.jodconverter.local.filter.*"
+        }
     }
 }

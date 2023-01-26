@@ -23,7 +23,6 @@ package org.jodconverter.local.filter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.jodconverter.local.ResourceUtil.documentFile;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.File;
 
@@ -33,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
@@ -88,9 +86,6 @@ class PageCounterFilterITest {
     @Test
     void whenPage2Selected_ShouldCount3Then1(
         final @TempDir File testFolder, final OfficeManager manager) {
-
-      // TODO: This test does not work on macos (cirrus-ci). Find out why.
-      assumeFalse(OSUtils.IS_OS_MAC);
 
       final File targetFile = new File(testFolder, DRAW_FILENAME + ".page2.pdf");
 
