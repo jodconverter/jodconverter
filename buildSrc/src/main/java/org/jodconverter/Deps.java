@@ -5,7 +5,7 @@ public class Deps {
   // Compile
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-  public static final String checkerQual = "org.checkerframework:checker-qual:3.28.0";
+  public static final String checkerQual = "org.checkerframework:checker-qual:3.29.0";
 
   // Main
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -18,7 +18,7 @@ public class Deps {
 
   // Spring Boot libraries
   // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-  public static final String springBootVersion = "2.7.7";
+  public static final String springBootVersion = "2.7.8";
   public static final String springBootDependencies =
       "org.springframework.boot:spring-boot-dependencies:" + springBootVersion;
   public static final String springBootStarter = "org.springframework.boot:spring-boot-starter";
@@ -43,6 +43,7 @@ public class Deps {
   public static final String springContext = "org.springframework:spring-context";
   public static final String springTest = "org.springframework:spring-test";
 
+  // Latest version -> https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api
   public static final String javaxAnnotations = "javax.annotation:javax.annotation-api:1.3.2";
 
   // HTTP Components libraries
