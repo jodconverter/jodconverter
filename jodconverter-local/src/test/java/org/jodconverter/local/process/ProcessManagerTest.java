@@ -31,25 +31,18 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.test.util.TestUtil;
 import org.jodconverter.core.util.OSUtils;
-import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
 
 /** Contains tests for the {@link ProcessManager} classes */
 class ProcessManagerTest {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProcessManagerTest.class);
 
   private static long waitForPidNotFound(
       final ProcessManager processManager, final ProcessQuery query) throws IOException {
@@ -215,13 +208,6 @@ class ProcessManagerTest {
 
       processManager.kill(process, pid);
       assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
-    }
-
-    private String buildOutput(final List<String> lines) {
-      Objects.requireNonNull(lines, "lines must not be null");
-
-      // Ignore empty lines
-      return lines.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("\n"));
     }
 
     @Test
