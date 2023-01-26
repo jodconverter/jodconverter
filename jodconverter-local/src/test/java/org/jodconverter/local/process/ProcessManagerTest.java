@@ -207,7 +207,7 @@ class ProcessManagerTest {
 
       // In Mac OS X, sleep command does nt work with quantifiers
       // and takes argument num just as num seconds.
-      final Process process = Runtime.getRuntime().exec("sleep 5s");
+      final Process process = Runtime.getRuntime().exec("sleep 5");
       final ProcessQuery query = new ProcessQuery("sleep", "5");
 
       final long pid = processManager.findPid(query);
