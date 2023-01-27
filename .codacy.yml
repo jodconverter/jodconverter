@@ -3,4 +3,3 @@ exclude_paths:
   - "**/test/**"
   - "**/integTest/**"
   - "buildSrc/**"
-  - "jodconverter-samples/**"

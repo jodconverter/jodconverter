@@ -39,9 +39,10 @@ ext {
     javaProjects = subprojects.findAll {
         new File(it.projectDir, 'src/main/java').directory
     }
-    releasedProjects = javaProjects.findAll {
-        !it.name.contains('jodconverter-sample')
-    }
+    //releasedProjects = javaProjects.findAll {
+    //    !it.name.contains('jodconverter-sample')
+    //}
+    releasedProjects = javaProjects
     librariesProjects = releasedProjects.findAll {
         !it.name.contains('jodconverter-cli')
     }
