@@ -1,5 +1,18 @@
 # Changelog
 
+## [v4.4.6](https://github.com/jodconverter/jodconverter/tree/v4.4.6) (2023-01-27)
+
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.5...v4.4.6)
+
+**Implemented enhancements:**
+
+- Added the ability to provide a custom-document-formats.json file [\#323](https://github.com/jodconverter/jodconverter/issues/323)
+- Jodconverter not working with spring-boot 3 [\#320](https://github.com/jodconverter/jodconverter/issues/320)
+
+**Merged pull requests:**
+
+- Spring boot 3.0 compatibility fixes \#320 [\#322](https://github.com/jodconverter/jodconverter/pull/322) ([EugenMayer](https://github.com/EugenMayer))
+
 ## [v4.4.5](https://github.com/jodconverter/jodconverter/tree/v4.4.5) (2022-12-21)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.4...v4.4.5)
@@ -7,14 +20,19 @@
 **Implemented enhancements:**
 
 - ExternalOfficeManager does not work [\#278](https://github.com/jodconverter/jodconverter/issues/278)
+- The address www.jodconverter.org redirects to malware [\#266](https://github.com/jodconverter/jodconverter/issues/266)
 
 **Fixed bugs:**
 
 - java.lang.NullPointerException: byExtension\(extension\) must not be null [\#319](https://github.com/jodconverter/jodconverter/issues/319)
-- Missing classes exception for the DefaultDocumentFormatRegistry [\#317](https://github.com/jodconverter/jodconverter/issues/317)
 - Failed to start bean 'documentationPluginsBootstrapper' when starting rest version [\#315](https://github.com/jodconverter/jodconverter/issues/315)
 - IndexOutOfBoundsException: Index: 1, Size: 1  when Run multiple tasks in concurrent. [\#310](https://github.com/jodconverter/jodconverter/issues/310)
 - Got error when using org.jodconverter:jodconverter-local-lo [\#309](https://github.com/jodconverter/jodconverter/issues/309)
+
+**Closed issues:**
+
+- With 4.4.3+ i get an exception missing classes for the DefaultDocumentFormatRegistry [\#317](https://github.com/jodconverter/jodconverter/issues/317)
+- how can I use jodconverter-remote connect openOffice? old version 2.2.1 can do it  \#260 [\#312](https://github.com/jodconverter/jodconverter/issues/312)
 
 **Merged pull requests:**
 
@@ -71,6 +89,7 @@
 - Build spring-boot configuration metadata into jar \#295 [\#296](https://github.com/jodconverter/jodconverter/pull/296) ([shysteph](https://github.com/shysteph))
 - add format definition for PowerPoint XML templates \(\#259\) [\#270](https://github.com/jodconverter/jodconverter/pull/270) ([stellingsimon](https://github.com/stellingsimon))
 - ✨new document format xltx [\#257](https://github.com/jodconverter/jodconverter/pull/257) ([jgoldhammer](https://github.com/jgoldhammer))
+- fixes \#151 [\#152](https://github.com/jodconverter/jodconverter/pull/152) ([anghelutar](https://github.com/anghelutar))
 
 ## [v4.4.2](https://github.com/jodconverter/jodconverter/tree/v4.4.2) (2021-02-10)
 
@@ -200,7 +219,6 @@
 **Merged pull requests:**
 
 - If parent dir is not exist,Program will throw exception while it crea… [\#181](https://github.com/jodconverter/jodconverter/pull/181) ([qiangtoudianyan](https://github.com/qiangtoudianyan))
-- fixes \#151 [\#152](https://github.com/jodconverter/jodconverter/pull/152) ([anghelutar](https://github.com/anghelutar))
 - Get Java11 compatible \#127 [\#128](https://github.com/jodconverter/jodconverter/pull/128) ([EugenMayer](https://github.com/EugenMayer))
 
 ## [v4.2.2](https://github.com/jodconverter/jodconverter/tree/v4.2.2) (2018-11-30)
@@ -255,6 +273,10 @@
 - javadocs? [\#69](https://github.com/jodconverter/jodconverter/issues/69)
 - can't build successfully on OS X [\#68](https://github.com/jodconverter/jodconverter/issues/68)
 - Use TableOfContentUpdaterFilter in Spring Boot [\#55](https://github.com/jodconverter/jodconverter/issues/55)
+
+**Merged pull requests:**
+
+- Using remote LibreOffice Online server on demand [\#20](https://github.com/jodconverter/jodconverter/pull/20) ([Wastack](https://github.com/Wastack))
 
 ## [v4.2.0](https://github.com/jodconverter/jodconverter/tree/v4.2.0) (2018-03-01)
 
@@ -332,7 +354,6 @@
 **Merged pull requests:**
 
 - Add open document templates to document formats. [\#25](https://github.com/jodconverter/jodconverter/pull/25) ([benelot](https://github.com/benelot))
-- Using remote LibreOffice Online server on demand [\#20](https://github.com/jodconverter/jodconverter/pull/20) ([Wastack](https://github.com/Wastack))
 - Add a Gitter chat badge to README.md [\#19](https://github.com/jodconverter/jodconverter/pull/19) ([gitter-badger](https://github.com/gitter-badger))
 - Update publish-projects.gradle [\#13](https://github.com/jodconverter/jodconverter/pull/13) ([michelole](https://github.com/michelole))
 - Update build.gradle [\#12](https://github.com/jodconverter/jodconverter/pull/12) ([michelole](https://github.com/michelole))
