@@ -12,6 +12,7 @@
 ### What you want to know...
 
 - **Documentation**: The JODConverter documentation (work in progress) can be found [here](https://github.com/jodconverter/jodconverter/wiki).
+- **Examples**: A dedicated repository with sample projects can be found [here](https://github.com/jodconverter/jodconverter-samples).
 - **Dependencies**:
   * [jodconverter-local](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local) module dependencies.
   * [jodconverter-remote](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-remote) module dependencies.
