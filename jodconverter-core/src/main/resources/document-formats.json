@@ -86,7 +86,8 @@
   {
     "name": "HTML",
     "extensions": [
-      "html"
+      "html",
+      "htm"
     ],
     "mediaType": "text/html",
     "inputFamily": "WEB",
