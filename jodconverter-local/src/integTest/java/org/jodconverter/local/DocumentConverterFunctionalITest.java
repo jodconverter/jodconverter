@@ -66,6 +66,16 @@ class DocumentConverterFunctionalITest {
   }
 
   @Test
+  void testHtmConversion(final @TempDir File testFolder, final DocumentConverter converter) {
+
+    final File source = documentFile("test.htm");
+    final File target = new File(testFolder, "test.pdf");
+
+    // Convert the file to PDF
+    converter.convert(source).to(target);
+  }
+
+  @Test
   void testCustomDocumentFormats(
       final @TempDir File testFolder, final DocumentConverter converter) {
 
