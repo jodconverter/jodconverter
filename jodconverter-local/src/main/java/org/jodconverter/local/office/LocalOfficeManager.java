@@ -206,7 +206,7 @@ public final class LocalOfficeManager
       // Build the office URLs
       final LocalOfficeManager manager =
           new LocalOfficeManager(
-              LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames),
+              LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames, null),
               officeHome,
               workingDir,
               processManager,
