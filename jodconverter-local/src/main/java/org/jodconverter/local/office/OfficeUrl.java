@@ -97,6 +97,20 @@ class OfficeUrl {
   }
 
   /**
+   * Creates an UnoUrl for the specified websocket url.
+   *
+   * @param url The url.
+   * @return The created UnoUrl.
+   */
+  /* default */ static UnoUrl websocket(final String url) {
+    try {
+      return UnoUrl.parseUnoUrl("uno:websocket,url=" + url + ";urp;StarOffice.ServiceManager");
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(ex);
+    }
+  }
+
+  /**
    * Creates an OfficeUrl for the specified pipe.
    *
    * @param pipeName The pipe name.
@@ -122,6 +136,24 @@ class OfficeUrl {
    */
   public OfficeUrl(final @Nullable String host, final int port) {
     unoUrl = socket(host, port);
+  }
+
+  /**
+   * Creates an OfficeUrl for the specified websocket url.
+   *
+   * @param url The websocket url.
+   */
+  /* default */ static OfficeUrl createForWebsocket(final String url) {
+    return new OfficeUrl(websocket(url));
+  }
+
+  /**
+   * Creates an OfficeUrl from a given UnoUrl.
+   *
+   * @param unoUrl The UnoUrl
+   */
+  public OfficeUrl(final @NonNull UnoUrl unoUrl) {
+    this.unoUrl = unoUrl;
   }
 
   /**

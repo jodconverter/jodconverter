@@ -190,7 +190,7 @@ public final class LocalOfficeUtils {
   public static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames) {
-    return buildOfficeUrls(null, portNumbers, pipeNames);
+    return buildOfficeUrls(null, portNumbers, pipeNames, null);
   }
 
   /**
@@ -199,17 +199,20 @@ public final class LocalOfficeUtils {
    * @param host The host to which open ports belong, may be null.
    * @param portNumbers The port numbers from which office URLs will be created, may be null.
    * @param pipeNames The pipe names from which office URLs will be created, may be null.
+   * @param websocketUrls The websocket urls from which office URLs will be created, may be null.
    * @return an array of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
   public static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable String host,
       final @Nullable List<@NonNull Integer> portNumbers,
-      final @Nullable List<@NonNull String> pipeNames) {
+      final @Nullable List<@NonNull String> pipeNames,
+      final @Nullable List<@NonNull String> websocketUrls) {
 
-    // Assign default value if no pipe names or port numbers have been specified.
+    // Assign default value if no pipe names, port numbers or websocketUrls have been specified.
     if ((portNumbers == null || portNumbers.isEmpty())
-        && (pipeNames == null || pipeNames.isEmpty())) {
+        && (pipeNames == null || pipeNames.isEmpty())
+        && (websocketUrls == null || websocketUrls.isEmpty())) {
       return Collections.singletonList(new OfficeUrl(host, DEFAULT_PORT));
     }
 
@@ -220,6 +223,9 @@ public final class LocalOfficeUtils {
     }
     if (pipeNames != null) {
       pipeNames.stream().map(OfficeUrl::new).forEach(officeUrls::add);
+    }
+    if (websocketUrls != null) {
+      websocketUrls.stream().map(OfficeUrl::createForWebsocket).forEach(officeUrls::add);
     }
     return officeUrls;
   }

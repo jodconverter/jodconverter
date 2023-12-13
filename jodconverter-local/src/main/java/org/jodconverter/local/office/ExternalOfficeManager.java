@@ -141,6 +141,7 @@ public final class ExternalOfficeManager
     private List<String> pipeNames;
     private String hostName = DEFAULT_HOSTNAME;
     private List<Integer> portNumbers;
+    private List<String> websocketUrls;
     private Boolean connectOnStart = DEFAULT_CONNECT_ON_START;
     private long connectTimeout = DEFAULT_CONNECT_TIMEOUT;
     private Long connectRetryInterval = DEFAULT_CONNECT_RETRY_INTERVAL;
@@ -161,7 +162,7 @@ public final class ExternalOfficeManager
       // Build the manager
       final ExternalOfficeManager manager =
           new ExternalOfficeManager(
-              LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames),
+              LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames, websocketUrls),
               workingDir,
               connectOnStart,
               connectTimeout,
@@ -213,6 +214,21 @@ public final class ExternalOfficeManager
 
       if (portNumbers != null && portNumbers.length != 0) {
         this.portNumbers = Arrays.stream(portNumbers).boxed().collect(Collectors.toList());
+      }
+      return this;
+    }
+
+    /**
+     * Specifies the websocket urls that will be used to communicate with office. An instance of
+     * office will be launched for each websocket url.
+     *
+     * @param websocketUrls The websocket urls to use.
+     * @return This builder instance.
+     */
+    public @NonNull Builder websocketUrls(final @Nullable String... websocketUrls) {
+
+      if (websocketUrls != null && websocketUrls.length != 0) {
+        this.websocketUrls = Arrays.asList(websocketUrls);
       }
       return this;
     }
