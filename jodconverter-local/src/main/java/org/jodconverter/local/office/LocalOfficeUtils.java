@@ -64,8 +64,9 @@ public final class LocalOfficeUtils {
 
   /**
    * This class is required in order to create a default office home only on demand, as explained by
-   * the Initialization-on-demand holder idiom:
-   * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+   * the Initialization-on-demand holder idiom: <a
+   * href="https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom">Initialization-on-demand
+   * holder idiom</a>
    */
   private static class DefaultOfficeHomeHolder {
 
@@ -184,10 +185,10 @@ public final class LocalOfficeUtils {
    *
    * @param portNumbers The port numbers from which office URLs will be created, may be null.
    * @param pipeNames The pipe names from which office URLs will be created, may be null.
-   * @return an array of office URL. If both arguments are null, then an array is returned with a
+   * @return an list of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  public static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
+  static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames) {
     return buildOfficeUrls(null, portNumbers, pipeNames, null);
@@ -200,10 +201,10 @@ public final class LocalOfficeUtils {
    * @param portNumbers The port numbers from which office URLs will be created, may be null.
    * @param pipeNames The pipe names from which office URLs will be created, may be null.
    * @param websocketUrls The websocket urls from which office URLs will be created, may be null.
-   * @return an array of office URL. If both arguments are null, then an array is returned with a
+   * @return a list of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  public static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
+  static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable String host,
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames,

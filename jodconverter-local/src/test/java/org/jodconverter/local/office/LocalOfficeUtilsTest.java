@@ -193,6 +193,27 @@ class LocalOfficeUtilsTest {
                   assertThat(urls.get(2).getConnectString())
                       .isEqualTo(new OfficeUrl("oo3").getConnectString()));
     }
+
+    @Test
+    void withWebSocketUrlsOnly_ShouldReturnOfficeUrlsWithGivenWebSocketUrl() {
+
+      final List<String> webSocketUrls =
+          Stream.of("test1", "test2", "test3").collect(Collectors.toList());
+      assertThat(LocalOfficeUtils.buildOfficeUrls(null, null, null, webSocketUrls))
+          .hasSize(3)
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(0).getConnectString())
+                      .isEqualTo(OfficeUrl.createForWebsocket("test1").getConnectString()))
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(1).getConnectString())
+                      .isEqualTo(OfficeUrl.createForWebsocket("test2").getConnectString()))
+          .satisfies(
+              urls ->
+                  assertThat(urls.get(2).getConnectString())
+                      .isEqualTo(OfficeUrl.createForWebsocket("test3").getConnectString()));
+    }
   }
 
   @Nested

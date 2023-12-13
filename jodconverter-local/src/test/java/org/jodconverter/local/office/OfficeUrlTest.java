@@ -50,4 +50,16 @@ class OfficeUrlTest {
           .isEqualTo(unoUrl.getConnectionAndParametersAsString());
     }
   }
+
+  @Test
+  void withWebSocket_ShouldReturnSameAsOriginalUnoUrl() {
+
+    final OfficeUrl officeUrl = OfficeUrl.createForWebsocket("test");
+    final UnoUrl unoUrl = OfficeUrl.websocket("test");
+    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+      softly
+          .assertThat(officeUrl.getConnectString())
+          .isEqualTo(unoUrl.getConnectionAndParametersAsString());
+    }
+  }
 }

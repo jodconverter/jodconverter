@@ -127,6 +127,8 @@ class ExternalOfficeManagerTest {
               .hostName(null)
               .portNumbers((int[]) null)
               .portNumbers(new int[] {})
+              .websocketUrls((String[]) null)
+              .websocketUrls(new String[] {})
               .connectOnStart(null)
               .connectTimeout(null)
               .connectRetryInterval(null)
@@ -182,6 +184,7 @@ class ExternalOfficeManagerTest {
               .pipeNames("test")
               .hostName("localhost")
               .portNumbers(2003)
+              .websocketUrls("test")
               .connectOnStart(false)
               .connectTimeout(5_000L)
               .connectRetryInterval(1_000L)
@@ -199,7 +202,7 @@ class ExternalOfficeManagerTest {
       assertThat(manager)
           .extracting("entries")
           .asList()
-          .hasSize(2)
+          .hasSize(3)
           .allSatisfy(
               o ->
                   assertThat(o)
@@ -223,7 +226,13 @@ class ExternalOfficeManagerTest {
                   assertThat(o.get(1))
                       .hasFieldOrPropertyWithValue(
                           "connectionManager.connection.officeUrl.connectString",
-                          new OfficeUrl("test").getConnectString()));
+                          new OfficeUrl("test").getConnectString()))
+          .satisfies(
+              o ->
+                  assertThat(o.get(2))
+                      .hasFieldOrPropertyWithValue(
+                          "connectionManager.connection.officeUrl.connectString",
+                          OfficeUrl.createForWebsocket("test").getConnectString()));
     }
 
     @Test

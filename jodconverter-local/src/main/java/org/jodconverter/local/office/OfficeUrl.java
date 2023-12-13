@@ -111,6 +111,15 @@ class OfficeUrl {
   }
 
   /**
+   * Creates an OfficeUrl for the specified websocket url.
+   *
+   * @param url The websocket url.
+   */
+  /* default */ static OfficeUrl createForWebsocket(final String url) {
+    return new OfficeUrl(websocket(url));
+  }
+
+  /**
    * Creates an OfficeUrl for the specified pipe.
    *
    * @param pipeName The pipe name.
@@ -136,15 +145,6 @@ class OfficeUrl {
    */
   public OfficeUrl(final @Nullable String host, final int port) {
     unoUrl = socket(host, port);
-  }
-
-  /**
-   * Creates an OfficeUrl for the specified websocket url.
-   *
-   * @param url The websocket url.
-   */
-  /* default */ static OfficeUrl createForWebsocket(final String url) {
-    return new OfficeUrl(websocket(url));
   }
 
   /**

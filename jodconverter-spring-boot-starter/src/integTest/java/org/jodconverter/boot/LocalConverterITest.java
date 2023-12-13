@@ -148,9 +148,9 @@ class LocalConverterITest {
     assertThat(loadProperties).isNotNull();
     assertThat(loadProperties).containsEntry("FilterOptions", "utf16");
 
-    final Map<String, Object> StoreProperties = format.getStoreProperties(DocumentFamily.TEXT);
-    assertThat(StoreProperties).isNotNull();
-    assertThat(StoreProperties).containsEntry("FilterOptions", "utf16");
+    final Map<String, Object> storeProperties = format.getStoreProperties(DocumentFamily.TEXT);
+    assertThat(storeProperties).isNotNull();
+    assertThat(storeProperties).containsEntry("FilterOptions", "utf16");
   }
 
   /** Test custom registry. */
