@@ -60,6 +60,9 @@ public final class LocalOfficeManager
   // the same URL already exists.
   public static final ExistingProcessAction DEFAULT_EXISTING_PROCESS_ACTION =
       ExistingProcessAction.KILL;
+  // The default behavior when we want to start an office process and a process with
+  // the same URL already exists (string value used in the spring-boot project).
+  public static final String DEFAULT_EXISTING_PROCESS_ACTION_STRING = "kill";
   // The default "fail fast" behavior when an office process is started.
   public static final boolean DEFAULT_START_FAIL_FAST = false;
   // The default behavior when an office process is started regarding OpenGL usage.
@@ -505,6 +508,23 @@ public final class LocalOfficeManager
         this.existingProcessAction = existingProcessAction;
       }
       return this;
+    }
+
+    /**
+     * Specifies the action that must be taken when starting a new office process and there already
+     * is an existing running process for the same connection string.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: ExistingProcessAction.KILL
+     *
+     * @param existingProcessAction The existing process action.
+     * @return This builder instance.
+     */
+    public @NonNull Builder existingProcessAction(final @Nullable String existingProcessAction) {
+
+      return StringUtils.isBlank(existingProcessAction)
+          ? this
+          : existingProcessAction(
+              ExistingProcessAction.valueOf(existingProcessAction.toUpperCase()));
     }
 
     /**

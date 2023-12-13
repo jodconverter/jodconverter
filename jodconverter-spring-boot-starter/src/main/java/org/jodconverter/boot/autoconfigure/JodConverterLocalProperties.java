@@ -30,9 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.jodconverter.core.document.DocumentFormatProperties;
 import org.jodconverter.core.office.AbstractOfficeManagerPool;
 import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
-import org.jodconverter.local.task.LoadDocumentMode;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter.local")
@@ -99,8 +97,7 @@ public class JodConverterLocalProperties {
    * Specifies the action the must be taken when starting a new office process and there already is
    * an existing running process for the same connection string.
    */
-  private ExistingProcessAction existingProcessAction =
-      LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
+  private String existingProcessAction = LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION_STRING;
 
   /**
    * Controls whether the manager will "fail fast" if an office process cannot be started or the
@@ -166,7 +163,7 @@ public class JodConverterLocalProperties {
    * assuming the office process has access to the file on disk or not. If not, the conversion
    * process will use stream adapters.
    */
-  private LoadDocumentMode loadDocumentMode = LocalConverter.DEFAULT_LOAD_DOCUMENT_MODE;
+  private String loadDocumentMode = LocalConverter.DEFAULT_LOAD_DOCUMENT_MODE_STRING;
 
   public boolean isEnabled() {
     return enabled;
@@ -248,12 +245,11 @@ public class JodConverterLocalProperties {
     this.afterStartProcessDelay = afterStartProcessDelay;
   }
 
-  public @Nullable ExistingProcessAction getExistingProcessAction() {
+  public @Nullable String getExistingProcessAction() {
     return existingProcessAction;
   }
 
-  public void setExistingProcessAction(
-      final @Nullable ExistingProcessAction existingProcessAction) {
+  public void setExistingProcessAction(final @Nullable String existingProcessAction) {
     this.existingProcessAction = existingProcessAction;
   }
 
@@ -338,11 +334,11 @@ public class JodConverterLocalProperties {
     this.useUnsafeQuietUpdate = useUnsafeQuietUpdate;
   }
 
-  public @Nullable LoadDocumentMode getLoadDocumentMode() {
+  public @Nullable String getLoadDocumentMode() {
     return loadDocumentMode;
   }
 
-  public void setLoadDocumentMode(final @Nullable LoadDocumentMode loadDocumentMode) {
+  public void setLoadDocumentMode(final @Nullable String loadDocumentMode) {
     this.loadDocumentMode = loadDocumentMode;
   }
 }

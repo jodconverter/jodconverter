@@ -32,9 +32,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.jodconverter.boot.autoconfigure.JodConverterLocalProperties;
 import org.jodconverter.boot.autoconfigure.JodConverterRemoteProperties;
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
-import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
 /**
@@ -98,7 +96,7 @@ class AutoConfigurationPropertiesITest {
             190_000L,
             1_000L,
             3_000L,
-            ExistingProcessAction.FAIL,
+            "fail",
             true,
             true,
             true,
@@ -108,7 +106,7 @@ class AutoConfigurationPropertiesITest {
             null,
             true,
             true,
-            LoadDocumentMode.REMOTE);
+            "remote");
   }
 
   @Test

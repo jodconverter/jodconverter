@@ -457,7 +457,7 @@ class LocalConverterTest {
               () ->
                   LocalConverter.builder()
                       .officeManager(officeManager)
-                      .loadDocumentMode(LoadDocumentMode.REMOTE)
+                      .loadDocumentMode("remote")
                       .build()
                       .convert(SOURCE_FILE)
                       .to(targetFile)
@@ -482,7 +482,7 @@ class LocalConverterTest {
               () ->
                   LocalConverter.builder()
                       .officeManager(officeManager)
-                      .loadDocumentMode(LoadDocumentMode.AUTO)
+                      .loadDocumentMode("auto")
                       .build()
                       .convert(SOURCE_FILE)
                       .to(targetFile)

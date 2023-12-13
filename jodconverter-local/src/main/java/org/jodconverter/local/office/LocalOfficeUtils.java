@@ -204,7 +204,7 @@ public final class LocalOfficeUtils {
    * @return a list of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
+  /* default */ static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable String host,
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames,

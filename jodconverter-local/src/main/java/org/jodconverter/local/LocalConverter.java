@@ -39,6 +39,7 @@ import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
@@ -68,6 +69,12 @@ public final class LocalConverter extends AbstractConverter {
 
   /** The default behavior regarding the loading of a document. */
   public static final LoadDocumentMode DEFAULT_LOAD_DOCUMENT_MODE = LoadDocumentMode.AUTO;
+
+  /**
+   * The default behavior regarding the loading of a document. (string value used in the spring-boot
+   * project)
+   */
+  public static final String DEFAULT_LOAD_DOCUMENT_MODE_STRING = "auto";
 
   /**
    * The properties which are applied by default when loading a document if not manually overridden.
@@ -302,6 +309,23 @@ public final class LocalConverter extends AbstractConverter {
         this.loadDocumentMode = loadDocumentMode;
       }
       return this;
+    }
+
+    /**
+     * Specifies how a document is loaded/stored when converting a document, whether it is loaded
+     * assuming the office process has access to the file on disk or not. If not, the conversion
+     * process will use stream adapters
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: LoadDocumentMode.AUTO
+     *
+     * @param loadDocumentMode The load document mode.
+     * @return This builder instance.
+     */
+    public @NonNull Builder loadDocumentMode(final @Nullable String loadDocumentMode) {
+
+      return StringUtils.isBlank(loadDocumentMode)
+          ? this
+          : loadDocumentMode(LoadDocumentMode.valueOf(loadDocumentMode.toUpperCase()));
     }
 
     /**
