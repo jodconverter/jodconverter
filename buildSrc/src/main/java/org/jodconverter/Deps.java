@@ -5,20 +5,21 @@ public class Deps {
   // Compile
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-  public static final String checkerQual = "org.checkerframework:checker-qual:3.29.0";
+  public static final String checkerQual = "org.checkerframework:checker-qual:3.41.0";
 
   // Main
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // Apache Commons Libraries
   // Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
-  public static final String commonsCli = "commons-cli:commons-cli:1.5.0";
+  public static final String commonsCli = "commons-cli:commons-cli:1.6.0";
   // Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
-  public static final String commonsIo = "commons-io:commons-io:2.11.0";
+  public static final String commonsIo = "commons-io:commons-io:2.15.1";
 
   // Spring Boot libraries
+  // Spring boot 3+ requires java 17
   // Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-  public static final String springBootVersion = "2.7.8";
+  public static final String springBootVersion = "2.7.18";
   public static final String springBootDependencies =
       "org.springframework.boot:spring-boot-dependencies:" + springBootVersion;
   public static final String springBootStarter = "org.springframework.boot:spring-boot-starter";
@@ -28,7 +29,7 @@ public class Deps {
       "org.springframework.boot:spring-boot-starter-test";
 
   // Latest version -> https://mvnrepository.com/artifact/org.libreoffice
-  public static final String loVersion = "7.4.1";
+  public static final String loVersion = "7.6.4";
   public static final String libreoffice = "org.libreoffice:libreoffice:" + loVersion;
 
   // Latest version -> https://mvnrepository.com/artifact/org.openoffice
@@ -70,5 +71,6 @@ public class Deps {
   // We now have to use the wiremock standalone version since
   // jetty dependency is provided by spring boot
   // Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
+  // 3+ required minimum java 11
   public static final String wiremock = "com.github.tomakehurst:wiremock-standalone:2.27.2";
 }

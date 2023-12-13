@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 import org.jodconverter.core.DocumentConverter;
@@ -203,7 +204,13 @@ public final class CliConverter {
       throws OfficeException {
 
     final String wildcard = FilenameUtils.getBaseName(filename);
-    final File[] files = inputDir.listFiles((FileFilter) new WildcardFileFilter(wildcard));
+    final File[] files =
+        inputDir.listFiles(
+            (FileFilter)
+                WildcardFileFilter.builder()
+                    .setWildcards(wildcard)
+                    .setIoCase(IOCase.INSENSITIVE)
+                    .get());
     if (files != null) {
       for (final File file : files) {
 

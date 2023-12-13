@@ -106,7 +106,7 @@ class AutoConfigurationPropertiesITest {
             null,
             true,
             true,
-            "remote");
+            "Remote");
   }
 
   @Test
