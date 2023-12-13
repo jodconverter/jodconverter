@@ -141,7 +141,7 @@ idea {
 
 def librariesSources = librariesProjects.sourceSets.main
 
-task javadocAll(type: Javadoc) {
+tasks.register('javadocAll', Javadoc) {
     description 'Aggregates Javadoc API documentation of all libraries.'
     group 'Documentation'
     dependsOn librariesProjects.build
@@ -182,7 +182,7 @@ task javadocAll(type: Javadoc) {
 // Creates an aggregated JaCoCo executionData for all
 // the tests (unit tests and integration tests) found
 // in sub Java projects 
-task jacocoMerge(type: JacocoMerge) {
+tasks.register('jacocoMerge', JacocoMerge) {
     description = 'Aggregates JaCoCo test and integration test coverage reports of all projects.'
     group = "Reporting"
 
@@ -196,7 +196,7 @@ task jacocoMerge(type: JacocoMerge) {
 }
 
 // Code coverage report for all the sub (java) projects
-task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+tasks.register('jacocoRootReport', JacocoReport) {
     description = 'Generates an aggregate report from all subprojects'
     dependsOn releasedProjects.test, releasedProjects.integrationTest, jacocoMerge
 
@@ -226,7 +226,7 @@ coveralls {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Utilities
-task printConfigurations {
+tasks.register('printConfigurations') {
     group "Help"
     doLast {
 

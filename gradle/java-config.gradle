@@ -52,7 +52,7 @@ if (JavaVersion.current() < baselineJavaVersion) {
     throw new GradleException("This build must be run with at least Java 8.")
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = sourceEncoding
     options.compilerArgs << "-Xlint:-options"
     options.compilerArgs << "-Xlint:unchecked"
@@ -95,7 +95,7 @@ checkstyle {
 // Disable checkstyle for test code
 [checkstyleTest, checkstyleIntegTest]*.enabled = false
 
-tasks.withType(Checkstyle) {
+tasks.withType(Checkstyle).configureEach {
     reports {
         xml.required.set(false)
         html.required.set(true)
@@ -174,7 +174,7 @@ check.dependsOn jacocoTestReport
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Licensing
 
-task copyLicense(type: Copy) {
+tasks.register('copyLicense', Copy) {
     from file("$rootProject.projectDir/LICENSE")
     into file("$projectDir/src/main/resources/META-INF/")
 }
@@ -187,14 +187,16 @@ processResources {
 // Artifacts
 
 // sources jar
-task sourcesJar(type: Jar, dependsOn: classes) {
+tasks.register('sourcesJar', Jar) {
+    dependsOn classes
     description = "Builds a source jar artifact suitable for deployment."
     archiveClassifier.set("sources")
     from sourceSets.main.allSource
 }
 
 // javadoc jar
-task javadocJar(type: Jar, dependsOn: javadoc) {
+tasks.register('javadocJar', Jar) {
+    dependsOn javadoc
     description = "Builds a javadoc jar artifact suitable for deployment."
     archiveClassifier.set("javadoc")
     from javadoc.destinationDir
