@@ -1,13 +1,30 @@
 # Changelog
 
+## [Unreleased](https://github.com/jodconverter/jodconverter/tree/HEAD)
+
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.6...HEAD)
+
+**Fixed bugs:**
+
+- Using SpringBoot autoconfiguration with a remote setup fails with ClassNotFoundException [\#331](https://github.com/jodconverter/jodconverter/issues/331)
+
+**Merged pull requests:**
+
+- add support for websocket urps available \>= LibreOffice 24.2 [\#355](https://github.com/jodconverter/jodconverter/pull/355) ([caolanm](https://github.com/caolanm))
+- Add support for additional HTML extension alias [\#338](https://github.com/jodconverter/jodconverter/pull/338) ([LiamMacP](https://github.com/LiamMacP))
+
 ## [v4.4.6](https://github.com/jodconverter/jodconverter/tree/v4.4.6) (2023-01-27)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.5...v4.4.6)
 
 **Implemented enhancements:**
 
-- Added the ability to provide a custom-document-formats.json file [\#323](https://github.com/jodconverter/jodconverter/issues/323)
+- Add publish mode to presentation-\>html conversion in document-formats.json [\#323](https://github.com/jodconverter/jodconverter/issues/323)
 - Jodconverter not working with spring-boot 3 [\#320](https://github.com/jodconverter/jodconverter/issues/320)
+
+**Closed issues:**
+
+- Why does the process restart after "maximum tasks"? [\#321](https://github.com/jodconverter/jodconverter/issues/321)
 
 **Merged pull requests:**
 
@@ -25,7 +42,7 @@
 **Fixed bugs:**
 
 - java.lang.NullPointerException: byExtension\(extension\) must not be null [\#319](https://github.com/jodconverter/jodconverter/issues/319)
-- Failed to start bean 'documentationPluginsBootstrapper' when starting rest version [\#315](https://github.com/jodconverter/jodconverter/issues/315)
+-  Failed to start bean 'documentationPluginsBootstrapper' when starting rest version [\#315](https://github.com/jodconverter/jodconverter/issues/315)
 - IndexOutOfBoundsException: Index: 1, Size: 1  when Run multiple tasks in concurrent. [\#310](https://github.com/jodconverter/jodconverter/issues/310)
 - Got error when using org.jodconverter:jodconverter-local-lo [\#309](https://github.com/jodconverter/jodconverter/issues/309)
 
@@ -89,7 +106,6 @@
 - Build spring-boot configuration metadata into jar \#295 [\#296](https://github.com/jodconverter/jodconverter/pull/296) ([shysteph](https://github.com/shysteph))
 - add format definition for PowerPoint XML templates \(\#259\) [\#270](https://github.com/jodconverter/jodconverter/pull/270) ([stellingsimon](https://github.com/stellingsimon))
 - ✨new document format xltx [\#257](https://github.com/jodconverter/jodconverter/pull/257) ([jgoldhammer](https://github.com/jgoldhammer))
-- fixes \#151 [\#152](https://github.com/jodconverter/jodconverter/pull/152) ([anghelutar](https://github.com/anghelutar))
 
 ## [v4.4.2](https://github.com/jodconverter/jodconverter/tree/v4.4.2) (2021-02-10)
 
@@ -153,6 +169,7 @@
 
 - Make 127.0.0.1 in socket connection configurable [\#242](https://github.com/jodconverter/jodconverter/pull/242) ([nikowitt](https://github.com/nikowitt))
 - bugfix ps args truncated at 125 chars [\#238](https://github.com/jodconverter/jodconverter/pull/238) ([chunlinyao](https://github.com/chunlinyao))
+- If parent dir is not exist,Program will throw exception while it crea… [\#181](https://github.com/jodconverter/jodconverter/pull/181) ([qiangtoudianyan](https://github.com/qiangtoudianyan))
 
 ## [v4.3.0](https://github.com/jodconverter/jodconverter/tree/v4.3.0) (2020-03-05)
 
@@ -218,7 +235,7 @@
 
 **Merged pull requests:**
 
-- If parent dir is not exist,Program will throw exception while it crea… [\#181](https://github.com/jodconverter/jodconverter/pull/181) ([qiangtoudianyan](https://github.com/qiangtoudianyan))
+- fixes \#151 [\#152](https://github.com/jodconverter/jodconverter/pull/152) ([anghelutar](https://github.com/anghelutar))
 - Get Java11 compatible \#127 [\#128](https://github.com/jodconverter/jodconverter/pull/128) ([EugenMayer](https://github.com/EugenMayer))
 
 ## [v4.2.2](https://github.com/jodconverter/jodconverter/tree/v4.2.2) (2018-11-30)
@@ -258,7 +275,7 @@
 - http is deprecated AFAIU [\#91](https://github.com/jodconverter/jodconverter/pull/91) ([EugenMayer](https://github.com/EugenMayer))
 - Add Server / Client hint for better understanding [\#90](https://github.com/jodconverter/jodconverter/pull/90) ([EugenMayer](https://github.com/EugenMayer))
 - Add BMP support [\#86](https://github.com/jodconverter/jodconverter/pull/86) ([ggsurrel](https://github.com/ggsurrel))
-- 🐧 Supporting more platforms [\#85](https://github.com/jodconverter/jodconverter/pull/85) ([damienvdb06](https://github.com/damienvdb06))
+- 🐧 Supporting more platforms [\#85](https://github.com/jodconverter/jodconverter/pull/85) ([damien-vdb](https://github.com/damien-vdb))
 - Make `gradlew` executable \(refs \#74\) [\#78](https://github.com/jodconverter/jodconverter/pull/78) ([michelole](https://github.com/michelole))
 - remove sourcefile extension check [\#65](https://github.com/jodconverter/jodconverter/pull/65) ([aruis](https://github.com/aruis))
 - Update LocalOfficeUtils.java,fix Mac OS find Officehome [\#64](https://github.com/jodconverter/jodconverter/pull/64) ([aruis](https://github.com/aruis))
@@ -273,10 +290,6 @@
 - javadocs? [\#69](https://github.com/jodconverter/jodconverter/issues/69)
 - can't build successfully on OS X [\#68](https://github.com/jodconverter/jodconverter/issues/68)
 - Use TableOfContentUpdaterFilter in Spring Boot [\#55](https://github.com/jodconverter/jodconverter/issues/55)
-
-**Merged pull requests:**
-
-- Using remote LibreOffice Online server on demand [\#20](https://github.com/jodconverter/jodconverter/pull/20) ([Wastack](https://github.com/Wastack))
 
 ## [v4.2.0](https://github.com/jodconverter/jodconverter/tree/v4.2.0) (2018-03-01)
 
@@ -354,6 +367,7 @@
 **Merged pull requests:**
 
 - Add open document templates to document formats. [\#25](https://github.com/jodconverter/jodconverter/pull/25) ([benelot](https://github.com/benelot))
+- Using remote LibreOffice Online server on demand [\#20](https://github.com/jodconverter/jodconverter/pull/20) ([Wastack](https://github.com/Wastack))
 - Add a Gitter chat badge to README.md [\#19](https://github.com/jodconverter/jodconverter/pull/19) ([gitter-badger](https://github.com/gitter-badger))
 - Update publish-projects.gradle [\#13](https://github.com/jodconverter/jodconverter/pull/13) ([michelole](https://github.com/michelole))
 - Update build.gradle [\#12](https://github.com/jodconverter/jodconverter/pull/12) ([michelole](https://github.com/michelole))
