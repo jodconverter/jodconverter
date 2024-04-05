@@ -25,7 +25,6 @@ import java.util.Map;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 import org.jodconverter.core.document.DocumentFormatProperties;
 import org.jodconverter.core.office.AbstractOfficeManagerPool;
@@ -34,7 +33,6 @@ import org.jodconverter.local.office.LocalOfficeManager;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter.local")
-@ConfigurationPropertiesScan
 public class JodConverterLocalProperties {
 
   /** Enable JODConverter, which means that office instances will be launched. */
