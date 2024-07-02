@@ -20,9 +20,6 @@
 
 package org.jodconverter.local.office;
 
-import com.sun.star.beans.PropertyValue;
-import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XServiceInfo;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -31,8 +28,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import com.sun.star.beans.PropertyValue;
+import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XServiceInfo;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.util.AssertUtils;
@@ -46,8 +50,6 @@ import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.PureJavaProcessManager;
 import org.jodconverter.local.process.UnixProcessManager;
 import org.jodconverter.local.process.WindowsProcessManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Provides helper functions for local office. */
 public final class LocalOfficeUtils {
