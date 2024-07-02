@@ -23,14 +23,12 @@ package org.jodconverter.boot.autoconfigure;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import org.jodconverter.remote.ssl.SslConfig;
 
 /** Configuration class for JODConverter Remote. */
 @ConfigurationProperties("jodconverter.remote")
-@ConfigurationPropertiesScan
 @SuppressWarnings({
   "PMD.ArrayIsStoredDirectly",
   "PMD.ExcessivePublicCount",
