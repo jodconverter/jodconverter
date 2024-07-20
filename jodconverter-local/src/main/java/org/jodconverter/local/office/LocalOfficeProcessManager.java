@@ -649,7 +649,7 @@ class LocalOfficeProcessManager {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("ProcessBuilder command: {}", String.join(" ", command));
     }
-    return new ProcessBuilder(command).inheritIO();
+    return new ProcessBuilder(command);
   }
 
   /**
