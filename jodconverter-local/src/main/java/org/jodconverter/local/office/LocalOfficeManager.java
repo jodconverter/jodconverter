@@ -167,9 +167,9 @@ public final class LocalOfficeManager
     private List<String> pipeNames;
     private String hostName = DEFAULT_HOSTNAME;
     private List<Integer> portNumbers;
-    private File officeHome = LocalOfficeUtils.getDefaultOfficeHome();
-    private ProcessManager processManager = LocalOfficeUtils.findBestProcessManager();
-    private List<String> runAsArgs = Collections.emptyList();
+    private File officeHome;
+    private ProcessManager processManager;
+    private List<String> runAsArgs;
     private File templateProfileDir;
     private boolean useDefaultOnInvalidTemplateProfileDir;
     private long processTimeout = DEFAULT_PROCESS_TIMEOUT;
@@ -188,6 +188,17 @@ public final class LocalOfficeManager
 
     @Override
     public @NonNull LocalOfficeManager build() {
+
+      // Set non-constant default values.
+      if (officeHome == null) {
+        officeHome = LocalOfficeUtils.getDefaultOfficeHome();
+      }
+      if (processManager == null) {
+        processManager = LocalOfficeUtils.findBestProcessManager();
+      }
+      if (runAsArgs == null) {
+        runAsArgs = Collections.emptyList();
+      }
 
       // Validate the directories we are working with
       OfficeUtils.validateWorkingDir(workingDir);
