@@ -227,9 +227,22 @@
     }
   },
   {
+    "name": "Microsoft Excel 2007-2013 XML (Macro Enabled)",
+    "extensions": [
+      "xlsm"
+    ],
+    "mediaType": "application/vnd.ms-excel.sheet.macroEnabled.12",
+    "inputFamily": "SPREADSHEET",
+    "storeProperties": {
+      "SPREADSHEET": {
+        "FilterName": "Calc MS Excel 2007 VBA XML"
+      }
+    }
+  },
+  {
     "name": "Microsoft Excel 2007-2013 XML Template",
     "extensions": [
-      "xltx"
+      "xltx", "xltm"
     ],
     "mediaType": "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
     "inputFamily": "SPREADSHEET",

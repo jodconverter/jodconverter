@@ -34,8 +34,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * href="https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0">OpenOffice
  * Filters Documentation</a>
  *
- * <p>See <a
- * href="https://help.libreoffice.org/7.4/en-US/text/shared/guide/convertfilters.html">File
+ * <p>See <a https://help.libreoffice.org/latest/en-US/text/shared/guide/convertfilters.html">File
  * Conversion Filter Names</a>
  *
  * <p>See <a
@@ -251,6 +250,16 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
   public static final @NonNull DocumentFormat XLSX = byExtension("xlsx");
 
   /**
+   * "Microsoft Excel 2007-2013 XML (Macro Enabled).
+   *
+   * <ul>
+   *   <li>Extension: xlsm
+   *   <li>Media Type: application/vnd.ms-excel.sheet.macroEnabled.12
+   * </ul>
+   */
+  public static final @NonNull DocumentFormat XLSM = byExtension("xlsm");
+
+  /**
    * Microsoft Excel 2007-2013 XML Spreadsheet template.
    *
    * <ul>
@@ -259,6 +268,16 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    * </ul>
    */
   public static final @NonNull DocumentFormat XLTX = byExtension("xltx");
+
+  /**
+   * Microsoft Excel 2007-2013 XML Spreadsheet template.
+   *
+   * <ul>
+   *   <li>Extension: xltm
+   *   <li>Media Type: application/vnd.openxmlformats-officedocument.spreadsheetml.template
+   * </ul>
+   */
+  public static final @NonNull DocumentFormat XLTM = byExtension("xltm");
 
   /**
    * Comma Separated Values.

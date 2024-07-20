@@ -61,7 +61,9 @@ import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.VSDX;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.WPD;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XHTML;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLS;
+import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLSM;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLSX;
+import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLTM;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLTX;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.getFormatByExtension;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.getFormatByMediaType;
@@ -212,7 +214,9 @@ class DefaultDocumentFormatRegistryTest {
       assertByExt(ass, "sxc", SXC);
       assertByExt(ass, "xls", XLS);
       assertByExt(ass, "xlsx", XLSX);
+      assertByExt(ass, "xlsm", XLSM);
       assertByExt(ass, "xltx", XLTX);
+      assertByExt(ass, "xltm", XLTM);
       assertByExt(ass, "csv", CSV);
       assertByExt(ass, "tsv", TSV);
       assertByExt(ass, "odp", ODP);
@@ -268,6 +272,7 @@ class DefaultDocumentFormatRegistryTest {
       assertByType(ass, "application/vnd.sun.xml.calc", SXC);
       assertByType(ass, "application/vnd.ms-excel", XLS);
       assertByType(ass, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", XLSX);
+      assertByType(ass, "application/vnd.ms-excel.sheet.macroEnabled.12", XLSM);
       assertByType(
           ass, "application/vnd.openxmlformats-officedocument.spreadsheetml.template", XLTX);
       assertByType(ass, "text/csv", CSV);
