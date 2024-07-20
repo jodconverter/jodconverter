@@ -168,7 +168,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
   }
 
   // This function return true if we must stop trying to find the pid,
-  // or true if we must keep going.
+  // or false if we must keep going.
   private boolean findPid(final StartProcessResult attemptResult, final int tryCount)
       throws IOException {
 
