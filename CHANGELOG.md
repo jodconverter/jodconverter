@@ -1,12 +1,51 @@
 # Changelog
 
-## [Unreleased](https://github.com/jodconverter/jodconverter/tree/HEAD)
+## [v4.4.8](https://github.com/jodconverter/jodconverter/tree/v4.4.8) (2024-09-01)
 
-[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.6...HEAD)
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.7...v4.4.8)
+
+**Implemented enhancements:**
+
+- Add xlsm support in DefaultDocumentFormatRegistry [\#391](https://github.com/jodconverter/jodconverter/issues/391)
+
+**Fixed bugs:**
+
+- No qualifying bean of type 'org.jodconverter.core.DocumentConverter' available [\#390](https://github.com/jodconverter/jodconverter/issues/390)
+- Task keeps hanging when using Remote JodConverter [\#384](https://github.com/jodconverter/jodconverter/issues/384)
+- Scanner (IO) bug [\#383](https://github.com/jodconverter/jodconverter/issues/383)
+
+**Closed issues:**
+
+- Incompatible with LO 24.x \(probably?\) on macos [\#386](https://github.com/jodconverter/jodconverter/issues/386)
+- Removed unnecessary `@ConfigurationPropertiesScan` on `JodConverterLocalProperties` and `JodConverterRemoteProperties` [\#377](https://github.com/jodconverter/jodconverter/issues/377)
+- Information about supported properties and their meaning [\#372](https://github.com/jodconverter/jodconverter/issues/372)
+- The Word document with more than 12 pages will automatically cancel the task. [\#364](https://github.com/jodconverter/jodconverter/issues/364)
+- pptx file conversion of PDF failed [\#359](https://github.com/jodconverter/jodconverter/issues/359)
+
+**Merged pull requests:**
+
+- Remove unnecessary ConfigurationPropertiesScan annotation [\#378](https://github.com/jodconverter/jodconverter/pull/378) ([bianjp](https://github.com/bianjp))
+
+## [v4.4.7](https://github.com/jodconverter/jodconverter/tree/v4.4.7) (2023-12-13)
+
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.6...v4.4.7)
 
 **Fixed bugs:**
 
 - Using SpringBoot autoconfiguration with a remote setup fails with ClassNotFoundException [\#331](https://github.com/jodconverter/jodconverter/issues/331)
+
+**Closed issues:**
+
+- there are a blank column in my pdf [\#354](https://github.com/jodconverter/jodconverter/issues/354)
+- Error: This office manager is not running. [\#353](https://github.com/jodconverter/jodconverter/issues/353)
+- Cannot find a valid unoloader.jar path. [\#348](https://github.com/jodconverter/jodconverter/issues/348)
+- An error is reported after the office manager Temporary folder is deleted [\#346](https://github.com/jodconverter/jodconverter/issues/346)
+- Getting error: Unsupported URL  "type detection failed" [\#337](https://github.com/jodconverter/jodconverter/issues/337)
+- Could not store document: tempfile\_1.pdf [\#329](https://github.com/jodconverter/jodconverter/issues/329)
+- Failed to load class "org.slf4j.impl.StaticLoggerBinder". [\#328](https://github.com/jodconverter/jodconverter/issues/328)
+- 启动加载异常 bean of type 'org.jodconverter.core.DocumentConverter' that could not be found. [\#326](https://github.com/jodconverter/jodconverter/issues/326)
+- Images are not shown correctly [\#311](https://github.com/jodconverter/jodconverter/issues/311)
+- Blank first page when converting to any format [\#252](https://github.com/jodconverter/jodconverter/issues/252)
 
 **Merged pull requests:**
 
@@ -169,7 +208,6 @@
 
 - Make 127.0.0.1 in socket connection configurable [\#242](https://github.com/jodconverter/jodconverter/pull/242) ([nikowitt](https://github.com/nikowitt))
 - bugfix ps args truncated at 125 chars [\#238](https://github.com/jodconverter/jodconverter/pull/238) ([chunlinyao](https://github.com/chunlinyao))
-- If parent dir is not exist,Program will throw exception while it crea… [\#181](https://github.com/jodconverter/jodconverter/pull/181) ([qiangtoudianyan](https://github.com/qiangtoudianyan))
 
 ## [v4.3.0](https://github.com/jodconverter/jodconverter/tree/v4.3.0) (2020-03-05)
 
@@ -235,6 +273,7 @@
 
 **Merged pull requests:**
 
+- If parent dir is not exist,Program will throw exception while it crea… [\#181](https://github.com/jodconverter/jodconverter/pull/181) ([qiangtoudianyan](https://github.com/qiangtoudianyan))
 - fixes \#151 [\#152](https://github.com/jodconverter/jodconverter/pull/152) ([anghelutar](https://github.com/anghelutar))
 - Get Java11 compatible \#127 [\#128](https://github.com/jodconverter/jodconverter/pull/128) ([EugenMayer](https://github.com/EugenMayer))
 
