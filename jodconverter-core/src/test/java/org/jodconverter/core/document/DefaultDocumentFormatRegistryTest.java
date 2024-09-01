@@ -130,6 +130,7 @@ class DefaultDocumentFormatRegistryTest {
           "fods",
           "xlsx",
           "xltx",
+          "xlsm",
           "xls",
           "csv",
           "tsv",

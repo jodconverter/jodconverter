@@ -203,9 +203,6 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       final Map<String, Object> loadProps = getLoadProperties();
       final XComponent document = loadDocumentFromURL(loader, sourceFile, loadProps);
 
-      // Handle password protection request to throw a meaningful exception, if required.
-      handlePasswordProtection(document, loadProps);
-
       // The document cannot be null
       AssertUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
 
@@ -224,20 +221,33 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
       final XComponentLoader loader, final File sourceFile, final Map<String, Object> loadProps)
       throws com.sun.star.uno.Exception, OfficeException {
 
-    if (useStreamAdapters) {
-      try {
-        final byte[] bytes = Files.readAllBytes(sourceFile.toPath());
-        loadProps.put("InputStream", new ByteArrayToXInputStreamAdapter(bytes));
+    XComponent document = null;
+    try {
+      if (useStreamAdapters) {
+        try {
+          final byte[] bytes = Files.readAllBytes(sourceFile.toPath());
+          loadProps.put("InputStream", new ByteArrayToXInputStreamAdapter(bytes));
 
-        return loader.loadComponentFromURL(
-            "private:stream", "_blank", 0, toUnoProperties(loadProps));
+          document =
+              loader.loadComponentFromURL(
+                  "private:stream", "_blank", 0, toUnoProperties(loadProps));
 
-      } catch (IOException exception) {
-        throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
+        } catch (IOException exception) {
+          throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
+        }
+      } else {
+        document =
+            loader.loadComponentFromURL(toUrl(sourceFile), "_blank", 0, toUnoProperties(loadProps));
       }
+    } catch (com.sun.star.lang.DisposedException exception) {
+      // LibreOffice 24+ will throw this exception for password protection.
+      handlePasswordProtection(document, loadProps);
+      throw exception;
     }
 
-    return loader.loadComponentFromURL(toUrl(sourceFile), "_blank", 0, toUnoProperties(loadProps));
+    // Handle password protection request to throw a meaningful exception, if required.
+    handlePasswordProtection(document, loadProps);
+    return document;
   }
 
   // Closes the specified document.
