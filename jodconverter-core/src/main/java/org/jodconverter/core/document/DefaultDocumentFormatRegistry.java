@@ -34,7 +34,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * href="https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0">OpenOffice
  * Filters Documentation</a>
  *
- * <p>See <a https://help.libreoffice.org/latest/en-US/text/shared/guide/convertfilters.html">File
+ * <p>See <a
+ * href="https://help.libreoffice.org/latest/en-US/text/shared/guide/convertfilters.html">File
  * Conversion Filter Names</a>
  *
  * <p>See <a
