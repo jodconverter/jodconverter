@@ -133,7 +133,7 @@ test {
     failFast = true
 
     // Uncomment when we want to see the logs while testing
-    //testLogging.showStandardStreams = true
+    testLogging.showStandardStreams = true
 }
 
 integrationTest {
@@ -151,7 +151,7 @@ integrationTest {
     systemProperty "org.jodconverter.local.manager.templateProfileDir", project.findProperty("org.jodconverter.local.manager.templateProfileDir")
 
     // Uncomment when we want to see the logs while testing
-    //testLogging.showStandardStreams = true
+    testLogging.showStandardStreams = true
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
