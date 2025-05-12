@@ -50,11 +50,9 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.core.util.FileUtils;
-import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.utils.Info;
 import org.jodconverter.local.office.utils.Lo;
-import org.jodconverter.local.process.LinesPumpStreamHandler;
 import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.ProcessQuery;
 
@@ -370,8 +368,10 @@ class LocalOfficeProcessManager {
     pid = PID_UNKNOWN;
     process = null;
 
-    // Detect office version
-    detectOfficeDescriptor();
+    // Detect the office version if required.
+    if (descriptor == null) {
+      descriptor = detectOfficeDescriptor();
+    }
 
     // Build the 'accept' argument (connection string).
     final String acceptString = officeUrl.getAcceptString();
@@ -657,51 +657,14 @@ class LocalOfficeProcessManager {
    * class using the path of the office executable, and then using the --help command line option,
    * if possible.
    */
-  private void detectOfficeDescriptor() {
+  private OfficeDescriptor detectOfficeDescriptor() {
 
     // Create the command used to launch the office process
     final File executable = LocalOfficeUtils.getOfficeExecutable(officeHome);
 
     final String execPath = executable.getAbsolutePath();
 
-    descriptor = OfficeDescriptor.fromExecutablePath(execPath);
-
-    // On Windows, we can't try the help option.
-    // See https://bugs.documentfoundation.org/show_bug.cgi?id=100826
-    if (OSUtils.IS_OS_WINDOWS) {
-      return;
-    }
-
-    final String prefix = descriptor.useLongOptionNameGnuStyle() ? "--" : "-";
-
-    final List<String> command = new ArrayList<>(runAsArgs);
-    command.add(execPath);
-    command.add(prefix + "invisible");
-    command.add(prefix + "help");
-    command.add(prefix + "headless");
-    command.add(prefix + "nocrashreport");
-    command.add(prefix + "nodefault");
-    command.add(prefix + "nofirststartwizard");
-    command.add(prefix + "nolockcheck");
-    command.add(prefix + "nologo");
-    command.add(prefix + "norestore");
-    command.add("-env:UserInstallation=" + LocalOfficeUtils.toUrl(instanceProfileDir));
-    final ProcessBuilder processBuilder = new ProcessBuilder(command);
-    try {
-      final Process process = processBuilder.start();
-      final LinesPumpStreamHandler handler =
-          new LinesPumpStreamHandler(process.getInputStream(), process.getErrorStream());
-      handler.start();
-      try {
-        process.waitFor();
-        handler.stop();
-      } catch (InterruptedException ignored) {
-        // Ignore
-      }
-      descriptor = OfficeDescriptor.fromHelpOutput(handler.getOutputPumper().getLines());
-    } catch (IOException ioEx) {
-      LOGGER.warn("An I/O error prevents us to determine office version", ioEx);
-    }
+    return OfficeDescriptor.fromExecutablePath(execPath);
   }
 
   /** Kills the office process instance. */

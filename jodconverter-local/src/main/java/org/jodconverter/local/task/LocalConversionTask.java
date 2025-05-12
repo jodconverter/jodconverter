@@ -34,6 +34,7 @@ import com.sun.star.frame.XStorable;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lib.uno.adapter.OutputStreamToXOutputStreamAdapter;
 import com.sun.star.task.ErrorCodeIOException;
+import com.sun.star.uno.XComponentContext;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -50,6 +51,7 @@ import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.filter.RefreshFilter;
 import org.jodconverter.local.office.LocalOfficeContext;
 import org.jodconverter.local.office.LocalOfficeUtils;
+import org.jodconverter.local.office.utils.Info;
 import org.jodconverter.local.office.utils.Lo;
 
 /** Represents the default behavior for a local conversion task. */
@@ -94,19 +96,31 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   @Override
   public void execute(final @NonNull OfficeContext context) throws OfficeException {
 
+    final LocalOfficeContext localContext = (LocalOfficeContext) context;
+
     if (LOGGER.isInfoEnabled()) {
-      LOGGER.info(
-          "Executing local conversion task [{} -> {}]...",
+      final String sourceExt =
           Optional.of(source)
               .map(DocumentSpecs::getFormat)
               .map(DocumentFormat::getExtension)
-              .orElse("?"),
+              .orElse("?");
+      final String targetExt =
           Optional.of(target)
               .map(DocumentSpecs::getFormat)
               .map(DocumentFormat::getExtension)
-              .orElse("?"));
+              .orElse("?");
+      if (LOGGER.isDebugEnabled() && localContext.getComponentContext() != null) {
+        final XComponentContext compContext = localContext.getComponentContext();
+        LOGGER.debug(
+            "Executing local conversion task using {} {} [{} -> {}]...",
+            Info.getOfficeName(compContext),
+            Info.getOfficeVersionLong(compContext),
+            sourceExt,
+            targetExt);
+      } else {
+        LOGGER.info("Executing local conversion task [{} -> {}]...", sourceExt, targetExt);
+      }
     }
-    final LocalOfficeContext localContext = (LocalOfficeContext) context;
 
     // Obtain a source file that can be loaded by office. If the source
     // is an input stream, then a temporary file will be created from the

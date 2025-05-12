@@ -20,71 +20,20 @@
 
 package org.jodconverter.local.office;
 
-import java.util.List;
 import java.util.Locale;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Contains basic information about the office installation being used. */
 public final class OfficeDescriptor {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OfficeDescriptor.class);
-
   private static final String LIBRE_OFFICE = "LibreOffice";
   private static final String OPEN_OFFICE = "OpenOffice";
-  private static final String LIBRE_OFFICE_LCASE = "libreoffice";
-  private static final String OPEN_OFFICE_LCASE = "openoffice";
 
   private String product = "???";
-  private String version = "???";
   private boolean useLongOptionNameGnuStyle;
 
   private OfficeDescriptor() {}
-
-  /**
-   * Creates descriptor from the command line output using the help option.
-   *
-   * @param lines The output lines of the execution.
-   * @return The descriptor.
-   */
-  public static @NonNull OfficeDescriptor fromHelpOutput(
-      final @NonNull List<@NonNull String> lines) {
-
-    final OfficeDescriptor desc = new OfficeDescriptor();
-
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Building {} from help output lines", OfficeDescriptor.class.getName());
-    }
-
-    for (final String line : lines) {
-      if (line.contains("--help")) {
-        desc.useLongOptionNameGnuStyle = true;
-      } else {
-        fromLine(desc, line);
-      }
-    }
-
-    if (LOGGER.isInfoEnabled()) {
-      LOGGER.info("soffice info (from help output): {}", desc);
-    }
-    return desc;
-  }
-
-  private static void fromLine(final OfficeDescriptor desc, final String line) {
-    final String lowerLine = line.trim().toLowerCase(Locale.ROOT);
-    if (lowerLine.startsWith(OPEN_OFFICE_LCASE) || lowerLine.startsWith(LIBRE_OFFICE_LCASE)) {
-      final String productLine = line.trim();
-      final String[] parts = productLine.split(" ");
-      if (parts.length > 0) {
-        desc.product = parts[0];
-        if (parts.length > 1) {
-          desc.version = parts[1];
-        }
-      }
-    }
-  }
 
   /**
    * Creates descriptor from the office installation path.
@@ -97,18 +46,12 @@ public final class OfficeDescriptor {
     final OfficeDescriptor desc = new OfficeDescriptor();
 
     final String lowerPath = path.toLowerCase(Locale.ROOT);
-    if (lowerPath.contains(LIBRE_OFFICE_LCASE)) {
+    if (lowerPath.contains(LIBRE_OFFICE.toLowerCase(Locale.ROOT))) {
       desc.product = LIBRE_OFFICE;
       desc.useLongOptionNameGnuStyle = true;
-    } else if (lowerPath.contains(OPEN_OFFICE_LCASE)) {
+    } else if (lowerPath.contains(OPEN_OFFICE.toLowerCase(Locale.ROOT))) {
       desc.product = OPEN_OFFICE;
       desc.useLongOptionNameGnuStyle = false;
-    }
-
-    // Version cannot be known from the installation path.
-
-    if (LOGGER.isInfoEnabled()) {
-      LOGGER.info("soffice info (from exec path): {}", desc);
     }
 
     return desc;
@@ -124,15 +67,6 @@ public final class OfficeDescriptor {
   }
 
   /**
-   * Gets the version of the office installation being used.
-   *
-   * @return The version or ??? if unknown.
-   */
-  public @NonNull String getVersion() {
-    return version;
-  }
-
-  /**
    * Gets whether we must use the lone option name GNU style (--) when setting command line options
    * to start an office instance.
    *
@@ -145,7 +79,6 @@ public final class OfficeDescriptor {
   @Override
   public @NonNull String toString() {
     return String.format(
-        "Product: %s - Version: %s - useLongOptionNameGnuStyle: %s",
-        getProduct(), getVersion(), useLongOptionNameGnuStyle());
+        "Product: %s - useLongOptionNameGnuStyle: %s", getProduct(), useLongOptionNameGnuStyle());
   }
 }
