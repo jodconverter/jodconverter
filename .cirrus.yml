@@ -90,7 +90,7 @@ macos_task:
 freebsd_task:
   freebsd_instance:
     # See https://cirrus-ci.org/guide/FreeBSD/#list-of-available-image-families for images that could be tested.
-    image_family: freebsd-14-0
+    image_family: freebsd-14-2
   # See https://www.freebsd.org/java/ for all available openjdk that could be tested.
   matrix:
     - name: freebsd:openjdk8
