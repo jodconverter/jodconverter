@@ -118,7 +118,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
     final Collection<DocumentFormat> formats = gson.fromJson(source, collectionType);
 
     // Fill the registry with loaded formats. Note that we have to use
-    // the constructor in order top create read only formats.
+    // the constructor in order top create read-only formats.
     formats.stream()
         .map(
             fmt -> {

@@ -48,24 +48,24 @@ import org.jodconverter.core.util.AssertUtils;
 /** Contains the required information used to deal with a specific document format . */
 public final class DocumentFormat {
 
-  private String name;
+  private final String name;
 
   // Be backward compatible. Former json file doesn't support multiple document format extensions.
   @SerializedName(
       value = "extensions",
       alternate = {"extension"})
   @JsonAdapter(ExtensionsAdapter.class)
-  private List<String> extensions;
+  private final List<String> extensions;
 
-  private String mediaType;
-  private DocumentFamily inputFamily;
-  private Map<String, Object> loadProperties;
+  private final String mediaType;
+  private final DocumentFamily inputFamily;
+  private final Map<String, Object> loadProperties;
 
   // Be backward compatible. storePropertiesByFamily has been renamed storeProperties
   @SerializedName(
       value = "storeProperties",
       alternate = {"storePropertiesByFamily"})
-  private Map<DocumentFamily, Map<String, Object>> storeProperties;
+  private final Map<DocumentFamily, Map<String, Object>> storeProperties;
 
   /**
    * Special adapter used to support backward compatibility when loading a document format json
@@ -85,9 +85,11 @@ public final class DocumentFormat {
     }
   }
 
-  static class DocumentFormatInstanceCreator implements InstanceCreator<DocumentFormat> {
+  /** instance creator used to avoid a runtime exception with java17 (see #408) */
+  /* default */ static class DocumentFormatInstanceCreator
+      implements InstanceCreator<DocumentFormat> {
     @Override
-    public DocumentFormat createInstance(Type type) {
+    public DocumentFormat createInstance(final Type type) {
       return new DocumentFormat();
     }
   }

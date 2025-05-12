@@ -34,7 +34,7 @@ public class DocumentFormatProperties {
   /** Properties applied when loading(opening) a document. */
   private final Map<String, Object> load = new HashMap<>();
 
-  /** Properties applied when storing(saving) a document for each supported families. */
+  /** Properties applied when storing(saving) a document for each supported family. */
   private final Map<DocumentFamily, Map<String, Object>> store = new HashMap<>();
 
   /**
