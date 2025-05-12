@@ -7,7 +7,7 @@ linux_task:
     #- add-apt-repository -y ppa:libreoffice/libreoffice-4-2
     #- add-apt-repository -y ppa:libreoffice/ppa
     - apt-get -q update
-    - apt-get -y install libreoffice-still
+    - apt-get -y install libreoffice
   # See https://hub.docker.com/_/eclipse-temurin for openjdk versions that could be tested.
   matrix:
     - name: linux:temurinjdk8
@@ -68,7 +68,7 @@ windows_task:
         # https://community.chocolatey.org/packages/Temurin17
         TEMURINOPENJDK_PACKAGE: temurin17
   install_script:
-    - choco install -y libreoffice
+    - choco install -y libreoffice-still
     - choco install -y %TEMURINOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
   build_script:
     - gradlew.bat build -x javadoc --stacktrace
