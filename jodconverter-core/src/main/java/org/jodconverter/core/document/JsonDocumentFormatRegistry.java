@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -107,7 +108,10 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
   private void readJsonArray(
       final String source, final Map<String, DocumentFormatProperties> customProperties) {
 
-    final Gson gson = new Gson();
+    final GsonBuilder gsonBuilder = new GsonBuilder();
+    gsonBuilder.registerTypeAdapter(
+        DocumentFormat.class, new DocumentFormat.DocumentFormatInstanceCreator());
+    final Gson gson = gsonBuilder.create();
 
     // Deserialization
     final Type collectionType = new TypeToken<Collection<DocumentFormat>>() {}.getType();

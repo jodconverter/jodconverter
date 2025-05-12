@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.gson.InstanceCreator;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -47,22 +48,24 @@ import org.jodconverter.core.util.AssertUtils;
 /** Contains the required information used to deal with a specific document format . */
 public final class DocumentFormat {
 
-  private final String name;
+  private String name;
+
   // Be backward compatible. Former json file doesn't support multiple document format extensions.
   @SerializedName(
       value = "extensions",
       alternate = {"extension"})
   @JsonAdapter(ExtensionsAdapter.class)
-  private final List<String> extensions;
+  private List<String> extensions;
 
-  private final String mediaType;
-  private final DocumentFamily inputFamily;
-  private final Map<String, Object> loadProperties;
+  private String mediaType;
+  private DocumentFamily inputFamily;
+  private Map<String, Object> loadProperties;
+
   // Be backward compatible. storePropertiesByFamily has been renamed storeProperties
   @SerializedName(
       value = "storeProperties",
       alternate = {"storePropertiesByFamily"})
-  private final Map<DocumentFamily, Map<String, Object>> storeProperties;
+  private Map<DocumentFamily, Map<String, Object>> storeProperties;
 
   /**
    * Special adapter used to support backward compatibility when loading a document format json
@@ -79,6 +82,13 @@ public final class DocumentFormat {
         return cxt.deserialize(json, listType);
       }
       return Stream.of(json.getAsString()).collect(Collectors.toList());
+    }
+  }
+
+  static class DocumentFormatInstanceCreator implements InstanceCreator<DocumentFormat> {
+    @Override
+    public DocumentFormat createInstance(Type type) {
+      return new DocumentFormat();
     }
   }
 
@@ -122,6 +132,19 @@ public final class DocumentFormat {
   public static @NonNull DocumentFormat unmodifiableCopy(
       final @NonNull DocumentFormat sourceFormat) {
     return builder(sourceFormat).unmodifiable(true).build();
+  }
+
+  /**
+   * Empty constructor used by the instance creator (needed for Gson with Java 17+). See:
+   * https://github.com/jodconverter/jodconverter/issues/408
+   */
+  private DocumentFormat() {
+    this.name = null;
+    this.extensions = null;
+    this.mediaType = null;
+    this.inputFamily = null;
+    this.loadProperties = null;
+    this.storeProperties = null;
   }
 
   /**
