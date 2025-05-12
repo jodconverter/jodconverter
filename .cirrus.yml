@@ -7,7 +7,7 @@ linux_task:
     #- add-apt-repository -y ppa:libreoffice/libreoffice-4-2
     #- add-apt-repository -y ppa:libreoffice/ppa
     - apt-get -q update
-    - apt-get -y install libreoffice
+    - apt-get -y install libreoffice-still
   # See https://hub.docker.com/_/eclipse-temurin for openjdk versions that could be tested.
   matrix:
     - name: linux:temurinjdk8
