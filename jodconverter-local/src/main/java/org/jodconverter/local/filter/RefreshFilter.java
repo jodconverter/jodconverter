@@ -43,7 +43,7 @@ public class RefreshFilter implements Filter {
 
   /**
    * Singleton instance of refresh filter that won't call the next filter in the chain. Use this
-   * filter only when you are absolutely sure that it will be used as last filter in a filter chain.
+   * filter only when you are sure that it will be used as the last filter in a filter chain.
    *
    * @since 4.1.0
    */

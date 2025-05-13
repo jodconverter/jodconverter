@@ -38,7 +38,7 @@ public interface TargetDocumentSpecs extends DocumentSpecs {
    * @param file The file to which the conversion result was written.
    */
   default void onComplete(final @NonNull File file) {
-    // Default behavior is to do nothing
+    // The default behavior is to do nothing
   }
 
   /**

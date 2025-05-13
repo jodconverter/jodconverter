@@ -20,6 +20,6 @@
 
 package org.jodconverter.core.job;
 
-/** A conversion job with optional target format that is not yet applied to the converter. */
+/** A conversion job with an optional target format that is not yet applied to the converter. */
 public interface ConversionJobWithOptionalTargetFormatUnspecified
     extends ConversionJobWithRequiredTargetFormatUnspecified, ConversionJob {}

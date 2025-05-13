@@ -56,7 +56,7 @@ public final class FileUtils {
 
   private static boolean endsWithSeparator(final @NonNull String filename) {
 
-    if (filename.length() == 0) {
+    if (filename.isEmpty()) {
       return false;
     }
     final char lastChar = filename.charAt(filename.length() - 1);

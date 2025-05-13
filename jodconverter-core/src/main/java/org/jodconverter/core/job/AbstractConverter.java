@@ -98,7 +98,7 @@ public abstract class AbstractConverter implements DocumentConverter {
   /**
    * Converts a source document using the given specifications.
    *
-   * @param source The conversion input as a document specifications.
+   * @param source The conversion input as document specifications.
    * @return The current conversion specification.
    */
   protected abstract @NonNull AbstractConversionJobWithSourceFormatUnspecified convert(

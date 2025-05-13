@@ -23,7 +23,7 @@ package org.jodconverter.core.office;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
- * Represents an error condition that can be temporary, i.e. that could go away by simply retrying
+ * Represents an error condition that can be temporary, i.e., that could go away by simply retrying
  * the same operation after an interval.
  */
 public class TemporaryException extends Exception {

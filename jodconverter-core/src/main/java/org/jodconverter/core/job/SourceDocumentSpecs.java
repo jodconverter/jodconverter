@@ -37,6 +37,6 @@ public interface SourceDocumentSpecs extends DocumentSpecs {
    * @param file The file that was consumed.
    */
   default void onConsumed(final @NonNull File file) {
-    // Default behavior is to do nothing
+    // The default behavior is to do nothing
   }
 }

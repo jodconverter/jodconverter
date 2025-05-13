@@ -82,7 +82,7 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
 
     AssertUtils.notNull(documentFamily, "documentFamily must not be null");
     // Use fmtsByMediaType since fmtsByExtension may contain the same
-    // DocumentFormat with multiple extensions (e.g: jpg, jpeg).
+    // DocumentFormat with multiple extensions (e.g.: jpg, jpeg).
     return fmtsByMediaType.values().stream()
         .filter(format -> format.getStoreProperties(documentFamily) != null)
         .collect(Collectors.toSet());

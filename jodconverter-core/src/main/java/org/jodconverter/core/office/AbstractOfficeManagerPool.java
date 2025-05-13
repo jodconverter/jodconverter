@@ -222,7 +222,7 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
   }
 
   /**
-   * Prepares directory of this manager, under the working directory.
+   * Prepares the directory of this manager, under the working directory.
    *
    * @throws OfficeException If the temporary directory cannot be created.
    */

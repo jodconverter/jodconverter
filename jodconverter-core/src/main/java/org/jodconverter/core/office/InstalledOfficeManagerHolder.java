@@ -24,7 +24,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Holds a unique instance of an {@link org.jodconverter.core.office.OfficeManager} that will be
- * used by created {@link org.jodconverter.core.DocumentConverter} when no office manager are given
+ * used by created {@link org.jodconverter.core.DocumentConverter} when no office manager is given
  * to the converter builder.
  */
 public final

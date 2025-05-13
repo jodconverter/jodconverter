@@ -51,7 +51,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   private static final String[] NODE_PATHS = {NODE_PRODUCT, NODE_L10N};
 
   /**
-   * Compares two versions strings (ex. 1.6.1).
+   * Compares two versions of strings (ex. 1.6.1).
    *
    * @param version1 The first version to compare.
    * @param version2 The second version to compare.

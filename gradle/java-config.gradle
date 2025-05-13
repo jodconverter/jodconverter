@@ -209,7 +209,7 @@ artifacts {
 }
 
 jar {
-    // The following options must be set here orelse the moduleName won't be define.
+    // The following options must be set here or else the moduleName won't be define.
     afterEvaluate {
         manifest {
             def moduleName = project.hasProperty('moduleName') ? project.moduleName : project.name
@@ -266,7 +266,7 @@ javadoc {
     //options.addStringOption('Xdoclint:none', '-quiet')
 
 
-    // The following options must be set here orelse the moduleName won't be define.
+    // The following options must be set here or else the moduleName won't be define.
     afterEvaluate {
         configure(options) {
             def moduleName = project.hasProperty('moduleName') ? project.moduleName : project.name

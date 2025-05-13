@@ -385,7 +385,7 @@ public final class LocalOfficeUtils {
    * Validates that the specified File instance is a valid office template profile directory.
    *
    * @param templateProfileDir The directory to validate.
-   * @exception IllegalStateException If the specified directory if not a valid office template
+   * @exception IllegalStateException If the specified directory is not a valid office template
    *     profile directory.
    */
   public static void validateOfficeTemplateProfileDirectory(

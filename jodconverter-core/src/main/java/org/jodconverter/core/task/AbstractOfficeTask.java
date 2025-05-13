@@ -25,7 +25,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jodconverter.core.job.SourceDocumentSpecs;
 
 /**
- * Base class for all office tasks implementation.
+ * Base class for all office tasks implementations.
  *
  * @see OfficeTask
  */

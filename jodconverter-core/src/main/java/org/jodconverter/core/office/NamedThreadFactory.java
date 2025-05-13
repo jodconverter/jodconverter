@@ -46,7 +46,7 @@ public class NamedThreadFactory implements ThreadFactory {
    * Creates a new instance of the factory.
    *
    * @param basename Basename of a new tread created by this factory.
-   * @param daemon If true, marks new thread as a daemon thread
+   * @param daemon If true, marks the new thread as a daemon thread
    */
   public NamedThreadFactory(final @NonNull String basename, final boolean daemon) {
 

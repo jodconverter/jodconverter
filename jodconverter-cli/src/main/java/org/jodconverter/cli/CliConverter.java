@@ -61,7 +61,7 @@ public final class CliConverter {
    * @param filenames An array containing the filenames of the files to convert.
    * @param outputFormat The output format to convert to files to.
    * @param outputDirPath The directory where to create a converted file. If null, a converted file
-   *     will be created into the same directory as the input file.
+   *     will be created in the same directory as the input file.
    * @param overwrite Indicates whether an output file that already exists must be overwritten.
    * @throws org.jodconverter.core.office.OfficeException If an error occurs while converting the
    *     files.
@@ -110,7 +110,7 @@ public final class CliConverter {
   }
 
   /**
-   * Converts the specified files. The output format are generate from the output filenames.
+   * Converts the specified files. The output formats are generated from the output filenames.
    *
    * @param inputFilenames An array containing the filenames of the files to convert.
    * @param outputFilenames An array containing the output filenames to convert into.

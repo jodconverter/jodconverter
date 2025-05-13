@@ -58,7 +58,7 @@ class LocalOfficeManagerPoolEntryITest {
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long START_INITIAL_WAIT = 2_000L; // 2 Seconds.
-  // 30 Seconds is too short on MasOS.
+  // 30 Seconds is too short on macOS.
   private static final long START_WAIT_TIMEOUT = 60_000L; // 60 Seconds.
   private static final long STOP_INITIAL_WAIT = 2_000L; // 2 Seconds.
   private static final long STOP_WAIT_TIMEOUT = 30_000L; // 30 Seconds.

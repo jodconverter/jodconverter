@@ -260,14 +260,14 @@ class LocalOfficeProcessManager {
    * Restarts the office process when there is a timeout while executing a task.
    *
    * <p>The function will only forcibly kill the office process, causing an unexpected disconnection
-   * and subsequent restart.
+   * and later restart.
    *
    * @see LocalOfficeManagerPoolEntry
    */
   /* default */ void restartDueToTaskTimeout() {
     LOGGER.info("Restarting due to task timeout...");
 
-    // This will cause unexpected disconnection and subsequent restart.
+    // This will cause unexpected disconnection and later restart.
     forciblyTerminateProcess();
   }
 
@@ -324,8 +324,8 @@ class LocalOfficeProcessManager {
    *     the instance profile directory is already created. To recreate the instance profile
    *     directory, {@code restart} should be set to {@code false}.
    * @return {@code null}. So it could be used in a {@link java.util.concurrent.Callable}.
-   * @throws OfficeException If the office process cannot be started, or we are unable to connectr
-   *     to the started process.
+   * @throws OfficeException If the office process cannot be started, or we are unable to connect to
+   *     the started process.
    */
   @SuppressWarnings("SameReturnValue")
   private Void startProcessAndConnect(final boolean restart) throws OfficeException {
@@ -390,7 +390,7 @@ class LocalOfficeProcessManager {
       try {
         retryable.execute(processRetryInterval, processTimeout);
       } finally {
-        // We must keep these even on connect failure in order to be able to kill the process if
+        // We must keep these even on connection failure to be able to kill the process if
         // required.
         process = retryable.getProcess();
         pid = retryable.getProcessId();

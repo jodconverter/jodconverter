@@ -41,7 +41,7 @@ public abstract class AbstractRetryable<T extends Throwable> {
   /**
    * Attempt to execute the task, once.
    *
-   * @throws TemporaryException For an error condition that can be temporary - i.e. retrying later
+   * @throws TemporaryException For an error condition that can be temporary - i.e., retrying later
    *     could be successful
    * @throws T For all other error conditions
    */

@@ -24,7 +24,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DocumentFormat;
 
-/** A conversion job with optional source format that is not yet applied to the converter. */
+/** A conversion job with an optional source format that is not yet applied to the converter. */
 public interface ConversionJobWithOptionalSourceFormatUnspecified
     extends ConversionJobWithSourceSpecified {
 

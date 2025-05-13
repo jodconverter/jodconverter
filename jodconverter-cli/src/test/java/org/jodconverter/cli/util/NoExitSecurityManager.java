@@ -24,7 +24,7 @@ import java.security.Permission;
 
 /**
  * Helper class while testing that will prevent a call to System.exit to actually shut down the VM.
- * Instead, a ExitException is thrown.
+ * Instead, an ExitException is thrown.
  */
 public class NoExitSecurityManager extends SecurityManager {
 

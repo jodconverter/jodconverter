@@ -74,7 +74,7 @@ public class PagesSelectorFilter implements Filter {
    * Creates a new filter that will select the specified pages while converting a document (only the
    * given pages will be converted).
    *
-   * @param pages The page numbers of the page to convert. First page is index 1.
+   * @param pages The page numbers of the page to convert. The first page is index 1.
    */
   public PagesSelectorFilter(final @NonNull Integer... pages) {
     this(Stream.of(pages).collect(Collectors.toSet()));
@@ -84,7 +84,7 @@ public class PagesSelectorFilter implements Filter {
    * Creates a new filter that will select the specified pages while converting a document (only the
    * given pages will be converted).
    *
-   * @param pages The page numbers of the page to convert. First page is index 1.
+   * @param pages The page numbers of the page to convert. The first page is index 1.
    */
   public PagesSelectorFilter(final @NonNull Set<@NonNull Integer> pages) {
     super();
