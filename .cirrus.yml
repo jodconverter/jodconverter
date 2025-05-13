@@ -70,6 +70,7 @@ windows_task:
   install_script:
     - choco install -y libreoffice-still
     - choco install -y %TEMURINOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
+    - refreshenv
   build_script:
     - gradlew.bat build -x javadoc --stacktrace
 
