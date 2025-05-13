@@ -253,40 +253,48 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
 
   private void initialize(final String connectPart, final XBridge bridge) throws Exception {
 
-    // Query for the XComponent interface and add this as event listener.
+    // Query for the XComponent interface and add this as an event listener.
+    LOGGER.trace("Adding event listener to the bridge...");
     bridgeComponent = Lo.qi(XComponent.class, bridge);
     bridgeComponent.addEventListener(this);
 
     // Get the remote instance
+    LOGGER.trace("Getting the bridge instance...");
     final String rootOid = officeUrl.getUnoUrl().getRootOid();
     final Object bridgeInstance = bridge.getInstance(rootOid);
-    // Did the remote server export this object ?
+    // Did the remote server export this object?
     if (bridgeInstance == null) {
       throw new OfficeConnectionException(
           "Server didn't provide an instance for '" + rootOid + "'", connectPart);
     }
 
     // Query the initial object for its main factory interface.
+    LOGGER.trace("Query the initial object for its main factory interface...");
     final XMultiComponentFactory officeMultiComponentFactory =
         Lo.qi(XMultiComponentFactory.class, bridgeInstance);
 
     // Retrieve the office component context (it's not yet exported from office).
 
     // Query for the XPropertySet interface.
+    LOGGER.trace("Query the factory XPropertySet interface...");
     final XPropertySet properties = Lo.qi(XPropertySet.class, officeMultiComponentFactory);
 
     // Query for the interface XComponentContext using the default context from the office server.
+    LOGGER.trace("Query the XComponentContext using the default context from the office server...");
     componentContext =
         Lo.qi(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
 
-    // Initialise the service manager.
+    // Initialize the service manager.
+    LOGGER.trace("Initializing the service manager....");
     serviceManager = componentContext.getServiceManager();
 
     // Now create the desktop service that handles application windows and documents.
-    // NOTE: use the office component context here !
+    // NOTE: use the office component context here!
+    LOGGER.trace("Initializing the desktop service....");
     desktopService =
         officeMultiComponentFactory.createInstanceWithContext(
             "com.sun.star.frame.Desktop", componentContext);
+    LOGGER.trace("Initializing the component loader....");
     componentLoader =
         Lo.qiOptional(XComponentLoader.class, desktopService)
             .orElseThrow(
