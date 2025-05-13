@@ -65,8 +65,6 @@ public final class LocalOfficeManager
   public static final String DEFAULT_EXISTING_PROCESS_ACTION_STRING = "kill";
   // The default "fail fast" behavior when an office process is started.
   public static final boolean DEFAULT_START_FAIL_FAST = false;
-  // The default behavior when an office process is started regarding OpenGL usage.
-  public static final boolean DEFAULT_DISABLE_OPENGL = false;
   // The default "keep process alive" behavior on shutdown.
   public static final boolean DEFAULT_KEEP_ALIVE_ON_SHUTDOWN = false;
   // The default maximum number of tasks an office process can execute before restarting.
@@ -105,7 +103,7 @@ public final class LocalOfficeManager
    * then be the unique instance of the {@link
    * org.jodconverter.core.office.InstalledOfficeManagerHolder} class. Note that if the {@code
    * InstalledOfficeManagerHolder} class already holds an {@code OfficeManager} instance, the owner
-   * of this existing manager is responsible to stopped it.
+   * of this existing manager is responsible to stop it.
    *
    * @return A {@link LocalOfficeManager} with default configuration.
    */
@@ -126,7 +124,6 @@ public final class LocalOfficeManager
       final ExistingProcessAction existingProcessAction,
       final boolean startFailFast,
       final boolean keepAliveOnShutdown,
-      final boolean disableOpengl,
       final int maxTasksPerProcess,
       final long taskExecutionTimeout,
       final long taskQueueTimeout) {
@@ -152,7 +149,6 @@ public final class LocalOfficeManager
                             existingProcessAction,
                             startFailFast,
                             keepAliveOnShutdown,
-                            disableOpengl,
                             new OfficeConnection(officeUrl))))
             .collect(Collectors.toList()));
   }
@@ -178,7 +174,6 @@ public final class LocalOfficeManager
     private ExistingProcessAction existingProcessAction = DEFAULT_EXISTING_PROCESS_ACTION;
     private boolean startFailFast = DEFAULT_START_FAIL_FAST;
     private boolean keepAliveOnShutdown = DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-    private boolean disableOpengl = DEFAULT_DISABLE_OPENGL;
     private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
     // Private constructor so only LocalOfficeManager can initialize an instance of this builder.
@@ -232,7 +227,6 @@ public final class LocalOfficeManager
               existingProcessAction,
               startFailFast,
               keepAliveOnShutdown,
-              disableOpengl,
               maxTasksPerProcess,
               taskExecutionTimeout,
               taskQueueTimeout);
@@ -258,7 +252,7 @@ public final class LocalOfficeManager
     }
 
     /**
-     * Specifies host name that will be use in the --accept argument when starting an office
+     * Specifies the host name that will be used in the --accept argument when starting an office
      * process. Most of the time, the default will work. But if it doesn't work (unable to connect
      * to the started process), using {@code localhost} instead may work.
      *
@@ -504,7 +498,7 @@ public final class LocalOfficeManager
     }
 
     /**
-     * Specifies the action that must be taken when starting a new office process and there already
+     * Specifies the action that must be taken when starting a new office process, and there already
      * is an existing running process for the same connection string.
      *
      * <p>&nbsp; <b><i>Default</i></b>: ExistingProcessAction.KILL
@@ -580,26 +574,8 @@ public final class LocalOfficeManager
     }
 
     /**
-     * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
-     * done if OpenGL is already disabled according to the user profile used with the office
-     * process. If the options is changed, then office will be restarted.
-     *
-     * <p>&nbsp; <b><i>Default</i></b>: false
-     *
-     * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
-     * @return This builder instance.
-     */
-    public @NonNull Builder disableOpengl(final @Nullable Boolean disableOpengl) {
-
-      if (disableOpengl != null) {
-        this.disableOpengl = disableOpengl;
-      }
-      return this;
-    }
-
-    /**
      * Specifies the maximum number of tasks an office process can execute before restarting. 0
-     * means infinite number of task (will never restart).
+     * means an infinite number of tasks (will never restart).
      *
      * <p>&nbsp; <b><i>Default</i></b>: 200
      *

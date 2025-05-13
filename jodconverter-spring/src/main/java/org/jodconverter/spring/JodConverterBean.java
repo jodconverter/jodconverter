@@ -23,7 +23,6 @@ package org.jodconverter.spring;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_HOSTNAME;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
@@ -60,10 +59,10 @@ import org.jodconverter.local.process.ProcessManager;
 /**
  * The purpose of this class is to provide to the Spring Container a Bean that encapsulates the
  * functionality already present in the JODConverter-CORE library. The target of this bean is to
- * provide the functionality of the PocessPoolOfficeManager.
+ * provide the functionality of the ProcessPoolOfficeManager.
  *
  * <p>The Controller shall launch the OO processes. The Controller shall stop the OO processes when
- * it´s time to shut down the application
+ * it's time to shut down the application
  *
  * @author Jose Luis López López
  */
@@ -87,7 +86,6 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   private ExistingProcessAction existingProcessAction = DEFAULT_EXISTING_PROCESS_ACTION;
   private Boolean startFailFast = DEFAULT_START_FAIL_FAST;
   private Boolean keepAliveOnShutdown = DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-  private Boolean disableOpengl = DEFAULT_DISABLE_OPENGL;
   private Integer maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
   private OfficeManager officeManager;
@@ -125,7 +123,6 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
         .existingProcessAction(existingProcessAction)
         .startFailFast(startFailFast)
         .keepAliveOnShutdown(keepAliveOnShutdown)
-        .disableOpengl(disableOpengl)
         .maxTasksPerProcess(maxTasksPerProcess);
     if (Boolean.TRUE.equals(useDefaultOnInvalidTemplateProfileDir)) {
       builder.templateProfileDirOrDefault(templateProfileDir);
@@ -224,7 +221,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Sets the host name that will be use in the --accept argument when starting an office process.
+   * Sets the host name that will be used in the --accept argument when starting an office process.
    * Most of the time, the default will work. But if it doesn't work (unable to connect to the
    * started process), using {@code localhost} instead may work.
    *
@@ -329,8 +326,8 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Specifies the action the must be taken when starting a new office process and there already is
-   * an existing running process for the same connection string.
+   * Specifies the action that must be taken when starting a new office process, and there already
+   * is an existing running process for the same connection string.
    *
    * <p>&nbsp; <b><i>Default</i></b>: ExistingProcessAction.KILL
    *
@@ -361,8 +358,8 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   /**
    * Controls whether the manager will keep the office process alive on shutdown. If set to {@code
    * true}, the stop task will only disconnect from the office process, which will stay alive. If
-   * set to {@code false}, the office process will be stopped gracefully (or killed if could not
-   * been stopped gracefully).
+   * set to {@code false}, the office process will be stopped gracefully (or killed if it could not
+   * be stopped gracefully).
    *
    * <p>&nbsp; <b><i>Default</i></b>: false
    *
@@ -373,21 +370,8 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   }
 
   /**
-   * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
-   * done if OpenGL is already disabled according to the user profile used with the office process.
-   * If the options is changed, then office must be restarted.
-   *
-   * <p>&nbsp; <b><i>Default</i></b>: false
-   *
-   * @param disableOpengl {@code true} to disable OpenGL, {@code false} otherwise.
-   */
-  public void setDisableOpengl(final @Nullable Boolean disableOpengl) {
-    this.disableOpengl = disableOpengl;
-  }
-
-  /**
    * Specifies the maximum number of tasks an office process can execute before restarting. 0 means
-   * infinite number of task (will never restart).
+   * an infinite number of tasks (will never restart).
    *
    * <p>&nbsp; <b><i>Default</i></b>: 200
    *

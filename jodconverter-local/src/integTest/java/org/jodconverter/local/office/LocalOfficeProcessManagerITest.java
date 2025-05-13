@@ -23,13 +23,11 @@ package org.jodconverter.local.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +42,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.test.util.TestUtil;
-import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.process.IntegTestProcessManager;
 
 /** Contains tests for the {@link LocalOfficeProcessManager} class. */
@@ -81,7 +78,6 @@ class LocalOfficeProcessManagerITest {
               ExistingProcessAction.KILL,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-              DEFAULT_DISABLE_OPENGL,
               new OfficeConnection(CONNECT_URL));
       try {
         manager.start();
@@ -116,7 +112,6 @@ class LocalOfficeProcessManagerITest {
               ExistingProcessAction.FAIL,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-              DEFAULT_DISABLE_OPENGL,
               new OfficeConnection(CONNECT_URL));
       try {
 
@@ -155,7 +150,6 @@ class LocalOfficeProcessManagerITest {
               ExistingProcessAction.CONNECT,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-              DEFAULT_DISABLE_OPENGL,
               new OfficeConnection(CONNECT_URL));
       try {
 
@@ -192,7 +186,6 @@ class LocalOfficeProcessManagerITest {
               ExistingProcessAction.CONNECT_OR_KILL,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-              DEFAULT_DISABLE_OPENGL,
               new OfficeConnection(CONNECT_URL));
       try {
         manager.start();
@@ -252,7 +245,6 @@ class LocalOfficeProcessManagerITest {
               ExistingProcessAction.CONNECT_OR_KILL,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-              DEFAULT_DISABLE_OPENGL,
               connection);
       managerRef.set(manager);
       try {
@@ -275,10 +267,6 @@ class LocalOfficeProcessManagerITest {
     @Test
     void withCustomProfileDir_ShouldCopyProfileDirToWorkingDir() throws OfficeException {
 
-      // Don't do this test on Windows (won't work on Windows 10 and 11,
-      // since we have to disable OpenGL).
-      assumeTrue(!OSUtils.IS_OS_WINDOWS);
-
       final OfficeConnection connection = new OfficeConnection(CONNECT_URL);
       final LocalOfficeProcessManager manager =
           new LocalOfficeProcessManager(
@@ -294,7 +282,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-              DEFAULT_DISABLE_OPENGL,
               connection);
       try {
         manager.start();
@@ -335,7 +322,6 @@ class LocalOfficeProcessManagerITest {
               ExistingProcessAction.KILL,
               true,
               true,
-              DEFAULT_DISABLE_OPENGL,
               connection);
       try {
         manager.start();
@@ -358,7 +344,6 @@ class LocalOfficeProcessManagerITest {
                 ExistingProcessAction.FAIL,
                 true,
                 DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-                DEFAULT_DISABLE_OPENGL,
                 connection);
 
         // Find a way to assert that an exception is thrown (check the log).
@@ -381,7 +366,6 @@ class LocalOfficeProcessManagerITest {
                 ExistingProcessAction.CONNECT_OR_KILL,
                 true,
                 DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-                DEFAULT_DISABLE_OPENGL,
                 connection);
 
       } finally {
@@ -412,7 +396,6 @@ class LocalOfficeProcessManagerITest {
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-            DEFAULT_DISABLE_OPENGL,
             connection);
     processManager.start();
     final long limit = start + START_WAIT_TIMEOUT;

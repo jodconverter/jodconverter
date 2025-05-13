@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
@@ -40,10 +39,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -216,7 +212,6 @@ class ConvertTest {
                           "officeProcessManager.existingProcessAction",
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
-                          "officeProcessManager.disableOpengl",
                           "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
                           DEFAULT_TASK_EXECUTION_TIMEOUT,
@@ -232,7 +227,6 @@ class ConvertTest {
                           DEFAULT_EXISTING_PROCESS_ACTION,
                           true,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-                          DEFAULT_DISABLE_OPENGL,
                           "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
     }
 
@@ -256,7 +250,6 @@ class ConvertTest {
               .parse(
                   (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
                   new String[] {
-                    "-g",
                     "-i",
                     ooHome.getPath(),
                     "-m",
@@ -306,7 +299,6 @@ class ConvertTest {
                           "officeProcessManager.existingProcessAction",
                           "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
-                          "officeProcessManager.disableOpengl",
                           "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
                           30_000L,
@@ -322,7 +314,6 @@ class ConvertTest {
                           ExistingProcessAction.KILL,
                           true,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-                          true,
                           "socket,host=127.0.0.1,port=2003,tcpNoDelay=1"));
     }
 
@@ -427,11 +418,14 @@ class ConvertTest {
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
+      Assertions.assertNotNull(localConverter);
 
       final Map<String, Object> expectedLoadProperties =
           new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
@@ -450,11 +444,14 @@ class ConvertTest {
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
+      Assertions.assertNotNull(localConverter);
 
       final Map<String, Object> expectedFilterData = new HashMap<>();
       expectedFilterData.put("PageRange", "2-2");
@@ -474,11 +471,14 @@ class ConvertTest {
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
+      Assertions.assertNotNull(localConverter);
 
       final Map<String, Object> expectedStoreProperties = new HashMap<>();
       expectedStoreProperties.put("Overwrite", true);
@@ -505,11 +505,14 @@ class ConvertTest {
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
+      Assertions.assertNotNull(localConverter);
 
       final Map<String, Object> expectedFilterData = new HashMap<>();
       expectedFilterData.put("PageRange", "2-4");
@@ -533,11 +536,14 @@ class ConvertTest {
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
               Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+      Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
+      Assertions.assertNotNull(localConverter);
 
       assertThat(localConverter)
           .extracting("loadProperties")

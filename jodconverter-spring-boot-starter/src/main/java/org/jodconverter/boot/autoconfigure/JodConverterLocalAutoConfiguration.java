@@ -87,7 +87,6 @@ public class JodConverterLocalAutoConfiguration {
             .processTimeout(properties.getProcessTimeout())
             .processRetryInterval(properties.getProcessRetryInterval())
             .afterStartProcessDelay(properties.getAfterStartProcessDelay())
-            .disableOpengl(properties.isDisableOpengl())
             .startFailFast(properties.isStartFailFast())
             .keepAliveOnShutdown(properties.isKeepAliveOnShutdown())
             .taskQueueTimeout(properties.getTaskQueueTimeout())

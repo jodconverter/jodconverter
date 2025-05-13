@@ -32,15 +32,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.sun.star.beans.XHierarchicalPropertySet;
-import com.sun.star.beans.XHierarchicalPropertySetInfo;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.DisposedException;
-import com.sun.star.lang.XComponent;
-import com.sun.star.uno.XComponentContext;
-import com.sun.star.util.XChangesBatch;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +45,6 @@ import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.RetryTimeoutException;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.StringUtils;
-import org.jodconverter.local.office.utils.Info;
-import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.ProcessQuery;
 
@@ -66,19 +58,12 @@ class LocalOfficeProcessManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeProcessManager.class);
 
-  // The path to the UseOpenGL configuration property.
-  private static final String PROP_PATH_USE_OPENGL = "VCL/UseOpenGL";
-
   private VerboseProcess process;
   private long pid = PID_UNKNOWN;
   private OfficeDescriptor descriptor;
-
   private final OfficeConnection connection;
   private final ExecutorService executor;
   private final File instanceProfileDir;
-  // Disconnection is expected when disabling OpenGL (restart required).
-  private final AtomicBoolean openglDisconnect = new AtomicBoolean(false);
-
   private final OfficeUrl officeUrl;
   private final File officeHome;
   private final ProcessManager processManager;
@@ -90,7 +75,6 @@ class LocalOfficeProcessManager {
   private final ExistingProcessAction existingProcessAction;
   private final boolean startFailFast;
   private final boolean keepAliveOnShutdown;
-  private final boolean disableOpengl;
 
   /**
    * Creates a new manager with the specified configuration.
@@ -108,7 +92,7 @@ class LocalOfficeProcessManager {
    *     an office process call (start/terminate).
    * @param afterStartProcessDelay The delay, in milliseconds, after the start of an office process
    *     before doing anything else.
-   * @param existingProcessAction Represents the action to take when starting a new office process
+   * @param existingProcessAction Represents the action to take when starting a new office process,
    *     and there already is a process running with the same connection string.
    * @param startFailFast Controls whether the manager will "fail fast" if the office process cannot
    *     be started. If set to {@code true}, the {@link #start()} operation will wait for the task
@@ -118,10 +102,7 @@ class LocalOfficeProcessManager {
    * @param keepAliveOnShutdown Controls whether the manager will keep the office process alive on
    *     shutdown. If set to {@code true}, the {@link #stop()} will only disconnect from the office
    *     process, which will stay alive. If set to {@code false}, the office process will be stopped
-   *     gracefully (or killed if could not been stopped gracefully).
-   * @param disableOpengl Indicates whether OpenGL must be disabled when starting a new office
-   *     process. Nothing will be done if OpenGL is already disabled according to the user profile
-   *     used with the office process. If the options is changed, then office must be restarted.
+   *     gracefully (or killed if it could not be stopped gracefully).
    * @param connection The object that will manage the connection to the office process.
    */
   /* default */ LocalOfficeProcessManager(
@@ -137,7 +118,6 @@ class LocalOfficeProcessManager {
       final ExistingProcessAction existingProcessAction,
       final boolean startFailFast,
       final boolean keepAliveOnShutdown,
-      final boolean disableOpengl,
       final OfficeConnection connection) {
 
     this.officeUrl = officeUrl;
@@ -151,7 +131,6 @@ class LocalOfficeProcessManager {
     this.existingProcessAction = existingProcessAction;
     this.startFailFast = startFailFast;
     this.keepAliveOnShutdown = keepAliveOnShutdown;
-    this.disableOpengl = disableOpengl;
     this.connection = connection;
 
     executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("jodconverter-offprocmng"));
@@ -186,7 +165,7 @@ class LocalOfficeProcessManager {
     if (startFailFast) {
       // Submit the start task to the executor.
       LOGGER.debug("Submitting start task...");
-      final Future<Void> future = executor.submit(() -> startProcessAndConnect(false, true));
+      final Future<Void> future = executor.submit(() -> startProcessAndConnect(false));
 
       // Wait for completion of the task.
       try {
@@ -208,7 +187,7 @@ class LocalOfficeProcessManager {
       executor.execute(
           () -> {
             try {
-              startProcessAndConnect(false, true);
+              startProcessAndConnect(false);
             } catch (OfficeException ex) {
               LOGGER.error("Could not start the office process.", ex);
             }
@@ -243,7 +222,7 @@ class LocalOfficeProcessManager {
           // causing a faster start of an office process.
           stopProcess(false);
           try {
-            startProcessAndConnect(true, false);
+            startProcessAndConnect(true);
           } catch (OfficeException ex) {
             LOGGER.error("Could not restart the office process.", ex);
           }
@@ -262,28 +241,17 @@ class LocalOfficeProcessManager {
 
     executor.execute(
         () -> {
-          if (openglDisconnect.compareAndSet(true, false)) {
-            LOGGER.debug("Connection lost because OpenGL was changed");
-            // We have lost the connection because OpenGL was changed.
-            // Thus, we want to keep the instance profile directory on restart.
-            ensureProcessExited(false);
-            try {
-              startProcessAndConnect(true, false);
-            } catch (OfficeException ex) {
-              LOGGER.error("Could not restart the office process after disabling OpenGL.", ex);
-            }
-          } else {
-            LOGGER.debug("Connection lost unexpectedly");
-            // Since we have lost the connection unexpectedly, it could mean that
-            // the office process has crashed. Thus, we want a clean instance profile
-            // directory on restart.
-            ensureProcessExited(true);
-            try {
-              startProcessAndConnect(false, true);
-            } catch (OfficeException ex) {
-              LOGGER.error(
-                  "Could not restart the office process after an unexpected lost connection.", ex);
-            }
+          LOGGER.debug("Connection lost unexpectedly");
+
+          // Since we have lost the connection unexpectedly, it could mean that
+          // the office process has crashed. Thus, we want a clean instance profile
+          // directory on restart.
+          ensureProcessExited(true);
+          try {
+            startProcessAndConnect(false);
+          } catch (OfficeException ex) {
+            LOGGER.error(
+                "Could not restart the office process after an unexpected lost connection.", ex);
           }
         });
   }
@@ -330,7 +298,7 @@ class LocalOfficeProcessManager {
 
     // Await for task termination. This is required if we don't want to let garbage on disk.
     try {
-      // +1000L to allows the deletion of the templateProfileDir.
+      // +1000L to allow the deletion of the templateProfileDir.
       // But is it really necessary? It is a wild guess...
       final long stopTimeout = processTimeout + 1000L;
       LOGGER.debug("Waiting for stop task to complete ({} millisecs)...", stopTimeout);
@@ -355,14 +323,12 @@ class LocalOfficeProcessManager {
    * @param restart Indicates whether it is a fresh start or a restart. A restart will assume that
    *     the instance profile directory is already created. To recreate the instance profile
    *     directory, {@code restart} should be set to {@code false}.
-   * @param checkOpengl Indicates whether we must check to change the OpenGL setting.
    * @return {@code null}. So it could be used in a {@link java.util.concurrent.Callable}.
    * @throws OfficeException If the office process cannot be started, or we are unable to connectr
    *     to the started process.
    */
   @SuppressWarnings("SameReturnValue")
-  private Void startProcessAndConnect(final boolean restart, final boolean checkOpengl)
-      throws OfficeException {
+  private Void startProcessAndConnect(final boolean restart) throws OfficeException {
 
     // Reinitialize pid and process.
     pid = PID_UNKNOWN;
@@ -399,9 +365,6 @@ class LocalOfficeProcessManager {
           String.format(
               "A process with --accept '%s' started but its pid could not be found", acceptString));
     }
-
-    // Handle OpenGL deactivation restart.
-    handleOpenGlRestart(checkOpengl);
 
     return null;
   }
@@ -441,21 +404,6 @@ class LocalOfficeProcessManager {
       throw new OfficeException(
           String.format("An error prevents us to start a process with --accept '%s'", acceptString),
           ex);
-    }
-  }
-
-  private void handleOpenGlRestart(final boolean checkOpengl) throws OfficeException {
-
-    // Here a connection has been made successfully to a newly started office process.
-    // Check to disable the usage of OpenGL. Some file won't load properly if OpenGL is
-    // on (LibreOffice).
-    if (checkOpengl && disableOpengl && checkForOpengl(connection.getComponentContext())) {
-      LOGGER.info("OpenGL has been disabled and a restart is required; restarting...");
-
-      // Set openglDisconnect to true in order to avoid instanceProfileDir deletion.
-      openglDisconnect.set(true);
-      // This will cause unexpected disconnection and subsequent restart.
-      executor.execute(this::forciblyTerminateProcess);
     }
   }
 
@@ -643,7 +591,7 @@ class LocalOfficeProcessManager {
     command.add("-env:UserInstallation=" + LocalOfficeUtils.toUrl(instanceProfileDir));
 
     // It could be interesting to use the LibreOffice pidfile switch
-    // to retrieve the LibreOffice pid. But is it reliable ? And it would
+    // to retrieve the LibreOffice pid. But is it reliable? And it would
     // not work with Apache OpenOffice.
 
     if (LOGGER.isDebugEnabled()) {
@@ -653,9 +601,8 @@ class LocalOfficeProcessManager {
   }
 
   /**
-   * Detects the office descriptor. This function will fill the OfficeDescriptor of the current
-   * class using the path of the office executable, and then using the --help command line option,
-   * if possible.
+   * Detects the office descriptor. This function will create the OfficeDescriptor using the path of
+   * the office executable.
    */
   private OfficeDescriptor detectOfficeDescriptor() {
 
@@ -724,57 +671,6 @@ class LocalOfficeProcessManager {
   }
 
   /**
-   * Checks if we must disable OpenGL.
-   *
-   * @param context The office context.
-   * @return {@code true} if OpenGL has been disabled and a restart is required; {@code false}
-   *     otherwise.
-   * @throws OfficeException If the verification fails.
-   */
-  private boolean checkForOpengl(final XComponentContext context) throws OfficeException {
-
-    // See configuration registry for more options.
-    // e.g: C:\Program Files\LibreOffice 5\share\registry\main.xcd
-
-    try {
-
-      // Create the view to the root element where UseOpenGL option lives
-      final Object viewRoot = Info.getConfigUpdateAccess(context, "/org.openoffice.Office.Common");
-      if (viewRoot == null) {
-        return false; // No restart needed
-      }
-      try {
-
-        // Check if the OpenGL option is on
-        final XHierarchicalPropertySet properties = Lo.qi(XHierarchicalPropertySet.class, viewRoot);
-
-        final XHierarchicalPropertySetInfo propsInfo = properties.getHierarchicalPropertySetInfo();
-        if (propsInfo.hasPropertyByHierarchicalName(PROP_PATH_USE_OPENGL)) {
-          final boolean useOpengl =
-              (boolean) properties.getHierarchicalPropertyValue(PROP_PATH_USE_OPENGL);
-          LOGGER.info("Use OpenGL is set to {}", useOpengl);
-          if (useOpengl) {
-            properties.setHierarchicalPropertyValue(PROP_PATH_USE_OPENGL, false);
-            // Changes have been applied to the view here
-            final XChangesBatch updateControl = Lo.qi(XChangesBatch.class, viewRoot);
-            updateControl.commitChanges();
-
-            // A restart is required.
-            return true;
-          }
-        }
-      } finally {
-        // We are done with the view - dispose it
-        Lo.qi(XComponent.class, viewRoot).dispose();
-      }
-      return false; // No restart needed
-
-    } catch (com.sun.star.uno.Exception ex) {
-      throw new OfficeException("Could not check if the Use OpenGL option is on.", ex);
-    }
-  }
-
-  /**
    * Prepare the profile directory of the office process.
    *
    * @throws OfficeException If the template profile directory cannot be copied to the new instance
@@ -787,10 +683,7 @@ class LocalOfficeProcessManager {
       deleteInstanceProfileDir();
     }
 
-    // Allow the templateProfileDir to be set using a System property for development purposes.
-    // Using Windows 10 and Windows 11, using a templateProfileDir to disable OpenGL and skia is
-    // mandatory orelse we won't be able to connect to the LibreOffice instance (connection
-    // refused).
+    // Allow the templateProfileDir to be set using a System property for development.
     File templateDir = templateProfileDir;
     if (templateDir == null) {
       final String property =

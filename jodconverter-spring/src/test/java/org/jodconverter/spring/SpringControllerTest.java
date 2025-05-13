@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
@@ -65,7 +64,6 @@ class SpringControllerTest {
             "existingProcessAction",
             "startFailFast",
             "keepAliveOnShutdown",
-            "disableOpengl",
             "maxTasksPerProcess")
         .containsExactly(
             null,
@@ -82,7 +80,6 @@ class SpringControllerTest {
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-            DEFAULT_DISABLE_OPENGL,
             DEFAULT_MAX_TASKS_PER_PROCESS);
   }
 
@@ -105,7 +102,6 @@ class SpringControllerTest {
     bean.setExistingProcessAction(ExistingProcessAction.CONNECT);
     bean.setStartFailFast(true);
     bean.setKeepAliveOnShutdown(true);
-    bean.setDisableOpengl(true);
     bean.setMaxTasksPerProcess(99);
 
     assertThat(bean)
@@ -124,7 +120,6 @@ class SpringControllerTest {
             "existingProcessAction",
             "startFailFast",
             "keepAliveOnShutdown",
-            "disableOpengl",
             "maxTasksPerProcess")
         .containsExactly(
             new File(testFolder, "workingDir").getPath(),
@@ -139,7 +134,6 @@ class SpringControllerTest {
             504L,
             10L,
             ExistingProcessAction.CONNECT,
-            true,
             true,
             true,
             99);

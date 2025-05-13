@@ -93,8 +93,6 @@ public final class Convert {
           .hasArg()
           .desc("output format (e.g. pdf)")
           .build();
-  private static final Option OPT_DISABLE_OPENGL =
-      Option.builder("g").longOpt("disable-opengl").desc("Disable OpenGL (optional)").build();
   private static final Option OPT_HELP =
       Option.builder("h").longOpt("help").desc("displays help at the command prompt").build();
   private static final Option OPT_OFFICE_HOME =
@@ -203,7 +201,6 @@ public final class Convert {
     // Always fail fast!!
     builder.startFailFast(true);
     applyOption(OPT_OFFICE_HOME, commandLine, builder::officeHome);
-    builder.disableOpengl(commandLine.hasOption(OPT_DISABLE_OPENGL.getOpt()));
     applyOption(OPT_PROCESS_MANAGER, commandLine, builder::processManager);
     applyOption(OPT_PORT, commandLine, opt -> builder.portNumbers(Integer.parseInt(opt)));
     applyOption(
@@ -298,7 +295,6 @@ public final class Convert {
     options.addOption(OPT_CONNECTION_URL); // -c, --connection-url
     options.addOption(OPT_OUTPUT_DIRECTORY); // -d, --output-directory
     options.addOption(OPT_OUTPUT_FORMAT); // -f, --output-format
-    options.addOption(OPT_DISABLE_OPENGL); // -g, --disable-opengl
     options.addOption(OPT_HELP); // -h, --help
     options.addOption(OPT_OFFICE_HOME); // -i, --office-home
     options.addOption(OPT_LOAD_PROPERTIES); // -l, --load-properties

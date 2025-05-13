@@ -40,14 +40,14 @@ public class JodConverterLocalProperties {
 
   /**
    * Represents the office home directory. If not set, the office installation directory is
-   * auto-detected, most recent version of LibreOffice first.
+   * auto-detected, the most recent version of LibreOffice first.
    */
   private String officeHome;
 
   /**
-   * Host name that will be use in the --accept argument when starting an office process. Most of
+   * Host name that will be used in the --accept argument when starting an office process. Most of
    * the time, the default will work. But if it doesn't work (unable to connect to the started
-   * process), using 'localhost' as host name instead may work.
+   * process), using 'localhost' as the host name instead may work.
    */
   private String hostName = LocalOfficeManager.DEFAULT_HOSTNAME;
 
@@ -92,8 +92,8 @@ public class JodConverterLocalProperties {
   private long afterStartProcessDelay = LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
 
   /**
-   * Specifies the action the must be taken when starting a new office process and there already is
-   * an existing running process for the same connection string.
+   * Specifies the action that must be taken when starting a new office process, and there already
+   * is an existing running process for the same connection string.
    */
   private String existingProcessAction = LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION_STRING;
 
@@ -111,17 +111,10 @@ public class JodConverterLocalProperties {
   /**
    * Controls whether the manager will keep the office process alive on shutdown. If set to {@code
    * true}, the stop task will only disconnect from the office process, which will stay alive. If
-   * set to {@code false}, the office process will be stopped gracefully (or killed if could not
-   * been stopped gracefully).
+   * set to {@code false}, the office process will be stopped gracefully (or killed if could not be
+   * stopped gracefully).
    */
   private boolean keepAliveOnShutdown = LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-
-  /**
-   * Specifies whether OpenGL must be disabled when starting a new office process. Nothing will be
-   * done if OpenGL is already disabled according to the user profile used with the office process.
-   * If the options is changed, then office will be restarted.
-   */
-  private boolean disableOpengl = LocalOfficeManager.DEFAULT_DISABLE_OPENGL;
 
   /**
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
@@ -265,14 +258,6 @@ public class JodConverterLocalProperties {
 
   public void setKeepAliveOnShutdown(final boolean keepAliveOnShutdown) {
     this.keepAliveOnShutdown = keepAliveOnShutdown;
-  }
-
-  public boolean isDisableOpengl() {
-    return disableOpengl;
-  }
-
-  public void setDisableOpengl(final boolean disableOpengl) {
-    this.disableOpengl = disableOpengl;
   }
 
   public long getTaskQueueTimeout() {
