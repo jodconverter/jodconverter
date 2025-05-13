@@ -32,12 +32,7 @@ import java.util.Map;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lib.uno.adapter.ByteArrayToXInputStreamAdapter;
-import com.sun.star.task.DocumentMSPasswordRequest;
-import com.sun.star.task.DocumentPasswordRequest;
-import com.sun.star.task.ErrorCodeIOException;
-import com.sun.star.task.PasswordRequest;
-import com.sun.star.task.XInteractionHandler;
-import com.sun.star.task.XInteractionRequest;
+import com.sun.star.task.*;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -59,12 +54,14 @@ import org.jodconverter.local.office.utils.Lo;
  *
  * @see org.jodconverter.core.task.OfficeTask
  */
-public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
+public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
+    implements PasswordProtectedExceptionSupportTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLocalOfficeTask.class);
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
   protected final Map<String, Object> loadProperties;
   protected final boolean useStreamAdapters;
+  private PasswordInteractionHandler passwordPasswordInteractionHandler;
 
   /** Handler used to detect password-protected file. */
   private static class PasswordInteractionHandler implements XInteractionHandler {
@@ -92,12 +89,12 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
     }
 
     /**
-     * Gets name of the document (more properly, the URL of the document), for which the request was
-     * made.
+     * Gets the name of the document (more properly, the URL of the document), for which the request
+     * was made.
      *
-     * @return The name of the document for which the request was made, null {@code false} if no
-     *     password interaction request was made, or "NA" if an interaction was made, but the
-     *     document pas is unknown.
+     * @return The name of the document for which the request was made, null if no password
+     *     interaction request was made, or "NA" if an interaction was made, but the document name
+     *     is unknown.
      */
     public String getDocumentName() {
       return documentName;
@@ -185,7 +182,10 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
 
     // Register a PasswordInteractionHandler handler for opening documents, but only
     // if no interaction handler has been put into the load properties.
-    loadProps.putIfAbsent("InteractionHandler", new PasswordInteractionHandler());
+    if (!loadProps.containsKey("InteractionHandler")) {
+      passwordPasswordInteractionHandler = new PasswordInteractionHandler();
+      loadProps.put("InteractionHandler", passwordPasswordInteractionHandler);
+    }
 
     return loadProps;
   }
@@ -279,17 +279,19 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask {
   private void handlePasswordProtection(
       final XComponent document, final Map<String, Object> loadProps) throws OfficeException {
 
-    if (document == null) {
-      final Object handler = loadProps.get("InteractionHandler");
-      if (handler instanceof PasswordInteractionHandler) {
-        final PasswordInteractionHandler pHandler = (PasswordInteractionHandler) handler;
-        if (pHandler.hasPasswordInteractionRequest()) {
-          throw new PasswordProtectedException(
-              "Document password requested for " + pHandler.getDocumentName(),
-              pHandler.getPasswordRequest());
-        }
-      }
+    if (document == null
+        && passwordPasswordInteractionHandler != null
+        && passwordPasswordInteractionHandler.hasPasswordInteractionRequest()) {
+      throw new PasswordProtectedException(
+          "Document password requested for " + passwordPasswordInteractionHandler.getDocumentName(),
+          passwordPasswordInteractionHandler.getPasswordRequest());
     }
+  }
+
+  @Override
+  public boolean hasPasswordInteractionRequest() {
+    return passwordPasswordInteractionHandler != null
+        && passwordPasswordInteractionHandler.hasPasswordInteractionRequest();
   }
 
   @Override

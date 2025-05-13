@@ -23,6 +23,7 @@ package org.jodconverter.local.office;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.core.office.AbstractOfficeManagerPoolEntry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.OfficeTask;
+import org.jodconverter.local.task.PasswordProtectedExceptionSupportTask;
 
 /**
  * An {@link LocalOfficeManagerPoolEntry} is responsible to execute tasks submitted through a {@link
@@ -52,6 +54,8 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   private final LocalOfficeProcessManager officeProcessManager;
   private final AtomicInteger taskCount = new AtomicInteger(0);
   private final AtomicBoolean disconnectExpected = new AtomicBoolean(false);
+  private final AtomicReference<PasswordProtectedExceptionSupportTask>
+      passwordProtectedExceptionSupportTask = new AtomicReference<>();
 
   /**
    * Creates a new pool entry for the specified office URL with the specified configuration.
@@ -100,11 +104,28 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
             // will cancel any task that may be running.
             if (!disconnectExpected.compareAndSet(true, false)) {
 
-              // Here, we didn't expect this disconnection. We must restart
-              // the office process, canceling any task that may be running.
-              LOGGER.warn("Connection lost unexpectedly; attempting restart");
-              cancelTask();
-              officeProcessManager.restartDueToLostConnection();
+              // We have to check here for password protection for LibreOffice 24+ since
+              // a password interaction causes a disconnection when the password is not
+              // provided.
+              // https://github.com/jodconverter/jodconverter/issues/423#issue-3000441635
+              final PasswordProtectedExceptionSupportTask task =
+                  passwordProtectedExceptionSupportTask.getAndSet(null);
+              if (task != null && task.hasPasswordInteractionRequest()) {
+
+                // We don't have to cancel the task here. A PasswordProtectedException has
+                // already been thrown or will be thrown in another thread, causing the task
+                // to fail with an ExecutionException, which will contain the
+                // PasswordProtectedException.
+                officeProcessManager.restart();
+
+              } else {
+
+                // Here, we didn't expect this disconnection. We must restart
+                // the office process, canceling any task that may be running.
+                LOGGER.warn("Connection lost unexpectedly; attempting restart");
+                cancelTask();
+                officeProcessManager.restartDueToLostConnection();
+              }
             }
           }
         };
@@ -116,6 +137,13 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   @Override
   public void doExecute(final @NonNull OfficeTask task) throws OfficeException {
     LOGGER.debug("Executing task: {}", task);
+
+    // Keep the task to let us know if we are processing a task that supports
+    // throwing PasswordProtectedException.
+    passwordProtectedExceptionSupportTask.set(null);
+    if (task instanceof PasswordProtectedExceptionSupportTask) {
+      passwordProtectedExceptionSupportTask.set((PasswordProtectedExceptionSupportTask) task);
+    }
 
     // Execute the task.
     task.execute(officeProcessManager.getConnection());
@@ -142,7 +170,7 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   @Override
   protected void handleExecuteTimeoutException(final @NonNull TimeoutException timeoutEx) {
 
-    // Is the task did not complete within the configured timeout, we must restart
+    // If the task did not complete within the configured timeout, we must restart.
     officeProcessManager.restartDueToTaskTimeout();
   }
 

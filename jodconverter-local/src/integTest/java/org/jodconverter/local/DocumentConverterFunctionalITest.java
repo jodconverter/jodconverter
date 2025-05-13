@@ -103,8 +103,7 @@ class DocumentConverterFunctionalITest {
     assertThat(testFolder.list()).hasSizeGreaterThanOrEqualTo(1);
   }
 
-  // @Test
-  // TODO: This test fail with LibreOffice 24+, find out why
+  @Test
   void testPasswordProtectedFiles(
       final @TempDir File testFolder, final DocumentConverter converter) {
 
