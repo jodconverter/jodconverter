@@ -12,9 +12,9 @@ public class Deps {
 
   // Apache Commons Libraries
   // Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
-  public static final String commonsCli = "commons-cli:commons-cli:1.6.0";
+  public static final String commonsCli = "commons-cli:commons-cli:1.9.0";
   // Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
-  public static final String commonsIo = "commons-io:commons-io:2.15.1";
+  public static final String commonsIo = "commons-io:commons-io:2.19.0";
 
   // Spring Boot libraries
   // Spring boot 3+ requires java 17
@@ -29,7 +29,7 @@ public class Deps {
       "org.springframework.boot:spring-boot-starter-test";
 
   // Latest version -> https://mvnrepository.com/artifact/org.libreoffice
-  public static final String loVersion = "7.6.4";
+  public static final String loVersion = "24.8.4";
   public static final String libreoffice = "org.libreoffice:libreoffice:" + loVersion;
 
   // Latest version -> https://mvnrepository.com/artifact/org.openoffice
@@ -69,7 +69,7 @@ public class Deps {
   public static final String mockito = "org.mockito:mockito-core";
   public static final String mockitoInline = "org.mockito:mockito-inline";
   // We now have to use the wiremock standalone version since
-  // jetty dependency is provided by spring boot
+  // spring boot provides jetty dependency
   // Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
   // 3+ required minimum java 11
   public static final String wiremock = "com.github.tomakehurst:wiremock-standalone:2.27.2";
