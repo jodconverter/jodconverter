@@ -28,7 +28,7 @@ Build default, JODConverter is built using the OpenOffice libraries. See [here](
 
 #### Gradle:
 ```Shell
-implementation 'org.jodconverter:jodconverter-local-lo:4.4.8'
+implementation 'org.jodconverter:jodconverter-local-lo:4.4.9'
 ```
 
 #### Maven:
@@ -36,7 +36,7 @@ implementation 'org.jodconverter:jodconverter-local-lo:4.4.8'
 <dependency>
   <groupId>org.jodconverter</groupId>
   <artifactId>jodconverter-local-lo</artifactId>
-  <version>4.4.8</version>
+  <version>4.4.9</version>
 </dependency>
 ```
 
@@ -44,11 +44,11 @@ implementation 'org.jodconverter:jodconverter-local-lo:4.4.8'
 
 #### Gradle:
 ```Shell
-implementation 'org.jodconverter:jodconverter-local:4.4.8'
+implementation 'org.jodconverter:jodconverter-local:4.4.9'
 ```
 or
 ```Shell
-implementation 'org.jodconverter:jodconverter-local-oo:4.4.8'
+implementation 'org.jodconverter:jodconverter-local-oo:4.4.9'
 ```
 
 #### Maven:
@@ -56,7 +56,7 @@ implementation 'org.jodconverter:jodconverter-local-oo:4.4.8'
 <dependency>
   <groupId>org.jodconverter</groupId>
   <artifactId>jodconverter-local</artifactId>
-  <version>4.4.8</version>
+  <version>4.4.9</version>
 </dependency>
 ```
 or
@@ -64,7 +64,7 @@ or
 <dependency>
   <groupId>org.jodconverter</groupId>
   <artifactId>jodconverter-local-oo</artifactId>
-  <version>4.4.8</version>
+  <version>4.4.9</version>
 </dependency>
 ```
 

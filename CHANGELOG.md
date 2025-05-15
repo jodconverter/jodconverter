@@ -1,23 +1,36 @@
 # Changelog
 
+## [v4.4.9](https://github.com/jodconverter/jodconverter/tree/v4.4.9)
+
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.8...v4.4.9)
+
+**Implemented enhancements:**
+
+- Remove the disableOpengl option. [\#426](https://github.com/jodconverter/jodconverter/issues/426)
+
+**Fixed bugs:**
+
+- Libre Office disconnects when converting a password protected ODT file to PDF [\#423](https://github.com/jodconverter/jodconverter/issues/423)
+- On more recent Java version like Java 17, JODconverter has runtime exception Unable to create instance DocumentFormat [\#408](https://github.com/jodconverter/jodconverter/issues/408)
+
 ## [v4.4.8](https://github.com/jodconverter/jodconverter/tree/v4.4.8) (2024-09-01)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.7...v4.4.8)
 
 **Implemented enhancements:**
 
-- Add xlsm support in DefaultDocumentFormatRegistry [\#391](https://github.com/jodconverter/jodconverter/issues/391)
+- Any particular reason we do not support xlsm in DefaultDocumentFormatRegistry [\#391](https://github.com/jodconverter/jodconverter/issues/391)
 
 **Fixed bugs:**
 
 - No qualifying bean of type 'org.jodconverter.core.DocumentConverter' available [\#390](https://github.com/jodconverter/jodconverter/issues/390)
-- Task keeps hanging when using Remote JodConverter [\#384](https://github.com/jodconverter/jodconverter/issues/384)
-- Scanner (IO) bug [\#383](https://github.com/jodconverter/jodconverter/issues/383)
+- Scanner bug [\#383](https://github.com/jodconverter/jodconverter/issues/383)
 
 **Closed issues:**
 
-- Incompatible with LO 24.x \(probably?\) on macos [\#386](https://github.com/jodconverter/jodconverter/issues/386)
-- Removed unnecessary `@ConfigurationPropertiesScan` on `JodConverterLocalProperties` and `JodConverterRemoteProperties` [\#377](https://github.com/jodconverter/jodconverter/issues/377)
+- Incompatible with LO 24.x \(probably?\) [\#386](https://github.com/jodconverter/jodconverter/issues/386)
+- Task keeps hanging when using Remote JodConverter [\#384](https://github.com/jodconverter/jodconverter/issues/384)
+- Please remove unnecessary `@ConfigurationPropertiesScan` on `JodConverterLocalProperties` and `JodConverterRemoteProperties` [\#377](https://github.com/jodconverter/jodconverter/issues/377)
 - Information about supported properties and their meaning [\#372](https://github.com/jodconverter/jodconverter/issues/372)
 - The Word document with more than 12 pages will automatically cancel the task. [\#364](https://github.com/jodconverter/jodconverter/issues/364)
 - pptx file conversion of PDF failed [\#359](https://github.com/jodconverter/jodconverter/issues/359)
@@ -121,7 +134,6 @@
 - Spring configuration metadata json not generated [\#295](https://github.com/jodconverter/jodconverter/issues/295)
 - linux+docker+libreoffice，spring-boot + jodconverter，Could not start the office process. [\#292](https://github.com/jodconverter/jodconverter/issues/292)
 - 转pdf异常，Caused by: com.sun.star.io.IOException: SfxBaseModel::impl\_store \<file:///D:/officedest/home/data/localpath/servicecenter/20210817/20210817094906679504091671043/Unit%201%20B%20Read%20and%20write基于深度学习的教学课件.pdf\> failed: 0x11b\(Error Area:Io Class:Abort Code:27\) [\#287](https://github.com/jodconverter/jodconverter/issues/287)
-- Docx does not recognize the password [\#286](https://github.com/jodconverter/jodconverter/issues/286)
 - "Unspecified Application Error" occurs from specific PPTX document [\#272](https://github.com/jodconverter/jodconverter/issues/272)
 - org.jodconverter.office.OfficeException: Office process died with exit code 333 [\#268](https://github.com/jodconverter/jodconverter/issues/268)
 - No response for pdf converter when more requests [\#267](https://github.com/jodconverter/jodconverter/issues/267)
