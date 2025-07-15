@@ -1,7 +1,28 @@
 // Follow https://github.com/gradle/gradle/issues/15383 to fix the way we access "libs"
 import org.gradle.accessors.dm.LibrariesForLibs
 
+//
+// Variables
+//
+
 val libs = the<LibrariesForLibs>()
+
+val moduleName = if (project.hasProperty("moduleName")) {
+    project.property("moduleName").toString()
+} else {
+    project.name
+}
+
+val javaVersionStr = libs.versions.java.get()
+val javaVersion = when (javaVersionStr) {
+    "1.8" -> JavaVersion.VERSION_1_8
+    "11" -> JavaVersion.VERSION_11
+    "17" -> JavaVersion.VERSION_17
+    "21" -> JavaVersion.VERSION_21
+    else -> throw GradleException("Unsupported Java version in libs.versions.toml: $javaVersionStr")
+}
+
+val charset = "UTF-8"
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Plugins
@@ -42,15 +63,6 @@ dependencies {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Compile
 
-val javaVersionStr = libs.versions.java.get()
-val javaVersion = when (javaVersionStr) {
-    "1.8" -> JavaVersion.VERSION_1_8
-    "11" -> JavaVersion.VERSION_11
-    "17" -> JavaVersion.VERSION_17
-    "21" -> JavaVersion.VERSION_21
-    else -> throw GradleException("Unsupported Java version in libs.versions.toml: $javaVersionStr")
-}
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(javaVersion.majorVersion)
@@ -62,7 +74,7 @@ if (JavaVersion.current() < javaVersion) {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.encoding = "UTF-8"
+    options.encoding = charset
     options.compilerArgs.addAll(
         listOf(
             "-Xlint:-options",
@@ -181,12 +193,6 @@ tasks.withType<Jar>().configureEach {
 tasks.named<Jar>("jar") {
     doFirst {
         manifest {
-            val moduleName = if (project.hasProperty("moduleName")) {
-                project.property("moduleName").toString()
-            } else {
-                project.name
-            }
-
             attributes(
                 mapOf(
                     "Automatic-Module-Name" to project.name.replace("-", "."),
@@ -219,9 +225,9 @@ tasks.named<Javadoc>("javadoc") {
     (options as StandardJavadocDocletOptions).apply {
         bottom =
             "Copyright &#169; 2022 - present; <a href=\"https://github.com/jodconverter\">JODConverter</a>. All rights reserved."
-        charSet = "UTF-8"
-        docEncoding = "UTF-8"
-        encoding = "UTF-8"
+        charSet = charset
+        docEncoding = charset
+        encoding = charset
         memberLevel = JavadocMemberLevel.PROTECTED
         source = javaVersionStr
 
@@ -236,12 +242,6 @@ tasks.named<Javadoc>("javadoc") {
     }
 
     doFirst {
-        val moduleName = if (project.hasProperty("moduleName")) {
-            project.property("moduleName").toString()
-        } else {
-            project.name
-        }
-
         (options as StandardJavadocDocletOptions).apply {
             windowTitle = "$moduleName API Documentation"
             docTitle = "$moduleName ${project.version} API Documentation"

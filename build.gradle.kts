@@ -98,15 +98,16 @@ gradle.projectsEvaluated {
 
         setDestinationDir(layout.buildDirectory.dir("docs/javadoc").get().asFile)
 
+        val charset = "UTF-8"
         (options as StandardJavadocDocletOptions).apply {
             windowTitle = "JODConverter API Documentation"
             docTitle = "JODConverter $version API Documentation"
             header = "JODConverter $version API"
             bottom =
                 "Copyright © 2022 - present; <a href=\"https://github.com/jodconverter/jodconverter\">JODConverter</a>. All rights reserved."
-            charSet = "UTF-8"
-            docEncoding = "UTF-8"
-            encoding = "UTF-8"
+            charSet = charset
+            docEncoding = charset
+            encoding = charset
             memberLevel = JavadocMemberLevel.PROTECTED
             source = "8"
             links(
