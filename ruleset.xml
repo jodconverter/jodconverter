@@ -90,13 +90,6 @@
                       value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
         </properties>
     </rule>
-    <rule ref="category/java/design.xml/ExcessiveMethodLength">
-        <properties>
-            <!-- Ignore the rule for test classes -->
-            <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
-        </properties>
-    </rule>
 	<rule ref="category/java/design.xml/TooManyFields">
 		<properties>
 			<property name="violationSuppressXPath"
@@ -134,7 +127,6 @@
     <!-- Use the 'errorprone' category -->
     <rule ref="category/java/errorprone.xml">
         <exclude name="AvoidFieldNameMatchingMethodName"/>
-        <exclude name="BeanMembersShouldSerialize"/>
         <exclude name="DataflowAnomalyAnalysis"/>
         <exclude name="DoNotTerminateVM"/>
         <exclude name="NullAssignment"/>

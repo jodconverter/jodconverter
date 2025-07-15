@@ -1,0 +1,135 @@
+[versions]
+
+# Java
+java = "1.8"
+
+#
+# Dependencies
+#
+
+# Checker Framework
+# Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
+checker-qual = "3.41.0"
+
+# Apache Commons
+# Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
+commons-cli = "1.9.0"
+# Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
+commons-io = "2.19.0"
+
+# Spring Boot
+# Spring boot 3+ requires java 17
+# Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
+spring-boot = "2.7.18"
+
+# LibreOffice
+# Latest version -> https://mvnrepository.com/artifact/org.libreoffice
+lo = "24.8.4"
+
+# OpenOffice
+# Latest version -> https://mvnrepository.com/artifact/org.openoffice
+oo = "4.1.2"
+
+# Javax Annotation
+# Latest version -> https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api
+javax-annotations = "1.3.2"
+
+#
+# Testing
+#
+
+wiremock = "2.27.2"
+
+#
+# Plugins
+#
+
+# Latest version -> https://github.com/checkstyle/checkstyle/releases/
+# 9.3 is the latest supporting java8, so stay with it until we set the minimal version to 11
+# Stay aligned with codacy version (log in into codacy and go to the "code patterns" menu)
+checkstyle = "9.3"
+
+# Latest version -> https://pmd.github.io
+# Stay aligned with codacy version (log in into codacy and go to the "code patterns" menu)
+pmd = "6.55.0"     # Stay aligned with Codacy
+
+# Coveralls plugin
+# Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
+coveralls = "2.12.2"
+
+# Nebula plugin
+# Latest version -> https://plugins.gradle.org/plugin/com.netflix.nebula.integtest
+nebula-integtest = "10.1.5"
+
+# Spotless plugin
+# Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
+# Latest spotless supporting java 8 is 6.13.0
+spotless = "6.13.0" # Latest version supporting Java 8
+
+#maven-publish = "0.33.0"
+maven-publish = "0.34.0"
+
+[libraries]
+
+# Core
+checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checker-qual" }
+
+# Apache Commons
+commons-cli = { module = "commons-cli:commons-cli", version.ref = "commons-cli" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
+
+# Spring Boot (BOM)
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+
+# LibreOffice
+libreoffice = { module = "org.libreoffice:libreoffice", version.ref = "lo" }
+
+# OpenOffice
+oo-juh = { module = "org.openoffice:juh", version.ref = "oo" }
+oo-jurt = { module = "org.openoffice:jurt", version.ref = "oo" }
+oo-ridl = { module = "org.openoffice:ridl", version.ref = "oo" }
+oo-unoil = { module = "org.openoffice:unoil", version.ref = "oo" }
+
+# Spring Core
+spring-core = { module = "org.springframework:spring-core" }
+spring-context = { module = "org.springframework:spring-context" }
+spring-test = { module = "org.springframework:spring-test" }
+
+# Javax
+javax-annotations = { module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotations" }
+
+# HTTP Components
+httpcore = { module = "org.apache.httpcomponents:httpcore" }
+httpclient = { module = "org.apache.httpcomponents:httpclient" }
+httpmime = { module = "org.apache.httpcomponents:httpmime" }
+fluent-hc = { module = "org.apache.httpcomponents:fluent-hc" }
+
+# Logging
+slf4j-api = { module = "org.slf4j:slf4j-api" }
+slf4j-log4j = { module = "org.slf4j:slf4j-log4j12" }
+
+# Other
+gson = { module = "com.google.code.gson:gson" }
+
+# Test
+assertj = { module = "org.assertj:assertj-core" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params" }
+mockito-core = { module = "org.mockito:mockito-core" }
+mockito-inline = { module = "org.mockito:mockito-inline" }
+wiremock = { module = "com.github.tomakehurst:wiremock-standalone", version.ref = "wiremock" }
+
+# Plugins
+spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+nebula-integtest = { module = "com.netflix.nebula.integtest:com.netflix.nebula.integtest.gradle.plugin", version.ref = "nebula-integtest" }
+maven-publish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "maven-publish" }
+
+[plugins]
+# Use in settings.gradle.kts or plugins {} blocks
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+nebula-integtest = { id = "com.netflix.nebula.integtest", version.ref = "nebula-integtest" }
+coveralls = { id = "com.github.kt3k.coveralls", version.ref = "coveralls" }
