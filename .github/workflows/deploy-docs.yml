@@ -27,7 +27,7 @@ jobs:
           python-version: '3.x'
 
       - name: 📥 Install MkDocs and dependencies
-        run: pip install --upgrade mkdocs mkdocs-material mike
+        run: pip install --upgrade mkdocs mkdocs-material mkdocs-section-index mike
 
       - name: 🧮 Calculate cache ID
         run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
