@@ -5,7 +5,7 @@ description = """
 """.trimIndent()
 
 group = "org.jodconverter"
-version = "4.4.10-SNAPSHOT"
+version = project.property("version") as String
 
 plugins {
     jacoco

@@ -4,7 +4,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention").version("0.10.0")
 }
 
-includeBuild("build-conventions")
+includeBuild("build-logic")
 
 include(
     "jodconverter-core",
