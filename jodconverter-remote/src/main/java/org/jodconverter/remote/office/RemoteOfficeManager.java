@@ -35,7 +35,7 @@ import org.jodconverter.remote.ssl.SslConfig;
 
 /**
  * {@link org.jodconverter.core.office.OfficeManager} pool implementation that does not depend on an
- * office installation to process conversion taks.
+ * office installation to process conversion tasks.
  */
 public final class RemoteOfficeManager
     extends AbstractOfficeManagerPool<RemoteOfficeManagerPoolEntry> {
@@ -178,7 +178,7 @@ public final class RemoteOfficeManager
     }
 
     /**
-     * Specifies the SSL configuration to secure communication with LibreOffice Online.
+     * Specifies the SSL configuration to secure communication with the remote server.
      *
      * @param sslConfig The SSL configuration.
      * @return This builder instance.
