@@ -1,0 +1,72 @@
+name: deploy-docs
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛂 Configure Git credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: 📥 Install MkDocs and dependencies
+        run: pip install --upgrade mkdocs mkdocs-material mike
+
+      - name: 🧮 Calculate cache ID
+        run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+
+      - name: 💾 Restore pip cache
+        uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+
+      - name: 🚀 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/docs/site
+
+      - name: 🧮 Extract version from gradle.properties
+        id: extract_version
+        run: |
+          version=$(grep "^version\s*=" gradle.properties | cut -d'=' -f2 | tr -d ' ')
+          echo "VERSION=$version" >> $GITHUB_OUTPUT
+          if [[ "$version" == *-SNAPSHOT ]]; then
+            echo "IS_SNAPSHOT=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_SNAPSHOT=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📤 Deploy documentation with mike
+        run: |
+          version=${{ steps.extract_version.outputs.VERSION }}
+          is_snapshot=${{ steps.extract_version.outputs.IS_SNAPSHOT }}
+
+          if [[ "$is_snapshot" == "true" ]]; then
+            echo "Deploying SNAPSHOT to static folder 'snapshot'"
+            mike deploy --push snapshot
+          else
+            echo "Deploying stable version $version with alias 'latest'"
+            mike deploy --push --update-aliases "$version" latest
+            mike set-default latest --push
+          fi

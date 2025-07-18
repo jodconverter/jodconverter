@@ -1,0 +1,105 @@
+site_name: JODConverter
+site_url: https://jodconverter.github.io/jodconverter/
+
+# Repository
+repo_name: JODConverter
+repo_url: https://github.com/jodconverter/jodconverter
+
+# Copyright
+copyright: © 2025 JODConverter. All rights reserved.
+
+theme:
+  name: material
+  logo: assets/logo.png
+  custom_dir: docs/overrides
+  features:
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+    - search.share
+    - navigation.footer
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+  palette:
+    # Palette toggle for light mode
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      primary: light blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      primary: light blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra:
+  version:
+    provider: mike
+    alias:
+      latest: "Stable"
+      snapshot: "Snapshot"
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jodconverter/jodconverter
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.details
+  - pymdownx.highlight:
+      #linenums: true
+      #linenums_style: pymdownx-inline
+      #anchor_linenums: true
+      #auto_title: true
+      #line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: docs/snippets
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+plugins:
+  - search
+  - section-index
+nav:
+  - Home:
+      - Overview: index.md
+      - Changelog: changelog.md
+      - Migration: migration.md
+      - Credits: credits.md
+      - License: license.md
+  - Getting Started:
+      - Java Library: getting-started/java-library.md
+      - Using Filters: getting-started/using-filters.md
+      - Command Line Tool: getting-started/command-line-tool.md
+      - LibreOffice Online: getting-started/libreoffice-online.md
+      - LibreOffice Portable: getting-started/libreoffice-portable.md
+      - Performance: getting-started/performance.md
+      - Supported Formats: getting-started/supported-formats.md
+      - System Requirements: getting-started/system-requirements.md
+  - Configuration:
+      - LocalOfficeManager: configuration/local-configuration.md
+      - ExternalOfficeManager: configuration/external-configuration.md
+      - RemoteOfficeManager: configuration/remote-configuration.md
+  - Samples:
+      - samples/index.md
+      - Basic Web Application: samples/basic-webapp.md
+      - Spring Boot REST API: samples/spring-boot-rest.md
+      - Spring Boot Web Application: samples/spring-boot-webapp.md
+  - FAQ: faq.md
+  - Contributing:
+      - contributing/index.md
+      - Documentation: contributing/documentation.md
+  - Donate: support.md
+  - License: license.md

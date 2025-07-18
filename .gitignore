@@ -209,3 +209,6 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,eclipse,intellij+all
+
+#MkDocs site
+site/

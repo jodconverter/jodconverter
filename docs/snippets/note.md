@@ -1,0 +1,2 @@
+> Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite
+derived from OOo such as [Apache OpenOffice](https://www.openoffice.org) and [LibreOffice](https://www.libreoffice.org).
