@@ -21,6 +21,9 @@
 package org.jodconverter.local.office;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +33,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.AbstractOfficeManagerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
+import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.util.AssertUtils;
@@ -55,6 +59,14 @@ import org.jodconverter.core.util.AssertUtils;
  */
 public final class ExternalOfficeManager
     extends AbstractOfficeManagerPool<ExternalOfficeManagerPoolEntry> {
+
+  public static void main(String[] args) throws UnsupportedEncodingException, OfficeException {
+    ExternalOfficeManager.Builder config = ExternalOfficeManager.builder();
+    String wopiURI = "http://localhost:9980/wopi/files/some-sample-document.odt";
+    String encodedURI = URLEncoder.encode(wopiURI, String.valueOf(StandardCharsets.UTF_8));
+    ExternalOfficeManager officeManager = config.websocketUrls("ws://localhost:9980/cool/" + encodedURI + "/ws").build();
+    officeManager.stop();
+  }
 
   // The default value for hostName.
   /* default */ static final String DEFAULT_HOSTNAME = "127.0.0.1";
@@ -178,6 +190,17 @@ public final class ExternalOfficeManager
     }
 
     /**
+     * Specifies host name that will be used to communicate with office.
+     *
+     * @param hostName The host name to use.
+     * @return This builder instance.
+     */
+    public @NonNull Builder hostName(final String hostName) {
+      this.hostName = hostName;
+      return this;
+    }
+
+    /**
      * Specifies the pipe names that will be used to communicate with office. An instance of office
      * will be launched for each pipe name.
      *
@@ -189,17 +212,6 @@ public final class ExternalOfficeManager
       if (pipeNames != null && pipeNames.length != 0) {
         this.pipeNames = Arrays.asList(pipeNames);
       }
-      return this;
-    }
-
-    /**
-     * Specifies host name that will be used to communicate with office.
-     *
-     * @param hostName The host name to use.
-     * @return This builder instance.
-     */
-    public @NonNull Builder hostName(final String hostName) {
-      this.hostName = hostName;
       return this;
     }
 

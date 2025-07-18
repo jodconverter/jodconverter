@@ -139,7 +139,7 @@ class ExternalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   @Override
   protected void handleExecuteTimeoutException(final @NonNull TimeoutException timeoutEx) {
 
-    // Is the task did not complete within the configured timeout, we must reconnect
+    // If the task did not complete within the configured timeout, we must reconnect
     reconnect();
   }
 
