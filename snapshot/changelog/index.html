@@ -1,0 +1,2073 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://jodconverter.github.io/jodconverter/snapshot/changelog/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../migration/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
+    
+    
+      
+        <title>Changelog - JODConverter</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="JODConverter" class="md-header__button md-logo" aria-label="JODConverter" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            JODConverter
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jodconverter/jodconverter" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    JODConverter
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+  Home
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../getting-started/java-library/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../configuration/local-configuration/" class="md-tabs__link">
+          
+  
+  
+  Configuration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../samples/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Samples
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../faq/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../contributing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../support/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Donate
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../license/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="JODConverter" class="md-nav__button md-logo" aria-label="JODConverter" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    JODConverter
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jodconverter/jodconverter" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    JODConverter
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Home
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#v449-2025-05-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.9 (2025-05-15)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v448-2024-09-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.8 (2024-09-01)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v447-2023-12-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.7 (2023-12-13)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v446-2023-01-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.6 (2023-01-27)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v445-2022-12-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.5 (2022-12-21)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v444-2022-09-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.4 (2022-09-22)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v443-2022-09-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.3 (2022-09-15)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v442-2021-02-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.2 (2021-02-10)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v441-2021-02-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.1 (2021-02-10)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v440-2021-01-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.0 (2021-01-15)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v430-2020-03-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.3.0 (2020-03-05)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v424-2020-01-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.4 (2020-01-16)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v423-2020-01-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.3 (2020-01-15)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v422-2018-11-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.2 (2018-11-30)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v421-2018-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.1 (2018-11-02)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v420-2018-03-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.0 (2018-03-01)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v411-2018-02-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.1.1 (2018-02-16)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../credits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Credits
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/java-library/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Java Library
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/using-filters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using Filters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/command-line-tool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Command Line Tool
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/libreoffice-online/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LibreOffice Online
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/libreoffice-portable/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LibreOffice Portable
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/supported-formats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Supported Formats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/system-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System Requirements
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/local-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LocalOfficeManager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/external-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ExternalOfficeManager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/remote-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RemoteOfficeManager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../samples/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Samples
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Samples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../samples/basic-webapp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic Web Application
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../samples/spring-boot-rest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Spring Boot REST API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../samples/spring-boot-webapp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Spring Boot Web Application
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../contributing/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Donate
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#v449-2025-05-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.9 (2025-05-15)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v448-2024-09-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.8 (2024-09-01)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v447-2023-12-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.7 (2023-12-13)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v446-2023-01-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.6 (2023-01-27)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v445-2022-12-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.5 (2022-12-21)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v444-2022-09-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.4 (2022-09-22)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v443-2022-09-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.3 (2022-09-15)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v442-2021-02-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.2 (2021-02-10)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v441-2021-02-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.1 (2021-02-10)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v440-2021-01-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.4.0 (2021-01-15)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v430-2020-03-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.3.0 (2020-03-05)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v424-2020-01-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.4 (2020-01-16)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v423-2020-01-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.3 (2020-01-15)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v422-2018-11-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.2 (2018-11-30)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v421-2018-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.1 (2018-11-02)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v420-2018-03-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.2.0 (2018-03-01)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v411-2018-02-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.1.1 (2018-02-16)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="v449-2025-05-15"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.9">v4.4.9</a> (2025-05-15)<a class="headerlink" href="#v449-2025-05-15" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.4.8...v4.4.9">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Remove the disableOpengl option. <a href="https://github.com/jodconverter/jodconverter/issues/426">#426</a></li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>Libre Office disconnects when converting a password protected ODT file to
+  PDF <a href="https://github.com/jodconverter/jodconverter/issues/423">#423</a></li>
+<li>On more recent Java version like Java 17, JODconverter has runtime exception Unable to create instance
+  DocumentFormat <a href="https://github.com/jodconverter/jodconverter/issues/408">#408</a></li>
+</ul>
+<h2 id="v448-2024-09-01"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.8">v4.4.8</a> (2024-09-01)<a class="headerlink" href="#v448-2024-09-01" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.4.7...v4.4.8">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Add xlsm support in DefaultDocumentFormatRegistry <a href="https://github.com/jodconverter/jodconverter/issues/391">#391</a></li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>No qualifying bean of type 'org.jodconverter.core.DocumentConverter'
+  available <a href="https://github.com/jodconverter/jodconverter/issues/390">#390</a></li>
+<li>Task keeps hanging when using Remote JodConverter <a href="https://github.com/jodconverter/jodconverter/issues/384">#384</a></li>
+<li>Scanner (IO) bug <a href="https://github.com/jodconverter/jodconverter/issues/383">#383</a></li>
+</ul>
+<p><strong>Closed issues:</strong></p>
+<ul>
+<li>Incompatible with LO 24.x (probably?) on macos <a href="https://github.com/jodconverter/jodconverter/issues/386">#386</a></li>
+<li>Removed unnecessary <code>@ConfigurationPropertiesScan</code> on <code>JodConverterLocalProperties</code> and
+  <code>JodConverterRemoteProperties</code> <a href="https://github.com/jodconverter/jodconverter/issues/377">#377</a></li>
+<li>Information about supported properties and their
+  meaning <a href="https://github.com/jodconverter/jodconverter/issues/372">#372</a></li>
+<li>The Word document with more than 12 pages will automatically cancel the
+  task. <a href="https://github.com/jodconverter/jodconverter/issues/364">#364</a></li>
+<li>pptx file conversion of PDF failed <a href="https://github.com/jodconverter/jodconverter/issues/359">#359</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Remove unnecessary ConfigurationPropertiesScan
+  annotation <a href="https://github.com/jodconverter/jodconverter/pull/378">#378</a> (<a href="https://github.com/bianjp">bianjp</a>)</li>
+</ul>
+<h2 id="v447-2023-12-13"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.7">v4.4.7</a> (2023-12-13)<a class="headerlink" href="#v447-2023-12-13" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.4.6...v4.4.7">Full Changelog</a></p>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>Using SpringBoot autoconfiguration with a remote setup fails with
+  ClassNotFoundException <a href="https://github.com/jodconverter/jodconverter/issues/331">#331</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>add support for websocket urps available &gt;= LibreOffice
+  24.2 <a href="https://github.com/jodconverter/jodconverter/pull/355">#355</a> (<a href="https://github.com/caolanm">caolanm</a>)</li>
+<li>Add support for additional HTML extension
+  alias <a href="https://github.com/jodconverter/jodconverter/pull/338">#338</a> (<a href="https://github.com/LiamMacP">LiamMacP</a>)</li>
+</ul>
+<h2 id="v446-2023-01-27"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.6">v4.4.6</a> (2023-01-27)<a class="headerlink" href="#v446-2023-01-27" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.4.5...v4.4.6">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Added the ability to provide a custom-document-formats.json
+  file <a href="https://github.com/jodconverter/jodconverter/issues/323">#323</a></li>
+<li>Jodconverter not working with spring-boot 3 <a href="https://github.com/jodconverter/jodconverter/issues/320">#320</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Spring boot 3.0 compatibility fixes
+  #320 <a href="https://github.com/jodconverter/jodconverter/pull/322">#322</a> (<a href="https://github.com/EugenMayer">EugenMayer</a>)</li>
+</ul>
+<h2 id="v445-2022-12-21"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.5">v4.4.5</a> (2022-12-21)<a class="headerlink" href="#v445-2022-12-21" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.4.4...v4.4.5">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>ExternalOfficeManager does not work <a href="https://github.com/jodconverter/jodconverter/issues/278">#278</a></li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>java.lang.NullPointerException: byExtension(extension) must not be
+  null <a href="https://github.com/jodconverter/jodconverter/issues/319">#319</a></li>
+<li>Missing classes exception for the
+  DefaultDocumentFormatRegistry <a href="https://github.com/jodconverter/jodconverter/issues/317">#317</a></li>
+<li>Failed to start bean 'documentationPluginsBootstrapper' when starting rest
+  version <a href="https://github.com/jodconverter/jodconverter/issues/315">#315</a></li>
+<li>IndexOutOfBoundsException: Index: 1, Size: 1 when Run multiple tasks in
+  concurrent. <a href="https://github.com/jodconverter/jodconverter/issues/310">#310</a></li>
+<li>Got error when using org.jodconverter:
+  jodconverter-local-lo <a href="https://github.com/jodconverter/jodconverter/issues/309">#309</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Migrate to swagger v3 / openapi - fixes
+  #317 <a href="https://github.com/jodconverter/jodconverter/pull/318">#318</a> (<a href="https://github.com/EugenMayer">EugenMayer</a>)</li>
+</ul>
+<h2 id="v444-2022-09-22"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.4">v4.4.4</a> (2022-09-22)<a class="headerlink" href="#v444-2022-09-22" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.4.3...v4.4.4">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Change default UpdateDocMode behavior and add new option to keep old behavior.</li>
+<li>Added FilterData and FilterOption do DocumentFormat builder.</li>
+</ul>
+<h2 id="v443-2022-09-15"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.3">v4.4.3</a> (2022-09-15)<a class="headerlink" href="#v443-2022-09-15" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.4.2...v4.4.3">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Provide builds of both OpenOffice and LibreOffice dependencies in the maven
+  center <a href="https://github.com/jodconverter/jodconverter/issues/273">#273</a></li>
+<li>support keepAliveOnShutdown through CLI <a href="https://github.com/jodconverter/jodconverter/issues/269">#269</a></li>
+<li>Issues converting potx and xltx <a href="https://github.com/jodconverter/jodconverter/issues/259">#259</a></li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>gradle build fail~~~~ with libreoffice 7.1.5 <a href="https://github.com/jodconverter/jodconverter/issues/271">#271</a></li>
+</ul>
+<p><strong>Closed issues:</strong></p>
+<ul>
+<li>Task :distZip FAILED <a href="https://github.com/jodconverter/jodconverter/issues/303">#303</a></li>
+<li>Added WEB document family <a href="https://github.com/jodconverter/jodconverter/issues/297">#297</a></li>
+<li>Spring configuration metadata json not generated <a href="https://github.com/jodconverter/jodconverter/issues/295">#295</a></li>
+<li>Specific Exception for Password Protected files <a href="https://github.com/jodconverter/jodconverter/issues/233">#233</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Update to spring boot 2.7.3 to fix
+  CVEs <a href="https://github.com/jodconverter/jodconverter/pull/307">#307</a> (<a href="https://github.com/EugenMayer">EugenMayer</a>)</li>
+<li>Build spring-boot configuration metadata into jar
+  #295 <a href="https://github.com/jodconverter/jodconverter/pull/296">#296</a> (<a href="https://github.com/shysteph">shysteph</a>)</li>
+<li>add format definition for PowerPoint XML templates
+  (#259) <a href="https://github.com/jodconverter/jodconverter/pull/270">#270</a> (<a href="https://github.com/stellingsimon">stellingsimon</a>)</li>
+<li>✨new document format
+  xltx <a href="https://github.com/jodconverter/jodconverter/pull/257">#257</a> (<a href="https://github.com/jgoldhammer">jgoldhammer</a>)</li>
+</ul>
+<h2 id="v442-2021-02-10"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.2">v4.4.2</a> (2021-02-10)<a class="headerlink" href="#v442-2021-02-10" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.4.1...v4.4.2">Full Changelog</a></p>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>DocumentFormat.input family should be optional. <a href="https://github.com/jodconverter/jodconverter/issues/249">#249</a></li>
+</ul>
+<h2 id="v441-2021-02-10"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.1">v4.4.1</a> (2021-02-10)<a class="headerlink" href="#v441-2021-02-10" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.4.0...v4.4.1">Full Changelog</a></p>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>regression: document-formats with singular extension field are not supported
+  anymore. <a href="https://github.com/jodconverter/jodconverter/issues/248">#248</a></li>
+<li>LocalOfficeManager#afterStartProcessDelay is not validated
+  properly. <a href="https://github.com/jodconverter/jodconverter/issues/246">#246</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>bugfix filename contains CJK characters cause error, change to UTF-8
+  encoding <a href="https://github.com/jodconverter/jodconverter/pull/245">#245</a> (<a href="https://github.com/chunlinyao">chunlinyao</a>)</li>
+</ul>
+<h2 id="v440-2021-01-15"><a href="https://github.com/jodconverter/jodconverter/tree/v4.4.0">v4.4.0</a> (2021-01-15)<a class="headerlink" href="#v440-2021-01-15" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.3.0...v4.4.0">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Add the ability to wait after an attempt to start an office process before trying to
+  connect. <a href="https://github.com/jodconverter/jodconverter/issues/244">#244</a></li>
+<li>Add dotx conversion out of the box <a href="https://github.com/jodconverter/jodconverter/issues/213">#213</a></li>
+<li>Add ability to attach OfficeManager to already running
+  Process <a href="https://github.com/jodconverter/jodconverter/issues/203">#203</a></li>
+<li>JODConverterBean, expose office manager to add filters
+  support <a href="https://github.com/jodconverter/jodconverter/issues/201">#201</a></li>
+<li>Make office process management asynchronous (start, restart,
+  etc). <a href="https://github.com/jodconverter/jodconverter/issues/200">#200</a></li>
+<li>Remove unnecessary dependencies. <a href="https://github.com/jodconverter/jodconverter/issues/198">#198</a></li>
+<li>Allow conversions on remote host with LibreOffice directly (
+  ExternalOfficeManager) <a href="https://github.com/jodconverter/jodconverter/issues/195">#195</a></li>
+<li>Use ExternalOfficeManager with a pool of processes <a href="https://github.com/jodconverter/jodconverter/issues/191">#191</a></li>
+<li>Allow process restart to be asynchronous <a href="https://github.com/jodconverter/jodconverter/issues/171">#171</a></li>
+<li>Add ability to reuse already running libreoffice
+  instances <a href="https://github.com/jodconverter/jodconverter/issues/72">#72</a></li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>ExternalOfficeManager :: makeTempDir not called when connectOnStart =
+  false <a href="https://github.com/jodconverter/jodconverter/issues/211">#211</a></li>
+</ul>
+<p><strong>Closed issues:</strong></p>
+<ul>
+<li>ExternalOfficeManager always connects sockets to
+  127.0.0.1 <a href="https://github.com/jodconverter/jodconverter/issues/241">#241</a></li>
+<li>DocUpdateMode not working? <a href="https://github.com/jodconverter/jodconverter/issues/227">#227</a></li>
+<li>Depending on the operating system, /tmp is getting regularly
+  cleaned <a href="https://github.com/jodconverter/jodconverter/issues/220">#220</a></li>
+<li>Temporary file name added in CSV -&gt; PDF conversion <a href="https://github.com/jodconverter/jodconverter/issues/219">#219</a></li>
+<li>Wiki page for LibreOffice Online example code should be
+  RemoteOfficeManager <a href="https://github.com/jodconverter/jodconverter/issues/216">#216</a></li>
+<li>Wiki page for LibreOffice Online still references "
+  jodconverter-online" <a href="https://github.com/jodconverter/jodconverter/issues/214">#214</a></li>
+<li>How to disable AutoCalculate? <a href="https://github.com/jodconverter/jodconverter/issues/207">#207</a></li>
+<li>JODConverter Reached limit Tasks and Restart  <a href="https://github.com/jodconverter/jodconverter/issues/196">#196</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Make 127.0.0.1 in socket connection
+  configurable <a href="https://github.com/jodconverter/jodconverter/pull/242">#242</a> (<a href="https://github.com/nikowitt">nikowitt</a>)</li>
+<li>bugfix ps args truncated at 125
+  chars <a href="https://github.com/jodconverter/jodconverter/pull/238">#238</a> (<a href="https://github.com/chunlinyao">chunlinyao</a>)</li>
+</ul>
+<h2 id="v430-2020-03-05"><a href="https://github.com/jodconverter/jodconverter/tree/v4.3.0">v4.3.0</a> (2020-03-05)<a class="headerlink" href="#v430-2020-03-05" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.2.4...v4.3.0">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Rename jodconverter-online module to
+  jodconverter-remote <a href="https://github.com/jodconverter/jodconverter/issues/190">#190</a></li>
+<li>Issues in java11, requiring package names refactoring <a href="https://github.com/jodconverter/jodconverter/issues/178">#178</a></li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>regression: Upgrade to jodconverter-local 4.2.3 imply to also add a dependency to
+  jodconverter-core <a href="https://github.com/jodconverter/jodconverter/issues/183">#183</a></li>
+<li>Unthrown MalformedInputException when looking for soffice
+  PID <a href="https://github.com/jodconverter/jodconverter/issues/180">#180</a></li>
+</ul>
+<h2 id="v424-2020-01-16"><a href="https://github.com/jodconverter/jodconverter/tree/v4.2.4">v4.2.4</a> (2020-01-16)<a class="headerlink" href="#v424-2020-01-16" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.2.3...v4.2.4">Full Changelog</a></p>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>regression: Upgrade to jodconverter-local 4.2.3 imply to also add a dependency to
+  jodconverter-core <a href="https://github.com/jodconverter/jodconverter/issues/183">#183</a></li>
+</ul>
+<h2 id="v423-2020-01-15"><a href="https://github.com/jodconverter/jodconverter/tree/v4.2.3">v4.2.3</a> (2020-01-15)<a class="headerlink" href="#v423-2020-01-15" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.2.2...v4.2.3">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>sample-webapp throws
+  java.lang.IllegalArgumentException <a href="https://github.com/jodconverter/jodconverter/issues/165">#165</a></li>
+<li>Add support for "XHTML" LibreOffice filters <a href="https://github.com/jodconverter/jodconverter/issues/134">#134</a></li>
+<li>Add all supported extensions to PDF conversion
+  support. <a href="https://github.com/jodconverter/jodconverter/issues/132">#132</a></li>
+<li>Java 11 compatibility <a href="https://github.com/jodconverter/jodconverter/issues/127">#127</a></li>
+<li>Add support for "XHTML" LibreOffice
+  filters <a href="https://github.com/jodconverter/jodconverter/pull/135">#135</a> (<a href="https://github.com/linux-warrior">linux-warrior</a>)</li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>sample-webapp throws
+  org.apache.commons.io.FileExistsException <a href="https://github.com/jodconverter/jodconverter/issues/166">#166</a></li>
+<li>Errors in tests when building jodconverter 4.2.2 with Java
+  9+ <a href="https://github.com/jodconverter/jodconverter/issues/159">#159</a></li>
+<li>Could not establish connection <a href="https://github.com/jodconverter/jodconverter/issues/148">#148</a></li>
+<li>LibreOffice path on FreeBSD is not autodetected <a href="https://github.com/jodconverter/jodconverter/issues/137">#137</a></li>
+<li>ExternalOfficeManager creates temporary files in the current
+  directory <a href="https://github.com/jodconverter/jodconverter/issues/130">#130</a></li>
+<li>class ExternalOfficeManager is not Public <a href="https://github.com/jodconverter/jodconverter/issues/121">#121</a></li>
+<li>Build fails with JDK10 on macOS <a href="https://github.com/jodconverter/jodconverter/issues/79">#79</a></li>
+</ul>
+<h2 id="v422-2018-11-30"><a href="https://github.com/jodconverter/jodconverter/tree/v4.2.2">v4.2.2</a> (2018-11-30)<a class="headerlink" href="#v422-2018-11-30" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.2.1...v4.2.2">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Create a filter to embed linked images into output
+  document. <a href="https://github.com/jodconverter/jodconverter/issues/117">#117</a></li>
+<li>Fix ExternalOfficeManager can't convert streams <a href="https://github.com/jodconverter/jodconverter/issues/116">#116</a></li>
+<li>Filter chain should be reusable without reset <a href="https://github.com/jodconverter/jodconverter/issues/112">#112</a></li>
+<li>static JodConverter.convert methods dont work with
+  ExternalOfficeManagerBuilder() <a href="https://github.com/jodconverter/jodconverter/issues/111">#111</a></li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>Fix regression introduced by #99. Use AOO libraries.  <a href="https://github.com/jodconverter/jodconverter/issues/113">#113</a></li>
+</ul>
+<h2 id="v421-2018-11-02"><a href="https://github.com/jodconverter/jodconverter/tree/v4.2.1">v4.2.1</a> (2018-11-02)<a class="headerlink" href="#v421-2018-11-02" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.2.0...v4.2.1">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Stop using deprecated command lines options using
+  LibreOffice <a href="https://github.com/jodconverter/jodconverter/issues/106">#106</a></li>
+<li>Redirect office output to jodconverter logs. <a href="https://github.com/jodconverter/jodconverter/issues/105">#105</a></li>
+<li>Add support for auto detecting OpenOffice4 path for linux DEB-based
+  Installation <a href="https://github.com/jodconverter/jodconverter/issues/101">#101</a></li>
+<li>Add property for setting ProcessManager explicitly <a href="https://github.com/jodconverter/jodconverter/issues/100">#100</a></li>
+<li>Use LibreOffice libraries instead of Apache Open-Office ones by
+  default <a href="https://github.com/jodconverter/jodconverter/issues/99">#99</a></li>
+<li>Add a property to trust all certificate in jodconverter-online
+  module <a href="https://github.com/jodconverter/jodconverter/issues/98">#98</a></li>
+<li>Add properties to the spring-boot-starter allowing document formats
+  customization. <a href="https://github.com/jodconverter/jodconverter/issues/94">#94</a></li>
+<li>Add templateProfileDirOrDefault option to the LocalOfficeManager
+  builder. <a href="https://github.com/jodconverter/jodconverter/issues/81">#81</a></li>
+<li>gradlew is not executable <a href="https://github.com/jodconverter/jodconverter/issues/74">#74</a></li>
+<li>Check workingDir for writing <a href="https://github.com/jodconverter/jodconverter/issues/67">#67</a></li>
+<li>No way to specify filter parameters with CLI version <a href="https://github.com/jodconverter/jodconverter/issues/63">#63</a></li>
+<li>No-args constructor for DocumentFormat does not exist <a href="https://github.com/jodconverter/jodconverter/issues/59">#59</a></li>
+<li>Added bean and property for ProcessManager for custom
+  implementation. <a href="https://github.com/jodconverter/jodconverter/pull/104">#104</a> (<a href="https://github.com/alexey-atiskov">alexey-atiskov</a>)</li>
+<li>Add Server / Client hint for better
+  understanding <a href="https://github.com/jodconverter/jodconverter/pull/90">#90</a> (<a href="https://github.com/EugenMayer">EugenMayer</a>)</li>
+<li>Add BMP support <a href="https://github.com/jodconverter/jodconverter/pull/86">#86</a> (<a href="https://github.com/ggsurrel">ggsurrel</a>)</li>
+<li>Supporting more
+  platforms <a href="https://github.com/jodconverter/jodconverter/pull/85">#85</a> (<a href="https://github.com/damienvdb06">damienvdb06</a>)</li>
+<li>Make <code>gradlew</code> executable (refs
+  #74) <a href="https://github.com/jodconverter/jodconverter/pull/78">#78</a> (<a href="https://github.com/michelole">michelole</a>)</li>
+<li>remove sourcefile extension
+  check <a href="https://github.com/jodconverter/jodconverter/pull/65">#65</a> (<a href="https://github.com/aruis">aruis</a>)</li>
+<li>Update LocalOfficeUtils.java,fix Mac OS find
+  Officehome <a href="https://github.com/jodconverter/jodconverter/pull/64">#64</a> (<a href="https://github.com/aruis">aruis</a>)</li>
+<li>Added JPG, TIFF, and GIF
+  support <a href="https://github.com/jodconverter/jodconverter/pull/60">#60</a> (<a href="https://github.com/recurve">recurve</a>)</li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>Incorrect usage of Validate.notNull method <a href="https://github.com/jodconverter/jodconverter/issues/97">#97</a></li>
+</ul>
+<h2 id="v420-2018-03-01"><a href="https://github.com/jodconverter/jodconverter/tree/v4.2.0">v4.2.0</a> (2018-03-01)<a class="headerlink" href="#v420-2018-03-01" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.1.1...v4.2.0">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Add JodConverter Online to the spring boot starter <a href="https://github.com/jodconverter/jodconverter/issues/56">#56</a></li>
+</ul>
+<p><strong>Closed issues:</strong></p>
+<ul>
+<li>Use of Spring 5 with Spring Boot 1.x is unusual <a href="https://github.com/jodconverter/jodconverter/issues/54">#54</a></li>
+<li>Wrong scope for <code>spring-boot-configuration-processor</code>  <a href="https://github.com/jodconverter/jodconverter/issues/53">#53</a></li>
+<li>Consider not adding "default to" in property description <a href="https://github.com/jodconverter/jodconverter/issues/52">#52</a></li>
+<li>Support for the latest LibreOffice <a href="https://github.com/jodconverter/jodconverter/issues/51">#51</a></li>
+</ul>
+<h2 id="v411-2018-02-16"><a href="https://github.com/jodconverter/jodconverter/tree/v4.1.1">v4.1.1</a> (2018-02-16)<a class="headerlink" href="#v411-2018-02-16" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/jodconverter/compare/v4.1.0...v4.1.1">Full Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul>
+<li>Changing Margins when converting .rtf to .pdf <a href="https://github.com/jodconverter/jodconverter/issues/50">#50</a></li>
+<li>Send load and store custom FilterOptions when using
+  jodconverter-online <a href="https://github.com/jodconverter/jodconverter/issues/47">#47</a></li>
+<li>When using Input/Output streams, temporary file are created with the tmp
+  extension. <a href="https://github.com/jodconverter/jodconverter/issues/46">#46</a></li>
+<li>Add merging support. <a href="https://github.com/jodconverter/jodconverter/issues/45">#45</a></li>
+<li>Add support for Flat XML formats <a href="https://github.com/jodconverter/jodconverter/issues/44">#44</a></li>
+<li>Add SSL support for JODConvetrer Online module <a href="https://github.com/jodconverter/jodconverter/issues/35">#35</a></li>
+<li>Create a sample application using the jodconverter-spring-boot-starter
+  module. <a href="https://github.com/jodconverter/jodconverter/issues/34">#34</a></li>
+</ul>
+<p><strong>Fixed bugs:</strong></p>
+<ul>
+<li>Online conversion never fill OutputStream nor deletes the temp file when converting to
+  OutputStream <a href="https://github.com/jodconverter/jodconverter/issues/43">#43</a></li>
+</ul>
+<p><strong>Closed issues:</strong></p>
+<ul>
+<li>Merge multiple fodt files and convert to PDF  <a href="https://github.com/jodconverter/jodconverter/issues/42">#42</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../migration/" class="md-footer__link md-footer__link--next" aria-label="Next: Migration">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Migration
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      © 2025 JODConverter. All rights reserved.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/jodconverter/jodconverter" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.annotate", "search.suggest", "search.highlight", "search.share", "navigation.footer", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": {"latest": "Stable", "snapshot": "Snapshot"}, "provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.56ea9cef.min.js"></script>
+      
+    
+  </body>
+</html>
