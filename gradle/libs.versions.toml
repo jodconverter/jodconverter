@@ -9,7 +9,7 @@ java = "1.8"
 
 # Checker Framework
 # Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-checker-qual = "3.41.0"
+checker-qual = "3.49.5"
 
 # Apache Commons
 # Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
@@ -38,6 +38,10 @@ javax-annotations = "1.3.2"
 # Testing
 #
 
+# We now have to use the wiremock standalone version since
+# spring boot provides jetty dependency
+# Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
+# 3+ required minimum java 11
 wiremock = "2.27.2"
 
 #
@@ -66,7 +70,6 @@ nebula-integtest = "10.1.5"
 # Latest spotless supporting java 8 is 6.13.0
 spotless = "6.13.0" # Latest version supporting Java 8
 
-#maven-publish = "0.33.0"
 maven-publish = "0.34.0"
 
 [libraries]
