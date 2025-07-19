@@ -206,7 +206,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
 
         // Restart and retry later.
         // see http://code.google.com/p/jodconverter/issues/detail?id=84
-        LOGGER.debug("Office process died with exit code 81; restarting it");
+        LOGGER.info("Office process died with exit code 81; restarting it");
 
         result = null; // In order to restart the process
         throw new TemporaryException("Office process died with exit code 81");
@@ -246,7 +246,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
 
       // Restart and retry later
       // see http://code.google.com/p/jodconverter/issues/detail?id=84
-      LOGGER.debug("Office process died with exit code 81; restarting it");
+      LOGGER.info("Office process died with exit code 81; restarting it");
       throw new TemporaryException(ex);
 
     } else {
