@@ -1,17 +1,35 @@
 # Changelog
 
-## [v4.4.9](https://github.com/jodconverter/jodconverter/tree/v4.4.9)
+## [v4.4.10](https://github.com/jodconverter/jodconverter/tree/v4.4.10) (2025-07-18)
+
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.9...v4.4.10)
+
+**Closed issues:**
+
+- Improve documentation
+- Change the logging level for expected error "office process died with exit code 81" from warn to info.
+
+## [v4.4.9](https://github.com/jodconverter/jodconverter/tree/v4.4.9) (2025-05-15)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.8...v4.4.9)
 
 **Implemented enhancements:**
 
 - Remove the disableOpengl option. [\#426](https://github.com/jodconverter/jodconverter/issues/426)
+- WindowsProcessManager\#isUsable triggers antivirus [\#388](https://github.com/jodconverter/jodconverter/issues/388)
 
 **Fixed bugs:**
 
 - Libre Office disconnects when converting a password protected ODT file to PDF [\#423](https://github.com/jodconverter/jodconverter/issues/423)
-- On more recent Java version like Java 17, JODconverter has runtime exception Unable to create instance DocumentFormat [\#408](https://github.com/jodconverter/jodconverter/issues/408)
+- On more recent Java version like Java 17, JODconverter has runtime exception Unable to create instance of class org.jodconverter.core.document.DocumentForma [\#408](https://github.com/jodconverter/jodconverter/issues/408)
+- When start app using jodconverter-spring-boot-starter, soffice.bin is considered a zombie process [\#392](https://github.com/jodconverter/jodconverter/issues/392)
+- The program running on Docker keeps generating zombie processes. [\#367](https://github.com/jodconverter/jodconverter/issues/367)
+
+**Closed issues:**
+
+- remaining soffice process blocking [\#398](https://github.com/jodconverter/jodconverter/issues/398)
+- jodconverter-local 4.4.3 or later causes the service to fail to end. [\#375](https://github.com/jodconverter/jodconverter/issues/375)
+- 4.4.2word导出pdf，偶尔出现org.jodconverter.core.office.OfficeException: Task did not complete: LocalConversionTask{source=SourceDocumentSpecsFromInputStream{file=null, for mat=null}, loadProperties=null, target=TargetDocumentSpecsFromOutputStream{file=null, format=pdf}, storeProperties=null} [\#336](https://github.com/jodconverter/jodconverter/issues/336)
 
 ## [v4.4.8](https://github.com/jodconverter/jodconverter/tree/v4.4.8) (2024-09-01)
 

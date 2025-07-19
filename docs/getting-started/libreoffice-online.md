@@ -27,12 +27,12 @@ avoid the LibreOffice installation on your server.
 
 === "Groovy"
     ```groovy
-    implementation "org.jodconverter:jodconverter-remote:4.9.0"
+    implementation "org.jodconverter:jodconverter-remote:4.4.10"
     ```
 
 === "Kotlin"
     ```kotlin
-    implementation("org.jodconverter:jodconverter-remote:4.9.0")
+    implementation("org.jodconverter:jodconverter-remote:4.4.10")
     ```
 
 ## Using the module

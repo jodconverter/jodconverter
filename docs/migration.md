@@ -1,5 +1,12 @@
 # Complete Migration Guide
 
+## 4.4.9 to 4.4.10
+
+This only contains bug fix, enhancements and dependency upgrade. It shouldn't have any impact.
+
+The major change only concerns the documentation, which has been moved to GitHub pages and built
+using MkDocs (material).
+
 ## 4.4.8 to 4.4.9
 
 The disableOpengl option is no longer supported. On recent LibreOffice versions, the option didn't work anymore. To
