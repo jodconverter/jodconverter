@@ -18,6 +18,9 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history (required by mike)
 
+      - name: 📥 Fetch gh-pages branch
+        run: git fetch origin gh-pages
+
       - name: 🛂 Configure Git credentials
         run: |
           git config user.name github-actions[bot]
