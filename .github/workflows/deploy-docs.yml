@@ -17,9 +17,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history (required by mike)
+          ref: master
+          persist-credentials: true
 
       - name: 📥 Fetch gh-pages branch
-        run: git fetch origin gh-pages
+        run: |
+          git fetch origin gh-pages --depth=1
 
       - name: 🛂 Configure Git credentials
         run: |
