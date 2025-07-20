@@ -1,8 +1,12 @@
 # Command Line Tool
 
-The command line tool provides a good way to check that everything is working, i.e., that you have the right OOo version
-installed etc. To convert a document, use the provided batch file, located in the bin directory of the cli module
-distribution.
+The `jodconverter-cli` module provides a standalone command-line tool for converting documents using LibreOffice or
+OpenOffice. It enables quick and easy file conversions without writing any Java code, making it ideal for automation,
+scripting, and server-side integrations.
+
+The command line tool provides a good way to check that everything is working, i.e., that you have the right OOo
+version installed etc. To convert a document, use the provided batch file, located in the bin directory of the cli
+module distribution.
 
 ### Syntax
 

@@ -47,52 +47,95 @@ The **JODConverter** project contains 8 modules.
 
 #### jodconverter-cli
 
-Client command line tool. See the [dedicated page](getting-started/command-line-tool.md) to know more about this tool.
+The `jodconverter-cli` module provides a standalone command-line tool for converting documents using LibreOffice or
+OpenOffice. It enables quick and easy file conversions without writing any Java code, making it ideal for automation,
+scripting, and server-side integrations.
+
+See the [dedicated page](getting-started/command-line-tool.md) to know more about this tool.
 
 #### jodconverter-core
 
 [Dependencies](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-core)
 
-Core abstractions, used by **JODConverter** library implementations, such as `jodconverter-local` or
-`jodconverter-remote`.
+The `jodconverter-core` module provides the core abstractions, used by **JODConverter** module implementations,
+such as `jodconverter-local` or `jodconverter-remote`. It abstracts the complexity of working with office managers,
+document formats, and conversion pipelines.
 
 #### jodconverter-local
 
 [Dependencies](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local)
 
-Module required to process local conversions.
+The `jodconverter-local` module builds on top of the `jodconverter-core` module and provides a ready-to-use
+implementation that connects to a locally installed instance of LibreOffice or Apache OpenOffice to perform document
+conversions.
+
+This module handles the lifecycle of the office process, manages one or more office instances, and provides a
+convenient API to convert documents using the local desktop installation of an office suite—without requiring
+the user to manually start or manage OOo in headless mode.
+
+See the [Java Library section](getting-started/java-library.md) to know more.
 
 #### jodconverter-local-oo
 
 [Dependencies](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local-oo)
 
-Module required to process local conversions, using the OpenOffice libraries. Using this module is in fact the
-exact same thing as using the `jodconverter-local` module. By default, **JODConverter** is built using the OpenOffice
-libraries. See [here](https://github.com/jodconverter/jodconverter/issues/113) to know why.
+The `jodconverter-local-oo` module provides a variant of `jodconverter-local` that is packaged with dependencies
+targeting Apache OpenOffice. It contains no additional code, but includes the OpenOffice UNO libraries instead of
+the LibreOffice ones.
 
-#### jodconverter-local-oo
+Use this module when your application needs to convert documents using an Apache OpenOffice installation.
+
+!!! note
+
+    Internally, both `jodconverter-local-oo` and `jodconverter-local-lo` delegate to the same codebase
+    (`jodconverter-local`). The only difference lies in the dependencies declared in their build files.
+
+Using this module is in fact the exact same thing as using the `jodconverter-local` module. By default,
+**JODConverter** is built using the OpenOffice libraries. See
+[here](https://github.com/jodconverter/jodconverter/issues/113) to know why.
+
+#### jodconverter-local-lo
 
 [Dependencies](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local-lo)
 
-Module required to process local conversions, using the LibreOffice libraries.
+The `jodconverter-local-lo` module is a variant of `jodconverter-local` that packages the project with LibreOffice UNO
+libraries instead of the default Apache OpenOffice ones. Like `jodconverter-local-oo`, it contains no additional Java
+code—only a different set of dependencies defined in its build.gradle.kts.
+
+Use this module if your application is intended to run with LibreOffice, which is generally recommended due to its more
+active development and broader format support.
 
 #### jodconverter-remote
 
 [Dependencies](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-remote)
 
-Module required to process remote conversions, which means sending conversion requests to a remote API.
+The `jodconverter-remote` module is a Java client library designed to perform document conversions by connecting to a
+remote document conversion REST API, such as those exposed by LibreOffice Online or Collabora Online.
+
+Instead of managing a local or UNO-based office process, this module sends documents and conversion requests over
+HTTP(S) to a remote server that handles the conversion, making it ideal for cloud-native or containerized environments.
 
 #### jodconverter-spring
 
 [Dependencies](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-spring)
 
-Spring integration module.
+The `jodconverter-spring` module provides seamless integration of **JODConverter** with the Spring Framework, enabling
+developers to easily configure and use document conversion services within Spring-based applications.
+
+This module offers Spring-friendly beans and configuration support for managing office processes and document
+converters, helping you embed **JODConverter** capabilities in your web applications, microservices, or backend systems
+built with Spring.
 
 #### jodconverter-spring-boot-starter
 
 [Dependencies](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-spring-boot-starter)
 
-Spring Boot integration module.
+The `jodconverter-spring-boot-starter` module provides a convenient Spring Boot starter that simplifies integrating
+**JODConverter**’s document conversion capabilities into Spring Boot applications.
+
+It auto-configures and manages all necessary beans, including the office manager and document converter, based on
+sensible defaults and externalized configuration properties, allowing developers to quickly enable document conversion
+with minimal setup.
 
 ---
 
