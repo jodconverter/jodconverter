@@ -122,7 +122,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       }
     }
 
-    // Obtain a source file that can be loaded by office. If the source
+    // Get a source file that the office process can load. If the source
     // is an input stream, then a temporary file will be created from the
     // stream. The temporary file will be deleted once the task is done.
     final File sourceFile = source.getFile();

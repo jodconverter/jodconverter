@@ -30,11 +30,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.job.AbstractConversionJob;
-import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecified;
-import org.jodconverter.core.job.AbstractConverter;
-import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
-import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.job.*;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
@@ -178,8 +174,8 @@ public final class LocalConverter extends AbstractConverter {
       // Determine whether we must use stream adapters.
       final boolean useStreamAdapters =
           loadDocumentMode == LoadDocumentMode.REMOTE
-              || loadDocumentMode == LoadDocumentMode.AUTO
-                  && officeManager instanceof ExternalOfficeManager;
+              || (loadDocumentMode == LoadDocumentMode.AUTO
+                  && officeManager instanceof ExternalOfficeManager);
 
       // Create a conversion task and execute it.
       final LocalConversionTask task =

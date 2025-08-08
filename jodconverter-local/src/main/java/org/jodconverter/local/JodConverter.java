@@ -38,7 +38,7 @@ import org.jodconverter.core.job.ConversionJobWithOptionalSourceFormatUnspecifie
 public final class JodConverter { // NOPMD - Disable utility class name rule violation
 
   /**
-   * Converts a source file that is stored on the local file system.
+   * Converts a source file stored on the local file system.
    *
    * @param source The conversion input as a file.
    * @return The current conversion specification.
