@@ -10,7 +10,12 @@ linux_task:
     - apt-get -y install libreoffice
   # See https://hub.docker.com/_/eclipse-temurin for openjdk versions that could be tested.
   matrix:
-    - name: linux:temurinjdk8
+    - name: linux:temurinjdk11
+      container:
+        image: eclipse-temurin:11
+      build_script:
+        - ./gradlew build -x javadoc --stacktrace
+    - name: linux:temurinjdk17
       env:
         CI_NAME: "CirrusCI"
         CI_BUILD_NUMBER: $CIRRUS_TASK_ID
@@ -19,19 +24,14 @@ linux_task:
         CI_PULL_REQUEST: $CIRRUS_PR
         COVERALLS_REPO_TOKEN: ENCRYPTED[55c5e5bd0d9ed1c86ce1fd9928a909d245e703ec48e593bf49c2cfeb5711c711a6ac841c8b9d11296993389dc2cbb0b3]
       container:
-        image: eclipse-temurin:8
+        image: eclipse-temurin:17
       build_script:
         - ./gradlew build -x javadoc --stacktrace
       coverage_script:
         - ./gradlew jacocoRootReport coveralls --warning-mode all
-    - name: linux:temurinjdk11
+    - name: linux:temurinjdk21
       container:
-        image: eclipse-temurin:11
-      build_script:
-        - ./gradlew build -x javadoc --stacktrace
-    - name: linux:temurinjdk17
-      container:
-        image: eclipse-temurin:17
+        image: eclipse-temurin:21
       build_script:
         - ./gradlew build -x javadoc --stacktrace
 
@@ -42,7 +42,7 @@ windows_task:
   env:
     JAVA_HOME: C:\ProgramFiles\EclipseAdoptium\
   clone_script:
-    # Use custom cloning to set the autocrlf to true orelse spotless will fail on Windows.
+    # Use custom cloning to set the autocrlf to true or else spotless will fail on Windows.
     CMD.exe /C ECHO ON &
     IF NOT DEFINED CIRRUS_PR (
     git config --global core.autocrlf true &
@@ -55,10 +55,6 @@ windows_task:
     git reset --hard %CIRRUS_CHANGE_IN_REPO%
     )
   matrix:
-    - name: windows:temurinjdk8
-      env:
-        # https://community.chocolatey.org/packages/Temurin8
-        TEMURINOPENJDK_PACKAGE: temurin8
     - name: windows:temurinjdk11
       env:
         # https://community.chocolatey.org/packages/Temurin11
@@ -67,6 +63,10 @@ windows_task:
       env:
         # https://community.chocolatey.org/packages/Temurin17
         TEMURINOPENJDK_PACKAGE: temurin17
+    - name: windows:temurinjdk17
+      env:
+        # https://community.chocolatey.org/packages/Temurin21
+        TEMURINOPENJDK_PACKAGE: temurin21
   install_script:
     - choco install -y libreoffice-still --version 7.6.6
     - choco install -y %TEMURINOPENJDK_PACKAGE% --params="/ADDLOCAL=FeatureMain,FeatureJavaHome /INSTALLDIR=%JAVA_HOME% /quiet"
@@ -80,7 +80,7 @@ macos_task:
   matrix:
     - name: macos:xcode:latest
       macos_instance:
-        image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
+        image: ghcr.io/cirruslabs/macos-runner:sonoma
   install_script:
     - brew update
     - brew install --cask libreoffice
@@ -90,16 +90,19 @@ macos_task:
 # FreeBSD
 freebsd_task:
   freebsd_instance:
-    # See https://cirrus-ci.org/guide/FreeBSD/#list-of-available-image-families for images that could be tested.
+    # See https://cirrus-ci.org/guide/FreeBSD/#list-of-available-image-families for images that can be tested.
     image_family: freebsd-14-2
-  # See https://www.freebsd.org/java/ for all available openjdk that could be tested.
+  # See https://gitlab.com/FreeBSD/freebsd-ports/-/tree/main/java for all available openjdk that can be tested.
   matrix:
-    - name: freebsd:openjdk8
-      install_java_script:
-        - pkg install -y openjdk8
     - name: freebsd:openjdk11
       install_java_script:
         - pkg install -y openjdk11
+    - name: freebsd:openjdk17
+      install_java_script:
+        - pkg install -y openjdk17
+    - name: freebsd:openjdk21
+      install_java_script:
+        - pkg install -y openjdk21
   install_lo_script:
     - pkg install -y libreoffice
   build_script:
