@@ -1,6 +1,14 @@
 <style>
   .md-content .md-typeset h1 {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 </style>
 
@@ -17,7 +25,7 @@
   <img src="assets/logo-with-text.png" alt="Logo" style="max-width: 100%; width: 500px; height: auto;" />
 </div>
 
-### Overview
+### Overview    
 
 **JODConverter**, the Java OpenDocument Converter, converts documents between different office formats.
 It leverages [LibreOffice](https://www.libreoffice.org) or [Apache OpenOffice](https://www.openoffice.org), which

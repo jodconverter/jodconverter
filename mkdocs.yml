@@ -19,7 +19,7 @@ theme:
     - search.highlight
     - search.share
     - navigation.footer
-    - navigation.sections
+    #- navigation.sections
     - navigation.tabs
     - navigation.tabs.sticky
   palette:
@@ -75,13 +75,55 @@ plugins:
 nav:
   - Home:
       - Overview: index.md
-      - Changelog: changelog.md
-      - Migration: migration.md
+      - Releases:
+          - Release 4.4.10: release-notes/release-notes-4.4.10.md
+          - Release 4.4.9: release-notes/release-notes-4.4.9.md
+          - Release 4.4.8: release-notes/release-notes-4.4.8.md
+          - Release 4.4.7: release-notes/release-notes-4.4.7.md
+          - Release 4.4.6: release-notes/release-notes-4.4.6.md
+          - Release 4.4.5: release-notes/release-notes-4.4.5.md
+          - Release 4.4.4: release-notes/release-notes-4.4.4.md
+          - Release 4.4.3: release-notes/release-notes-4.4.3.md
+          - Release 4.4.2: release-notes/release-notes-4.4.2.md
+          - Release 4.4.1: release-notes/release-notes-4.4.1.md
+          - Release 4.4.0: release-notes/release-notes-4.4.0.md
+          - Release 4.3.0: release-notes/release-notes-4.3.0.md
+          - Release 4.2.4: release-notes/release-notes-4.2.4.md
+          - Release 4.2.3: release-notes/release-notes-4.2.3.md
+          - Release 4.2.2: release-notes/release-notes-4.2.2.md
+          - Release 4.2.1: release-notes/release-notes-4.2.1.md
+          - Release 4.2.0: release-notes/release-notes-4.2.0.md
+          - Release 4.1.1: release-notes/release-notes-4.1.1.md
+          - Release 4.1.0: release-notes/release-notes-4.1.0.md
+      - Migration Guides:
+          - Migration 4.4.10: migration-guides/migration-guide-4.4.10.md
+          - Migration 4.4.9: migration-guides/migration-guide-4.4.9.md
+          - Migration 4.4.8: migration-guides/migration-guide-4.4.8.md
+          - Migration 4.4.7: migration-guides/migration-guide-4.4.7.md
+          - Migration 4.4.6: migration-guides/migration-guide-4.4.6.md
+          - Migration 4.4.5: migration-guides/migration-guide-4.4.5.md
+          - Migration 4.4.4: migration-guides/migration-guide-4.4.4.md
+          - Migration 4.4.3: migration-guides/migration-guide-4.4.3.md
+          - Migration 4.4.2: migration-guides/migration-guide-4.4.2.md
+          - Migration 4.4.1: migration-guides/migration-guide-4.4.1.md
+          - Migration 4.4.0: migration-guides/migration-guide-4.4.0.md
+          - Migration 4.3.0: migration-guides/migration-guide-4.3.0.md
+          - Migration 4.2.4: migration-guides/migration-guide-4.2.4.md
+          - Migration 4.2.3: migration-guides/migration-guide-4.2.3.md
+          - Migration 4.2.2: migration-guides/migration-guide-4.2.2.md
+          - Migration 4.2.1: migration-guides/migration-guide-4.2.1.md
+          - Migration 4.2.0: migration-guides/migration-guide-4.2.0.md
+          - Migration 4.1.1: migration-guides/migration-guide-4.1.1.md
+          - Migration 4.1.0: migration-guides/migration-guide-4.1.0.md
       - Credits: credits.md
       - License: license.md
   - Getting Started:
-      - Java Library: getting-started/java-library.md
-      - Using Filters: getting-started/using-filters.md
+      - Java Library:
+          - getting-started/java-library.md
+          - Office Managers: getting-started/office-managers.md
+          - Document Converters: getting-started/document-converters.md
+          - Document Format Registry: getting-started/document-format-registry.md
+          - Using Filters: getting-started/using-filters.md
       - Command Line Tool: getting-started/command-line-tool.md
       - LibreOffice Online: getting-started/libreoffice-online.md
       - LibreOffice Portable: getting-started/libreoffice-portable.md
@@ -89,9 +131,13 @@ nav:
       - Supported Formats: getting-started/supported-formats.md
       - System Requirements: getting-started/system-requirements.md
   - Configuration:
-      - LocalOfficeManager: configuration/local-configuration.md
-      - ExternalOfficeManager: configuration/external-configuration.md
-      - RemoteOfficeManager: configuration/remote-configuration.md
+      - Office Managers:
+        - LocalOfficeManager: configuration/local-manager.md
+        - ExternalOfficeManager: configuration/external-manager.md
+        - RemoteOfficeManager: configuration/remote-manager.md
+      - Document Converters:
+          - LocalConverter: configuration/local-converter.md
+          - RemoteConverter: configuration/remote-converter.md
   - Samples:
       - samples/index.md
       - Basic Web Application: samples/basic-webapp.md
