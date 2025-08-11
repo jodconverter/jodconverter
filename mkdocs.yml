@@ -42,9 +42,6 @@ theme:
 extra:
   version:
     provider: mike
-    alias:
-      latest: "Stable"
-      snapshot: "Snapshot"
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/jodconverter/jodconverter
@@ -72,6 +69,9 @@ markdown_extensions:
 plugins:
   - search
   - section-index
+  - mike:
+      alias_type: copy
+      canonical_version: latest
 nav:
   - Home:
       - Overview: index.md

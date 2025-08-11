@@ -16,14 +16,7 @@ jobs:
       - name: 📦 Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history (required by mike)
-          ref: master
-          persist-credentials: true
-
-      - name: 📥 Fetch gh-pages branch
-        run: |
-          # Ensure we have the remote gh-pages branch locally so mike can update it safely
-          git fetch origin gh-pages:gh-pages --depth=1 || echo "No existing gh-pages branch on remote"
+          fetch-depth: 0  # Needed for mike history
 
       - name: 🛂 Configure Git credentials
         run: |
@@ -67,9 +60,9 @@ jobs:
 
           if [[ "$is_snapshot" == "true" ]]; then
             echo "Deploying SNAPSHOT to static folder 'snapshot'"
-            mike deploy --push snapshot
+            mike deploy --push --update-aliases dev
           else
             echo "Deploying stable version $version with alias 'latest'"
             mike deploy --push --update-aliases "$version" latest
-            mike set-default latest --push
+            mike set-default --push latest
           fi
