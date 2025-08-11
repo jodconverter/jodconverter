@@ -22,7 +22,8 @@ jobs:
 
       - name: 📥 Fetch gh-pages branch
         run: |
-          git fetch origin gh-pages --depth=1
+          # Ensure we have the remote gh-pages branch locally so mike can update it safely
+          git fetch origin gh-pages:gh-pages --depth=1 || echo "No existing gh-pages branch on remote"
 
       - name: 🛂 Configure Git credentials
         run: |
@@ -47,12 +48,6 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
-
-      - name: 🚀 Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/docs/site
 
       - name: 🧮 Extract version from gradle.properties
         id: extract_version
