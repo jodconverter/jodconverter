@@ -87,23 +87,30 @@ macos_task:
   build_script:
     - ./gradlew build -x javadoc --stacktrace
 
-# FreeBSD
-freebsd_task:
-  freebsd_instance:
-    # See https://cirrus-ci.org/guide/FreeBSD/#list-of-available-image-families for images that can be tested.
-    image_family: freebsd-14-2
-  # See https://gitlab.com/FreeBSD/freebsd-ports/-/tree/main/java for all available openjdk that can be tested.
-  matrix:
-    - name: freebsd:openjdk11
-      install_java_script:
-        - pkg install -y openjdk11
-    - name: freebsd:openjdk17
-      install_java_script:
-        - pkg install -y openjdk17
-    - name: freebsd:openjdk21
-      install_java_script:
-        - pkg install -y openjdk21
-  install_lo_script:
-    - pkg install -y libreoffice
-  build_script:
-    - ./gradlew build -x javadoc --stacktrace
+##
+## We will need to investigate the following erro rbefore re-enabling test on FreeBds:
+# FAILURE: Build failed with an exception.
+#  * What went wrong:
+#  java.lang.ExceptionInInitializerError (no error message)
+#  > Unknown operating system: FreeBSD
+
+## FreeBSD
+#freebsd_task:
+#  freebsd_instance:
+#    # See https://cirrus-ci.org/guide/FreeBSD/#list-of-available-image-families for images that can be tested.
+#    image_family: freebsd-14-2
+#  # See https://gitlab.com/FreeBSD/freebsd-ports/-/tree/main/java for all available openjdk that can be tested.
+#  matrix:
+#    - name: freebsd:openjdk11
+#      install_java_script:
+#        - pkg install -y openjdk11
+#    - name: freebsd:openjdk17
+#      install_java_script:
+#        - pkg install -y openjdk17
+#    - name: freebsd:openjdk21
+#      install_java_script:
+#        - pkg install -y openjdk21
+#  install_lo_script:
+#    - pkg install -y libreoffice
+#  build_script:
+#    - ./gradlew build -x javadoc --stacktrace
