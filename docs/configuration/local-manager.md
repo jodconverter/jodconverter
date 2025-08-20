@@ -136,7 +136,7 @@ command line option.
     OfficeManager officeManager =
         LocalOfficeManager
             .builder()
-            .workingDir("C:\\jodconverter\\templateProfileDir")
+            .templateProfileDir("C:\\jodconverter\\templateProfileDir")
             .build();
     ```
 
@@ -145,21 +145,21 @@ command line option.
     ```yml title="application.yml"
     jodconverter:
       local:
-        working-dir: "C:/jodconverter/templateProfileDir"
+        template-profile-dir: "C:/jodconverter/templateProfileDir"
     ```
     
     ```conf title="application.properties"
-    jodconverter.local.working-dir = "C:/jodconverter/templateProfileDir"
+    jodconverter.local.template-profile-dir = "C:/jodconverter/templateProfileDir"
     ```
 
 === "Command Line"
 
     ```shell title="short option"
-    jodconverter-cli -w C:\jodconverter\templateProfileDir infile outfile
+    jodconverter-cli -u C:\jodconverter\templateProfileDir infile outfile
     ```
     or
     ```shell title="long option"
-    jodconverter-cli --working-dir C:\jodconverter\templateProfileDir infile outfile
+    jodconverter-cli --user-profile C:\jodconverter\templateProfileDir infile outfile
     ```
 
 #### &#128288;`hostName`

@@ -99,6 +99,7 @@ nav:
           - Document Converters: getting-started/document-converters.md
           - Document Format Registry: getting-started/document-format-registry.md
           - Using Filters: getting-started/using-filters.md
+      - Modules: getting-started/modules.md
       - Command Line Tool: getting-started/command-line-tool.md
       - LibreOffice Online: getting-started/libreoffice-online.md
       - LibreOffice Portable: getting-started/libreoffice-portable.md
