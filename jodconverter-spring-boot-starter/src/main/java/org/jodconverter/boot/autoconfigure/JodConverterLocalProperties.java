@@ -53,10 +53,17 @@ public class JodConverterLocalProperties {
 
   /**
    * List of ports, separated by commas, used by each JODConverter processing thread. The number of
-   * office instances is equal to the number of ports, since 1 office process will be launched for
-   * each port number.
+   * office instances is equal to the number of port numbers/pipe names, since 1 office process will
+   * be launched for each port number/pipe name.
    */
   private int[] portNumbers = {2002};
+
+  /**
+   * List of pipe names, separated by commas, used by each JODConverter processing thread. The
+   * number of office instances is equal to the number of port numbers/pipe names, since 1 office
+   * process will be launched for each port number/pipe name.
+   */
+  private String[] pipeNames = {};
 
   /**
    * Directory where temporary office profiles will be created. If not set, it defaults to the
@@ -186,6 +193,14 @@ public class JodConverterLocalProperties {
 
   public void setPortNumbers(final int[] portNumbers) {
     this.portNumbers = portNumbers;
+  }
+
+  public String[] getPipeNames() {
+    return pipeNames;
+  }
+
+  public void setPipeNames(final String[] pipeNames) {
+    this.pipeNames = pipeNames;
   }
 
   public @Nullable String getWorkingDir() {

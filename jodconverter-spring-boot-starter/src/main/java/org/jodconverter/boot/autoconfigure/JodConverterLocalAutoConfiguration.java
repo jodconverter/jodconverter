@@ -81,6 +81,7 @@ public class JodConverterLocalAutoConfiguration {
             .officeHome(properties.getOfficeHome())
             .hostName(properties.getHostName())
             .portNumbers(properties.getPortNumbers())
+            .pipeNames(properties.getPipeNames())
             .workingDir(properties.getWorkingDir())
             .templateProfileDir(properties.getTemplateProfileDir())
             .existingProcessAction(properties.getExistingProcessAction())
