@@ -21,15 +21,7 @@
 package org.jodconverter.core.document;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,7 +37,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.util.AssertUtils;
 
-/** Contains the required information used to deal with a specific document format . */
+/** Contains the required information used to deal with a specific document format. */
 public final class DocumentFormat {
 
   private final String name;
@@ -68,8 +60,8 @@ public final class DocumentFormat {
   private final Map<DocumentFamily, Map<String, Object>> storeProperties;
 
   /**
-   * Special adapter used to support backward compatibility when loading a document format json
-   * file. Former json file doesn't support multiple document format extensions.
+   * Special adapter used to support backward compatibility when loading a document format JSON
+   * file. The former JSON file doesn't support multiple document format extensions.
    */
   private static class ExtensionsAdapter implements JsonDeserializer<List<String>> {
 
@@ -85,7 +77,7 @@ public final class DocumentFormat {
     }
   }
 
-  /** instance creator used to avoid a runtime exception with java17 (see #408) */
+  /** Instance creator used to avoid a runtime exception with java17 (see #408) */
   /* default */ static class DocumentFormatInstanceCreator
       implements InstanceCreator<DocumentFormat> {
     @Override
@@ -137,8 +129,8 @@ public final class DocumentFormat {
   }
 
   /**
-   * Empty constructor used by the instance creator (needed for Gson with Java 17+). See:
-   * https://github.com/jodconverter/jodconverter/issues/408
+   * Empty constructor used by the instance creator (needed for Gson with Java 17+). See: <a
+   * href="https://github.com/jodconverter/jodconverter/issues/408">Issue 408</a>.
    */
   private DocumentFormat() {
     this.name = null;
@@ -262,8 +254,8 @@ public final class DocumentFormat {
    * Gets the properties required to store(save) a document of this format to a document of
    * supported families.
    *
-   * @return A DocumentFamily/Map pairs containing the properties to apply when storing a document
-   *     of this format, by DocumentFamily.
+   * @return A DocumentFamily/Map pair containing the properties to apply when storing a document of
+   *     this format, by DocumentFamily.
    */
   public @Nullable Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
       getStoreProperties() {
@@ -323,7 +315,7 @@ public final class DocumentFormat {
     }
 
     /**
-     * Creates the converter that is specified by this builder.
+     * Creates the converter specified by this builder.
      *
      * @return The converter that is specified by this builder.
      */
@@ -337,7 +329,7 @@ public final class DocumentFormat {
     /**
      * Initializes the builder by copying the properties of the specified document format.
      *
-     * @param sourceFormat The source document format, cannot be null.
+     * @param sourceFormat The source document format; cannot be null.
      * @return This builder instance.
      */
     @NonNull
@@ -365,7 +357,7 @@ public final class DocumentFormat {
     /**
      * Specifies the extension associated with the document format.
      *
-     * @param extension The extension, cannot be null.
+     * @param extension The extension; cannot be null.
      * @return This builder instance.
      */
     @NonNull
@@ -383,7 +375,7 @@ public final class DocumentFormat {
      * Specifies the input (when a document is loaded) DocumentFamily associated with the document
      * format.
      *
-     * @param inputFamily The DocumentFamily, may be null.
+     * @param inputFamily The DocumentFamily; may be null.
      * @return This builder instance.
      */
     @NonNull
@@ -397,8 +389,8 @@ public final class DocumentFormat {
      * Adds a property to the builder that will be applied when loading (open) a document of this
      * format.
      *
-     * @param name The property name, cannot be null.
-     * @param value The property value, may be null. If null, it will REMOVE the property from the
+     * @param name The property name; cannot be null.
+     * @param value The property value; may be null. If null, it will REMOVE the property from the
      *     map.
      * @return This builder instance.
      */
@@ -434,7 +426,7 @@ public final class DocumentFormat {
      * href="https://help.libreoffice.org/7.4/en-US/text/shared/guide/convertfilters.html?&DbPAR=SHARED&System=WIN">File
      * Conversion Filter Names</a>
      *
-     * @param value The {@code FilterName} value, may be null. If null, it will REMOVE the {@code
+     * @param value The {@code FilterName} value; may be null. If null, it will REMOVE the {@code
      *     FilterName} from the map.
      * @return This builder instance.
      */
@@ -448,7 +440,7 @@ public final class DocumentFormat {
      * Sets the {@code FilterOptions} property to the builder that will be applied when loading
      * (open) a document of this format.
      *
-     * @param value The {@code FilterOptions} value, may be null. If null, it will REMOVE the {@code
+     * @param value The {@code FilterOptions} value; may be null. If null, it will REMOVE the {@code
      *     FilterName} from the map.
      * @return This builder instance.
      */
@@ -461,7 +453,7 @@ public final class DocumentFormat {
     /**
      * Specifies the media (mime) type of the document format.
      *
-     * @param mediaType A string that represents the media type, cannot be null.
+     * @param mediaType A string that represents the media type; cannot be null.
      * @return This builder instance.
      */
     @NonNull
@@ -475,7 +467,7 @@ public final class DocumentFormat {
     /**
      * Specifies the name of the document format.
      *
-     * @param name The name of the document format, cannot be null.
+     * @param name The name of the document format; cannot be null.
      * @return This builder instance.
      */
     @NonNull
@@ -505,9 +497,9 @@ public final class DocumentFormat {
      * Adds a property to the builder that will be applied when storing (save) a document to this
      * format from a document of the specified family.
      *
-     * @param documentFamily The document family of the source (loaded) document, cannot be null.
-     * @param name The property name, cannot be null.
-     * @param value The property value, may be null. If null, it will REMOVE the property from the
+     * @param documentFamily The document family of the source (loaded) document; cannot be null.
+     * @param name The property name; cannot be null.
+     * @param value The property value; may be null. If null, it will REMOVE the property from the
      *     map.
      * @return This builder instance.
      */
@@ -561,7 +553,7 @@ public final class DocumentFormat {
      * href="https://help.libreoffice.org/7.4/en-US/text/shared/guide/convertfilters.html?&DbPAR=SHARED&System=WIN">File
      * Conversion Filter Names</a>
      *
-     * @param documentFamily The document family of the source (loaded) document, cannot be null.
+     * @param documentFamily The document family of the source (loaded) document; cannot be null.
      * @param value The {@code FilterName} value, may be null. If null, it will REMOVE the property
      *     from the map.
      * @return This builder instance.
@@ -577,7 +569,7 @@ public final class DocumentFormat {
      * Sets the {@code FilterOptions} property that will be applied when storing (save) a document
      * to this format from a document of the specified family.
      *
-     * @param documentFamily The document family of the source (loaded) document, cannot be null.
+     * @param documentFamily The document family of the source (loaded) document; cannot be null.
      * @param value The {@code FilterOptions} value, may be null. If null, it will REMOVE the
      *     property from the map.
      * @return This builder instance.
