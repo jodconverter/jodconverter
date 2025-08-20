@@ -180,7 +180,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     // new task that could be submitted.
     taskExecutor.setAvailable(false);
 
-    // Shutdown the executor. Is a task is running, it will be interrupted.
+    // Shutdown the executor. If a task is running, it will be interrupted.
     taskExecutor.shutdownNow();
 
     // Execute the subclass implementation
