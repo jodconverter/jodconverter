@@ -54,4 +54,6 @@ LocalConverter
 some [filters](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter)
 out of the box, but you can implement (and share obviously &#128513;) any filter you need. Your filter must implement
 the [Filter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/Filter.java)
-interface and is responsible to call the next filter in the filter chain.
+interface and is responsible for calling the next filter in the filter chain.
+
+--8<-- "note.md"

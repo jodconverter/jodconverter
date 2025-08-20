@@ -140,3 +140,5 @@ target `DocumentFormat` or via converter.storeProperty.
 
 - [Getting Started: Supported Formats](../getting-started/supported-formats.md)
 - [Getting Started: Document Converters](../getting-started/document-converters.md)
+
+--8<-- "note.md"

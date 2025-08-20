@@ -105,3 +105,5 @@ with minimal setup.
 - Use jodconverter-remote if you rely on a remote conversion service (LO Online/Collabora).
 - Use jodconverter-cli for one-off or scripted conversions without Java coding.
 - Add jodconverter-spring or jodconverter-spring-boot-starter for Spring-based apps.
+
+--8<-- "note.md"

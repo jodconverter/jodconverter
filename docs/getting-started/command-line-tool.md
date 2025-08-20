@@ -227,3 +227,5 @@ See [Configuration](../../configuration/local-configuration#workingdir).
      </bean>
    </beans>
    ```
+
+--8<-- "note.md"

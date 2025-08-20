@@ -22,3 +22,5 @@ include the presence of graphics, charts, and other objects in the document, mac
 The bottom line is that you should make some benchmarks of your own - with documents of the types and complexities
 required by your application - to understand if the performance is adequate for your purposes, or if you need to throw
 more hardware at the problem.
+
+--8<-- "note.md"

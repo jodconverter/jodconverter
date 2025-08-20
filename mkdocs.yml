@@ -93,13 +93,13 @@ nav:
       - Credits: credits.md
       - License: license.md
   - Getting Started:
+      - Modules: getting-started/modules.md
       - Java Library:
           - getting-started/java-library.md
           - Office Managers: getting-started/office-managers.md
           - Document Converters: getting-started/document-converters.md
           - Document Format Registry: getting-started/document-format-registry.md
           - Using Filters: getting-started/using-filters.md
-      - Modules: getting-started/modules.md
       - Command Line Tool: getting-started/command-line-tool.md
       - LibreOffice Online: getting-started/libreoffice-online.md
       - LibreOffice Portable: getting-started/libreoffice-portable.md

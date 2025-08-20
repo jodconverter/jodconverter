@@ -11,3 +11,5 @@
     * LibreOffice [system requirements](https://www.libreoffice.org/get-help/system-requirements).
 - For use as a web application / web service you will also need a servlet container such as
   [Apache Tomcat](https://tomcat.apache.org).
+
+--8<-- "note.md"

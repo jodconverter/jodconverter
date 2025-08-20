@@ -101,3 +101,5 @@ the conversion does not work. All conversions supported by your OOo installation
 > 2. HTML can be used as an output format but while all other formats always generate a single output file, HTML can
      produce multiple files. In addition to the HTML file in fact, any images contained in the input document will also
      be saved in the same directory. This requires extra care in your code, especially in a web environment.
+
+--8<-- "note.md"
