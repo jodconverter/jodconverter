@@ -1094,6 +1094,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../getting-started/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Modules
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../getting-started/command-line-tool/" class="md-nav__link">
         
   
@@ -2255,23 +2278,23 @@ documentation.</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">LocalOfficeManager</span>
 <span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">workingDir</span><span class="p">(</span><span class="s">&quot;C:\\jodconverter\\templateProfileDir&quot;</span><span class="p">)</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">templateProfileDir</span><span class="p">(</span><span class="s">&quot;C:\\jodconverter\\templateProfileDir&quot;</span><span class="p">)</span>
 </span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
 <div class="language-text highlight"><span class="filename">application.yml</span><pre><span></span><code>jodconverter:
   local:
-    working-dir: &quot;C:/jodconverter/templateProfileDir&quot;
+    template-profile-dir: &quot;C:/jodconverter/templateProfileDir&quot;
 </code></pre></div>
-<div class="language-text highlight"><span class="filename">application.properties</span><pre><span></span><code>jodconverter.local.working-dir = &quot;C:/jodconverter/templateProfileDir&quot;
+<div class="language-text highlight"><span class="filename">application.properties</span><pre><span></span><code>jodconverter.local.template-profile-dir = &quot;C:/jodconverter/templateProfileDir&quot;
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<p><div class="language-shell highlight"><span class="filename">short option</span><pre><span></span><code>jodconverter-cli<span class="w"> </span>-w<span class="w"> </span>C:<span class="se">\j</span>odconverter<span class="se">\t</span>emplateProfileDir<span class="w"> </span>infile<span class="w"> </span>outfile
+<p><div class="language-shell highlight"><span class="filename">short option</span><pre><span></span><code>jodconverter-cli<span class="w"> </span>-u<span class="w"> </span>C:<span class="se">\j</span>odconverter<span class="se">\t</span>emplateProfileDir<span class="w"> </span>infile<span class="w"> </span>outfile
 </code></pre></div>
 or
-<div class="language-shell highlight"><span class="filename">long option</span><pre><span></span><code>jodconverter-cli<span class="w"> </span>--working-dir<span class="w"> </span>C:<span class="se">\j</span>odconverter<span class="se">\t</span>emplateProfileDir<span class="w"> </span>infile<span class="w"> </span>outfile
+<div class="language-shell highlight"><span class="filename">long option</span><pre><span></span><code>jodconverter-cli<span class="w"> </span>--user-profile<span class="w"> </span>C:<span class="se">\j</span>odconverter<span class="se">\t</span>emplateProfileDir<span class="w"> </span>infile<span class="w"> </span>outfile
 </code></pre></div></p>
 </div>
 </div>
