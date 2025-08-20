@@ -24,6 +24,7 @@ Even a small contribution makes a big difference.
 
 You can support the project through:
 
+- [Buy Me a Coffee](https://buymeacoffee.com/sbraconnier)
 - [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)
 
 > 💬 _“If you rely on JODConverter, please consider giving back.”_

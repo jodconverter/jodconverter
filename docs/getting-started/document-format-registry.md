@@ -114,8 +114,8 @@ DefaultDocumentFormatRegistryInstanceHolder.setInstance(registry);
 Load properties used when opening a document are determined as follows:
 
 1. Input `DocumentFormat` load properties (from the registry), then
-2. Converter default load properties (Hidden=true, ReadOnly=true, UpdateDocMode=NO_UPDATE unless configured otherwise),
-   then
+2. Converter default load properties (`Hidden=true`, `ReadOnly=true`, `UpdateDocMode=NO_UPDATE` unless configured
+   otherwise), then
 3. Explicit per-converter loadProperty/loadProperties you set in the builder
 
 Store properties used when saving the output are determined as follows:
