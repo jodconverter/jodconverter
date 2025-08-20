@@ -154,7 +154,16 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
 
   @Override
   public final boolean isRunning() {
-    return poolState.get() == POOL_STARTED;
+
+    if (poolState.get() == POOL_STARTED) {
+      // Check for at least 1 available entry.
+      for (final E manager : entries) {
+        if (manager.isRunning()) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
@@ -202,7 +211,7 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
   @Override
   public final void execute(final @NonNull OfficeTask task) throws OfficeException {
 
-    if (!isRunning()) {
+    if (poolState.get() != POOL_STARTED) {
       throw new IllegalStateException("This office manager is not running.");
     }
 
