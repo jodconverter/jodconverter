@@ -1,13 +1,22 @@
 # Changelog
 
-## [v4.4.10](https://github.com/jodconverter/jodconverter/tree/v4.4.10) (2025-07-18)
+## [v4.4.11](https://github.com/jodconverter/jodconverter/tree/v4.4.11) (2025-08-21)
+
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.10...v4.4.11)
+
+**Implemented enhancements:**
+
+- Add support for named pipe in spring boot [\#431](https://github.com/jodconverter/jodconverter/issues/431)
+- `officeManager.isRunning\(\)` is meaningless with asynchronous process management [\#428](https://github.com/jodconverter/jodconverter/issues/428)
+
+## [v4.4.10](https://github.com/jodconverter/jodconverter/tree/v4.4.10) (2025-07-20)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.9...v4.4.10)
 
 **Closed issues:**
 
-- Improve documentation
-- Change the logging level for expected error "office process died with exit code 81" from warn to info.
+- When I convert docx to pdf, The Pdf file not contains SONG\_GB2312, only simsun [\#417](https://github.com/jodconverter/jodconverter/issues/417)
+- "API misuse: modification of a menu's items on a non-main thread when the menu is part of the main menu." on MacOS [\#403](https://github.com/jodconverter/jodconverter/issues/403)
 
 ## [v4.4.9](https://github.com/jodconverter/jodconverter/tree/v4.4.9) (2025-05-15)
 

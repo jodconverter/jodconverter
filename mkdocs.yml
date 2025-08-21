@@ -77,18 +77,18 @@ nav:
   - Home:
       - Overview: index.md
       - Releases:
+          - Release 4.4.11: release-notes/release-notes-4.4.11.md
           - Release 4.4.10: release-notes/release-notes-4.4.10.md
           - Release 4.4.9: release-notes/release-notes-4.4.9.md
           - Release 4.4.8: release-notes/release-notes-4.4.8.md
           - Release 4.4.7: release-notes/release-notes-4.4.7.md
-          - Release 4.4.6: release-notes/release-notes-4.4.6.md
           - All Releases: release-notes/index.md
       - Migration Guides:
+          - Migration 4.4.11: migration-guides/migration-guide-4.4.11.md
           - Migration 4.4.10: migration-guides/migration-guide-4.4.10.md
           - Migration 4.4.9: migration-guides/migration-guide-4.4.9.md
           - Migration 4.4.8: migration-guides/migration-guide-4.4.8.md
           - Migration 4.4.7: migration-guides/migration-guide-4.4.7.md
-          - Migration 4.4.6: migration-guides/migration-guide-4.4.6.md
           - All Migrations: migration-guides/index.md
       - Credits: credits.md
       - License: license.md
