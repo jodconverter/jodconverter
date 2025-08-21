@@ -16,10 +16,12 @@
 [![Coverage Status](https://coveralls.io/repos/github/jodconverter/jodconverter/badge.svg?branch=master)](https://coveralls.io/github/jodconverter/jodconverter?branch=master)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/90c9707226c6406abbea2353274ac773)](https://www.codacy.com/gh/jodconverter/jodconverter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jodconverter/jodconverter&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jodconverter/jodconverter-local)
+[![Maven Central Version](https://img.shields.io/maven-central/v/org.jodconverter/jodconverter-local)](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local)
 [![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-local.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-local)
 [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Sponsor](https://img.shields.io/badge/Sponsor-❤-pink.svg)](https://github.com/sponsors/jodconverter)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/sbraconnier)
 
 <div style="text-align: center;">
   <img src="assets/logo-with-text.png" alt="Logo" style="max-width: 100%; width: 500px; height: auto;" />
@@ -77,4 +79,8 @@ including some [wiki pages](https://code.google.com/archive/p/jodconverter/wikis
 
 If this project helps you, please consider a cup of &#9749;. Thanks!! &#128150;
 
+<iframe src="https://github.com/sponsors/jodconverter/button" title="Sponsor JODConverter" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/sbraconnier)
