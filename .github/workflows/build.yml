@@ -19,6 +19,11 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # The LibreOffice version installed on Windows and macOS (Linux uses the distribution's
+  # package). It must be a version still published under stable/ on the LibreOffice mirrors.
+  LIBREOFFICE_VERSION: '26.2.6'
+
 jobs:
   test:
     name: test (${{ matrix.os }})
@@ -59,23 +64,55 @@ jobs:
           sudo apt-get -q update
           sudo apt-get -y -q install libreoffice
 
+      # Windows and macOS: the installer is downloaded here instead of through Chocolatey or
+      # Homebrew. Both fetch it from download.documentfoundation.org only, and when that host
+      # is unreachable the Chocolatey install fails and the Homebrew one hangs.
+      - name: 💾 Restore the LibreOffice installer
+        if: runner.os != 'Linux'
+        id: lo-installer
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/lo-installer
+          key: libreoffice-${{ runner.os }}-${{ runner.arch }}-${{ env.LIBREOFFICE_VERSION }}
+
+      - name: ⬇️ Download the LibreOffice installer
+        if: runner.os != 'Linux' && steps.lo-installer.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$RUNNER_OS-$RUNNER_ARCH" in
+            Windows-*)   file="win/x86_64/LibreOffice_${LIBREOFFICE_VERSION}_Win_x86-64.msi" ;;
+            macOS-ARM64) file="mac/aarch64/LibreOffice_${LIBREOFFICE_VERSION}_MacOS_aarch64.dmg" ;;
+            macOS-*)     file="mac/x86_64/LibreOffice_${LIBREOFFICE_VERSION}_MacOS_x86-64.dmg" ;;
+          esac
+          mkdir -p "$RUNNER_TEMP/lo-installer"
+          for base in \
+            https://download.documentfoundation.org/libreoffice/stable \
+            https://ftp.osuosl.org/pub/tdf/libreoffice/stable; do
+            url="$base/$LIBREOFFICE_VERSION/$file"
+            echo "Downloading $url"
+            if curl -fL --connect-timeout 15 --max-time 600 --retry 2 \
+              -o "$RUNNER_TEMP/lo-installer/$(basename "$file")" "$url"; then
+              exit 0
+            fi
+          done
+          echo "::error::LibreOffice $LIBREOFFICE_VERSION could not be downloaded. If it is no longer under stable/ on the mirrors, update LIBREOFFICE_VERSION in this workflow."
+          exit 1
+
       - name: 📥 Install LibreOffice (Windows)
         if: runner.os == 'Windows'
-        # The Chocolatey package downloads the installer from a LibreOffice mirror, and that
-        # download fails now and then. Try a few times before giving up.
         shell: pwsh
         run: |
-          foreach ($attempt in 1..3) {
-            choco install -y --no-progress libreoffice-still
-            if ($LASTEXITCODE -eq 0) { exit 0 }
-            Write-Host "Attempt $attempt failed."
-            Start-Sleep -Seconds 20
-          }
-          exit 1
+          $msi = Get-ChildItem "$env:RUNNER_TEMP\lo-installer\*.msi" | Select-Object -First 1
+          $install = Start-Process msiexec -ArgumentList '/i', "`"$($msi.FullName)`"", '/qn', '/norestart' -Wait -PassThru
+          exit $install.ExitCode
 
       - name: 📥 Install LibreOffice (macOS)
         if: runner.os == 'macOS'
-        run: brew install --cask libreoffice
+        run: |
+          hdiutil attach -nobrowse -quiet -mountpoint /Volumes/LibreOfficeInstaller "$RUNNER_TEMP"/lo-installer/*.dmg
+          cp -R /Volumes/LibreOfficeInstaller/LibreOffice.app /Applications/
+          hdiutil detach -quiet /Volumes/LibreOfficeInstaller
 
       - name: 🛠️ Build and test
         # bash on every OS, so the same wrapper script runs everywhere.
