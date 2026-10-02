@@ -70,7 +70,13 @@ nebula-integtest = "10.1.5"
 # Latest spotless supporting java 8 is 6.13.0
 spotless = "6.13.0" # Latest version supporting Java 8
 
+# Maven publish plugin
+# Latest version -> https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 maven-publish = "0.34.0"
+
+# OWASP Dependency Check plugin
+# Latest version -> https://plugins.gradle.org/plugin/org.owasp.dependencycheck
+dependency-check = "13.0.0"
 
 [libraries]
 
@@ -136,3 +142,4 @@ maven-publish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.pu
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 nebula-integtest = { id = "com.netflix.nebula.integtest", version.ref = "nebula-integtest" }
 coveralls = { id = "com.github.kt3k.coveralls", version.ref = "coveralls" }
+dependency-check = { id = "org.owasp.dependencycheck", version.ref = "dependency-check" }

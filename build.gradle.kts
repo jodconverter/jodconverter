@@ -11,6 +11,7 @@ plugins {
     jacoco
     distribution
     alias(libs.plugins.coveralls)
+    alias(libs.plugins.dependency.check)
 }
 
 allprojects {
@@ -19,6 +20,17 @@ allprojects {
 
     repositories {
         mavenCentral()
+    }
+}
+
+// Run with: gradlew dependencyCheckAggregate
+// The NVD API key is read from the "nvdApiKey" Gradle property (~/.gradle/gradle.properties)
+// or from the NVD_API_KEY environment variable.
+dependencyCheck {
+    nvd {
+        apiKey = providers.gradleProperty("nvdApiKey")
+            .orElse(providers.environmentVariable("NVD_API_KEY"))
+            .orNull
     }
 }
 
