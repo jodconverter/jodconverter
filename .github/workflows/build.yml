@@ -32,9 +32,9 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-          - os: windows-latest
-            # LibreOffice 26.2.6 exits in the middle of conversions on the Windows runner,
-            # a different conversion on each run.
+          # On windows-latest (Windows Server 2025), LibreOffice exits or hangs in the middle of
+          # conversions, a different conversion on each run, with both 25.8.7 and 26.2.6.
+          - os: windows-2022
             libreoffice: '25.8.7'
           - os: macos-latest
             libreoffice: '26.2.6'
