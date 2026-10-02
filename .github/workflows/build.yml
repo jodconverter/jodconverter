@@ -116,8 +116,9 @@ jobs:
 
       - name: 🛠️ Build and test
         # bash on every OS, so the same wrapper script runs everywhere.
+        # --continue: a failing module does not hide the results of the others.
         shell: bash
-        run: ./gradlew build -x javadoc --stacktrace
+        run: ./gradlew build -x javadoc --continue --stacktrace
 
       - name: 📤 Upload test reports on failure
         if: failure()
