@@ -32,8 +32,8 @@ plugins {
     pmd
     checkstyle
     jacoco
-    id("com.diffplug.spotless") apply false
-    id("com.netflix.nebula.integtest") apply false
+    id("com.diffplug.spotless")
+    id("com.netflix.nebula.integtest")
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
