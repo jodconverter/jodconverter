@@ -23,6 +23,7 @@ package org.jodconverter.local.process;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -41,11 +42,11 @@ public class WindowsProcessManager extends AbstractProcessManager {
       Pattern.compile("^\\s*(?<CommandLine>.*?)\\s+(?<Pid>\\d+)\\s*$");
 
   // Whether wmic.exe is available. null means that it has not been checked yet.
-  private volatile Boolean wmicAvailable;
+  private final AtomicReference<Boolean> wmicAvailable = new AtomicReference<>();
 
   // Whether the running processes can be queried through powershell.exe. null means that it has
   // not been checked yet.
-  private volatile Boolean powershellQueryWorking;
+  private final AtomicReference<Boolean> powershellQueryWorking = new AtomicReference<>();
 
   /**
    * This class is required in order to create the default WindowsProcessManager only on demand, as
@@ -119,7 +120,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
 
   private boolean isPowershellQueryWorking() {
 
-    Boolean working = powershellQueryWorking;
+    Boolean working = powershellQueryWorking.get();
     if (working == null) {
       try {
         // Being able to start powershell.exe is not enough, since a policy may prevent the query
@@ -131,14 +132,14 @@ public class WindowsProcessManager extends AbstractProcessManager {
       } catch (IOException ioEx) {
         working = false;
       }
-      powershellQueryWorking = working;
+      powershellQueryWorking.set(working);
     }
     return working;
   }
 
   private boolean isWmicAvailable() {
 
-    Boolean available = wmicAvailable;
+    Boolean available = wmicAvailable.get();
     if (available == null) {
       try {
         execute(new String[] {"wmic", "quit"});
@@ -146,7 +147,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
       } catch (IOException ioEx) {
         available = false;
       }
-      wmicAvailable = available;
+      wmicAvailable.set(available);
     }
     return available;
   }
