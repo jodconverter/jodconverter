@@ -49,9 +49,10 @@ class LocalOfficeProcessManagerITest {
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long START_INITIAL_WAIT = 2_000L; // 2 Seconds.
-  private static final long START_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
+  // 30 Seconds is too short on macOS.
+  private static final long START_WAIT_TIMEOUT = 60_000L; // 60 Seconds.
   private static final long STOP_INITIAL_WAIT = 2_000L; // 2 Seconds.
-  private static final long STOP_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
+  private static final long STOP_WAIT_TIMEOUT = 30_000L; // 30 Seconds.
   private static final int TRY_COUNT = 2;
 
   @Nested
@@ -414,9 +415,9 @@ class LocalOfficeProcessManagerITest {
 
     final long start = System.currentTimeMillis();
 
-    TestUtil.sleepQuietly(STOP_INITIAL_WAIT);
+    TestUtil.sleepQuietly(START_INITIAL_WAIT);
 
-    final long limit = start + STOP_WAIT_TIMEOUT;
+    final long limit = start + START_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (manager.getConnection().isConnected()) {
         return;
@@ -435,9 +436,9 @@ class LocalOfficeProcessManagerITest {
 
     final long start = System.currentTimeMillis();
 
-    TestUtil.sleepQuietly(START_INITIAL_WAIT);
+    TestUtil.sleepQuietly(STOP_INITIAL_WAIT);
 
-    final long limit = start + START_WAIT_TIMEOUT;
+    final long limit = start + STOP_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (!manager.getConnection().isConnected()) {
         return;

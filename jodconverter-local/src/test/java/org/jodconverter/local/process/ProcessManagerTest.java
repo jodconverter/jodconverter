@@ -29,7 +29,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -299,6 +302,77 @@ class ProcessManagerTest {
             }
           };
       assertThat(manager.isUsable()).isTrue();
+    }
+
+    @Test
+    void isUsable_WhenWmicIsMissingAndPowershellQueryWorks_ShouldReturnTrue() {
+
+      final WindowsProcessManager manager =
+          new WindowsProcessManager() {
+            @Override
+            protected List<String> execute(final String... cmdarray) throws IOException {
+              if ("wmic".equals(cmdarray[0])) {
+                throw new IOException();
+              }
+              if ("powershell".equals(cmdarray[0])) {
+                return Collections.singletonList("powershell -NoProfile -NonInteractive 1234");
+              }
+              return new ArrayList<>();
+            }
+          };
+      assertThat(manager.isUsable()).isTrue();
+    }
+
+    @Test
+    void isUsable_WhenWmicIsMissingAndPowershellQueryReturnsNothing_ShouldReturnFalse() {
+
+      final WindowsProcessManager manager =
+          new WindowsProcessManager() {
+            @Override
+            protected List<String> execute(final String... cmdarray) throws IOException {
+              if ("wmic".equals(cmdarray[0])) {
+                throw new IOException();
+              }
+              return new ArrayList<>();
+            }
+          };
+      assertThat(manager.isUsable()).isFalse();
+    }
+
+    @Test
+    void getRunningProcessesCommand_WhenWmicIsAvailable_ShouldUseWmic() {
+
+      final WindowsProcessManager manager =
+          new WindowsProcessManager() {
+            @Override
+            protected List<String> execute(final String... cmdarray) {
+              return new ArrayList<>();
+            }
+          };
+      assertThat(manager.getRunningProcessesCommand("soffice"))
+          .containsExactly(
+              "cmd", "/c", "wmic process where(name like 'soffice%') get commandline,processid");
+    }
+
+    @Test
+    void getRunningProcessesCommand_WhenWmicIsMissing_ShouldUsePowershell() {
+
+      final WindowsProcessManager manager =
+          new WindowsProcessManager() {
+            @Override
+            protected List<String> execute(final String... cmdarray) throws IOException {
+              throw new IOException();
+            }
+          };
+      final String[] command = manager.getRunningProcessesCommand("soffice");
+      assertThat(command)
+          .startsWith("powershell", "-NoProfile", "-NonInteractive", "-EncodedCommand")
+          .hasSize(5);
+      assertThat(new String(Base64.getDecoder().decode(command[4]), StandardCharsets.UTF_16LE))
+          .isEqualTo(
+              "$ProgressPreference = 'SilentlyContinue'; "
+                  + "Get-CimInstance Win32_Process -Filter \"Name like 'soffice%'\""
+                  + " | ForEach-Object { \"$($_.CommandLine) $($_.ProcessId)\" }");
     }
 
     @Test
