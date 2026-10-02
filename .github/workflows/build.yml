@@ -61,7 +61,17 @@ jobs:
 
       - name: 📥 Install LibreOffice (Windows)
         if: runner.os == 'Windows'
-        run: choco install -y --no-progress libreoffice-still
+        # The Chocolatey package downloads the installer from a LibreOffice mirror, and that
+        # download fails now and then. Try a few times before giving up.
+        shell: pwsh
+        run: |
+          foreach ($attempt in 1..3) {
+            choco install -y --no-progress libreoffice-still
+            if ($LASTEXITCODE -eq 0) { exit 0 }
+            Write-Host "Attempt $attempt failed."
+            Start-Sleep -Seconds 20
+          }
+          exit 1
 
       - name: 📥 Install LibreOffice (macOS)
         if: runner.os == 'macOS'
