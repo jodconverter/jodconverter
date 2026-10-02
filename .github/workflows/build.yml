@@ -1,0 +1,97 @@
+name: build
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+  push:
+    branches:
+      - develop
+      - master
+  workflow_dispatch:
+
+# A new push to the same pull request or branch cancels the run in progress.
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      # Let every OS report, so an OS-specific failure is not hidden by another one.
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    steps:
+      - name: 🪟 Use CRLF line endings on Windows
+        # Spotless expects the platform line endings; without this, spotlessCheck fails on Windows.
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf true
+
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v7
+
+      - name: ☕ Set up JDK 17
+        # Runs Gradle. The code is compiled and tested on the Java version set in
+        # gradle/libs.versions.toml, through a Gradle toolchain that is downloaded when missing.
+        uses: actions/setup-java@v6
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: ⚙️ Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: 📥 Install LibreOffice (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get -q update
+          sudo apt-get -y -q install libreoffice
+
+      - name: 📥 Install LibreOffice (Windows)
+        if: runner.os == 'Windows'
+        run: choco install -y --no-progress libreoffice-still
+
+      - name: 📥 Install LibreOffice (macOS)
+        if: runner.os == 'macOS'
+        run: brew install --cask libreoffice
+
+      - name: 🛠️ Build and test
+        # bash on every OS, so the same wrapper script runs everywhere.
+        shell: bash
+        run: ./gradlew build -x javadoc --stacktrace
+
+      - name: 📤 Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports-${{ matrix.os }}
+          path: |
+            **/build/reports/tests/
+            **/build/reports/integTest/
+            **/build/test-results/
+          retention-days: 7
+
+  # The single check to require in the branch rulesets: it passes only when every OS passed.
+  # Rename it only together with the rulesets, or pull requests wait forever for a check
+  # that no longer reports.
+  build:
+    name: build
+    if: always()
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: ✅ Check the result of every OS
+        run: test "${{ needs.test.result }}" = "success"
