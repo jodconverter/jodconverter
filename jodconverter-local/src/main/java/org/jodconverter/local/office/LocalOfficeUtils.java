@@ -178,9 +178,13 @@ public final class LocalOfficeUtils {
       return UnixProcessManager.getDefault();
     } else if (OSUtils.IS_OS_WINDOWS) {
       final WindowsProcessManager windowsProcessManager = WindowsProcessManager.getDefault();
-      return windowsProcessManager.isUsable()
-          ? windowsProcessManager
-          : PureJavaProcessManager.getDefault();
+      if (windowsProcessManager.isUsable()) {
+        return windowsProcessManager;
+      }
+      LOGGER.warn(
+          "The commands required to manage processes on Windows are not available;"
+              + " an office process that is already running will not be detected.");
+      return PureJavaProcessManager.getDefault();
     } else {
       // NOTE: UnixProcessManager can't be trusted to work on Solaris
       // because of the 80-char limit on ps output there
