@@ -28,6 +28,7 @@ import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -155,8 +156,11 @@ public class JodConverterLocalAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean(name = "localDocumentConverter")
   @ConditionalOnBean(name = {"localOfficeManager", "documentFormatRegistry"})
+  // The qualifier is required when the remote office manager also exists: since Spring 6.1, a
+  // parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter localDocumentConverter(
-      final OfficeManager localOfficeManager, final DocumentFormatRegistry documentFormatRegistry) {
+      final @Qualifier("localOfficeManager") OfficeManager localOfficeManager,
+      final DocumentFormatRegistry documentFormatRegistry) {
 
     final Map<String, Object> loadProperties = new HashMap<>();
     if (properties.isApplyDefaultLoadProperties()) {

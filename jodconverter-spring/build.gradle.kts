@@ -13,7 +13,6 @@ dependencies {
     implementation(libs.slf4j.log4j)
     implementation(libs.spring.core)
     implementation(libs.spring.context)
-    implementation(libs.javax.annotations)
 
     testImplementation(libs.spring.test)
     testImplementation(libs.slf4j.log4j)

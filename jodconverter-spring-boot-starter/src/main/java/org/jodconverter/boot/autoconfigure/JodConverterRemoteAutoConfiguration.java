@@ -21,6 +21,7 @@
 package org.jodconverter.boot.autoconfigure;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -88,7 +89,10 @@ public class JodConverterRemoteAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean(name = "remoteDocumentConverter")
   @ConditionalOnBean(name = "remoteOfficeManager")
-  /* default */ DocumentConverter remoteDocumentConverter(final OfficeManager remoteOfficeManager) {
+  // The qualifier is required when the local office manager also exists: since Spring 6.1, a
+  // parameter name is no longer used to choose between beans of the same type.
+  /* default */ DocumentConverter remoteDocumentConverter(
+      final @Qualifier("remoteOfficeManager") OfficeManager remoteOfficeManager) {
 
     return RemoteConverter.make(remoteOfficeManager);
   }

@@ -20,11 +20,12 @@ commons-io = "2.22.0"
 # Spring Boot
 # Its BOM is only used by jodconverter-spring-boot-starter
 # Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-spring-boot = "2.7.18"
+spring-boot = "3.5.16"
 
 # Spring Framework, used by jodconverter-spring and jodconverter-cli
+# Stay on the version line used by the Spring Boot version above
 # Latest version -> https://mvnrepository.com/artifact/org.springframework/spring-core
-spring = "5.3.31"
+spring = "6.2.19"
 
 # SLF4J
 # Latest version -> https://mvnrepository.com/artifact/org.slf4j/slf4j-api
@@ -51,17 +52,14 @@ lo = "26.2.2"
 # Latest version -> https://mvnrepository.com/artifact/org.openoffice
 oo = "4.1.2"
 
-# Javax Annotation
-# Latest version -> https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api
-javax-annotations = "1.3.2"
-
 #
 # Testing
 #
 
 # JUnit (BOM)
 # Latest version -> https://mvnrepository.com/artifact/org.junit/junit-bom
-junit = "5.8.2"
+# Same version as the Spring Boot version above (Spring 6 requires JUnit 5.9+)
+junit = "5.12.2"
 
 # Latest version -> https://mvnrepository.com/artifact/org.assertj/assertj-core
 assertj = "3.22.0"
@@ -71,9 +69,8 @@ mockito = "4.5.1"
 
 # We now have to use the wiremock standalone version since
 # spring boot provides jetty dependency
-# Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
-# 3+ required minimum java 11
-wiremock = "2.27.2"
+# Latest version -> https://mvnrepository.com/artifact/org.wiremock/wiremock-standalone
+wiremock = "3.13.2"
 
 #
 # Plugins
@@ -138,8 +135,8 @@ spring-core = { module = "org.springframework:spring-core", version.ref = "sprin
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
 spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
-# Javax
-javax-annotations = { module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotations" }
+# Jakarta (version from the Spring Boot BOM)
+jakarta-annotations = { module = "jakarta.annotation:jakarta.annotation-api" }
 
 # HTTP Components
 httpcore = { module = "org.apache.httpcomponents:httpcore", version.ref = "httpcore" }
@@ -165,7 +162,7 @@ junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
-wiremock = { module = "com.github.tomakehurst:wiremock-standalone", version.ref = "wiremock" }
+wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
 
 # Plugins
 spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
