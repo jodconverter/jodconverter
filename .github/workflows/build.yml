@@ -122,23 +122,20 @@ jobs:
           cp -R /Volumes/LibreOfficeInstaller/LibreOffice.app /Applications/
           hdiutil detach -quiet /Volumes/LibreOfficeInstaller
 
-      - name: 🗂️ Prepare a LibreOffice profile (macOS)
-        # On the macOS runner, starting LibreOffice with a new profile takes about 37 s (about 1 s on
-        # Linux), and the integration tests start it about 30 times. The profile is initialised once
-        # here, and the integration tests copy it instead of creating a new one on each start.
+      - name: 🏷️ Resolve the runner hostname locally (macOS)
+        # On the macOS runner, LibreOffice takes about 35 s to answer the first request after each
+        # start, which looks like a hostname lookup timing out. Mapping the hostname to the loopback
+        # address is the usual fix on these runners.
         if: runner.os == 'macOS'
         run: |
-          profile="$RUNNER_TEMP/lo-profile"
-          time /Applications/LibreOffice.app/Contents/MacOS/soffice --headless --terminate_after_init "-env:UserInstallation=file://$profile"
-          test -d "$profile/user"
-          echo "TEMPLATE_PROFILE_ARG=-Porg.jodconverter.local.manager.templateProfileDir=$profile" >> "$GITHUB_ENV"
+          echo "127.0.0.1 $(hostname)" | sudo tee -a /etc/hosts
+          echo "::1 $(hostname)" | sudo tee -a /etc/hosts
 
       - name: 🛠️ Build and test
         # bash on every OS, so the same wrapper script runs everywhere.
         # --continue: a failing module does not hide the results of the others.
-        # TEMPLATE_PROFILE_ARG is only set on macOS (see the step above).
         shell: bash
-        run: ./gradlew build -x javadoc --continue --stacktrace $TEMPLATE_PROFILE_ARG
+        run: ./gradlew build -x javadoc --continue --stacktrace
 
       - name: 📤 Upload test reports on failure
         if: failure()
