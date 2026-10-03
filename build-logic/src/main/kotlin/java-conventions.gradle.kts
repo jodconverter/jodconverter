@@ -33,7 +33,6 @@ plugins {
     checkstyle
     jacoco
     id("com.diffplug.spotless")
-    id("com.netflix.nebula.integtest")
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -109,8 +108,9 @@ checkstyle {
 }
 
 // Disable checkstyle for test code
-tasks.named<Checkstyle>("checkstyleTest").configure { isEnabled = false }
-tasks.named<Checkstyle>("checkstyleIntegTest").configure { isEnabled = false }
+tasks.withType<Checkstyle>()
+    .matching { it.name == "checkstyleTest" || it.name == "checkstyleIntegTest" }
+    .configureEach { isEnabled = false }
 
 tasks.withType<Checkstyle>().configureEach {
     reports {
@@ -160,7 +160,32 @@ tasks.named<Test>("test") {
     testLogging.showStandardStreams = true
 }
 
-tasks.named<Test>("integrationTest") {
+// Integration tests live in src/integTest. They need an office installation, so they run in their
+// own task. They get the dependencies and the classes of the unit tests, since they reuse test helpers.
+val integTest: SourceSet = sourceSets.create("integTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+}
+configurations.named(integTest.implementationConfigurationName) {
+    extendsFrom(configurations.testImplementation.get())
+}
+configurations.named(integTest.runtimeOnlyConfigurationName) {
+    extendsFrom(configurations.testRuntimeOnly.get())
+}
+
+val integrationTest = tasks.register<Test>("integrationTest") {
+    description = "Runs the integration tests."
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    testClassesDirs = integTest.output.classesDirs
+    classpath = integTest.runtimeClasspath
+    shouldRunAfter(tasks.test)
+}
+
+tasks.named("check") {
+    dependsOn(integrationTest)
+}
+
+integrationTest.configure {
     jvmArgs = defaultJvmArgs
     useJUnitPlatform {
         includeEngines("junit-jupiter", "junit-vintage")
@@ -249,5 +274,4 @@ tasks.named<Javadoc>("javadoc") {
         }
     }
 }
-
 
