@@ -38,14 +38,12 @@ public interface DocumentSpecs {
    *
    * @return A file instance.
    */
-  @NonNull
-  File getFile();
+  @NonNull File getFile();
 
   /**
    * Gets the {@link org.jodconverter.core.document.DocumentFormat} specification for the document.
    *
    * @return The document format.
    */
-  @Nullable
-  DocumentFormat getFormat();
+  @Nullable DocumentFormat getFormat();
 }

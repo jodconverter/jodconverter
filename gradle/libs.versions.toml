@@ -1,7 +1,7 @@
 [versions]
 
 # Java
-java = "1.8"
+java = "17"
 
 #
 # Dependencies
@@ -49,9 +49,9 @@ wiremock = "2.27.2"
 #
 
 # Latest version -> https://github.com/checkstyle/checkstyle/releases/
-# 9.3 is the latest supporting java8, so stay with it until we set the minimal version to 11
 # Stay aligned with codacy version (log in into codacy and go to the "code patterns" menu)
-checkstyle = "9.3"
+# 12.x is the latest supporting java 17 (13+ requires java 21)
+checkstyle = "12.3.1"
 
 # Latest version -> https://pmd.github.io
 # Stay aligned with codacy version (log in into codacy and go to the "code patterns" menu)
@@ -67,8 +67,12 @@ nebula-integtest = "10.1.5"
 
 # Spotless plugin
 # Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-# Latest spotless supporting java 8 is 6.13.0
-spotless = "6.13.0" # Latest version supporting Java 8
+spotless = "8.10.3"
+
+# Google Java Format, used by Spotless
+# Latest version -> https://github.com/google/google-java-format/releases
+# Spotless limits google-java-format to 1.28.0 when running on java 17
+google-java-format = "1.28.0"
 
 # Maven publish plugin
 # Latest version -> https://github.com/vanniktech/gradle-maven-publish-plugin/releases

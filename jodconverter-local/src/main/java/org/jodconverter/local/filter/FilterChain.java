@@ -57,6 +57,5 @@ public interface FilterChain {
    *
    * @return The copy of this chain.
    */
-  @NonNull
-  FilterChain copy();
+  @NonNull FilterChain copy();
 }

@@ -29,7 +29,9 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -116,8 +118,8 @@ class TargetDocumentSpecsFromOutputStreamTest {
       assertThat(tempFile.createNewFile()).isTrue();
       final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
 
-      try (FileOutputStream outputStream =
-          new FileOutputStream(new File(testFolder, "target.txt"))) {
+      try (CloseTrackingOutputStream outputStream =
+          new CloseTrackingOutputStream(new FileOutputStream(new File(testFolder, "target.txt")))) {
         final TargetDocumentSpecsFromOutputStream specs =
             new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, true);
 
@@ -127,7 +129,7 @@ class TargetDocumentSpecsFromOutputStreamTest {
         assertThat(tempFile).doesNotExist();
 
         // Check that the OutputStream is closed.
-        assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", true);
+        assertThat(outputStream.closed).isTrue();
       }
     }
 
@@ -139,8 +141,8 @@ class TargetDocumentSpecsFromOutputStreamTest {
       assertThat(tempFile.createNewFile()).isTrue();
       final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
 
-      try (FileOutputStream outputStream =
-          new FileOutputStream(new File(testFolder, "target.txt"))) {
+      try (CloseTrackingOutputStream outputStream =
+          new CloseTrackingOutputStream(new FileOutputStream(new File(testFolder, "target.txt")))) {
         final TargetDocumentSpecsFromOutputStream specs =
             new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
 
@@ -150,7 +152,7 @@ class TargetDocumentSpecsFromOutputStreamTest {
         assertThat(tempFile).doesNotExist();
 
         // Check that the OutputStream is not closed.
-        assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", false);
+        assertThat(outputStream.closed).isFalse();
       }
     }
   }
@@ -166,8 +168,8 @@ class TargetDocumentSpecsFromOutputStreamTest {
       assertThat(tempFile.createNewFile()).isTrue();
       final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
 
-      try (FileOutputStream outputStream =
-          new FileOutputStream(new File(testFolder, "target.txt"))) {
+      try (CloseTrackingOutputStream outputStream =
+          new CloseTrackingOutputStream(new FileOutputStream(new File(testFolder, "target.txt")))) {
         final TargetDocumentSpecsFromOutputStream specs =
             new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, true);
 
@@ -177,7 +179,7 @@ class TargetDocumentSpecsFromOutputStreamTest {
         assertThat(tempFile).doesNotExist();
 
         // Check that the OutputStream is not closed.
-        assertThat((Object) outputStream).hasFieldOrPropertyWithValue("closed", false);
+        assertThat(outputStream.closed).isFalse();
       }
     }
 
@@ -189,8 +191,8 @@ class TargetDocumentSpecsFromOutputStreamTest {
       assertThat(tempFile.createNewFile()).isTrue();
       final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
 
-      try (FileOutputStream outputStream =
-          new FileOutputStream(new File(testFolder, "target.txt"))) {
+      try (CloseTrackingOutputStream outputStream =
+          new CloseTrackingOutputStream(new FileOutputStream(new File(testFolder, "target.txt")))) {
         final TargetDocumentSpecsFromOutputStream specs =
             new TargetDocumentSpecsFromOutputStream(outputStream, fileMaker, false);
 
@@ -200,8 +202,25 @@ class TargetDocumentSpecsFromOutputStreamTest {
         assertThat(tempFile).doesNotExist();
 
         // Check that the OutputStream is not closed.
-        assertThat(outputStream).hasFieldOrPropertyWithValue("closed", false);
+        assertThat(outputStream.closed).isFalse();
       }
+    }
+  }
+
+  // Records whether the stream was closed. Reading the private "closed" field of
+  // FileOutputStream is not allowed since Java 17 (strong encapsulation of the JDK internals).
+  private static final class CloseTrackingOutputStream extends FilterOutputStream {
+
+    private boolean closed;
+
+    /* default */ CloseTrackingOutputStream(final OutputStream out) {
+      super(out);
+    }
+
+    @Override
+    public void close() throws IOException {
+      closed = true;
+      super.close();
     }
   }
 }

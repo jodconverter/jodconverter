@@ -121,9 +121,9 @@ gradle.projectsEvaluated {
             docEncoding = charset
             encoding = charset
             memberLevel = JavadocMemberLevel.PROTECTED
-            source = "8"
+            source = libs.versions.java.get()
             links(
-                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://docs.oracle.com/en/java/javase/17/docs/api/",
                 "https://api.libreoffice.org/docs/java/ref/",
                 "https://commons.apache.org/proper/commons-lang/javadocs/api-release/",
                 "https://docs.spring.io/spring-boot/docs/${libs.versions.spring.boot.get()}/api/"

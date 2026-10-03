@@ -80,10 +80,7 @@ class ProcessManagerTest {
 
       final long pid = processManager.findPid(query);
       assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-      assertThat(process)
-          .extracting("pid")
-          .isInstanceOfSatisfying(
-              Number.class, number -> assertThat(number.longValue()).isEqualTo(pid));
+      assertThat(process.pid()).isEqualTo(pid);
 
       processManager.kill(process, pid);
       assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
@@ -126,10 +123,7 @@ class ProcessManagerTest {
 
       final long pid = processManager.findPid(query);
       assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
-      assertThat(process)
-          .extracting("pid")
-          .isInstanceOfSatisfying(
-              Number.class, number -> assertThat(number.longValue()).isEqualTo(pid));
+      assertThat(process.pid()).isEqualTo(pid);
 
       processManager.kill(process, pid);
       assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
