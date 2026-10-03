@@ -36,10 +36,10 @@ jobs:
           - os: ubuntu-latest
           # On the GitHub Windows runners (windows-2022 and windows-latest), LibreOffice exits or
           # hangs in the middle of conversions, a different conversion on each run, with both
-          # 25.8.7 and 26.2.6. Allowed to fail until this is understood.
-          - os: windows-latest
-            libreoffice: '26.2.6'
-            allow-failure: true
+          # 25.8.7 and 26.2.6. Disabled until this is understood.
+          # - os: windows-latest
+          #   libreoffice: '26.2.6'
+          #   allow-failure: true
           - os: macos-latest
             libreoffice: '26.2.6'
 
