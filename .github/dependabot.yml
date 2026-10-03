@@ -1,0 +1,36 @@
+# Opens pull requests to update the dependencies, against develop.
+# Docs: https://docs.github.com/en/code-security/dependabot
+version: 2
+
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    target-branch: "develop"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    # The project must stay compatible with Java 8, and several dependencies are pinned to the last
+    # version that supports it (see gradle/libs.versions.toml). Major versions usually drop old Java
+    # versions, so they are not proposed.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      gradle-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "develop"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    groups:
+      actions:
+        update-types:
+          - "minor"
+          - "patch"
