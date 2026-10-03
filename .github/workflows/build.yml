@@ -1,0 +1,155 @@
+name: build
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+  push:
+    branches:
+      - develop
+      - master
+  workflow_dispatch:
+
+# A new push to the same pull request or branch cancels the run in progress.
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    # A job allowed to fail still runs and reports, but does not fail the "build" check below.
+    continue-on-error: ${{ matrix.allow-failure == true }}
+    strategy:
+      # Let every OS report, so an OS-specific failure is not hidden by another one.
+      fail-fast: false
+      # libreoffice: the version installed on Windows and macOS (Linux uses the distribution's
+      # package). It must be a version still published under stable/ on the LibreOffice mirrors.
+      matrix:
+        include:
+          - os: ubuntu-latest
+          # On the GitHub Windows runners (windows-2022 and windows-latest), LibreOffice exits or
+          # hangs in the middle of conversions, a different conversion on each run, with both
+          # 25.8.7 and 26.2.6. Disabled until this is understood.
+          # - os: windows-latest
+          #   libreoffice: '26.2.6'
+          #   allow-failure: true
+          - os: macos-latest
+            libreoffice: '26.2.6'
+
+    env:
+      LIBREOFFICE_VERSION: ${{ matrix.libreoffice }}
+
+    steps:
+      - name: 🪟 Use CRLF line endings on Windows
+        # Spotless expects the platform line endings; without this, spotlessCheck fails on Windows.
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf true
+
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v7
+
+      - name: ☕ Set up JDK 17
+        # Runs Gradle. The code is compiled and tested on the Java version set in
+        # gradle/libs.versions.toml, through a Gradle toolchain that is downloaded when missing.
+        uses: actions/setup-java@v6
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: ⚙️ Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: 📥 Install LibreOffice (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get -q update
+          sudo apt-get -y -q install libreoffice
+
+      # Windows and macOS: the installer is downloaded here instead of through Chocolatey or
+      # Homebrew. Both fetch it from download.documentfoundation.org only, and when that host
+      # is unreachable the Chocolatey install fails and the Homebrew one hangs.
+      - name: 💾 Restore the LibreOffice installer
+        if: runner.os != 'Linux'
+        id: lo-installer
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/lo-installer
+          key: libreoffice-${{ runner.os }}-${{ runner.arch }}-${{ env.LIBREOFFICE_VERSION }}
+
+      - name: ⬇️ Download the LibreOffice installer
+        if: runner.os != 'Linux' && steps.lo-installer.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$RUNNER_OS-$RUNNER_ARCH" in
+            Windows-*)   file="win/x86_64/LibreOffice_${LIBREOFFICE_VERSION}_Win_x86-64.msi" ;;
+            macOS-ARM64) file="mac/aarch64/LibreOffice_${LIBREOFFICE_VERSION}_MacOS_aarch64.dmg" ;;
+            macOS-*)     file="mac/x86_64/LibreOffice_${LIBREOFFICE_VERSION}_MacOS_x86-64.dmg" ;;
+          esac
+          mkdir -p "$RUNNER_TEMP/lo-installer"
+          for base in \
+            https://download.documentfoundation.org/libreoffice/stable \
+            https://ftp.osuosl.org/pub/tdf/libreoffice/stable; do
+            url="$base/$LIBREOFFICE_VERSION/$file"
+            echo "Downloading $url"
+            if curl -fL --connect-timeout 15 --max-time 600 --retry 2 \
+              -o "$RUNNER_TEMP/lo-installer/$(basename "$file")" "$url"; then
+              exit 0
+            fi
+          done
+          echo "::error::LibreOffice $LIBREOFFICE_VERSION could not be downloaded. If it is no longer under stable/ on the mirrors, update LIBREOFFICE_VERSION in this workflow."
+          exit 1
+
+      - name: 📥 Install LibreOffice (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem "$env:RUNNER_TEMP\lo-installer\*.msi" | Select-Object -First 1
+          $install = Start-Process msiexec -ArgumentList '/i', "`"$($msi.FullName)`"", '/qn', '/norestart' -Wait -PassThru
+          exit $install.ExitCode
+
+      - name: 📥 Install LibreOffice (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          hdiutil attach -nobrowse -quiet -mountpoint /Volumes/LibreOfficeInstaller "$RUNNER_TEMP"/lo-installer/*.dmg
+          cp -R /Volumes/LibreOfficeInstaller/LibreOffice.app /Applications/
+          hdiutil detach -quiet /Volumes/LibreOfficeInstaller
+
+      - name: 🛠️ Build and test
+        # bash on every OS, so the same wrapper script runs everywhere.
+        # --continue: a failing module does not hide the results of the others.
+        shell: bash
+        run: ./gradlew build -x javadoc --continue --stacktrace
+
+      - name: 📤 Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports-${{ matrix.os }}
+          path: |
+            **/build/reports/tests/
+            **/build/reports/integTest/
+            **/build/test-results/
+            **/build/integTest-results/
+          retention-days: 7
+
+  # The single check to require in the branch rulesets: it passes only when every OS that is
+  # not allowed to fail passed.
+  # Rename it only together with the rulesets, or pull requests wait forever for a check
+  # that no longer reports.
+  build:
+    name: build
+    if: always()
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: ✅ Check the result of every OS
+        run: test "${{ needs.test.result }}" = "success"
