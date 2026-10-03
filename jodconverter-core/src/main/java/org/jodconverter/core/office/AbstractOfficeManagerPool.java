@@ -152,6 +152,20 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
     }
   }
 
+  public File getTempDir() throws OfficeException {
+    if (tempDir.exists() && tempDir.isDirectory()) {
+      return tempDir;
+    }
+
+    // If tempDir exists but is not a directory (e.g., it's a file), delete it
+    if (tempDir.exists()) {
+      tempDir.delete();
+    }
+
+    tempDir.mkdirs();
+    return tempDir;
+  }
+
   @Override
   public final boolean isRunning() {
 

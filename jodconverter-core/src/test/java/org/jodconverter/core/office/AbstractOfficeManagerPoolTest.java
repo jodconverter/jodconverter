@@ -515,6 +515,107 @@ class AbstractOfficeManagerPoolTest {
   }
 
   @Nested
+  class GetTempDir {
+
+    @Test
+    void whenTempDirExists_ShouldReturnTempDir() throws OfficeException {
+
+      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      try {
+        manager.start();
+        final File tempDir = manager.getTempDir();
+        assertThat(tempDir).isNotNull();
+        assertThat(tempDir).isDirectory();
+        assertThat(tempDir).exists();
+      } finally {
+        manager.stop();
+      }
+    }
+
+    @Test
+    void whenTempDirDoesNotExist_ShouldCreateAndReturnTempDir() throws OfficeException {
+
+      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      try {
+        // Ensure the temporary directory does not exist
+        final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+        assertThat(tempDir).doesNotExist();
+
+        // Calling getTempDir() should create the directory and return it
+        final File returnedTempDir = manager.getTempDir();
+        assertThat(returnedTempDir).isNotNull();
+        assertThat(returnedTempDir).isDirectory();
+        assertThat(returnedTempDir).exists();
+        assertThat(returnedTempDir).isEqualTo(tempDir);
+      } finally {
+        manager.stop();
+      }
+    }
+
+    @Test
+    void whenTempDirCreationFails_ShouldThrowOfficeException() throws OfficeException {
+
+      final File mockDir = mock(File.class);
+      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      try {
+        ReflectionTestUtils.setField(manager, "tempDir", mockDir);
+        when(mockDir.exists()).thenReturn(false);
+        when(mockDir.mkdirs()).thenReturn(true);
+        when(mockDir.isDirectory()).thenReturn(false);
+
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(manager::getTempDir)
+            .withMessageStartingWith("Cannot create temporary directory");
+      } finally {
+        manager.stop();
+      }
+    }
+
+    @Test
+    void whenCalledMultipleTimes_ShouldReturnSameTempDir() throws OfficeException {
+
+      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      try {
+        final File tempDir1 = manager.getTempDir();
+        final File tempDir2 = manager.getTempDir();
+
+        assertThat(tempDir1).isNotNull();
+        assertThat(tempDir2).isNotNull();
+        assertThat(tempDir1).isEqualTo(tempDir2);
+        assertThat(tempDir1).isDirectory();
+        assertThat(tempDir1).exists();
+      } finally {
+        manager.stop();
+      }
+    }
+
+    @Test
+    void whenTempDirIsFile_ShouldCreateNewDirectory() throws OfficeException, IOException {
+
+      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      try {
+        final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+
+        // Create a file instead of a directory
+        if (!tempDir.getParentFile().exists()) {
+          assertThat(tempDir.getParentFile().mkdirs()).isTrue();
+        }
+        assertThat(tempDir.createNewFile()).isTrue();
+        assertThat(tempDir).isFile();
+
+        // Calling getTempDir() should delete the file and create a directory
+        final File returnedTempDir = manager.getTempDir();
+        assertThat(returnedTempDir).isNotNull();
+        assertThat(returnedTempDir).isDirectory();
+        assertThat(returnedTempDir).exists();
+        assertThat(returnedTempDir).isEqualTo(tempDir);
+      } finally {
+        manager.stop();
+      }
+    }
+  }
+
+  @Nested
   class MakeTemporaryFile {
 
     @Test
