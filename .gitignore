@@ -212,3 +212,6 @@ gradle-app.setting
 
 #MkDocs site
 site/
+
+# Kotlin compiler data of the build-logic included build
+.kotlin/
