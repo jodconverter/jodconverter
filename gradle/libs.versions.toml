@@ -9,13 +9,13 @@ java = "17"
 
 # Checker Framework
 # Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-checker-qual = "3.49.5"
+checker-qual = "4.3.0"
 
 # Apache Commons
 # Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
-commons-cli = "1.9.0"
+commons-cli = "1.11.0"
 # Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
-commons-io = "2.19.0"
+commons-io = "2.22.0"
 
 # Spring Boot
 # Spring boot 3+ requires java 17
@@ -24,7 +24,7 @@ spring-boot = "2.7.18"
 
 # LibreOffice
 # Latest version -> https://mvnrepository.com/artifact/org.libreoffice
-lo = "24.8.4"
+lo = "26.2.2"
 
 # OpenOffice
 # Latest version -> https://mvnrepository.com/artifact/org.openoffice

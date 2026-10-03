@@ -69,99 +69,95 @@ public final class Convert {
           .argName("file")
           .hasArg()
           .desc("Application context file (optional)")
-          .build();
+          .get();
   private static final Option OPT_CONNECTION_URL =
       Option.builder("c")
           .longOpt("connection-url")
           .argName("url")
           .hasArg()
           .desc("remote LibreOffice Online server URL for conversion")
-          .build();
+          .get();
   private static final Option OPT_OUTPUT_DIRECTORY =
       Option.builder("d")
           .longOpt("output-directory")
           .argName("dir")
           .hasArg()
           .desc("output directory (optional; defaults to input directory)")
-          .build();
+          .get();
   private static final Option OPT_OUTPUT_FORMAT =
-      Option.builder("f")
-          .longOpt("output-format")
-          .hasArg()
-          .desc("output format (e.g. pdf)")
-          .build();
+      Option.builder("f").longOpt("output-format").hasArg().desc("output format (e.g. pdf)").get();
   private static final Option OPT_HELP =
-      Option.builder("h").longOpt("help").desc("displays help at the command prompt").build();
+      Option.builder("h").longOpt("help").desc("displays help at the command prompt").get();
   private static final Option OPT_OFFICE_HOME =
       Option.builder("i")
           .longOpt("office-home")
           .argName("dir")
           .hasArg()
           .desc("office home directory (optional; defaults to auto-detect)")
-          .build();
+          .get();
   private static final Option OPT_KEEP_ALIVE =
       Option.builder("k")
           .longOpt("keep-alive")
           .desc("keep the office process alive on shutdown (optional; defaults to false)")
-          .build();
+          .get();
   private static final Option OPT_LOAD_PROPERTIES =
       Option.builder("l")
           .longOpt("load-properties")
           .valueSeparator()
           .hasArgs()
           .desc("load properties (optional; eg. -lPassword=myPassword)")
-          .build();
+          .get();
   private static final Option OPT_PROCESS_MANAGER =
       Option.builder("m")
           .longOpt("process-manager")
           .argName("classname")
           .hasArg()
           .desc("class name of the process manager to use (optional; defaults to auto-detect)")
-          .build();
+          .get();
   private static final Option OPT_HOSTNAME =
       Option.builder("n")
           .longOpt("host-name")
           .hasArg()
           .desc("host name that will be used in the --accept argument when starting a process")
-          .build();
+          .get();
   private static final Option OPT_OVERWRITE =
       Option.builder("o")
           .longOpt("overwrite")
           .desc("overwrite existing output file (optional; defaults to false)")
-          .build();
+          .get();
   private static final Option OPT_PORT =
       Option.builder("p")
           .longOpt("port")
           .hasArg()
           .desc("office socket port (optional; defaults to 2002)")
-          .build();
+          .get();
   private static final Option OPT_REGISTRY =
       Option.builder("r")
           .longOpt("registry")
           .argName("file")
           .hasArg()
           .desc("document formats registry configuration file (optional)")
-          .build();
+          .get();
   private static final Option OPT_STORE_PROPERTIES =
       Option.builder("s")
           .longOpt("store-properties")
           .valueSeparator()
           .hasArgs()
           .desc("store properties (optional; eg. -sOverwrite=true -sFDPageRange=1-2)")
-          .build();
+          .get();
   private static final Option OPT_TIMEOUT =
       Option.builder("t")
           .longOpt("timeout")
           .hasArg()
           .desc("maximum conversion time in seconds (optional; defaults to 120)")
-          .build();
+          .get();
   private static final Option OPT_USER_PROFILE =
       Option.builder("u")
           .longOpt("user-profile")
           .argName("dir")
           .hasArg()
           .desc("use settings from the given user installation dir (optional)")
-          .build();
+          .get();
   private static final Option OPT_WORKING_DIR =
       Option.builder("w")
           .longOpt("working-dir")
@@ -169,9 +165,9 @@ public final class Convert {
           .hasArg()
           .desc(
               "directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir)")
-          .build();
+          .get();
   private static final Option OPT_VERSION =
-      Option.builder("v").longOpt("version").desc("displays version information and exit").build();
+      Option.builder("v").longOpt("version").desc("displays version information and exit").get();
   private static final Option OPT_EXISTING_PROCESS_ACTION =
       Option.builder("x")
           .longOpt("existing-process-action")
@@ -183,7 +179,7 @@ public final class Convert {
                   + " with kill: kill existing process;"
                   + " with connect: connect to existing process;"
                   + " with connect_or_kill: connect to existing process with kill fallback")
-          .build();
+          .get();
 
   private static final Options OPTIONS = initOptions();
 
