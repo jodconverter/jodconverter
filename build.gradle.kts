@@ -34,12 +34,12 @@ dependencyCheck {
     }
 }
 
-val javadocAll by tasks.registering(Javadoc::class) {
+val javadocAll = tasks.register<Javadoc>("javadocAll") {
     description = "Aggregates Javadoc API documentation of all libraries."
     group = "Documentation"
 }
 
-val jacocoRootReport by tasks.registering(JacocoReport::class) {
+val jacocoRootReport = tasks.register<JacocoReport>("jacocoRootReport") {
     group = "verification"
     description = "Generates an aggregate Jacoco coverage report"
 }

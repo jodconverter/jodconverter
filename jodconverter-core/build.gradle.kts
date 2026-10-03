@@ -22,13 +22,13 @@ dependencies {
 
 // Configuration group used to manage test dependencies
 // (when test classes depend on test classes from another project)
-val tests by configurations.creating
+val tests = configurations.create("tests")
 
-val testJar by tasks.registering(Jar::class) {
+val testJar = tasks.register<Jar>("testJar") {
     archiveClassifier.set("test")
     from(sourceSets["test"].output)
 }
 
 artifacts {
-    add("tests", testJar)
+    add(tests.name, testJar)
 }

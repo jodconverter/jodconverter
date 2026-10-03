@@ -12,6 +12,5 @@ dependencies {
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 
     implementation(libs.spotless)
-    implementation(libs.nebula.integtest)
     implementation(libs.maven.publish)
 }

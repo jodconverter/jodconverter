@@ -33,7 +33,6 @@ plugins {
     checkstyle
     jacoco
     id("com.diffplug.spotless")
-    id("com.netflix.nebula.integtest")
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,6 +57,8 @@ dependencies {
     // You are seeing this disclaimer because Mockito is configured to create inlined mocks.
     testRuntimeOnly(libs.checker.qual)
     testRuntimeOnly(libs.junit.jupiter.engine)
+    // Required since Gradle 9, which no longer provides it to the test tasks.
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,8 +108,9 @@ checkstyle {
 }
 
 // Disable checkstyle for test code
-tasks.named<Checkstyle>("checkstyleTest").configure { isEnabled = false }
-tasks.named<Checkstyle>("checkstyleIntegTest").configure { isEnabled = false }
+tasks.withType<Checkstyle>()
+    .matching { it.name == "checkstyleTest" || it.name == "checkstyleIntegTest" }
+    .configureEach { isEnabled = false }
 
 tasks.withType<Checkstyle>().configureEach {
     reports {
@@ -158,7 +160,32 @@ tasks.named<Test>("test") {
     testLogging.showStandardStreams = true
 }
 
-tasks.named<Test>("integrationTest") {
+// Integration tests live in src/integTest. They need an office installation, so they run in their
+// own task. They get the dependencies and the classes of the unit tests, since they reuse test helpers.
+val integTest: SourceSet = sourceSets.create("integTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+}
+configurations.named(integTest.implementationConfigurationName) {
+    extendsFrom(configurations.testImplementation.get())
+}
+configurations.named(integTest.runtimeOnlyConfigurationName) {
+    extendsFrom(configurations.testRuntimeOnly.get())
+}
+
+val integrationTest = tasks.register<Test>("integrationTest") {
+    description = "Runs the integration tests."
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    testClassesDirs = integTest.output.classesDirs
+    classpath = integTest.runtimeClasspath
+    shouldRunAfter(tasks.test)
+}
+
+tasks.named("check") {
+    dependsOn(integrationTest)
+}
+
+integrationTest.configure {
     jvmArgs = defaultJvmArgs
     useJUnitPlatform {
         includeEngines("junit-jupiter", "junit-vintage")
@@ -189,28 +216,31 @@ tasks.withType<Jar>().configureEach {
 }
 
 tasks.named<Jar>("jar") {
-    doFirst {
-        manifest {
-            attributes(
-                mapOf(
-                    "Automatic-Module-Name" to project.name.replace("-", "."),
-                    "Build-Jdk-Spec" to javaVersionStr,
-                    "Built-By" to "JODConverter",
-                    "Bundle-License" to "https://github.com/jodconverter/jodconverter/wiki/LICENSE",
-                    "Bundle-Vendor" to "JODConverter",
-                    "Bundle-DocURL" to "https://github.com/jodconverter/jodconverter/wiki",
-                    "Implementation-Title" to moduleName,
-                    "Implementation-Version" to project.version,
-                    "Implementation-Vendor" to "JODConverter Team",
-                    "Implementation-Vendor-Id" to "org.jodconverter",
-                    "Implementation-Url" to "https://github.com/jodconverter/jodconverter",
-                    "Specification-Title" to moduleName,
-                    "Specification-Version" to project.version,
-                    "Specification-Vendor" to "JODConverter Team",
-                    "Provider" to "Gradle ${gradle.gradleVersion}"
-                )
+    // Resolved here, at configuration time: tasks must not access the project while they execute.
+    val automaticModuleName = project.name.replace("-", ".")
+    val projectVersion = project.version.toString()
+    val gradleVersion = gradle.gradleVersion
+
+    manifest {
+        attributes(
+            mapOf(
+                "Automatic-Module-Name" to automaticModuleName,
+                "Build-Jdk-Spec" to javaVersionStr,
+                "Built-By" to "JODConverter",
+                "Bundle-License" to "https://github.com/jodconverter/jodconverter/wiki/LICENSE",
+                "Bundle-Vendor" to "JODConverter",
+                "Bundle-DocURL" to "https://github.com/jodconverter/jodconverter/wiki",
+                "Implementation-Title" to moduleName,
+                "Implementation-Version" to projectVersion,
+                "Implementation-Vendor" to "JODConverter Team",
+                "Implementation-Vendor-Id" to "org.jodconverter",
+                "Implementation-Url" to "https://github.com/jodconverter/jodconverter",
+                "Specification-Title" to moduleName,
+                "Specification-Version" to projectVersion,
+                "Specification-Vendor" to "JODConverter Team",
+                "Provider" to "Gradle $gradleVersion"
             )
-        }
+        )
     }
 }
 
@@ -239,12 +269,12 @@ tasks.named<Javadoc>("javadoc") {
         addBooleanOption("Xdoclint:none", true)
     }
 
-    doFirst {
-        (options as StandardJavadocDocletOptions).apply {
-            windowTitle = "$moduleName API Documentation"
-            docTitle = "$moduleName ${project.version} API Documentation"
-            header = "$moduleName ${project.version} API"
-        }
+    // Resolved here, at configuration time: tasks must not access the project while they execute.
+    val projectVersion = project.version.toString()
+    (options as StandardJavadocDocletOptions).apply {
+        windowTitle = "$moduleName API Documentation"
+        docTitle = "$moduleName $projectVersion API Documentation"
+        header = "$moduleName $projectVersion API"
     }
 }
 
