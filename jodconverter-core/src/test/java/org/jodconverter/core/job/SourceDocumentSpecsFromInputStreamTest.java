@@ -28,6 +28,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -140,7 +141,8 @@ class SourceDocumentSpecsFromInputStreamTest {
       final File sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (FileInputStream inputStream = new FileInputStream(sourceFile)) {
+      try (CloseTrackingInputStream inputStream =
+          new CloseTrackingInputStream(new FileInputStream(sourceFile))) {
         final SourceDocumentSpecsFromInputStream specs =
             new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, true);
 
@@ -150,7 +152,7 @@ class SourceDocumentSpecsFromInputStreamTest {
         assertThat(tempFile).doesNotExist();
 
         // Check that the InputStream is closed.
-        assertThat((Object) inputStream).hasFieldOrPropertyWithValue("closed", true);
+        assertThat(inputStream.closed).isTrue();
       }
     }
 
@@ -165,7 +167,8 @@ class SourceDocumentSpecsFromInputStreamTest {
       final File sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (FileInputStream inputStream = new FileInputStream(sourceFile)) {
+      try (CloseTrackingInputStream inputStream =
+          new CloseTrackingInputStream(new FileInputStream(sourceFile))) {
         final SourceDocumentSpecsFromInputStream specs =
             new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
 
@@ -174,9 +177,26 @@ class SourceDocumentSpecsFromInputStreamTest {
         // Check that the temp file is deleted
         assertThat(tempFile).doesNotExist();
 
-        // Check that the InputStream is closed.
-        assertThat((Object) inputStream).hasFieldOrPropertyWithValue("closed", false);
+        // Check that the InputStream is not closed.
+        assertThat(inputStream.closed).isFalse();
       }
+    }
+  }
+
+  // Records whether the stream was closed. Reading the private "closed" field of
+  // FileInputStream is not allowed since Java 17 (strong encapsulation of the JDK internals).
+  private static final class CloseTrackingInputStream extends FilterInputStream {
+
+    private boolean closed;
+
+    /* default */ CloseTrackingInputStream(final InputStream in) {
+      super(in);
+    }
+
+    @Override
+    public void close() throws IOException {
+      closed = true;
+      super.close();
     }
   }
 }

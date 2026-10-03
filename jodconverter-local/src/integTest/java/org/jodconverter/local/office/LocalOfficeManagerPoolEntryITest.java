@@ -40,6 +40,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -251,13 +252,19 @@ class LocalOfficeManagerPoolEntryITest {
           final MockOfficeTask task = new MockOfficeTask();
           poolEntry.execute(task);
           assertThat(task.isCompleted()).isTrue();
-          assertThat(poolEntry).extracting("taskCount.value").isEqualTo(i + 1);
+          assertThat(poolEntry)
+              .extracting("taskCount")
+              .asInstanceOf(InstanceOfAssertFactories.ATOMIC_INTEGER)
+              .hasValue(i + 1);
         }
 
         final MockOfficeTask task = new MockOfficeTask();
         poolEntry.execute(task);
         assertThat(task.isCompleted()).isTrue();
-        assertThat(poolEntry).extracting("taskCount.value").isEqualTo(1);
+        assertThat(poolEntry)
+            .extracting("taskCount")
+            .asInstanceOf(InstanceOfAssertFactories.ATOMIC_INTEGER)
+            .hasValue(1);
 
       } finally {
 
