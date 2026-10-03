@@ -63,7 +63,7 @@ coveralls = "2.12.2"
 
 # Nebula plugin
 # Latest version -> https://plugins.gradle.org/plugin/com.netflix.nebula.integtest
-nebula-integtest = "10.1.5"
+nebula-integtest = "13.1.2"
 
 # Spotless plugin
 # Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
@@ -132,6 +132,7 @@ assertj = { module = "org.assertj:assertj-core" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 mockito-core = { module = "org.mockito:mockito-core" }
 mockito-inline = { module = "org.mockito:mockito-inline" }
 wiremock = { module = "com.github.tomakehurst:wiremock-standalone", version.ref = "wiremock" }

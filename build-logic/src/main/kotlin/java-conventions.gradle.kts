@@ -58,6 +58,8 @@ dependencies {
     // You are seeing this disclaimer because Mockito is configured to create inlined mocks.
     testRuntimeOnly(libs.checker.qual)
     testRuntimeOnly(libs.junit.jupiter.engine)
+    // Required since Gradle 9, which no longer provides it to the test tasks.
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
