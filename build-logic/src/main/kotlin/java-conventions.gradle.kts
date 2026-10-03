@@ -264,7 +264,7 @@ tasks.named<Javadoc>("javadoc") {
             "https://docs.oracle.com/en/java/javase/17/docs/api/",
             "https://api.libreoffice.org/docs/java/ref/",
             "https://commons.apache.org/proper/commons-lang/apidocs/",
-            "https://docs.spring.io/spring-boot/docs/${libs.versions.spring.boot.get()}/api/"
+            "https://docs.spring.io/spring-boot/${libs.versions.spring.boot.get()}/api/java/"
         )
 
         addBooleanOption("Xdoclint:none", true)

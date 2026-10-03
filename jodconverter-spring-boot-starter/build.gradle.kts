@@ -22,5 +22,5 @@ dependencies {
 
     testImplementation(libs.wiremock)
     testImplementation(libs.spring.boot.starter.test)
-    testImplementation(libs.javax.annotations)
+    testImplementation(libs.jakarta.annotations)
 }
