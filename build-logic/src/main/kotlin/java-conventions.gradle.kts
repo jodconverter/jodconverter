@@ -216,28 +216,31 @@ tasks.withType<Jar>().configureEach {
 }
 
 tasks.named<Jar>("jar") {
-    doFirst {
-        manifest {
-            attributes(
-                mapOf(
-                    "Automatic-Module-Name" to project.name.replace("-", "."),
-                    "Build-Jdk-Spec" to javaVersionStr,
-                    "Built-By" to "JODConverter",
-                    "Bundle-License" to "https://github.com/jodconverter/jodconverter/wiki/LICENSE",
-                    "Bundle-Vendor" to "JODConverter",
-                    "Bundle-DocURL" to "https://github.com/jodconverter/jodconverter/wiki",
-                    "Implementation-Title" to moduleName,
-                    "Implementation-Version" to project.version,
-                    "Implementation-Vendor" to "JODConverter Team",
-                    "Implementation-Vendor-Id" to "org.jodconverter",
-                    "Implementation-Url" to "https://github.com/jodconverter/jodconverter",
-                    "Specification-Title" to moduleName,
-                    "Specification-Version" to project.version,
-                    "Specification-Vendor" to "JODConverter Team",
-                    "Provider" to "Gradle ${gradle.gradleVersion}"
-                )
+    // Resolved here, at configuration time: tasks must not access the project while they execute.
+    val automaticModuleName = project.name.replace("-", ".")
+    val projectVersion = project.version.toString()
+    val gradleVersion = gradle.gradleVersion
+
+    manifest {
+        attributes(
+            mapOf(
+                "Automatic-Module-Name" to automaticModuleName,
+                "Build-Jdk-Spec" to javaVersionStr,
+                "Built-By" to "JODConverter",
+                "Bundle-License" to "https://github.com/jodconverter/jodconverter/wiki/LICENSE",
+                "Bundle-Vendor" to "JODConverter",
+                "Bundle-DocURL" to "https://github.com/jodconverter/jodconverter/wiki",
+                "Implementation-Title" to moduleName,
+                "Implementation-Version" to projectVersion,
+                "Implementation-Vendor" to "JODConverter Team",
+                "Implementation-Vendor-Id" to "org.jodconverter",
+                "Implementation-Url" to "https://github.com/jodconverter/jodconverter",
+                "Specification-Title" to moduleName,
+                "Specification-Version" to projectVersion,
+                "Specification-Vendor" to "JODConverter Team",
+                "Provider" to "Gradle $gradleVersion"
             )
-        }
+        )
     }
 }
 
@@ -266,12 +269,13 @@ tasks.named<Javadoc>("javadoc") {
         addBooleanOption("Xdoclint:none", true)
     }
 
-    doFirst {
-        (options as StandardJavadocDocletOptions).apply {
-            windowTitle = "$moduleName API Documentation"
-            docTitle = "$moduleName ${project.version} API Documentation"
-            header = "$moduleName ${project.version} API"
-        }
+    // Resolved here, at configuration time: tasks must not access the project while they execute.
+    val projectVersion = project.version.toString()
+    (options as StandardJavadocDocletOptions).apply {
+        windowTitle = "$moduleName API Documentation"
+        docTitle = "$moduleName $projectVersion API Documentation"
+        header = "$moduleName $projectVersion API"
     }
 }
+
 
