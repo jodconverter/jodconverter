@@ -18,9 +18,30 @@ commons-cli = "1.11.0"
 commons-io = "2.22.0"
 
 # Spring Boot
-# Spring boot 3+ requires java 17
+# Its BOM is only used by jodconverter-spring-boot-starter
 # Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
 spring-boot = "2.7.18"
+
+# Spring Framework, used by jodconverter-spring and jodconverter-cli
+# Latest version -> https://mvnrepository.com/artifact/org.springframework/spring-core
+spring = "5.3.31"
+
+# SLF4J
+# Latest version -> https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+slf4j = "1.7.36"
+
+# Gson
+# Latest version -> https://mvnrepository.com/artifact/com.google.code.gson/gson
+gson = "2.9.1"
+
+# Apache HttpComponents
+# Latest version -> https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+httpclient = "4.5.14"
+# Latest version -> https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore
+httpcore = "4.4.16"
+# Used by httpclient, which requests an older version
+# Latest version -> https://mvnrepository.com/artifact/commons-codec/commons-codec
+commons-codec = "1.15"
 
 # LibreOffice
 # Latest version -> https://mvnrepository.com/artifact/org.libreoffice
@@ -37,6 +58,16 @@ javax-annotations = "1.3.2"
 #
 # Testing
 #
+
+# JUnit (BOM)
+# Latest version -> https://mvnrepository.com/artifact/org.junit/junit-bom
+junit = "5.8.2"
+
+# Latest version -> https://mvnrepository.com/artifact/org.assertj/assertj-core
+assertj = "3.22.0"
+
+# Latest version -> https://mvnrepository.com/artifact/org.mockito/mockito-core
+mockito = "4.5.1"
 
 # We now have to use the wiremock standalone version since
 # spring boot provides jetty dependency
@@ -103,34 +134,37 @@ oo-ridl = { module = "org.openoffice:ridl", version.ref = "oo" }
 oo-unoil = { module = "org.openoffice:unoil", version.ref = "oo" }
 
 # Spring Core
-spring-core = { module = "org.springframework:spring-core" }
-spring-context = { module = "org.springframework:spring-context" }
-spring-test = { module = "org.springframework:spring-test" }
+spring-core = { module = "org.springframework:spring-core", version.ref = "spring" }
+spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
+spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
 # Javax
 javax-annotations = { module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotations" }
 
 # HTTP Components
-httpcore = { module = "org.apache.httpcomponents:httpcore" }
-httpclient = { module = "org.apache.httpcomponents:httpclient" }
-httpmime = { module = "org.apache.httpcomponents:httpmime" }
-fluent-hc = { module = "org.apache.httpcomponents:fluent-hc" }
+httpcore = { module = "org.apache.httpcomponents:httpcore", version.ref = "httpcore" }
+httpclient = { module = "org.apache.httpcomponents:httpclient", version.ref = "httpclient" }
+httpmime = { module = "org.apache.httpcomponents:httpmime", version.ref = "httpclient" }
+fluent-hc = { module = "org.apache.httpcomponents:fluent-hc", version.ref = "httpclient" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 
 # Logging
-slf4j-api = { module = "org.slf4j:slf4j-api" }
-slf4j-log4j = { module = "org.slf4j:slf4j-log4j12" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-log4j = { module = "org.slf4j:slf4j-log4j12", version.ref = "slf4j" }
 
 # Other
-gson = { module = "com.google.code.gson:gson" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 # Test
-assertj = { module = "org.assertj:assertj-core" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+# The JUnit artifacts get their version from the JUnit BOM
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
-mockito-core = { module = "org.mockito:mockito-core" }
-mockito-inline = { module = "org.mockito:mockito-inline" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
 wiremock = { module = "com.github.tomakehurst:wiremock-standalone", version.ref = "wiremock" }
 
 # Plugins

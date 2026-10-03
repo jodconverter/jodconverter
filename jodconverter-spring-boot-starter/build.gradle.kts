@@ -8,6 +8,9 @@ plugins {
 }
 
 dependencies {
+    // The Spring Boot BOM manages the versions of the Spring Boot dependencies of the starter.
+    implementation(platform(libs.spring.boot.dependencies))
+
     compileOnly(project(":jodconverter-local"))
     compileOnly(project(":jodconverter-remote"))
     annotationProcessor(libs.spring.boot.configuration.processor)

@@ -44,9 +44,10 @@ repositories {
 
 dependencies {
 
-    implementation(platform(libs.spring.boot.dependencies))
     compileOnly(libs.checker.qual)
 
+    // Test dependencies only: unlike a BOM on implementation, it is not part of the published artifacts.
+    testImplementation(platform(libs.junit.bom))
     testImplementation(libs.assertj)
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.params)
