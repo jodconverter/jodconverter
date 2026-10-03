@@ -879,7 +879,7 @@ class RemoteOfficeManagerSslITest {
       try {
         final SslConfig sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
-        sslConfig.setCiphers(new String[] {"TLS_RSA_WITH_AES_128_CBC_SHA"});
+        sslConfig.setCiphers(new String[] {"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"});
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
