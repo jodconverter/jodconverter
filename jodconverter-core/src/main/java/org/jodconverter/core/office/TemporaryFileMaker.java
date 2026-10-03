@@ -32,8 +32,7 @@ public interface TemporaryFileMaker {
    *
    * @return the created file.
    */
-  @NonNull
-  File makeTemporaryFile();
+  @NonNull File makeTemporaryFile();
 
   /**
    * Creates a new temporary file with the specified extension.
@@ -41,6 +40,5 @@ public interface TemporaryFileMaker {
    * @param extension the extension of the file to create.
    * @return the created file.
    */
-  @NonNull
-  File makeTemporaryFile(@NonNull String extension);
+  @NonNull File makeTemporaryFile(@NonNull String extension);
 }

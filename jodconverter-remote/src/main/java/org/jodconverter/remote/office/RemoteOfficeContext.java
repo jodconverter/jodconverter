@@ -33,14 +33,12 @@ public interface RemoteOfficeContext extends OfficeContext {
    *
    * @return The client that will send the conversion request.
    */
-  @NonNull
-  HttpClient getHttpClient();
+  @NonNull HttpClient getHttpClient();
 
   /**
    * Gets the request configuration.
    *
    * @return The request configuration.
    */
-  @NonNull
-  RequestConfig getRequestConfig();
+  @NonNull RequestConfig getRequestConfig();
 }

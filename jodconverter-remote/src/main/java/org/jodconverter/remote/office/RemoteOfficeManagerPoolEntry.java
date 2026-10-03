@@ -217,8 +217,12 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   private void configureKeyMaterial(final SSLContextBuilder sslBuilder)
-      throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException,
-          CertificateException, IOException, NoSuchProviderException {
+      throws UnrecoverableKeyException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          CertificateException,
+          IOException,
+          NoSuchProviderException {
 
     final KeyStore keystore =
         loadStore(
@@ -270,7 +274,10 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   private void configureTrustMaterial(final SSLContextBuilder sslBuilder)
-      throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException,
+      throws NoSuchAlgorithmException,
+          KeyStoreException,
+          CertificateException,
+          IOException,
           NoSuchProviderException {
 
     if (sslConfig.isTrustAll()) {
@@ -321,7 +328,10 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
       final String storePassword,
       final String storeType,
       final String storeProvider)
-      throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException,
+      throws NoSuchAlgorithmException,
+          CertificateException,
+          IOException,
+          KeyStoreException,
           NoSuchProviderException {
 
     if (store != null) {
