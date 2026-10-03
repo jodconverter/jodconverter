@@ -24,6 +24,8 @@ jobs:
     name: test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
+    # A job allowed to fail still runs and reports, but does not fail the "build" check below.
+    continue-on-error: ${{ matrix.allow-failure == true }}
     strategy:
       # Let every OS report, so an OS-specific failure is not hidden by another one.
       fail-fast: false
@@ -32,10 +34,12 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-          # On windows-latest (Windows Server 2025), LibreOffice exits or hangs in the middle of
-          # conversions, a different conversion on each run, with both 25.8.7 and 26.2.6.
-          - os: windows-2022
-            libreoffice: '25.8.7'
+          # On the GitHub Windows runners (windows-2022 and windows-latest), LibreOffice exits or
+          # hangs in the middle of conversions, a different conversion on each run, with both
+          # 25.8.7 and 26.2.6. Allowed to fail until this is understood.
+          - os: windows-latest
+            libreoffice: '26.2.6'
+            allow-failure: true
           - os: macos-latest
             libreoffice: '26.2.6'
 
@@ -133,9 +137,11 @@ jobs:
             **/build/reports/tests/
             **/build/reports/integTest/
             **/build/test-results/
+            **/build/integTest-results/
           retention-days: 7
 
-  # The single check to require in the branch rulesets: it passes only when every OS passed.
+  # The single check to require in the branch rulesets: it passes only when every OS that is
+  # not allowed to fail passed.
   # Rename it only together with the rulesets, or pull requests wait forever for a check
   # that no longer reports.
   build:
