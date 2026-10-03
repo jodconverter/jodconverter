@@ -76,7 +76,7 @@ google-java-format = "1.28.0"
 
 # Maven publish plugin
 # Latest version -> https://github.com/vanniktech/gradle-maven-publish-plugin/releases
-maven-publish = "0.34.0"
+maven-publish = "0.37.0"
 
 # OWASP Dependency Check plugin
 # Latest version -> https://plugins.gradle.org/plugin/org.owasp.dependencycheck
