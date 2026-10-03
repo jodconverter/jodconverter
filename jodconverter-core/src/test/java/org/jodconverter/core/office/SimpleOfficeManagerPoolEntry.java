@@ -61,6 +61,11 @@ class SimpleOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // Nothing to stop here.
   }
 
+  @Override
+  public void requestRestart() {
+    // No-op for test implementation
+  }
+
   // Change visibility in order to be able to call while testing
   @Override
   public void cancelTask() {

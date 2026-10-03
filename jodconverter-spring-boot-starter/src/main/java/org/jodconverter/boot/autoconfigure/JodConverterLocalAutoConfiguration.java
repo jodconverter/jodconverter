@@ -74,7 +74,7 @@ public class JodConverterLocalAutoConfiguration {
   }
 
   // Creates the OfficeManager bean.
-  private OfficeManager createOfficeManager(final ProcessManager processManager) {
+  private LocalOfficeManager createOfficeManager(final ProcessManager processManager) {
 
     final LocalOfficeManager.Builder builder =
         LocalOfficeManager.builder()
@@ -146,7 +146,7 @@ public class JodConverterLocalAutoConfiguration {
 
   @Bean(name = "localOfficeManager", initMethod = "start", destroyMethod = "stop")
   @ConditionalOnMissingBean(name = "localOfficeManager")
-  /* default */ OfficeManager localOfficeManager(final ProcessManager processManager) {
+  /* default */ LocalOfficeManager localOfficeManager(final ProcessManager processManager) {
 
     return createOfficeManager(processManager);
   }

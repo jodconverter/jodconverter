@@ -75,6 +75,7 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            RestartStrategy.automatic(),
             connection);
 
     assertThatExceptionOfType(OfficeException.class)
@@ -118,6 +119,7 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            RestartStrategy.automatic(),
             connection);
 
     // TODO: Check that the error message if properly logged.
@@ -150,6 +152,7 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_EXISTING_PROCESS_ACTION,
             DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            RestartStrategy.automatic(),
             connection);
 
     assertThatCode(() -> ReflectionTestUtils.invokeMethod(manager, "forciblyTerminateProcess"))

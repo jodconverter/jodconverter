@@ -206,6 +206,25 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
   }
 
   /**
+   * Checks if this manager entry is currently idle (available to execute tasks).
+   *
+   * @return {@code true} if the manager is idle and available, {@code false} if it's busy or
+   *     unavailable.
+   */
+  public boolean isIdle() {
+    return taskExecutor.isAvailable();
+  }
+
+  /**
+   * Requests a restart of this manager entry. The actual restart behavior depends on the
+   * implementation and configured restart strategy.
+   *
+   * <p>This method should only be called when the entry is idle. Calling it on a busy entry may
+   * have implementation-specific behavior.
+   */
+  public abstract void requestRestart();
+
+  /**
    * Allow subclasses to perform operation when the office manager is started.
    *
    * @throws OfficeException If an error occurred while starting the manager.

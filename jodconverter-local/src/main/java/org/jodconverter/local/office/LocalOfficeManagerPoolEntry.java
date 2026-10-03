@@ -76,6 +76,14 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     this.officeProcessManager = officeProcessManager;
     this.maxTasksPerProcess = maxTasksPerProcess;
 
+    // Set the availability callback so that the process manager can mark this entry
+    // as unavailable when a manual restart is requested
+    officeProcessManager.setAvailabilityCallback(
+        () -> {
+          LOGGER.info("Marking pool entry unavailable due to pending restart");
+          setAvailable(false);
+        });
+
     // This connection event listener will be notified when a connection is established or
     // closed/lost to/from an office instance.
     final OfficeConnectionEventListener connectionEventListener =
@@ -198,6 +206,11 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     // Now we can stop the running office process
     officeProcessManager.stop();
+  }
+
+  @Override
+  public void requestRestart() {
+    restart();
   }
 
   private void restart() {

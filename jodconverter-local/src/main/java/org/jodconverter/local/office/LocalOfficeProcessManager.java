@@ -75,6 +75,8 @@ class LocalOfficeProcessManager {
   private final ExistingProcessAction existingProcessAction;
   private final boolean startFailFast;
   private final boolean keepAliveOnShutdown;
+  private final RestartStrategy restartStrategy;
+  private RestartStrategy.AvailabilityCallback availabilityCallback;
 
   /**
    * Creates a new manager with the specified configuration.
@@ -103,6 +105,7 @@ class LocalOfficeProcessManager {
    *     shutdown. If set to {@code true}, the {@link #stop()} will only disconnect from the office
    *     process, which will stay alive. If set to {@code false}, the office process will be stopped
    *     gracefully (or killed if it could not be stopped gracefully).
+   * @param restartStrategy The strategy to use for handling office process restarts.
    * @param connection The object that will manage the connection to the office process.
    */
   /* default */ LocalOfficeProcessManager(
@@ -118,6 +121,7 @@ class LocalOfficeProcessManager {
       final ExistingProcessAction existingProcessAction,
       final boolean startFailFast,
       final boolean keepAliveOnShutdown,
+      final RestartStrategy restartStrategy,
       final OfficeConnection connection) {
 
     this.officeUrl = officeUrl;
@@ -131,6 +135,7 @@ class LocalOfficeProcessManager {
     this.existingProcessAction = existingProcessAction;
     this.startFailFast = startFailFast;
     this.keepAliveOnShutdown = keepAliveOnShutdown;
+    this.restartStrategy = restartStrategy;
     this.connection = connection;
 
     executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("jodconverter-offprocmng"));
@@ -138,6 +143,17 @@ class LocalOfficeProcessManager {
         new File(
             workingDir,
             ".jodconverter_" + officeUrl.getConnectString().replace(',', '_').replace('=', '-'));
+  }
+
+  /**
+   * Sets the availability callback that will be invoked when a manual restart is requested. This
+   * allows the pool entry to be marked as unavailable immediately when a restart is needed.
+   *
+   * @param availabilityCallback The callback to invoke.
+   */
+  /* default */ void setAvailabilityCallback(
+      final RestartStrategy.AvailabilityCallback availabilityCallback) {
+    this.availabilityCallback = availabilityCallback;
   }
 
   /**
@@ -209,66 +225,86 @@ class LocalOfficeProcessManager {
   /**
    * Restarts an office process.
    *
-   * <p>The task of restarting the process and connecting to it is executed by a single thread
-   * {@link ExecutorService} and thus, the current {@code restart()} function returns immediately.
-   * The restart will be done as soon as the executor is available to execute the task.
+   * <p>The task of restarting the process and connecting to it is executed via the configured
+   * {@link RestartStrategy}. With automatic restart strategy, the restart happens immediately in a
+   * background thread. With manual restart strategy, the restart is queued and must be triggered
+   * externally.
    */
   /* default */ void restart() {
-    LOGGER.info("Restarting...");
+    LOGGER.info("Restart requested...");
 
-    executor.execute(
-        () -> {
-          // On clean restart, we won't delete the instance profile directory,
-          // causing a faster start of an office process.
-          stopProcess(false);
-          try {
-            startProcessAndConnect(true);
-          } catch (OfficeException ex) {
-            LOGGER.error("Could not restart the office process.", ex);
-          }
-        });
+    restartStrategy.onRestartRequired(
+        RestartReason.MAX_TASKS_REACHED,
+        () ->
+            executor.execute(
+                () -> {
+                  LOGGER.info("Executing restart...");
+                  // On clean restart, we won't delete the instance profile directory,
+                  // causing a faster start of an office process.
+                  stopProcess(false);
+                  try {
+                    startProcessAndConnect(true);
+                  } catch (OfficeException ex) {
+                    LOGGER.error("Could not restart the office process.", ex);
+                  }
+                }),
+        availabilityCallback);
   }
 
   /**
    * Restarts the office process when the connection is lost.
    *
-   * <p>The task of restarting the process and connecting to it is executed by a single thread
-   * {@link ExecutorService} and thus, the current {@code restartDueToLostConnection()} function
-   * returns immediately.
+   * <p>The task of restarting the process and connecting to it is executed via the configured
+   * {@link RestartStrategy}. With automatic restart strategy, the restart happens immediately in a
+   * background thread. With manual restart strategy, the restart is queued and must be triggered
+   * externally.
    */
   /* default */ void restartDueToLostConnection() {
-    LOGGER.info("Restarting due to lost connection...");
+    LOGGER.info("Restart requested due to lost connection...");
 
-    executor.execute(
-        () -> {
-          LOGGER.debug("Connection lost unexpectedly");
+    restartStrategy.onRestartRequired(
+        RestartReason.CONNECTION_LOST,
+        () ->
+            executor.execute(
+                () -> {
+                  LOGGER.info("Executing restart due to lost connection...");
+                  LOGGER.debug("Connection lost unexpectedly");
 
-          // Since we have lost the connection unexpectedly, it could mean that
-          // the office process has crashed. Thus, we want a clean instance profile
-          // directory on restart.
-          ensureProcessExited(true);
-          try {
-            startProcessAndConnect(false);
-          } catch (OfficeException ex) {
-            LOGGER.error(
-                "Could not restart the office process after an unexpected lost connection.", ex);
-          }
-        });
+                  // Since we have lost the connection unexpectedly, it could mean that
+                  // the office process has crashed. Thus, we want a clean instance profile
+                  // directory on restart.
+                  ensureProcessExited(true);
+                  try {
+                    startProcessAndConnect(false);
+                  } catch (OfficeException ex) {
+                    LOGGER.error(
+                        "Could not restart the office process after an unexpected lost connection.",
+                        ex);
+                  }
+                }),
+        availabilityCallback);
   }
 
   /**
    * Restarts the office process when there is a timeout while executing a task.
    *
-   * <p>The function will only forcibly kill the office process, causing an unexpected disconnection
-   * and later restart.
+   * <p>The function will forcibly kill the office process via the configured {@link
+   * RestartStrategy}. With automatic restart strategy, this happens immediately. With manual
+   * restart strategy, the kill action is queued and must be triggered externally.
    *
    * @see LocalOfficeManagerPoolEntry
    */
   /* default */ void restartDueToTaskTimeout() {
-    LOGGER.info("Restarting due to task timeout...");
+    LOGGER.info("Restart requested due to task timeout...");
 
-    // This will cause unexpected disconnection and later restart.
-    forciblyTerminateProcess();
+    restartStrategy.onRestartRequired(
+        RestartReason.TASK_TIMEOUT,
+        () -> {
+          LOGGER.info("Executing restart due to task timeout...");
+          // This will cause unexpected disconnection and later restart.
+          forciblyTerminateProcess();
+        },
+        availabilityCallback);
   }
 
   /**

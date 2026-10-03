@@ -169,6 +169,11 @@ class ExternalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     connectionManager.disconnect();
   }
 
+  @Override
+  public void requestRestart() {
+    reconnect();
+  }
+
   private void reconnect() {
 
     // The manager is no longer available
