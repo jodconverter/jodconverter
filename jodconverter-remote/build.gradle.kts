@@ -19,6 +19,12 @@ dependencies {
     implementation(libs.httpmime)
     implementation(libs.fluent.hc)
 
+    constraints {
+        implementation(libs.commons.codec) {
+            because("httpclient requests an older version")
+        }
+    }
+
     testImplementation(libs.slf4j.log4j)
     testImplementation(libs.mockito.inline)
     testImplementation(libs.spring.test)
