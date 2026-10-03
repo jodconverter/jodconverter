@@ -12,7 +12,7 @@ Thanks for taking the time to contribute! Bug reports, fixes, improvements and d
 
 You need:
 
-- **A JDK to run Gradle.** CI uses JDK 17. The code itself is compiled and tested for Java 8 through a Gradle toolchain, which is downloaded automatically when it is missing.
+- **JDK 17 or newer** to run Gradle. The code is compiled and tested on Java 17 through a Gradle toolchain, which is downloaded automatically when it is missing.
 - **LibreOffice** (or Apache OpenOffice), only for the integration tests. It is detected in its default installation location.
 
 Always use the Gradle wrapper (`./gradlew`, or `gradlew.bat` on Windows).
@@ -33,7 +33,7 @@ Unit tests live in `src/test/java`. Tests that need a running office live in `sr
 
 - The code follows the [Google Java Style](https://google.github.io/styleguide/javaguide.html), enforced by Spotless. Run `./gradlew spotlessApply` before committing; the build fails when the formatting is off.
 - Spotless also adds the license header to new source files.
-- Keep the code compatible with Java 8.
+- Keep the code compatible with Java 17.
 
 ## Tests
 

@@ -10,9 +10,9 @@ updates:
       interval: "weekly"
     labels:
       - "dependencies"
-    # The project must stay compatible with Java 8, and several dependencies are pinned to the last
-    # version that supports it (see gradle/libs.versions.toml). Major versions usually drop old Java
-    # versions, so they are not proposed.
+    # Major versions usually need code or configuration changes, and some tools are pinned to the last
+    # version that runs on Java 17 (see gradle/libs.versions.toml). They are upgraded deliberately, so
+    # they are not proposed.
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
