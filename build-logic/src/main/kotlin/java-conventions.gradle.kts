@@ -123,9 +123,7 @@ tasks.withType<Checkstyle>().configureEach {
 spotless {
     java {
         // Format code using google java format
-        // Since we are running Spotless on JVM 8 (must support JVM 8), we are limited to google-java-format 1.7.
-        // Remove the version when we set the minimal JVM to 11.
-        googleJavaFormat("1.7") // Java 8 compatible
+        googleJavaFormat(libs.versions.google.java.format.get())
 
         // Import order
         importOrderFile("$rootDir/spotless.importorder")
@@ -232,7 +230,7 @@ tasks.named<Javadoc>("javadoc") {
         source = javaVersionStr
 
         links(
-            "https://docs.oracle.com/javase/8/docs/api/",
+            "https://docs.oracle.com/en/java/javase/17/docs/api/",
             "https://api.libreoffice.org/docs/java/ref/",
             "https://commons.apache.org/proper/commons-lang/apidocs/",
             "https://docs.spring.io/spring-boot/docs/${libs.versions.spring.boot.get()}/api/"
