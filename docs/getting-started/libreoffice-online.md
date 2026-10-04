@@ -50,7 +50,7 @@ When a connection url is specified with the **-c** or **--connection-url** optio
 final RemoteOfficeManager officeManager = RemoteOfficeManager.make("http://path/to/myLibreOfficeOnlineServer");
 ```
 
-See [Java Library](java-library.md) for more.
+See [Java Library](java-library/index.md) for more.
 
 ### SSL Support
 

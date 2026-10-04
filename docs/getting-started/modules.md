@@ -3,7 +3,7 @@
 This page provides an overview of the JODConverter project modules and when to use each one. If you’re new here, start
 with the Java Library page and come back for details.
 
-- Java Library: [Java Library](java-library.md)
+- Java Library: [Java Library](java-library/index.md)
 - Command Line Tool: [Command Line Tool](command-line-tool.md)
 
 ---
@@ -36,7 +36,7 @@ This module handles the lifecycle of the office process, manages one or more off
 convenient API to convert documents using the local desktop installation of an office suite—without requiring
 the user to manually start or manage OOo in headless mode.
 
-See also: [Java Library](java-library.md)
+See also: [Java Library](java-library/index.md)
 
 ## jodconverter-local-oo
 

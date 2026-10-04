@@ -1,0 +1,124 @@
+[project]
+site_name = "JODConverter"
+site_url = "https://jodconverter.github.io/jodconverter/"
+repo_name = "JODConverter"
+repo_url = "https://github.com/jodconverter/jodconverter"
+edit_uri = "edit/master/docs/"
+copyright = "© 2025 JODConverter. All rights reserved."
+extra_css = ["assets/stylesheets/extra.css"]
+
+nav = [
+  { Home = [
+    { Overview = "index.md" },
+    { Releases = [
+      { "Release 4.4.11" = "release-notes/release-notes-4.4.11.md" },
+      { "Release 4.4.10" = "release-notes/release-notes-4.4.10.md" },
+      { "Release 4.4.9" = "release-notes/release-notes-4.4.9.md" },
+      { "Release 4.4.8" = "release-notes/release-notes-4.4.8.md" },
+      { "Release 4.4.7" = "release-notes/release-notes-4.4.7.md" },
+      { "All Releases" = "release-notes/index.md" },
+    ] },
+    { "Migration Guides" = [
+      { "Migration 4.4.11" = "migration-guides/migration-guide-4.4.11.md" },
+      { "Migration 4.4.10" = "migration-guides/migration-guide-4.4.10.md" },
+      { "Migration 4.4.9" = "migration-guides/migration-guide-4.4.9.md" },
+      { "Migration 4.4.8" = "migration-guides/migration-guide-4.4.8.md" },
+      { "Migration 4.4.7" = "migration-guides/migration-guide-4.4.7.md" },
+      { "All Migrations" = "migration-guides/index.md" },
+    ] },
+    { Credits = "credits.md" },
+    { License = "license.md" },
+  ] },
+  { "Getting Started" = [
+    { Modules = "getting-started/modules.md" },
+    { "Java Library" = [
+      "getting-started/java-library/index.md",
+      { "Office Managers" = "getting-started/office-managers.md" },
+      { "Document Converters" = "getting-started/document-converters.md" },
+      { "Document Format Registry" = "getting-started/document-format-registry.md" },
+      { "Using Filters" = "getting-started/using-filters.md" },
+    ] },
+    { "Command Line Tool" = "getting-started/command-line-tool.md" },
+    { "LibreOffice Online" = "getting-started/libreoffice-online.md" },
+    { "LibreOffice Portable" = "getting-started/libreoffice-portable.md" },
+    { Performance = "getting-started/performance.md" },
+    { "Supported Formats" = "getting-started/supported-formats.md" },
+    { "System Requirements" = "getting-started/system-requirements.md" },
+  ] },
+  { Configuration = [
+    { Overview = "configuration/index.md" },
+    { "Office Managers" = [
+      { LocalOfficeManager = "configuration/local-manager.md" },
+      { ExternalOfficeManager = "configuration/external-manager.md" },
+      { RemoteOfficeManager = "configuration/remote-manager.md" },
+    ] },
+    { "Document Converters" = [
+      { LocalConverter = "configuration/local-converter.md" },
+      { RemoteConverter = "configuration/remote-converter.md" },
+    ] },
+  ] },
+  { Samples = [
+    "samples/index.md",
+    { "Basic Web Application" = "samples/basic-webapp.md" },
+    { "Spring Boot REST API" = "samples/spring-boot-rest.md" },
+    { "Spring Boot Web Application" = "samples/spring-boot-webapp.md" },
+  ] },
+  { FAQ = "faq.md" },
+  { Contributing = [
+    "contributing/index.md",
+    { Documentation = "contributing/documentation.md" },
+  ] },
+  { Donate = "support.md" },
+]
+
+[project.theme]
+variant = "modern"
+logo = "assets/logo.png"
+features = [
+  "content.code.copy",
+  "content.code.annotate",
+  "search.highlight",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[project.extra.version]
+provider = "mike"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/jodconverter/jodconverter"
+
+# Read by mike (the Zensical-compatible fork) when deploying a version.
+[project.plugins.mike]
+alias_type = "copy"
+canonical_version = "latest"
+
+[project.markdown_extensions]
+admonition = {}
+attr_list = {}
+pymdownx.details = {}
+pymdownx.highlight.pygments_lang_class = true
+pymdownx.inlinehilite = {}
+pymdownx.snippets = { base_path = "docs/snippets", check_paths = true }
+pymdownx.superfences = {}
+pymdownx.tabbed.alternate_style = true
+toc.permalink = true
