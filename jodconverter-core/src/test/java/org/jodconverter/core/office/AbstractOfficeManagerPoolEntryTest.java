@@ -82,6 +82,68 @@ class AbstractOfficeManagerPoolEntryTest {
     }
 
     @Test
+    void whenTaskExecutionTimeout_ShouldCancelTaskSoNextTaskCanRun() throws OfficeException {
+
+      final SimpleOfficeManagerPoolEntry entry = new SimpleOfficeManagerPoolEntry(500L);
+      try {
+        entry.start();
+
+        // Without cancellation, this task would keep the entry busy for 5 seconds
+        final SimpleOfficeTask timedOutTask = new SimpleOfficeTask(5_000L);
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(() -> entry.execute(timedOutTask))
+            .withCauseExactlyInstanceOf(TimeoutException.class);
+
+        final SimpleOfficeTask nextTask = new SimpleOfficeTask();
+        assertThatCode(() -> entry.execute(nextTask)).doesNotThrowAnyException();
+        assertThat(nextTask.isCompleted()).isTrue();
+        assertThat(timedOutTask.isCompleted()).isFalse();
+
+      } finally {
+        entry.stop();
+      }
+    }
+
+    @Test
+    void whenCallerInterrupted_ShouldCancelTaskSoNextTaskCanRun() throws Exception {
+
+      final SimpleOfficeManagerPoolEntry entry = new SimpleOfficeManagerPoolEntry(1_000L);
+      try {
+        entry.start();
+
+        final SimpleOfficeTask interruptedTask = new SimpleOfficeTask(5_000L);
+        final AtomicReference<OfficeException> ex = new AtomicReference<>();
+        final Thread caller =
+            new Thread(
+                () -> {
+                  try {
+                    entry.execute(interruptedTask);
+                  } catch (OfficeException oe) {
+                    ex.set(oe);
+                  }
+                });
+        caller.start();
+        // Let the task execution begin, then interrupt the caller
+        Thread.sleep(250L);
+        caller.interrupt();
+        caller.join();
+
+        assertThat(ex.get())
+            .hasMessageStartingWith("Task was interrupted while executing")
+            .hasCauseExactlyInstanceOf(InterruptedException.class);
+
+        // Without cancellation, this task would wait behind the interrupted one and time out
+        final SimpleOfficeTask nextTask = new SimpleOfficeTask();
+        assertThatCode(() -> entry.execute(nextTask)).doesNotThrowAnyException();
+        assertThat(nextTask.isCompleted()).isTrue();
+        assertThat(interruptedTask.isCompleted()).isFalse();
+
+      } finally {
+        entry.stop();
+      }
+    }
+
+    @Test
     void whenExecutionExceptionIsOfficeException_ShouldThrowSameOfficeException()
         throws OfficeException {
 
