@@ -25,7 +25,7 @@ Then open http://127.0.0.1:8000. Edits in `docs/` reload automatically. Before o
 
 Each release has its own version of the site, selected from the version menu. Versions are deployed with [mike](https://github.com/squidfunk/mike), using the fork that works with Zensical until Zensical supports versioning natively.
 
-The `.github/workflows/deploy-docs.yml` workflow deploys the documentation on every push to `master`: a release version is published under its version number with the `latest` alias, and a snapshot version under `dev`. You don't need mike to preview your changes.
+The `.github/workflows/deploy-docs.yml` workflow deploys the documentation: every push to `develop` publishes the `dev` version, and a release pushed to `master` publishes its version number with the `latest` alias. A maintainer can also run the workflow by hand to publish a given release version. You don't need mike to preview your changes.
 
 ## Content conventions
 
