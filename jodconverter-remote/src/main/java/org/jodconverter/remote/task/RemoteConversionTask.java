@@ -127,10 +127,13 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
 
         // We suppose that the server supports custom load properties, but LibreOffice Online
         // does not support custom load properties, only the sample web service do.
-        addPropertiesToBuilder(
-            uriBuilder,
-            LOAD_PROPERTIES_PREFIX_PARAM,
-            Objects.requireNonNull(target.getFormat()).getLoadProperties());
+        // Load properties are used to load the source document, so they come from its format.
+        Optional.ofNullable(source.getFormat())
+            .map(DocumentFormat::getLoadProperties)
+            .ifPresent(
+                loadProperties ->
+                    addPropertiesToBuilder(
+                        uriBuilder, LOAD_PROPERTIES_PREFIX_PARAM, loadProperties));
 
         // We suppose that the server supports custom store properties, but LibreOffice Online
         // does not support custom store properties, only the sample web service do.
@@ -141,7 +144,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
                     addPropertiesToBuilder(
                         uriBuilder,
                         STORE_PROPERTIES_PREFIX_PARAM,
-                        target.getFormat().getStoreProperties(family)));
+                        Objects.requireNonNull(target.getFormat()).getStoreProperties(family)));
 
         Executor.newInstance(remoteContext.getHttpClient())
             .execute(
