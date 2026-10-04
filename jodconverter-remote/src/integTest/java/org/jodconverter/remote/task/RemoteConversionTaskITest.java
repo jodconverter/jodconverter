@@ -109,6 +109,51 @@ class RemoteConversionTaskITest {
     }
 
     @Test
+    void withLoadProperties_ShouldSendSourceFormatLoadPropertiesOnly(final @TempDir File testFolder)
+        throws OfficeException {
+
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      wireMockServer.start();
+      try {
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("http://localhost:8000/lool/convert-to/")
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/pdf")).willReturn(aResponse().withStatus(200)));
+
+          // Load properties are used to load the source document
+          final DocumentFormat doc =
+              DocumentFormat.builder()
+                  .from(DefaultDocumentFormatRegistry.DOC)
+                  .loadProperty("Password", "secret")
+                  .build();
+          final DocumentFormat pdf =
+              DocumentFormat.builder()
+                  .from(DefaultDocumentFormatRegistry.PDF)
+                  .loadProperty("TargetOnly", "ignored")
+                  .build();
+          RemoteConverter.make(manager).convert(inputFile).as(doc).to(outputFile).as(pdf).execute();
+
+          wireMockServer.verify(
+              postRequestedFor(urlPathEqualTo("/lool/convert-to/pdf"))
+                  .withQueryParam("lPassword", equalTo("secret"))
+                  .withoutQueryParam("lTargetOnly"));
+
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
+      } finally {
+        wireMockServer.stop();
+      }
+    }
+
+    @Test
     void withFilterDataNotMap_ShouldHaveNormalFilterDataPropertyAsParameters(
         final @TempDir File testFolder) throws OfficeException {
 
