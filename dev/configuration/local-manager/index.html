@@ -1788,6 +1788,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#poolsize" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        &#128290;<code>poolSize</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#processmanager" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2514,6 +2525,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#poolsize" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        &#128290;<code>poolSize</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#processmanager" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2843,15 +2865,13 @@ but it should be the directory in the OOo installation containing libjpipe (or j
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code>pipeNames</code> can't be used with Spring Boot for now.</p>
-</div>
 <div class="language-yml highlight"><span class="filename">application.yml</span><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">local</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">port-numbers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2002, 2003, 2004, 2005</span>
+<span class="w">    </span><span class="nt">pipe-names</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pipe1, Pipe2, Pipe3, Pipe4</span>
 </code></pre></div>
 <div class="language-text highlight"><span class="filename">application.properties</span><pre><span></span><code>jodconverter.local.port-numbers = 2002, 2003, 2004, 2005
+jodconverter.local.pipe-names = Pipe1, Pipe2, Pipe3, Pipe4
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -2867,6 +2887,34 @@ or
 </div>
 </div>
 </div>
+<h4 id="poolsize">&#128290;<code>poolSize</code><a class="headerlink" href="#poolsize" title="Permanent link">&para;</a></h4>
+<p>The number of office processes to start, using free TCP ports picked when the manager is built. Use it when you only
+care about how many conversions can run at the same time, not about which ports are used. It replaces <code>portNumbers</code> and
+<code>pipeNames</code>, and can't be combined with them.</p>
+<p>Two applications started at the same instant may pick the same free port. The office process started last then fails
+to start, with an error saying that the port is already used by another program. If that can happen in your setup,
+configure distinct port numbers or pipe names instead.</p>
+<p>&nbsp;<strong><em>Default</em></strong>: not set (the processes come from <code>portNumbers</code> and <code>pipeNames</code>).</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Java</label><label for="__tabbed_6_2">Spring Boot</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">LocalOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">poolSize</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-yml highlight"><span class="filename">application.yml</span><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">local</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">pool-size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+</code></pre></div>
+<div class="language-text highlight"><span class="filename">application.properties</span><pre><span></span><code>jodconverter.local.pool-size = 4
+</code></pre></div>
+</div>
+</div>
+</div>
 <h4 id="processmanager">&#128288;<code>processManager</code><a class="headerlink" href="#processmanager" title="Permanent link">&para;</a></h4>
 <p>A process manager is used when <strong>JODConverter</strong> needs to deal with a started office process. When <strong>JODConverter</strong>
 starts an office process, it must retrieve the PID of the started process to be able to kill it later if required.</p>
@@ -2874,7 +2922,7 @@ starts an office process, it must retrieve the PID of the started process to be 
 which <strong>JODConverter</strong> is running. But any process manager implementing the
 <a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/process/ProcessManager.java"><code>ProcessManager</code></a>
 interface can be used if found on the classpath.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:3"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Java</label><label for="__tabbed_6_2">Spring Boot</label><label for="__tabbed_6_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:3"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Java</label><label for="__tabbed_7_2">Spring Boot</label><label for="__tabbed_7_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="c1">// This example will create an instance of the com.example.foo.CustomProcessManager</span>
@@ -2906,7 +2954,7 @@ or
 <h4 id="runasargs">&#128288;<code>runAsArgs</code><a class="headerlink" href="#runasargs" title="Permanent link">&para;</a></h4>
 <p>This property specifies the sudo arguments that will be used with unix commands when <strong>JODConverter</strong> chooses
 a unix process manager.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:3"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Java</label><label for="__tabbed_7_2">Spring Boot</label><label for="__tabbed_7_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:3"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><input id="__tabbed_8_3" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Java</label><label for="__tabbed_8_2">Spring Boot</label><label for="__tabbed_8_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -2927,7 +2975,7 @@ a unix process manager.</p>
 <h4 id="processtimeout">&#8986;<code>processTimeout</code><a class="headerlink" href="#processtimeout" title="Permanent link">&para;</a></h4>
 <p>This property sets the timeout, in milliseconds, when trying to execute an office process call (start/terminate).</p>
 <p>&nbsp;<strong><em>Default</em></strong>: 120000 (2 minutes)</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="8:3"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><input id="__tabbed_8_3" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Java</label><label for="__tabbed_8_2">Spring Boot</label><label for="__tabbed_8_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><input id="__tabbed_9_3" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">Java</label><label for="__tabbed_9_2">Spring Boot</label><label for="__tabbed_9_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -2954,7 +3002,7 @@ a unix process manager.</p>
 <p>This property sets the delay, in milliseconds, between each try when trying to execute an office process call (
 start/terminate).</p>
 <p>&nbsp;<strong><em>Default</em></strong>: 250 (0.25 seconds)</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><input id="__tabbed_9_3" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">Java</label><label for="__tabbed_9_2">Spring Boot</label><label for="__tabbed_9_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="10:3"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><input id="__tabbed_10_2" name="__tabbed_10" type="radio" /><input id="__tabbed_10_3" name="__tabbed_10" type="radio" /><div class="tabbed-labels"><label for="__tabbed_10_1">Java</label><label for="__tabbed_10_2">Spring Boot</label><label for="__tabbed_10_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -2982,7 +3030,7 @@ start/terminate).</p>
 else. It is required on some OS to avoid an attempt to connect to the started process that will hang for more than 5
 minutes before throwing a timeout exception, we do not know why.</p>
 <p>&nbsp;<strong><em>Default</em></strong>: 0 (no delay). On FreeBSD, which is a known OS needing this, it defaults to 2000 (2 seconds).</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="10:3"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><input id="__tabbed_10_2" name="__tabbed_10" type="radio" /><input id="__tabbed_10_3" name="__tabbed_10" type="radio" /><div class="tabbed-labels"><label for="__tabbed_10_1">Java</label><label for="__tabbed_10_2">Spring Boot</label><label for="__tabbed_10_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="11:3"><input checked="checked" id="__tabbed_11_1" name="__tabbed_11" type="radio" /><input id="__tabbed_11_2" name="__tabbed_11" type="radio" /><input id="__tabbed_11_3" name="__tabbed_11" type="radio" /><div class="tabbed-labels"><label for="__tabbed_11_1">Java</label><label for="__tabbed_11_2">Spring Boot</label><label for="__tabbed_11_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -3022,7 +3070,7 @@ string and that there already is a process running with the same connection stri
 <p>&nbsp;<strong><em>Default</em></strong>: ExistingProcessAction.KILL.</p>
 <p>See <a href="https://github.com/jodconverter/jodconverter/issues/72">here</a> to understand why such a property exists
 and to learn more about a use case where this properly is useful.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="11:3"><input checked="checked" id="__tabbed_11_1" name="__tabbed_11" type="radio" /><input id="__tabbed_11_2" name="__tabbed_11" type="radio" /><input id="__tabbed_11_3" name="__tabbed_11" type="radio" /><div class="tabbed-labels"><label for="__tabbed_11_1">Java</label><label for="__tabbed_11_2">Spring Boot</label><label for="__tabbed_11_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="12:3"><input checked="checked" id="__tabbed_12_1" name="__tabbed_12" type="radio" /><input id="__tabbed_12_2" name="__tabbed_12" type="radio" /><input id="__tabbed_12_3" name="__tabbed_12" type="radio" /><div class="tabbed-labels"><label for="__tabbed_12_1">Java</label><label for="__tabbed_12_2">Spring Boot</label><label for="__tabbed_12_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -3056,7 +3104,7 @@ stopped gracefully (or killed if it could not be stopped gracefully).</p>
 <p>See <a href="https://github.com/jodconverter/jodconverter/issues/72">here</a> to understand why such a property exists
 and to learn more about a use case where this properly is useful.</p>
 <p>&nbsp;<strong><em>Default</em></strong>: false.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="12:3"><input checked="checked" id="__tabbed_12_1" name="__tabbed_12" type="radio" /><input id="__tabbed_12_2" name="__tabbed_12" type="radio" /><input id="__tabbed_12_3" name="__tabbed_12" type="radio" /><div class="tabbed-labels"><label for="__tabbed_12_1">Java</label><label for="__tabbed_12_2">Spring Boot</label><label for="__tabbed_12_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="13:3"><input checked="checked" id="__tabbed_13_1" name="__tabbed_13" type="radio" /><input id="__tabbed_13_2" name="__tabbed_13" type="radio" /><input id="__tabbed_13_3" name="__tabbed_13" type="radio" /><div class="tabbed-labels"><label for="__tabbed_13_1">Java</label><label for="__tabbed_13_2">Spring Boot</label><label for="__tabbed_13_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -3090,7 +3138,7 @@ throw an exception if the office process is not started successfully or if the c
 If set to <code>false</code>, the task of starting the process and connecting to it will be submitted and will return immediately,
 meaning a faster starting process. Only error logs will be produced if anything goes wrong.</p>
 <p>&nbsp;<strong><em>Default</em></strong>: false.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="13:3"><input checked="checked" id="__tabbed_13_1" name="__tabbed_13" type="radio" /><input id="__tabbed_13_2" name="__tabbed_13" type="radio" /><input id="__tabbed_13_3" name="__tabbed_13" type="radio" /><div class="tabbed-labels"><label for="__tabbed_13_1">Java</label><label for="__tabbed_13_2">Spring Boot</label><label for="__tabbed_13_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="14:3"><input checked="checked" id="__tabbed_14_1" name="__tabbed_14" type="radio" /><input id="__tabbed_14_2" name="__tabbed_14" type="radio" /><input id="__tabbed_14_3" name="__tabbed_14" type="radio" /><div class="tabbed-labels"><label for="__tabbed_14_1">Java</label><label for="__tabbed_14_2">Spring Boot</label><label for="__tabbed_14_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -3119,7 +3167,7 @@ this option with the command line tool.</p>
 number of tasks (will never restart). It is not recommended to set this property to 0 since some OOo installation
 is known to have memory leaks when converting documents.</p>
 <p>&nbsp;<strong><em>Default</em></strong>: 200</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="14:3"><input checked="checked" id="__tabbed_14_1" name="__tabbed_14" type="radio" /><input id="__tabbed_14_2" name="__tabbed_14" type="radio" /><input id="__tabbed_14_3" name="__tabbed_14" type="radio" /><div class="tabbed-labels"><label for="__tabbed_14_1">Java</label><label for="__tabbed_14_2">Spring Boot</label><label for="__tabbed_14_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="15:3"><input checked="checked" id="__tabbed_15_1" name="__tabbed_15" type="radio" /><input id="__tabbed_15_2" name="__tabbed_15" type="radio" /><input id="__tabbed_15_3" name="__tabbed_15" type="radio" /><div class="tabbed-labels"><label for="__tabbed_15_1">Java</label><label for="__tabbed_15_2">Spring Boot</label><label for="__tabbed_15_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -3146,7 +3194,7 @@ is known to have memory leaks when converting documents.</p>
 <p>This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
 the queue if the waiting time is longer than this timeout and an <code>OfficeException</code> will be thrown.</p>
 <p>&nbsp;<strong><em>Default</em></strong>: 30000 (30 seconds)</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="15:3"><input checked="checked" id="__tabbed_15_1" name="__tabbed_15" type="radio" /><input id="__tabbed_15_2" name="__tabbed_15" type="radio" /><input id="__tabbed_15_3" name="__tabbed_15" type="radio" /><div class="tabbed-labels"><label for="__tabbed_15_1">Java</label><label for="__tabbed_15_2">Spring Boot</label><label for="__tabbed_15_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="16:3"><input checked="checked" id="__tabbed_16_1" name="__tabbed_16" type="radio" /><input id="__tabbed_16_2" name="__tabbed_16" type="radio" /><input id="__tabbed_16_3" name="__tabbed_16" type="radio" /><div class="tabbed-labels"><label for="__tabbed_16_1">Java</label><label for="__tabbed_16_2">Spring Boot</label><label for="__tabbed_16_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -3173,7 +3221,7 @@ the queue if the waiting time is longer than this timeout and an <code>OfficeExc
 <p>This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
 timeout, this task will be aborted and the next task is processed.</p>
 <p>&nbsp;<strong><em>Default</em></strong>: 120000 (2 minutes)</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="16:3"><input checked="checked" id="__tabbed_16_1" name="__tabbed_16" type="radio" /><input id="__tabbed_16_2" name="__tabbed_16" type="radio" /><input id="__tabbed_16_3" name="__tabbed_16" type="radio" /><div class="tabbed-labels"><label for="__tabbed_16_1">Java</label><label for="__tabbed_16_2">Spring Boot</label><label for="__tabbed_16_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="17:3"><input checked="checked" id="__tabbed_17_1" name="__tabbed_17" type="radio" /><input id="__tabbed_17_2" name="__tabbed_17" type="radio" /><input id="__tabbed_17_3" name="__tabbed_17" type="radio" /><div class="tabbed-labels"><label for="__tabbed_17_1">Java</label><label for="__tabbed_17_2">Spring Boot</label><label for="__tabbed_17_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
