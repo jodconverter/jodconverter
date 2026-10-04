@@ -18,7 +18,7 @@ is doing. The following example will convert only the second page of a given sou
 final File inputFile = new File("document.rtf");
 final File outputFile = new File("document.html");
 
-final PageSelectorFilter selectorFilter = new PageSelectorFilter(2);
+final PagesSelectorFilter selectorFilter = new PagesSelectorFilter(2);
 
 LocalConverter
   .builder()
@@ -49,6 +49,28 @@ LocalConverter
   .to(outputFile)
   .execute();
 ```
+
+## Merging documents
+
+The [DocumentInserterFilter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentInserterFilter.java)
+inserts another document at the end of the loaded text document. Chain one filter per document to merge several
+documents into one:
+
+```java
+final File outputFile = new File("merged.pdf");
+
+LocalConverter
+  .builder()
+  .filterChain(
+      new DocumentInserterFilter(new File("chapter2.docx")),
+      new DocumentInserterFilter(new File("chapter3.docx")))
+  .build()
+  .convert(new File("chapter1.docx"))
+  .to(outputFile)
+  .execute();
+```
+
+## Available filters
 
 **JODConverter** provides
 some [filters](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter)
