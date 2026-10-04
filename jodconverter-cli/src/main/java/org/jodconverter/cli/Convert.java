@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -50,7 +51,6 @@ import org.jodconverter.remote.office.RemoteOfficeManager;
 import org.jodconverter.remote.ssl.SslConfig;
 
 /** Command line interface executable. */
-@SuppressWarnings("PMD.UseUtilityClass")
 public final class Convert {
 
   /** Status returned when the program runs without errors. */
@@ -183,18 +183,21 @@ public final class Convert {
 
   private static final Options OPTIONS = initOptions();
 
-  private static void checkPrintInfoAndExit(final CommandLine commandLine) {
+  // Returns true if the command line asked for some info, which is printed, and nothing else.
+  private static boolean printInfoIfRequested(final CommandLine commandLine) {
 
     if (commandLine.hasOption(OPT_HELP.getOpt())) {
       printHelp();
-      System.exit(STATUS_OK);
+      return true;
     }
 
     if (commandLine.hasOption(OPT_VERSION.getOpt())) {
       final Package pack = Convert.class.getPackage();
       printInfo("jodconverter-cli version %s", pack.getImplementationVersion());
-      System.exit(STATUS_OK);
+      return true;
     }
+
+    return false;
   }
 
   private static OfficeManager createOfficeManager(
@@ -336,12 +339,25 @@ public final class Convert {
    */
   public static void main(final String[] arguments) {
 
+    System.exit(run(arguments));
+  }
+
+  /**
+   * Runs the program, without exiting the JVM.
+   *
+   * @param arguments program arguments.
+   * @return The exit status of the program.
+   */
+  /* default */ static int run(final String... arguments) {
+
     try {
       final CommandLine commandLine = new DefaultParser().parse(OPTIONS, arguments);
 
       // Check if the command line contains arguments that is supposed
       // to print some info and then exit.
-      checkPrintInfoAndExit(commandLine);
+      if (printInfoIfRequested(commandLine)) {
+        return STATUS_OK;
+      }
 
       // Get conversion arguments
       final String outputFormat = getStringOption(commandLine, OPT_OUTPUT_FORMAT.getOpt());
@@ -353,7 +369,7 @@ public final class Convert {
       // Validate arguments length
       if (outputFormat == null && filenames.length % 2 != 0 || filenames.length == 0) {
         printHelp();
-        System.exit(STATUS_INVALID_ARGUMENTS);
+        return STATUS_INVALID_ARGUMENTS;
       }
 
       // Load the application context if provided
@@ -399,16 +415,16 @@ public final class Convert {
         }
       }
 
-      System.exit(STATUS_OK);
+      return STATUS_OK;
 
     } catch (ParseException e) {
       printErr(e.getMessage());
       printHelp();
-      System.exit(STATUS_ERROR);
+      return STATUS_ERROR;
     } catch (Exception e) {
       printErr(e.getMessage());
       e.printStackTrace(System.err);
-      System.exit(STATUS_ERROR);
+      return STATUS_ERROR;
     }
   }
 
@@ -513,7 +529,14 @@ public final class Convert {
       "  or:",
       "jodconverter-cli [options] -f output-format infile [infile ...]"
     };
-    new HelpFormatter().printHelp(String.join("\n", help), OPTIONS);
+    try {
+      HelpFormatter.builder()
+          .setShowSince(false)
+          .get()
+          .printHelp(String.join("\n", help), null, OPTIONS, null, false);
+    } catch (IOException ex) {
+      printErr(ex.getMessage());
+    }
   }
 
   private static void printErr(final Object... values) {

@@ -21,10 +21,8 @@
 package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -34,9 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
-import org.jodconverter.cli.util.ExitException;
-import org.jodconverter.cli.util.NoExitExtension;
-import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.office.ExistingProcessAction;
@@ -45,11 +40,7 @@ import org.jodconverter.local.office.LocalOfficeUtils;
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
  */
-@ExtendWith({
-  ConsoleStreamsListenerExtension.class,
-  NoExitExtension.class,
-  ResetExitExceptionExtension.class
-})
+@ExtendWith(ConsoleStreamsListenerExtension.class)
 class ConvertITest {
 
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
@@ -68,24 +59,17 @@ class ConvertITest {
       final File outputFile = new File(testFolder, "convert_WithMultipleFilters.doc");
 
       SystemLogHandler.startCapture();
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-r",
-                        registryFile.getPath(),
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                final String capturedlog = SystemLogHandler.stopCapture();
-                assertThat(e).hasFieldOrPropertyWithValue("status", 2);
-                assertThat(capturedlog).contains("The target format is missing or not supported");
-              });
+      final int status =
+          Convert.run(
+              "-r",
+              registryFile.getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(status).isEqualTo(2);
+      assertThat(capturedlog).contains("The target format is missing or not supported");
     }
 
     @Test
@@ -94,25 +78,15 @@ class ConvertITest {
       final File inputFile = new File(SOURCE_FILE);
       final File outputFile = new File(testFolder, "convert_WithFilenames.pdf");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e)
-                    .isExactlyInstanceOf(ExitException.class)
-                    .hasFieldOrPropertyWithValue("status", 0);
-
-                assertThat(outputFile).isFile();
-                assertThat(outputFile.length()).isGreaterThan(0L);
-              });
+      final int status =
+          Convert.run(
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      assertThat(status).isEqualTo(0);
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
     }
 
     @Test
@@ -125,23 +99,12 @@ class ConvertITest {
       final File outputFile =
           new File(testFolder, FileUtils.getBaseName(inputFile.getName()) + ".pdf");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-f",
-                        "pdf",
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFileTmp.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-                assertThat(outputFile).isFile();
-                assertThat(outputFile.length()).isGreaterThan(0L);
-              });
+      final int status =
+          Convert.run(
+              "-f", "pdf", "-x", ExistingProcessAction.KILL.toString(), inputFileTmp.getPath());
+      assertThat(status).isEqualTo(0);
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
     }
 
     @Test
@@ -151,63 +114,42 @@ class ConvertITest {
       final File inputFile = new File(SOURCE_FILE);
       final File outputFile = new File(testFolder, "convert_WithMultipleFilters.pdf");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-a",
-                        filterChainFile.getPath(),
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-
-                assertThat(outputFile).isFile();
-                assertThat(outputFile.length()).isGreaterThan(0L);
-              });
+      final int status =
+          Convert.run(
+              "-a",
+              filterChainFile.getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      assertThat(status).isEqualTo(0);
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
     }
 
     @Test
-    void withSingleFilter_ShouldSucceed(final @TempDir File testFolder) {
+    void withSingleFilter_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
       final File filterChainFile =
           new File(CONFIG_DIR + "applicationContext_pagesSelectorFilter.xml");
       final File inputFile = new File(SOURCE_MULTI_FILE);
       final File outputFile = new File(testFolder, "convert_WithSingleFilter.txt");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-a",
-                        filterChainFile.getPath(),
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-
-                try {
-                  final String content =
-                      FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-                  assertThat(content)
-                      .as("Check content: %s", content)
-                      .contains("Test document Page 2")
-                      .doesNotContain("Test document Page 1")
-                      .doesNotContain("Test document Page 3");
-                } catch (IOException ex) {
-                  assertThat(ex).isNull();
-                }
-              });
+      final int status =
+          Convert.run(
+              "-a",
+              filterChainFile.getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      assertThat(status).isEqualTo(0);
+      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      assertThat(content)
+          .as("Check content: %s", content)
+          .contains("Test document Page 2")
+          .doesNotContain("Test document Page 1")
+          .doesNotContain("Test document Page 3");
     }
 
     @Test
@@ -216,26 +158,19 @@ class ConvertITest {
       final File inputFile = new File(SOURCE_MULTI_FILE);
       final File outputFile = new File(testFolder, "convert_WithCustomStoreProperties.pdf");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-sFDPageRange=2-2",
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
+      final int status =
+          Convert.run(
+              "-sFDPageRange=2-2",
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      assertThat(status).isEqualTo(0);
 
-                // If the document (with the image) is fully converted, it will
-                // be much greater that 30K (over 70K). Only the second page
-                // doesn't have an image.
-                assertThat(outputFile.length()).isLessThan(30_000L);
-              });
+      // If the document (with the image) is fully converted, it will
+      // be much greater that 30K (over 70K). Only the second page
+      // doesn't have an image.
+      assertThat(outputFile.length()).isLessThan(30_000L);
     }
   }
 
@@ -245,27 +180,23 @@ class ConvertITest {
     @Test
     void withAllCustomizableOption_ShouldExecuteAndExitWithCode0() {
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-i",
-                        LocalOfficeUtils.getDefaultOfficeHome().getPath(),
-                        "-m",
-                        LocalOfficeUtils.findBestProcessManager().getClass().getName(),
-                        "-t",
-                        "30000",
-                        "-p",
-                        "2002",
-                        "-u",
-                        new File("src/integTest/resources/templateProfileDir").getPath(),
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        "input1.txt",
-                        "output1.pdf"
-                      }))
-          .satisfies(e -> assertThat(e.getStatus()).isEqualTo(0));
+      final int status =
+          Convert.run(
+              "-i",
+              LocalOfficeUtils.getDefaultOfficeHome().getPath(),
+              "-m",
+              LocalOfficeUtils.findBestProcessManager().getClass().getName(),
+              "-t",
+              "30000",
+              "-p",
+              "2002",
+              "-u",
+              new File("src/integTest/resources/templateProfileDir").getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              "input1.txt",
+              "output1.pdf");
+      assertThat(status).isEqualTo(0);
     }
   }
 }
