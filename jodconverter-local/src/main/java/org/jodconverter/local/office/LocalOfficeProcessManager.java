@@ -518,21 +518,20 @@ class LocalOfficeProcessManager {
 
       // A process was found!
       switch (existingProcessAction) {
-        case FAIL:
-          // Throw an exception if the kill switch is off.
-          throw new OfficeException(
-              String.format(
-                  "A process with --accept '%s' is already running; pid %d", accept, pid));
-        case KILL:
+        case FAIL ->
+            // Throw an exception if the kill switch is off.
+            throw new OfficeException(
+                String.format(
+                    "A process with --accept '%s' is already running; pid %d", accept, pid));
+        case KILL -> {
           // Kill any running process with the same connection string if the kill switch is on.
           killExistingProcess(pid, processQuery);
           pid = PID_UNKNOWN;
-          break;
-        case CONNECT:
-          // Connect to the existing office process.
-          connectToExistingProcess(pid, accept);
-          break;
-        case CONNECT_OR_KILL:
+        }
+        case CONNECT ->
+            // Connect to the existing office process.
+            connectToExistingProcess(pid, accept);
+        case CONNECT_OR_KILL -> {
           // Try to connect to the existing office process.
           try {
             connectToExistingProcess(pid, accept);
@@ -541,7 +540,7 @@ class LocalOfficeProcessManager {
             killExistingProcess(pid, processQuery);
             pid = PID_UNKNOWN;
           }
-          break;
+        }
       }
 
       // Return the pid.

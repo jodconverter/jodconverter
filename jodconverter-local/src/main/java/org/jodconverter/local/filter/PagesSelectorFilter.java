@@ -105,22 +105,20 @@ public class PagesSelectorFilter implements Filter {
     if (family != null) {
 
       switch (family) {
-        case TEXT:
-        case WEB:
+        case TEXT, WEB -> {
           LOGGER.debug("Applying the PagesSelectorFilter for a Text document");
 
           // We must process from the start to the end.
           Collections.sort(pages);
           selectTextPages(Lo.qi(XTextDocument.class, document));
-          break;
-        case SPREADSHEET:
+        }
+        case SPREADSHEET -> {
           LOGGER.debug("Applying the PagesSelectorFilter for a Calc document");
 
           // We must process from the end to the start.
           selectSheets(Lo.qi(XSpreadsheetDocument.class, document));
-          break;
-        case PRESENTATION:
-        case DRAWING:
+        }
+        case PRESENTATION, DRAWING -> {
           LOGGER.debug(
               "Applying the PagesSelectorFilter for a {} document",
               family == DocumentFamily.DRAWING ? "Draw" : "Impress");
@@ -128,7 +126,7 @@ public class PagesSelectorFilter implements Filter {
           // We must process from the end to the start.
           pages.sort(Collections.reverseOrder());
           selectDrawPages(Lo.qi(XDrawPagesSupplier.class, document));
-          break;
+        }
       }
     }
 

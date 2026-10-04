@@ -53,27 +53,25 @@ public class PageCounterFilter implements Filter {
     if (family != null) {
 
       switch (family) {
-        case TEXT:
-        case WEB:
+        case TEXT, WEB -> {
           LOGGER.debug("Applying the PageCounterFilter for a Text document");
           pageCount =
               (Integer)
                   Props.getProperty(
                       Lo.qi(XModel.class, document).getCurrentController(), "PageCount");
-          break;
-        case SPREADSHEET:
+        }
+        case SPREADSHEET -> {
           LOGGER.debug("Applying the PageCounterFilter for a Calc document");
           pageCount =
               Lo.qi(XSpreadsheetDocument.class, document).getSheets().getElementNames().length;
-          break;
-        case PRESENTATION:
-        case DRAWING:
+        }
+        case PRESENTATION, DRAWING -> {
           LOGGER.debug(
               "Applying the PageCounterFilter for a {} document",
               family == DocumentFamily.DRAWING ? "Draw" : "Impress");
           final XDrawPages xDrawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
           pageCount = xDrawPages.getCount();
-          break;
+        }
       }
     }
 
