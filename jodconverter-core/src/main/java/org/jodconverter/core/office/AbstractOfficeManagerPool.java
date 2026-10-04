@@ -194,17 +194,17 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
   /**
    * Make the given manager available to executes tasks.
    *
+   * <p>The pool always has room for the manager, since it was taken from it. Unlike put, offer
+   * never blocks and ignores the interrupted state of the calling thread, so an interrupted caller
+   * still returns the manager instead of losing it for good.
+   *
    * @param manager A manager to return to the pool.
-   * @throws OfficeException If we are unable to release a manager.
    */
-  private void releaseManager(final E manager) throws OfficeException {
+  private void releaseManager(final E manager) {
     LOGGER.debug("Returning office manager to the pool...");
 
-    try {
-      pool.put(manager);
-    } catch (InterruptedException ex) {
-      Thread.currentThread().interrupt();
-      throw new OfficeException("Interruption while releasing manager", ex);
+    if (!pool.offer(manager)) {
+      LOGGER.error("Unable to return the office manager to the pool: the pool is full.");
     }
   }
 

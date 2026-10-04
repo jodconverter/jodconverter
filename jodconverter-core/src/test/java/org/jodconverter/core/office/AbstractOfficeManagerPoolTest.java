@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Nested;
@@ -468,45 +467,35 @@ class AbstractOfficeManagerPoolTest {
     //    }
 
     @Test
-    void whenInterruptedWhileReleasingAquiringManager_ShouldThrowOfficeException()
-        throws Exception {
+    void whenCallerInterruptedWhileExecuting_ShouldReturnEntryToPool() throws Exception {
 
+      // A single entry: if it is not returned to the pool, the next task cannot get one
       final SimpleOfficeManager manager =
-          SimpleOfficeManager.builder().taskQueueTimeout(2_500L).build();
+          SimpleOfficeManager.builder().poolSize(1).taskQueueTimeout(1_000L).build();
       try {
         manager.start();
 
-        final AtomicReference<Throwable> ex = new AtomicReference<>();
-
-        assertThatCode(
+        final AtomicReference<OfficeException> ex = new AtomicReference<>();
+        final Thread caller =
+            new Thread(
                 () -> {
-                  final Thread thread =
-                      new Thread(
-                          () -> {
-                            try {
-                              // Try to release a fake entry while there is no place in the manager
-                              ReflectionTestUtils.invokeMethod(
-                                  manager,
-                                  "releaseManager",
-                                  new SimpleOfficeManagerPoolEntry(1_000L));
-                            } catch (UndeclaredThrowableException e) {
-                              ex.set(e.getUndeclaredThrowable());
-                            }
-                          });
+                  try {
+                    manager.execute(new SimpleOfficeTask(2_000L));
+                  } catch (OfficeException oe) {
+                    ex.set(oe);
+                  }
+                });
+        caller.start();
+        // Let the task execution begin, then interrupt the caller
+        Thread.sleep(250L);
+        caller.interrupt();
+        caller.join();
 
-                  // Start the thread.
-                  thread.start();
-                  // Interrupt the thread.
-                  thread.interrupt();
-                  //  Wait for thread to complete.
-                  thread.join();
-                })
-            .doesNotThrowAnyException();
+        assertThat(ex.get()).hasMessageStartingWith("Task was interrupted while executing");
 
-        assertThat(ex.get())
-            .isExactlyInstanceOf(OfficeException.class)
-            .hasMessage("Interruption while releasing manager")
-            .hasCauseExactlyInstanceOf(InterruptedException.class);
+        final SimpleOfficeTask nextTask = new SimpleOfficeTask();
+        assertThatCode(() -> manager.execute(nextTask)).doesNotThrowAnyException();
+        assertThat(nextTask.isCompleted()).isTrue();
 
       } finally {
         manager.stop();

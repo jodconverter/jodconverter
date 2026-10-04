@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -49,7 +50,8 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
 
   private final long taskExecutionTimeout;
   private final SuspendableThreadPoolExecutor taskExecutor;
-  private Future<?> currentFuture;
+  // Read by the threads that report a lost connection, through cancelTask()
+  private final AtomicReference<Future<?>> currentFuture = new AtomicReference<>();
 
   /**
    * Initializes a new pool entry with the specified configuration.
@@ -75,24 +77,26 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     // at least once, meaning that the entry has been started.
 
     // Submit the task to the executor
-    currentFuture =
+    final Future<?> future =
         taskExecutor.submit(
             () -> {
               doExecute(task);
               return null;
             });
+    currentFuture.set(future);
 
     // Wait for completion of the task.
-    waitTaskCompletion(task);
+    waitTaskCompletion(task, future);
   }
 
-  private void waitTaskCompletion(final OfficeTask task) throws OfficeException {
+  private void waitTaskCompletion(final OfficeTask task, final Future<?> future)
+      throws OfficeException {
 
     // Wait for completion of the task, (maximum wait time is the configured task execution
     // timeout).
     try {
       LOGGER.debug("Waiting {} ms for task to complete: {}", taskExecutionTimeout, task);
-      currentFuture.get(taskExecutionTimeout, TimeUnit.MILLISECONDS);
+      future.get(taskExecutionTimeout, TimeUnit.MILLISECONDS);
       LOGGER.debug("Task executed successfully: {}", task);
 
     } catch (CancellationException ex) {
@@ -107,14 +111,17 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
 
     } catch (InterruptedException ex) {
 
-      // The task was interrupted...
+      // The waiting thread was interrupted: the task must not keep running for nobody...
+      future.cancel(true);
       Thread.currentThread().interrupt();
       throw new OfficeException(
           String.format("Task was interrupted while executing: %s", task), ex);
 
     } catch (TimeoutException ex) {
 
-      // The task did not complete within the configured timeout...
+      // The task did not complete within the configured timeout. Cancel it, so it does not
+      // block the next tasks of this entry, then let the subclass handle the timeout.
+      future.cancel(true);
       handleExecuteTimeoutException(ex);
       throw new OfficeException(
           String.format(
@@ -122,7 +129,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
           ex);
 
     } finally {
-      currentFuture = null;
+      currentFuture.compareAndSet(future, null);
     }
   }
 
@@ -189,9 +196,10 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
 
   /** Cancels the current running task, if any. Do nothing if there is no current running task. */
   protected void cancelTask() {
-    if (currentFuture != null) {
+    final Future<?> future = currentFuture.get();
+    if (future != null) {
       LOGGER.debug("Cancelling current task...");
-      currentFuture.cancel(true);
+      future.cancel(true);
     }
   }
 
