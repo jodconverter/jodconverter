@@ -1,16 +1,31 @@
 name: deploy-docs
 
+# develop publishes the "dev" version of the site; a release pushed to master publishes its version with the
+# "latest" alias. The manual run publishes the given release version from the selected branch's docs.
 on:
   push:
     branches:
+      - develop
       - master
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version to publish with the "latest" alias (e.g. 4.4.11). Empty: the version in gradle.properties.'
+        required: false
+        default: ''
 
 permissions:
   contents: write
 
+# mike pushes to gh-pages: one deployment at a time, none cancelled halfway
+concurrency:
+  group: deploy-docs
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: 📦 Checkout repository
@@ -33,27 +48,40 @@ jobs:
       - name: 📥 Install Zensical and mike
         run: pip install -r requirements-docs.txt
 
-      - name: 🧮 Extract version from gradle.properties
-        id: extract_version
+      - name: 🧮 Choose the version to deploy
+        id: target
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          version=$(grep "^version\s*=" gradle.properties | cut -d'=' -f2 | tr -d ' ')
-          echo "VERSION=$version" >> $GITHUB_OUTPUT
+          version="${INPUT_VERSION:-$(grep "^version\s*=" gradle.properties | cut -d'=' -f2 | tr -d ' ')}"
           if [[ "$version" == *-SNAPSHOT ]]; then
-            echo "IS_SNAPSHOT=true" >> $GITHUB_OUTPUT
+            # Snapshots are published as "dev" from develop only
+            if [[ "$REF_NAME" != "develop" ]]; then
+              echo "Snapshot version $version on $REF_NAME: nothing to deploy"
+              echo "MODE=skip" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "MODE=dev" >> "$GITHUB_OUTPUT"
+          elif [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "MODE=release" >> "$GITHUB_OUTPUT"
+            echo "VERSION=$version" >> "$GITHUB_OUTPUT"
           else
-            echo "IS_SNAPSHOT=false" >> $GITHUB_OUTPUT
+            echo "::error::Invalid version: $version"
+            exit 1
           fi
 
       - name: 📤 Deploy documentation with mike
+        if: steps.target.outputs.MODE != 'skip'
+        env:
+          MODE: ${{ steps.target.outputs.MODE }}
+          VERSION: ${{ steps.target.outputs.VERSION }}
         run: |
-          version=${{ steps.extract_version.outputs.VERSION }}
-          is_snapshot=${{ steps.extract_version.outputs.IS_SNAPSHOT }}
-
-          if [[ "$is_snapshot" == "true" ]]; then
-            echo "Deploying SNAPSHOT to static folder 'snapshot'"
+          if [[ "$MODE" == "dev" ]]; then
+            echo "Deploying the development documentation as 'dev'"
             mike deploy --push --update-aliases dev
           else
-            echo "Deploying stable version $version with alias 'latest'"
-            mike deploy --push --update-aliases "$version" latest
+            echo "Deploying version $VERSION with the 'latest' alias"
+            mike deploy --push --update-aliases "$VERSION" latest
             mike set-default --push latest
           fi
