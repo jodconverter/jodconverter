@@ -102,4 +102,4 @@ Notes for Contributors
 - Keep new tests JUnit 5-native unless interacting with existing Vintage-based tests.
 - Prefer AssertJ for expressive assertions.
 - Avoid introducing hard dependencies on external software in unit tests; place those under integrationTest.
-- Check docs under docs/ for user-facing guides; mkdocs.yml drives site generation but is independent of the Java build.
+- Check docs under docs/ for user-facing guides; zensical.toml drives site generation (built with Zensical) but is independent of the Java build.

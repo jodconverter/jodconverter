@@ -47,7 +47,7 @@ Default load properties are:
 - **UpdateDocMode**: UpdateDocMode.NO_UPDATE
 
 When building the load properties map that will be used to load a source document, the load properties of the input [
-`DocumentFormat`](../getting-started/document-format-registry.md//#what-is-a-document-format), if any, are put in the
+`DocumentFormat`](../getting-started/document-format-registry.md#what-is-a-document-format), if any, are put in the
 map first. Then, the default load properties, if required, are added to the map. Finally, any properties specified in
 the `loadProperty(String, Object)` or `loadProperties(Map)` are put in the map.
 
@@ -73,7 +73,7 @@ This property specifies a property, for this converter, that will be applied whe
 conversion task, regardless of the input format of the document.
 
 When building the load properties map that will be used to load a source document, the load properties of the input [
-`DocumentFormat`](../getting-started/document-format-registry.md//#what-is-a-document-format), if any, are put in the
+`DocumentFormat`](../getting-started/document-format-registry.md#what-is-a-document-format), if any, are put in the
 map first. Then, the default load properties, if required, are added to the map. Finally, any properties specified in
 the `loadProperty(String, Object)` or `loadProperties(Map)` are put in the map.
 
