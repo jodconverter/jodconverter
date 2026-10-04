@@ -35,10 +35,10 @@ class ProcessQueryTest {
         .isEqualTo(
             "ProcessQuery{"
                 + "command='"
-                + query.getCommand()
+                + query.command()
                 + '\''
                 + ", argument='"
-                + query.getArgument()
+                + query.argument()
                 + '\''
                 + '}');
   }

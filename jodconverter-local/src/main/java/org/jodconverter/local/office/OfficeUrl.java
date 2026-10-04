@@ -41,11 +41,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * a Connection</a> and <a href="http://www.openoffice.org/udk/common/man/spec/uno-url.html">UNO Url
  * - Specification</a> in the OpenOffice.org Developer's Guide for more details.
  */
-class OfficeUrl {
+record OfficeUrl(UnoUrl unoUrl) {
 
   private static final String DEFAULT_HOST = "127.0.0.1";
-
-  private final UnoUrl unoUrl;
 
   /**
    * Creates an UnoUrl for the specified pipe.
@@ -125,7 +123,7 @@ class OfficeUrl {
    * @param pipeName The pipe name.
    */
   public OfficeUrl(final @NonNull String pipeName) {
-    unoUrl = pipe(pipeName);
+    this(pipe(pipeName));
   }
 
   /**
@@ -144,7 +142,7 @@ class OfficeUrl {
    * @param port The port.
    */
   public OfficeUrl(final @Nullable String host, final int port) {
-    unoUrl = socket(host, port);
+    this(socket(host, port));
   }
 
   /**
@@ -152,7 +150,7 @@ class OfficeUrl {
    *
    * @param unoUrl The UnoUrl
    */
-  public OfficeUrl(final @NonNull UnoUrl unoUrl) {
+  OfficeUrl(final @NonNull UnoUrl unoUrl) {
     this.unoUrl = unoUrl;
   }
 
@@ -161,7 +159,8 @@ class OfficeUrl {
    *
    * @return The created {@code UnoUrl} for this wrapper.
    */
-  public UnoUrl getUnoUrl() {
+  @Override
+  public UnoUrl unoUrl() {
     return unoUrl;
   }
 

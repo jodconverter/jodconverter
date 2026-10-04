@@ -229,7 +229,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
       throw new TemporaryException(
           String.format(
               "A process with --accept '%s' started but its pid could not be found; restarting",
-              processQuery.getArgument()));
+              processQuery.argument()));
     }
   }
 

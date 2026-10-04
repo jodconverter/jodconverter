@@ -457,7 +457,7 @@ class LocalOfficeProcessManager {
     if (LOGGER.isWarnEnabled()) {
       LOGGER.warn(
           "A process with --accept '{}' is already running; pid {}; trying to kill it...",
-          processQuery.getArgument(),
+          processQuery.argument(),
           pid);
     }
     processManager.kill(null, pid);
@@ -473,7 +473,7 @@ class LocalOfficeProcessManager {
       throw new OfficeException(
           String.format(
               "A process with --accept '%s' is already running and could not be killed; pid %d",
-              processQuery.getArgument(), pid));
+              processQuery.argument(), pid));
     }
   }
 
@@ -503,7 +503,7 @@ class LocalOfficeProcessManager {
    */
   private long checkForExistingProcess(final ProcessQuery processQuery) throws OfficeException {
 
-    final String accept = processQuery.getArgument();
+    final String accept = processQuery.argument();
     try {
       // Search for an existing process that would prevent us to start a new
       // office process with the same connection string.

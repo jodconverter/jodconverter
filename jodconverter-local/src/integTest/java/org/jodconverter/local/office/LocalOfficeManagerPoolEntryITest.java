@@ -317,15 +317,8 @@ class LocalOfficeManagerPoolEntryITest {
     assertThat(manager).extracting("officeProcessManager.process.exitCode").isEqualTo(0);
   }
 
-  private static class RestartAfterCrashTask implements Callable<Boolean> {
-
-    private final LocalOfficeManagerPoolEntry officeManager;
-
-    private RestartAfterCrashTask(final LocalOfficeManagerPoolEntry officeManager) {
-      super();
-
-      this.officeManager = officeManager;
-    }
+  private record RestartAfterCrashTask(LocalOfficeManagerPoolEntry officeManager)
+      implements Callable<Boolean> {
 
     @Override
     public Boolean call() throws Exception {

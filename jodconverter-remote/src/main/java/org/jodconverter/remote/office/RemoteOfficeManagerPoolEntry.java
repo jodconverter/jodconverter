@@ -75,19 +75,12 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   private final long connectTimeout;
   private final long socketTimeout;
 
-  /** Strategy that selects a private key by its alias. */
-  private static final class SelectByAlias implements PrivateKeyStrategy {
-
-    private final String keyAlias;
-
-    /**
-     * Create a new instance of the strategy.
-     *
-     * @param keyAlias The alias of the private key to select.
-     */
-    public SelectByAlias(final String keyAlias) {
-      this.keyAlias = keyAlias;
-    }
+  /**
+   * Strategy that selects a private key by its alias.
+   *
+   * @param keyAlias The alias of the private key to select.
+   */
+  private record SelectByAlias(String keyAlias) implements PrivateKeyStrategy {
 
     @Override
     public String chooseAlias(final Map<String, PrivateKeyDetails> aliases, final Socket socket) {

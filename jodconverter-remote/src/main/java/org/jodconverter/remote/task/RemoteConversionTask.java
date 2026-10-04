@@ -123,7 +123,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
 
         // Use the fluent API to post the file and save the response into the target file.
         final RequestConfig requestConfig = remoteContext.getRequestConfig();
-        final URIBuilder uriBuilder = new URIBuilder(buildUrl(requestConfig.getUrl()));
+        final URIBuilder uriBuilder = new URIBuilder(buildUrl(requestConfig.url()));
 
         // We suppose that the server supports custom load properties, but LibreOffice Online
         // does not support custom load properties, only the sample web service do.
@@ -147,8 +147,8 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
             .execute(
                 // Request.Post(buildUrl(requestConfig.getUrl()))
                 Request.Post(uriBuilder.build())
-                    .connectTimeout(Math.toIntExact(requestConfig.getConnectTimeout()))
-                    .socketTimeout(Math.toIntExact(requestConfig.getSocketTimeout()))
+                    .connectTimeout(Math.toIntExact(requestConfig.connectTimeout()))
+                    .socketTimeout(Math.toIntExact(requestConfig.socketTimeout()))
                     .body(entity))
             .saveContent(targetFile);
 

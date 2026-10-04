@@ -106,10 +106,9 @@ public abstract class AbstractProcessManager implements ProcessManager {
     }
 
     final Pattern commandPattern =
-        Pattern.compile(
-            Pattern.quote(query.getCommand()) + ".*" + Pattern.quote(query.getArgument()));
+        Pattern.compile(Pattern.quote(query.command()) + ".*" + Pattern.quote(query.argument()));
     final Pattern processLinePattern = getRunningProcessLinePattern();
-    final String[] currentProcessesCommand = getRunningProcessesCommand(query.getCommand());
+    final String[] currentProcessesCommand = getRunningProcessesCommand(query.command());
 
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace(
