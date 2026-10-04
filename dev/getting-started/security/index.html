@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://jodconverter.github.io/jodconverter/latest/getting-started/command-line-tool/">
+        <link rel="canonical" href="https://jodconverter.github.io/jodconverter/latest/getting-started/security/">
       
       
-        <link rel="prev" href="../using-filters/">
+        <link rel="prev" href="../containers/">
       
       
-        <link rel="next" href="../libreoffice-online/">
+        <link rel="next" href="../performance/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Command Line Tool - JODConverter</title>
+        <title>Security - JODConverter</title>
       
     
     
@@ -83,7 +83,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#command-line-tool" class="md-skip">
+        <a href="#security" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Command Line Tool
+              Security
             
           </span>
         </div>
@@ -1320,36 +1320,10 @@
                   
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Command Line Tool
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../command-line-tool/" class="md-nav__link">
         
   
   
@@ -1364,275 +1338,6 @@
   
 
       </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#syntax" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Syntax
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Parameters
-      </span>
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Parameters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#infile" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        infile
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#outfile" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        outfile
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-a-application-context-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -a, --application-context <code>&lt;file&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-c-connection-url-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -c, --connection-url <code>&lt;url&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-d-output-directory-dir" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -d, --output-directory <code>&lt;dir&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-f-output-format-arg" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -f, --output-format <code>&lt;arg&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-h-help" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -h, --help
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-i-office-home-dir" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -i, --office-home <code>&lt;dir&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-k-keep-alive" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -k, --keep-alive
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-l-load-properties" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -l, --load-properties
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-m-process-manager-classname" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -m, --process-manager <code>&lt;classname&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-h-host-name-arg" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -h, --host-name <code>&lt;arg&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-o-overwrite" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -o, --overwrite
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-p-port-arg" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -p, --port <code>&lt;arg&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-r-registry-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -r, --registry <code>&lt;file&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-t-timeout-arg" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -t, --timeout <code>&lt;arg&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-u-user-profile-dir" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -u, --user-profile <code>&lt;dir&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-v-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -v, --version
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-w-working-dir-dir" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -w, --working-dir <code>&lt;dir&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#remarks" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Remarks
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1723,10 +1428,36 @@
                   
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../security/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Security
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1741,6 +1472,71 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#external-references-in-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        External references in documents
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#isolate-the-office-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Isolate the office process
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-through-a-separate-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Converting through a separate server
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Related
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2529,10 +2325,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#syntax" class="md-nav__link">
+  <a href="#external-references-in-documents" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Syntax
+        External references in documents
       </span>
     </span>
   </a>
@@ -2540,236 +2336,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
+  <a href="#isolate-the-office-process" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Parameters
+        Isolate the office process
       </span>
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Parameters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#infile" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        infile
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#outfile" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        outfile
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-a-application-context-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -a, --application-context <code>&lt;file&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-c-connection-url-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -c, --connection-url <code>&lt;url&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-d-output-directory-dir" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -d, --output-directory <code>&lt;dir&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-f-output-format-arg" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -f, --output-format <code>&lt;arg&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-h-help" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -h, --help
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-i-office-home-dir" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -i, --office-home <code>&lt;dir&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-k-keep-alive" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -k, --keep-alive
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-l-load-properties" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -l, --load-properties
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-m-process-manager-classname" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -m, --process-manager <code>&lt;classname&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-h-host-name-arg" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -h, --host-name <code>&lt;arg&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-o-overwrite" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -o, --overwrite
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-p-port-arg" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -p, --port <code>&lt;arg&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-r-registry-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -r, --registry <code>&lt;file&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-t-timeout-arg" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -t, --timeout <code>&lt;arg&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-u-user-profile-dir" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -u, --user-profile <code>&lt;dir&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-v-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -v, --version
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-w-working-dir-dir" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -w, --working-dir <code>&lt;dir&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#remarks" class="md-nav__link">
+  <a href="#converting-through-a-separate-server" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Remarks
+        Converting through a separate server
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Related
       </span>
     </span>
   </a>
@@ -2795,179 +2387,42 @@
   
 
 
-<h1 id="command-line-tool">Command Line Tool<a class="headerlink" href="#command-line-tool" title="Permanent link">&para;</a></h1>
-<p>The <code>jodconverter-cli</code> module provides a standalone command-line tool for converting documents using LibreOffice or
-OpenOffice. It enables quick and easy file conversions without writing any Java code, making it ideal for automation,
-scripting, and server-side integrations.</p>
-<p>The command line tool provides a good way to check that everything is working, i.e., that you have the right OOo
-version installed etc. To convert a document, use the provided batch file, located in the bin directory of the cli
-module distribution.</p>
-<h3 id="syntax">Syntax<a class="headerlink" href="#syntax" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code>jodconverter-cli [options] infile outfile [infile outfile ...]
-</code></pre></div>
-<p>or</p>
-<div class="language-text highlight"><pre><span></span><code>jodconverter-cli [options] -f output-format infile [infile ...]
-</code></pre></div>
-<h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
-<h4 id="infile">infile<a class="headerlink" href="#infile" title="Permanent link">&para;</a></h4>
-<p>The input file to convert (required). When used with the <strong>-f</strong> switch, infile may contain wildcards to match multiple
-files to convert. Thus, it is possible with the jodconverter-cli tool to convert more than 1 file at the time.</p>
-<h4 id="outfile">outfile<a class="headerlink" href="#outfile" title="Permanent link">&para;</a></h4>
-<p>The target file which is the result of the conversion.</p>
-<h4 id="-a-application-context-file">-a, --application-context <code>&lt;file&gt;</code><a class="headerlink" href="#-a-application-context-file" title="Permanent link">&para;</a></h4>
-<p>Application context file (optional).</p>
-<h4 id="-c-connection-url-url">-c, --connection-url <code>&lt;url&gt;</code><a class="headerlink" href="#-c-connection-url-url" title="Permanent link">&para;</a></h4>
-<p>Remote LibreOffice Online server URL for conversion (optional).</p>
-<h4 id="-d-output-directory-dir">-d, --output-directory <code>&lt;dir&gt;</code><a class="headerlink" href="#-d-output-directory-dir" title="Permanent link">&para;</a></h4>
-<p>Output directory (optional; defaults to input directory).</p>
-<h4 id="-f-output-format-arg">-f, --output-format <code>&lt;arg&gt;</code><a class="headerlink" href="#-f-output-format-arg" title="Permanent link">&para;</a></h4>
-<p>Output format (e.g. pdf).</p>
-<h4 id="-h-help">-h, --help<a class="headerlink" href="#-h-help" title="Permanent link">&para;</a></h4>
-<p>Displays help at the command prompt.</p>
-<h4 id="-i-office-home-dir">-i, --office-home <code>&lt;dir&gt;</code><a class="headerlink" href="#-i-office-home-dir" title="Permanent link">&para;</a></h4>
-<p>OOo home directory (optional; defaults to auto-detect).
-See <a href="../../../configuration/local-configuration#officehome">Configuration</a>.</p>
-<h4 id="-k-keep-alive">-k, --keep-alive<a class="headerlink" href="#-k-keep-alive" title="Permanent link">&para;</a></h4>
-<p>Keep the office process alive on shutdown (optional; defaults to false).
-See <a href="../../../configuration/local-configuration#keepaliveonshutdown">Configuration</a>.</p>
-<h4 id="-l-load-properties">-l, --load-properties<a class="headerlink" href="#-l-load-properties" title="Permanent link">&para;</a></h4>
-<p>Load properties (optional; eg. -lPassword=myPassword).</p>
-<h4 id="-m-process-manager-classname">-m, --process-manager <code>&lt;classname&gt;</code><a class="headerlink" href="#-m-process-manager-classname" title="Permanent link">&para;</a></h4>
-<p>Class name of the process manager to use (optional; defaults to auto-detect).
-See <a href="../../../configuration/local-configuration#processmanager">Configuration</a>.</p>
-<h4 id="-h-host-name-arg">-h, --host-name <code>&lt;arg&gt;</code><a class="headerlink" href="#-h-host-name-arg" title="Permanent link">&para;</a></h4>
-<p>Host name that will be used in the --accept argument when starting a process.
-See <a href="../../../configuration/local-configuration#hostname">Configuration</a>.</p>
-<h4 id="-o-overwrite">-o, --overwrite<a class="headerlink" href="#-o-overwrite" title="Permanent link">&para;</a></h4>
-<p>Overwrite existing output file (optional; defaults to false).</p>
-<h4 id="-p-port-arg">-p, --port <code>&lt;arg&gt;</code><a class="headerlink" href="#-p-port-arg" title="Permanent link">&para;</a></h4>
-<p>Office socket port (optional; defaults to 2002).
-See <a href="../../../configuration/local-configuration#portnumbers-pipenames">Configuration</a>.</p>
-<h4 id="-r-registry-file">-r, --registry <code>&lt;file&gt;</code><a class="headerlink" href="#-r-registry-file" title="Permanent link">&para;</a></h4>
-<p>Document formats registry configuration file (optional).</p>
-<h4 id="-t-timeout-arg">-t, --timeout <code>&lt;arg&gt;</code><a class="headerlink" href="#-t-timeout-arg" title="Permanent link">&para;</a></h4>
-<p>Maximum conversion time in seconds (optional; defaults to 120).
-See <a href="../../../configuration/local-configuration#taskexecutiontimeout">Configuration</a>.</p>
-<h4 id="-u-user-profile-dir">-u, --user-profile <code>&lt;dir&gt;</code><a class="headerlink" href="#-u-user-profile-dir" title="Permanent link">&para;</a></h4>
-<p>Use settings from the given OOo user installation directory (optional).
-See <a href="../../../configuration/local-configuration#templateprofiledir">Configuration</a>.</p>
-<h4 id="-v-version">-v, --version<a class="headerlink" href="#-v-version" title="Permanent link">&para;</a></h4>
-<p>Displays version information and exit.</p>
-<h4 id="-w-working-dir-dir">-w, --working-dir <code>&lt;dir&gt;</code><a class="headerlink" href="#-w-working-dir-dir" title="Permanent link">&para;</a></h4>
-<p>Directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir).
-See <a href="../../../configuration/local-configuration#workingdir">Configuration</a>.</p>
-<h3 id="remarks">Remarks<a class="headerlink" href="#remarks" title="Permanent link">&para;</a></h3>
+<h1 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h1>
+<p>Converting a document means opening it in LibreOffice or Apache OpenOffice, with everything the document format allows.
+When documents come from untrusted users, treat the office process as code that handles hostile input, and isolate it.</p>
+<h2 id="external-references-in-documents">External references in documents<a class="headerlink" href="#external-references-in-documents" title="Permanent link">&para;</a></h2>
+<p>Documents can reference external resources: linked images, linked sections or data, OLE objects, <code>file:///</code> and
+<code>http://</code> URLs. When the office program resolves them while loading a document, a crafted document can make the server
+read a local file and put its content in the converted output (file disclosure), or send requests to internal services
+(server-side request forgery, SSRF).</p>
+<p><strong>What JODConverter does:</strong> since version 4.4.4, documents are loaded with <code>UpdateDocMode.NO_UPDATE</code>, so links are not
+updated on load. The previous default, <code>QUIET_UPDATE</code>, updated them silently, which was exploited in
+<a href="https://nvd.nist.gov/vuln/detail/CVE-2020-25820">CVE-2020-25820</a>. The <code>useUnsafeQuietUpdate</code> option of the
+<a href="../../configuration/local-converter/#useunsafequietupdate">LocalConverter</a> brings the old behavior back: don't enable it
+for untrusted documents.</p>
+<p><strong>What it does not cover:</strong> <code>NO_UPDATE</code> does not stop every external resource from being loaded; for example, linked
+images in a document can still be fetched while it is loaded. Isolation is what protects you.</p>
+<h2 id="isolate-the-office-process">Isolate the office process<a class="headerlink" href="#isolate-the-office-process" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Using <strong>-a</strong></li>
+<li><strong>Network:</strong> run the office processes where they can't reach internal services, cloud metadata endpoints or the
+  Internet. A container or a network policy without outbound access blocks SSRF whatever the document contains.</li>
+<li><strong>File system:</strong> run them as a dedicated, unprivileged user that can only read the documents to convert and its own
+  working directory, so that a <code>file:///</code> reference has nothing sensitive to read.</li>
+<li><strong>Dedicated installation:</strong> don't share the office installation and its user profile with people who use it
+  interactively.</li>
+<li><strong>Limits:</strong> keep a <code>taskExecutionTimeout</code>, and limit the size of the uploaded documents in your application.</li>
+<li><strong>Updates:</strong> keep LibreOffice up to date; security fixes in document filters are released regularly.</li>
 </ul>
-<p>An application context configuration file is really a Spring configuration file, so a configuration file will start
-  with the following:</p>
-<div class="language-xml highlight"><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;beans</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
-<span class="w">       </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-<span class="w">       </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
-
-<span class="w">  </span><span class="cm">&lt;!-- Configuration goes here! --&gt;</span>
-
-<span class="nt">&lt;/beans&gt;</span>
-</code></pre></div>
-<p>A configuration file can be used to initialize
-  the <a href="../using-filters/">filter chain</a> that will be applied to the loaded
-  document before it is saved to the desired format. Here's an example of a configuration to create a filter chain that
-  will first insert a given text to the document, then will insert a graphic into it, and finally will apply the
-  configured text strings replacement:</p>
-<div class="language-xml highlight"><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;beans</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
-<span class="w">       </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-<span class="w">       </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
-
-<span class="w">  </span><span class="cm">&lt;!-- Creation of all the required filters we want to add to the filter chain. --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"textInserterFilter"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.filter.text.TextInserterFilter"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Text to insert --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"text to insert"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Arguments related to the added box size and position --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"100"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w"> </span><span class="cm">&lt;!-- Width, 10 CM --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"10"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w">  </span><span class="cm">&lt;!-- Height, 1 CM --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"50"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w">  </span><span class="cm">&lt;!-- Horizontal Position, 5 CM --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"100"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w"> </span><span class="cm">&lt;!-- Vertical Position, 10 CM --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"graphicInserterFilter"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.filter.text.GraphicInserterFilter"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Path to the image --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"src/integTest/resources/images/sample-1.jpg"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Arguments related to the added box size and position --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"50"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w">  </span><span class="cm">&lt;!-- Horizontal Position, 5 CM --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"111"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w"> </span><span class="cm">&lt;!-- Vertical Position, 11.1 CM (just under text box) --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"textReplacerFilter"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.filter.text.TextReplacerFilter"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">name=</span><span class="s">"searchList"</span><span class="nt">&gt;</span>
-<span class="w">      </span><span class="nt">&lt;list&gt;</span>
-<span class="w">        </span><span class="nt">&lt;value&gt;</span>text<span class="nt">&lt;/value&gt;</span>
-<span class="w">        </span><span class="nt">&lt;value&gt;</span>to<span class="w"> </span>insert<span class="nt">&lt;/value&gt;</span>
-<span class="w">      </span><span class="nt">&lt;/list&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/constructor-arg&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">name=</span><span class="s">"replacementList"</span><span class="nt">&gt;</span>
-<span class="w">      </span><span class="nt">&lt;list&gt;</span>
-<span class="w">        </span><span class="nt">&lt;value&gt;</span>Text<span class="nt">&lt;/value&gt;</span>
-<span class="w">        </span><span class="nt">&lt;value&gt;</span>describing<span class="w"> </span>the<span class="w"> </span>image<span class="w"> </span>below<span class="nt">&lt;/value&gt;</span>
-<span class="w">      </span><span class="nt">&lt;/list&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/constructor-arg&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-
-<span class="w">  </span><span class="cm">&lt;!-- Configure the filter chain that will be used while converting a document. --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"filterChain"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.filter.DefaultFilterChain"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg&gt;</span>
-<span class="w">      </span><span class="nt">&lt;list&gt;</span>
-<span class="w">        </span><span class="nt">&lt;ref</span><span class="w"> </span><span class="na">bean=</span><span class="s">"textInserterFilter"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;ref</span><span class="w"> </span><span class="na">bean=</span><span class="s">"graphicInserterFilter"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;ref</span><span class="w"> </span><span class="na">bean=</span><span class="s">"textReplacerFilter"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">      </span><span class="nt">&lt;/list&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/constructor-arg&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-
-<span class="nt">&lt;/beans&gt;</span>
-</code></pre></div>
-<p>Combine with the <em>-c</em> switch, a configuration file can be used to initialize
-  the <a href="../../libreoffice-remote/#ssl-support">SSL Context</a> of the connection
-  to the Libre Office Online server:</p>
-<div class="language-xml highlight"><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;beans</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
-<span class="w">       </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-<span class="w">       </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="cm">&lt;!-- Configure the SSL to secure communication with a Libre Office Online server. --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.ssl.SslConfig"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Indicates whether SSL support is enabled or not. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"enabled"</span><span class="w"> </span><span class="na">value=</span><span class="s">"true"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Comma separated values of the supported SSL ciphers. Defaults to the JVM default values. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"ciphers"</span><span class="w"> </span><span class="na">value=</span><span class="s">"ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Comma separated values of the enabled SSL protocols. Defaults to the JVM default values. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"enabledProtocols"</span><span class="w"> </span><span class="na">value=</span><span class="s">"enabledProtocols"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The alias that identifies the key in the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyAlias"</span><span class="w"> </span><span class="na">value=</span><span class="s">"keyalias"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The password used to access the key in the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyPassword"</span><span class="w"> </span><span class="na">value=</span><span class="s">"keypassword"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The path to the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyStore"</span><span class="w"> </span><span class="na">value=</span><span class="s">"/path/to/the/keystore.jks"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The password used to load the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyStorePassword"</span><span class="w"> </span><span class="na">value=</span><span class="s">"keystorepassword"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The type of key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyStoreType"</span><span class="w"> </span><span class="na">value=</span><span class="s">"JKS"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The provider for the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyStoreProvider"</span><span class="w"> </span><span class="na">value=</span><span class="s">"BC"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The path to the trust store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"trustStore"</span><span class="w"> </span><span class="na">value=</span><span class="s">"/path/to/the/truststore.p12"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The password used to load the trust store . --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"trustStorePassword"</span><span class="w"> </span><span class="na">value=</span><span class="s">"truststorepassword"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The type of trust store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"trustStoreType"</span><span class="w"> </span><span class="na">value=</span><span class="s">"PKCS12"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The provider for the trust store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"trustStoreProvider"</span><span class="w"> </span><span class="na">value=</span><span class="s">"SUN"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The SSL protocol to use. Default to TLS. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"protocol"</span><span class="w"> </span><span class="na">value=</span><span class="s">"TLS"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Indicates whether hostname should be verify during SSL handshake. Defaults to true. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"verifyHostname"</span><span class="w"> </span><span class="na">value=</span><span class="s">"true"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-<span class="nt">&lt;/beans&gt;</span>
-</code></pre></div>
+<p>Office settings (Tools &gt; Options), such as the security and load/save options, can be applied to the office processes
+started by <strong>JODConverter</strong> with a <a href="../../configuration/local-manager/#templateprofiledir">templateProfileDir</a>.</p>
+<h2 id="converting-through-a-separate-server">Converting through a separate server<a class="headerlink" href="#converting-through-a-separate-server" title="Permanent link">&para;</a></h2>
+<p>Converting through a remote server, such as <a href="../libreoffice-online/">LibreOffice Online or Collabora Online</a>, keeps the
+office program out of your application's host altogether. The isolation advice above then applies to that server.</p>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../containers/">Running in containers</a></li>
+<li><a href="../../configuration/local-converter/">LocalConverter configuration</a></li>
+</ul>
 <blockquote>
 <p>Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite
 derived from OOo such as <a href="https://www.openoffice.org">Apache OpenOffice</a> and <a href="https://www.libreoffice.org">LibreOffice</a>.</p>
@@ -3003,7 +2458,7 @@ derived from OOo such as <a href="https://www.openoffice.org">Apache OpenOffice<
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../using-filters/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Using Filters">
+          <a href="../containers/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Running in Containers">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
@@ -3013,20 +2468,20 @@ derived from OOo such as <a href="https://www.openoffice.org">Apache OpenOffice<
                 Previous
               </span>
               <div class="md-ellipsis">
-                Using Filters
+                Running in Containers
               </div>
             </div>
           </a>
         
         
           
-          <a href="../libreoffice-online/" class="md-footer__link md-footer__link--next" aria-label="Next: LibreOffice Online">
+          <a href="../performance/" class="md-footer__link md-footer__link--next" aria-label="Next: Performance">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                LibreOffice Online
+                Performance
               </div>
             </div>
             <div class="md-footer__button md-icon">

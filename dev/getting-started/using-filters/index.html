@@ -256,6 +256,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1047,6 +1051,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1290,6 +1298,23 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Using Filters
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="././" class="md-nav__link md-nav__link--active">
         
   
@@ -1305,6 +1330,48 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#merging-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Merging documents
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Available filters
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1389,6 +1456,60 @@
     
   
   LibreOffice Portable
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../containers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Running in Containers
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Security
 
     
   </span>
@@ -2160,6 +2281,11 @@
                       
                     
                     
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
                   
                   <div class="md-sidebar__inner">
                     
@@ -2171,6 +2297,36 @@
   
     
   
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#merging-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Merging documents
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Available filters
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2204,7 +2360,7 @@ is doing. The following example will convert only the second page of a given sou
 <div class="language-java highlight"><pre><span></span><code><span class="kd">final</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="n">inputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"document.rtf"</span><span class="p">);</span>
 <span class="kd">final</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="n">outputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"document.html"</span><span class="p">);</span>
 
-<span class="kd">final</span><span class="w"> </span><span class="n">PageSelectorFilter</span><span class="w"> </span><span class="n">selectorFilter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PageSelectorFilter</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">PagesSelectorFilter</span><span class="w"> </span><span class="n">selectorFilter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PagesSelectorFilter</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
 
 <span class="n">LocalConverter</span>
 <span class="w">  </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
@@ -2232,6 +2388,23 @@ target format is not PDF. Indeed, when converting to PDF, you are better off usi
 <span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">outputFile</span><span class="p">)</span>
 <span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
+<h2 id="merging-documents">Merging documents<a class="headerlink" href="#merging-documents" title="Permanent link">&para;</a></h2>
+<p>The <a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentInserterFilter.java">DocumentInserterFilter</a>
+inserts another document at the end of the loaded text document. Chain one filter per document to merge several
+documents into one:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="kd">final</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="n">outputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"merged.pdf"</span><span class="p">);</span>
+
+<span class="n">LocalConverter</span>
+<span class="w">  </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">filterChain</span><span class="p">(</span>
+<span class="w">      </span><span class="k">new</span><span class="w"> </span><span class="n">DocumentInserterFilter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"chapter2.docx"</span><span class="p">)),</span>
+<span class="w">      </span><span class="k">new</span><span class="w"> </span><span class="n">DocumentInserterFilter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"chapter3.docx"</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"chapter1.docx"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">outputFile</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<h2 id="available-filters">Available filters<a class="headerlink" href="#available-filters" title="Permanent link">&para;</a></h2>
 <p><strong>JODConverter</strong> provides
 some <a href="https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter">filters</a>
 out of the box, but you can implement (and share obviously &#128513;) any filter you need. Your filter must implement

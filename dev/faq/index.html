@@ -254,6 +254,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1045,6 +1049,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1372,6 +1380,60 @@
     
   
   LibreOffice Portable
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/containers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Running in Containers
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Security
 
     
   </span>
@@ -2071,6 +2133,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#known-libreoffice-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Known LibreOffice issues
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2279,6 +2352,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#known-libreoffice-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Known LibreOffice issues
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2427,6 +2511,11 @@ Note that the more office process you start, the more RAM will be consumed by Li
 <span class="p">}</span>
 </code></pre></div>
 </details>
+<details class="question">
+<summary>Can I merge several documents into one?</summary>
+<p>Yes, for text documents: the <code>DocumentInserterFilter</code> inserts another document at the end of the one being
+converted. See <a href="../getting-started/using-filters/#merging-documents">Merging documents</a>.</p>
+</details>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <details class="question">
 <summary>When converting from format X to Y, something in the output is not quite right. What happened?</summary>
@@ -2451,6 +2540,60 @@ lost. The webapp does not even attempt to provide a solution for this problem, b
 on your particular requirements. In some cases you may want to package HTML and images into a ZIP file in order
 to return a single file. In other cases you may want to copy HTML and images to a public path on your web server to
 access them directly. In all cases you should think about security implications. It's up to you.</p>
+</details>
+<details class="question">
+<summary>The conversion fails with <code>URL seems to be an unsupported one</code> (or <code>Could not open document</code>). Why?</summary>
+<p>The office installation is most probably incomplete: the module that handles the document is missing (Writer for
+text documents, Calc for spreadsheets, Impress for presentations). It happens with distribution packages that
+install only part of the office suite, for example the Apache OpenOffice Debian packages without <code>openoffice-calc</code>,
+<code>openoffice-writer</code> and their siblings. Install the missing modules; see
+<a href="../getting-started/containers/#install-a-complete-office">Running in containers</a>.</p>
+</details>
+<details class="question">
+<summary>The converted document has extra pages or a different layout. Why?</summary>
+<p>Most of the time, a font used by the document is not installed on the server, and LibreOffice replaced it with a
+font that has different metrics. Install the fonts the documents use, or metric-compatible ones; see
+<a href="../getting-started/containers/#install-the-fonts-your-documents-use">Install the fonts your documents use</a>.</p>
+</details>
+<details class="question">
+<summary>Zombie processes (<code>&lt;defunct&gt;</code>) pile up in my container. Why?</summary>
+<p>The helper processes of LibreOffice are re-parented to process 1 of the container when an office process stops.
+If process 1 is your Java application, nobody reaps them. Run the container with an init process (<code>docker run
+--init</code>, <code>init: true</code> in Docker Compose, or tini); see
+<a href="../getting-started/containers/#use-an-init-process">Use an init process</a>.</p>
+</details>
+<details class="question">
+<summary>A conversion sometimes fails with <code>Task did not complete within timeout</code>. What happens?</summary>
+<p>The office process did not finish the conversion within the <code>taskExecutionTimeout</code>. <strong>JODConverter</strong> then kills
+the process and starts a new one, so the following conversions work again. Common causes are a document that makes
+LibreOffice hang, a document too big for the timeout, or an overloaded machine. Check the <code>DEBUG</code> logs of the
+<code>org.jodconverter</code> logger, raise the timeout for big documents, and keep LibreOffice up to date. If a specific
+document always fails, try converting it with LibreOffice alone.</p>
+</details>
+<details class="question">
+<summary>The logs show <code>Entity: line 1: parser error : Document is empty</code> when an office process starts. Is it a problem?</summary>
+<p>No. LibreOffice writes this message on its error output when it starts with a new profile, and
+<strong>JODConverter</strong> relays the output of the office process to its logs. Conversions are not affected.</p>
+</details>
+<details class="question">
+<summary>Hidden sheets appear when converting a spreadsheet to PDF. How can I skip them?</summary>
+<p>Recent LibreOffice versions don't export hidden sheets. If they still appear, check the same export in LibreOffice
+itself: hidden rows or columns are a different setting from hidden sheets, and an old LibreOffice version may
+behave differently.</p>
+</details>
+<h2 id="known-libreoffice-issues">Known LibreOffice issues<a class="headerlink" href="#known-libreoffice-issues" title="Permanent link">&para;</a></h2>
+<p>These are LibreOffice behaviors that <strong>JODConverter</strong> can't change, with the workarounds known so far.</p>
+<details class="question">
+<summary>With <code>SinglePageSheets</code>, hyperlinks in the PDF point to local paths</summary>
+<p>When a spreadsheet is exported to PDF with the <code>SinglePageSheets</code> filter option, web hyperlinks may become local
+file paths. See the <a href="https://ask.libreoffice.org/t/web-hyperlinks-not-preserved-after-export-to-pdf/96762">LibreOffice discussion</a>
+and a <a href="https://github.com/jodconverter/jodconverter/issues/400">workaround shared by a user</a>.</p>
+</details>
+<details class="question">
+<summary>Converting a presentation to HTML no longer creates one image per slide</summary>
+<p>The HTML export of presentations changed in LibreOffice 24.2 and no longer produces the image-per-slide output of
+earlier versions (<a href="https://github.com/jodconverter/jodconverter/issues/396">#396</a>). Use another output format, or
+an earlier LibreOffice version if you depend on that output.</p>
 </details>
 <blockquote>
 <p>Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite
