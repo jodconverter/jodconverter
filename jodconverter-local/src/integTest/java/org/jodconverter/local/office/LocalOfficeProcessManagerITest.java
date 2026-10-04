@@ -30,6 +30,8 @@ import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_T
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -89,6 +91,38 @@ class LocalOfficeProcessManagerITest {
         manager.stop();
         assertStoppedAndDisconnected(manager);
         assertStoppedAndDisconnected(existingManager);
+      }
+    }
+
+    @Test
+    void whenPortUsedByAnotherProgram_ShouldThrowOfficeException() throws Exception {
+
+      // Another program (Tomcat for example) listening on the office port
+      try (ServerSocket otherProgram = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
+        final OfficeUrl url = new OfficeUrl(otherProgram.getLocalPort());
+        final LocalOfficeProcessManager manager =
+            new LocalOfficeProcessManager(
+                url,
+                LocalOfficeUtils.getDefaultOfficeHome(),
+                OfficeUtils.getDefaultWorkingDir(),
+                LocalOfficeUtils.findBestProcessManager(),
+                new ArrayList<>(),
+                null,
+                DEFAULT_PROCESS_TIMEOUT,
+                DEFAULT_PROCESS_RETRY_INTERVAL,
+                10L,
+                ExistingProcessAction.KILL,
+                true,
+                DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                new OfficeConnection(url));
+        try {
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(manager::start)
+              .withMessageContaining("is already used by another program");
+        } finally {
+          manager.stop();
+          assertStoppedAndDisconnected(manager);
+        }
       }
     }
 
