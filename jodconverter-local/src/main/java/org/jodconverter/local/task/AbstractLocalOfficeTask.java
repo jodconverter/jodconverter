@@ -108,13 +108,13 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
 
       final Object request = interactionRequest.getRequest();
 
-      if (request instanceof PasswordRequest) {
-        passwordRequest = (PasswordRequest) request;
+      if (request instanceof PasswordRequest pwdRequest) {
+        passwordRequest = pwdRequest;
         documentName = "NA";
-        if (request instanceof DocumentPasswordRequest) {
-          documentName = ((DocumentPasswordRequest) request).Name;
-        } else if (request instanceof DocumentMSPasswordRequest) {
-          documentName = ((DocumentMSPasswordRequest) request).Name;
+        if (request instanceof DocumentPasswordRequest docRequest) {
+          documentName = docRequest.Name;
+        } else if (request instanceof DocumentMSPasswordRequest msDocRequest) {
+          documentName = msDocRequest.Name;
         }
         LOGGER.debug("Password interaction detected for {}", documentName);
       }

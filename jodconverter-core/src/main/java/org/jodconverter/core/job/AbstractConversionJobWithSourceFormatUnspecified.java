@@ -95,10 +95,8 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   public @NonNull AbstractConversionJob to(
       final @NonNull OutputStream target, final boolean closeStream) {
 
-    if (officeManager instanceof TemporaryFileMaker) {
-      return toInternal(
-          new TargetDocumentSpecsFromOutputStream(
-              target, (TemporaryFileMaker) officeManager, closeStream));
+    if (officeManager instanceof TemporaryFileMaker fileMaker) {
+      return toInternal(new TargetDocumentSpecsFromOutputStream(target, fileMaker, closeStream));
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "

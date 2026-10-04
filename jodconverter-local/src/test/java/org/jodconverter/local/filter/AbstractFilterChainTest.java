@@ -96,10 +96,7 @@ class AbstractFilterChainTest {
                           })
                       .doFilter(mock(OfficeContext.class), mock(XComponent.class)))
           .withCauseExactlyInstanceOf(OfficeException.class)
-          .satisfies(
-              e -> {
-                assertThat(e.getCause()).hasMessage("Unsupported Filter");
-              });
+          .satisfies(e -> assertThat(e.getCause()).hasMessage("Unsupported Filter"));
     }
 
     @Test

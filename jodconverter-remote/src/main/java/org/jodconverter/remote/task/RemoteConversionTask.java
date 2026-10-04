@@ -69,7 +69,6 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
     this.target = target;
   }
 
-  @SuppressWarnings("unchecked")
   private void addPropertiesToBuilder(
       final URIBuilder uriBuilder,
       final String parameterPrefix,
@@ -81,9 +80,9 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
         final Object value = entry.getValue();
 
         // First, check if we are dealing with the FilterData property
-        if (FILTER_DATA.equalsIgnoreCase(key) && value instanceof Map) {
+        if (FILTER_DATA.equalsIgnoreCase(key) && value instanceof Map<?, ?> filterData) {
           // Add all the FilterData properties
-          for (final Map.Entry<String, Object> fdentry : ((Map<String, Object>) value).entrySet()) {
+          for (final Map.Entry<?, ?> fdentry : filterData.entrySet()) {
             uriBuilder.addParameter(
                 parameterPrefix + FILTER_DATA_PREFIX_PARAM + fdentry.getKey(),
                 fdentry.getValue().toString());

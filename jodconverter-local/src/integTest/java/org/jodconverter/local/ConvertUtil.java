@@ -115,15 +115,13 @@ public final class ConvertUtil {
 
         // Log the error.
         final String message = "Could not convert from " + sourceExt + " to " + targetExt + ".";
-        if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
-          final com.sun.star.task.ErrorCodeIOException ioEx =
-              (com.sun.star.task.ErrorCodeIOException) ex.getCause();
+        if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException ioEx) {
           if (LOGGER.isErrorEnabled()) {
-            LOGGER.error(message + " " + ioEx.getMessage(), ioEx);
+            LOGGER.error("{} {}", message, ioEx.getMessage(), ioEx);
           }
         } else {
           if (LOGGER.isErrorEnabled()) {
-            LOGGER.error(message + " " + ex.getMessage(), ex);
+            LOGGER.error("{} {}", message, ex.getMessage(), ex);
           }
         }
 
