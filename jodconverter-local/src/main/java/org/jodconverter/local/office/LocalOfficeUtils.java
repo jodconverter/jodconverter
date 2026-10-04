@@ -24,7 +24,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -226,7 +225,7 @@ public final class LocalOfficeUtils {
     if ((portNumbers == null || portNumbers.isEmpty())
         && (pipeNames == null || pipeNames.isEmpty())
         && (websocketUrls == null || websocketUrls.isEmpty())) {
-      return Collections.singletonList(new OfficeUrl(host, DEFAULT_PORT));
+      return List.of(new OfficeUrl(host, DEFAULT_PORT));
     }
 
     // Build the office URL list and return it

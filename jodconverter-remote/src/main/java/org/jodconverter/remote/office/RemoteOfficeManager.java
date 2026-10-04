@@ -21,7 +21,6 @@
 package org.jodconverter.remote.office;
 
 import java.io.File;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -103,7 +102,7 @@ public final class RemoteOfficeManager
                         connectTimeout,
                         socketTimeout,
                         taskExecutionTimeout))
-            .collect(Collectors.toList()));
+            .toList());
   }
 
   /**

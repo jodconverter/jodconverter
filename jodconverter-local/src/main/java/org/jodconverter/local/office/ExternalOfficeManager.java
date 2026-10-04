@@ -23,7 +23,6 @@ package org.jodconverter.local.office;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -127,7 +126,7 @@ public final class ExternalOfficeManager
                             connectRetryInterval,
                             connectFailFast,
                             new OfficeConnection(officeUrl))))
-            .collect(Collectors.toList()));
+            .toList());
   }
 
   /**
@@ -213,7 +212,7 @@ public final class ExternalOfficeManager
     public @NonNull Builder portNumbers(final int... portNumbers) {
 
       if (portNumbers != null && portNumbers.length != 0) {
-        this.portNumbers = Arrays.stream(portNumbers).boxed().collect(Collectors.toList());
+        this.portNumbers = Arrays.stream(portNumbers).boxed().toList();
       }
       return this;
     }

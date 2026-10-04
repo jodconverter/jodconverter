@@ -20,7 +20,6 @@
 
 package org.jodconverter.local;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,12 +82,8 @@ public final class LocalConverter extends AbstractConverter {
   private final FilterChain filterChain;
 
   static {
-    final Map<String, Object> loadProperties = new HashMap<>();
-    loadProperties.put("Hidden", true);
-    loadProperties.put("ReadOnly", true);
-    loadProperties.put("UpdateDocMode", UpdateDocMode.NO_UPDATE);
-
-    DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
+    DEFAULT_LOAD_PROPERTIES =
+        Map.of("Hidden", true, "ReadOnly", true, "UpdateDocMode", UpdateDocMode.NO_UPDATE);
   }
 
   /**

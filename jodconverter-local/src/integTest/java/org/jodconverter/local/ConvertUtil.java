@@ -23,7 +23,6 @@ package org.jodconverter.local;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -45,14 +44,14 @@ public final class ConvertUtil {
   // Input format to be skipped when testing al possible conversion.
   // They may fail on some OS or LO/OO version.
   private static final List<String> SKIPPED_INPUT_FORMAT =
-      Arrays.asList(
+      List.of(
           "odg", "svg", "fodg", "fodp", "fods", "fodt", "docx", "dotx", "xlsx", "xltx", "pptx",
           "potx");
 
   // Output formats to be skipped when testing al possible conversion.
   // They may fail on some OS or LO/OO version.
   private static final List<String> SKIPPED_OUTPUT_FORMAT =
-      Arrays.asList(
+      List.of(
           "svg", "png", "jpg", "jpeg", "tif", "tiff", "gif", "swf", "sxc", "sxi", "sxw", "fodg",
           "fodp", "fods", "fodt", "docx", "dotx", "xlsx", "xltx", "pptx", "potx", "xhtml");
 
