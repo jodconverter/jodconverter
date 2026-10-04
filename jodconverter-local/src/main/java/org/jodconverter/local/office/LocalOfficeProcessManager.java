@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -602,7 +603,29 @@ class LocalOfficeProcessManager {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("ProcessBuilder command: {}", String.join(" ", command));
     }
-    return new ProcessBuilder(command);
+    final ProcessBuilder processBuilder = new ProcessBuilder(command);
+
+    // The office process writes its temporary files (lu*.tmp) into the instance profile
+    // directory instead of the system temp directory. It only removes them on a graceful exit;
+    // this way, they are also removed with the profile directory when the process is killed.
+    final File tempDir = getInstanceTempDir();
+    if (!tempDir.isDirectory() && !tempDir.mkdirs()) {
+      LOGGER.warn("Could not create the temp directory '{}'", tempDir);
+    }
+    final Map<String, String> environment = processBuilder.environment();
+    environment.put("TMPDIR", tempDir.getAbsolutePath()); // Linux, macOS
+    environment.put("TMP", tempDir.getAbsolutePath()); // Windows
+    environment.put("TEMP", tempDir.getAbsolutePath()); // Windows
+    return processBuilder;
+  }
+
+  /**
+   * Gets the directory where the office process writes its temporary files.
+   *
+   * @return The temp directory, inside the instance profile directory.
+   */
+  /* default */ @NonNull File getInstanceTempDir() {
+    return new File(instanceProfileDir, "tmp");
   }
 
   /**

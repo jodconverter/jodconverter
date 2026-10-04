@@ -180,6 +180,47 @@ class LocalOfficeProcessManagerReflectTest {
   }
 
   @Test
+  void prepareProcessBuilder_ShouldPointTempDirectoriesIntoInstanceProfileDir(
+      final @TempDir File testFolder) {
+
+    final OfficeUrl url = new OfficeUrl(9999);
+    final LocalOfficeProcessManager manager =
+        new LocalOfficeProcessManager(
+            url,
+            testFolder,
+            testFolder,
+            LocalOfficeUtils.findBestProcessManager(),
+            new ArrayList<>(),
+            null,
+            DEFAULT_PROCESS_TIMEOUT,
+            DEFAULT_PROCESS_RETRY_INTERVAL,
+            DEFAULT_AFTER_START_PROCESS_DELAY,
+            DEFAULT_EXISTING_PROCESS_ACTION,
+            DEFAULT_START_FAIL_FAST,
+            DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            TestOfficeConnection.prepareTest(url));
+    ReflectionTestUtils.setField(
+        manager, "descriptor", OfficeDescriptor.fromExecutablePath("soffice"));
+
+    final ProcessBuilder processBuilder =
+        ReflectionTestUtils.invokeMethod(manager, "prepareProcessBuilder", "acceptString");
+
+    final File tempDir = manager.getInstanceTempDir();
+    assertThat(tempDir)
+        .isDirectory()
+        .hasParent((File) ReflectionTestUtils.getField(manager, "instanceProfileDir"));
+    assertThat(processBuilder)
+        .isNotNull()
+        .extracting(ProcessBuilder::environment)
+        .satisfies(
+            env ->
+                assertThat(env)
+                    .containsEntry("TMPDIR", tempDir.getAbsolutePath())
+                    .containsEntry("TMP", tempDir.getAbsolutePath())
+                    .containsEntry("TEMP", tempDir.getAbsolutePath()));
+  }
+
+  @Test
   void forciblyTerminateProcess_WhenNotStarted_ShouldDoNothing() {
 
     final OfficeUrl url = new OfficeUrl(9999);
