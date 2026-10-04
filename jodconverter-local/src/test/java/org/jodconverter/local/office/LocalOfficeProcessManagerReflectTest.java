@@ -35,6 +35,8 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -218,6 +220,71 @@ class LocalOfficeProcessManagerReflectTest {
                     .containsEntry("TMPDIR", tempDir.getAbsolutePath())
                     .containsEntry("TMP", tempDir.getAbsolutePath())
                     .containsEntry("TEMP", tempDir.getAbsolutePath()));
+  }
+
+  @Test
+  void checkPortAvailable_WhenAnotherProgramListens_ShouldThrowOfficeException(
+      final @TempDir File testFolder) throws IOException {
+
+    // Another program listening on the port (Tomcat for example)
+    try (ServerSocket otherProgram = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
+      final int port = otherProgram.getLocalPort();
+      final LocalOfficeProcessManager manager = newManager(new OfficeUrl(port), testFolder);
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(
+              () -> {
+                try {
+                  ReflectionTestUtils.invokeMethod(manager, "checkPortAvailable", "acceptString");
+                } catch (UndeclaredThrowableException e) {
+                  throw e.getUndeclaredThrowable();
+                }
+              })
+          .withMessageStartingWith(
+              "Port " + port + " on host '127.0.0.1' is already used by another program");
+    }
+  }
+
+  @Test
+  void checkPortAvailable_WhenPortFree_ShouldDoNothing(final @TempDir File testFolder)
+      throws IOException {
+
+    final int port;
+    try (ServerSocket socket = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
+      port = socket.getLocalPort();
+    }
+    final LocalOfficeProcessManager manager = newManager(new OfficeUrl(port), testFolder);
+
+    assertThatCode(
+            () -> ReflectionTestUtils.invokeMethod(manager, "checkPortAvailable", "acceptString"))
+        .doesNotThrowAnyException();
+  }
+
+  @Test
+  void checkPortAvailable_WhenPipe_ShouldDoNothing(final @TempDir File testFolder) {
+
+    final LocalOfficeProcessManager manager = newManager(new OfficeUrl("jodconverter"), testFolder);
+
+    assertThatCode(
+            () -> ReflectionTestUtils.invokeMethod(manager, "checkPortAvailable", "acceptString"))
+        .doesNotThrowAnyException();
+  }
+
+  private static LocalOfficeProcessManager newManager(final OfficeUrl url, final File folder) {
+    return new LocalOfficeProcessManager(
+        url,
+        folder,
+        folder,
+        LocalOfficeUtils.findBestProcessManager(),
+        new ArrayList<>(),
+        null,
+        DEFAULT_PROCESS_TIMEOUT,
+        DEFAULT_PROCESS_RETRY_INTERVAL,
+        DEFAULT_AFTER_START_PROCESS_DELAY,
+        DEFAULT_EXISTING_PROCESS_ACTION,
+        DEFAULT_START_FAIL_FAST,
+        DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+        TestOfficeConnection.prepareTest(url));
   }
 
   @Test

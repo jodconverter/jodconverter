@@ -25,6 +25,8 @@ import static org.jodconverter.local.process.ProcessManager.PID_UNKNOWN;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.DisposedException;
+import com.sun.star.lib.uno.helper.UnoUrl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +66,9 @@ class LocalOfficeProcessManager {
   // process that crashed is already gone; one that is still running after losing its connection
   // (a disposed bridge) is not worth waiting the whole process timeout for.
   private static final long LOST_CONNECTION_EXIT_TIMEOUT = 2_000L;
+
+  // How long to wait for a connection when checking whether a port is already used.
+  private static final int PORT_CHECK_TIMEOUT = 1_000;
 
   private VerboseProcess process;
   private long pid = PID_UNKNOWN;
@@ -171,7 +177,7 @@ class LocalOfficeProcessManager {
     if (startFailFast) {
       // Submit the start task to the executor.
       LOGGER.debug("Submitting start task...");
-      final Future<Void> future = executor.submit(() -> startProcessAndConnect(false));
+      final Future<Void> future = executor.submit(() -> startProcessAndConnect(false, true));
 
       // Wait for completion of the task.
       try {
@@ -193,7 +199,7 @@ class LocalOfficeProcessManager {
       executor.execute(
           () -> {
             try {
-              startProcessAndConnect(false);
+              startProcessAndConnect(false, true);
             } catch (OfficeException ex) {
               LOGGER.error("Could not start the office process.", ex);
             }
@@ -334,8 +340,28 @@ class LocalOfficeProcessManager {
    * @throws OfficeException If the office process cannot be started, or we are unable to connect to
    *     the started process.
    */
-  @SuppressWarnings("SameReturnValue")
   private Void startProcessAndConnect(final boolean restart) throws OfficeException {
+    return startProcessAndConnect(restart, false);
+  }
+
+  /**
+   * Starts the office process managed by this manager and connect to the started process.
+   *
+   * <p>This function is always called into tasks that are executed by a single thread {@link
+   * ExecutorService}.
+   *
+   * @param restart Indicates whether it is a fresh start or a restart. See {@link
+   *     #startProcessAndConnect(boolean)}.
+   * @param checkPortAvailable If {@code true}, fails right away when the port of a socket
+   *     connection is already used by another program. Only done on the first start: on a restart,
+   *     the previous office process may still be releasing the port.
+   * @return {@code null}. So it could be used in a {@link java.util.concurrent.Callable}.
+   * @throws OfficeException If the office process cannot be started, or we are unable to connect to
+   *     the started process.
+   */
+  @SuppressWarnings("SameReturnValue")
+  private Void startProcessAndConnect(final boolean restart, final boolean checkPortAvailable)
+      throws OfficeException {
 
     // Reinitialize pid and process.
     pid = PID_UNKNOWN;
@@ -359,6 +385,13 @@ class LocalOfficeProcessManager {
       return null;
     }
 
+    // No office process uses the connection string. If another program already listens on the
+    // port, the office process we would start cannot listen on it, and we would try to connect
+    // to that other program instead.
+    if (checkPortAvailable) {
+      checkPortAvailable(acceptString);
+    }
+
     // Prepare the instance directory only on first start
     if (!restart) {
       prepareInstanceProfileDir();
@@ -374,6 +407,35 @@ class LocalOfficeProcessManager {
     }
 
     return null;
+  }
+
+  /**
+   * Fails if the port of a socket connection is already used by another program.
+   *
+   * @param acceptString The connection string (accept argument) of the office process.
+   * @throws OfficeException If another program listens on the port.
+   */
+  private void checkPortAvailable(final String acceptString) throws OfficeException {
+
+    final UnoUrl unoUrl = officeUrl.unoUrl();
+    if (!"socket".equalsIgnoreCase(unoUrl.getConnection())) {
+      return; // Pipes and websockets have no port
+    }
+    final Map<String, String> parameters = unoUrl.getConnectionParameters();
+    final String host = parameters.get("host");
+    final int port = Integer.parseInt(parameters.get("port"));
+
+    try (Socket socket = new Socket()) {
+      socket.connect(new InetSocketAddress(host, port), PORT_CHECK_TIMEOUT);
+    } catch (IOException ex) {
+      // Nothing listens on the port: the office process can use it.
+      return;
+    }
+    throw new OfficeException(
+        String.format(
+            "Port %d on host '%s' is already used by another program; cannot start an office"
+                + " process with --accept '%s'",
+            port, host, acceptString));
   }
 
   private void executeStartProcessAndConnect(
