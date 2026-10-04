@@ -32,6 +32,49 @@ import org.junit.jupiter.api.Test;
 /** Contains tests for the {@link JsonDocumentFormatRegistry} class. */
 class JsonDocumentFormatRegistryTest {
 
+  @Test
+  void create_WithNumericProperties_ShouldKeepWholeNumbersAsIntegers() {
+
+    final JsonDocumentFormatRegistry registry =
+        JsonDocumentFormatRegistry.create(
+            """
+            [
+              {
+                "name": "Portable Document Format",
+                "extensions": ["pdf"],
+                "mediaType": "application/pdf",
+                "loadProperties": { "Version": 2 },
+                "storeProperties": {
+                  "TEXT": {
+                    "FilterName": "writer_pdf_Export",
+                    "FilterData": {
+                      "SelectPdfVersion": 15,
+                      "Negative": -3,
+                      "Big": 4294967296,
+                      "Ratio": 1.5,
+                      "Exponent": 1e3
+                    }
+                  }
+                }
+              }
+            ]""");
+
+    final DocumentFormat format = registry.getFormatByExtension("pdf");
+    assertThat(format).isNotNull();
+    assertThat(format.getLoadProperties()).containsEntry("Version", 2);
+    assertThat(format.getStoreProperties(DocumentFamily.TEXT))
+        .extractingByKey("FilterData")
+        .isInstanceOfSatisfying(
+            Map.class,
+            filterData ->
+                assertThat(filterData)
+                    .containsEntry("SelectPdfVersion", 15)
+                    .containsEntry("Negative", -3)
+                    .containsEntry("Big", 4_294_967_296L)
+                    .containsEntry("Ratio", 1.5)
+                    .containsEntry("Exponent", 1000.0));
+  }
+
   /** Test custom properties. */
   @Test
   void create_WithCustomLoadProperties_CustomPropertiesAppliedSuccessfully() throws IOException {

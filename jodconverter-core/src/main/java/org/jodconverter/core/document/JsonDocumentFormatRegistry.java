@@ -23,6 +23,7 @@ package org.jodconverter.core.document;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DocumentFormat.Builder;
@@ -104,6 +106,23 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
     super();
   }
 
+  // Reads a JSON number as an Integer, or a Long when it is too big for an Integer. A number
+  // with a fraction or an exponent is read as a Double.
+  private static Number readNumber(final JsonReader in) throws IOException {
+
+    final String value = in.nextString();
+    if (value.indexOf('.') < 0 && value.indexOf('e') < 0 && value.indexOf('E') < 0) {
+      final BigInteger integer = new BigInteger(value);
+      if (integer.bitLength() < Integer.SIZE) {
+        return integer.intValue();
+      }
+      if (integer.bitLength() < Long.SIZE) {
+        return integer.longValue();
+      }
+    }
+    return Double.valueOf(value);
+  }
+
   // Fill the registry from the given JSON source
   private void readJsonArray(
       final String source, final Map<String, DocumentFormatProperties> customProperties) {
@@ -111,6 +130,9 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
     final GsonBuilder gsonBuilder = new GsonBuilder();
     gsonBuilder.registerTypeAdapter(
         DocumentFormat.class, new DocumentFormat.DocumentFormatInstanceCreator());
+    // Gson reads every number of a property map as a Double by default. Office ignores a
+    // property of an integer type given as a double, so whole numbers stay integers.
+    gsonBuilder.setObjectToNumberStrategy(JsonDocumentFormatRegistry::readNumber);
     final Gson gson = gsonBuilder.create();
 
     // Deserialization

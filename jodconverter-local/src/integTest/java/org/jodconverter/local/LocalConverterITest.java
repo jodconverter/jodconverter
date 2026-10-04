@@ -39,6 +39,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.document.DocumentFormatRegistry;
+import org.jodconverter.core.document.JsonDocumentFormatRegistry;
+import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.task.LoadDocumentMode;
@@ -62,6 +65,51 @@ class LocalConverterITest {
 
       assertThat(outputFile).isFile();
       assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withNumericFilterDataFromJsonRegistry_ShouldApplyIt(
+        final @TempDir File testFolder, final OfficeManager manager)
+        throws IOException, OfficeException {
+
+      // SelectPdfVersion 15 = PDF 1.5; LibreOffice writes PDF 1.7 when it ignores the value
+      final DocumentFormatRegistry registry =
+          JsonDocumentFormatRegistry.create(
+              """
+              [
+                {
+                  "name": "Microsoft Word 97-2003",
+                  "extensions": ["doc"],
+                  "mediaType": "application/msword",
+                  "inputFamily": "TEXT"
+                },
+                {
+                  "name": "Portable Document Format",
+                  "extensions": ["pdf"],
+                  "mediaType": "application/pdf",
+                  "storeProperties": {
+                    "TEXT": {
+                      "FilterName": "writer_pdf_Export",
+                      "FilterData": { "SelectPdfVersion": 15 }
+                    }
+                  }
+                }
+              ]""");
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      LocalConverter.builder()
+          .officeManager(manager)
+          .formatRegistry(registry)
+          .build()
+          .convert(SOURCE_FILE)
+          .to(outputFile)
+          .execute();
+
+      final byte[] header = new byte[8];
+      try (InputStream in = Files.newInputStream(outputFile.toPath())) {
+        assertThat(in.read(header)).isEqualTo(header.length);
+      }
+      assertThat(new String(header, StandardCharsets.US_ASCII)).isEqualTo("%PDF-1.5");
     }
 
     @Test
