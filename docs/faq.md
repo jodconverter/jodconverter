@@ -147,6 +147,11 @@ class: hide-toc
     }
     ```
 
+??? question "Can I merge several documents into one?"
+
+    Yes, for text documents: the `DocumentInserterFilter` inserts another document at the end of the one being
+    converted. See [Merging documents](getting-started/using-filters.md#merging-documents).
+
 ## Troubleshooting
 
 ??? question "When converting from format X to Y, something in the output is not quite right. What happened?"
@@ -172,5 +177,61 @@ class: hide-toc
     on your particular requirements. In some cases you may want to package HTML and images into a ZIP file in order
     to return a single file. In other cases you may want to copy HTML and images to a public path on your web server to
     access them directly. In all cases you should think about security implications. It's up to you.
+
+??? question "The conversion fails with `URL seems to be an unsupported one` (or `Could not open document`). Why?"
+
+    The office installation is most probably incomplete: the module that handles the document is missing (Writer for
+    text documents, Calc for spreadsheets, Impress for presentations). It happens with distribution packages that
+    install only part of the office suite, for example the Apache OpenOffice Debian packages without `openoffice-calc`,
+    `openoffice-writer` and their siblings. Install the missing modules; see
+    [Running in containers](getting-started/containers.md#install-a-complete-office).
+
+??? question "The converted document has extra pages or a different layout. Why?"
+
+    Most of the time, a font used by the document is not installed on the server, and LibreOffice replaced it with a
+    font that has different metrics. Install the fonts the documents use, or metric-compatible ones; see
+    [Install the fonts your documents use](getting-started/containers.md#install-the-fonts-your-documents-use).
+
+??? question "Zombie processes (`<defunct>`) pile up in my container. Why?"
+
+    The helper processes of LibreOffice are re-parented to process 1 of the container when an office process stops.
+    If process 1 is your Java application, nobody reaps them. Run the container with an init process (`docker run
+    --init`, `init: true` in Docker Compose, or tini); see
+    [Use an init process](getting-started/containers.md#use-an-init-process).
+
+??? question "A conversion sometimes fails with `Task did not complete within timeout`. What happens?"
+
+    The office process did not finish the conversion within the `taskExecutionTimeout`. **JODConverter** then kills
+    the process and starts a new one, so the following conversions work again. Common causes are a document that makes
+    LibreOffice hang, a document too big for the timeout, or an overloaded machine. Check the `DEBUG` logs of the
+    `org.jodconverter` logger, raise the timeout for big documents, and keep LibreOffice up to date. If a specific
+    document always fails, try converting it with LibreOffice alone.
+
+??? question "The logs show `Entity: line 1: parser error : Document is empty` when an office process starts. Is it a problem?"
+
+    No. LibreOffice writes this message on its error output when it starts with a new profile, and
+    **JODConverter** relays the output of the office process to its logs. Conversions are not affected.
+
+??? question "Hidden sheets appear when converting a spreadsheet to PDF. How can I skip them?"
+
+    Recent LibreOffice versions don't export hidden sheets. If they still appear, check the same export in LibreOffice
+    itself: hidden rows or columns are a different setting from hidden sheets, and an old LibreOffice version may
+    behave differently.
+
+## Known LibreOffice issues
+
+These are LibreOffice behaviors that **JODConverter** can't change, with the workarounds known so far.
+
+??? question "With `SinglePageSheets`, hyperlinks in the PDF point to local paths"
+
+    When a spreadsheet is exported to PDF with the `SinglePageSheets` filter option, web hyperlinks may become local
+    file paths. See the [LibreOffice discussion](https://ask.libreoffice.org/t/web-hyperlinks-not-preserved-after-export-to-pdf/96762)
+    and a [workaround shared by a user](https://github.com/jodconverter/jodconverter/issues/400).
+
+??? question "Converting a presentation to HTML no longer creates one image per slide"
+
+    The HTML export of presentations changed in LibreOffice 24.2 and no longer produces the image-per-slide output of
+    earlier versions ([#396](https://github.com/jodconverter/jodconverter/issues/396)). Use another output format, or
+    an earlier LibreOffice version if you depend on that output.
 
 --8<-- "note.md"
