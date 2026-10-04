@@ -504,6 +504,29 @@ class AbstractOfficeManagerPoolTest {
   }
 
   @Nested
+  class GetTempDir {
+
+    @Test
+    void shouldBeCreatedOnStartAndDeletedOnStop(final @TempDir File testFolder)
+        throws OfficeException {
+
+      final SimpleOfficeManager manager =
+          SimpleOfficeManager.builder().workingDir(testFolder).build();
+      final File tempDir = manager.getTempDir();
+      assertThat(tempDir).hasParent(testFolder).doesNotExist();
+
+      manager.start();
+      try {
+        assertThat(tempDir).isDirectory();
+        assertThat(manager.makeTemporaryFile("txt")).hasParent(tempDir);
+      } finally {
+        manager.stop();
+      }
+      assertThat(tempDir).doesNotExist();
+    }
+  }
+
+  @Nested
   class MakeTemporaryFile {
 
     @Test
