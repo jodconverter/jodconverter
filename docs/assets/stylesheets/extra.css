@@ -35,11 +35,9 @@
   --md-accent-fg-color--transparent: #00b5fd1a;
   --md-accent-bg-color: #fff;
   --md-typeset-a-color: #0077b3;
-
   --md-code-bg-color: #f2f7fa;
   --md-code-hl-color: #00b5fd26;
   --md-typeset-mark-color: #f0840033;
-
   --jod-surface: #f5f9fc;
   --jod-border: #d9e6ee;
   --jod-heading: var(--jod-navy);
@@ -54,23 +52,19 @@
   --md-primary-fg-color--dark: #021622;
   --md-primary-bg-color: #fff;
   --md-primary-bg-color--light: #ffffffb3;
-
   --md-default-bg-color: #061722;
   --md-default-bg-color--light: #061722b3;
   --md-default-bg-color--lighter: #0617224d;
   --md-default-bg-color--lightest: #0617221f;
-
   --md-accent-fg-color: var(--jod-sky);
   --md-accent-fg-color--transparent: #00b5fd1f;
   --md-accent-bg-color: #061722;
   --md-typeset-a-color: #45c9ff;
-
   --md-code-bg-color: #0b2433;
   --md-code-hl-color: #00b5fd33;
   --md-typeset-mark-color: #f0840040;
   --md-footer-bg-color: #041219;
   --md-footer-bg-color--dark: #030d13;
-
   --jod-surface: #0a1f2d;
   --jod-border: #16364a;
   --jod-heading: #f2f8fb;
@@ -83,7 +77,7 @@
   /* Light text and icons on the navy background */
   --md-default-fg-color: #ffffffeb;
   --md-default-fg-color--light: #ffffffb8;
-  --md-default-fg-color--lighter: #ffffff66;
+  --md-default-fg-color--lighter: #fff6;
   --md-default-fg-color--lightest: #ffffff24;
   --md-accent-fg-color: var(--jod-sky);
   --md-typeset-a-color: var(--jod-sky);
@@ -209,6 +203,7 @@
 .md-typeset .admonition,
 .md-typeset details {
   --jod-adm: var(--jod-sky);
+
   border: 0.05rem solid color-mix(in srgb, var(--jod-adm) 35%, transparent);
   border-left: 0.2rem solid var(--jod-adm);
   border-radius: 0.4rem;
@@ -250,8 +245,8 @@
 .md-footer-meta {
   --md-default-fg-color: #ffffffeb;
   --md-default-fg-color--light: #ffffffa6;
-  --md-default-fg-color--lighter: #ffffff66;
-  --md-footer-fg-color--lighter: #ffffff66;
+  --md-default-fg-color--lighter: #fff6;
+  --md-footer-fg-color--lighter: #fff6;
 
   color: var(--md-default-fg-color--light);
   background-color: var(--jod-navy);
