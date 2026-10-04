@@ -286,7 +286,7 @@ public final class FileUtils {
 
     AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
 
-    return new String(Files.readAllBytes(srcPath), encoding);
+    return Files.readString(srcPath, encoding);
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

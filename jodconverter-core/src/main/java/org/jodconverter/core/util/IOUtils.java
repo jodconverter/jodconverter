@@ -20,21 +20,15 @@
 
 package org.jodconverter.core.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.nio.charset.Charset;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /** Contains IO helper functions. */
 public final class IOUtils {
-
-  // buffer size used for reading and writing
-  private static final int BUFFER_SIZE = 8192;
 
   /**
    * Reads all char from an input stream and writes them to a string.
@@ -49,24 +43,11 @@ public final class IOUtils {
     AssertUtils.notNull(in, "in must not be null");
     AssertUtils.notNull(encoding, "encoding must not be null");
 
-    final StringBuilder builder = new StringBuilder();
-    try (Reader source = new BufferedReader(new InputStreamReader(in, encoding))) {
-
-      // Inspired from private java.nio.file.Files.copy(InputStream, OutputStream)
-      // long nread = 0L;
-      final char[] buf = new char[BUFFER_SIZE];
-      int n;
-      while ((n = source.read(buf)) > 0) { // NOPMD - Allow assignment here
-        builder.append(buf, 0, n);
-        // nread += n;
-      }
-      // LOGGER.debug("Total number of characters read: {}", nread);
+    try (in) {
+      return new String(in.readAllBytes(), encoding);
     }
-
-    return builder.toString();
   }
 
-  // Taken from private java.nio.file.Files.copy(InputStream, OutputStream)
   /**
    * Reads all bytes from an input stream and writes them to an output stream.
    *
@@ -80,14 +61,7 @@ public final class IOUtils {
     AssertUtils.notNull(in, "in must not be null");
     AssertUtils.notNull(out, "out must not be null");
 
-    long nread = 0L;
-    final byte[] buf = new byte[BUFFER_SIZE];
-    int n;
-    while ((n = in.read(buf)) > 0) { // NOPMD - Allow assignment here
-      out.write(buf, 0, n);
-      nread += n;
-    }
-    return nread;
+    return in.transferTo(out);
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

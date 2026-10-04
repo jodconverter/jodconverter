@@ -99,13 +99,13 @@ class FileUtilsTest {
         final File to = new File(dir, "to.txt");
         to.createNewFile();
 
-        Files.write(from.toPath(), "Whatever".getBytes(encoding));
-        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
+        Files.writeString(from.toPath(), "Whatever", encoding);
+        Files.writeString(to.toPath(), "Yihaa", encoding);
 
         assertThatExceptionOfType(FileAlreadyExistsException.class)
             .isThrownBy(() -> FileUtils.copyFile(from, to));
 
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Yihaa");
+        assertThat(Files.readString(to.toPath(), encoding)).isEqualTo("Yihaa");
       }
     }
 
@@ -125,11 +125,11 @@ class FileUtilsTest {
         from.createNewFile();
         final File to = new File(dir, "to.txt");
 
-        Files.write(from.toPath(), test.getBytes(encoding));
+        Files.writeString(from.toPath(), test, encoding);
 
         FileUtils.copyFile(from, to);
 
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo(test);
+        assertThat(Files.readString(to.toPath(), encoding)).isEqualTo(test);
         assertThat(from.lastModified()).isEqualTo(to.lastModified());
       }
 
@@ -146,12 +146,12 @@ class FileUtilsTest {
         final File to = new File(dir, "to.txt");
         to.createNewFile();
 
-        Files.write(from.toPath(), "Whatever".getBytes(encoding));
-        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
+        Files.writeString(from.toPath(), "Whatever", encoding);
+        Files.writeString(to.toPath(), "Yihaa", encoding);
 
         FileUtils.copyFile(from, to, StandardCopyOption.REPLACE_EXISTING);
 
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Whatever");
+        assertThat(Files.readString(to.toPath(), encoding)).isEqualTo("Whatever");
         assertThat(from.lastModified()).isEqualTo(to.lastModified());
       }
     }
@@ -219,13 +219,13 @@ class FileUtilsTest {
         final File to = new File(toDir, "from.txt");
         to.createNewFile();
 
-        Files.write(from.toPath(), "Whatever".getBytes(encoding));
-        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
+        Files.writeString(from.toPath(), "Whatever", encoding);
+        Files.writeString(to.toPath(), "Yihaa", encoding);
 
         assertThatExceptionOfType(FileAlreadyExistsException.class)
             .isThrownBy(() -> FileUtils.copyFileToDirectory(from, toDir));
 
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Yihaa");
+        assertThat(Files.readString(to.toPath(), encoding)).isEqualTo("Yihaa");
       }
     }
 
@@ -246,12 +246,12 @@ class FileUtilsTest {
         final File toDir = new File(dir, "to");
         toDir.mkdir();
 
-        Files.write(from.toPath(), test.getBytes(encoding));
+        Files.writeString(from.toPath(), test, encoding);
 
         FileUtils.copyFileToDirectory(from, toDir);
 
         final File to = new File(toDir, "from.txt");
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo(test);
+        assertThat(Files.readString(to.toPath(), encoding)).isEqualTo(test);
         assertThat(from.lastModified()).isEqualTo(to.lastModified());
       }
 
@@ -268,12 +268,12 @@ class FileUtilsTest {
         from.createNewFile();
         final File toDir = new File(new File(new File(new File(dir, "to"), "to"), "to"), "to");
 
-        Files.write(from.toPath(), test.getBytes(encoding));
+        Files.writeString(from.toPath(), test, encoding);
 
         FileUtils.copyFileToDirectory(from, toDir);
 
         final File to = new File(toDir, "from.txt");
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo(test);
+        assertThat(Files.readString(to.toPath(), encoding)).isEqualTo(test);
         assertThat(from.lastModified()).isEqualTo(to.lastModified());
       }
 
@@ -292,12 +292,12 @@ class FileUtilsTest {
         final File to = new File(toDir, "from.txt");
         to.createNewFile();
 
-        Files.write(from.toPath(), "Whatever".getBytes(encoding));
-        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
+        Files.writeString(from.toPath(), "Whatever", encoding);
+        Files.writeString(to.toPath(), "Yihaa", encoding);
 
         FileUtils.copyFileToDirectory(from, toDir, StandardCopyOption.REPLACE_EXISTING);
 
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Whatever");
+        assertThat(Files.readString(to.toPath(), encoding)).isEqualTo("Whatever");
         assertThat(from.lastModified()).isEqualTo(to.lastModified());
       }
     }
@@ -406,20 +406,20 @@ class FileUtilsTest {
         from3.createNewFile();
         final File toDir = new File(testFolder, "to");
 
-        Files.write(from1.toPath(), "Whatever1".getBytes(encoding));
-        Files.write(from2.toPath(), "Whatever2".getBytes(encoding));
-        Files.write(from3.toPath(), "Whatever3".getBytes(encoding));
+        Files.writeString(from1.toPath(), "Whatever1", encoding);
+        Files.writeString(from2.toPath(), "Whatever2", encoding);
+        Files.writeString(from3.toPath(), "Whatever3", encoding);
 
         FileUtils.copyDirectory(from, toDir);
 
         final File to1 = new File(toDir, "from1.txt");
-        assertThat(new String(Files.readAllBytes(to1.toPath()), encoding)).isEqualTo("Whatever1");
+        assertThat(Files.readString(to1.toPath(), encoding)).isEqualTo("Whatever1");
         assertThat(from1.lastModified()).isEqualTo(to1.lastModified());
         final File to2 = new File(toDir, "from2/from2.txt");
-        assertThat(new String(Files.readAllBytes(to2.toPath()), encoding)).isEqualTo("Whatever2");
+        assertThat(Files.readString(to2.toPath(), encoding)).isEqualTo("Whatever2");
         assertThat(from2.lastModified()).isEqualTo(to2.lastModified());
         final File to3 = new File(toDir, "from3/from3/from1.txt");
-        assertThat(new String(Files.readAllBytes(to3.toPath()), encoding)).isEqualTo("Whatever3");
+        assertThat(Files.readString(to3.toPath(), encoding)).isEqualTo("Whatever3");
         assertThat(from3.lastModified()).isEqualTo(to3.lastModified());
       }
 
@@ -442,20 +442,20 @@ class FileUtilsTest {
         final File toDir = new File(testFolder, "to");
         toDir.mkdir();
 
-        Files.write(from1.toPath(), "Whatever1".getBytes(encoding));
-        Files.write(from2.toPath(), "Whatever2".getBytes(encoding));
-        Files.write(from3.toPath(), "Whatever3".getBytes(encoding));
+        Files.writeString(from1.toPath(), "Whatever1", encoding);
+        Files.writeString(from2.toPath(), "Whatever2", encoding);
+        Files.writeString(from3.toPath(), "Whatever3", encoding);
 
         FileUtils.copyDirectory(from, toDir, StandardCopyOption.REPLACE_EXISTING);
 
         final File to1 = new File(toDir, "from1.txt");
-        assertThat(new String(Files.readAllBytes(to1.toPath()), encoding)).isEqualTo("Whatever1");
+        assertThat(Files.readString(to1.toPath(), encoding)).isEqualTo("Whatever1");
         assertThat(from1.lastModified()).isEqualTo(to1.lastModified());
         final File to2 = new File(toDir, "from2/from2.txt");
-        assertThat(new String(Files.readAllBytes(to2.toPath()), encoding)).isEqualTo("Whatever2");
+        assertThat(Files.readString(to2.toPath(), encoding)).isEqualTo("Whatever2");
         assertThat(from2.lastModified()).isEqualTo(to2.lastModified());
         final File to3 = new File(toDir, "from3/from3/from1.txt");
-        assertThat(new String(Files.readAllBytes(to3.toPath()), encoding)).isEqualTo("Whatever3");
+        assertThat(Files.readString(to3.toPath(), encoding)).isEqualTo("Whatever3");
         assertThat(from3.lastModified()).isEqualTo(to3.lastModified());
       }
     }
@@ -759,7 +759,7 @@ class FileUtilsTest {
         final File file = new File(dir, "file.txt");
         file.createNewFile();
 
-        Files.write(file.toPath(), test.getBytes(encoding));
+        Files.writeString(file.toPath(), test, encoding);
 
         assertThat(FileUtils.readFileToString(file, encoding)).isEqualTo(test);
       }
