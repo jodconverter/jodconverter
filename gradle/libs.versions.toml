@@ -83,7 +83,7 @@ checkstyle = "12.3.1"
 
 # Latest version -> https://pmd.github.io
 # Stay aligned with codacy version (log in into codacy and go to the "code patterns" menu)
-pmd = "6.55.0"     # Stay aligned with Codacy
+pmd = "7.28.0"
 
 # Coveralls plugin
 # Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
