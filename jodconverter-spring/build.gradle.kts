@@ -10,7 +10,7 @@ plugins {
 dependencies {
     implementation(project(":jodconverter-local"))
 
-    implementation(libs.slf4j.log4j)
+    implementation(libs.slf4j.api)
     implementation(libs.spring.core)
     implementation(libs.spring.context)
 
