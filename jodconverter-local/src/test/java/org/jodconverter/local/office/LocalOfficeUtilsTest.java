@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -102,6 +103,24 @@ class LocalOfficeUtilsTest {
 
       assertThat(LocalOfficeUtils.findBestProcessManager())
           .isEqualTo(WindowsProcessManager.getDefault());
+    }
+  }
+
+  @Nested
+  class FindFreePorts {
+
+    @Test
+    void shouldReturnDistinctPortsThatCanBeBound() throws IOException {
+
+      final List<Integer> ports = LocalOfficeUtils.findFreePorts(3);
+
+      assertThat(ports).hasSize(3).doesNotHaveDuplicates().allMatch(port -> port > 0);
+      for (final int port : ports) {
+        // The ports were released: they can be used again
+        try (ServerSocket socket = new ServerSocket(port)) {
+          assertThat(socket.getLocalPort()).isEqualTo(port);
+        }
+      }
     }
   }
 

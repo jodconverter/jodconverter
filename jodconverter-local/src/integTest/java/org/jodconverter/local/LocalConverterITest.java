@@ -44,6 +44,7 @@ import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.util.FileUtils;
+import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.task.LoadDocumentMode;
 
 /** Contains tests for the {@link LocalConverter} class. */
@@ -62,6 +63,23 @@ class LocalConverterITest {
 
       assertThatCode(() -> converter.convert(SOURCE_FILE).to(outputFile).execute())
           .doesNotThrowAnyException();
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withPoolSize_ShouldStartProcessesOnFreePortsAndConvert(final @TempDir File testFolder)
+        throws OfficeException {
+
+      final File outputFile = new File(testFolder, "out.pdf");
+      final OfficeManager manager = LocalOfficeManager.builder().poolSize(2).build();
+      manager.start();
+      try {
+        LocalConverter.make(manager).convert(SOURCE_FILE).to(outputFile).execute();
+      } finally {
+        manager.stop();
+      }
 
       assertThat(outputFile).isFile();
       assertThat(outputFile.length()).isGreaterThan(0L);

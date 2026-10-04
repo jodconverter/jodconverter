@@ -161,6 +161,7 @@ public final class LocalOfficeManager
     private List<String> pipeNames;
     private String hostName = DEFAULT_HOSTNAME;
     private List<Integer> portNumbers;
+    private Integer poolSize;
     private File officeHome;
     private ProcessManager processManager;
     private List<String> runAsArgs;
@@ -208,6 +209,15 @@ public final class LocalOfficeManager
         }
       } else {
         LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
+      }
+
+      // A pool size alone: use that many free ports.
+      if (poolSize != null) {
+        AssertUtils.isTrue(
+            portNumbers == null && pipeNames == null,
+            "poolSize cannot be used with portNumbers or pipeNames:"
+                + " the pool size comes from one or the other");
+        portNumbers = LocalOfficeUtils.findFreePorts(poolSize);
       }
 
       // Build the office URLs
@@ -275,6 +285,28 @@ public final class LocalOfficeManager
 
       if (portNumbers != null && portNumbers.length != 0) {
         this.portNumbers = Arrays.stream(portNumbers).boxed().toList();
+      }
+      return this;
+    }
+
+    /**
+     * Specifies the number of office processes to start, using free port numbers picked when the
+     * manager is built. It is an alternative to {@link #portNumbers(int...)} and {@link
+     * #pipeNames(String...)}, and cannot be combined with them.
+     *
+     * <p>Two applications started at the same instant may pick the same free port. The office
+     * process started last then fails to start, with an error saying that the port is already used.
+     * To avoid it, configure distinct port numbers or pipe names instead.
+     *
+     * @param poolSize The number of office processes, which must be greater than 0.
+     * @return This builder instance.
+     */
+    public @NonNull Builder poolSize(final @Nullable Integer poolSize) {
+
+      if (poolSize != null) {
+        AssertUtils.isTrue(
+            poolSize > 0, String.format("poolSize %s must be greater than 0", poolSize));
+        this.poolSize = poolSize;
       }
       return this;
     }

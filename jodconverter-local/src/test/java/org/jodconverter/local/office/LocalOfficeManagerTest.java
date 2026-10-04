@@ -151,6 +151,47 @@ class LocalOfficeManagerTest {
   class Build {
 
     @Test
+    void withPoolSize_ShouldUseThatManyDistinctPorts() {
+
+      final OfficeManager manager = builder().poolSize(3).build();
+
+      assertThat(manager)
+          .extracting("entries")
+          .asList()
+          .hasSize(3)
+          .extracting("officeProcessManager.officeUrl.connectString")
+          .doesNotHaveDuplicates()
+          .allSatisfy(
+              connectString ->
+                  assertThat((String) connectString)
+                      .matches("socket,host=127\\.0\\.0\\.1,port=\\d+,tcpNoDelay=1"));
+    }
+
+    @Test
+    void withPoolSizeAndPortNumbers_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> builder().portNumbers(2003).poolSize(2).build())
+          .withMessageStartingWith("poolSize cannot be used with portNumbers or pipeNames");
+    }
+
+    @Test
+    void withPoolSizeAndPipeNames_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> builder().pipeNames("jodconverter").poolSize(2).build())
+          .withMessageStartingWith("poolSize cannot be used with portNumbers or pipeNames");
+    }
+
+    @Test
+    void withInvalidPoolSize_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> builder().poolSize(0))
+          .withMessage("poolSize 0 must be greater than 0");
+    }
+
+    @Test
     @SuppressWarnings("RedundantArrayCreation")
     void withNullValues_ShouldInitializedManagerWithDefaultValues() {
 
@@ -165,6 +206,7 @@ class LocalOfficeManagerTest {
               .hostName(null)
               .portNumbers((int[]) null)
               .portNumbers(new int[] {})
+              .poolSize(null)
               .officeHome((String) null)
               .officeHome((File) null)
               .processManager((String) null)

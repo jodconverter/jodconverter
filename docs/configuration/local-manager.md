@@ -231,18 +231,16 @@ but it should be the directory in the OOo installation containing libjpipe (or j
 
 === "Spring Boot"
 
-    !!! note
-
-        `pipeNames` can't be used with Spring Boot for now.
-
     ```yml title="application.yml"
     jodconverter:
       local:
         port-numbers: 2002, 2003, 2004, 2005
+        pipe-names: Pipe1, Pipe2, Pipe3, Pipe4
     ```
     
     ```conf title="application.properties"
     jodconverter.local.port-numbers = 2002, 2003, 2004, 2005
+    jodconverter.local.pipe-names = Pipe1, Pipe2, Pipe3, Pipe4
     ```
 
 === "Command Line"
@@ -257,6 +255,40 @@ but it should be the directory in the OOo installation containing libjpipe (or j
     or
     ```shell title="long option"
     jodconverter-cli --port 2003 infile outfile
+    ```
+
+#### &#128290;`poolSize`
+
+The number of office processes to start, using free TCP ports picked when the manager is built. Use it when you only
+care about how many conversions can run at the same time, not about which ports are used. It replaces `portNumbers` and
+`pipeNames`, and can't be combined with them.
+
+Two applications started at the same instant may pick the same free port. The office process started last then fails
+to start, with an error saying that the port is already used by another program. If that can happen in your setup,
+configure distinct port numbers or pipe names instead.
+
+&nbsp;***Default***: not set (the processes come from `portNumbers` and `pipeNames`).
+
+=== "Java"
+
+    ```java hl_lines="4"
+    OfficeManager officeManager =
+        LocalOfficeManager
+            .builder()
+            .poolSize(4)
+            .build();
+    ```
+
+=== "Spring Boot"
+
+    ```yml title="application.yml"
+    jodconverter:
+      local:
+        pool-size: 4
+    ```
+    
+    ```conf title="application.properties"
+    jodconverter.local.pool-size = 4
     ```
 
 #### &#128288;`processManager`
