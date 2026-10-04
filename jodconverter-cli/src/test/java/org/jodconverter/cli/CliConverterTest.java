@@ -43,8 +43,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
-import org.jodconverter.cli.util.NoExitExtension;
-import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
@@ -56,11 +54,7 @@ import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.task.LocalConversionTask;
 
 /** Contains tests for the {@link CliConverter} class. */
-@ExtendWith({
-  ConsoleStreamsListenerExtension.class,
-  NoExitExtension.class,
-  ResetExitExceptionExtension.class
-})
+@ExtendWith(ConsoleStreamsListenerExtension.class)
 class CliConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";

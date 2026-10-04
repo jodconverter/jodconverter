@@ -39,18 +39,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import org.jodconverter.cli.util.*;
+import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
+import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.*;
 
 /** Contains tests for the {@link Convert} class. */
-@ExtendWith({
-  ConsoleStreamsListenerExtension.class,
-  NoExitExtension.class,
-  ResetExitExceptionExtension.class
-})
+@ExtendWith(ConsoleStreamsListenerExtension.class)
 class ConvertTest {
 
   @TempDir File testFolder;
@@ -71,87 +68,57 @@ class ConvertTest {
     @Test
     void withOptionHelp_ShouldPrintHelpAndExitWithCode0() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {"-h"});
-
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog)
-            .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 0);
-      }
+      SystemLogHandler.startCapture();
+      final int status = Convert.run("-h");
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(status).isEqualTo(0);
     }
 
     @Test
     void withOptionHelp_ShouldPrintVersionAndExitWithCode0() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {"-v"});
-
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog).contains("jodconverter-cli version");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 0);
-      }
+      SystemLogHandler.startCapture();
+      final int status = Convert.run("-v");
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("jodconverter-cli version");
+      assertThat(status).isEqualTo(0);
     }
 
     @Test
     void withUnknownArgument_ShouldPrintErrorHelpAndExitWithCode2() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {"-yz"});
-
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog)
-            .contains(
-                "Unrecognized option: -yz",
-                "jodconverter-cli [options] infile outfile [infile outfile ...]");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 2);
-      }
+      SystemLogHandler.startCapture();
+      final int status = Convert.run("-yz");
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains(
+              "Unrecognized option: -yz",
+              "jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(status).isEqualTo(2);
     }
 
     @Test
     void withMissingsFilenames_ShouldPrintErrorHelpAndExitWithCode255() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {""});
-
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog)
-            .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 255);
-      }
+      SystemLogHandler.startCapture();
+      final int status = Convert.run("");
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(status).isEqualTo(255);
     }
 
     @Test
     void withWrongFilenamesLength_ShouldPrintErrorHelpAndExitWithCode255() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {"input1.txt", "output1.pdf", "input2.txt"});
-
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog)
-            .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 255);
-      }
+      SystemLogHandler.startCapture();
+      final int status = Convert.run("input1.txt", "output1.pdf", "input2.txt");
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(status).isEqualTo(255);
     }
   }
 
