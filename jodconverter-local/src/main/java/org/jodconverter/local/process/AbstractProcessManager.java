@@ -113,10 +113,11 @@ public abstract class AbstractProcessManager implements ProcessManager {
 
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace(
-          "Finding PID using\n"
-              + "Command to get current running processes: {}\n"
-              + "Regex used to match current running process lines: {}\n"
-              + "Regex used to match running office process we are looking for: {}",
+          """
+          Finding PID using
+          Command to get current running processes: {}
+          Regex used to match current running process lines: {}
+          Regex used to match running office process we are looking for: {}""",
           currentProcessesCommand,
           processLinePattern.pattern(),
           commandPattern.pattern());
@@ -136,9 +137,10 @@ public abstract class AbstractProcessManager implements ProcessManager {
         final String commandLine = lineMatcher.group("CommandLine");
         if (LOGGER.isTraceEnabled()) {
           LOGGER.trace(
-              "Line matches!\n"
-                  + "pid: {}; Command line: {}\n"
-                  + "Checking if this command line matches the office command line regex",
+              """
+              Line matches!
+              pid: {}; Command line: {}
+              Checking if this command line matches the office command line regex""",
               pid,
               commandLine);
         }
