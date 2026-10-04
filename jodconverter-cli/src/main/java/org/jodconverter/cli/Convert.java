@@ -33,6 +33,7 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.cli.help.HelpFormatter;
+import org.apache.commons.cli.help.TextHelpAppendable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -62,6 +63,9 @@ public final class Convert {
 
   /** Status returned when the program arguments are invalid. */
   public static final int STATUS_INVALID_ARGUMENTS = 255;
+
+  // Wide enough for most option descriptions to fit on one line (the default is 74).
+  private static final int HELP_WIDTH = 120;
 
   private static final Option OPT_APPLICATION_CONTEXT =
       Option.builder("a")
@@ -529,9 +533,12 @@ public final class Convert {
       "  or:",
       "jodconverter-cli [options] -f output-format infile [infile ...]"
     };
+    final TextHelpAppendable appendable = new TextHelpAppendable(System.out);
+    appendable.setMaxWidth(HELP_WIDTH);
     try {
       HelpFormatter.builder()
           .setShowSince(false)
+          .setHelpAppendable(appendable)
           .get()
           .printHelp(String.join("\n", help), null, OPTIONS, null, false);
     } catch (IOException ex) {
