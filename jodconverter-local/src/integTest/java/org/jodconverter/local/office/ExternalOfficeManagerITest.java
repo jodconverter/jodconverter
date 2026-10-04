@@ -73,6 +73,7 @@ class ExternalOfficeManagerITest {
             DEFAULT_EXISTING_PROCESS_ACTION,
             true,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            RestartStrategy.automatic(),
             connection);
     manager.start();
     final OfficeConnection conn =

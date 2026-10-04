@@ -122,6 +122,7 @@ public final class LocalOfficeManager
       final ExistingProcessAction existingProcessAction,
       final boolean startFailFast,
       final boolean keepAliveOnShutdown,
+      final RestartStrategy restartStrategy,
       final int maxTasksPerProcess,
       final long taskExecutionTimeout,
       final long taskQueueTimeout) {
@@ -147,6 +148,7 @@ public final class LocalOfficeManager
                             existingProcessAction,
                             startFailFast,
                             keepAliveOnShutdown,
+                            restartStrategy,
                             new OfficeConnection(officeUrl))))
             .toList());
   }
@@ -172,6 +174,7 @@ public final class LocalOfficeManager
     private ExistingProcessAction existingProcessAction = DEFAULT_EXISTING_PROCESS_ACTION;
     private boolean startFailFast = DEFAULT_START_FAIL_FAST;
     private boolean keepAliveOnShutdown = DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+    private RestartStrategy restartStrategy;
     private int maxTasksPerProcess = DEFAULT_MAX_TASKS_PER_PROCESS;
 
     // Private constructor so only LocalOfficeManager can initialize an instance of this builder.
@@ -191,6 +194,9 @@ public final class LocalOfficeManager
       }
       if (runAsArgs == null) {
         runAsArgs = List.of();
+      }
+      if (restartStrategy == null) {
+        restartStrategy = RestartStrategy.automatic();
       }
 
       // Validate the directories we are working with
@@ -225,6 +231,7 @@ public final class LocalOfficeManager
               existingProcessAction,
               startFailFast,
               keepAliveOnShutdown,
+              restartStrategy,
               maxTasksPerProcess,
               taskExecutionTimeout,
               taskQueueTimeout);
@@ -588,6 +595,24 @@ public final class LocalOfficeManager
             String.format(
                 "maxTasksPerProcess %s must be greater than or equal to 0", maxTasksPerProcess));
         this.maxTasksPerProcess = maxTasksPerProcess;
+      }
+      return this;
+    }
+
+    /**
+     * Specifies the restart strategy to use for handling office process restarts. The strategy
+     * determines whether restarts happen automatically in the background or are deferred for manual
+     * triggering.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: Automatic restart strategy
+     *
+     * @param restartStrategy The restart strategy to use.
+     * @return This builder instance.
+     */
+    public @NonNull Builder restartStrategy(final @Nullable RestartStrategy restartStrategy) {
+
+      if (restartStrategy != null) {
+        this.restartStrategy = restartStrategy;
       }
       return this;
     }

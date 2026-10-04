@@ -79,6 +79,7 @@ class LocalOfficeProcessManagerTest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               DEFAULT_START_FAIL_FAST,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              RestartStrategy.automatic(),
               connection);
 
       assertThat(manager.getConnection()).isEqualTo(connection);
@@ -107,6 +108,7 @@ class LocalOfficeProcessManagerTest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              RestartStrategy.automatic(),
               new OfficeConnection(url) {
                 @Override
                 public void connect() throws OfficeConnectionException {
@@ -138,6 +140,7 @@ class LocalOfficeProcessManagerTest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              RestartStrategy.automatic(),
               connection);
 
       final AtomicReference<OfficeException> ex = new AtomicReference<>();
@@ -189,6 +192,7 @@ class LocalOfficeProcessManagerTest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              RestartStrategy.automatic(),
               connection);
 
       assertThatCode(manager::stop).doesNotThrowAnyException();
@@ -215,6 +219,7 @@ class LocalOfficeProcessManagerTest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               false,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              RestartStrategy.automatic(),
               connection);
 
       assertThatCode(manager::start).doesNotThrowAnyException();
@@ -240,6 +245,7 @@ class LocalOfficeProcessManagerTest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               false,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              RestartStrategy.automatic(),
               connection);
 
       assertThatCode(manager::stop).doesNotThrowAnyException();
@@ -270,6 +276,7 @@ class LocalOfficeProcessManagerTest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               false,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              RestartStrategy.automatic(),
               connection);
 
       assertThatCode(manager::stop).doesNotThrowAnyException();
@@ -297,6 +304,7 @@ class LocalOfficeProcessManagerTest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               false,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              RestartStrategy.automatic(),
               connection);
 
       final AtomicReference<OfficeException> ex = new AtomicReference<>();
@@ -352,6 +360,7 @@ class LocalOfficeProcessManagerTest {
               DEFAULT_EXISTING_PROCESS_ACTION,
               false,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+              RestartStrategy.automatic(),
               connection);
 
       assertThatCode(manager::restart).doesNotThrowAnyException();

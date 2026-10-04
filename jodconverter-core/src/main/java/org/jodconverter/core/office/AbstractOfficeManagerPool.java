@@ -47,7 +47,7 @@ import org.jodconverter.core.util.StringUtils;
  * {@link #execute(org.jodconverter.core.task.OfficeTask)} function is called.
  */
 public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerPoolEntry>
-    implements OfficeManager, TemporaryFileMaker {
+    implements OfficeManager, OfficeRestarter, TemporaryFileMaker {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOfficeManagerPool.class);
 
@@ -267,6 +267,85 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
         "tempfile_"
             + tempFileCounter.getAndIncrement()
             + (StringUtils.isBlank(extension) ? "" : "." + extension));
+  }
+
+  /**
+   * Restarts all idle processes in the pool. Only processes that are not currently handling tasks
+   * will be restarted.
+   *
+   * <p>The restart behavior depends on the configured {@link
+   * org.jodconverter.local.office.RestartStrategy}. With automatic restart strategy, processes
+   * restart immediately in background threads. With manual restart strategy, restarts are queued
+   * and must be triggered externally.
+   *
+   * @return The number of idle processes that were requested to restart.
+   */
+  @Override
+  public int restartIdleProcesses() {
+
+    synchronized (this) {
+      int restartedCount = 0;
+
+      if (poolState.get() != POOL_STARTED) {
+        return restartedCount;
+      }
+
+      for (final E entry : entries) {
+        if (entry.isIdle()) {
+          entry.requestRestart();
+          restartedCount++;
+        }
+      }
+
+      LOGGER.info("Requested restart for {} idle process(es)", restartedCount);
+      return restartedCount;
+    }
+  }
+
+  /**
+   * Gets the number of idle (available) processes in the pool.
+   *
+   * @return The count of idle processes.
+   */
+  @Override
+  public int getIdleCount() {
+
+    synchronized (this) {
+      if (poolState.get() != POOL_STARTED) {
+        return 0;
+      }
+
+      int idleCount = 0;
+      for (final E entry : entries) {
+        if (entry.isIdle()) {
+          idleCount++;
+        }
+      }
+      return idleCount;
+    }
+  }
+
+  /**
+   * Gets the number of busy (unavailable) processes in the pool.
+   *
+   * @return The count of busy processes.
+   */
+  @Override
+  public int getBusyCount() {
+
+    synchronized (this) {
+      if (poolState.get() != POOL_STARTED) {
+        return 0;
+      }
+
+      int busyCount = 0;
+      for (final E entry : entries) {
+        if (!entry.isIdle()) {
+          busyCount++;
+        }
+      }
+      return busyCount;
+    }
   }
 
   /**

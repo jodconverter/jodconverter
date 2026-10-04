@@ -316,6 +316,11 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // Nothing to stop here.
   }
 
+  @Override
+  public void requestRestart() {
+    // No-op for remote office manager - there's no process to restart
+  }
+
   private KeyStore loadStore(
       final String store,
       final String storePassword,
