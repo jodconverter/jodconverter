@@ -20,6 +20,7 @@
 
 package org.jodconverter.local.office;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
@@ -28,13 +29,18 @@ import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIV
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.office.OfficeException;
@@ -129,6 +135,48 @@ class LocalOfficeProcessManagerReflectTest {
               ReflectionTestUtils.invokeMethod(manager, "forciblyTerminateProcess");
             })
         .doesNotThrowAnyException();
+  }
+
+  @Test
+  void restartDueToLostConnection_WhenProcessStillRunning_ShouldKillItWithoutWaitingProcessTimeout(
+      final @TempDir File testFolder) throws InterruptedException {
+
+    final OfficeUrl url = new OfficeUrl(9999);
+    final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
+    final CountDownLatch killed = new CountDownLatch(1);
+    final LocalOfficeProcessManager manager =
+        new LocalOfficeProcessManager(
+            url,
+            // No office here: the restart that follows the kill fails right away
+            testFolder,
+            testFolder,
+            new ProcessManager() {
+              @Override
+              public void kill(final Process process, final long pid) {
+                killed.countDown();
+              }
+            },
+            new ArrayList<>(),
+            null,
+            DEFAULT_PROCESS_TIMEOUT,
+            DEFAULT_PROCESS_RETRY_INTERVAL,
+            DEFAULT_AFTER_START_PROCESS_DELAY,
+            DEFAULT_EXISTING_PROCESS_ACTION,
+            DEFAULT_START_FAIL_FAST,
+            DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            connection);
+
+    // A process that never exits by itself (no exit code)
+    final VerboseProcess verboseProcess = mock(VerboseProcess.class);
+    given(verboseProcess.getExitCode()).willReturn(null);
+    ReflectionTestUtils.setField(manager, "pid", 0L);
+    ReflectionTestUtils.setField(manager, "process", verboseProcess);
+
+    ReflectionTestUtils.invokeMethod(manager, "restartDueToLostConnection");
+
+    // Killed after the short grace period, far before the process timeout
+    assertThat(DEFAULT_PROCESS_TIMEOUT).isGreaterThan(10_000L);
+    assertThat(killed.await(10L, TimeUnit.SECONDS)).isTrue();
   }
 
   @Test

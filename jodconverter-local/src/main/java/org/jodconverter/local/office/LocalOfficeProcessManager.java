@@ -58,6 +58,11 @@ class LocalOfficeProcessManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeProcessManager.class);
 
+  // How long a process that lost its connection gets to exit by itself before it is killed. A
+  // process that crashed is already gone; one that is still running after losing its connection
+  // (a disposed bridge) is not worth waiting the whole process timeout for.
+  private static final long LOST_CONNECTION_EXIT_TIMEOUT = 2_000L;
+
   private VerboseProcess process;
   private long pid = PID_UNKNOWN;
   private OfficeDescriptor descriptor;
@@ -245,8 +250,9 @@ class LocalOfficeProcessManager {
 
           // Since we have lost the connection unexpectedly, it could mean that
           // the office process has crashed. Thus, we want a clean instance profile
-          // directory on restart.
-          ensureProcessExited(true);
+          // directory on restart. A process still running is killed after a short
+          // grace period: without its connection, it cannot be used anymore.
+          ensureProcessExited(true, Math.min(processTimeout, LOST_CONNECTION_EXIT_TIMEOUT));
           try {
             startProcessAndConnect(false);
           } catch (OfficeException ex) {
@@ -647,19 +653,35 @@ class LocalOfficeProcessManager {
    */
   private void ensureProcessExited(final boolean deleteInstanceProfileDir) {
 
+    ensureProcessExited(deleteInstanceProfileDir, processTimeout);
+  }
+
+  /**
+   * Ensures that the process exited, forcibly terminating it if it is still running after the
+   * specified timeout.
+   *
+   * <p>This function is always called into tasks that are executed by a single thread {@link
+   * ExecutorService} and thus, the function must manage its own exception handling.
+   *
+   * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
+   *     deleted.
+   * @param exitTimeout The maximum time to wait for the process to exit by itself, in milliseconds.
+   */
+  private void ensureProcessExited(final boolean deleteInstanceProfileDir, final long exitTimeout) {
+
     try {
       // If the process has never been started by us (process != null),
       // just return a success exit code (0).
       int exitCode = 0;
       if (process != null) {
         final ExitCodeRetryable retryable = new ExitCodeRetryable(process);
-        retryable.execute(processRetryInterval, processTimeout);
+        retryable.execute(processRetryInterval, exitTimeout);
         exitCode = retryable.getExitCode();
       }
       LOGGER.info("Process exited with code {}", exitCode);
 
     } catch (RetryTimeoutException ex) {
-      LOGGER.error("Time out ensuring process exited", ex);
+      LOGGER.warn("Process did not exit within {} ms; forcibly terminating it", exitTimeout);
       forciblyTerminateProcess();
 
     } finally {
