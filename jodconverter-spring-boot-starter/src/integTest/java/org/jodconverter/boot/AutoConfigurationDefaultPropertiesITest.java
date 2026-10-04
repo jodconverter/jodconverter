@@ -90,7 +90,7 @@ class AutoConfigurationDefaultPropertiesITest {
             true,
             null,
             "127.0.0.1",
-            new int[] {2002},
+            null,
             new String[] {},
             null,
             null,

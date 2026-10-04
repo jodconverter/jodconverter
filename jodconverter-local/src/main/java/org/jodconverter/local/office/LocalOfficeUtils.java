@@ -21,6 +21,8 @@
 package org.jodconverter.local.office;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -188,6 +190,37 @@ public final class LocalOfficeUtils {
       // NOTE: UnixProcessManager can't be trusted to work on Solaris
       // because of the 80-char limit on ps output there
       return PureJavaProcessManager.getDefault();
+    }
+  }
+
+  /**
+   * Finds the specified number of distinct TCP ports that are free at the time of the call. The
+   * ports are released before returning, so another program could take one of them before it is
+   * used.
+   *
+   * @param count The number of ports to find, greater than 0.
+   * @return The free port numbers.
+   * @throws IllegalStateException If the free ports cannot be found.
+   */
+  /* default */ static @NonNull List<@NonNull Integer> findFreePorts(final int count) {
+
+    // All the sockets are kept open until every port is found, so the ports are distinct.
+    final List<ServerSocket> sockets = new ArrayList<>(count);
+    try {
+      for (int i = 0; i < count; i++) {
+        sockets.add(new ServerSocket(0));
+      }
+      return sockets.stream().map(ServerSocket::getLocalPort).toList();
+    } catch (IOException ex) {
+      throw new IllegalStateException(String.format("Could not find %d free ports", count), ex);
+    } finally {
+      for (final ServerSocket socket : sockets) {
+        try {
+          socket.close();
+        } catch (IOException ex) {
+          LOGGER.debug("Could not close the socket used to find a free port", ex);
+        }
+      }
     }
   }
 

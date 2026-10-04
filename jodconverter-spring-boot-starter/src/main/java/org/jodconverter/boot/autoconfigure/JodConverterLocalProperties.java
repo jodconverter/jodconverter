@@ -54,9 +54,16 @@ public class JodConverterLocalProperties {
   /**
    * List of ports, separated by commas, used by each JODConverter processing thread. The number of
    * office instances is equal to the number of port numbers/pipe names, since 1 office process will
-   * be launched for each port number/pipe name.
+   * be launched for each port number/pipe name. When neither port numbers, pipe names nor a pool
+   * size are set, the port 2002 is used.
    */
-  private int[] portNumbers = {2002};
+  private int[] portNumbers;
+
+  /**
+   * Number of office processes to start, using free port numbers picked at startup. An alternative
+   * to port numbers and pipe names, which cannot be combined with them.
+   */
+  private Integer poolSize;
 
   /**
    * List of pipe names, separated by commas, used by each JODConverter processing thread. The
@@ -187,12 +194,20 @@ public class JodConverterLocalProperties {
     this.hostName = hostName;
   }
 
-  public int[] getPortNumbers() {
+  public int @Nullable [] getPortNumbers() {
     return portNumbers;
   }
 
-  public void setPortNumbers(final int[] portNumbers) {
+  public void setPortNumbers(final int @Nullable [] portNumbers) {
     this.portNumbers = portNumbers;
+  }
+
+  public @Nullable Integer getPoolSize() {
+    return poolSize;
+  }
+
+  public void setPoolSize(final @Nullable Integer poolSize) {
+    this.poolSize = poolSize;
   }
 
   public String[] getPipeNames() {
