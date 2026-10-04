@@ -246,7 +246,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
     // Create a remote bridge with no instance provider using the urp protocol.
     return bridgeFactory.createBridge(
         "jodconverter_" + BRIDGE_INDEX.getAndIncrement(),
-        officeUrl.getUnoUrl().getProtocolAndParametersAsString(),
+        officeUrl.unoUrl().getProtocolAndParametersAsString(),
         connection,
         null);
   }
@@ -260,7 +260,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
 
     // Get the remote instance
     LOGGER.trace("Getting the bridge instance...");
-    final String rootOid = officeUrl.getUnoUrl().getRootOid();
+    final String rootOid = officeUrl.unoUrl().getRootOid();
     final Object bridgeInstance = bridge.getInstance(rootOid);
     // Did the remote server export this object?
     if (bridgeInstance == null) {

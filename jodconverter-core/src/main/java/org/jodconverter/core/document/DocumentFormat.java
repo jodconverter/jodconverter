@@ -22,8 +22,6 @@ package org.jodconverter.core.document;
 
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonDeserializationContext;
@@ -73,7 +71,7 @@ public final class DocumentFormat {
         final Type listType = new TypeToken<List<String>>() {}.getType();
         return cxt.deserialize(json, listType);
       }
-      return Stream.of(json.getAsString()).collect(Collectors.toList());
+      return List.of(json.getAsString());
     }
   }
 
@@ -175,9 +173,7 @@ public final class DocumentFormat {
       this.loadProperties = null;
     } else {
       this.loadProperties =
-          unmodifiable
-              ? Collections.unmodifiableMap(new HashMap<>(loadProperties))
-              : new HashMap<>(loadProperties);
+          unmodifiable ? Map.copyOf(loadProperties) : new HashMap<>(loadProperties);
     }
     if (storeProperties == null) {
       this.storeProperties = null;
@@ -186,11 +182,7 @@ public final class DocumentFormat {
           new EnumMap<>(DocumentFamily.class);
       storeProperties.forEach(
           (family, props) ->
-              familyMap.put(
-                  family,
-                  unmodifiable
-                      ? Collections.unmodifiableMap(new HashMap<>(props))
-                      : new HashMap<>(props)));
+              familyMap.put(family, unmodifiable ? Map.copyOf(props) : new HashMap<>(props)));
       this.storeProperties = unmodifiable ? Collections.unmodifiableMap(familyMap) : familyMap;
     }
   }

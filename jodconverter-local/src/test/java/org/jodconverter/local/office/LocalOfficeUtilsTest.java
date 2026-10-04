@@ -37,8 +37,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.lang.XComponent;
@@ -157,7 +155,7 @@ class LocalOfficeUtilsTest {
     @Test
     void withPortNumbersOnly_ShouldReturnOfficeUrlsWithGivenPortNumbers() {
 
-      final List<Integer> portNumbers = Stream.of(2003, 2004, 2005).collect(Collectors.toList());
+      final List<Integer> portNumbers = List.of(2003, 2004, 2005);
       assertThat(LocalOfficeUtils.buildOfficeUrls(portNumbers, null))
           .hasSize(3)
           .satisfies(
@@ -177,7 +175,7 @@ class LocalOfficeUtilsTest {
     @Test
     void withPipeNamesOnly_ShouldReturnOfficeUrlsWithGivenPipeNames() {
 
-      final List<String> pipeNames = Stream.of("oo1", "oo2", "oo3").collect(Collectors.toList());
+      final List<String> pipeNames = List.of("oo1", "oo2", "oo3");
       assertThat(LocalOfficeUtils.buildOfficeUrls(null, pipeNames))
           .hasSize(3)
           .satisfies(
@@ -197,8 +195,7 @@ class LocalOfficeUtilsTest {
     @Test
     void withWebSocketUrlsOnly_ShouldReturnOfficeUrlsWithGivenWebSocketUrl() {
 
-      final List<String> webSocketUrls =
-          Stream.of("test1", "test2", "test3").collect(Collectors.toList());
+      final List<String> webSocketUrls = List.of("test1", "test2", "test3");
       assertThat(LocalOfficeUtils.buildOfficeUrls(null, null, null, webSocketUrls))
           .hasSize(3)
           .satisfies(

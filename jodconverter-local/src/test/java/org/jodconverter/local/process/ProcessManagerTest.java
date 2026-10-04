@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -309,7 +308,7 @@ class ProcessManagerTest {
                 throw new IOException();
               }
               if ("powershell".equals(cmdarray[0])) {
-                return Collections.singletonList("powershell -NoProfile -NonInteractive 1234");
+                return List.of("powershell -NoProfile -NonInteractive 1234");
               }
               return new ArrayList<>();
             }

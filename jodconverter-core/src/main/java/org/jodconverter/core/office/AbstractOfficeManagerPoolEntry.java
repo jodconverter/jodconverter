@@ -130,8 +130,8 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
       final OfficeTask task, final ExecutionException executionException) {
 
     // Rethrow the original (cause) exception
-    if (executionException.getCause() instanceof OfficeException) {
-      return (OfficeException) executionException.getCause();
+    if (executionException.getCause() instanceof OfficeException officeEx) {
+      return officeEx;
     }
 
     return new OfficeException(

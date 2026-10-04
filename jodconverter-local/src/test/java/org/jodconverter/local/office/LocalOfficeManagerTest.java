@@ -40,8 +40,7 @@ import static org.jodconverter.local.office.LocalOfficeManager.make;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
@@ -320,7 +319,7 @@ class LocalOfficeManagerTest {
                         99,
                         ooHome,
                         TestProcessManager.class.getName(),
-                        Stream.of("sudo").collect(Collectors.toList()),
+                        List.of("sudo"),
                         templateProfileDir,
                         502L,
                         503L,

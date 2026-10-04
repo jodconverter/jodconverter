@@ -141,8 +141,8 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // Keep the task to let us know if we are processing a task that supports
     // throwing PasswordProtectedException.
     passwordProtectedExceptionSupportTask.set(null);
-    if (task instanceof PasswordProtectedExceptionSupportTask) {
-      passwordProtectedExceptionSupportTask.set((PasswordProtectedExceptionSupportTask) task);
+    if (task instanceof PasswordProtectedExceptionSupportTask supportTask) {
+      passwordProtectedExceptionSupportTask.set(supportTask);
     }
 
     // Execute the task.

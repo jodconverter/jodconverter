@@ -69,7 +69,6 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
     this.target = target;
   }
 
-  @SuppressWarnings("unchecked")
   private void addPropertiesToBuilder(
       final URIBuilder uriBuilder,
       final String parameterPrefix,
@@ -81,9 +80,9 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
         final Object value = entry.getValue();
 
         // First, check if we are dealing with the FilterData property
-        if (FILTER_DATA.equalsIgnoreCase(key) && value instanceof Map) {
+        if (FILTER_DATA.equalsIgnoreCase(key) && value instanceof Map<?, ?> filterData) {
           // Add all the FilterData properties
-          for (final Map.Entry<String, Object> fdentry : ((Map<String, Object>) value).entrySet()) {
+          for (final Map.Entry<?, ?> fdentry : filterData.entrySet()) {
             uriBuilder.addParameter(
                 parameterPrefix + FILTER_DATA_PREFIX_PARAM + fdentry.getKey(),
                 fdentry.getValue().toString());
@@ -124,7 +123,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
 
         // Use the fluent API to post the file and save the response into the target file.
         final RequestConfig requestConfig = remoteContext.getRequestConfig();
-        final URIBuilder uriBuilder = new URIBuilder(buildUrl(requestConfig.getUrl()));
+        final URIBuilder uriBuilder = new URIBuilder(buildUrl(requestConfig.url()));
 
         // We suppose that the server supports custom load properties, but LibreOffice Online
         // does not support custom load properties, only the sample web service do.
@@ -148,8 +147,8 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
             .execute(
                 // Request.Post(buildUrl(requestConfig.getUrl()))
                 Request.Post(uriBuilder.build())
-                    .connectTimeout(Math.toIntExact(requestConfig.getConnectTimeout()))
-                    .socketTimeout(Math.toIntExact(requestConfig.getSocketTimeout()))
+                    .connectTimeout(Math.toIntExact(requestConfig.connectTimeout()))
+                    .socketTimeout(Math.toIntExact(requestConfig.socketTimeout()))
                     .body(entity))
             .saveContent(targetFile);
 

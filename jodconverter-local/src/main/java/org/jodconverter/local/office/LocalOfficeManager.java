@@ -23,9 +23,7 @@ package org.jodconverter.local.office;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -150,7 +148,7 @@ public final class LocalOfficeManager
                             startFailFast,
                             keepAliveOnShutdown,
                             new OfficeConnection(officeUrl))))
-            .collect(Collectors.toList()));
+            .toList());
   }
 
   /**
@@ -192,7 +190,7 @@ public final class LocalOfficeManager
         processManager = LocalOfficeUtils.findBestProcessManager();
       }
       if (runAsArgs == null) {
-        runAsArgs = Collections.emptyList();
+        runAsArgs = List.of();
       }
 
       // Validate the directories we are working with
@@ -276,7 +274,7 @@ public final class LocalOfficeManager
     public @NonNull Builder portNumbers(final int... portNumbers) {
 
       if (portNumbers != null && portNumbers.length != 0) {
-        this.portNumbers = Arrays.stream(portNumbers).boxed().collect(Collectors.toList());
+        this.portNumbers = Arrays.stream(portNumbers).boxed().toList();
       }
       return this;
     }
@@ -362,7 +360,7 @@ public final class LocalOfficeManager
     public @NonNull Builder runAsArgs(final @Nullable String... runAsArgs) {
 
       if (runAsArgs != null && runAsArgs.length != 0) {
-        this.runAsArgs = Collections.unmodifiableList(Arrays.asList(runAsArgs));
+        this.runAsArgs = List.of(runAsArgs);
       }
       return this;
     }

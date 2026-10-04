@@ -85,10 +85,8 @@ public abstract class AbstractConverter implements DocumentConverter {
   public @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
       final @NonNull InputStream source, final boolean closeStream) {
 
-    if (officeManager instanceof TemporaryFileMaker) {
-      return convert(
-          new SourceDocumentSpecsFromInputStream(
-              source, (TemporaryFileMaker) officeManager, closeStream));
+    if (officeManager instanceof TemporaryFileMaker fileMaker) {
+      return convert(new SourceDocumentSpecsFromInputStream(source, fileMaker, closeStream));
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "

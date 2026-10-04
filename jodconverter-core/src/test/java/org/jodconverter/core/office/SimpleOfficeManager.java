@@ -22,7 +22,6 @@ package org.jodconverter.core.office;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.jodconverter.core.util.AssertUtils;
@@ -79,7 +78,7 @@ public final class SimpleOfficeManager
     setEntries(
         IntStream.range(0, poolSize)
             .mapToObj(i -> new SimpleOfficeManagerPoolEntry(taskExecutionTimeout))
-            .collect(Collectors.toList()));
+            .toList());
   }
 
   // Change visibility in order to be able to mock the entries

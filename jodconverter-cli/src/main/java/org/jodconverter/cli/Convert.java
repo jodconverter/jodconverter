@@ -231,21 +231,15 @@ public final class Convert {
     applyOption(
         OPT_EXISTING_PROCESS_ACTION,
         commandLine,
-        opt -> {
-          switch (opt.toLowerCase(Locale.ROOT).replace('-', '_')) {
-            case "fail":
-              return builder.existingProcessAction(ExistingProcessAction.FAIL);
-            case "kill":
-              return builder.existingProcessAction(ExistingProcessAction.KILL);
-            case "connect":
-              return builder.existingProcessAction(ExistingProcessAction.CONNECT);
-            case "connect_or_kill":
-              return builder.existingProcessAction(ExistingProcessAction.CONNECT_OR_KILL);
-            default:
-              return builder.existingProcessAction(
-                  LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION);
-          }
-        });
+        opt ->
+            builder.existingProcessAction(
+                switch (opt.toLowerCase(Locale.ROOT).replace('-', '_')) {
+                  case "fail" -> ExistingProcessAction.FAIL;
+                  case "kill" -> ExistingProcessAction.KILL;
+                  case "connect" -> ExistingProcessAction.CONNECT;
+                  case "connect_or_kill" -> ExistingProcessAction.CONNECT_OR_KILL;
+                  default -> LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
+                }));
 
     return builder.install().build();
   }
