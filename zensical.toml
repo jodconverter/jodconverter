@@ -5,6 +5,7 @@ repo_name = "JODConverter"
 repo_url = "https://github.com/jodconverter/jodconverter"
 edit_uri = "edit/master/docs/"
 copyright = "© 2025 JODConverter. All rights reserved."
+extra_css = ["assets/stylesheets/extra.css"]
 
 nav = [
   { Home = [
@@ -86,14 +87,16 @@ features = [
 [[project.theme.palette]]
 media = "(prefers-color-scheme: light)"
 scheme = "default"
-primary = "light blue"
+primary = "custom"
+accent = "custom"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: dark)"
 scheme = "slate"
-primary = "light blue"
+primary = "custom"
+accent = "custom"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"
 
