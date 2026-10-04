@@ -255,6 +255,17 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
     OfficeUtils.deleteOrRenameFile(tempDir, 0L, 0L);
   }
 
+  /**
+   * Gets the temporary directory of this manager, where the temporary files used by conversions
+   * (for example when converting streams) are created. The directory is created, under the working
+   * directory, when the manager is started, and deleted when it is stopped.
+   *
+   * @return The temporary directory.
+   */
+  public @NonNull File getTempDir() {
+    return tempDir;
+  }
+
   @Override
   public @NonNull File makeTemporaryFile() {
     return makeTemporaryFile(null);
