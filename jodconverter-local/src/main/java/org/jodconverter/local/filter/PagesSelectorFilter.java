@@ -29,20 +29,14 @@ import java.util.stream.Stream;
 
 import com.sun.star.container.XIndexAccess;
 import com.sun.star.container.XNamed;
-import com.sun.star.datatransfer.XTransferable;
 import com.sun.star.datatransfer.XTransferableSupplier;
 import com.sun.star.drawing.XDrawPage;
-import com.sun.star.drawing.XDrawPages;
 import com.sun.star.drawing.XDrawPagesSupplier;
-import com.sun.star.frame.XController;
 import com.sun.star.lang.XComponent;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
-import com.sun.star.sheet.XSpreadsheets;
 import com.sun.star.text.XPageCursor;
-import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
-import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.view.XSelectionSupplier;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -101,7 +95,7 @@ public class PagesSelectorFilter implements Filter {
       final @NonNull FilterChain chain)
       throws Exception {
 
-    final DocumentFamily family = LocalOfficeUtils.getDocumentFamilySilently(document);
+    final var family = LocalOfficeUtils.getDocumentFamilySilently(document);
     if (family != null) {
 
       switch (family) {
@@ -141,15 +135,15 @@ public class PagesSelectorFilter implements Filter {
       return;
     }
 
-    final XController ctrl = docText.getCurrentController();
+    final var ctrl = docText.getCurrentController();
 
     // Get the text cursor for the document.
-    final XTextCursor tc = docText.getText().createTextCursor();
+    final var tc = docText.getText().createTextCursor();
 
     // Get the view cursor for the document. We also need a page cursor
     // on the view cursor to navigate through the document pages.
-    final XTextViewCursor vc = Lo.qi(XTextViewCursorSupplier.class, ctrl).getViewCursor();
-    final XPageCursor pc = Lo.qi(XPageCursor.class, vc);
+    final var vc = Lo.qi(XTextViewCursorSupplier.class, ctrl).getViewCursor();
+    final var pc = Lo.qi(XPageCursor.class, vc);
 
     // Reset both cursors to the beginning of the document
     tc.gotoStart(false);
@@ -166,12 +160,12 @@ public class PagesSelectorFilter implements Filter {
     tc.gotoRange(vc.getStart(), true);
 
     // Select the source page.
-    final XSelectionSupplier selectionSupplier = Lo.qi(XSelectionSupplier.class, ctrl);
+    final var selectionSupplier = Lo.qi(XSelectionSupplier.class, ctrl);
     selectionSupplier.select(tc);
 
     // Copy the selection (whole source page).
-    final XTransferableSupplier transferableSupplier = Lo.qi(XTransferableSupplier.class, ctrl);
-    final XTransferable xTransferable = transferableSupplier.getTransferable();
+    final var transferableSupplier = Lo.qi(XTransferableSupplier.class, ctrl);
+    final var xTransferable = transferableSupplier.getTransferable();
 
     // Now select the target page.
     tc.gotoStart(false);
@@ -189,14 +183,14 @@ public class PagesSelectorFilter implements Filter {
 
   private void selectTextPages(final XTextDocument doc) throws Exception {
 
-    final XController ctrl = doc.getCurrentController();
+    final var ctrl = doc.getCurrentController();
 
     // Save the PageCount property of the document.
     final int pageCount = (Integer) Props.getProperty(ctrl, "PageCount");
 
     // Delete all the pages except the ones to select.
-    int nextTargetPage = 1;
-    for (final int page : pages) {
+    var nextTargetPage = 1;
+    for (final var page : pages) {
       // Ignore invalid page
       if (page > 0 && page <= pageCount) {
         copyPage(doc, page, nextTargetPage++);
@@ -204,15 +198,15 @@ public class PagesSelectorFilter implements Filter {
     }
 
     // Once done, we must delete the pages after that last copied page.
-    final int lastPage = nextTargetPage - 1;
+    final var lastPage = nextTargetPage - 1;
 
     // Get the text cursor for the document.
-    final XTextCursor tc = doc.getText().createTextCursor();
+    final var tc = doc.getText().createTextCursor();
 
     // Get the view cursor for the document. We also need a page cursor
     // on the view cursor to navigate through the document pages.
-    final XTextViewCursor vc = Lo.qi(XTextViewCursorSupplier.class, ctrl).getViewCursor();
-    final XPageCursor pc = Lo.qi(XPageCursor.class, vc);
+    final var vc = Lo.qi(XTextViewCursorSupplier.class, ctrl).getViewCursor();
+    final var pc = Lo.qi(XPageCursor.class, vc);
 
     // Reset both cursors to the beginning of the document
     tc.gotoStart(false);
@@ -225,12 +219,12 @@ public class PagesSelectorFilter implements Filter {
     pc.jumpToEndOfPage();
     tc.gotoRange(vc.getEnd(), true);
     // Select the pages.
-    final XSelectionSupplier selectionSupplier = Lo.qi(XSelectionSupplier.class, ctrl);
+    final var selectionSupplier = Lo.qi(XSelectionSupplier.class, ctrl);
     selectionSupplier.select(tc);
 
     // Copy the selection (pages).
-    final XTransferableSupplier transSupplier = Lo.qi(XTransferableSupplier.class, ctrl);
-    final XTransferable trans = transSupplier.getTransferable();
+    final var transSupplier = Lo.qi(XTransferableSupplier.class, ctrl);
+    final var trans = transSupplier.getTransferable();
 
     // Now select the whole document.
     tc.gotoStart(false); // Go to the start
@@ -244,14 +238,14 @@ public class PagesSelectorFilter implements Filter {
 
   private void selectSheets(final XSpreadsheetDocument doc) throws Exception {
 
-    final XSpreadsheets sheets = doc.getSheets();
-    final XIndexAccess indexedSheets = Lo.qi(XIndexAccess.class, sheets);
+    final var sheets = doc.getSheets();
+    final var indexedSheets = Lo.qi(XIndexAccess.class, sheets);
 
     // Delete all the sheets except the ones to select.
-    final int count = indexedSheets.getCount();
-    for (int i = count - 1; i >= 0; i--) {
-      final XSpreadsheet sheet = Lo.qi(XSpreadsheet.class, indexedSheets.getByIndex(i));
-      final XNamed namedSheet = Lo.qi(XNamed.class, sheet);
+    final var count = indexedSheets.getCount();
+    for (var i = count - 1; i >= 0; i--) {
+      final var sheet = Lo.qi(XSpreadsheet.class, indexedSheets.getByIndex(i));
+      final var namedSheet = Lo.qi(XNamed.class, sheet);
       if (!pages.contains(i + 1)) {
         sheets.removeByName(namedSheet.getName());
       }
@@ -260,11 +254,11 @@ public class PagesSelectorFilter implements Filter {
 
   private void selectDrawPages(final XDrawPagesSupplier supplier) throws Exception {
 
-    final XDrawPages drawPages = supplier.getDrawPages();
-    final int pageCount = drawPages.getCount();
+    final var drawPages = supplier.getDrawPages();
+    final var pageCount = drawPages.getCount();
 
     // Delete all the pages except the ones to select.
-    for (int i = pageCount; i > 0; i--) {
+    for (var i = pageCount; i > 0; i--) {
       if (!pages.contains(i)) {
         drawPages.remove(Lo.qi(XDrawPage.class, drawPages.getByIndex(i - 1)));
       }

@@ -50,8 +50,9 @@ public class WindowsProcessManager extends AbstractProcessManager {
 
   /**
    * This class is required in order to create the default WindowsProcessManager only on demand, as
-   * explained by the Initialization-on-demand holder idiom:
-   * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+   * explained by the <a
+   * href="https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom">Initialization-on-demand
+   * holder idiom</a>.
    */
   private static class DefaultHolder { // NOPMD - Disable utility class name rule violation
     /* default */ static final WindowsProcessManager INSTANCE = new WindowsProcessManager();
@@ -77,7 +78,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
 
     // Each line of the output is the command line of a process followed by its pid, as wmic does.
     // The progress records are disabled since powershell writes them to the error stream.
-    final String script =
+    final var script =
         "$ProgressPreference = 'SilentlyContinue'; "
             + "Get-CimInstance Win32_Process -Filter \"Name like '"
             + process.replace("'", "''")
@@ -111,7 +112,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
       if (!isWmicAvailable() && !isPowershellQueryWorking()) {
         return false;
       }
-      execute(new String[] {"taskkill", "/?"});
+      execute("taskkill", "/?");
       return true;
     } catch (IOException ioEx) {
       return false;
@@ -120,7 +121,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
 
   private boolean isPowershellQueryWorking() {
 
-    Boolean working = powershellQueryWorking.get();
+    var working = powershellQueryWorking.get();
     if (working == null) {
       try {
         // Being able to start powershell.exe is not enough, since a policy may prevent the query
@@ -139,10 +140,10 @@ public class WindowsProcessManager extends AbstractProcessManager {
 
   private boolean isWmicAvailable() {
 
-    Boolean available = wmicAvailable.get();
+    var available = wmicAvailable.get();
     if (available == null) {
       try {
-        execute(new String[] {"wmic", "quit"});
+        execute("wmic", "quit");
         available = true;
       } catch (IOException ioEx) {
         available = false;
@@ -155,7 +156,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
   @Override
   public void kill(final @Nullable Process process, final long pid) throws IOException {
     if (pid > PID_UNKNOWN) {
-      execute(new String[] {"taskkill", "/t", "/f", "/pid", String.valueOf(pid)});
+      execute("taskkill", "/t", "/f", "/pid", String.valueOf(pid));
     } else {
       super.kill(process, pid);
     }

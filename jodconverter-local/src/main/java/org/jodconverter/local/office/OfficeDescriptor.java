@@ -43,9 +43,9 @@ public final class OfficeDescriptor {
    */
   public static @NonNull OfficeDescriptor fromExecutablePath(final @NonNull String path) {
 
-    final OfficeDescriptor desc = new OfficeDescriptor();
+    final var desc = new OfficeDescriptor();
 
-    final String lowerPath = path.toLowerCase(Locale.ROOT);
+    final var lowerPath = path.toLowerCase(Locale.ROOT);
     if (lowerPath.contains(LIBRE_OFFICE.toLowerCase(Locale.ROOT))) {
       desc.product = LIBRE_OFFICE;
       desc.useLongOptionNameGnuStyle = true;

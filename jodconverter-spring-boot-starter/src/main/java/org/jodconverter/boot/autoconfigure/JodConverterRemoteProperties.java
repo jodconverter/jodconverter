@@ -341,7 +341,7 @@ public class JodConverterRemoteProperties {
      */
     public @NonNull SslConfig sslConfig() {
 
-      final SslConfig sslConfig = new SslConfig();
+      final var sslConfig = new SslConfig();
       sslConfig.setEnabled(isEnabled());
       sslConfig.setCiphers(getCiphers());
       sslConfig.setKeyAlias(getKeyAlias());

@@ -54,7 +54,7 @@ class InstalledOfficeManagerHolder { // NOPMD - Disable utility class name rule 
   public static @Nullable OfficeManager setInstance(final @Nullable OfficeManager manager) {
 
     synchronized (InstalledOfficeManagerHolder.class) {
-      final OfficeManager oldManager = instance;
+      final var oldManager = instance;
       instance = manager;
       return oldManager;
     }

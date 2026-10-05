@@ -58,10 +58,10 @@ class PageCounterFilterITest {
     void whenPage2Selected_ShouldCount3Then1(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, CALC_FILENAME + ".sheet2.xls");
+      final var targetFile = new File(testFolder, CALC_FILENAME + ".sheet2.xls");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(
@@ -87,10 +87,10 @@ class PageCounterFilterITest {
     void whenPage2Selected_ShouldCount3Then1(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, DRAW_FILENAME + ".page2.pdf");
+      final var targetFile = new File(testFolder, DRAW_FILENAME + ".page2.pdf");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(
@@ -116,10 +116,10 @@ class PageCounterFilterITest {
     void whenPage2Selected_ShouldCount4Then1(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, IMPRESS_FILENAME + ".page2.pdf");
+      final var targetFile = new File(testFolder, IMPRESS_FILENAME + ".page2.pdf");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(
@@ -145,10 +145,10 @@ class PageCounterFilterITest {
     void whenPage2Selected_ShouldCount3Then1(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, TEXT_FILENAME + ".page2.pdf");
+      final var targetFile = new File(testFolder, TEXT_FILENAME + ".page2.pdf");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(

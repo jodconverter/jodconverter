@@ -24,11 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -48,18 +45,18 @@ class LocalOfficeManagerPoolEntryTest {
     void whenMaxTasksPerConnectionReached_ShouldRestart()
         throws OfficeException, InterruptedException {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final LocalOfficeProcessManager processManager = mock(LocalOfficeProcessManager.class);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var processManager = mock(LocalOfficeProcessManager.class);
       given(processManager.getConnection()).willReturn(connection);
-      final LocalOfficeManagerPoolEntry entry =
+      final var entry =
           new LocalOfficeManagerPoolEntry(2, DEFAULT_TASK_EXECUTION_TIMEOUT, processManager);
       entry.start();
 
       // Force a connection (it is usually done in LocalOfficeProcessManager#start).
       connection.connect();
 
-      final OfficeTask task = mock(OfficeTask.class);
+      final var task = mock(OfficeTask.class);
       entry.execute(task);
       entry.execute(task);
 
@@ -77,11 +74,11 @@ class LocalOfficeManagerPoolEntryTest {
     @Test
     void shouldRestartDueToTaskTimeout() throws OfficeException, InterruptedException {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final LocalOfficeProcessManager processManager = mock(LocalOfficeProcessManager.class);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var processManager = mock(LocalOfficeProcessManager.class);
       given(processManager.getConnection()).willReturn(connection);
-      final LocalOfficeManagerPoolEntry entry =
+      final var entry =
           new LocalOfficeManagerPoolEntry(DEFAULT_MAX_TASKS_PER_PROCESS, 100L, processManager);
       entry.start();
 
@@ -113,11 +110,11 @@ class LocalOfficeManagerPoolEntryTest {
     @Test
     void whenNotStarted_ReturnFalse() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final LocalOfficeProcessManager processManager = mock(LocalOfficeProcessManager.class);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var processManager = mock(LocalOfficeProcessManager.class);
       given(processManager.getConnection()).willReturn(connection);
-      final LocalOfficeManagerPoolEntry entry =
+      final var entry =
           new LocalOfficeManagerPoolEntry(
               DEFAULT_MAX_TASKS_PER_PROCESS, DEFAULT_TASK_EXECUTION_TIMEOUT, processManager);
 
@@ -127,11 +124,11 @@ class LocalOfficeManagerPoolEntryTest {
     @Test
     void whenStartedButNotConnected_ReturnFalse() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final LocalOfficeProcessManager processManager = mock(LocalOfficeProcessManager.class);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var processManager = mock(LocalOfficeProcessManager.class);
       given(processManager.getConnection()).willReturn(connection);
-      final LocalOfficeManagerPoolEntry entry =
+      final var entry =
           new LocalOfficeManagerPoolEntry(
               DEFAULT_MAX_TASKS_PER_PROCESS, DEFAULT_TASK_EXECUTION_TIMEOUT, processManager);
       entry.start();
@@ -142,11 +139,11 @@ class LocalOfficeManagerPoolEntryTest {
     @Test
     void whenStartedAndConnected_ReturnTrue() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final LocalOfficeProcessManager processManager = mock(LocalOfficeProcessManager.class);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var processManager = mock(LocalOfficeProcessManager.class);
       given(processManager.getConnection()).willReturn(connection);
-      final LocalOfficeManagerPoolEntry entry =
+      final var entry =
           new LocalOfficeManagerPoolEntry(
               DEFAULT_MAX_TASKS_PER_PROCESS, DEFAULT_TASK_EXECUTION_TIMEOUT, processManager);
       entry.start();
@@ -164,11 +161,11 @@ class LocalOfficeManagerPoolEntryTest {
     @Test
     void ShouldCallOfficeManagerStart() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final LocalOfficeProcessManager processManager = mock(LocalOfficeProcessManager.class);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var processManager = mock(LocalOfficeProcessManager.class);
       given(processManager.getConnection()).willReturn(connection);
-      final LocalOfficeManagerPoolEntry entry =
+      final var entry =
           new LocalOfficeManagerPoolEntry(
               DEFAULT_MAX_TASKS_PER_PROCESS, DEFAULT_TASK_EXECUTION_TIMEOUT, processManager);
       entry.start();
@@ -183,11 +180,11 @@ class LocalOfficeManagerPoolEntryTest {
     @Test
     void ShouldCallOfficeManagerStop() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final LocalOfficeProcessManager processManager = mock(LocalOfficeProcessManager.class);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var processManager = mock(LocalOfficeProcessManager.class);
       given(processManager.getConnection()).willReturn(connection);
-      final LocalOfficeManagerPoolEntry entry =
+      final var entry =
           new LocalOfficeManagerPoolEntry(
               DEFAULT_MAX_TASKS_PER_PROCESS, DEFAULT_TASK_EXECUTION_TIMEOUT, processManager);
       entry.start();
@@ -204,11 +201,11 @@ class LocalOfficeManagerPoolEntryTest {
     @Test
     void whenUnexpectedDisconnection_ShouldRestartDueToLostConnection() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final LocalOfficeProcessManager processManager = mock(LocalOfficeProcessManager.class);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var processManager = mock(LocalOfficeProcessManager.class);
       given(processManager.getConnection()).willReturn(connection);
-      final LocalOfficeManagerPoolEntry entry =
+      final var entry =
           new LocalOfficeManagerPoolEntry(
               DEFAULT_MAX_TASKS_PER_PROCESS, DEFAULT_TASK_EXECUTION_TIMEOUT, processManager);
       entry.start();
@@ -220,7 +217,7 @@ class LocalOfficeManagerPoolEntryTest {
       assertThat(entry.isRunning()).isTrue();
 
       // executed will hold whether the task has been fully executed or not.
-      final AtomicBoolean executed = new AtomicBoolean(false);
+      final var executed = new AtomicBoolean(false);
 
       // Create a thread that will sleep 250 millisec and set the executed flag to true.
       final Runnable runnable =
@@ -232,7 +229,7 @@ class LocalOfficeManagerPoolEntryTest {
               // ignore
             }
           };
-      final Thread thread = new Thread(runnable);
+      final var thread = new Thread(runnable);
 
       // Execute a task that will only start the thread and return immediately.
       entry.execute(context -> thread.start());

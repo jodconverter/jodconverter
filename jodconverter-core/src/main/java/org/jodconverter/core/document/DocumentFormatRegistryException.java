@@ -20,6 +20,8 @@
 
 package org.jodconverter.core.document;
 
+import java.io.Serial;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -27,7 +29,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * properly.
  */
 public class DocumentFormatRegistryException extends RuntimeException {
-  private static final long serialVersionUID = -4334974313547581948L;
+
+  @Serial private static final long serialVersionUID = -4334974313547581948L;
 
   /**
    * Constructs an exception with the specified detail message and cause.

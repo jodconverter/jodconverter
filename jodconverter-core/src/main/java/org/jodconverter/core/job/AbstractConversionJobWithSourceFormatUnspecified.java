@@ -77,8 +77,8 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   @Override
   public @NonNull AbstractConversionJob to(final @NonNull File target) {
 
-    final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(target);
-    final DocumentFormat format =
+    final var specs = new TargetDocumentSpecsFromFile(target);
+    final var format =
         formatRegistry.getFormatByExtension(
             Objects.requireNonNull(FileUtils.getExtension(target.getName())));
     if (format != null) {
@@ -119,7 +119,7 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
     // No need to validate that the source format is provided. We will let
     // OOo deal with the detection of the source file format.
 
-    final AbstractConversionJob job = to(target);
+    final var job = to(target);
     job.setDefaultTargetOptions(defaultTargetOptions);
     return job;
   }

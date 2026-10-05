@@ -67,7 +67,7 @@ class ExternalConverterITest {
   void convert_ShouldUseTheRunningOfficeProcess(final @TempDir File testFolder)
       throws OfficeException {
 
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var outputFile = new File(testFolder, "out.pdf");
 
     converter.convert(new File(SOURCE_FILE_PATH)).to(outputFile).execute();
 

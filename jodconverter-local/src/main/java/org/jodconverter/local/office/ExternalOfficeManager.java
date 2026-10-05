@@ -159,7 +159,7 @@ public final class ExternalOfficeManager
       OfficeUtils.validateWorkingDir(workingDir);
 
       // Build the manager
-      final ExternalOfficeManager manager =
+      final var manager =
           new ExternalOfficeManager(
               LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames, websocketUrls),
               workingDir,

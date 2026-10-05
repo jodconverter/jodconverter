@@ -25,11 +25,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -65,7 +61,8 @@ final class PdfOptionsParser {
    *
    * @return The option names, in the order of their groups.
    */
-  /* default */ static Set<String> getOptionNames() {
+  /* default */
+  static Set<String> getOptionNames() {
     return OPTIONS.keySet();
   }
 
@@ -79,24 +76,25 @@ final class PdfOptionsParser {
    * @throws IllegalArgumentException If a name or a value is not valid, or if the options cannot be
    *     used together.
    */
-  /* default */ static PdfOptions parse(final String preset, final String... options) {
+  /* default */
+  static PdfOptions parse(final String preset, final String... options) {
 
     if (preset == null && (options == null || options.length == 0)) {
       return null;
     }
 
-    final PdfOptions.Builder builder = preset == null ? PdfOptions.builder() : preset(preset);
+    final var builder = preset == null ? PdfOptions.builder() : preset(preset);
     String certificateFile = null;
     String privateKeyFile = null;
     if (options != null) {
-      for (final String option : options) {
-        final int separator = option.indexOf('=');
+      for (final var option : options) {
+        final var separator = option.indexOf('=');
         if (separator <= 0) {
           throw new IllegalArgumentException(
               "Invalid PDF option '" + option + "'; expected name=value");
         }
-        final String name = option.substring(0, separator).trim();
-        final String value = option.substring(separator + 1);
+        final var name = option.substring(0, separator).trim();
+        final var value = option.substring(separator + 1);
         if (CERTIFICATE_FILE.equals(name)) {
           certificateFile = value;
         } else if (PRIVATE_KEY_FILE.equals(name)) {
@@ -130,7 +128,7 @@ final class PdfOptionsParser {
       return;
     }
 
-    final BiConsumer<PdfOptions.Builder, String> setter = OPTIONS.get(name);
+    final var setter = OPTIONS.get(name);
     if (setter == null) {
       throw new IllegalArgumentException(
           "Unknown PDF option '"
@@ -163,8 +161,8 @@ final class PdfOptionsParser {
               + "' must be used together");
     }
     try {
-      final String certificate = readFile(certificateFile);
-      final String privateKey = readFile(privateKeyFile);
+      final var certificate = readFile(certificateFile);
+      final var privateKey = readFile(privateKeyFile);
       builder.signature(signature -> signature.certificatePem(certificate, privateKey));
     } catch (UncheckedIOException ex) {
       throw new IllegalArgumentException(ex.getMessage(), ex);
@@ -218,7 +216,7 @@ final class PdfOptionsParser {
 
   // An RGB color, written as RRGGBB, #RRGGBB or 0xRRGGBB.
   private static int color(final String value) {
-    final String hex = value.trim().replaceFirst("^(#|0[xX])", "");
+    final var hex = value.trim().replaceFirst("^(#|0[xX])", "");
     try {
       return Integer.parseInt(hex, 16);
     } catch (NumberFormatException ex) {
@@ -228,8 +226,8 @@ final class PdfOptionsParser {
 
   // An enum constant, written in any case, with hyphens or underscores (pdf-a-2b, PDF_A_2B).
   private static <E extends Enum<E>> E enumValue(final Class<E> type, final String value) {
-    final String normalized = normalize(value);
-    for (final E constant : type.getEnumConstants()) {
+    final var normalized = normalize(value);
+    for (final var constant : type.getEnumConstants()) {
       if (constant.name().equals(normalized)) {
         return constant;
       }
@@ -243,7 +241,7 @@ final class PdfOptionsParser {
 
   // The PDF version, also accepted as "1.7", "2.0", "a-1b"...
   private static PdfVersion version(final String value) {
-    final String normalized = normalize(value);
+    final var normalized = normalize(value);
     return enumValue(
         PdfVersion.class,
         normalized.startsWith("PDF") || "DEFAULT".equals(normalized)
@@ -254,7 +252,7 @@ final class PdfOptionsParser {
   @SuppressWarnings("PMD.NcssCount")
   private static Map<String, BiConsumer<PdfOptions.Builder, String>> initOptions() {
 
-    final Map<String, BiConsumer<PdfOptions.Builder, String>> map = new LinkedHashMap<>();
+    final var map = new LinkedHashMap<String, BiConsumer<PdfOptions.Builder, String>>();
 
     // General
     map.put("version", (b, v) -> b.version(version(v)));

@@ -42,7 +42,7 @@ class CalcITest {
   @Test
   void withCalcDocument_ShouldSucceed(final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File sourceFile = documentFile("test.ods");
+    final var sourceFile = documentFile("test.ods");
 
     final Filter filter =
         (context, document, chain) -> {
@@ -51,7 +51,7 @@ class CalcITest {
           assertThat(Calc.getCalcDoc(document)).isNotNull();
         };
 
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()
@@ -67,7 +67,7 @@ class CalcITest {
   @Test
   void withTextDocument_ShouldSucceed(final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File sourceFile = documentFile("test.odt");
+    final var sourceFile = documentFile("test.odt");
 
     final Filter filter =
         (context, document, chain) -> {
@@ -76,7 +76,7 @@ class CalcITest {
           assertThat(Calc.getCalcDoc(document)).isNull();
         };
 
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()

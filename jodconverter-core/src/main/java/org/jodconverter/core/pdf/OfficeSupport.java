@@ -20,7 +20,6 @@
 
 package org.jodconverter.core.pdf;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Describes which office installations support a PDF option or a PDF version. */
@@ -48,7 +47,8 @@ final class OfficeSupport {
    * @param minor The minor number of the first LibreOffice version.
    * @return The office support.
    */
-  /* default */ static OfficeSupport libreOffice(final int major, final int minor) {
+  /* default */
+  static OfficeSupport libreOffice(final int major, final int minor) {
     return new OfficeSupport(major, minor, false);
   }
 
@@ -66,12 +66,12 @@ final class OfficeSupport {
       return openOffice;
     }
 
-    final Matcher matcher = VERSION_PATTERN.matcher(officeVersion.trim());
+    final var matcher = VERSION_PATTERN.matcher(officeVersion.trim());
     if (!matcher.find()) {
       return true;
     }
-    final int officeMajor = Integer.parseInt(matcher.group(1));
-    final int officeMinor = matcher.group(2) == null ? 0 : Integer.parseInt(matcher.group(2));
+    final var officeMajor = Integer.parseInt(matcher.group(1));
+    final var officeMinor = matcher.group(2) == null ? 0 : Integer.parseInt(matcher.group(2));
     return officeMajor > major || officeMajor == major && officeMinor >= minor;
   }
 

@@ -23,7 +23,6 @@ package org.jodconverter.core.document;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,14 +41,14 @@ final class DumpJsonDefaultDocumentFormatRegistry {
    */
   public static void main(final String[] args) {
 
-    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+    final var registry = DefaultDocumentFormatRegistry.getInstance();
     @SuppressWarnings("unchecked")
-    final TreeMap<String, DocumentFormat> formats =
+    final var formats =
         new TreeMap<>(
             (Map<String, DocumentFormat>)
                 ReflectionTestUtils.getField(registry, "fmtsByExtension"));
 
-    final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    final var gson = new GsonBuilder().setPrettyPrinting().create();
     if (LOGGER.isInfoEnabled()) {
       LOGGER.info(gson.toJson(formats.values()));
     }

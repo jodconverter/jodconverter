@@ -104,7 +104,7 @@ public final class SimpleOfficeManager
     @Override
     public SimpleOfficeManager build() {
 
-      final SimpleOfficeManager manager =
+      final var manager =
           new SimpleOfficeManager(workingDir, poolSize, taskExecutionTimeout, taskQueueTimeout);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);

@@ -30,7 +30,7 @@ class OfficeConnectionExceptionTest {
   @Test
   void withConnectStringAndThrowable_ShouldCreateExceptionWithConnectStringAndThrowable() {
 
-    final OfficeConnectionException ex = new OfficeConnectionException("message", "host=127.0.0.1");
+    final var ex = new OfficeConnectionException("message", "host=127.0.0.1");
     assertThat(ex.getConnectString()).isEqualTo("host=127.0.0.1");
     assertThat(ex).hasNoCause();
   }
@@ -38,7 +38,7 @@ class OfficeConnectionExceptionTest {
   @Test
   void withConnectString_ShouldCreateExceptionWithConnectString() {
 
-    final OfficeConnectionException ex =
+    final var ex =
         new OfficeConnectionException("message", "host=127.0.0.1", new RuntimeException());
     assertThat(ex.getConnectString()).isEqualTo("host=127.0.0.1");
     assertThat(ex).hasCauseExactlyInstanceOf(RuntimeException.class);

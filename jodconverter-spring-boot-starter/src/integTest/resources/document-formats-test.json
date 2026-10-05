@@ -1,7 +1,9 @@
-[  
+[
   {
     "name": "Portable Document Format",
-    "extensions": ["pdf"],
+    "extensions": [
+      "pdf"
+    ],
     "mediaType": "application/pdf",
     "inputFamily": "DRAWING",
     "storeProperties": {
@@ -21,7 +23,9 @@
   },
   {
     "name": "HTML",
-    "extensions": ["html"],
+    "extensions": [
+      "html"
+    ],
     "mediaType": "text/html",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -39,7 +43,9 @@
   },
   {
     "name": "XHTML",
-    "extensions": ["xhtml"],
+    "extensions": [
+      "xhtml"
+    ],
     "mediaType": "application/xhtml+xml",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -57,7 +63,9 @@
   },
   {
     "name": "Microsoft Word 97-2003",
-    "extensions": ["doc"],
+    "extensions": [
+      "doc"
+    ],
     "mediaType": "application/msword",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -68,7 +76,9 @@
   },
   {
     "name": "Microsoft Word 2007-2013 XML",
-    "extensions": ["docx"],
+    "extensions": [
+      "docx"
+    ],
     "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "inputFamily": "TEXT",
     "storeProperties": {
@@ -79,7 +89,9 @@
   },
   {
     "name": "Plain Text",
-    "extensions": ["txt"],
+    "extensions": [
+      "txt"
+    ],
     "mediaType": "text/plain",
     "inputFamily": "TEXT",
     "loadProperties": {
@@ -95,7 +107,9 @@
   },
   {
     "name": "Rich Text Format",
-    "extensions": ["rtf"],
+    "extensions": [
+      "rtf"
+    ],
     "mediaType": "text/rtf",
     "inputFamily": "TEXT",
     "storeProperties": {

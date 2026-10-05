@@ -48,8 +48,8 @@ class DrawITest {
           assertThat(Draw.isImpress(document)).isFalse();
         };
 
-    final File sourceFile = documentFile("test.odg");
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var sourceFile = documentFile("test.odg");
+    final var outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()
@@ -72,8 +72,8 @@ class DrawITest {
           assertThat(Draw.isImpress(document)).isTrue();
         };
 
-    final File sourceFile = documentFile("test.odp");
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var sourceFile = documentFile("test.odp");
+    final var outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()
@@ -95,8 +95,8 @@ class DrawITest {
           assertThat(Draw.isImpress(document)).isFalse();
         };
 
-    final File sourceFile = documentFile("test.odt");
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var sourceFile = documentFile("test.odt");
+    final var outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()

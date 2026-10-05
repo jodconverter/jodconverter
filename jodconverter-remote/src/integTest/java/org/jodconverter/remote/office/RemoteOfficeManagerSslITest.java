@@ -20,9 +20,7 @@
 
 package org.jodconverter.remote.office;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -41,7 +39,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.remote.RemoteConverter;
@@ -77,10 +74,10 @@ class RemoteOfficeManagerSslITest {
     void withKeyPasswordAndPasswordNotProvided_ShouldThrowUnrecoverableKeyException(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -92,13 +89,13 @@ class RemoteOfficeManagerSslITest {
                   .trustStorePassword(SERVER_TRUSTSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setKeyStore(CLIENT_KEYSTOREKEYPWD_PATH);
         sslConfig.setKeyStorePassword(CLIENT_KEYSTOREKEYPWD_PWD);
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/convert-to/")
                 .sslConfig(sslConfig)
@@ -126,10 +123,10 @@ class RemoteOfficeManagerSslITest {
     void withKeyPasswordAndPasswordProvided_ShouldSucceed(final @TempDir File testFolder)
         throws Exception {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -141,7 +138,7 @@ class RemoteOfficeManagerSslITest {
                   .trustStorePassword(SERVER_TRUSTSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setKeyStore(CLIENT_KEYSTOREKEYPWD_PATH);
         sslConfig.setKeyStorePassword(CLIENT_KEYSTOREKEYPWD_PWD);
@@ -153,7 +150,7 @@ class RemoteOfficeManagerSslITest {
         sslConfig.setTrustStoreType("jks");
         sslConfig.setTrustStoreProvider("SUN");
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001") // try
                 // all
@@ -172,7 +169,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -186,10 +183,10 @@ class RemoteOfficeManagerSslITest {
     void withNeedClientAuthAndConfiguredClientAuth_ShouldSucceed(final @TempDir File testFolder)
         throws Exception {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -201,14 +198,14 @@ class RemoteOfficeManagerSslITest {
                   .trustStorePassword(SERVER_TRUSTSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setKeyStore(CLIENT_KEYSTORE_PATH);
         sslConfig.setKeyStorePassword(CLIENT_KEYSTORE_PWD);
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/") // try
                 // all
@@ -227,7 +224,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -241,10 +238,10 @@ class RemoteOfficeManagerSslITest {
     void withNeedClientAuthAndMissingClientAuth_ShouldThrowSSLException(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -255,11 +252,11 @@ class RemoteOfficeManagerSslITest {
                   .needClientAuth(true));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/convert-to/")
                 .sslConfig(sslConfig)
@@ -286,10 +283,10 @@ class RemoteOfficeManagerSslITest {
     void withSpecifiedPrivateKeyAndBadPrivateKeySpecified_ShouldThrowSSLException(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -302,7 +299,7 @@ class RemoteOfficeManagerSslITest {
                   .needClientAuth(true));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setKeyStore(CLIENT_KEYSTORE_PATH);
         sslConfig.setKeyStorePassword(CLIENT_KEYSTORE_PWD);
@@ -310,7 +307,7 @@ class RemoteOfficeManagerSslITest {
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/convert-to/")
                 .sslConfig(sslConfig)
@@ -337,10 +334,10 @@ class RemoteOfficeManagerSslITest {
     void withSpecifiedPrivateKeyAndGoodPrivateKeySpecified_ShouldSucceed(
         final @TempDir File testFolder) throws Exception {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -353,7 +350,7 @@ class RemoteOfficeManagerSslITest {
                   .needClientAuth(true));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setKeyStore(CLIENT_KEYSTORE_PATH);
         sslConfig.setKeyStorePassword(CLIENT_KEYSTORE_PWD);
@@ -361,7 +358,7 @@ class RemoteOfficeManagerSslITest {
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool") // try
                 // all
@@ -380,7 +377,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -395,10 +392,10 @@ class RemoteOfficeManagerSslITest {
     void withSelfSignedCertificateAndNoSslConfiguration_ShouldThrowSSLException(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -408,7 +405,7 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/convert-to/")
                 .build();
@@ -436,10 +433,10 @@ class RemoteOfficeManagerSslITest {
     void withSelfSignedCertificateAndSslConfiguration_ShouldSucceed(final @TempDir File testFolder)
         throws Exception {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -449,12 +446,12 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/") // try all accepted URL paths...
                 .sslConfig(sslConfig)
@@ -469,7 +466,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -484,10 +481,10 @@ class RemoteOfficeManagerSslITest {
     void withSelfSignedCertificateAndTrustAll_ShouldSucceed(final @TempDir File testFolder)
         throws Exception {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -497,11 +494,11 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setTrustAll(true);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/") // try all accepted URL paths...
                 .sslConfig(sslConfig)
@@ -516,7 +513,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -531,10 +528,10 @@ class RemoteOfficeManagerSslITest {
     void withSelfSignedCertificateAndHostnameVerification_ShouldThrowSslException(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -544,11 +541,11 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/convert-to/")
                 .sslConfig(sslConfig)
@@ -577,10 +574,10 @@ class RemoteOfficeManagerSslITest {
     void withSelfSignedCertificateAndSslDisabled_ShouldThrowSSLException(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -590,9 +587,9 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/convert-to/")
                 .sslConfig(sslConfig)
@@ -621,10 +618,10 @@ class RemoteOfficeManagerSslITest {
     void withUnknownSslProtocol_ShouldThrowNoSuchAlgorithmException(final @TempDir File testFolder)
         throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -634,13 +631,13 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setProtocol("UnknownProtocol");
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/convert-to/")
                 .sslConfig(sslConfig)
@@ -669,10 +666,10 @@ class RemoteOfficeManagerSslITest {
     void withKnownSslProtocol_ShouldSucceed(final @TempDir File testFolder)
         throws OfficeException, IOException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -682,13 +679,13 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setProtocol("TLSv1.2");
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection(
                     "https://localhost:8001/lool/convert-to") // try all accepted URL paths...
@@ -704,7 +701,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -719,10 +716,10 @@ class RemoteOfficeManagerSslITest {
     void withUnknownEnabledlProtocol_ShouldThrowNoSuchAlgorithmException(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -732,13 +729,13 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setEnabledProtocols(new String[] {"UnknownProtocol"});
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/convert-to/")
                 .sslConfig(sslConfig)
@@ -767,10 +764,10 @@ class RemoteOfficeManagerSslITest {
     void withKnownEnabledProtocol_ShouldSucceed(final @TempDir File testFolder)
         throws OfficeException, IOException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -780,13 +777,13 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setEnabledProtocols(new String[] {"TLSv1.2"});
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection(
                     "https://localhost:8001/lool/convert-to") // try all accepted URL paths...
@@ -802,7 +799,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -817,10 +814,10 @@ class RemoteOfficeManagerSslITest {
     void withUnknownCipher_ShouldThrowNoSuchAlgorithmException(final @TempDir File testFolder)
         throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -830,13 +827,13 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setCiphers(new String[] {"UnknownCipher"});
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("https://localhost:8001/lool/convert-to/")
                 .sslConfig(sslConfig)
@@ -864,10 +861,10 @@ class RemoteOfficeManagerSslITest {
     void withKnownEnabledCipher_ShouldSucceed(final @TempDir File testFolder)
         throws OfficeException, IOException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -877,13 +874,13 @@ class RemoteOfficeManagerSslITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        final SslConfig sslConfig = new SslConfig();
+        final var sslConfig = new SslConfig();
         sslConfig.setEnabled(true);
         sslConfig.setCiphers(new String[] {"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"});
         sslConfig.setTrustStore(CLIENT_TRUSTSTORE_PATH);
         sslConfig.setTrustStorePassword(CLIENT_TRUSTSTORE_PWD);
         sslConfig.setVerifyHostname(false);
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection(
                     "https://localhost:8001/lool/convert-to/") // try all accepted URL paths...
@@ -899,7 +896,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();

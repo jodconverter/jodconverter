@@ -20,14 +20,8 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
+import static org.assertj.core.api.Assertions.*;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.util.ArrayList;
 
@@ -39,7 +33,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.SimpleOfficeTask;
 import org.jodconverter.core.test.util.TestUtil;
@@ -54,12 +47,12 @@ class ExternalOfficeManagerITest {
 
   private static LocalOfficeProcessManager startOfficeProcess() throws OfficeException {
 
-    final long start = System.currentTimeMillis();
+    final var start = System.currentTimeMillis();
 
     // Starts an office process
-    final OfficeConnection connection = new OfficeConnection(CONNECT_URL);
+    final var connection = new OfficeConnection(CONNECT_URL);
 
-    final LocalOfficeProcessManager manager =
+    final var manager =
         new LocalOfficeProcessManager(
             CONNECT_URL,
             LocalOfficeUtils.getDefaultOfficeHome(),
@@ -75,9 +68,8 @@ class ExternalOfficeManagerITest {
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             connection);
     manager.start();
-    final OfficeConnection conn =
-        (OfficeConnection) ReflectionTestUtils.getField(manager, "connection");
-    final long limit = start + START_WAIT_TIMEOUT;
+    final var conn = (OfficeConnection) ReflectionTestUtils.getField(manager, "connection");
+    final var limit = start + START_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (conn.isConnected()) {
         break;
@@ -105,7 +97,7 @@ class ExternalOfficeManagerITest {
   @Test
   void execute_WhenProcessDoesNotExist_ShouldFailed() {
 
-    final OfficeManager manager =
+    final var manager =
         ExternalOfficeManager.builder()
             .portNumbers(65_530)
             .connectTimeout(3_000L)
@@ -121,14 +113,14 @@ class ExternalOfficeManagerITest {
   @ParameterizedTest
   @ValueSource(strings = {"localhost", "127.0.0.1"})
   void execute_WhenProcessExists_ShouldSucceed(final String host) {
-    final OfficeManager manager =
+    final var manager =
         ExternalOfficeManager.builder()
             .hostName(host)
             .portNumbers(2002)
             .connectFailFast(true)
             .build();
 
-    final SimpleOfficeTask task = new SimpleOfficeTask();
+    final var task = new SimpleOfficeTask();
     assertThatCode(
             () -> {
               try {

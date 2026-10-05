@@ -76,9 +76,9 @@ public class StreamPumper extends Thread {
   @Override
   public void run() {
 
-    try (BufferedReader bufferedReader =
+    try (var bufferedReader =
         new BufferedReader(new InputStreamReader(stream, Charset.defaultCharset()))) {
-      String line = bufferedReader.readLine();
+      var line = bufferedReader.readLine();
       while (line != null) {
         consumer.consume(line);
         line = bufferedReader.readLine();

@@ -20,26 +20,20 @@
 
 package org.jodconverter.local.filter.text;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameContainer;
 import com.sun.star.drawing.XShape;
 import com.sun.star.graphic.XGraphicProvider;
 import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XMultiServiceFactory;
-import com.sun.star.text.XText;
 import com.sun.star.text.XTextContent;
-import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.uno.XComponentContext;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -73,10 +67,10 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
   private static Dimension getImageSize(final File image) throws OfficeException {
 
     try {
-      try (ImageInputStream inputStream = ImageIO.createImageInputStream(image)) {
-        final Iterator<ImageReader> readers = ImageIO.getImageReaders(inputStream);
+      try (var inputStream = ImageIO.createImageInputStream(image)) {
+        final var readers = ImageIO.getImageReaders(inputStream);
         if (readers.hasNext()) {
-          final ImageReader reader = readers.next();
+          final var reader = readers.next();
           try {
             reader.setInput(inputStream);
 
@@ -220,29 +214,29 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
       throws Exception {
 
     // Querying for the interface XMultiServiceFactory (text service factory) on the XTextDocument
-    final XMultiServiceFactory serviceFactory = Lo.getServiceFactory(document);
+    final var serviceFactory = Lo.getServiceFactory(document);
 
     // Creating graphic shape service
-    final Object graphicShape =
+    final var graphicShape =
         serviceFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
 
     // Access the XShape interface of the GraphicObjectShape
-    final XShape shape = Lo.qi(XShape.class, graphicShape);
+    final var shape = Lo.qi(XShape.class, graphicShape);
 
     // Set the size of the new Text Frame using the XShape's 'setSize'
     shape.setSize(toOfficeSize(getRectSize()));
 
     // Inserting image to the document
-    final String strUrl = LocalOfficeUtils.toUrl(imageFile);
+    final var strUrl = LocalOfficeUtils.toUrl(imageFile);
 
     // Querying property interface for the graphic shape service
-    final XPropertySet propSet = Lo.qi(XPropertySet.class, graphicShape);
+    final var propSet = Lo.qi(XPropertySet.class, graphicShape);
 
     if (Info.isLibreOffice(context)
         && Info.compareVersions("6.1", Info.getOfficeVersionShort(context), 2) >= 0) {
 
       // Create a GraphicProvider at the global service manager.
-      final XGraphicProvider graphicProvider =
+      final var graphicProvider =
           Lo.createInstance(
               context, XGraphicProvider.class, "com.sun.star.graphic.GraphicProvider");
       Objects.requireNonNull(graphicProvider);
@@ -254,12 +248,12 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
 
     } else {
       // Creating bitmap container service
-      final XNameContainer bitmapContainer =
+      final var bitmapContainer =
           Lo.createInstance(
               serviceFactory, XNameContainer.class, "com.sun.star.drawing.BitmapTable");
 
       LOGGER.debug("Embedding image to the bitmap container '{}'", strUrl);
-      final String uuid = UUID.randomUUID().toString();
+      final var uuid = UUID.randomUUID().toString();
       bitmapContainer.insertByName(uuid, strUrl);
 
       // Assign image internal URL to the graphic shape property
@@ -267,24 +261,24 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
     }
 
     // Assign all the other properties
-    for (final Map.Entry<String, Object> entry : getShapeProperties().entrySet()) {
+    for (final var entry : getShapeProperties().entrySet()) {
       propSet.setPropertyValue(entry.getKey(), entry.getValue());
     }
 
     // Querying for the interface XTextDocument (text interface) on the XComponent
-    final XTextDocument docText = Lo.qi(XTextDocument.class, document);
+    final var docText = Lo.qi(XTextDocument.class, document);
 
     // Getting text field interface
-    final XText text = docText.getText();
+    final var text = docText.getText();
 
     // Getting text cursor
-    final XTextCursor textCursor = text.createTextCursor();
+    final var textCursor = text.createTextCursor();
 
     // Apply the AnchorPageNo fix
     applyAnchorPageNoFix(docText, textCursor);
 
     // Convert graphic shape to the text content item
-    final XTextContent textContent = Lo.qi(XTextContent.class, graphicShape);
+    final var textContent = Lo.qi(XTextContent.class, graphicShape);
 
     // Embed image into the document text with replacement
     LOGGER.debug("Inserting image into the document");

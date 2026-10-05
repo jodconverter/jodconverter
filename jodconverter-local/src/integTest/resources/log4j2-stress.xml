@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Used by StressITest, which keeps a log file to be able to see if an error occurred. -->
 <Configuration>
-  <Appenders>
-    <Console name="stdout" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d %-5p --- [%t] %c{1.} - %m%n"/>
-    </Console>
-    <File name="file" fileName="build/integTest-results/test.log" append="false">
-      <PatternLayout pattern="%d %-5p --- [%t] %c{1.} - %m%n"/>
-    </File>
-  </Appenders>
-  <Loggers>
-    <Root level="DEBUG">
-      <AppenderRef ref="stdout"/>
-      <AppenderRef ref="file"/>
-    </Root>
-  </Loggers>
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p --- [%t] %c{1.} - %m%n"/>
+        </Console>
+        <File name="file" fileName="build/integTest-results/test.log" append="false">
+            <PatternLayout pattern="%d %-5p --- [%t] %c{1.} - %m%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="DEBUG">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="file"/>
+        </Root>
+    </Loggers>
 </Configuration>

@@ -20,10 +20,7 @@
 
 package org.jodconverter.core.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.core.office.SimpleOfficeManager.DEFAULT_TASK_EXECUTION_TIMEOUT;
 
 import java.util.concurrent.CancellationException;
@@ -45,13 +42,12 @@ class AbstractOfficeManagerPoolEntryTest {
     @Test
     void whenTaskSuccessful_ShouldBeCompleted() throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+      final var entry = new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
       try {
         entry.start();
         assertThat(entry.isRunning()).isTrue();
 
-        final SimpleOfficeTask task = new SimpleOfficeTask();
+        final var task = new SimpleOfficeTask();
         assertThatCode(() -> entry.execute(task)).doesNotThrowAnyException();
         assertThat(task.isCompleted()).isTrue();
 
@@ -64,12 +60,12 @@ class AbstractOfficeManagerPoolEntryTest {
     @Test
     void whenTaskExecutionTimeout_ShouldThrowOfficeException() throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry = new SimpleOfficeManagerPoolEntry(500L);
+      final var entry = new SimpleOfficeManagerPoolEntry(500L);
       try {
         entry.start();
         assertThat(entry.isRunning()).isTrue();
 
-        final SimpleOfficeTask task = new SimpleOfficeTask(1_000L);
+        final var task = new SimpleOfficeTask(1_000L);
         assertThatExceptionOfType(OfficeException.class)
             .isThrownBy(() -> entry.execute(task))
             .withCauseExactlyInstanceOf(TimeoutException.class)
@@ -84,17 +80,17 @@ class AbstractOfficeManagerPoolEntryTest {
     @Test
     void whenTaskExecutionTimeout_ShouldCancelTaskSoNextTaskCanRun() throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry = new SimpleOfficeManagerPoolEntry(500L);
+      final var entry = new SimpleOfficeManagerPoolEntry(500L);
       try {
         entry.start();
 
         // Without cancellation, this task would keep the entry busy for 5 seconds
-        final SimpleOfficeTask timedOutTask = new SimpleOfficeTask(5_000L);
+        final var timedOutTask = new SimpleOfficeTask(5_000L);
         assertThatExceptionOfType(OfficeException.class)
             .isThrownBy(() -> entry.execute(timedOutTask))
             .withCauseExactlyInstanceOf(TimeoutException.class);
 
-        final SimpleOfficeTask nextTask = new SimpleOfficeTask();
+        final var nextTask = new SimpleOfficeTask();
         assertThatCode(() -> entry.execute(nextTask)).doesNotThrowAnyException();
         assertThat(nextTask.isCompleted()).isTrue();
         assertThat(timedOutTask.isCompleted()).isFalse();
@@ -107,13 +103,13 @@ class AbstractOfficeManagerPoolEntryTest {
     @Test
     void whenCallerInterrupted_ShouldCancelTaskSoNextTaskCanRun() throws Exception {
 
-      final SimpleOfficeManagerPoolEntry entry = new SimpleOfficeManagerPoolEntry(1_000L);
+      final var entry = new SimpleOfficeManagerPoolEntry(1_000L);
       try {
         entry.start();
 
-        final SimpleOfficeTask interruptedTask = new SimpleOfficeTask(5_000L);
-        final AtomicReference<OfficeException> ex = new AtomicReference<>();
-        final Thread caller =
+        final var interruptedTask = new SimpleOfficeTask(5_000L);
+        final var ex = new AtomicReference<OfficeException>();
+        final var caller =
             new Thread(
                 () -> {
                   try {
@@ -133,7 +129,7 @@ class AbstractOfficeManagerPoolEntryTest {
             .hasCauseExactlyInstanceOf(InterruptedException.class);
 
         // Without cancellation, this task would wait behind the interrupted one and time out
-        final SimpleOfficeTask nextTask = new SimpleOfficeTask();
+        final var nextTask = new SimpleOfficeTask();
         assertThatCode(() -> entry.execute(nextTask)).doesNotThrowAnyException();
         assertThat(nextTask.isCompleted()).isTrue();
         assertThat(interruptedTask.isCompleted()).isFalse();
@@ -147,14 +143,13 @@ class AbstractOfficeManagerPoolEntryTest {
     void whenExecutionExceptionIsOfficeException_ShouldThrowSameOfficeException()
         throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
-      final IllegalStateException exception = new IllegalStateException("This is a test");
+      final var entry = new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+      final var exception = new IllegalStateException("This is a test");
       try {
         entry.start();
         assertThat(entry.isRunning()).isTrue();
 
-        final SimpleOfficeTask task = new SimpleOfficeTask(exception);
+        final var task = new SimpleOfficeTask(exception);
         assertThatExceptionOfType(OfficeException.class)
             .isThrownBy(() -> entry.execute(task))
             .withCauseExactlyInstanceOf(IllegalStateException.class)
@@ -170,14 +165,13 @@ class AbstractOfficeManagerPoolEntryTest {
     void whenExecutionExceptionIsNotOfficeException_ShouldWrapCauseInOfficeException()
         throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
-      final OfficeException exception = new OfficeException("This is a test");
+      final var entry = new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+      final var exception = new OfficeException("This is a test");
       try {
         entry.start();
         assertThat(entry.isRunning()).isTrue();
 
-        final SimpleOfficeTask task = new SimpleOfficeTask(exception);
+        final var task = new SimpleOfficeTask(exception);
         assertThatExceptionOfType(OfficeException.class)
             .isThrownBy(() -> entry.execute(task))
             .withMessage("Failed to execute task")
@@ -198,9 +192,9 @@ class AbstractOfficeManagerPoolEntryTest {
       // entry would have never been made available. So, a task execution timeout will
       // occur.
 
-      final SimpleOfficeManagerPoolEntry entry = new SimpleOfficeManagerPoolEntry(500L);
+      final var entry = new SimpleOfficeManagerPoolEntry(500L);
       try {
-        final SimpleOfficeTask task = new SimpleOfficeTask(1_000L);
+        final var task = new SimpleOfficeTask(1_000L);
 
         assertThatExceptionOfType(OfficeException.class)
             .isThrownBy(() -> entry.execute(task))
@@ -212,52 +206,10 @@ class AbstractOfficeManagerPoolEntryTest {
       }
     }
 
-    //    @Test
-    //    void whenTaskInterrupted_ShouldThrowOfficeException() throws OfficeException {
-    //
-    //      final SimpleOfficeManagerPoolEntry entry =
-    //          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
-    //      try {
-    //        final SimpleOfficeTask task = new SimpleOfficeTask(5_000L);
-    //        final AtomicReference<OfficeException> ex = new AtomicReference<>();
-    //
-    //        assertThatCode(
-    //                () -> {
-    //                  final Thread thread =
-    //                      new Thread(
-    //                          () -> {
-    //                            try {
-    //                              entry.execute(task);
-    //                            } catch (OfficeException oe) {
-    //                              ex.set(oe);
-    //                            }
-    //                          });
-    //
-    //                  // Start the thread.
-    //                  thread.start();
-    //                  // Interrupt the thread.
-    //                  thread.interrupt();
-    //                  //  Wait for thread to complete.
-    //                  thread.join();
-    //                })
-    //            .doesNotThrowAnyException();
-    //
-    //        assertThat(ex.get())
-    //            .isExactlyInstanceOf(OfficeException.class)
-    //            .hasMessageStartingWith("Task was interrupted while executing")
-    //            .hasCauseExactlyInstanceOf(InterruptedException.class);
-    //
-    //      } finally {
-    //        entry.stop();
-    //        assertThat(entry.isRunning()).isFalse();
-    //      }
-    //    }
-
     @Test
     void whenTerminated_ShouldThrowIllegalStateException() throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+      final var entry = new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
       entry.start();
       assertThat(entry.isRunning()).isTrue();
       entry.stop();
@@ -273,8 +225,7 @@ class AbstractOfficeManagerPoolEntryTest {
     @Test
     void whenAlreadyStarted_ShouldIgnoreSubsequentStart() throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+      final var entry = new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
       try {
         entry.start();
         assertThat(entry.isRunning()).isTrue();
@@ -290,8 +241,7 @@ class AbstractOfficeManagerPoolEntryTest {
     @Test
     void whenTerminated_ShouldThrowIllegalStateException() throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+      final var entry = new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
       entry.start();
       assertThat(entry.isRunning()).isTrue();
       entry.stop();
@@ -305,8 +255,7 @@ class AbstractOfficeManagerPoolEntryTest {
     @Test
     void whenNotStartedYet_ShouldStopAndInvalidateManager() throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+      final var entry = new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
       entry.stop();
       assertThat(entry.isRunning()).isFalse();
       assertThatIllegalStateException().isThrownBy(entry::start);
@@ -319,8 +268,7 @@ class AbstractOfficeManagerPoolEntryTest {
     @Test
     void whenNoRunningTask_ShouldNoNothing() throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+      final var entry = new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
       try {
         entry.start();
         assertThat(entry.isRunning()).isTrue();
@@ -335,15 +283,14 @@ class AbstractOfficeManagerPoolEntryTest {
     @Test
     void whenTaskRunning_ShouldCancelTask() throws OfficeException {
 
-      final SimpleOfficeManagerPoolEntry entry =
-          new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
+      final var entry = new SimpleOfficeManagerPoolEntry(DEFAULT_TASK_EXECUTION_TIMEOUT);
       try {
-        final SimpleOfficeTask task = new SimpleOfficeTask(5_000L);
-        final AtomicReference<OfficeException> ex = new AtomicReference<>();
+        final var task = new SimpleOfficeTask(5_000L);
+        final var ex = new AtomicReference<OfficeException>();
 
         assertThatCode(
                 () -> {
-                  final Thread thread =
+                  final var thread =
                       new Thread(
                           () -> {
                             try {

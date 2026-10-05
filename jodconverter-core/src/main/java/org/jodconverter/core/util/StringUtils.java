@@ -51,10 +51,10 @@ public final class StringUtils {
    */
   public static boolean endsWithAny(
       final @Nullable String str, final @Nullable String... searchStrings) {
-    if (isEmpty(str) || searchStrings == null || searchStrings.length == 0) {
+    if (isEmpty(str) || searchStrings == null) {
       return false;
     }
-    for (final String searchString : searchStrings) {
+    for (final var searchString : searchStrings) {
       if (searchString != null && str.endsWith(searchString)) {
         return true;
       }
@@ -102,7 +102,7 @@ public final class StringUtils {
     if (str.isEmpty()) {
       return true;
     }
-    for (int i = 0; i < str.length(); i++) {
+    for (var i = 0; i < str.length(); i++) {
       if (!Character.isWhitespace(str.charAt(i))) {
         return false;
       }
@@ -124,7 +124,7 @@ public final class StringUtils {
     if (str.isEmpty()) {
       return false;
     }
-    for (int i = 0; i < str.length(); i++) {
+    for (var i = 0; i < str.length(); i++) {
       if (!Character.isWhitespace(str.charAt(i))) {
         return true;
       }

@@ -96,7 +96,7 @@ public final class SimpleConverter extends AbstractConverter {
     public void doExecute() throws OfficeException {
 
       // Create a default conversion task and execute it
-      final SimpleOfficeTask task = new SimpleOfficeTask();
+      final var task = new SimpleOfficeTask();
       officeManager.execute(task);
     }
   }

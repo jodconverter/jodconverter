@@ -20,14 +20,8 @@
 
 package org.jodconverter.remote.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT;
-import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT;
-import static org.jodconverter.remote.office.RemoteOfficeManager.MAX_POOL_SIZE;
+import static org.assertj.core.api.Assertions.*;
+import static org.jodconverter.remote.office.RemoteOfficeManager.*;
 
 import java.io.File;
 
@@ -37,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 
 /** Contains tests for the {@link RemoteOfficeManager} class. */
@@ -51,7 +44,7 @@ class RemoteOfficeManagerTest {
     @Test
     void shouldInitializedManagerWithDefaultValues() {
 
-      final OfficeManager manager = RemoteOfficeManager.make("localhost");
+      final var manager = RemoteOfficeManager.make("localhost");
 
       assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
       assertThat(manager)
@@ -94,9 +87,9 @@ class RemoteOfficeManagerTest {
     void shouldSetInstalledOfficeManagerHolder() {
 
       // Ensure we do not replace the current installed manager
-      final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
+      final var installedManager = InstalledOfficeManagerHolder.getInstance();
       try {
-        final OfficeManager manager = RemoteOfficeManager.install("localhost");
+        final var manager = RemoteOfficeManager.install("localhost");
         assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
       } finally {
         InstalledOfficeManagerHolder.setInstance(installedManager);
@@ -110,7 +103,7 @@ class RemoteOfficeManagerTest {
     @Test
     void withNullValues_ShouldInitializedManagerWithDefaultValues() {
 
-      final OfficeManager manager =
+      final var manager =
           RemoteOfficeManager.builder()
               .workingDir((String) null)
               .workingDir((File) null)
@@ -159,10 +152,10 @@ class RemoteOfficeManagerTest {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void withCustomValues_ShouldInitializedManagerWithCustomValues() {
 
-      final File workingDir = new File(testFolder, "temp");
+      final var workingDir = new File(testFolder, "temp");
       workingDir.mkdirs();
 
-      final OfficeManager manager =
+      final var manager =
           RemoteOfficeManager.builder()
               .workingDir(workingDir.getPath())
               .taskExecutionTimeout(500L)

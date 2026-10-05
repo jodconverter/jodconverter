@@ -20,17 +20,8 @@
 
 package org.jodconverter.core.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +33,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -63,14 +53,14 @@ class OfficeUtilsTest {
     @Test
     void whenNotCustomTempDir_ShouldReturnDefaultTempDir() {
 
-      final File defaultTempDir = new File(System.getProperty("java.io.tmpdir"));
+      final var defaultTempDir = new File(System.getProperty("java.io.tmpdir"));
       assertThat(defaultTempDir).isEqualTo(OfficeUtils.getDefaultWorkingDir());
     }
 
     @Test
     void whenCustomTempDir_ShouldReturnCustomTempDir(final @TempDir File testFolder) {
 
-      final String backup = System.getProperty("java.io.tmpdir");
+      final var backup = System.getProperty("java.io.tmpdir");
       try {
         System.setProperty("java.io.tmpdir", testFolder.getAbsolutePath());
         assertThat(OfficeUtils.getDefaultWorkingDir()).isEqualTo(testFolder);
@@ -86,7 +76,7 @@ class OfficeUtilsTest {
     @Test
     void whenNotExists_ShouldThrowIllegalStateException(final @TempDir File testFolder) {
 
-      final File workingDir = new File(testFolder, "temp");
+      final var workingDir = new File(testFolder, "temp");
       assertThatExceptionOfType(IllegalStateException.class)
           .isThrownBy(() -> OfficeUtils.validateWorkingDir(workingDir))
           .withMessageStartingWith("workingDir doesn't exist or is not a directory");
@@ -96,7 +86,7 @@ class OfficeUtilsTest {
     void whenIsFile_ShouldThrowIllegalStateException(final @TempDir File testFolder)
         throws IOException {
 
-      final File file = new File(testFolder, getClass().getName() + ".txt");
+      final var file = new File(testFolder, getClass().getName() + ".txt");
       assertThat(file.createNewFile()).isTrue();
       assertThatExceptionOfType(IllegalStateException.class)
           .isThrownBy(() -> OfficeUtils.validateWorkingDir(file))
@@ -106,7 +96,7 @@ class OfficeUtilsTest {
     @Test
     void whenNotWritable_ShouldThrowIllegalStateException() {
 
-      final File workingDir = mock(File.class);
+      final var workingDir = mock(File.class);
       when(workingDir.isDirectory()).thenAnswer(invocation -> true);
       when(workingDir.canWrite()).thenAnswer(invocation -> false);
 
@@ -118,7 +108,7 @@ class OfficeUtilsTest {
     @Test
     void whenDirectoryAndWritable_ShouldNotThrowAnyException() {
 
-      final File workingDir = mock(File.class);
+      final var workingDir = mock(File.class);
       when(workingDir.isDirectory()).thenAnswer(invocation -> true);
       when(workingDir.canWrite()).thenAnswer(invocation -> true);
 
@@ -131,7 +121,7 @@ class OfficeUtilsTest {
     @Test
     void whenOfficeExceptionThrown_ShouldSwallowException() throws OfficeException {
 
-      final OfficeManager officeManager = mock(OfficeManager.class);
+      final var officeManager = mock(OfficeManager.class);
       doThrow(OfficeException.class).when(officeManager).stop();
 
       assertThatCode(() -> OfficeUtils.stopQuietly(officeManager)).doesNotThrowAnyException();
@@ -145,7 +135,7 @@ class OfficeUtilsTest {
     @Test
     void withNotNull_ShouldCallClose() throws OfficeException {
 
-      final OfficeManager officeManager = mock(OfficeManager.class);
+      final var officeManager = mock(OfficeManager.class);
       OfficeUtils.stopQuietly(officeManager);
       verify(officeManager, times(1)).stop();
     }
@@ -157,12 +147,12 @@ class OfficeUtilsTest {
     @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
     void whenCannotBeDeleted_ShouldRename() throws OfficeException, IOException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
 
-      final File mockDir = mock(File.class);
-      final Path mockPath = mock(Path.class);
-      final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+      final var mockDir = mock(File.class);
+      final var mockPath = mock(Path.class);
+      final var tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
       ReflectionTestUtils.setField(manager, "tempDir", mockDir);
       when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
       when(mockDir.getName()).thenAnswer(invocation -> tempDir.getName());
@@ -175,8 +165,8 @@ class OfficeUtilsTest {
                 return true;
               });
 
-      final FileSystem mockFileSystem = mock(FileSystem.class);
-      final FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
+      final var mockFileSystem = mock(FileSystem.class);
+      final var mockFileSystemProvider = mock(FileSystemProvider.class);
       when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
       when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
       when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
@@ -186,7 +176,7 @@ class OfficeUtilsTest {
           .delete(isA(Path.class));
 
       manager.stop();
-      final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
+      final var arg = ArgumentCaptor.forClass(File.class);
       verify(mockDir, times(1)).renameTo(arg.capture());
       assertThat(arg.getValue()).exists();
       assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
@@ -199,12 +189,12 @@ class OfficeUtilsTest {
     @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
     void whenCannotBeDeletedNorRenamed_ShouldNotRename() throws OfficeException, IOException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
 
-      final File mockDir = mock(File.class);
-      final Path mockPath = mock(Path.class);
-      final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+      final var mockDir = mock(File.class);
+      final var mockPath = mock(Path.class);
+      final var tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
       ReflectionTestUtils.setField(manager, "tempDir", mockDir);
       when(mockDir.exists()).thenAnswer(invocation -> tempDir.exists());
       when(mockDir.getName()).thenAnswer(invocation -> tempDir.getName());
@@ -212,8 +202,8 @@ class OfficeUtilsTest {
       when(mockDir.toPath()).thenAnswer(invocation -> mockPath);
       when(mockDir.renameTo(isA(File.class))).thenAnswer(invocation -> false);
 
-      final FileSystem mockFileSystem = mock(FileSystem.class);
-      final FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
+      final var mockFileSystem = mock(FileSystem.class);
+      final var mockFileSystemProvider = mock(FileSystemProvider.class);
       when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
       when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
       when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
@@ -223,7 +213,7 @@ class OfficeUtilsTest {
           .delete(isA(Path.class));
 
       manager.stop();
-      final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
+      final var arg = ArgumentCaptor.forClass(File.class);
       verify(mockDir, times(1)).renameTo(arg.capture());
       assertThat(arg.getValue()).doesNotExist();
       assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
@@ -236,24 +226,24 @@ class OfficeUtilsTest {
     void whenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory(final @TempDir File testFolder)
         throws Exception {
 
-      final File workingDir =
+      final var workingDir =
           new File(testFolder, "delete_WhenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory");
       workingDir.mkdirs();
-      final File dirToDelete =
+      final var dirToDelete =
           new File(workingDir, "delete_WhenCannotBeDeletedButCanBeRenamed_ShouldRenameDirectory");
       dirToDelete.mkdirs();
       File.createTempFile("test1_", ".tmp", dirToDelete);
       File.createTempFile("test2_", ".tmp", dirToDelete);
       File.createTempFile("test3_", ".tmp", dirToDelete);
       File.createTempFile("test4_", ".tmp", dirToDelete);
-      final File subDirToDelete = new File(dirToDelete, "foo");
+      final var subDirToDelete = new File(dirToDelete, "foo");
       subDirToDelete.mkdirs();
       File.createTempFile("test1_", ".tmp", subDirToDelete);
       File.createTempFile("test2_", ".tmp", subDirToDelete);
       File.createTempFile("test3_", ".tmp", subDirToDelete);
       File.createTempFile("test4_", ".tmp", subDirToDelete);
 
-      try (MockedStatic<FileUtils> utils = Mockito.mockStatic(FileUtils.class)) {
+      try (var utils = Mockito.mockStatic(FileUtils.class)) {
         utils.when(() -> FileUtils.delete(isA(File.class))).thenThrow(IOException.class);
 
         OfficeUtils.deleteOrRenameFile(dirToDelete, 0L, 0L);
@@ -275,7 +265,7 @@ class OfficeUtilsTest {
     @Test
     void withNotNull_ShouldCallClose() throws OfficeException {
 
-      final OfficeManager officeManager = mock(OfficeManager.class);
+      final var officeManager = mock(OfficeManager.class);
       OfficeUtils.stopQuietly(officeManager);
       verify(officeManager, times(1)).stop();
     }

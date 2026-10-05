@@ -66,7 +66,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
     AssertUtils.notNull(type, "type must not be null");
     AssertUtils.notNull(type, "object must not be null");
 
-    final T obj = UnoRuntime.getInstance().queryInterface(type, object);
+    final var obj = UnoRuntime.getInstance().queryInterface(type, object);
 
     AssertUtils.notNull(
         obj,
@@ -197,6 +197,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    *     the {@link WrappedUnoException}.
    * @deprecated Use {@link #createInstance(XComponent, Class, String)} instead.
    */
+  @Deprecated
   public static <T> @NonNull T createInstanceMSF(
       final @NonNull XComponent component,
       final @NonNull Class<T> type,
@@ -221,6 +222,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    *     the {@link WrappedUnoException}.
    * @deprecated Use {@link #createInstance(XMultiServiceFactory, Class, String)} instead.
    */
+  @Deprecated
   public static <T> @NonNull T createInstanceMSF(
       final @NonNull XMultiServiceFactory factory,
       final @NonNull Class<T> type,

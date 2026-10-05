@@ -45,7 +45,7 @@ public class ExitCodeRetryable extends AbstractRetryable<RuntimeException> {
   @Override
   protected void attempt() throws TemporaryException {
 
-    final Integer code = process.getExitCode();
+    final var code = process.getExitCode();
     if (code == null) {
       throw new TemporaryException("The process has not yet terminated");
     }

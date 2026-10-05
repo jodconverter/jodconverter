@@ -20,15 +20,8 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+import static org.assertj.core.api.Assertions.*;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -56,9 +49,9 @@ class LocalOfficeProcessManagerReflectTest {
   @Test
   void checkForExistingProcess_WhenIOExceptionCatched_ShouldTrowOfficeException() {
 
-    final OfficeUrl url = new OfficeUrl(9999);
-    final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
-    final LocalOfficeProcessManager manager =
+    final var url = new OfficeUrl(9999);
+    final var connection = TestOfficeConnection.prepareTest(url);
+    final var manager =
         new LocalOfficeProcessManager(
             url,
             LocalOfficeUtils.getDefaultOfficeHome(),
@@ -105,9 +98,9 @@ class LocalOfficeProcessManagerReflectTest {
   @Test
   void forciblyTerminateProcess_WhenIoExceptionCatched_ShouldLogError() {
 
-    final OfficeUrl url = new OfficeUrl(9999);
-    final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
-    final LocalOfficeProcessManager manager =
+    final var url = new OfficeUrl(9999);
+    final var connection = TestOfficeConnection.prepareTest(url);
+    final var manager =
         new LocalOfficeProcessManager(
             url,
             LocalOfficeUtils.getDefaultOfficeHome(),
@@ -131,7 +124,7 @@ class LocalOfficeProcessManagerReflectTest {
     // TODO: Check that the error message if properly logged.
     assertThatCode(
             () -> {
-              final VerboseProcess verboseProcess = mock(VerboseProcess.class);
+              final var verboseProcess = mock(VerboseProcess.class);
               ReflectionTestUtils.setField(manager, "pid", 0L);
               ReflectionTestUtils.setField(manager, "process", verboseProcess);
               ReflectionTestUtils.invokeMethod(manager, "forciblyTerminateProcess");
@@ -143,10 +136,10 @@ class LocalOfficeProcessManagerReflectTest {
   void restartDueToLostConnection_WhenProcessStillRunning_ShouldKillItWithoutWaitingProcessTimeout(
       final @TempDir File testFolder) throws InterruptedException {
 
-    final OfficeUrl url = new OfficeUrl(9999);
-    final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
-    final CountDownLatch killed = new CountDownLatch(1);
-    final LocalOfficeProcessManager manager =
+    final var url = new OfficeUrl(9999);
+    final var connection = TestOfficeConnection.prepareTest(url);
+    final var killed = new CountDownLatch(1);
+    final var manager =
         new LocalOfficeProcessManager(
             url,
             // No office here: the restart that follows the kill fails right away
@@ -169,7 +162,7 @@ class LocalOfficeProcessManagerReflectTest {
             connection);
 
     // A process that never exits by itself (no exit code)
-    final VerboseProcess verboseProcess = mock(VerboseProcess.class);
+    final var verboseProcess = mock(VerboseProcess.class);
     given(verboseProcess.getExitCode()).willReturn(null);
     ReflectionTestUtils.setField(manager, "pid", 0L);
     ReflectionTestUtils.setField(manager, "process", verboseProcess);
@@ -185,8 +178,8 @@ class LocalOfficeProcessManagerReflectTest {
   void prepareProcessBuilder_ShouldPointTempDirectoriesIntoInstanceProfileDir(
       final @TempDir File testFolder) {
 
-    final OfficeUrl url = new OfficeUrl(9999);
-    final LocalOfficeProcessManager manager =
+    final var url = new OfficeUrl(9999);
+    final var manager =
         new LocalOfficeProcessManager(
             url,
             testFolder,
@@ -207,7 +200,7 @@ class LocalOfficeProcessManagerReflectTest {
     final ProcessBuilder processBuilder =
         ReflectionTestUtils.invokeMethod(manager, "prepareProcessBuilder", "acceptString");
 
-    final File tempDir = manager.getInstanceTempDir();
+    final var tempDir = manager.getInstanceTempDir();
     assertThat(tempDir)
         .isDirectory()
         .hasParent((File) ReflectionTestUtils.getField(manager, "instanceProfileDir"));
@@ -227,9 +220,9 @@ class LocalOfficeProcessManagerReflectTest {
       final @TempDir File testFolder) throws IOException {
 
     // Another program listening on the port (Tomcat for example)
-    try (ServerSocket otherProgram = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
-      final int port = otherProgram.getLocalPort();
-      final LocalOfficeProcessManager manager = newManager(new OfficeUrl(port), testFolder);
+    try (var otherProgram = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
+      final var port = otherProgram.getLocalPort();
+      final var manager = newManager(new OfficeUrl(port), testFolder);
 
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(
@@ -250,10 +243,10 @@ class LocalOfficeProcessManagerReflectTest {
       throws IOException {
 
     final int port;
-    try (ServerSocket socket = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
+    try (var socket = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
       port = socket.getLocalPort();
     }
-    final LocalOfficeProcessManager manager = newManager(new OfficeUrl(port), testFolder);
+    final var manager = newManager(new OfficeUrl(port), testFolder);
 
     assertThatCode(
             () -> ReflectionTestUtils.invokeMethod(manager, "checkPortAvailable", "acceptString"))
@@ -263,7 +256,7 @@ class LocalOfficeProcessManagerReflectTest {
   @Test
   void checkPortAvailable_WhenPipe_ShouldDoNothing(final @TempDir File testFolder) {
 
-    final LocalOfficeProcessManager manager = newManager(new OfficeUrl("jodconverter"), testFolder);
+    final var manager = newManager(new OfficeUrl("jodconverter"), testFolder);
 
     assertThatCode(
             () -> ReflectionTestUtils.invokeMethod(manager, "checkPortAvailable", "acceptString"))
@@ -291,9 +284,9 @@ class LocalOfficeProcessManagerReflectTest {
   void prepareProcessBuilder_WithOfficeExecutable_ShouldStartTheExecutable(
       final @TempDir File testFolder) {
 
-    final OfficeUrl url = new OfficeUrl(9999);
-    final File launcher = new File(testFolder, "libreoffice");
-    final LocalOfficeProcessManager manager =
+    final var url = new OfficeUrl(9999);
+    final var launcher = new File(testFolder, "libreoffice");
+    final var manager =
         new LocalOfficeProcessManager(
             url,
             null,
@@ -323,9 +316,9 @@ class LocalOfficeProcessManagerReflectTest {
   @Test
   void forciblyTerminateProcess_WhenNotStarted_ShouldDoNothing() {
 
-    final OfficeUrl url = new OfficeUrl(9999);
-    final OfficeConnection connection = TestOfficeConnection.prepareTest(url);
-    final LocalOfficeProcessManager manager =
+    final var url = new OfficeUrl(9999);
+    final var connection = TestOfficeConnection.prepareTest(url);
+    final var manager =
         new LocalOfficeProcessManager(
             url,
             LocalOfficeUtils.getDefaultOfficeHome(),

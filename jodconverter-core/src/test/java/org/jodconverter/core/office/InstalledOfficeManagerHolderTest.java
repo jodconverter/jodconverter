@@ -41,7 +41,7 @@ class InstalledOfficeManagerHolderTest {
     @Test
     void whenInstanceNotSet_ShouldReturnNull() {
 
-      final OfficeManager backup = InstalledOfficeManagerHolder.getInstance();
+      final var backup = InstalledOfficeManagerHolder.getInstance();
       try {
         InstalledOfficeManagerHolder.setInstance(null);
         assertThat(InstalledOfficeManagerHolder.getInstance()).isNull();
@@ -53,8 +53,8 @@ class InstalledOfficeManagerHolderTest {
     @Test
     void whenInstanceSet_ShouldReturnInstance() {
 
-      final OfficeManager backup = InstalledOfficeManagerHolder.getInstance();
-      final OfficeManager newInstance = SimpleOfficeManager.make();
+      final var backup = InstalledOfficeManagerHolder.getInstance();
+      final var newInstance = SimpleOfficeManager.make();
       try {
         InstalledOfficeManagerHolder.setInstance(newInstance);
         assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(newInstance);
@@ -70,8 +70,8 @@ class InstalledOfficeManagerHolderTest {
     @Test
     void whenInstanceNotSet_ShouldReturnNull() {
 
-      final OfficeManager backup = InstalledOfficeManagerHolder.getInstance();
-      final OfficeManager newInstance = SimpleOfficeManager.make();
+      final var backup = InstalledOfficeManagerHolder.getInstance();
+      final var newInstance = SimpleOfficeManager.make();
       try {
         InstalledOfficeManagerHolder.setInstance(null);
         assertThat(InstalledOfficeManagerHolder.setInstance(newInstance)).isNull();
@@ -83,9 +83,9 @@ class InstalledOfficeManagerHolderTest {
     @Test
     void whenInstancetSet_ShouldReturnOldInstacce() {
 
-      final OfficeManager backup = InstalledOfficeManagerHolder.getInstance();
-      final OfficeManager newInstance1 = SimpleOfficeManager.make();
-      final OfficeManager newInstance2 = SimpleOfficeManager.make();
+      final var backup = InstalledOfficeManagerHolder.getInstance();
+      final var newInstance1 = SimpleOfficeManager.make();
+      final var newInstance2 = SimpleOfficeManager.make();
       try {
         InstalledOfficeManagerHolder.setInstance(newInstance1);
         assertThat(InstalledOfficeManagerHolder.setInstance(newInstance2)).isEqualTo(newInstance1);

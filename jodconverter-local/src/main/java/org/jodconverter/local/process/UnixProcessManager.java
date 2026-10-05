@@ -44,8 +44,9 @@ public class UnixProcessManager extends AbstractProcessManager {
 
   /**
    * This class is required in order to create the default UnixProcessManager only on demand, as
-   * explained by the Initialization-on-demand holder idiom:
-   * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
+   * explained by the <a
+   * href="https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom">Initialization-on-demand
+   * holder idiom</a>.
    */
   private static class DefaultHolder { // NOPMD - Disable utility class name rule violation
     /* default */ static final UnixProcessManager INSTANCE = new UnixProcessManager();
@@ -68,7 +69,7 @@ public class UnixProcessManager extends AbstractProcessManager {
       return super.execute(cmdarray);
     }
 
-    final String[] newarray = new String[runAsArgs.length + cmdarray.length];
+    final var newarray = new String[runAsArgs.length + cmdarray.length];
     System.arraycopy(runAsArgs, 0, newarray, 0, runAsArgs.length);
     System.arraycopy(cmdarray, 0, newarray, runAsArgs.length, cmdarray.length);
 
@@ -92,7 +93,7 @@ public class UnixProcessManager extends AbstractProcessManager {
   @Override
   public void kill(final @Nullable Process process, final long pid) throws IOException {
     if (pid > PID_UNKNOWN) {
-      execute(new String[] {"/bin/kill", "-KILL", String.valueOf(pid)});
+      execute("/bin/kill", "-KILL", String.valueOf(pid));
     } else {
       super.kill(process, pid);
     }

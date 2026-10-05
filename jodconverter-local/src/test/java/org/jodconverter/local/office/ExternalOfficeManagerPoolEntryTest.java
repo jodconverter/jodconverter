@@ -22,16 +22,8 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_FAIL_FAST;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_ON_START;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.jodconverter.local.office.ExternalOfficeManager.*;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -50,9 +42,9 @@ class ExternalOfficeManagerPoolEntryTest {
     @Test
     void whenNotConnected_ShouldConnectFirstThenExecuteTask() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(2002);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final ExternalOfficeManagerPoolEntry entry =
+      final var url = new OfficeUrl(2002);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var entry =
           new ExternalOfficeManagerPoolEntry(
               DEFAULT_CONNECT_ON_START,
               DEFAULT_MAX_TASKS_PER_CONNECTION,
@@ -61,7 +53,7 @@ class ExternalOfficeManagerPoolEntryTest {
                   DEFAULT_CONNECT_TIMEOUT, DEFAULT_CONNECT_RETRY_INTERVAL, true, connection));
       entry.start();
 
-      final OfficeTask task = mock(OfficeTask.class);
+      final var task = mock(OfficeTask.class);
       entry.execute(task);
 
       assertThat(connection.getConnectCount()).isEqualTo(1);
@@ -72,9 +64,9 @@ class ExternalOfficeManagerPoolEntryTest {
     void whenMaxTasksPerConnectionReached_ShouldReconnect()
         throws OfficeException, InterruptedException {
 
-      final OfficeUrl url = new OfficeUrl(2002);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final ExternalOfficeManagerPoolEntry entry =
+      final var url = new OfficeUrl(2002);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var entry =
           new ExternalOfficeManagerPoolEntry(
               true,
               2,
@@ -83,7 +75,7 @@ class ExternalOfficeManagerPoolEntryTest {
                   DEFAULT_CONNECT_TIMEOUT, DEFAULT_CONNECT_RETRY_INTERVAL, true, connection));
       entry.start();
 
-      final OfficeTask task = mock(OfficeTask.class);
+      final var task = mock(OfficeTask.class);
       entry.execute(task);
       entry.execute(task);
 
@@ -101,9 +93,9 @@ class ExternalOfficeManagerPoolEntryTest {
     @Test
     void shouldReconnect() throws OfficeException, InterruptedException {
 
-      final OfficeUrl url = new OfficeUrl(2002);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final ExternalOfficeManagerPoolEntry entry =
+      final var url = new OfficeUrl(2002);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var entry =
           new ExternalOfficeManagerPoolEntry(
               DEFAULT_CONNECT_ON_START,
               DEFAULT_MAX_TASKS_PER_CONNECTION,
@@ -137,9 +129,9 @@ class ExternalOfficeManagerPoolEntryTest {
     @Test
     void whenNotStarted_ReturnFalse() {
 
-      final OfficeUrl url = new OfficeUrl(2002);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final ExternalOfficeManagerPoolEntry entry =
+      final var url = new OfficeUrl(2002);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var entry =
           new ExternalOfficeManagerPoolEntry(
               DEFAULT_CONNECT_ON_START,
               DEFAULT_MAX_TASKS_PER_CONNECTION,
@@ -156,9 +148,9 @@ class ExternalOfficeManagerPoolEntryTest {
     @Test
     void whenStartedButNotConnected_ReturnFalse() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(2002);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final ExternalOfficeManagerPoolEntry entry =
+      final var url = new OfficeUrl(2002);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var entry =
           new ExternalOfficeManagerPoolEntry(
               false,
               DEFAULT_MAX_TASKS_PER_CONNECTION,
@@ -173,9 +165,9 @@ class ExternalOfficeManagerPoolEntryTest {
     @Test
     void whenStartedAndConnected_ReturnTrue() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(2002);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final ExternalOfficeManagerPoolEntry entry =
+      final var url = new OfficeUrl(2002);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var entry =
           new ExternalOfficeManagerPoolEntry(
               true,
               DEFAULT_MAX_TASKS_PER_CONNECTION,
@@ -199,9 +191,9 @@ class ExternalOfficeManagerPoolEntryTest {
     @Test
     void ShouldDisconnect() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(2002);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final ExternalOfficeManagerPoolEntry entry =
+      final var url = new OfficeUrl(2002);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var entry =
           new ExternalOfficeManagerPoolEntry(
               true,
               DEFAULT_MAX_TASKS_PER_CONNECTION,
@@ -223,9 +215,9 @@ class ExternalOfficeManagerPoolEntryTest {
     void whenUnexpectedDisconnection_ShouldCancelCurrentTaskAndReconnect()
         throws OfficeException, InterruptedException {
 
-      final OfficeUrl url = new OfficeUrl(2002);
-      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url);
-      final ExternalOfficeManagerPoolEntry entry =
+      final var url = new OfficeUrl(2002);
+      final var connection = TestOfficeConnection.prepareTest(url);
+      final var entry =
           new ExternalOfficeManagerPoolEntry(
               true,
               DEFAULT_MAX_TASKS_PER_CONNECTION,
@@ -238,7 +230,7 @@ class ExternalOfficeManagerPoolEntryTest {
       assertThat(entry.isRunning()).isTrue();
 
       // executed will hold whether the task has been fully executed or not.
-      final AtomicBoolean executed = new AtomicBoolean(false);
+      final var executed = new AtomicBoolean(false);
 
       // Create a thread that will sleep 250 millisec and set the executed flag to true.
       final Runnable runnable =
@@ -250,7 +242,7 @@ class ExternalOfficeManagerPoolEntryTest {
               // ignore
             }
           };
-      final Thread thread = new Thread(runnable);
+      final var thread = new Thread(runnable);
 
       // Execute a task that will only start the thread and return immediately.
       entry.execute(context -> thread.start());

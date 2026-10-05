@@ -40,8 +40,8 @@ public class AbstractRemoteOfficeTaskTest {
     @Test
     void shouldReturnExpectedValue() {
 
-      final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
-      final AbstractRemoteOfficeTask obj =
+      final var source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
+      final var obj =
           new AbstractRemoteOfficeTask(source) {
             @Override
             public void execute(@SuppressWarnings("NullableProblems") final OfficeContext context) {

@@ -94,7 +94,7 @@ public class JodConverterExternalAutoConfiguration {
       final ObjectProvider<DocumentFormatRegistry> documentFormatRegistry,
       final ObjectProvider<PdfOptions> pdfOptions) {
 
-    final LocalConverter.Builder builder =
+    final var builder =
         LocalConverter.builder()
             .officeManager(externalOfficeManager)
             .loadDocumentMode(properties.getLoadDocumentMode())

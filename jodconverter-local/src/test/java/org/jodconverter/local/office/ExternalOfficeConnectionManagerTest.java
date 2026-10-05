@@ -20,9 +20,7 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.concurrent.RejectedExecutionException;
 
@@ -34,19 +32,16 @@ import org.jodconverter.core.office.OfficeException;
 /** Contains tests for the {@link ExternalOfficeConnectionManager} class. */
 class ExternalOfficeConnectionManagerTest {
 
-  private static final long NO_SLEEP = 0L;
-
   @Nested
   class GetConnection {
 
     @Test
     void shouldReturnExpectedConnection() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, false);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, true, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
 
       assertThat(manager.getConnection()).isEqualTo(connection);
     }
@@ -58,12 +53,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenConnectFailFastIsTrueAndCouldNotConnect_ShouldThrowOfficeException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection =
-          TestOfficeConnection.prepareFailingConnectTest(url, false);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareFailingConnectTest(url, false);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, true, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
 
       assertThatExceptionOfType(OfficeException.class).isThrownBy(manager::connect);
     }
@@ -71,11 +64,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenConnectFailFastIsTrueAndCouldConnect_ShouldNotThrowAnyException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, false);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, true, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
 
       assertThatCode(manager::connect).doesNotThrowAnyException();
     }
@@ -83,61 +75,21 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenConnectFailFastIsTrueAndAlreadyConnected_ShouldNotThrowAnyException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareFailingConnectTest(url, true);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareFailingConnectTest(url, true);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, true, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
 
       assertThatCode(manager::connect).doesNotThrowAnyException();
     }
 
-    //    @Test
-    //    void whenConnectFailFastIsTrueAndTaskInterrupted_ShouldNotConnect() {
-    //
-    //      final OfficeUrl url = new OfficeUrl(9999);
-    //      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
-    //
-    //      final ExternalOfficeConnectionManager manager =
-    //          new ExternalOfficeConnectionManager(1000L, 1000L, true, connection);
-    //
-    //      final AtomicReference<OfficeException> ex = new AtomicReference<>();
-    //
-    //      assertThatCode(
-    //              () -> {
-    //                final Thread thread =
-    //                    new Thread(
-    //                        () -> {
-    //                          try {
-    //                            manager.connect();
-    //                          } catch (OfficeException oe) {
-    //                            ex.set(oe);
-    //                          }
-    //                        });
-    //
-    //                // Start the thread.
-    //                thread.start();
-    //                // Interrupt the thread.
-    //                thread.interrupt();
-    //                //  Wait for thread to complete.
-    //                thread.join();
-    //              })
-    //          .doesNotThrowAnyException();
-    //
-    //      assertThat(ex.get())
-    //          .isExactlyInstanceOf(OfficeException.class)
-    //          .hasMessageStartingWith("Interruption while connecting to external office process.")
-    //          .hasCauseExactlyInstanceOf(InterruptedException.class);
-    //    }
-
     @Test
     void whenDisconnectedAndConnectFailFastIsTrue_ShouldThrowRejectedExecutionException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, false);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, true, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
 
       assertThatCode(manager::disconnect).doesNotThrowAnyException();
       assertThatExceptionOfType(RejectedExecutionException.class).isThrownBy(manager::connect);
@@ -146,12 +98,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenConnectFailFastIsFalseAndCouldNotConnect_ShouldNotThrowAnyException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection =
-          TestOfficeConnection.prepareFailingConnectTest(url, false);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareFailingConnectTest(url, false);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
       assertThatCode(manager::connect).doesNotThrowAnyException();
     }
@@ -159,11 +109,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenConnectFailFastIsFalseAndCouldConnect_ShouldNotThrowAnyException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, false);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
       assertThatCode(manager::connect).doesNotThrowAnyException();
     }
@@ -171,11 +120,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenDisconnectedAndConnectFailFastIsFalse_ShouldThrowRejectedExecutionException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, false);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
       assertThatCode(manager::disconnect).doesNotThrowAnyException();
       assertThatExceptionOfType(RejectedExecutionException.class).isThrownBy(manager::connect);
@@ -188,11 +136,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenNotConnected_ShouldNotThrowAnyException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, false);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
       assertThatCode(manager::disconnect).doesNotThrowAnyException();
     }
@@ -200,11 +147,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenConnected_ShouldDisconnect() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, true);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, true);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
       assertThatCode(manager::disconnect).doesNotThrowAnyException();
     }
@@ -256,11 +202,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenCouldReconnect_ShouldNotThrowAnyException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, true);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, true);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
       assertThatCode(manager::reconnect).doesNotThrowAnyException();
     }
@@ -268,11 +213,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenCouldNotReconnect_ShouldNotThrowAnyException() {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareFailingConnectTest(url, true);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareFailingConnectTest(url, true);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
       assertThatCode(manager::reconnect).doesNotThrowAnyException();
     }
@@ -284,11 +228,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenNotConnected_ShouldConnect() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, false);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, false);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
       manager.ensureConnected();
       assertThat(connection.isConnected()).isTrue();
@@ -297,11 +240,10 @@ class ExternalOfficeConnectionManagerTest {
     @Test
     void whenAlreadyConnected_ShouldStayConnected() throws OfficeException {
 
-      final OfficeUrl url = new OfficeUrl(9999);
-      final OfficeConnection connection = TestOfficeConnection.prepareTest(url, true);
+      final var url = new OfficeUrl(9999);
+      final var connection = TestOfficeConnection.prepareTest(url, true);
 
-      final ExternalOfficeConnectionManager manager =
-          new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
 
       manager.ensureConnected();
       assertThat(connection.isConnected()).isTrue();
@@ -313,12 +255,10 @@ class ExternalOfficeConnectionManagerTest {
     private final OfficeUrl url;
     private boolean isConnected;
     private boolean throwConnectException;
-    private long connectSleep;
-    private long disconnectSleep;
 
     static TestOfficeConnection prepareTest(final OfficeUrl url, final boolean isConnected) {
 
-      final TestOfficeConnection conn = new TestOfficeConnection(url);
+      final var conn = new TestOfficeConnection(url);
       conn.isConnected = isConnected;
       return conn;
     }
@@ -326,7 +266,7 @@ class ExternalOfficeConnectionManagerTest {
     static TestOfficeConnection prepareFailingConnectTest(
         final OfficeUrl url, final boolean isConnected) {
 
-      final TestOfficeConnection conn = new TestOfficeConnection(url);
+      final var conn = new TestOfficeConnection(url);
       conn.isConnected = isConnected;
       conn.throwConnectException = true;
       return conn;
@@ -336,14 +276,6 @@ class ExternalOfficeConnectionManagerTest {
       super(url);
 
       this.url = url;
-    }
-
-    public void setConnectSleep(final long sleep) {
-      this.connectSleep = sleep;
-    }
-
-    public void setDisconnectSleep(final long sleep) {
-      this.disconnectSleep = sleep;
     }
 
     @Override
@@ -356,25 +288,11 @@ class ExternalOfficeConnectionManagerTest {
       if (throwConnectException) {
         throw new OfficeConnectionException("Could not connect.", url.getConnectString());
       }
-      if (connectSleep > NO_SLEEP) {
-        try {
-          Thread.sleep(connectSleep);
-        } catch (InterruptedException ignore) {
-          // ignore
-        }
-      }
       this.isConnected = true;
     }
 
     @Override
     public void disconnect() {
-      if (disconnectSleep > NO_SLEEP) {
-        try {
-          Thread.sleep(disconnectSleep);
-        } catch (InterruptedException ignore) {
-          // ignore
-        }
-      }
       this.isConnected = false;
     }
   }

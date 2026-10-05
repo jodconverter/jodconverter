@@ -20,6 +20,8 @@
 
 package org.jodconverter.core.job;
 
+import java.io.Serial;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -27,7 +29,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * DocumentSpecs} implementation.
  */
 public class DocumentSpecsIOException extends RuntimeException {
-  private static final long serialVersionUID = -6559172184207148592L;
+  @Serial private static final long serialVersionUID = -6559172184207148592L;
 
   /**
    * Constructs an exception with the specified detail message and cause.

@@ -30,8 +30,6 @@ import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 import org.jodconverter.core.DocumentConverter;
-import org.jodconverter.core.document.DocumentFormat;
-import org.jodconverter.core.job.ConversionJob;
 import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.util.AssertUtils;
@@ -94,14 +92,14 @@ public final class CliConverter {
     AssertUtils.notEmpty(outputFormat, "outputFormat must not be null nor empty");
 
     // Prepare the output directory.
-    final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
+    final var outputDir = outputDirPath == null ? null : new File(outputDirPath);
     prepareOutputDir(outputDir);
 
     // For all the filenames... Note that a filename may contain wildcards.
-    for (final String filename : filenames) {
+    for (final var filename : filenames) {
 
       // Create a file instance with the argument and also get the parent directory.
-      final File inputFile = new File(filename);
+      final var inputFile = new File(filename);
 
       // If the filename is a file, we will have only 1 file to convert for this loop iteration.
       if (inputFile.isFile()) {
@@ -116,7 +114,7 @@ public final class CliConverter {
       } else {
 
         // If the filename is not a file, check if it has wildcards to match multiple files.
-        final File inputFileParent = inputFile.getParentFile();
+        final var inputFileParent = inputFile.getParentFile();
         if (inputFileParent.isDirectory()) {
           convertFiles(inputFileParent, filename, outputDir, outputFormat, overwrite);
         } else {
@@ -148,8 +146,8 @@ public final class CliConverter {
     AssertUtils.notEmpty(inputFilenames, "inputFilenames must not be null nor empty");
     AssertUtils.notEmpty(outputFilenames, "outputFilenames must not be null nor empty");
 
-    final int inputLength = inputFilenames.length;
-    final int outputLength = outputFilenames.length;
+    final var inputLength = inputFilenames.length;
+    final var outputLength = outputFilenames.length;
 
     // Make sure lengths are ok, these need to be equal
     AssertUtils.isTrue(
@@ -159,18 +157,18 @@ public final class CliConverter {
             inputLength, outputLength));
 
     // Prepare the output directory
-    final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
+    final var outputDir = outputDirPath == null ? null : new File(outputDirPath);
     prepareOutputDir(outputDir);
 
     // For all the input/output filename pairs...
-    for (int i = 0; i < inputFilenames.length; i++) {
+    for (var i = 0; i < inputFilenames.length; i++) {
 
       // Get the input and output files
-      final String inputFilename = inputFilenames[i];
-      final String inputFullPath = FilenameUtils.getFullPath(inputFilename);
-      final String outputFilename = outputFilenames[i];
-      final String outputFullPath = FilenameUtils.getFullPath(outputFilename);
-      final File outputDirectory =
+      final var inputFilename = inputFilenames[i];
+      final var inputFullPath = FilenameUtils.getFullPath(inputFilename);
+      final var outputFilename = outputFilenames[i];
+      final var outputFullPath = FilenameUtils.getFullPath(outputFilename);
+      final var outputDirectory =
           StringUtils.isBlank(outputFullPath)
               ? outputDir == null
                   ? StringUtils.isBlank(inputFullPath) ? new File(".") : new File(inputFullPath)
@@ -189,7 +187,7 @@ public final class CliConverter {
   private void convert(final File inputFile, final File outputFile) throws OfficeException {
 
     printInfo("Converting '%s' to '%s'", inputFile, outputFile);
-    final ConversionJob job = converter.convert(inputFile).to(outputFile);
+    final var job = converter.convert(inputFile).to(outputFile);
     if (supportsTargetOptions(outputFile)) {
       job.with(targetOptions);
     }
@@ -202,8 +200,8 @@ public final class CliConverter {
     if (targetOptions == null) {
       return false;
     }
-    final String extension = FileUtils.getExtension(outputFile.getName());
-    final DocumentFormat format =
+    final var extension = FileUtils.getExtension(outputFile.getName());
+    final var format =
         extension == null ? null : converter.getFormatRegistry().getFormatByExtension(extension);
     return format != null && targetOptions.supports(format);
   }
@@ -219,7 +217,7 @@ public final class CliConverter {
     if (validateInputFile(inputFile)) {
 
       // Create output file instance and validate that it is a valid target
-      final File outputFile = new File(outputDir, outputFilename);
+      final var outputFile = new File(outputDir, outputFilename);
       if (validateOutputFile(inputFile, outputFile, overwrite)) {
 
         // We can now convert the document
@@ -236,8 +234,8 @@ public final class CliConverter {
       final boolean overwrite)
       throws OfficeException {
 
-    final String wildcard = FilenameUtils.getBaseName(filename);
-    final File[] files =
+    final var wildcard = FilenameUtils.getBaseName(filename);
+    final var files =
         inputDir.listFiles(
             (FileFilter)
                 WildcardFileFilter.builder()
@@ -245,7 +243,7 @@ public final class CliConverter {
                     .setIoCase(IOCase.INSENSITIVE)
                     .get());
     if (files != null) {
-      for (final File file : files) {
+      for (final var file : files) {
 
         // Convert the file
         convertFile(

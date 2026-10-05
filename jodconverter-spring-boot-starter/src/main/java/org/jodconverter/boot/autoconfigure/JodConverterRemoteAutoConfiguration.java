@@ -63,7 +63,7 @@ public class JodConverterRemoteAutoConfiguration {
 
     AssertUtils.notNull(properties.getUrl(), "urlConnection is required");
 
-    final RemoteOfficeManager.Builder builder =
+    final var builder =
         RemoteOfficeManager.builder()
             .urlConnection(properties.getUrl())
             .connectTimeout(properties.getConnectTimeout())
@@ -97,8 +97,7 @@ public class JodConverterRemoteAutoConfiguration {
       final @Qualifier("remoteOfficeManager") OfficeManager remoteOfficeManager,
       final ObjectProvider<PdfOptions> pdfOptions) {
 
-    final RemoteConverter.Builder builder =
-        RemoteConverter.builder().officeManager(remoteOfficeManager);
+    final var builder = RemoteConverter.builder().officeManager(remoteOfficeManager);
     // Apply the PDF options, from the jodconverter.pdf properties or from the application, to
     // all the conversions to PDF.
     pdfOptions.ifUnique(builder::defaultTargetOptions);

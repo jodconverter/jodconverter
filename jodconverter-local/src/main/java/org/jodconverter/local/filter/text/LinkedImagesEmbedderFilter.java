@@ -74,26 +74,26 @@ public class LinkedImagesEmbedderFilter implements Filter {
   private static void convertLinkedImagesToEmbedded(
       final XComponentContext context, final XComponent document) throws Exception {
 
-    final XIndexAccess indexAccess =
+    final var indexAccess =
         Lo.qi(
             XIndexAccess.class,
             Lo.qi(XTextGraphicObjectsSupplier.class, document).getGraphicObjects());
-    final boolean useGraphic =
+    final var useGraphic =
         Info.isLibreOffice(context)
             && Info.compareVersions(Info.getOfficeVersionShort(context), "6.1", 2) >= 0;
     // Create a GraphicProvider if required.
-    final XGraphicProvider graphicProvider =
+    final var graphicProvider =
         useGraphic
             ? Lo.createInstance(
                 context, XGraphicProvider.class, "com.sun.star.graphic.GraphicProvider")
             : null;
-    for (int i = 0; i < indexAccess.getCount(); i++) {
-      final Any xImageAny = (Any) indexAccess.getByIndex(i);
-      final Object xImageObject = xImageAny.getObject();
-      final XTextContent xImage = (XTextContent) xImageObject;
-      final XServiceInfo xInfo = Lo.qi(XServiceInfo.class, xImage);
+    for (var i = 0; i < indexAccess.getCount(); i++) {
+      final var xImageAny = (Any) indexAccess.getByIndex(i);
+      final var xImageObject = xImageAny.getObject();
+      final var xImage = (XTextContent) xImageObject;
+      final var xInfo = Lo.qi(XServiceInfo.class, xImage);
       if (xInfo.supportsService("com.sun.star.text.TextGraphicObject")) {
-        final XPropertySet xPropSet = Lo.qi(XPropertySet.class, xImage);
+        final var xPropSet = Lo.qi(XPropertySet.class, xImage);
         if (useGraphic) {
           embedImageUsingGraphic(graphicProvider, xPropSet);
         } else {
@@ -105,11 +105,11 @@ public class LinkedImagesEmbedderFilter implements Filter {
 
   private static void embedImageUsingGraphic(
       final XGraphicProvider graphicProvider, final XPropertySet propSet) throws Exception {
-    final XGraphic xGraphic =
+    final var xGraphic =
         (XGraphic) AnyConverter.toObject(XGraphic.class, propSet.getPropertyValue("Graphic"));
     // Only ones that are not embedded
-    final XPropertySet xGraphicPropSet = Lo.qi(XPropertySet.class, xGraphic);
-    final boolean linked = (boolean) xGraphicPropSet.getPropertyValue("Linked");
+    final var xGraphicPropSet = Lo.qi(XPropertySet.class, xGraphic);
+    final var linked = (boolean) xGraphicPropSet.getPropertyValue("Linked");
     if (linked) {
       // Since 6.1, we must use "Graphic" instead of "GraphicURL"
       Objects.requireNonNull(graphicProvider);
@@ -126,12 +126,12 @@ public class LinkedImagesEmbedderFilter implements Filter {
 
   private static void embedImageUsingGraphicUrl(
       final XComponent document, final XPropertySet propSet) throws Exception {
-    final String name = propSet.getPropertyValue("LinkDisplayName").toString();
-    final String graphicUrl = propSet.getPropertyValue("GraphicURL").toString();
+    final var name = propSet.getPropertyValue("LinkDisplayName").toString();
+    final var graphicUrl = propSet.getPropertyValue("GraphicURL").toString();
     // Only ones that are not embedded
     if (!graphicUrl.contains("vnd.sun.")) {
       // Creating bitmap container service
-      final XNameContainer bitmapContainer =
+      final var bitmapContainer =
           Lo.createInstance(document, XNameContainer.class, "com.sun.star.drawing.BitmapTable");
       if (!bitmapContainer.hasByName(name)) {
         bitmapContainer.insertByName(name, graphicUrl);

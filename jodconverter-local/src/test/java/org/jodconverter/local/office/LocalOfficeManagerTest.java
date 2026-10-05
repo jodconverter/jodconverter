@@ -22,20 +22,7 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
-import static org.jodconverter.local.office.LocalOfficeManager.MAX_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.MIN_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.builder;
-import static org.jodconverter.local.office.LocalOfficeManager.install;
-import static org.jodconverter.local.office.LocalOfficeManager.make;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.TestProcessManager;
@@ -76,7 +62,7 @@ class LocalOfficeManagerTest {
     @Test
     void shouldInitializedManagerWithDefaultValues() {
 
-      final OfficeManager manager = make();
+      final var manager = make();
 
       assertThat(manager).isInstanceOf(LocalOfficeManager.class);
       assertThat(manager)
@@ -137,9 +123,9 @@ class LocalOfficeManagerTest {
     void shouldSetInstalledOfficeManagerHolder() {
 
       // Ensure we do not replace the current installed manager
-      final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
+      final var installedManager = InstalledOfficeManagerHolder.getInstance();
       try {
-        final OfficeManager manager = install();
+        final var manager = install();
         assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
       } finally {
         InstalledOfficeManagerHolder.setInstance(installedManager);
@@ -154,7 +140,7 @@ class LocalOfficeManagerTest {
     void withMissingOfficeExecutable_ShouldThrowIllegalArgumentException(
         final @TempDir File folder) {
 
-      final File missing = new File(folder, "missing-launcher");
+      final var missing = new File(folder, "missing-launcher");
       assertThatIllegalArgumentException()
           .isThrownBy(() -> builder().officeExecutable(missing).build())
           .withMessage("officeExecutable doesn't exist or is not a file: " + missing);
@@ -164,11 +150,11 @@ class LocalOfficeManagerTest {
     void withOfficeExecutable_ShouldNotRequireOfficeHomeAndUseTheExecutable(
         final @TempDir File folder) throws IOException {
 
-      final File launcher = new File(folder, "launcher");
+      final var launcher = new File(folder, "launcher");
       assertThat(launcher.createNewFile()).isTrue();
 
       // An office home without office in it is accepted when the executable is specified
-      final OfficeManager manager =
+      final var manager =
           builder()
               .officeHome(new File(folder, "not-an-office-home"))
               .officeExecutable(launcher.getPath())
@@ -186,7 +172,7 @@ class LocalOfficeManagerTest {
     @Test
     void withPoolSize_ShouldUseThatManyDistinctPorts() {
 
-      final OfficeManager manager = builder().poolSize(3).build();
+      final var manager = builder().poolSize(3).build();
 
       assertThat(manager)
           .extracting("entries")
@@ -228,7 +214,7 @@ class LocalOfficeManagerTest {
     @SuppressWarnings("RedundantArrayCreation")
     void withNullValues_ShouldInitializedManagerWithDefaultValues() {
 
-      final OfficeManager manager =
+      final var manager =
           builder()
               .workingDir((String) null)
               .workingDir((File) null)
@@ -316,24 +302,24 @@ class LocalOfficeManagerTest {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void withCustomValues_ShouldInitializedManagerWithCustomValues() throws IOException {
 
-      final File workingDir = new File(testFolder, "temp");
+      final var workingDir = new File(testFolder, "temp");
       workingDir.mkdirs();
 
-      final File ooHome = new File(testFolder, "oohomecustom");
-      final File program = new File(ooHome, "program");
+      final var ooHome = new File(testFolder, "oohomecustom");
+      final var program = new File(ooHome, "program");
       program.mkdirs();
       new File(program, "soffice.bin").createNewFile(); // EXECUTABLE_DEFAULT
       new File(program, "soffice").createNewFile(); // EXECUTABLE_MAC
       new File(program, "soffice.exe").createNewFile(); // EXECUTABLE_WINDOWS
-      final File macos = new File(ooHome, "MacOS");
+      final var macos = new File(ooHome, "MacOS");
       macos.mkdirs();
       new File(macos, "soffice").createNewFile(); // EXECUTABLE_MAC_41
       program.mkdirs();
 
-      final File templateProfileDir = new File(testFolder, "template");
+      final var templateProfileDir = new File(testFolder, "template");
       new File(templateProfileDir, "user").mkdirs();
 
-      final OfficeManager manager =
+      final var manager =
           builder()
               .workingDir(workingDir.getPath())
               .taskExecutionTimeout(500L)
@@ -457,9 +443,9 @@ class LocalOfficeManagerTest {
     @Test
     void withInvalidTemplateProfileDir_ShouldUseDefaultTemplateProfileDir() {
 
-      final File templateProfileDir = new File(testFolder, "template");
+      final var templateProfileDir = new File(testFolder, "template");
 
-      final OfficeManager manager =
+      final var manager =
           builder().templateProfileDirOrDefault(templateProfileDir.getPath()).build();
 
       assertThat(manager).isInstanceOf(LocalOfficeManager.class);

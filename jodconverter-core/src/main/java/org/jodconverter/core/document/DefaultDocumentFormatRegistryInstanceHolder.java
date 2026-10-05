@@ -21,7 +21,6 @@
 package org.jodconverter.core.document;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -43,7 +42,7 @@ class DefaultDocumentFormatRegistryInstanceHolder { // NOPMD - Disable class nam
   public static @NonNull DocumentFormatRegistry getInstance() {
     synchronized (DocumentFormatRegistry.class) {
       if (instance == null) {
-        final JsonDocumentFormatRegistry defaultRegistry = loadRegistry("/document-formats.json");
+        final var defaultRegistry = loadRegistry("/document-formats.json");
         if (defaultRegistry == null) {
           // It should never happen since the core module is shipped
           // with a default document-formats.json file.
@@ -75,8 +74,7 @@ class DefaultDocumentFormatRegistryInstanceHolder { // NOPMD - Disable class nam
 
   private static JsonDocumentFormatRegistry loadRegistry(final String name) {
 
-    try (InputStream input =
-        DefaultDocumentFormatRegistryInstanceHolder.class.getResourceAsStream(name)) {
+    try (var input = DefaultDocumentFormatRegistryInstanceHolder.class.getResourceAsStream(name)) {
       if (input != null) {
         return JsonDocumentFormatRegistry.create(input);
       }

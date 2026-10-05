@@ -23,14 +23,8 @@ package org.jodconverter.cli;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.cli.*;
@@ -221,7 +215,7 @@ public final class Convert {
     }
 
     if (commandLine.hasOption(OPT_VERSION.getOpt())) {
-      final Package pack = Convert.class.getPackage();
+      final var pack = Convert.class.getPackage();
       printInfo("jodconverter-cli version %s", pack.getImplementationVersion());
       return true;
     }
@@ -240,7 +234,7 @@ public final class Convert {
 
     // Not remote conversion...
 
-    final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
+    final var builder = LocalOfficeManager.builder();
 
     // Always fail fast!!
     builder.startFailFast(true);
@@ -282,7 +276,7 @@ public final class Convert {
   private static OfficeManager createRemoteOfficeManager(
       final CommandLine commandLine, final AbstractApplicationContext context) {
 
-    final String connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
+    final var connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
     assert connectionUrl != null;
     return RemoteOfficeManager.builder()
         .urlConnection(connectionUrl)
@@ -331,7 +325,7 @@ public final class Convert {
 
   private static Options initOptions() {
 
-    final Options options = new Options();
+    final var options = new Options();
     options.addOption(OPT_APPLICATION_CONTEXT); // -a, --application-context
     options.addOption(OPT_CONNECTION_URL); // -c, --connection-url
     options.addOption(OPT_OUTPUT_DIRECTORY); // -d, --output-directory
@@ -373,10 +367,11 @@ public final class Convert {
    * @param arguments program arguments.
    * @return The exit status of the program.
    */
-  /* default */ static int run(final String... arguments) {
+  /* default */
+  static int run(final String... arguments) {
 
     try {
-      final CommandLine commandLine = parse(arguments);
+      final var commandLine = parse(arguments);
 
       // Check if the command line contains arguments that is supposed
       // to print some info and then exit.
@@ -385,11 +380,11 @@ public final class Convert {
       }
 
       // Get conversion arguments
-      final String outputFormat = getStringOption(commandLine, OPT_OUTPUT_FORMAT.getOpt());
-      final String outputDirPath = getStringOption(commandLine, OPT_OUTPUT_DIRECTORY.getOpt());
-      final DocumentFormatRegistry registry = getRegistryOption(commandLine);
-      final boolean overwrite = commandLine.hasOption(OPT_OVERWRITE.getOpt());
-      final String[] filenames = commandLine.getArgs();
+      final var outputFormat = getStringOption(commandLine, OPT_OUTPUT_FORMAT.getOpt());
+      final var outputDirPath = getStringOption(commandLine, OPT_OUTPUT_DIRECTORY.getOpt());
+      final var registry = getRegistryOption(commandLine);
+      final var overwrite = commandLine.hasOption(OPT_OVERWRITE.getOpt());
+      final var filenames = commandLine.getArgs();
 
       // Validate arguments length
       if (outputFormat == null && filenames.length % 2 != 0 || filenames.length == 0) {
@@ -413,10 +408,10 @@ public final class Convert {
       }
 
       // Load the application context if provided
-      final AbstractApplicationContext context = getApplicationContextOption(commandLine);
+      final var context = getApplicationContextOption(commandLine);
 
       // Create a default office manager from the command line
-      final OfficeManager officeManager = createOfficeManager(commandLine, context);
+      final var officeManager = createOfficeManager(commandLine, context);
 
       try {
         // Starts the manager
@@ -424,15 +419,15 @@ public final class Convert {
         officeManager.start();
 
         // Build a client converter and start the conversion
-        final CliConverter converter =
+        final var converter =
             createCliConverter(commandLine, context, officeManager, registry, pdfOptions);
 
         if (outputFormat == null) {
 
           // Build 2 arrays; one containing the input files and the other
           // containing the output files.
-          final String[] inputFilenames = new String[filenames.length / 2];
-          final String[] outputFilenames = new String[inputFilenames.length];
+          final var inputFilenames = new String[filenames.length / 2];
+          final var outputFilenames = new String[inputFilenames.length];
           for (int i = 0, j = 0; // NOPMD - Disable for loop variables count
               i < filenames.length;
               i += 2, j++) {
@@ -475,14 +470,15 @@ public final class Convert {
    * @return The parsed command line.
    * @throws ParseException If the arguments are not valid.
    */
-  /* default */ static CommandLine parse(final String... arguments) throws ParseException {
+  /* default */
+  static CommandLine parse(final String... arguments) throws ParseException {
 
     // A property is written -lName=value or -sName=value, and its value may contain the equal
     // sign. The name=value part is separated from its option here, since the parser would
     // otherwise split it on every equal sign.
-    final List<String> normalized = new ArrayList<>();
-    for (final String argument : arguments) {
-      final Matcher matcher = ATTACHED_PROPERTY.matcher(argument);
+    final var normalized = new ArrayList<String>();
+    for (final var argument : arguments) {
+      final var matcher = ATTACHED_PROPERTY.matcher(argument);
       if (matcher.matches()) {
         normalized.add(matcher.group(1));
         normalized.add(matcher.group(2));
@@ -513,21 +509,21 @@ public final class Convert {
   // with FD are properties of the FilterData.
   private static Map<String, Object> buildProperties(final String kind, final String... args) {
 
-    final Map<String, Object> properties = new HashMap<>();
+    final var properties = new HashMap<String, Object>();
     if (args == null) {
       return properties;
     }
 
-    final Map<String, Object> filterDataProperties = new HashMap<>();
-    for (final String arg : args) {
+    final var filterDataProperties = new HashMap<String, Object>();
+    for (final var arg : args) {
       // Only the first equal sign separates the name from the value.
-      final int separator = arg.indexOf('=');
+      final var separator = arg.indexOf('=');
       if (separator <= 0) {
         throw new IllegalArgumentException(
             "Invalid " + kind + " property '" + arg + "'; expected name=value");
       }
-      final String key = arg.substring(0, separator);
-      final Object value = toPropertyValue(arg.substring(separator + 1));
+      final var key = arg.substring(0, separator);
+      final var value = toPropertyValue(arg.substring(separator + 1));
       if (key.length() > 2 && key.startsWith("FD")) {
         filterDataProperties.put(key.substring("FD".length()), value);
       } else {
@@ -549,31 +545,30 @@ public final class Convert {
       final PdfOptions pdfOptions) {
 
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
-      final RemoteConverter.Builder builder =
-          RemoteConverter.builder().officeManager(officeManager);
+      final var builder = RemoteConverter.builder().officeManager(officeManager);
       if (registry != null) {
         builder.formatRegistry(registry);
       }
       return new CliConverter(builder.build(), pdfOptions);
     }
 
-    final LocalConverter.Builder builder = LocalConverter.builder().officeManager(officeManager);
+    final var builder = LocalConverter.builder().officeManager(officeManager);
     if (registry != null) {
       builder.formatRegistry(registry);
     }
 
     // Specify custom load properties if required
-    final Map<String, Object> loadProperties =
+    final var loadProperties =
         buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
     builder.loadProperties(loadProperties);
 
     // Specify custom store properties if required
-    final Map<String, Object> storeProperties =
+    final var storeProperties =
         buildProperties("store", commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt()));
     builder.storeProperties(storeProperties);
 
     // Specify a filter chain if required
-    final FilterChain filterChain = getFilterChain(context);
+    final var filterChain = getFilterChain(context);
     if (filterChain != null) {
       builder.filterChain(filterChain);
     }
@@ -587,7 +582,7 @@ public final class Convert {
       "  or:",
       "jodconverter-cli [options] -f output-format infile [infile ...]"
     };
-    final TextHelpAppendable appendable = new TextHelpAppendable(System.out);
+    final var appendable = new TextHelpAppendable(System.out);
     appendable.setMaxWidth(HELP_WIDTH);
     try {
       HelpFormatter.builder()

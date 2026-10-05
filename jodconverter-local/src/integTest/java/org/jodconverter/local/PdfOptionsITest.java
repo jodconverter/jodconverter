@@ -20,9 +20,7 @@
 
 package org.jodconverter.local;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -34,24 +32,16 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
-import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
@@ -128,9 +118,9 @@ class PdfOptionsITest {
       final Consumer<PdfOptions.Builder> config)
       throws OfficeException {
 
-    final PdfOptions.Builder builder = PdfOptions.builder();
+    final var builder = PdfOptions.builder();
     config.accept(builder);
-    final File target = new File(testFolder, "out" + fileCount++ + ".pdf");
+    final var target = new File(testFolder, "out" + fileCount++ + ".pdf");
     converter.convert(source).to(target).with(builder.build()).execute();
     return target;
   }
@@ -153,23 +143,23 @@ class PdfOptionsITest {
               OFFICE_VERSION.set(
                   Info.getOfficeVersionLong(((LocalOfficeContext) context).getComponentContext())));
     }
-    final Matcher matcher = VERSION_PATTERN.matcher(String.valueOf(OFFICE_VERSION.get()));
+    final var matcher = VERSION_PATTERN.matcher(String.valueOf(OFFICE_VERSION.get()));
     assumeTrue(matcher.find(), "Unknown office version: " + OFFICE_VERSION.get());
-    final int officeMajor = Integer.parseInt(matcher.group(1));
-    final int officeMinor = Integer.parseInt(matcher.group(2));
+    final var officeMajor = Integer.parseInt(matcher.group(1));
+    final var officeMinor = Integer.parseInt(matcher.group(2));
     assumeTrue(
         officeMajor > major || officeMajor == major && officeMinor >= minor,
         "Requires LibreOffice " + major + "." + minor + ", found " + OFFICE_VERSION.get());
   }
 
   private static String text(final File file) throws IOException {
-    try (PDDocument doc = Loader.loadPDF(file)) {
+    try (var doc = Loader.loadPDF(file)) {
       return new PDFTextStripper().getText(doc);
     }
   }
 
   private static int pageCount(final File file) throws IOException {
-    try (PDDocument doc = Loader.loadPDF(file)) {
+    try (var doc = Loader.loadPDF(file)) {
       return doc.getNumberOfPages();
     }
   }
@@ -181,36 +171,36 @@ class PdfOptionsITest {
   // Gets the XMP metadata of the document, which tells its PDF/A and PDF/UA conformance. Older
   // office versions only write it for these conformances; it is empty when absent.
   private static String xmp(final File file) throws IOException {
-    try (PDDocument doc = Loader.loadPDF(file)) {
-      final PDMetadata metadata = doc.getDocumentCatalog().getMetadata();
+    try (var doc = Loader.loadPDF(file)) {
+      final var metadata = doc.getDocumentCatalog().getMetadata();
       return metadata == null ? "" : new String(metadata.toByteArray(), StandardCharsets.UTF_8);
     }
   }
 
   private static boolean isTagged(final File file) throws IOException {
-    try (PDDocument doc = Loader.loadPDF(file)) {
+    try (var doc = Loader.loadPDF(file)) {
       return doc.getDocumentCatalog().getStructureTreeRoot() != null;
     }
   }
 
   // Gets the value of a name entry of the document catalog, or null if it is absent.
   private static String catalogName(final File file, final String key) throws IOException {
-    try (PDDocument doc = Loader.loadPDF(file)) {
+    try (var doc = Loader.loadPDF(file)) {
       return doc.getDocumentCatalog().getCOSObject().getNameAsString(key);
     }
   }
 
   private static boolean catalogHas(final File file, final String key) throws IOException {
-    try (PDDocument doc = Loader.loadPDF(file)) {
+    try (var doc = Loader.loadPDF(file)) {
       return doc.getDocumentCatalog().getCOSObject().containsKey(key);
     }
   }
 
   private static <T extends PDAnnotation> List<T> annotations(
       final PDDocument doc, final Class<T> type) throws IOException {
-    final List<T> found = new ArrayList<>();
-    for (final PDPage page : doc.getPages()) {
-      for (final PDAnnotation annotation : page.getAnnotations()) {
+    final var found = new ArrayList<T>();
+    for (final var page : doc.getPages()) {
+      for (final var annotation : page.getAnnotations()) {
         if (type.isInstance(annotation)) {
           found.add(type.cast(annotation));
         }
@@ -221,9 +211,9 @@ class PdfOptionsITest {
 
   // Gets the image of the first page (the source document has only one).
   private static PDImageXObject image(final PDDocument doc) throws IOException {
-    final PDResources resources = doc.getPage(0).getResources();
-    for (final COSName name : resources.getXObjectNames()) {
-      final PDXObject xobject = resources.getXObject(name);
+    final var resources = doc.getPage(0).getResources();
+    for (final var name : resources.getXObjectNames()) {
+      final var xobject = resources.getXObject(name);
       if (xobject instanceof PDImageXObject img && img.getWidth() > 50) {
         return img;
       }
@@ -232,9 +222,9 @@ class PdfOptionsITest {
   }
 
   private static List<PDFormXObject> forms(final PDDocument doc) throws IOException {
-    final List<PDFormXObject> found = new ArrayList<>();
-    final PDResources resources = doc.getPage(0).getResources();
-    for (final COSName name : resources.getXObjectNames()) {
+    final var found = new ArrayList<PDFormXObject>();
+    final var resources = doc.getPage(0).getResources();
+    for (final var name : resources.getXObjectNames()) {
       if (resources.getXObject(name) instanceof PDFormXObject form) {
         found.add(form);
       }
@@ -244,7 +234,7 @@ class PdfOptionsITest {
 
   // Gets the form XObject that draws the watermark of the first page.
   private static PDFormXObject watermark(final PDDocument doc) throws IOException {
-    for (final PDFormXObject form : forms(doc)) {
+    for (final var form : forms(doc)) {
       if (content(form).contains(" Tf")) {
         return form;
       }
@@ -257,16 +247,16 @@ class PdfOptionsITest {
   }
 
   private static String firstGroup(final String regex, final String input) {
-    final Matcher matcher = Pattern.compile(regex).matcher(input);
+    final var matcher = Pattern.compile(regex).matcher(input);
     assertThat(matcher.find()).as("'%s' in '%s'", regex, input).isTrue();
     return matcher.group(1);
   }
 
   // Gets the action of the link to the "other" document of the source document.
   private static PDAction fileLinkAction(final File file) throws IOException {
-    try (PDDocument doc = Loader.loadPDF(file)) {
-      for (final PDAnnotationLink link : annotations(doc, PDAnnotationLink.class)) {
-        final PDAction action = link.getAction();
+    try (var doc = Loader.loadPDF(file)) {
+      for (final var link : annotations(doc, PDAnnotationLink.class)) {
+        final var action = link.getAction();
         if (action instanceof PDActionLaunch
             || action instanceof PDActionURI uri && uri.getURI().contains("other")) {
           return action;
@@ -281,7 +271,7 @@ class PdfOptionsITest {
   }
 
   private static PDPageDestination openDestination(final PDDocument doc) throws IOException {
-    final PDDestinationOrAction openAction = doc.getDocumentCatalog().getOpenAction();
+    final var openAction = doc.getDocumentCatalog().getOpenAction();
     if (openAction instanceof PDActionGoTo goTo) {
       return (PDPageDestination) goTo.getDestination();
     }
@@ -289,14 +279,14 @@ class PdfOptionsITest {
   }
 
   private static PDViewerPreferences viewerPreferences(final PDDocument doc) {
-    final PDViewerPreferences preferences = doc.getDocumentCatalog().getViewerPreferences();
+    final var preferences = doc.getDocumentCatalog().getViewerPreferences();
     return preferences == null ? new PDViewerPreferences(new COSDictionary()) : preferences;
   }
 
   private static List<String> fieldNames(final File file) throws IOException {
-    final List<String> names = new ArrayList<>();
-    try (PDDocument doc = Loader.loadPDF(file)) {
-      for (final PDAnnotationWidget widget : annotations(doc, PDAnnotationWidget.class)) {
+    final var names = new ArrayList<String>();
+    try (var doc = Loader.loadPDF(file)) {
+      for (final var widget : annotations(doc, PDAnnotationWidget.class)) {
         names.add(widget.getCOSObject().getString(COSName.T));
       }
     }
@@ -305,7 +295,7 @@ class PdfOptionsITest {
 
   // Gets the permission bits of an encrypted document.
   private static int permissionBits(final File file) throws IOException {
-    try (PDDocument doc = Loader.loadPDF(file)) {
+    try (var doc = Loader.loadPDF(file)) {
       return doc.getEncryption().getPermissions();
     }
   }
@@ -323,12 +313,12 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final Map<PdfVersion, String> headers = new HashMap<>();
+      final var headers = new HashMap<PdfVersion, String>();
       headers.put(PdfVersion.PDF_1_5, "%PDF-1.5");
       headers.put(PdfVersion.PDF_1_6, "%PDF-1.6");
       headers.put(PdfVersion.PDF_1_7, "%PDF-1.7");
-      for (final Map.Entry<PdfVersion, String> entry : headers.entrySet()) {
-        final File pdf = writer(converter, testFolder, b -> b.version(entry.getKey()));
+      for (final var entry : headers.entrySet()) {
+        final var pdf = writer(converter, testFolder, b -> b.version(entry.getKey()));
         assertThat(header(pdf)).as("%s", entry.getKey()).isEqualTo(entry.getValue());
         assertThat(xmp(pdf)).doesNotContain("pdfaid:part");
       }
@@ -339,12 +329,12 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final Map<PdfVersion, String> parts = new HashMap<>();
+      final var parts = new HashMap<PdfVersion, String>();
       parts.put(PdfVersion.PDF_A_1B, "1");
       parts.put(PdfVersion.PDF_A_2B, "2");
       parts.put(PdfVersion.PDF_A_3B, "3");
-      for (final Map.Entry<PdfVersion, String> entry : parts.entrySet()) {
-        final File pdf = writer(converter, testFolder, b -> b.version(entry.getKey()));
+      for (final var entry : parts.entrySet()) {
+        final var pdf = writer(converter, testFolder, b -> b.version(entry.getKey()));
         assertThat(xmp(pdf))
             .as("%s", entry.getKey())
             .containsPattern("<pdfaid:part>\\s*" + entry.getValue() + "\\s*</pdfaid:part>");
@@ -360,8 +350,8 @@ class PdfOptionsITest {
 
       assumeLibreOffice(manager, 25, 2);
 
-      final File pdf2 = writer(converter, testFolder, b -> b.version(PdfVersion.PDF_2_0));
-      final File pdfA4 = writer(converter, testFolder, b -> b.version(PdfVersion.PDF_A_4));
+      final var pdf2 = writer(converter, testFolder, b -> b.version(PdfVersion.PDF_2_0));
+      final var pdfA4 = writer(converter, testFolder, b -> b.version(PdfVersion.PDF_A_4));
 
       assertThat(header(pdf2)).isEqualTo("%PDF-2.0");
       assertThat(xmp(pdfA4)).containsPattern("<pdfaid:part>\\s*4\\s*</pdfaid:part>");
@@ -372,8 +362,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = writer(converter, testFolder, b -> b.pdfUa(true));
-      final File off = writer(converter, testFolder, b -> b.pdfUa(false).tagged(true));
+      final var on = writer(converter, testFolder, b -> b.pdfUa(true));
+      final var off = writer(converter, testFolder, b -> b.pdfUa(false).tagged(true));
 
       assertThat(xmp(on)).contains("pdfuaid:part");
       assertThat(isTagged(on)).isTrue();
@@ -394,12 +384,12 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = writer(converter, testFolder, b -> b.embedSourceDocument(true));
-      final File off = writer(converter, testFolder, b -> b.embedSourceDocument(false));
+      final var on = writer(converter, testFolder, b -> b.embedSourceDocument(true));
+      final var off = writer(converter, testFolder, b -> b.embedSourceDocument(false));
 
-      final COSName additionalStreams = COSName.getPDFName("AdditionalStreams");
-      try (PDDocument docOn = Loader.loadPDF(on);
-          PDDocument docOff = Loader.loadPDF(off)) {
+      final var additionalStreams = COSName.getPDFName("AdditionalStreams");
+      try (var docOn = Loader.loadPDF(on);
+          var docOff = Loader.loadPDF(off)) {
         assertThat(docOn.getDocument().getTrailer().containsKey(additionalStreams)).isTrue();
         assertThat(docOff.getDocument().getTrailer().containsKey(additionalStreams)).isFalse();
       }
@@ -411,12 +401,12 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = writer(converter, testFolder, b -> b.referenceXObjects(true));
-      final File off = writer(converter, testFolder, b -> b.referenceXObjects(false));
+      final var on = writer(converter, testFolder, b -> b.referenceXObjects(true));
+      final var off = writer(converter, testFolder, b -> b.referenceXObjects(false));
 
-      final COSName ref = COSName.getPDFName("Ref");
-      try (PDDocument docOn = Loader.loadPDF(on);
-          PDDocument docOff = Loader.loadPDF(off)) {
+      final var ref = COSName.getPDFName("Ref");
+      try (var docOn = Loader.loadPDF(on);
+          var docOff = Loader.loadPDF(off)) {
         assertThat(forms(docOn)).anyMatch(form -> form.getCOSObject().containsKey(ref));
         assertThat(forms(docOff)).noneMatch(form -> form.getCOSObject().containsKey(ref));
       }
@@ -431,15 +421,15 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on =
+      final var on =
           writer(
               converter, testFolder, b -> b.images(i -> i.lossless(true).reduceResolution(false)));
-      final File off =
+      final var off =
           writer(
               converter, testFolder, b -> b.images(i -> i.lossless(false).reduceResolution(false)));
 
-      try (PDDocument docOn = Loader.loadPDF(on);
-          PDDocument docOff = Loader.loadPDF(off)) {
+      try (var docOn = Loader.loadPDF(on);
+          var docOff = Loader.loadPDF(off)) {
         assertThat(image(docOn).getSuffix()).isEqualTo("png");
         assertThat(image(docOff).getSuffix()).isEqualTo("jpg");
       }
@@ -450,19 +440,19 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File low =
+      final var low =
           writer(
               converter,
               testFolder,
               b -> b.images(i -> i.lossless(false).jpegQuality(10).reduceResolution(false)));
-      final File high =
+      final var high =
           writer(
               converter,
               testFolder,
               b -> b.images(i -> i.lossless(false).jpegQuality(95).reduceResolution(false)));
 
-      try (PDDocument docLow = Loader.loadPDF(low);
-          PDDocument docHigh = Loader.loadPDF(high)) {
+      try (var docLow = Loader.loadPDF(low);
+          var docHigh = Loader.loadPDF(high)) {
         assertThat(image(docLow).getCOSObject().getLength() * 2)
             .isLessThan(image(docHigh).getCOSObject().getLength());
       }
@@ -474,17 +464,17 @@ class PdfOptionsITest {
         throws IOException, OfficeException {
 
       // The image has 600 pixels shown in one inch.
-      final File full =
+      final var full =
           writer(
               converter, testFolder, b -> b.images(i -> i.lossless(true).reduceResolution(false)));
-      final File dpi75 =
+      final var dpi75 =
           writer(converter, testFolder, b -> b.images(i -> i.lossless(true).maxResolution(75)));
-      final File dpi150 =
+      final var dpi150 =
           writer(converter, testFolder, b -> b.images(i -> i.lossless(true).maxResolution(150)));
 
-      try (PDDocument docFull = Loader.loadPDF(full);
-          PDDocument doc75 = Loader.loadPDF(dpi75);
-          PDDocument doc150 = Loader.loadPDF(dpi150)) {
+      try (var docFull = Loader.loadPDF(full);
+          var doc75 = Loader.loadPDF(dpi75);
+          var doc150 = Loader.loadPDF(dpi150)) {
         assertThat(image(docFull).getWidth()).isEqualTo(600);
         assertThat(image(doc75).getWidth()).isEqualTo(75);
         assertThat(image(doc150).getWidth()).isEqualTo(150);
@@ -500,8 +490,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File second = writer(converter, testFolder, b -> b.pages(p -> p.range("2")));
-      final File firstTwo = writer(converter, testFolder, b -> b.pages(p -> p.range("1-2")));
+      final var second = writer(converter, testFolder, b -> b.pages(p -> p.range("2")));
+      final var firstTwo = writer(converter, testFolder, b -> b.pages(p -> p.range("1-2")));
 
       assertThat(pageCount(second)).isEqualTo(1);
       assertThat(text(second)).contains("Chapter Two").doesNotContain("Chapter One");
@@ -513,8 +503,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File skipped = writer(converter, testFolder, b -> b.pages(p -> p.skipEmptyPages(true)));
-      final File kept = writer(converter, testFolder, b -> b.pages(p -> p.skipEmptyPages(false)));
+      final var skipped = writer(converter, testFolder, b -> b.pages(p -> p.skipEmptyPages(true)));
+      final var kept = writer(converter, testFolder, b -> b.pages(p -> p.skipEmptyPages(false)));
 
       assertThat(pageCount(kept)).isEqualTo(pageCount(skipped) + 1);
     }
@@ -524,8 +514,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = writer(converter, testFolder, b -> b.pages(p -> p.placeholders(true)));
-      final File off = writer(converter, testFolder, b -> b.pages(p -> p.placeholders(false)));
+      final var on = writer(converter, testFolder, b -> b.pages(p -> p.placeholders(true)));
+      final var off = writer(converter, testFolder, b -> b.pages(p -> p.placeholders(false)));
 
       assertThat(text(on)).contains("PLACEHOLDERTEXT");
       assertThat(text(off)).doesNotContain("PLACEHOLDERTEXT");
@@ -540,8 +530,8 @@ class PdfOptionsITest {
 
       assumeLibreOffice(manager, 26, 2);
 
-      final File on = writer(converter, testFolder, b -> b.pages(p -> p.trackedChanges(true)));
-      final File off = writer(converter, testFolder, b -> b.pages(p -> p.trackedChanges(false)));
+      final var on = writer(converter, testFolder, b -> b.pages(p -> p.trackedChanges(true)));
+      final var off = writer(converter, testFolder, b -> b.pages(p -> p.trackedChanges(false)));
 
       assertThat(text(on)).contains("DELETEDWORD");
       assertThat(text(off)).doesNotContain("DELETEDWORD");
@@ -556,12 +546,12 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = writer(converter, testFolder, b -> b.comments(c -> c.asPdfAnnotations(true)));
-      final File off =
+      final var on = writer(converter, testFolder, b -> b.comments(c -> c.asPdfAnnotations(true)));
+      final var off =
           writer(converter, testFolder, b -> b.comments(c -> c.asPdfAnnotations(false)));
 
-      try (PDDocument docOn = Loader.loadPDF(on);
-          PDDocument docOff = Loader.loadPDF(off)) {
+      try (var docOn = Loader.loadPDF(on);
+          var docOff = Loader.loadPDF(off)) {
         assertThat(annotations(docOn, PDAnnotationText.class)).hasSize(1);
         assertThat(annotations(docOff, PDAnnotationText.class)).isEmpty();
       }
@@ -572,12 +562,12 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on =
+      final var on =
           writer(
               converter,
               testFolder,
               b -> b.comments(c -> c.asPdfAnnotations(false).inMargin(true)));
-      final File off =
+      final var off =
           writer(
               converter,
               testFolder,
@@ -592,9 +582,9 @@ class PdfOptionsITest {
   class Bookmarks {
 
     private boolean hasNamedDestinations(final File file) throws IOException {
-      try (PDDocument doc = Loader.loadPDF(file)) {
-        final COSDictionary catalog = doc.getDocumentCatalog().getCOSObject();
-        final COSBase names = catalog.getDictionaryObject(COSName.NAMES);
+      try (var doc = Loader.loadPDF(file)) {
+        final var catalog = doc.getDocumentCatalog().getCOSObject();
+        final var names = catalog.getDictionaryObject(COSName.NAMES);
         return catalog.containsKey(COSName.DESTS)
             || names instanceof COSDictionary dictionary && dictionary.containsKey(COSName.DESTS);
       }
@@ -605,8 +595,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = writer(converter, testFolder, b -> b.bookmarks(m -> m.export(true)));
-      final File off = writer(converter, testFolder, b -> b.bookmarks(m -> m.export(false)));
+      final var on = writer(converter, testFolder, b -> b.bookmarks(m -> m.export(true)));
+      final var off = writer(converter, testFolder, b -> b.bookmarks(m -> m.export(false)));
 
       assertThat(catalogHas(on, "Outlines")).isTrue();
       assertThat(catalogHas(off, "Outlines")).isFalse();
@@ -617,13 +607,13 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File oneLevel =
+      final var oneLevel =
           writer(converter, testFolder, b -> b.bookmarks(m -> m.export(true).openLevels(1)));
-      final File allLevels =
+      final var allLevels =
           writer(converter, testFolder, b -> b.bookmarks(m -> m.export(true).openLevels(-1)));
 
-      try (PDDocument docOne = Loader.loadPDF(oneLevel);
-          PDDocument docAll = Loader.loadPDF(allLevels)) {
+      try (var docOne = Loader.loadPDF(oneLevel);
+          var docAll = Loader.loadPDF(allLevels)) {
         assertThat(docOne.getDocumentCatalog().getDocumentOutline().getFirstChild().isNodeOpen())
             .isFalse();
         assertThat(docAll.getDocumentCatalog().getDocumentOutline().getFirstChild().isNodeOpen())
@@ -636,9 +626,9 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on =
+      final var on =
           writer(converter, testFolder, b -> b.bookmarks(m -> m.asNamedDestinations(true)));
-      final File off =
+      final var off =
           writer(converter, testFolder, b -> b.bookmarks(m -> m.asNamedDestinations(false)));
 
       assertThat(hasNamedDestinations(on)).isTrue();
@@ -654,8 +644,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = writer(converter, testFolder, b -> b.forms(f -> f.export(true)));
-      final File off = writer(converter, testFolder, b -> b.forms(f -> f.export(false)));
+      final var on = writer(converter, testFolder, b -> b.forms(f -> f.export(true)));
+      final var off = writer(converter, testFolder, b -> b.forms(f -> f.export(false)));
 
       assertThat(fieldNames(on)).contains("samename", "SubmitButton");
       assertThat(fieldNames(off)).isEmpty();
@@ -666,14 +656,14 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final Map<SubmitFormat, Integer> flags = new HashMap<>();
-      for (final SubmitFormat format : SubmitFormat.values()) {
-        final File pdf =
+      final var flags = new HashMap<SubmitFormat, Integer>();
+      for (final var format : SubmitFormat.values()) {
+        final var pdf =
             writer(converter, testFolder, b -> b.forms(f -> f.export(true).submitFormat(format)));
-        try (PDDocument doc = Loader.loadPDF(pdf)) {
-          for (final PDAnnotationWidget widget : annotations(doc, PDAnnotationWidget.class)) {
+        try (var doc = Loader.loadPDF(pdf)) {
+          for (final var widget : annotations(doc, PDAnnotationWidget.class)) {
             if ("SubmitButton".equals(widget.getCOSObject().getString(COSName.T))) {
-              final COSDictionary action =
+              final var action =
                   widget.getCOSObject().getCOSDictionary(COSName.AA).getCOSDictionary(COSName.D);
               assertThat(action.getNameAsString(COSName.S)).isEqualTo("SubmitForm");
               flags.put(format, action.getInt(COSName.getPDFName("Flags")));
@@ -696,10 +686,10 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on =
+      final var on =
           writer(
               converter, testFolder, b -> b.forms(f -> f.export(true).allowDuplicateNames(true)));
-      final File off =
+      final var off =
           writer(
               converter, testFolder, b -> b.forms(f -> f.export(true).allowDuplicateNames(false)));
 
@@ -720,8 +710,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = writer(converter, testFolder, b -> b.links(l -> l.relativeFileLinks(true)));
-      final File off = writer(converter, testFolder, b -> b.links(l -> l.relativeFileLinks(false)));
+      final var on = writer(converter, testFolder, b -> b.links(l -> l.relativeFileLinks(true)));
+      final var off = writer(converter, testFolder, b -> b.links(l -> l.relativeFileLinks(false)));
 
       assertThat(fileLinkUri(on)).isEqualTo("other.odt");
       assertThat(fileLinkUri(off)).startsWith("file:///").endsWith("/other.odt");
@@ -732,9 +722,9 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on =
+      final var on =
           writer(converter, testFolder, b -> b.links(l -> l.convertOdfTargetsToPdf(true)));
-      final File off =
+      final var off =
           writer(converter, testFolder, b -> b.links(l -> l.convertOdfTargetsToPdf(false)));
 
       assertThat(fileLinkUri(on)).endsWith("other.pdf");
@@ -746,15 +736,15 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File reader =
+      final var reader =
           writer(
               converter,
               testFolder,
               b -> b.links(l -> l.crossDocumentLinks(LinkTarget.PDF_READER)));
-      final File browser =
+      final var browser =
           writer(
               converter, testFolder, b -> b.links(l -> l.crossDocumentLinks(LinkTarget.BROWSER)));
-      final File byDefault =
+      final var byDefault =
           writer(
               converter, testFolder, b -> b.links(l -> l.crossDocumentLinks(LinkTarget.DEFAULT)));
 
@@ -772,10 +762,10 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File none = writer(converter, testFolder, b -> b.initialView(v -> v.pane(Pane.NONE)));
-      final File bookmarks =
+      final var none = writer(converter, testFolder, b -> b.initialView(v -> v.pane(Pane.NONE)));
+      final var bookmarks =
           writer(converter, testFolder, b -> b.initialView(v -> v.pane(Pane.BOOKMARKS)));
-      final File thumbnails =
+      final var thumbnails =
           writer(converter, testFolder, b -> b.initialView(v -> v.pane(Pane.THUMBNAILS)));
 
       // Without page mode, a viewer shows no pane.
@@ -789,9 +779,9 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File pdf = writer(converter, testFolder, b -> b.initialView(v -> v.page(2)));
+      final var pdf = writer(converter, testFolder, b -> b.initialView(v -> v.page(2)));
 
-      try (PDDocument doc = Loader.loadPDF(pdf)) {
+      try (var doc = Loader.loadPDF(pdf)) {
         assertThat(openDestination(doc).retrievePageNumber()).isEqualTo(1);
       }
     }
@@ -801,25 +791,25 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File fitPage =
+      final var fitPage =
           writer(
               converter,
               testFolder,
               b -> b.initialView(v -> v.magnification(Magnification.FIT_PAGE)));
-      final File fitWidth =
+      final var fitWidth =
           writer(
               converter,
               testFolder,
               b -> b.initialView(v -> v.magnification(Magnification.FIT_WIDTH)));
-      final File fitVisible =
+      final var fitVisible =
           writer(
               converter,
               testFolder,
               b -> b.initialView(v -> v.magnification(Magnification.FIT_VISIBLE)));
 
-      try (PDDocument docPage = Loader.loadPDF(fitPage);
-          PDDocument docWidth = Loader.loadPDF(fitWidth);
-          PDDocument docVisible = Loader.loadPDF(fitVisible)) {
+      try (var docPage = Loader.loadPDF(fitPage);
+          var docWidth = Loader.loadPDF(fitWidth);
+          var docVisible = Loader.loadPDF(fitVisible)) {
         assertThat(openDestination(docPage)).isInstanceOf(PDPageFitDestination.class);
         assertThat(openDestination(docWidth))
             .isInstanceOfSatisfying(
@@ -837,9 +827,9 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File pdf = writer(converter, testFolder, b -> b.initialView(v -> v.zoom(75)));
+      final var pdf = writer(converter, testFolder, b -> b.initialView(v -> v.zoom(75)));
 
-      try (PDDocument doc = Loader.loadPDF(pdf)) {
+      try (var doc = Loader.loadPDF(pdf)) {
         assertThat(openDestination(doc))
             .isInstanceOfSatisfying(
                 PDPageXYZDestination.class,
@@ -852,16 +842,16 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File single =
+      final var single =
           writer(converter, testFolder, b -> b.initialView(v -> v.layout(PageLayout.SINGLE_PAGE)));
-      final File continuous =
+      final var continuous =
           writer(converter, testFolder, b -> b.initialView(v -> v.layout(PageLayout.CONTINUOUS)));
-      final File facing =
+      final var facing =
           writer(
               converter,
               testFolder,
               b -> b.initialView(v -> v.layout(PageLayout.CONTINUOUS_FACING)));
-      final File byDefault =
+      final var byDefault =
           writer(converter, testFolder, b -> b.initialView(v -> v.layout(PageLayout.DEFAULT)));
 
       assertThat(catalogName(single, "PageLayout")).isEqualTo("SinglePage");
@@ -879,7 +869,7 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on =
+      final var on =
           writer(
               converter,
               testFolder,
@@ -892,7 +882,7 @@ class PdfOptionsITest {
                               .hideMenubar(true)
                               .hideToolbar(true)
                               .hideWindowControls(true)));
-      final File off =
+      final var off =
           writer(
               converter,
               testFolder,
@@ -906,16 +896,16 @@ class PdfOptionsITest {
                               .hideToolbar(false)
                               .hideWindowControls(false)));
 
-      try (PDDocument docOn = Loader.loadPDF(on);
-          PDDocument docOff = Loader.loadPDF(off)) {
-        final PDViewerPreferences prefsOn = viewerPreferences(docOn);
+      try (var docOn = Loader.loadPDF(on);
+          var docOff = Loader.loadPDF(off)) {
+        final var prefsOn = viewerPreferences(docOn);
         assertThat(prefsOn.fitWindow()).isTrue();
         assertThat(prefsOn.centerWindow()).isTrue();
         assertThat(prefsOn.displayDocTitle()).isTrue();
         assertThat(prefsOn.hideMenubar()).isTrue();
         assertThat(prefsOn.hideToolbar()).isTrue();
         assertThat(prefsOn.hideWindowUI()).isTrue();
-        final PDViewerPreferences prefsOff = viewerPreferences(docOff);
+        final var prefsOff = viewerPreferences(docOff);
         assertThat(prefsOff.fitWindow()).isFalse();
         assertThat(prefsOff.centerWindow()).isFalse();
         assertThat(prefsOff.displayDocTitle()).isFalse();
@@ -930,11 +920,11 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File center = writer(converter, testFolder, b -> b.viewer(v -> v.centerWindow(true)));
-      final File toolbar = writer(converter, testFolder, b -> b.viewer(v -> v.hideToolbar(true)));
+      final var center = writer(converter, testFolder, b -> b.viewer(v -> v.centerWindow(true)));
+      final var toolbar = writer(converter, testFolder, b -> b.viewer(v -> v.hideToolbar(true)));
 
-      try (PDDocument docCenter = Loader.loadPDF(center);
-          PDDocument docToolbar = Loader.loadPDF(toolbar)) {
+      try (var docCenter = Loader.loadPDF(center);
+          var docToolbar = Loader.loadPDF(toolbar)) {
         assertThat(viewerPreferences(docCenter).centerWindow()).isTrue();
         assertThat(viewerPreferences(docCenter).hideToolbar()).isFalse();
         assertThat(viewerPreferences(docToolbar).hideToolbar()).isTrue();
@@ -947,8 +937,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = writer(converter, testFolder, b -> b.viewer(v -> v.fullScreen(true)));
-      final File off = writer(converter, testFolder, b -> b.viewer(v -> v.fullScreen(false)));
+      final var on = writer(converter, testFolder, b -> b.viewer(v -> v.fullScreen(true)));
+      final var off = writer(converter, testFolder, b -> b.viewer(v -> v.fullScreen(false)));
 
       assertThat(catalogName(on, "PageMode")).isEqualTo("FullScreen");
       assertThat(catalogName(off, "PageMode")).isNotEqualTo("FullScreen");
@@ -965,12 +955,11 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File pdf =
-          writer(converter, testFolder, b -> b.security(s -> s.openPassword("openpw")));
+      final var pdf = writer(converter, testFolder, b -> b.security(s -> s.openPassword("openpw")));
 
       assertThatExceptionOfType(InvalidPasswordException.class)
           .isThrownBy(() -> Loader.loadPDF(pdf, "wrong").close());
-      try (PDDocument doc = Loader.loadPDF(pdf, "openpw")) {
+      try (var doc = Loader.loadPDF(pdf, "openpw")) {
         assertThat(doc.isEncrypted()).isTrue();
         assertThat(doc.getNumberOfPages()).isPositive();
       }
@@ -981,11 +970,11 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File pdf =
+      final var pdf =
           writer(converter, testFolder, b -> b.security(s -> s.permissionPassword(OWNER_PASSWORD)));
 
-      try (PDDocument asUser = Loader.loadPDF(pdf);
-          PDDocument asOwner = Loader.loadPDF(pdf, OWNER_PASSWORD)) {
+      try (var asUser = Loader.loadPDF(pdf);
+          var asOwner = Loader.loadPDF(pdf, OWNER_PASSWORD)) {
         assertThat(asUser.isEncrypted()).isTrue();
         assertThat(asUser.getCurrentAccessPermission().isOwnerPermission()).isFalse();
         assertThat(asOwner.getCurrentAccessPermission().isOwnerPermission()).isTrue();
@@ -997,8 +986,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final Map<Printing, Integer> bits = new HashMap<>();
-      for (final Printing printing : Printing.values()) {
+      final var bits = new HashMap<Printing, Integer>();
+      for (final var printing : Printing.values()) {
         bits.put(
             printing,
             permissionBits(
@@ -1023,16 +1012,16 @@ class PdfOptionsITest {
         throws IOException, OfficeException {
 
       // The bits that are set, among: 4 modify, 6 annotate, 9 fill in forms, 11 assemble.
-      final Map<Changes, String> bits = new HashMap<>();
-      for (final Changes changes : Changes.values()) {
-        final int value =
+      final var bits = new HashMap<Changes, String>();
+      for (final var changes : Changes.values()) {
+        final var value =
             permissionBits(
                 writer(
                     converter,
                     testFolder,
                     b -> b.security(s -> s.permissionPassword(OWNER_PASSWORD).changes(changes))));
-        final List<String> set = new ArrayList<>();
-        for (final int position : new int[] {4, 6, 9, 11}) {
+        final var set = new ArrayList<String>();
+        for (final var position : new int[] {4, 6, 9, 11}) {
           if (bit(value, position)) {
             set.add(String.valueOf(position));
           }
@@ -1053,13 +1042,13 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final int allowed =
+      final var allowed =
           permissionBits(
               writer(
                   converter,
                   testFolder,
                   b -> b.security(s -> s.permissionPassword(OWNER_PASSWORD).copying(true))));
-      final int accessibilityOnly =
+      final var accessibilityOnly =
           permissionBits(
               writer(
                   converter,
@@ -1070,7 +1059,7 @@ class PdfOptionsITest {
                               s.permissionPassword(OWNER_PASSWORD)
                                   .copying(false)
                                   .accessibilityAccess(true))));
-      final int denied =
+      final var denied =
           permissionBits(
               writer(
                   converter,
@@ -1098,8 +1087,8 @@ class PdfOptionsITest {
 
     // The names of the fonts of a form, without the prefix of the embedded subsets (ABCDEF+).
     private TreeSet<String> fontNames(final PDFormXObject form) throws IOException {
-      final TreeSet<String> names = new TreeSet<>();
-      for (final COSName name : form.getResources().getFontNames()) {
+      final var names = new TreeSet<String>();
+      for (final var name : form.getResources().getFontNames()) {
         names.add(form.getResources().getFont(name).getName().replaceFirst("^[A-Z]{6}\\+", ""));
       }
       return names;
@@ -1110,9 +1099,9 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File with =
+      final var with =
           writer(converter, testFolder, b -> b.tagged(false).watermark(w -> w.text(WATERMARK)));
-      final File without = writer(converter, testFolder, b -> b.tagged(false));
+      final var without = writer(converter, testFolder, b -> b.tagged(false));
 
       // The letters of the watermark are drawn one by one.
       assertThat(text(with).replaceAll("\\s+", "")).contains(WATERMARK);
@@ -1124,22 +1113,22 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File single =
+      final var single =
           writer(converter, testFolder, b -> b.tagged(false).watermark(w -> w.text(WATERMARK)));
-      final File tiled =
+      final var tiled =
           writer(
               converter, testFolder, b -> b.tagged(false).watermark(w -> w.tiledText(WATERMARK)));
 
       // Each watermark is drawn by a form: the tiled one needs many more of them.
-      try (PDDocument docSingle = Loader.loadPDF(single);
-          PDDocument docTiled = Loader.loadPDF(tiled)) {
+      try (var docSingle = Loader.loadPDF(single);
+          var docTiled = Loader.loadPDF(tiled)) {
         assertThat(textFormCount(docTiled)).isGreaterThan(textFormCount(docSingle) * 5);
       }
     }
 
     private long textFormCount(final PDDocument doc) throws IOException {
       long count = 0;
-      for (final PDFormXObject form : forms(doc)) {
+      for (final var form : forms(doc)) {
         if (content(form).contains(" Tf")) {
           count++;
         }
@@ -1152,9 +1141,9 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File plain =
+      final var plain =
           writer(converter, testFolder, b -> b.tagged(false).watermark(w -> w.text(WATERMARK)));
-      final File styled =
+      final var styled =
           writer(
               converter,
               testFolder,
@@ -1163,13 +1152,13 @@ class PdfOptionsITest {
                       .watermark(
                           w -> w.text(WATERMARK).color(0xFF0000).fontHeight(20).rotation(90)));
 
-      final String color = "([\\d.]+ [\\d.]+ [\\d.]+) rg";
-      final String size = "/F\\d+ ([\\d.]+) Tf";
-      final String matrix = "([-\\d.]+ [-\\d.]+ [-\\d.]+ [-\\d.]+) [-\\d.]+ [-\\d.]+ Tm";
-      try (PDDocument docPlain = Loader.loadPDF(plain);
-          PDDocument docStyled = Loader.loadPDF(styled)) {
-        final String plainContent = content(watermark(docPlain));
-        final String styledContent = content(watermark(docStyled));
+      final var color = "([\\d.]+ [\\d.]+ [\\d.]+) rg";
+      final var size = "/F\\d+ ([\\d.]+) Tf";
+      final var matrix = "([-\\d.]+ [-\\d.]+ [-\\d.]+ [-\\d.]+) [-\\d.]+ [-\\d.]+ Tm";
+      try (var docPlain = Loader.loadPDF(plain);
+          var docStyled = Loader.loadPDF(styled)) {
+        final var plainContent = content(watermark(docPlain));
+        final var styledContent = content(watermark(docStyled));
         assertThat(firstGroup(color, styledContent)).isEqualTo("1 0 0");
         assertThat(firstGroup(color, plainContent)).isNotEqualTo("1 0 0");
         assertThat(firstGroup(size, styledContent)).isEqualTo("20");
@@ -1184,16 +1173,16 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File plain =
+      final var plain =
           writer(converter, testFolder, b -> b.tagged(false).watermark(w -> w.text(WATERMARK)));
-      final File mono =
+      final var mono =
           writer(
               converter,
               testFolder,
               b -> b.tagged(false).watermark(w -> w.text(WATERMARK).fontName("Liberation Mono")));
 
-      try (PDDocument docPlain = Loader.loadPDF(plain);
-          PDDocument docMono = Loader.loadPDF(mono)) {
+      try (var docPlain = Loader.loadPDF(plain);
+          var docMono = Loader.loadPDF(mono)) {
         assertThat(fontNames(watermark(docMono))).isNotEqualTo(fontNames(watermark(docPlain)));
         assertThat(fontNames(watermark(docMono))).anyMatch(name -> name.contains("Mono"));
       }
@@ -1216,9 +1205,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on =
-          impress(converter, testFolder, b -> b.presentation(p -> p.hiddenSlides(true)));
-      final File off =
+      final var on = impress(converter, testFolder, b -> b.presentation(p -> p.hiddenSlides(true)));
+      final var off =
           impress(converter, testFolder, b -> b.presentation(p -> p.hiddenSlides(false)));
 
       assertThat(pageCount(on)).isEqualTo(3);
@@ -1232,10 +1220,9 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = impress(converter, testFolder, b -> b.presentation(p -> p.notesPages(true)));
-      final File off =
-          impress(converter, testFolder, b -> b.presentation(p -> p.notesPages(false)));
-      final File only =
+      final var on = impress(converter, testFolder, b -> b.presentation(p -> p.notesPages(true)));
+      final var off = impress(converter, testFolder, b -> b.presentation(p -> p.notesPages(false)));
+      final var only =
           impress(
               converter,
               testFolder,
@@ -1255,12 +1242,12 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on = impress(converter, testFolder, b -> b.presentation(p -> p.transitions(true)));
-      final File off =
+      final var on = impress(converter, testFolder, b -> b.presentation(p -> p.transitions(true)));
+      final var off =
           impress(converter, testFolder, b -> b.presentation(p -> p.transitions(false)));
 
-      try (PDDocument docOn = Loader.loadPDF(on);
-          PDDocument docOff = Loader.loadPDF(off)) {
+      try (var docOn = Loader.loadPDF(on);
+          var docOff = Loader.loadPDF(off)) {
         assertThat(docOn.getPage(0).getCOSObject().containsKey("Trans")).isTrue();
         assertThat(docOff.getPage(0).getCOSObject().containsKey("Trans")).isFalse();
       }
@@ -1283,9 +1270,8 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File on =
-          calc(converter, testFolder, b -> b.spreadsheet(s -> s.singlePageSheets(true)));
-      final File off =
+      final var on = calc(converter, testFolder, b -> b.spreadsheet(s -> s.singlePageSheets(true)));
+      final var off =
           calc(converter, testFolder, b -> b.spreadsheet(s -> s.singlePageSheets(false)));
 
       // Two sheets.
@@ -1302,8 +1288,8 @@ class PdfOptionsITest {
 
       assumeLibreOffice(manager, 24, 8);
 
-      final File first = calc(converter, testFolder, b -> b.spreadsheet(s -> s.sheetRange("1")));
-      final File second = calc(converter, testFolder, b -> b.spreadsheet(s -> s.sheetRange("2")));
+      final var first = calc(converter, testFolder, b -> b.spreadsheet(s -> s.sheetRange("1")));
+      final var second = calc(converter, testFolder, b -> b.spreadsheet(s -> s.sheetRange("2")));
 
       assertThat(text(first)).contains("AlphaR1").doesNotContain("BetaR1");
       assertThat(text(second)).contains("BetaR1").doesNotContain("AlphaR1");
@@ -1318,13 +1304,13 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File pdf = new File(testFolder, "archive.pdf");
+      final var pdf = new File(testFolder, "archive.pdf");
       converter.convert(WRITER_FILE).to(pdf).with(PdfOptions.archive()).execute();
 
       assertThat(xmp(pdf)).containsPattern("<pdfaid:part>\\s*2\\s*</pdfaid:part>");
       assertThat(isTagged(pdf)).isTrue();
       assertThat(catalogHas(pdf, "Outlines")).isTrue();
-      try (PDDocument doc = Loader.loadPDF(pdf)) {
+      try (var doc = Loader.loadPDF(pdf)) {
         assertThat(image(doc).getSuffix()).isEqualTo("png");
       }
     }
@@ -1334,7 +1320,7 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File pdf = new File(testFolder, "accessible.pdf");
+      final var pdf = new File(testFolder, "accessible.pdf");
       converter.convert(WRITER_FILE).to(pdf).with(PdfOptions.accessible()).execute();
 
       assertThat(xmp(pdf)).contains("pdfuaid:part");
@@ -1347,11 +1333,11 @@ class PdfOptionsITest {
         final @TempDir File testFolder, final DocumentConverter converter)
         throws IOException, OfficeException {
 
-      final File pdf = new File(testFolder, "compact.pdf");
+      final var pdf = new File(testFolder, "compact.pdf");
       converter.convert(WRITER_FILE).to(pdf).with(PdfOptions.compact()).execute();
 
       assertThat(isTagged(pdf)).isTrue();
-      try (PDDocument doc = Loader.loadPDF(pdf)) {
+      try (var doc = Loader.loadPDF(pdf)) {
         assertThat(image(doc).getSuffix()).isEqualTo("jpg");
         assertThat(image(doc).getWidth()).isEqualTo(150);
       }
@@ -1368,9 +1354,9 @@ class PdfOptionsITest {
 
       // Without FilterData, the office uses the settings of its configuration. Empty options
       // must not change that.
-      final File plain = new File(testFolder, "plain.pdf");
+      final var plain = new File(testFolder, "plain.pdf");
       converter.convert(WRITER_FILE).to(plain).execute();
-      final File empty = writer(converter, testFolder, b -> {});
+      final var empty = writer(converter, testFolder, b -> {});
 
       assertThat(isTagged(empty)).isEqualTo(isTagged(plain));
       assertThat(catalogName(empty, "PageMode")).isEqualTo(catalogName(plain, "PageMode"));
@@ -1383,16 +1369,16 @@ class PdfOptionsITest {
         throws IOException, OfficeException {
 
       // The converter asks for PDF 1.6 and only the first page, for all its conversions.
-      final Map<String, Object> filterData = new HashMap<>();
+      final var filterData = new HashMap<String, Object>();
       filterData.put("SelectPdfVersion", 16);
       filterData.put("PageRange", "1");
-      final DocumentConverter converter =
+      final var converter =
           LocalConverter.builder()
               .officeManager(manager)
               .storeProperty("FilterData", filterData)
               .build();
-      final File converterOnly = new File(testFolder, "converter.pdf");
-      final File withOptions = new File(testFolder, "options.pdf");
+      final var converterOnly = new File(testFolder, "converter.pdf");
+      final var withOptions = new File(testFolder, "options.pdf");
 
       converter.convert(WRITER_FILE).to(converterOnly).execute();
       converter
@@ -1413,7 +1399,7 @@ class PdfOptionsITest {
     void toOutputStream_ShouldApplyTheOptions(final DocumentConverter converter)
         throws OfficeException {
 
-      final ByteArrayOutputStream output = new ByteArrayOutputStream();
+      final var output = new ByteArrayOutputStream();
 
       converter
           .convert(WRITER_FILE)
@@ -1429,7 +1415,7 @@ class PdfOptionsITest {
     void withTargetThatIsNotPdf_ShouldThrowIllegalArgumentException(
         final @TempDir File testFolder, final DocumentConverter converter) {
 
-      final File outputFile = new File(testFolder, "out.odt");
+      final var outputFile = new File(testFolder, "out.odt");
 
       assertThatIllegalArgumentException()
           .isThrownBy(

@@ -20,11 +20,7 @@
 
 package org.jodconverter.core.office;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -77,7 +73,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
     // at least once, meaning that the entry has been started.
 
     // Submit the task to the executor
-    final Future<?> future =
+    final var future =
         taskExecutor.submit(
             () -> {
               doExecute(task);
@@ -196,7 +192,7 @@ public abstract class AbstractOfficeManagerPoolEntry implements OfficeManager {
 
   /** Cancels the current running task, if any. Do nothing if there is no current running task. */
   protected void cancelTask() {
-    final Future<?> future = currentFuture.get();
+    final var future = currentFuture.get();
     if (future != null) {
       LOGGER.debug("Cancelling current task...");
       future.cancel(true);

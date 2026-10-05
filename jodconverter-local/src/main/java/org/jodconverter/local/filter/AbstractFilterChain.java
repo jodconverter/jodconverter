@@ -88,7 +88,7 @@ public abstract class AbstractFilterChain implements FilterChain {
 
     // Call the next filter if there is one
     if (pos < filters.size()) {
-      final Filter filter = filters.get(pos++);
+      final var filter = filters.get(pos++);
       doFilter(filter, context, document);
     }
   }

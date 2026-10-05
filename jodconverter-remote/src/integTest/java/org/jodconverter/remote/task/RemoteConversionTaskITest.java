@@ -20,17 +20,12 @@
 
 package org.jodconverter.remote.task;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -42,7 +37,6 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.core.pdf.PdfVersion;
@@ -62,13 +56,13 @@ class RemoteConversionTaskITest {
     void withCustomProperties_ShouldHavePropertiesAsParameters(final @TempDir File testFolder)
         throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      final var wireMockServer = new WireMockServer(options().port(8000));
       wireMockServer.start();
       try {
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("http://localhost:8000/lool/convert-to/")
                 .build();
@@ -77,17 +71,17 @@ class RemoteConversionTaskITest {
           wireMockServer.stubFor(
               post(urlPathEqualTo("/lool/convert-to/pdf")).willReturn(aResponse().withStatus(200)));
 
-          final Map<String, Object> filterData = new HashMap<>();
+          final var filterData = new HashMap<String, Object>();
           filterData.put("PageRange", "2");
           filterData.put("RestrictPermissions", true);
           filterData.put("Printing", 0);
-          final Map<String, Object> customProperties = new HashMap<>();
+          final var customProperties = new HashMap<String, Object>();
           customProperties.put("FilterData", filterData);
           customProperties.put("Overwrite", true);
           customProperties.put("Primitive", 10);
           customProperties.put("NonStringNorPrimitive", Collections.EMPTY_LIST);
 
-          final DocumentFormat pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
+          final var pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
           Objects.requireNonNull(pdf.getStoreProperties(DocumentFamily.TEXT))
               .putAll(customProperties);
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).as(pdf).execute();
@@ -114,13 +108,13 @@ class RemoteConversionTaskITest {
     void withTargetOptions_ShouldSendThemWithPrecedenceOverTheTargetFormat(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      final var wireMockServer = new WireMockServer(options().port(8000));
       wireMockServer.start();
       try {
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("http://localhost:8000/lool/convert-to/")
                 .build();
@@ -129,10 +123,10 @@ class RemoteConversionTaskITest {
           wireMockServer.stubFor(
               post(urlPathEqualTo("/lool/convert-to/pdf")).willReturn(aResponse().withStatus(200)));
 
-          final Map<String, Object> filterData = new HashMap<>();
+          final var filterData = new HashMap<String, Object>();
           filterData.put("PageRange", "2");
           filterData.put("SelectPdfVersion", 16);
-          final DocumentFormat pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
+          final var pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
           Objects.requireNonNull(pdf.getStoreProperties(DocumentFamily.TEXT))
               .put("FilterData", filterData);
 
@@ -162,13 +156,13 @@ class RemoteConversionTaskITest {
     void withLoadProperties_ShouldSendSourceFormatLoadPropertiesOnly(final @TempDir File testFolder)
         throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      final var wireMockServer = new WireMockServer(options().port(8000));
       wireMockServer.start();
       try {
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("http://localhost:8000/lool/convert-to/")
                 .build();
@@ -178,12 +172,12 @@ class RemoteConversionTaskITest {
               post(urlPathEqualTo("/lool/convert-to/pdf")).willReturn(aResponse().withStatus(200)));
 
           // Load properties are used to load the source document
-          final DocumentFormat doc =
+          final var doc =
               DocumentFormat.builder()
                   .from(DefaultDocumentFormatRegistry.DOC)
                   .loadProperty("Password", "secret")
                   .build();
-          final DocumentFormat pdf =
+          final var pdf =
               DocumentFormat.builder()
                   .from(DefaultDocumentFormatRegistry.PDF)
                   .loadProperty("TargetOnly", "ignored")
@@ -207,13 +201,13 @@ class RemoteConversionTaskITest {
     void withFilterDataNotMap_ShouldHaveNormalFilterDataPropertyAsParameters(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      final var wireMockServer = new WireMockServer(options().port(8000));
       wireMockServer.start();
       try {
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("http://localhost:8000/lool/convert-to/")
                 .build();
@@ -222,10 +216,10 @@ class RemoteConversionTaskITest {
           wireMockServer.stubFor(
               post(urlPathEqualTo("/lool/convert-to/pdf")).willReturn(aResponse().withStatus(200)));
 
-          final Map<String, Object> customProperties = new HashMap<>();
+          final var customProperties = new HashMap<String, Object>();
           customProperties.put("FilterData", "foo");
 
-          final DocumentFormat pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
+          final var pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
           Objects.requireNonNull(pdf.getStoreProperties(DocumentFamily.TEXT))
               .putAll(customProperties);
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).as(pdf).execute();

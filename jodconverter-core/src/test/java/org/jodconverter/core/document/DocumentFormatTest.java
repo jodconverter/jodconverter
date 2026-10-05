@@ -22,7 +22,6 @@ package org.jodconverter.core.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -45,7 +44,7 @@ class DocumentFormatTest {
 
     // If an exception is thrown, the test will automatically fail.
 
-    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+    final var registry = DefaultDocumentFormatRegistry.getInstance();
     // TEXT output format
     toString(registry.getOutputFormats(DocumentFamily.TEXT));
     // SPREADSHEET output format
@@ -60,12 +59,12 @@ class DocumentFormatTest {
   void copy_ShouldCreateModifiableCopy() {
 
     // If an exception is thrown, the test will automatically fail.
-    final DocumentFormat copy = DocumentFormat.copy(DefaultDocumentFormatRegistry.CSV);
+    final var copy = DocumentFormat.copy(DefaultDocumentFormatRegistry.CSV);
     assertThat(copy).isNotEqualTo(DefaultDocumentFormatRegistry.CSV);
     assertThat(copy.getName()).isEqualTo(DefaultDocumentFormatRegistry.CSV.getName());
 
     // Ensure it is modifiable
-    final Map<String, Object> map = copy.getLoadProperties();
+    final var map = copy.getLoadProperties();
     assertThat(map).isNotNull();
     map.put("PropertyX", "ValueX");
   }

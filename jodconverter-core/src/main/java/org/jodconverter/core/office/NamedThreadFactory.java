@@ -57,7 +57,7 @@ public class NamedThreadFactory implements ThreadFactory {
   @Override
   public @NonNull Thread newThread(final @NonNull Runnable runnable) {
 
-    final Thread thread = new Thread(runnable, basename + "-" + THREAD_INDEX.getAndIncrement());
+    final var thread = new Thread(runnable, basename + "-" + THREAD_INDEX.getAndIncrement());
     thread.setDaemon(daemon);
     return thread;
   }

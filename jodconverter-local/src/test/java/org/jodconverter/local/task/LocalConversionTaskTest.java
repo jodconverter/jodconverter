@@ -20,9 +20,7 @@
 
 package org.jodconverter.local.task;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
@@ -31,7 +29,6 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.frame.XComponentLoader;
@@ -69,14 +66,14 @@ class LocalConversionTaskTest {
     void withUnsupportedFormat_ShouldThrowIllegalArgumentException(
         final UnoRuntime unoRuntime, final @TempDir File testFolder) {
 
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")).willReturn(true);
 
-      final XComponent document = mock(XComponent.class);
+      final var document = mock(XComponent.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
 
-      final File targetFile = new File(testFolder, ZIP_TARGET_FILENAME);
-      final LocalConversionTask task =
+      final var targetFile = new File(testFolder, ZIP_TARGET_FILENAME);
+      final var task =
           new LocalConversionTask(
               new FooSourceSpecs(SOURCE_FILE),
               new FooTargetSpecsWithoutFilterFormat(targetFile),
@@ -93,20 +90,20 @@ class LocalConversionTaskTest {
     void whenErrorCodeIOExceptionCatched_ShouldThrowOfficeException(
         final UnoRuntime unoRuntime, final @TempDir File testFolder) throws Exception {
 
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")).willReturn(true);
 
-      final XStorable storable = mock(XStorable.class);
+      final var storable = mock(XStorable.class);
       doThrow(ErrorCodeIOException.class)
           .when(storable)
           .storeToURL(isA(String.class), isA(PropertyValue[].class));
 
-      final XComponent document = mock(XComponent.class);
+      final var document = mock(XComponent.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(unoRuntime.queryInterface(XStorable.class, document)).willReturn(storable);
 
-      final File targetFile = new File(testFolder, TARGET_FILENAME);
-      final LocalConversionTask task =
+      final var targetFile = new File(testFolder, TARGET_FILENAME);
+      final var task =
           new LocalConversionTask(
               new FooSourceSpecs(SOURCE_FILE),
               new FooTargetSpecs(targetFile),
@@ -123,20 +120,20 @@ class LocalConversionTaskTest {
     void whenIOExceptionCatched_ShouldThrowOfficeException(
         final UnoRuntime unoRuntime, final @TempDir File testFolder) throws Exception {
 
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")).willReturn(true);
 
-      final XStorable storable = mock(XStorable.class);
+      final var storable = mock(XStorable.class);
       doThrow(IOException.class)
           .when(storable)
           .storeToURL(isA(String.class), isA(PropertyValue[].class));
 
-      final XComponent document = mock(XComponent.class);
+      final var document = mock(XComponent.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(unoRuntime.queryInterface(XStorable.class, document)).willReturn(storable);
 
-      final File targetFile = new File(testFolder, TARGET_FILENAME);
-      final LocalConversionTask task =
+      final var targetFile = new File(testFolder, TARGET_FILENAME);
+      final var task =
           new LocalConversionTask(
               new FooSourceSpecs(SOURCE_FILE),
               new FooTargetSpecs(targetFile),
@@ -157,17 +154,17 @@ class LocalConversionTaskTest {
     void whenIOExceptionCatched_ShouldThrowOfficeException(
         final UnoRuntime unoRuntime, final @TempDir File testFolder) throws Exception {
 
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")).willReturn(true);
 
-      final XStorable storable = mock(XStorable.class);
+      final var storable = mock(XStorable.class);
       doThrow(IOException.class)
           .when(storable)
           .storeToURL(isA(String.class), isA(PropertyValue[].class));
 
-      final XComponent document = mock(XComponent.class);
-      final XComponentLoader loader = mock(XComponentLoader.class);
-      final LocalOfficeContext context = mock(LocalOfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var loader = mock(XComponentLoader.class);
+      final var context = mock(LocalOfficeContext.class);
       given(
               loader.loadComponentFromURL(
                   isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class)))
@@ -177,8 +174,8 @@ class LocalConversionTaskTest {
       given(unoRuntime.queryInterface(XStorable.class, document)).willReturn(storable);
       given(unoRuntime.queryInterface(XComponent.class, document)).willReturn(document);
 
-      final File targetFile = new File(testFolder, TARGET_FILENAME);
-      final LocalConversionTask task =
+      final var targetFile = new File(testFolder, TARGET_FILENAME);
+      final var task =
           new LocalConversionTask(
               new FooSourceSpecs(SOURCE_FILE),
               new FooTargetSpecs(targetFile),
@@ -195,17 +192,17 @@ class LocalConversionTaskTest {
     void whenRuntimeExceptionCatched_ShouldThrowOfficeException(
         final UnoRuntime unoRuntime, final @TempDir File testFolder) throws Exception {
 
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(serviceInfo.supportsService("com.sun.star.text.GenericTextDocument")).willReturn(true);
 
-      final XStorable storable = mock(XStorable.class);
+      final var storable = mock(XStorable.class);
       doThrow(RuntimeException.class)
           .when(storable)
           .storeToURL(isA(String.class), isA(PropertyValue[].class));
 
-      final XComponent document = mock(XComponent.class);
-      final XComponentLoader loader = mock(XComponentLoader.class);
-      final LocalOfficeContext context = mock(LocalOfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var loader = mock(XComponentLoader.class);
+      final var context = mock(LocalOfficeContext.class);
       given(
               loader.loadComponentFromURL(
                   isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class)))
@@ -215,8 +212,8 @@ class LocalConversionTaskTest {
       given(unoRuntime.queryInterface(XStorable.class, document)).willReturn(storable);
       given(unoRuntime.queryInterface(XComponent.class, document)).willReturn(document);
 
-      final File targetFile = new File(testFolder, TARGET_FILENAME);
-      final LocalConversionTask task =
+      final var targetFile = new File(testFolder, TARGET_FILENAME);
+      final var task =
           new LocalConversionTask(
               new FooSourceSpecs(SOURCE_FILE),
               new FooTargetSpecs(targetFile),
@@ -236,15 +233,15 @@ class LocalConversionTaskTest {
     @Test
     void shouldReturnExpectedValue(final @TempDir File testFolder) {
 
-      final FooSourceSpecs sourceSpecs = new FooSourceSpecs(SOURCE_FILE);
-      final Map<String, Object> loadProps = new HashMap<>();
+      final var sourceSpecs = new FooSourceSpecs(SOURCE_FILE);
+      final var loadProps = new HashMap<String, Object>();
       loadProps.put("Key1", "Val1");
-      final File targetFile = new File(testFolder, TARGET_FILENAME);
-      final FooTargetSpecs targetSpecs = new FooTargetSpecs(targetFile);
-      final Map<String, Object> storeProps = new HashMap<>();
+      final var targetFile = new File(testFolder, TARGET_FILENAME);
+      final var targetSpecs = new FooTargetSpecs(targetFile);
+      final var storeProps = new HashMap<String, Object>();
       storeProps.put("Key2", "Val2");
 
-      final LocalConversionTask task =
+      final var task =
           new LocalConversionTask(sourceSpecs, targetSpecs, true, loadProps, storeProps, null);
       assertThat(task.toString())
           .isEqualTo(
@@ -295,7 +292,7 @@ class LocalConversionTaskTest {
 
     @Override
     public DocumentFormat getFormat() {
-      final DocumentFormat fmt = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
+      final var fmt = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
       if (fmt.getStoreProperties() != null) {
         fmt.getStoreProperties().clear();
       }

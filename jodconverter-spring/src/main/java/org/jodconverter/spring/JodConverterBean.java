@@ -20,17 +20,7 @@
 
 package org.jodconverter.spring;
 
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_HOSTNAME;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
-import static org.jodconverter.local.office.LocalOfficeManager.builder;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -46,14 +36,12 @@ import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.document.DocumentFormat;
-import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExistingProcessAction;
-import org.jodconverter.local.office.LocalOfficeManager.Builder;
 import org.jodconverter.local.process.ProcessManager;
 
 /**
@@ -94,7 +82,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   @Override
   public void afterPropertiesSet() throws OfficeException {
 
-    final Builder builder = builder();
+    final var builder = builder();
 
     if (!StringUtils.isBlank(portNumbers)) {
       builder.portNumbers(
@@ -165,9 +153,9 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
   /** Prints the available formats provided by the JODConverter module. */
   public void logAvailableFormats() {
 
-    final DocumentFormatRegistry ref = DefaultDocumentFormatRegistry.getInstance();
+    final var ref = DefaultDocumentFormatRegistry.getInstance();
 
-    Set<DocumentFormat> formats = ref.getOutputFormats(DocumentFamily.TEXT);
+    var formats = ref.getOutputFormats(DocumentFamily.TEXT);
     logSupportedGroupFormats("Supported Text Document Formats are:", formats);
     formats = ref.getOutputFormats(DocumentFamily.SPREADSHEET);
     logSupportedGroupFormats("Supported SpreadSheet Document Formats are:", formats);

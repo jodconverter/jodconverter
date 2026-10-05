@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ class UnmodifiableFilterChainTest {
     @Test
     void shouldBeReadOnly() {
 
-      final UnmodifiableFilterChain chain = new UnmodifiableFilterChain(NoopFilter.NOOP);
+      final var chain = new UnmodifiableFilterChain(NoopFilter.NOOP);
       assertThatExceptionOfType(UnsupportedOperationException.class)
           .isThrownBy(() -> chain.addFilter(RefreshFilter.REFRESH));
     }
@@ -50,11 +49,10 @@ class UnmodifiableFilterChainTest {
     @Test
     void with2Filters_ShouldCopy2Filters() {
 
-      final List<Filter> filters = new ArrayList<>();
+      final var filters = new ArrayList<Filter>();
       filters.add(NoopFilter.NOOP);
       filters.add(RefreshFilter.REFRESH);
-      final UnmodifiableFilterChain chain =
-          new UnmodifiableFilterChain(NoopFilter.NOOP, RefreshFilter.REFRESH);
+      final var chain = new UnmodifiableFilterChain(NoopFilter.NOOP, RefreshFilter.REFRESH);
       assertThat(chain.copy()).extracting("filters").isEqualTo(filters);
     }
   }

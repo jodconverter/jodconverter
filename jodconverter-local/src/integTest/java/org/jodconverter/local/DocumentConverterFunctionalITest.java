@@ -27,7 +27,6 @@ import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.File;
-import java.util.Map;
 import java.util.Objects;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -37,7 +36,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFamily;
-import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.office.PasswordProtectedException;
 
@@ -48,8 +46,8 @@ class DocumentConverterFunctionalITest {
   @Test
   void htmlWithImageConversion(final @TempDir File testFolder, final DocumentConverter converter) {
 
-    final File source = documentFile("index.html");
-    final File target = new File(testFolder, "index.pdf");
+    final var source = documentFile("index.html");
+    final var target = new File(testFolder, "index.pdf");
 
     // Convert the file to PDF
     converter.convert(source).to(target);
@@ -58,8 +56,8 @@ class DocumentConverterFunctionalITest {
   @Test
   void testHtmlConversion(final @TempDir File testFolder, final DocumentConverter converter) {
 
-    final File source = documentFile("test.html");
-    final File target = new File(testFolder, "test.pdf");
+    final var source = documentFile("test.html");
+    final var target = new File(testFolder, "test.pdf");
 
     // Convert the file to PDF
     converter.convert(source).to(target);
@@ -68,8 +66,8 @@ class DocumentConverterFunctionalITest {
   @Test
   void testHtmConversion(final @TempDir File testFolder, final DocumentConverter converter) {
 
-    final File source = documentFile("test.htm");
-    final File target = new File(testFolder, "test.pdf");
+    final var source = documentFile("test.htm");
+    final var target = new File(testFolder, "test.pdf");
 
     // Convert the file to PDF
     converter.convert(source).to(target);
@@ -83,18 +81,18 @@ class DocumentConverterFunctionalITest {
     assumeFalse(OSUtils.IS_OS_MAC);
 
     // This test is done to ensure that the custom-document-formats.json is loaded properly.
-    final DocumentFormat format = converter.getFormatRegistry().getFormatByExtension("html");
+    final var format = converter.getFormatRegistry().getFormatByExtension("html");
     assertThat(format).isNotNull();
 
-    final Map<String, Object> properties = format.getStoreProperties(DocumentFamily.PRESENTATION);
+    final var properties = format.getStoreProperties(DocumentFamily.PRESENTATION);
     assertThat(properties).isNotNull();
 
-    final Object filterData = properties.get("FilterData");
+    final var filterData = properties.get("FilterData");
     assertThat(filterData).isNotNull();
     assertThat(filterData).asInstanceOf(InstanceOfAssertFactories.MAP).containsKey("PublishMode");
 
-    final File inputFile = documentFile("/test_custom_formats.odp");
-    final File outputFile = new File(testFolder, "test_out.html");
+    final var inputFile = documentFile("/test_custom_formats.odp");
+    final var outputFile = new File(testFolder, "test_out.html");
 
     assertThatCode(() -> converter.convert(inputFile).to(outputFile).execute())
         .doesNotThrowAnyException();
@@ -107,10 +105,10 @@ class DocumentConverterFunctionalITest {
   void testPasswordProtectedFiles(
       final @TempDir File testFolder, final DocumentConverter converter) {
 
-    final File source = documentFile("test_password.odt");
+    final var source = documentFile("test_password.odt");
 
     // Convert the file to PDF
-    final Throwable throwable =
+    final var throwable =
         catchThrowable(
             () -> ConvertUtil.convertFileToSupportedFormats(source, testFolder, converter));
 
@@ -125,7 +123,7 @@ class DocumentConverterFunctionalITest {
   void runAllPossibleConversions(
       final @TempDir File testFolder, final DocumentConverter converter) {
 
-    for (final File sourceFile :
+    for (final var sourceFile :
         Objects.requireNonNull(
             new File("src/integTest/resources/documents")
                 .listFiles((dir, name) -> name.startsWith("test.")))) {

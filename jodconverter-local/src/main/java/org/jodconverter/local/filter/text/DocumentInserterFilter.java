@@ -27,7 +27,6 @@ import java.io.File;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.document.XDocumentInsertable;
 import com.sun.star.lang.XComponent;
-import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -65,7 +64,7 @@ public class DocumentInserterFilter implements Filter {
       throws Exception {
 
     // This filter can only be used with text document
-    final XTextDocument docText = Write.getTextDoc(document);
+    final var docText = Write.getTextDoc(document);
     if (docText != null) {
       LOGGER.debug("Applying the DocumentInserterFilter");
       insertDocument(docText);
@@ -78,14 +77,14 @@ public class DocumentInserterFilter implements Filter {
   private void insertDocument(final XTextDocument document) throws Exception {
 
     // We need the text cursor in order to go to the end of the document.
-    final XTextCursor textCursor = document.getText().createTextCursor();
+    final var textCursor = document.getText().createTextCursor();
 
     // Go to the end of the document
     textCursor.gotoEnd(false);
 
     // Insert the document to merge at the end of the current document.
     // TODO: Should we allow custom load properties ?
-    final XDocumentInsertable insertable = Lo.qi(XDocumentInsertable.class, textCursor);
+    final var insertable = Lo.qi(XDocumentInsertable.class, textCursor);
     insertable.insertDocumentFromURL(toUrl(documentToInsert), new PropertyValue[0]);
   }
 }

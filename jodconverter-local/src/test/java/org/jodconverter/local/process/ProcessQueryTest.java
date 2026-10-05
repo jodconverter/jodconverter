@@ -30,7 +30,7 @@ class ProcessQueryTest {
   @Test
   void gettersAndToStringShouldUseGivenValues() {
 
-    final ProcessQuery query = new ProcessQuery("toto", "tata");
+    final var query = new ProcessQuery("toto", "tata");
     assertThat(query.toString())
         .isEqualTo(
             "ProcessQuery{"

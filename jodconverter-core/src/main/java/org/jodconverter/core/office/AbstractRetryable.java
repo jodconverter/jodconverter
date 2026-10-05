@@ -72,8 +72,8 @@ public abstract class AbstractRetryable<T extends Throwable> {
   public void execute(final long delay, final long interval, final long timeout)
       throws RetryTimeoutException, T {
 
-    final long start = System.currentTimeMillis();
-    int attempt = 0;
+    final var start = System.currentTimeMillis();
+    var attempt = 0;
 
     if (delay > NO_SLEEP) {
       sleep(delay);

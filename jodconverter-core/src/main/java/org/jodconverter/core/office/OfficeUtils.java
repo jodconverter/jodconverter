@@ -48,7 +48,7 @@ public final class OfficeUtils {
    * directory must be a writable, existing directory.
    *
    * @param workingDir The directory to validate.
-   * @exception IllegalStateException If the specified directory if not a valid working directory.
+   * @throws IllegalStateException If the specified directory if not a valid working directory.
    */
   public static void validateWorkingDir(final @NonNull File workingDir) {
 
@@ -116,18 +116,18 @@ public final class OfficeUtils {
 
     LOGGER.debug("Deleting '{}'", file);
     try {
-      final DeleteFileRetryable retryable = new DeleteFileRetryable(file);
+      final var retryable = new DeleteFileRetryable(file);
       retryable.execute(interval, timeout);
     } catch (RetryTimeoutException deleteEx) {
-      final File oldFile =
+      final var oldFile =
           new File(file.getParentFile(), file.getName() + ".old." + System.currentTimeMillis());
       if (file.renameTo(oldFile)) {
         if (LOGGER.isWarnEnabled()) {
-          LOGGER.warn("Could not delete '" + file + "'; renamed it to '" + oldFile + "'", deleteEx);
+          LOGGER.warn("Could not delete '{}'; renamed it to '{}'", file, oldFile, deleteEx);
         }
       } else {
         if (LOGGER.isErrorEnabled()) {
-          LOGGER.error("Could not delete '" + file + "'", deleteEx);
+          LOGGER.error("Could not delete '{}'", file, deleteEx);
         }
       }
     }

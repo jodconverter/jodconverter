@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 /** Contains tests for the {@link DocumentFormatRegistryException} class. */
 class DocumentFormatRegistryExceptionTest {
@@ -38,8 +37,7 @@ class DocumentFormatRegistryExceptionTest {
   void create_NoRegistryWhileLoading_ShouldThrowDocumentFormatRegistryException() {
 
     DefaultDocumentFormatRegistryInstanceHolder.setInstance(null);
-    try (MockedStatic<JsonDocumentFormatRegistry> staticMock =
-        mockStatic(JsonDocumentFormatRegistry.class)) {
+    try (var staticMock = mockStatic(JsonDocumentFormatRegistry.class)) {
       staticMock
           .when(() -> JsonDocumentFormatRegistry.create(isA(InputStream.class)))
           .thenReturn(null);
@@ -56,8 +54,7 @@ class DocumentFormatRegistryExceptionTest {
   void create_IoExceptionThrownWhileLoading_ShouldThrowDocumentFormatRegistryException() {
 
     DefaultDocumentFormatRegistryInstanceHolder.setInstance(null);
-    try (MockedStatic<JsonDocumentFormatRegistry> staticMock =
-        mockStatic(JsonDocumentFormatRegistry.class)) {
+    try (var staticMock = mockStatic(JsonDocumentFormatRegistry.class)) {
       staticMock
           .when(() -> JsonDocumentFormatRegistry.create(isA(InputStream.class)))
           .thenThrow(IOException.class);

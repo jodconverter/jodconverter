@@ -48,7 +48,7 @@ class TableOfContentUpdaterFilterITest {
   void withoutLevelChange_ShouldUpdatedTableOfContent(
       final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".updateonly.txt");
+    final var targetFile = new File(testFolder, SOURCE_FILENAME + ".updateonly.txt");
 
     // Test the filter
     assertThatCode(
@@ -62,7 +62,7 @@ class TableOfContentUpdaterFilterITest {
                     .execute())
         .doesNotThrowAnyException();
 
-    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    final var content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
         .as("Check content: %s", content)
         .containsPattern(
@@ -98,7 +98,7 @@ class TableOfContentUpdaterFilterITest {
   void withLevelChange_ShouldUpdatedTableOfContent(
       final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".updatelevel.txt");
+    final var targetFile = new File(testFolder, SOURCE_FILENAME + ".updatelevel.txt");
 
     // Test the filter
     assertThatCode(
@@ -112,7 +112,7 @@ class TableOfContentUpdaterFilterITest {
                     .execute())
         .doesNotThrowAnyException();
 
-    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    final var content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
         .as("Check content: %s", content)
         .containsPattern(

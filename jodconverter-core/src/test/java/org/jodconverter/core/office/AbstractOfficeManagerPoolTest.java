@@ -20,11 +20,7 @@
 
 package org.jodconverter.core.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -72,9 +68,9 @@ class AbstractOfficeManagerPoolTest {
   void install_ShouldSetInstalledOfficeManagerHolder() {
 
     // Ensure we do not replace the current installed manager
-    final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
+    final var installedManager = InstalledOfficeManagerHolder.getInstance();
     try {
-      final OfficeManager manager = SimpleOfficeManager.install();
+      final var manager = SimpleOfficeManager.install();
       assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
     } finally {
       InstalledOfficeManagerHolder.setInstance(installedManager);
@@ -87,7 +83,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void withDefaultValues_ShouldCreateOfficeManagerWithDefaultValues() {
 
-      final OfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
 
       assertThat(manager).isInstanceOf(SimpleOfficeManager.class);
       assertThat(manager)
@@ -110,7 +106,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void withNullValues_ShouldCreateOfficeManagerWithDefaultValues() {
 
-      final OfficeManager manager =
+      final var manager =
           SimpleOfficeManager.builder()
               .workingDir((File) null)
               .workingDir((String) null)
@@ -140,7 +136,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void withCustomValues_ShouldCreateOfficeManagerWithCustomValues() {
 
-      final OfficeManager manager =
+      final var manager =
           SimpleOfficeManager.builder()
               .workingDir(OfficeUtils.getDefaultWorkingDir())
               .taskExecutionTimeout(20_000L)
@@ -169,8 +165,7 @@ class AbstractOfficeManagerPoolTest {
     void withStringValues_ShouldCreateOfficeManagerUsingStringValues(
         final @TempDir File testFolder) {
 
-      final OfficeManager manager =
-          SimpleOfficeManager.builder().workingDir(testFolder.getPath()).build();
+      final var manager = SimpleOfficeManager.builder().workingDir(testFolder.getPath()).build();
 
       assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
       assertThat(manager).extracting("tempDir.parentFile").isEqualTo(testFolder);
@@ -179,7 +174,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void withEmptyStringValues_ShouldCreateOfficeManagerWithDefaultValues() {
 
-      final OfficeManager manager = SimpleOfficeManager.builder().workingDir("   ").build();
+      final var manager = SimpleOfficeManager.builder().workingDir("   ").build();
 
       assertThat(manager).isInstanceOf(AbstractOfficeManagerPool.class);
       assertThat(manager)
@@ -210,7 +205,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void whenAlreadyStarted_ShouldThrowIllegalStateException() throws OfficeException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       try {
         manager.start();
         assertThatIllegalStateException()
@@ -224,7 +219,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void whenTerminated_ShouldThrowIllegalStateException() throws OfficeException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
       manager.stop();
       assertThatIllegalStateException()
@@ -235,7 +230,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void onceStarted_ShouldHaveStartedEntries() throws OfficeException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.builder().poolSize(5).build();
+      final var manager = SimpleOfficeManager.builder().poolSize(5).build();
       try {
         manager.start();
         assertThat(manager)
@@ -257,9 +252,9 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void onceStarted_ShouldHaveCreatedTempDir() throws OfficeException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       try {
-        final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+        final var tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
         assertThat(tempDir).doesNotExist();
         manager.start();
         assertThat(tempDir).isDirectory();
@@ -273,11 +268,11 @@ class AbstractOfficeManagerPoolTest {
     void whenTempDirAlreadyExists_ShouldHaveDeletesFirstThenCreatedTempDir()
         throws OfficeException, IOException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       try {
-        final File tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
+        final var tempDir = (File) ReflectionTestUtils.getField(manager, "tempDir");
         tempDir.mkdirs();
-        final File tempFile = new File(tempDir, "test.txt");
+        final var tempFile = new File(tempDir, "test.txt");
         assertThat(tempFile.createNewFile()).isTrue();
         assertThat(tempDir).isDirectory();
         assertThat(tempDir.listFiles()).hasSize(1);
@@ -292,8 +287,8 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void whenTempDirNotCreated_ShouldThrowOfficeException() throws OfficeException {
 
-      final File mockDir = mock(File.class);
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var mockDir = mock(File.class);
+      final var manager = SimpleOfficeManager.make();
       try {
         ReflectionTestUtils.setField(manager, "tempDir", mockDir);
         when(mockDir.exists()).thenAnswer(invocation -> false);
@@ -314,7 +309,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void whenAlreadyTerminated_SubsequentStopIgnored() throws OfficeException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
       manager.stop();
       assertThatCode(manager::stop).doesNotThrowAnyException();
@@ -323,7 +318,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void onceTerminated_ShouldHaveStoppedEntries() throws OfficeException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.builder().poolSize(5).build();
+      final var manager = SimpleOfficeManager.builder().poolSize(5).build();
       manager.start();
       manager.stop();
       assertThat(manager)
@@ -345,14 +340,14 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void whenNotStartedYet_ShouldReturnFalse() {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       assertThat(manager.isRunning()).isEqualTo(false);
     }
 
     @Test
     void whenStarted_ShouldReturnTrue() throws OfficeException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
       assertThat(manager.isRunning()).isEqualTo(true);
       manager.stop();
@@ -361,7 +356,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void whenTerminated_ShouldReturnFalse() throws OfficeException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
       manager.stop();
       assertThat(manager.isRunning()).isEqualTo(false);
@@ -382,7 +377,7 @@ class AbstractOfficeManagerPoolTest {
     @Test
     void whenTerminated_ShouldThrowIllegalStateException() throws OfficeException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
       manager.stop();
 
@@ -393,16 +388,15 @@ class AbstractOfficeManagerPoolTest {
     void whenTaskQueueTimeout_ShouldThrowOfficeException()
         throws OfficeException, InterruptedException {
 
-      final SimpleOfficeManager manager =
-          SimpleOfficeManager.builder().taskQueueTimeout(500L).build();
+      final var manager = SimpleOfficeManager.builder().taskQueueTimeout(500L).build();
       try {
         manager.start();
 
         // Create threads that will both execute a task taking more than a second to execute.
-        final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 1_500L);
-        final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 500L);
-        final Thread thread1 = new Thread(runnable1);
-        final Thread thread2 = new Thread(runnable2);
+        final var runnable1 = new SleepyOfficeTaskRunner(manager, 1_500L);
+        final var runnable2 = new SleepyOfficeTaskRunner(manager, 500L);
+        final var thread1 = new Thread(runnable1);
+        final var thread2 = new Thread(runnable2);
 
         // Start the threads.
         thread1.start();
@@ -426,57 +420,17 @@ class AbstractOfficeManagerPoolTest {
       }
     }
 
-    //    @Test
-    //    void whenInterruptedWhileAquiringManager_ShouldThrowOfficeException()
-    //        throws OfficeException, InterruptedException {
-    //
-    //      final SimpleOfficeManager manager =
-    //          SimpleOfficeManager.builder().taskQueueTimeout(500L).build();
-    //      try {
-    //        manager.start();
-    //
-    //        // Create threads that will both execute a task taking more than a seconds to execute.
-    //        final SleepyOfficeTaskRunner runnable1 = new SleepyOfficeTaskRunner(manager, 1_000L);
-    //        final SleepyOfficeTaskRunner runnable2 = new SleepyOfficeTaskRunner(manager, 500L);
-    //        final Thread thread1 = new Thread(runnable1);
-    //        final Thread thread2 = new Thread(runnable2);
-    //
-    //        // Start the threads.
-    //        thread1.start();
-    //        Thread.sleep(250L);
-    //
-    //        thread2.start();
-    //        Thread.sleep(250L);
-    //
-    //        // Interrupt the second thread
-    //        thread2.interrupt();
-    //
-    //        // Wait for threads to complete
-    //        thread1.join();
-    //        thread2.join();
-    //
-    //        // Here, the second runnable should contain the interruption exception
-    //        assertThat(runnable2.exception)
-    //            .isExactlyInstanceOf(OfficeException.class)
-    //            .hasMessage("Interruption while acquiring manager")
-    //            .hasCauseExactlyInstanceOf(InterruptedException.class);
-    //
-    //      } finally {
-    //        manager.stop();
-    //      }
-    //    }
-
     @Test
     void whenCallerInterruptedWhileExecuting_ShouldReturnEntryToPool() throws Exception {
 
       // A single entry: if it is not returned to the pool, the next task cannot get one
-      final SimpleOfficeManager manager =
+      final var manager =
           SimpleOfficeManager.builder().poolSize(1).taskQueueTimeout(1_000L).build();
       try {
         manager.start();
 
-        final AtomicReference<OfficeException> ex = new AtomicReference<>();
-        final Thread caller =
+        final var ex = new AtomicReference<OfficeException>();
+        final var caller =
             new Thread(
                 () -> {
                   try {
@@ -493,7 +447,7 @@ class AbstractOfficeManagerPoolTest {
 
         assertThat(ex.get()).hasMessageStartingWith("Task was interrupted while executing");
 
-        final SimpleOfficeTask nextTask = new SimpleOfficeTask();
+        final var nextTask = new SimpleOfficeTask();
         assertThatCode(() -> manager.execute(nextTask)).doesNotThrowAnyException();
         assertThat(nextTask.isCompleted()).isTrue();
 
@@ -510,9 +464,8 @@ class AbstractOfficeManagerPoolTest {
     void shouldBeCreatedOnStartAndDeletedOnStop(final @TempDir File testFolder)
         throws OfficeException {
 
-      final SimpleOfficeManager manager =
-          SimpleOfficeManager.builder().workingDir(testFolder).build();
-      final File tempDir = manager.getTempDir();
+      final var manager = SimpleOfficeManager.builder().workingDir(testFolder).build();
+      final var tempDir = manager.getTempDir();
       assertThat(tempDir).hasParent(testFolder).doesNotExist();
 
       manager.start();
@@ -530,11 +483,10 @@ class AbstractOfficeManagerPoolTest {
   class MakeTemporaryFile {
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void withoutArgument_ShouldCreateTempFileWithoutExtension()
         throws OfficeException, IOException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
       assertThat(manager.makeTemporaryFile().createNewFile()).isTrue();
       assertThat(manager)
@@ -542,20 +494,18 @@ class AbstractOfficeManagerPoolTest {
           .isInstanceOfSatisfying(
               File.class,
               file -> {
-                final File[] files = file.listFiles();
+                final var files = file.listFiles();
                 assertThat(files).hasSize(1);
-                //noinspection ConstantConditions
                 assertThat(files[0].getName().indexOf('.')).isEqualTo(-1);
               });
       manager.stop();
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void withBlankExtension_ShouldCreateTempFileWithoutExtension()
         throws OfficeException, IOException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
       assertThat(manager.makeTemporaryFile("   ").createNewFile()).isTrue();
       assertThat(manager)
@@ -563,7 +513,7 @@ class AbstractOfficeManagerPoolTest {
           .isInstanceOfSatisfying(
               File.class,
               file -> {
-                final File[] files = file.listFiles();
+                final var files = file.listFiles();
                 assertThat(files).hasSize(1);
                 assertThat(files[0].getName().indexOf('.')).isEqualTo(-1);
               });
@@ -571,10 +521,9 @@ class AbstractOfficeManagerPoolTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void withExtension_ShouldCreateTempFileWithExtension() throws OfficeException, IOException {
 
-      final SimpleOfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       manager.start();
       assertThat(manager.makeTemporaryFile("txt").createNewFile()).isTrue();
       assertThat(manager)
@@ -582,7 +531,7 @@ class AbstractOfficeManagerPoolTest {
           .isInstanceOfSatisfying(
               File.class,
               file -> {
-                final File[] files = file.listFiles();
+                final var files = file.listFiles();
                 assertThat(files).hasSize(1);
                 assertThat(files[0]).hasExtension("txt");
               });

@@ -42,7 +42,7 @@ class LinkedImagesEmbedderFilterITest {
   @Test
   void shouldEmbbedLinkedImages(final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, "test_with_linked_images.odt");
+    final var targetFile = new File(testFolder, "test_with_linked_images.odt");
     assertThatCode(
             () ->
                 LocalConverter.builder()

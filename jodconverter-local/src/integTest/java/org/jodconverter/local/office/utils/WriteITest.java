@@ -48,8 +48,8 @@ class WriteITest {
           assertThat(Write.getTextDoc(document)).isNotNull();
         };
 
-    final File sourceFile = documentFile("test.odt");
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var sourceFile = documentFile("test.odt");
+    final var outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()
@@ -71,8 +71,8 @@ class WriteITest {
           assertThat(Write.getTextDoc(document)).isNull();
         };
 
-    final File sourceFile = documentFile("test.ods");
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var sourceFile = documentFile("test.ods");
+    final var outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()

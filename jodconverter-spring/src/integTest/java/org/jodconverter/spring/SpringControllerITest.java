@@ -48,7 +48,8 @@ import org.jodconverter.local.LocalConverter;
 @DirtiesContext(classMode = AFTER_CLASS)
 class SpringControllerITest {
 
-  /* default */ @TempDir File testFolder;
+  /* default */
+  @TempDir File testFolder;
   private File inputFileTxt;
 
   @Autowired private JodConverterBean bean;
@@ -60,7 +61,7 @@ class SpringControllerITest {
     @Bean
     /* default */ JodConverterBean springJodConverter() {
 
-      final JodConverterBean bean = new JodConverterBean();
+      final var bean = new JodConverterBean();
       bean.setPortNumbers("2005");
 
       return bean;
@@ -71,7 +72,7 @@ class SpringControllerITest {
   void setUp() throws IOException {
 
     inputFileTxt = new File(testFolder, "inputFile.txt");
-    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
+    try (var writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
     }
@@ -80,7 +81,7 @@ class SpringControllerITest {
   @Test
   void testOfficeManager() throws OfficeException {
 
-    final File outputFile = new File(testFolder, "outputFile.txt");
+    final var outputFile = new File(testFolder, "outputFile.txt");
     LocalConverter.builder()
         .officeManager(bean.getManager())
         .build()
@@ -97,7 +98,7 @@ class SpringControllerITest {
   @Test
   void testTxtToRtf() throws OfficeException {
 
-    final File outputFile = new File(testFolder, "outputFile.rtf");
+    final var outputFile = new File(testFolder, "outputFile.rtf");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -109,7 +110,7 @@ class SpringControllerITest {
   @Test
   void testTxtToDoc() throws OfficeException {
 
-    final File outputFile = new File(testFolder, "outputFile.doc");
+    final var outputFile = new File(testFolder, "outputFile.doc");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -121,7 +122,7 @@ class SpringControllerITest {
   @Test
   void testTxtToPdf() throws OfficeException {
 
-    final File outputFile = new File(testFolder, "outputFile.pdf");
+    final var outputFile = new File(testFolder, "outputFile.pdf");
     bean.getConverter().convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();

@@ -20,13 +20,10 @@
 
 package org.jodconverter.core.job;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 
 import org.junit.jupiter.api.Nested;
@@ -69,11 +66,11 @@ class AbstractConverterTest {
     void whenKnownExtension_ShouldCreateJobWithSourceFormat(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final SimpleConverter converter = SimpleConverter.make();
-      final SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified job =
+      final var converter = SimpleConverter.make();
+      final var job =
           (SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified)
               converter.convert(sourceFile);
 
@@ -84,11 +81,11 @@ class AbstractConverterTest {
     void whenUnknownExtension_ShouldCreateJobWithoutSourceFormat(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source");
+      final var sourceFile = new File(testFolder, "source");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final SimpleConverter converter = SimpleConverter.make();
-      final SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified job =
+      final var converter = SimpleConverter.make();
+      final var job =
           (SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified)
               converter.convert(sourceFile);
 
@@ -103,12 +100,12 @@ class AbstractConverterTest {
     void withDefaultCloseStream_ShouldCreateJobWithCloseStreamSetToTrue(
         @TempDir final File testFolder) throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (InputStream inputStream = Files.newInputStream(sourceFile.toPath())) {
-        final SimpleConverter converter = SimpleConverter.make();
-        final SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified job =
+      try (var inputStream = Files.newInputStream(sourceFile.toPath())) {
+        final var converter = SimpleConverter.make();
+        final var job =
             (SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified)
                 converter.convert(inputStream);
         assertThat(job.source).hasFieldOrPropertyWithValue("closeStream", true);
@@ -119,12 +116,12 @@ class AbstractConverterTest {
     void withCloseStreamIsFalse_ShouldCreateJobWithCloseStreamSetToFalse(
         @TempDir final File testFolder) throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (InputStream inputStream = Files.newInputStream(sourceFile.toPath())) {
-        final SimpleConverter converter = SimpleConverter.make();
-        final SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified job =
+      try (var inputStream = Files.newInputStream(sourceFile.toPath())) {
+        final var converter = SimpleConverter.make();
+        final var job =
             (SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified)
                 converter.convert(inputStream, false);
         assertThat(job.source).hasFieldOrPropertyWithValue("closeStream", false);
@@ -135,11 +132,11 @@ class AbstractConverterTest {
     void withManagerNotSupportingFileMaker_ShouldThrowIllegalStateException(
         @TempDir final File testFolder) throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (InputStream inputStream = Files.newInputStream(sourceFile.toPath())) {
-        final SimpleConverter converter =
+      try (var inputStream = Files.newInputStream(sourceFile.toPath())) {
+        final var converter =
             SimpleConverter.builder()
                 .officeManager(
                     new OfficeManager() {

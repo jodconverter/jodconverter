@@ -21,7 +21,6 @@
 package org.jodconverter.local;
 
 import java.io.File;
-import java.net.URI;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.ConvertUtil.ConvertRunner;
 import org.jodconverter.local.office.LocalOfficeManager;
 
@@ -64,34 +62,34 @@ class StressITest {
 
     // Log at DEBUG level, to the console and to a log file (build/integTest-results/test.log)
     // to be able to see if an error occurred.
-    final LoggerContext context = (LoggerContext) LogManager.getContext(false);
-    final URI defaultConfig = context.getConfigLocation();
+    final var context = (LoggerContext) LogManager.getContext(false);
+    final var defaultConfig = context.getConfigLocation();
     context.setConfigLocation(
         Objects.requireNonNull(getClass().getResource("/log4j2-stress.xml")).toURI());
 
     // Configure the office manager in a way that maximizes possible race conditions.
-    final OfficeManager officeManager =
+    final var officeManager =
         LocalOfficeManager.builder()
             .portNumbers(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009)
             // .portNumbers(2002, 2003)
             .maxTasksPerProcess(MAX_PROCESS_TASKS)
             .build();
-    final LocalConverter converter = LocalConverter.make(officeManager);
+    final var converter = LocalConverter.make(officeManager);
 
     officeManager.start();
     try {
-      final File source =
+      final var source =
           new File(
               "src/integTest/resources/documents/test."
                   + Objects.requireNonNull(INPUT_FORMAT).getExtension());
 
-      final Thread[] threads = new Thread[MAX_THREADS];
+      final var threads = new Thread[MAX_THREADS];
 
-      boolean first = true;
-      int threadCount = 0;
+      var first = true;
+      var threadCount = 0;
 
-      for (int i = 0; i < MAX_CONVERSIONS; i++) {
-        final File target =
+      for (var i = 0; i < MAX_CONVERSIONS; i++) {
+        final var target =
             new File(
                 testFolder,
                 "test_" + i + "." + Objects.requireNonNull(OUTPUT_FORMAT).getExtension());
@@ -104,12 +102,12 @@ class StressITest {
         }
 
         LOGGER.info("Creating thread {}", threadCount);
-        final ConvertRunner runnable = new ConvertRunner(source, target, converter);
+        final var runnable = new ConvertRunner(source, target, converter);
         threads[threadCount] = new Thread(runnable);
         threads[threadCount++].start();
 
         if (threadCount == MAX_THREADS) {
-          for (int j = 0; j < threadCount; j++) {
+          for (var j = 0; j < threadCount; j++) {
             threads[j].join();
           }
           threadCount = 0;
@@ -117,7 +115,7 @@ class StressITest {
       }
 
       // Wait for remaining threads.
-      for (int j = 0; j < threadCount; j++) {
+      for (var j = 0; j < threadCount; j++) {
         threads[j].join();
       }
 

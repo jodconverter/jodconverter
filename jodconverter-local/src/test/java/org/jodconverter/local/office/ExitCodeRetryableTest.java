@@ -20,13 +20,9 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,9 +34,9 @@ class ExitCodeRetryableTest {
   @Test
   void whenAbleToGetExitCode_ShouldNotThrowAnyException() {
 
-    final VerboseProcess process = mock(VerboseProcess.class);
+    final var process = mock(VerboseProcess.class);
     given(process.getExitCode()).willReturn(0);
-    final ExitCodeRetryable retryable = new ExitCodeRetryable(process);
+    final var retryable = new ExitCodeRetryable(process);
 
     assertThatCode(() -> retryable.execute(0L, 100L)).doesNotThrowAnyException();
 
@@ -51,13 +47,13 @@ class ExitCodeRetryableTest {
   @Test
   void whenUnableToGetExitCode_ShouldThrowTemporaryException() {
 
-    final VerboseProcess process = mock(VerboseProcess.class);
+    final var process = mock(VerboseProcess.class);
     given(process.getExitCode()).willReturn(null);
 
     assertThatExceptionOfType(RetryTimeoutException.class)
         .isThrownBy(
             () -> {
-              final ExitCodeRetryable retryable = new ExitCodeRetryable(process);
+              final var retryable = new ExitCodeRetryable(process);
               retryable.execute(150L, 100L);
             });
 

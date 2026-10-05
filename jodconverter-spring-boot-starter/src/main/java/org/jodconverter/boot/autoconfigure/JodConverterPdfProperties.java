@@ -21,7 +21,6 @@
 package org.jodconverter.boot.autoconfigure;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -143,7 +142,7 @@ public class JodConverterPdfProperties {
    */
   public @NonNull PdfOptions toPdfOptions() {
 
-    final PdfOptions.Builder builder = newBuilder();
+    final var builder = newBuilder();
 
     if (version != null) {
       builder.version(version);
@@ -216,7 +215,7 @@ public class JodConverterPdfProperties {
   }
 
   private static String read(final Resource resource) {
-    try (InputStream in = resource.getInputStream()) {
+    try (var in = resource.getInputStream()) {
       return new String(in.readAllBytes(), StandardCharsets.UTF_8);
     } catch (IOException ex) {
       throw new UncheckedIOException("Could not read " + resource.getDescription(), ex);
