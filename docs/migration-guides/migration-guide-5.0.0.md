@@ -167,7 +167,8 @@ columns wide.
 
 - [`PdfOptions`](../getting-started/pdf-options.md): typed options to convert to PDF (PDF/A, PDF/UA, images, page
   range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
-  `with(...)` method: `converter.convert(source).to(target).with(PdfOptions.archive()).execute()`.
+  `with(...)` method: `converter.convert(source).to(target).with(PdfOptions.archive()).execute()`. The command line
+  tool takes them with its new `--pdf-preset` and `--pdf-option` arguments.
 - [`poolSize`](../configuration/local-manager.md): start a number of office processes on free ports, without choosing
   them (`jodconverter.local.pool-size` with Spring Boot).
 - [`officeExecutable`](../configuration/local-manager.md): start the office processes through a launcher, such as a

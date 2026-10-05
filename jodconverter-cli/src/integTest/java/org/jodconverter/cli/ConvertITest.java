@@ -90,6 +90,38 @@ class ConvertITest {
     }
 
     @Test
+    void withPdfOptions_ShouldApplyThemToThePdfOutputsOnly(final @TempDir File testFolder)
+        throws Exception {
+
+      final File inputFile = new File(SOURCE_MULTI_FILE);
+      final File pdfFile = new File(testFolder, "convert_WithPdfOptions.pdf");
+      final File odtFile = new File(testFolder, "convert_WithPdfOptions.odt");
+
+      final int status =
+          Convert.run(
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              "--pdf-preset",
+              "compact",
+              "--pdf-option",
+              "version=1.5",
+              "--pdf-option",
+              "pages.range=1",
+              inputFile.getPath(),
+              pdfFile.getPath(),
+              inputFile.getPath(),
+              odtFile.getPath());
+
+      assertThat(status).isEqualTo(0);
+      assertThat(odtFile).isFile();
+      final String pdf = FileUtils.readFileToString(pdfFile, StandardCharsets.ISO_8859_1);
+      assertThat(pdf).startsWith("%PDF-1.5");
+      // One page, and tagged by the preset.
+      assertThat(pdf.split("/Type\\s*/Page\\b(?!s)", -1)).hasSize(2);
+      assertThat(pdf).contains("/StructTreeRoot");
+    }
+
+    @Test
     void withOutputFormat_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
       final File inputFile = new File(SOURCE_FILE);

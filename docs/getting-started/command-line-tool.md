@@ -107,6 +107,23 @@ Displays version information and exit.
 Directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir).
 See [Configuration](../../configuration/local-configuration#workingdir).
 
+#### --pdf-preset `<name>`
+
+PDF options to start from, for the PDF outputs (optional): `archive` (PDF/A-2b), `accessible` (PDF/UA) or `compact`
+(reduced JPEG images). See [PDF Options](pdf-options.md#presets).
+
+#### --pdf-option `<name=value>`
+
+Option applied to the PDF outputs (optional). It can be repeated, and is applied on top of the preset if there is
+one:
+
+```
+jodconverter-cli --pdf-preset archive --pdf-option pages.range=1-3 --pdf-option watermark.text=DRAFT in.docx out.pdf
+```
+
+See [PDF Options](pdf-options.md#command-line) for the names and the values. The other outputs of the same command
+are converted without these options.
+
 ### Remarks
 
 + Using **-a**

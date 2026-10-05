@@ -87,6 +87,35 @@ class ConvertTest {
     }
 
     @Test
+    void withOptionHelp_ShouldDescribeThePdfOptions() {
+
+      SystemLogHandler.startCapture();
+      Convert.run("-h");
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("--pdf-preset <name>", "--pdf-option <name=value>");
+    }
+
+    @Test
+    void withInvalidPdfOption_ShouldPrintErrorAndExitWithCode255() {
+
+      SystemLogHandler.startCapture();
+      final int status = Convert.run("--pdf-option", "pages.rang=1", "input.doc", "output.pdf");
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("jodconverter-cli: Unknown PDF option 'pages.rang'");
+      assertThat(status).isEqualTo(255);
+    }
+
+    @Test
+    void withInvalidPdfPreset_ShouldPrintErrorAndExitWithCode255() {
+
+      SystemLogHandler.startCapture();
+      final int status = Convert.run("--pdf-preset", "tiny", "input.doc", "output.pdf");
+      final String capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("jodconverter-cli: Unknown PDF preset 'tiny'");
+      assertThat(status).isEqualTo(255);
+    }
+
+    @Test
     void withUnknownArgument_ShouldPrintErrorHelpAndExitWithCode2() {
 
       SystemLogHandler.startCapture();
@@ -381,7 +410,7 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
       Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
@@ -407,7 +436,7 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
       Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
@@ -434,7 +463,7 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
       Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
@@ -468,7 +497,7 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
       Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
@@ -499,7 +528,7 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
       Assertions.assertNotNull(cliConverter);
       final LocalConverter localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
