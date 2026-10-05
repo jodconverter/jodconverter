@@ -78,6 +78,7 @@ class LocalOfficeProcessManager {
   private final File instanceProfileDir;
   private final OfficeUrl officeUrl;
   private final File officeHome;
+  private final File officeExecutable;
   private final ProcessManager processManager;
   private final List<String> runAsArgs;
   private final File templateProfileDir;
@@ -132,8 +133,70 @@ class LocalOfficeProcessManager {
       final boolean keepAliveOnShutdown,
       final OfficeConnection connection) {
 
+    this(
+        officeUrl,
+        officeHome,
+        null,
+        workingDir,
+        processManager,
+        runAsArgs,
+        templateProfileDir,
+        processTimeout,
+        processRetryInterval,
+        afterStartProcessDelay,
+        existingProcessAction,
+        startFailFast,
+        keepAliveOnShutdown,
+        connection);
+  }
+
+  /**
+   * Creates a new manager with the specified configuration, starting the office process with the
+   * specified executable.
+   *
+   * @param officeUrl The URL for which the office process is created.
+   * @param officeHome The home directory of the office installation, used to find the executable
+   *     when {@code officeExecutable} is {@code null}.
+   * @param officeExecutable The program that starts the office process (a launcher such as the one
+   *     of a snap or an AppImage), or {@code null} to use the executable of the office home.
+   * @param workingDir The working directory to set to the office process.
+   * @param processManager The process manager to use to deal with the office process.
+   * @param runAsArgs The sudo arguments that will be used with unix commands.
+   * @param templateProfileDir The directory to copy to the temporary office profile directories to
+   *     be created.
+   * @param processTimeout The timeout, in milliseconds, when trying to execute an office process
+   *     call (start/terminate).
+   * @param processRetryInterval The delay, in milliseconds, between each try when trying to execute
+   *     an office process call (start/terminate).
+   * @param afterStartProcessDelay The delay, in milliseconds, after the start of an office process
+   *     before doing anything else.
+   * @param existingProcessAction Represents the action to take when starting a new office process,
+   *     and there already is a process running with the same connection string.
+   * @param startFailFast Controls whether the manager will "fail fast" if the office process cannot
+   *     be started.
+   * @param keepAliveOnShutdown Controls whether the manager will keep the office process alive on
+   *     shutdown.
+   * @param connection The object that will manage the connection to the office process.
+   */
+  /* default */ LocalOfficeProcessManager(
+      final OfficeUrl officeUrl,
+      final File officeHome,
+      final File officeExecutable,
+      final File workingDir,
+      final ProcessManager processManager,
+      final List<String> runAsArgs,
+      final File templateProfileDir,
+      final long processTimeout,
+      final long processRetryInterval,
+      final long afterStartProcessDelay,
+      final ExistingProcessAction existingProcessAction,
+      final boolean startFailFast,
+      final boolean keepAliveOnShutdown,
+      final OfficeConnection connection) {
+
     this.officeUrl = officeUrl;
     this.officeHome = officeHome;
+    this.officeExecutable = officeExecutable;
     this.processManager = processManager;
     this.runAsArgs = runAsArgs;
     this.templateProfileDir = templateProfileDir;
@@ -444,7 +507,7 @@ class LocalOfficeProcessManager {
     // Create the builder used to launch the office process
     final ProcessBuilder processBuilder = prepareProcessBuilder(acceptString);
 
-    LOGGER.debug("OFFICE HOME: {}", officeHome);
+    LOGGER.debug("OFFICE EXECUTABLE: {}", getOfficeExecutable());
     LOGGER.info(
         "Starting process with --accept '{}' and profileDir '{}'",
         acceptString,
@@ -633,7 +696,7 @@ class LocalOfficeProcessManager {
 
     // Create the command used to launch the office process
     final List<String> command = new ArrayList<>(runAsArgs);
-    final File executable = LocalOfficeUtils.getOfficeExecutable(officeHome);
+    final File executable = getOfficeExecutable();
 
     // LibreOffice:
     // https://help.libreoffice.org/Common/Starting_the_Software_With_Parameters
@@ -697,11 +760,23 @@ class LocalOfficeProcessManager {
   private OfficeDescriptor detectOfficeDescriptor() {
 
     // Create the command used to launch the office process
-    final File executable = LocalOfficeUtils.getOfficeExecutable(officeHome);
+    final File executable = getOfficeExecutable();
 
     final String execPath = executable.getAbsolutePath();
 
     return OfficeDescriptor.fromExecutablePath(execPath);
+  }
+
+  /**
+   * Gets the program that starts the office process: the configured office executable if any,
+   * otherwise the executable of the office home.
+   *
+   * @return The office executable.
+   */
+  private File getOfficeExecutable() {
+    return officeExecutable == null
+        ? LocalOfficeUtils.getOfficeExecutable(officeHome)
+        : officeExecutable;
   }
 
   /** Kills the office process instance. */

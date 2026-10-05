@@ -151,6 +151,39 @@ class LocalOfficeManagerTest {
   class Build {
 
     @Test
+    void withMissingOfficeExecutable_ShouldThrowIllegalArgumentException(
+        final @TempDir File folder) {
+
+      final File missing = new File(folder, "missing-launcher");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> builder().officeExecutable(missing).build())
+          .withMessage("officeExecutable doesn't exist or is not a file: " + missing);
+    }
+
+    @Test
+    void withOfficeExecutable_ShouldNotRequireOfficeHomeAndUseTheExecutable(
+        final @TempDir File folder) throws IOException {
+
+      final File launcher = new File(folder, "launcher");
+      assertThat(launcher.createNewFile()).isTrue();
+
+      // An office home without office in it is accepted when the executable is specified
+      final OfficeManager manager =
+          builder()
+              .officeHome(new File(folder, "not-an-office-home"))
+              .officeExecutable(launcher.getPath())
+              .portNumbers(2003, 2004)
+              .build();
+
+      assertThat(manager)
+          .extracting("entries")
+          .asList()
+          .hasSize(2)
+          .extracting("officeProcessManager.officeExecutable")
+          .containsOnly(launcher);
+    }
+
+    @Test
     void withPoolSize_ShouldUseThatManyDistinctPorts() {
 
       final OfficeManager manager = builder().poolSize(3).build();

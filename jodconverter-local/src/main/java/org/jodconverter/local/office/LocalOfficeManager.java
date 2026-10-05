@@ -112,6 +112,7 @@ public final class LocalOfficeManager
   private LocalOfficeManager(
       final List<OfficeUrl> officeUrls,
       final File officeHome,
+      final File officeExecutable,
       final File workingDir,
       final ProcessManager processManager,
       final List<String> runAsArgs,
@@ -137,6 +138,7 @@ public final class LocalOfficeManager
                         new LocalOfficeProcessManager(
                             officeUrl,
                             officeHome,
+                            officeExecutable,
                             workingDir,
                             processManager,
                             runAsArgs,
@@ -163,6 +165,7 @@ public final class LocalOfficeManager
     private List<Integer> portNumbers;
     private Integer poolSize;
     private File officeHome;
+    private File officeExecutable;
     private ProcessManager processManager;
     private List<String> runAsArgs;
     private File templateProfileDir;
@@ -183,8 +186,9 @@ public final class LocalOfficeManager
     @Override
     public @NonNull LocalOfficeManager build() {
 
-      // Set non-constant default values.
-      if (officeHome == null) {
+      // Set non-constant default values. The office home is only needed to find the office
+      // executable when none is specified.
+      if (officeHome == null && officeExecutable == null) {
         officeHome = LocalOfficeUtils.getDefaultOfficeHome();
       }
       if (processManager == null) {
@@ -196,7 +200,13 @@ public final class LocalOfficeManager
 
       // Validate the directories we are working with
       OfficeUtils.validateWorkingDir(workingDir);
-      LocalOfficeUtils.validateOfficeHome(officeHome);
+      if (officeExecutable == null) {
+        LocalOfficeUtils.validateOfficeHome(officeHome);
+      } else {
+        AssertUtils.isTrue(
+            officeExecutable.isFile(),
+            "officeExecutable doesn't exist or is not a file: " + officeExecutable);
+      }
       if (useDefaultOnInvalidTemplateProfileDir) {
         try {
           LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
@@ -225,6 +235,7 @@ public final class LocalOfficeManager
           new LocalOfficeManager(
               LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames, null),
               officeHome,
+              officeExecutable,
               workingDir,
               processManager,
               runAsArgs,
@@ -334,6 +345,37 @@ public final class LocalOfficeManager
     public @NonNull Builder officeHome(final @Nullable String officeHome) {
 
       return StringUtils.isBlank(officeHome) ? this : officeHome(new File(officeHome));
+    }
+
+    /**
+     * Specifies the program that starts the office processes, instead of the executable found in
+     * the office home ({@code program/soffice.bin}). Use it when the office program must be started
+     * through a launcher, for example the one of a snap ({@code /snap/bin/libreoffice}) or an
+     * AppImage. When it is set, the office home is not required.
+     *
+     * @param officeExecutable The office executable or launcher.
+     * @return This builder instance.
+     */
+    public @NonNull Builder officeExecutable(final @Nullable File officeExecutable) {
+
+      if (officeExecutable != null) {
+        this.officeExecutable = officeExecutable;
+      }
+      return this;
+    }
+
+    /**
+     * Specifies the program that starts the office processes, instead of the executable found in
+     * the office home. See {@link #officeExecutable(File)}.
+     *
+     * @param officeExecutable The path of the office executable or launcher.
+     * @return This builder instance.
+     */
+    public @NonNull Builder officeExecutable(final @Nullable String officeExecutable) {
+
+      return StringUtils.isBlank(officeExecutable)
+          ? this
+          : officeExecutable(new File(officeExecutable));
     }
 
     /**

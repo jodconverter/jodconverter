@@ -80,6 +80,7 @@ public class JodConverterLocalAutoConfiguration {
     final LocalOfficeManager.Builder builder =
         LocalOfficeManager.builder()
             .officeHome(properties.getOfficeHome())
+            .officeExecutable(properties.getOfficeExecutable())
             .hostName(properties.getHostName())
             .portNumbers(properties.getPortNumbers())
             .pipeNames(properties.getPipeNames())

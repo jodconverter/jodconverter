@@ -61,6 +61,47 @@ conversions.
     jodconverter-cli --office-home "C:/Program Files (x86)/OpenOffice 4" infile outfile
     ```
 
+#### &#128193;`officeExecutable`
+
+This property sets the program that starts the office processes, instead of the executable found in the office home
+(`program/soffice.bin`). Use it when the office program must be started through a launcher, for example a snap or an
+AppImage. When it is set, `officeHome` is not required.
+
+&nbsp;***Default***: The executable of the office home.
+
+!!! note "Snap"
+
+    A snap must be started through its launcher (`/snap/bin/libreoffice`): its `soffice.bin` can't find its libraries
+    outside of the snap sandbox. A snap also has its own private `/tmp` directory and can't read hidden folders directly
+    in your home directory, so set the [workingDir](#workingdir) to a non-hidden folder in your home directory, for
+    example `/home/me/jodconverter`, so that the office processes can read the files to convert. This setup has not been
+    tested by the **JODConverter** team; please report how it works for you.
+
+=== "Java"
+
+    ```java hl_lines="4"
+    OfficeManager officeManager =
+        LocalOfficeManager
+            .builder()
+            .officeExecutable("/snap/bin/libreoffice")
+            .workingDir("/home/me/jodconverter")
+            .build();
+    ```
+
+=== "Spring Boot"
+
+    ```yml title="application.yml"
+    jodconverter:
+      local:
+        office-executable: /snap/bin/libreoffice
+        working-dir: /home/me/jodconverter
+    ```
+    
+    ```conf title="application.properties"
+    jodconverter.local.office-executable = /snap/bin/libreoffice
+    jodconverter.local.working-dir = /home/me/jodconverter
+    ```
+
 #### &#128193;`workingDir`
 
 This property sets the directory where temporary office profile directories will be created. An office profile directory
