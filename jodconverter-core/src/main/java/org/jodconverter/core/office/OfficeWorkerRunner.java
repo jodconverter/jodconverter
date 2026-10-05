@@ -95,7 +95,7 @@ final class OfficeWorkerRunner implements Runnable {
     try {
       while (!stopping && makeReady()) {
         state = OfficeWorkerState.READY;
-        final OfficeJob job = pool.takeJob();
+        final var job = pool.takeJob();
         if (job == null) {
           // Nothing to do yet: check that the worker is still ready, then wait again.
           continue;
@@ -125,7 +125,7 @@ final class OfficeWorkerRunner implements Runnable {
     }
 
     state = started ? OfficeWorkerState.RESTARTING : OfficeWorkerState.STARTING;
-    int failures = 0;
+    var failures = 0;
     while (!stopping) {
       try {
         if (startAttempted) {
@@ -146,7 +146,7 @@ final class OfficeWorkerRunner implements Runnable {
           firstStart.completeExceptionally(ex);
           return false;
         }
-        final long delay = pool.getRestartDelay(failures++);
+        final var delay = pool.getRestartDelay(failures++);
         LOGGER.warn("An office worker could not be made ready; retrying in {} ms", delay, ex);
         sleep(delay);
       }
@@ -189,7 +189,7 @@ final class OfficeWorkerRunner implements Runnable {
       currentJob = null;
     }
     // An aborted job interrupts this thread; the next job must not inherit that.
-    final boolean interrupted = Thread.interrupted();
+    final var interrupted = Thread.interrupted();
 
     if (job.tryEndRunning()) {
       if (failure == null) {
@@ -251,14 +251,14 @@ final class OfficeWorkerRunner implements Runnable {
    * @throws InterruptedException If the calling thread is interrupted while waiting.
    */
   /* default */ void join() throws InterruptedException {
-    final Thread runnerThread = thread;
+    final var runnerThread = thread;
     if (runnerThread != null) {
       runnerThread.join();
     }
   }
 
   private void abortWorker() {
-    final Thread runnerThread = thread;
+    final var runnerThread = thread;
     if (runnerThread == null || !runnerThread.isAlive()) {
       // The worker is not driven by any thread: there is nothing to abort.
       return;
@@ -273,7 +273,7 @@ final class OfficeWorkerRunner implements Runnable {
 
   private void stopWorker() {
     // The stop of the worker must not be disturbed by the interruption that ended the loop.
-    final boolean interrupted = Thread.interrupted();
+    final var interrupted = Thread.interrupted();
     LOGGER.trace("Stopping an office worker (interrupted: {})", interrupted);
     try {
       worker.stop();

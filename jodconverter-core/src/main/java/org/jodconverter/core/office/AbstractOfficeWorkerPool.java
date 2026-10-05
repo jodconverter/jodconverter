@@ -170,8 +170,8 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
       watchdog.setRemoveOnCancelPolicy(true);
 
       // From here the tasks are accepted; they wait in the queue until a worker is ready.
-      final List<OfficeWorkerRunner> newRunners = new ArrayList<>();
-      for (final OfficeWorker worker : workers) {
+      final var newRunners = new ArrayList<OfficeWorkerRunner>();
+      for (final var worker : workers) {
         newRunners.add(new OfficeWorkerRunner(this, worker, startFailFast));
       }
       runners = newRunners;
@@ -180,7 +180,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
 
       if (startFailFast) {
         try {
-          for (final OfficeWorkerRunner runner : newRunners) {
+          for (final var runner : newRunners) {
             awaitFirstStart(runner);
           }
         } catch (OfficeException ex) {
@@ -231,7 +231,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
     poolState.set(POOL_SHUTDOWN);
     try {
       runners.forEach(OfficeWorkerRunner::requestStop);
-      for (final OfficeWorkerRunner runner : runners) {
+      for (final var runner : runners) {
         runner.join();
       }
     } catch (InterruptedException ex) {
@@ -262,7 +262,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
 
     if (poolState.get() == POOL_STARTED) {
       // Check for at least one worker that is ready, or executing a task.
-      for (final OfficeWorkerState state : getWorkerStates()) {
+      for (final var state : getWorkerStates()) {
         if (state == OfficeWorkerState.READY || state == OfficeWorkerState.BUSY) {
           return true;
         }
@@ -311,8 +311,8 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
       throw new IllegalStateException(ERROR_NOT_RUNNING);
     }
 
-    final OfficeJob job = new OfficeJob(task);
-    final CompletableFuture<Void> future = job.getFuture();
+    final var job = new OfficeJob(task);
+    final var future = job.getFuture();
 
     if (taskQueueCapacity > 0 && queue.size() >= taskQueueCapacity) {
       job.tryEndWaiting();
@@ -356,7 +356,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
   @Override
   public final void execute(final @NonNull OfficeTask task) throws OfficeException {
 
-    final CompletableFuture<Void> future = submit(task);
+    final var future = submit(task);
     try {
       future.get();
     } catch (InterruptedException ex) {

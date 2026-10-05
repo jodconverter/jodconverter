@@ -97,7 +97,7 @@ public final class FakeOfficeWorker implements OfficeWorker {
 
     ready = false;
     startBegun.countDown();
-    final CountDownLatch gate = startGate;
+    final var gate = startGate;
     if (gate != null) {
       try {
         gate.await();
@@ -117,7 +117,7 @@ public final class FakeOfficeWorker implements OfficeWorker {
 
   @Override
   public boolean isReady() {
-    final Runnable hook = onIsReady;
+    final var hook = onIsReady;
     if (hook != null) {
       hook.run();
     }

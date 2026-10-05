@@ -68,7 +68,7 @@ final class OfficeJob {
 
   // Replaces the timeout of this job, cancelling the previous one.
   /* default */ void setTimeout(final Future<?> timeout) {
-    final Future<?> previous = this.timeout;
+    final var previous = this.timeout;
     this.timeout = timeout;
     if (previous != null) {
       previous.cancel(false);
