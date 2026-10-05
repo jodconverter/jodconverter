@@ -10,6 +10,37 @@ A `ExternalOfficeManager` is built using a builder:
 OfficeManager officeManager = ExternalOfficeManager.builder().build();
 ```
 
+## Spring Boot
+
+With the Spring Boot starter, set `jodconverter.external.enabled` to `true` to get an `ExternalOfficeManager` bean
+named `externalOfficeManager`, and a `DocumentConverter` bean named `externalDocumentConverter` that converts through
+it. Each property below matches the builder property of the same name; the values shown are the defaults:
+
+```yml title="application.yml"
+jodconverter:
+  external:
+    enabled: true
+    host-name: 127.0.0.1
+    port-numbers: 2002              # or pipe-names / websocket-urls
+    working-dir:                    # defaults to java.io.tmpdir
+    connect-on-start: true
+    connect-timeout: 120000
+    connect-retry-interval: 250
+    connect-fail-fast: false
+    max-tasks-per-connection: 1000
+    task-queue-timeout: 30000
+    task-execution-timeout: 120000
+    apply-default-load-properties: true
+    load-document-mode: auto        # remote: stream documents to an office process on another host
+```
+
+When the office processes run in another container or on another host, set `load-document-mode` to `remote`: the
+documents are then sent through the connection instead of being read from (and written to) the local file system.
+The local and external auto-configurations can be enabled together; inject the converter you need with
+`@Qualifier("externalDocumentConverter")` or `@Qualifier("localDocumentConverter")`.
+
+## Builder properties
+
 Here are all the properties you can set through the builder:
 
 !!! note
