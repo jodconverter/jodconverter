@@ -30,8 +30,12 @@ import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.job.ConversionJob;
+import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.StringUtils;
 
 /**
@@ -43,6 +47,7 @@ public final class CliConverter {
 
   private final PrintWriter out;
   private final DocumentConverter converter;
+  private final TargetOptions targetOptions;
 
   /**
    * Creates a new instance of the class that will use the specified manager.
@@ -50,9 +55,21 @@ public final class CliConverter {
    * @param converter The converter responsible for the conversion.
    */
   public CliConverter(final DocumentConverter converter) {
+    this(converter, null);
+  }
+
+  /**
+   * Creates a new instance of the class that will use the specified manager.
+   *
+   * @param converter The converter responsible for the conversion.
+   * @param targetOptions The options applied to the target documents whose format they support,
+   *     such as {@link org.jodconverter.core.pdf.PdfOptions} for the PDF documents. May be null.
+   */
+  public CliConverter(final DocumentConverter converter, final TargetOptions targetOptions) {
 
     this.out = new PrintWriter(System.out);
     this.converter = converter;
+    this.targetOptions = targetOptions;
   }
 
   /**
@@ -172,7 +189,23 @@ public final class CliConverter {
   private void convert(final File inputFile, final File outputFile) throws OfficeException {
 
     printInfo("Converting '%s' to '%s'", inputFile, outputFile);
-    converter.convert(inputFile).to(outputFile).execute();
+    final ConversionJob job = converter.convert(inputFile).to(outputFile);
+    if (supportsTargetOptions(outputFile)) {
+      job.with(targetOptions);
+    }
+    job.execute();
+  }
+
+  // The target options only apply to the output files whose format they support.
+  private boolean supportsTargetOptions(final File outputFile) {
+
+    if (targetOptions == null) {
+      return false;
+    }
+    final String extension = FileUtils.getExtension(outputFile.getName());
+    final DocumentFormat format =
+        extension == null ? null : converter.getFormatRegistry().getFormatByExtension(extension);
+    return format != null && targetOptions.supports(format);
   }
 
   private void convertFile(

@@ -42,6 +42,7 @@ import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.filter.FilterChain;
@@ -185,6 +186,23 @@ public final class Convert {
                   + " with connect_or_kill: connect to existing process with kill fallback")
           .get();
 
+  private static final Option OPT_PDF_PRESET =
+      Option.builder()
+          .longOpt("pdf-preset")
+          .argName("name")
+          .hasArg()
+          .desc("PDF options to start from: archive, accessible or compact (optional)")
+          .get();
+  private static final Option OPT_PDF_OPTION =
+      Option.builder()
+          .longOpt("pdf-option")
+          .argName("name=value")
+          .hasArg()
+          .desc(
+              "option applied to the PDF outputs; can be repeated"
+                  + " (optional; eg. --pdf-option version=pdf-a-2b --pdf-option pages.range=1-3)")
+          .get();
+
   private static final Options OPTIONS = initOptions();
 
   // Returns true if the command line asked for some info, which is printed, and nothing else.
@@ -326,6 +344,8 @@ public final class Convert {
     options.addOption(OPT_VERSION); // -v, --version
     options.addOption(OPT_WORKING_DIR); // -i, --office-home
     options.addOption(OPT_EXISTING_PROCESS_ACTION); // -x, --existing-process-action
+    options.addOption(OPT_PDF_PRESET); // --pdf-preset
+    options.addOption(OPT_PDF_OPTION); // --pdf-option
 
     return options;
   }
@@ -370,6 +390,18 @@ public final class Convert {
         return STATUS_INVALID_ARGUMENTS;
       }
 
+      // Build the PDF options, before anything is started, since they may be invalid.
+      final PdfOptions pdfOptions;
+      try {
+        pdfOptions =
+            PdfOptionsParser.parse(
+                commandLine.getOptionValue(OPT_PDF_PRESET.getLongOpt()),
+                commandLine.getOptionValues(OPT_PDF_OPTION.getLongOpt()));
+      } catch (IllegalArgumentException ex) {
+        printErr(ex.getMessage());
+        return STATUS_INVALID_ARGUMENTS;
+      }
+
       // Load the application context if provided
       final AbstractApplicationContext context = getApplicationContextOption(commandLine);
 
@@ -383,7 +415,7 @@ public final class Convert {
 
         // Build a client converter and start the conversion
         final CliConverter converter =
-            createCliConverter(commandLine, context, officeManager, registry);
+            createCliConverter(commandLine, context, officeManager, registry, pdfOptions);
 
         if (outputFormat == null) {
 
@@ -486,7 +518,8 @@ public final class Convert {
       final CommandLine commandLine,
       final AbstractApplicationContext context,
       final OfficeManager officeManager,
-      final DocumentFormatRegistry registry) {
+      final DocumentFormatRegistry registry,
+      final PdfOptions pdfOptions) {
 
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
       final RemoteConverter.Builder builder =
@@ -494,7 +527,7 @@ public final class Convert {
       if (registry != null) {
         builder.formatRegistry(registry);
       }
-      return new CliConverter(builder.build());
+      return new CliConverter(builder.build(), pdfOptions);
     }
 
     final LocalConverter.Builder builder = LocalConverter.builder().officeManager(officeManager);
@@ -517,7 +550,7 @@ public final class Convert {
     if (filterChain != null) {
       builder.filterChain(filterChain);
     }
-    return new CliConverter(builder.build());
+    return new CliConverter(builder.build(), pdfOptions);
   }
 
   private static void printHelp() {
