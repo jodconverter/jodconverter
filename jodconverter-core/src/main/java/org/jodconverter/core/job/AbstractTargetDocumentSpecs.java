@@ -23,6 +23,9 @@ package org.jodconverter.core.job;
 import java.io.File;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Base class for all target document specifications implementations.
@@ -32,11 +35,29 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public abstract class AbstractTargetDocumentSpecs extends AbstractDocumentSpecs
     implements TargetDocumentSpecs {
 
+  private TargetOptions options;
+
   protected AbstractTargetDocumentSpecs() {
     super();
   }
 
   protected AbstractTargetDocumentSpecs(final @NonNull File file) {
     super(file);
+  }
+
+  @Override
+  public @Nullable TargetOptions getOptions() {
+    return options;
+  }
+
+  /**
+   * Sets the options that apply to the target document.
+   *
+   * @param options The options to set.
+   */
+  /* default */ void setOptions(final TargetOptions options) {
+
+    AssertUtils.notNull(options, "options must not be null");
+    this.options = options;
   }
 }

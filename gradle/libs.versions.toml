@@ -71,6 +71,10 @@ assertj = "3.22.0"
 # Latest version -> https://mvnrepository.com/artifact/org.mockito/mockito-core
 mockito = "4.5.1"
 
+# Used by the integration tests to inspect the PDF documents produced with PdfOptions
+# Latest version -> https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
+pdfbox = "3.0.8"
+
 # We now have to use the wiremock standalone version since
 # spring boot provides jetty dependency
 # Latest version -> https://mvnrepository.com/artifact/org.wiremock/wiremock-standalone
@@ -167,6 +171,7 @@ junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
+pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
 
 # Plugins

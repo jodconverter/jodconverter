@@ -69,8 +69,17 @@ class: hide-toc
 
 ??? question "How could I set password protection when converting a file to PDF?"
 
-    If you want to set password protection when converting to PDF, you must set 2 filter properties, `EncryptFile` and
-    `DocumentOpenPassword`.
+    Since JODConverter 5.0, use the [PDF options](getting-started/pdf-options.md#security-security):
+
+    ```java
+    converter
+        .convert(inputFile)
+        .to(outputFile)
+        .with(PdfOptions.builder().security(security -> security.openPassword("test")).build())
+        .execute();
+    ```
+
+    With older versions, you must set 2 filter properties, `EncryptFile` and `DocumentOpenPassword`.
     
     Here's how this could be done:
     

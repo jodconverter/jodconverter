@@ -57,9 +57,26 @@ public abstract class AbstractConversionJob
   }
 
   @Override
+  public @NonNull AbstractConversionJob with(final @NonNull TargetOptions options) {
+
+    AssertUtils.notNull(options, "options must not be null");
+    target.setOptions(options);
+    return this;
+  }
+
+  @Override
   public final void execute() throws OfficeException {
 
-    AssertUtils.notNull(target.getFormat(), "The target format is missing or not supported");
+    final DocumentFormat format = target.getFormat();
+    AssertUtils.notNull(format, "The target format is missing or not supported");
+    final TargetOptions options = target.getOptions();
+    if (options != null && !options.supports(format)) {
+      throw new IllegalArgumentException(
+          options.getClass().getSimpleName()
+              + " cannot be applied to a target document of format '"
+              + format.getExtension()
+              + "'");
+    }
     doExecute();
   }
 
