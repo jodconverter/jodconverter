@@ -124,7 +124,21 @@ try (FileInputStream in = new FileInputStream("in.html");
 }
 ```
 
-**4)** Applying save options and filters (`LocalConverter`).
+**4)** Converting to PDF with [PDF options](pdf-options.md).
+
+```java
+import java.io.File;
+import org.jodconverter.core.pdf.PdfOptions;
+import org.jodconverter.core.pdf.PdfVersion;
+
+converter
+    .convert(new File("in.odt"))
+    .to(new File("out.pdf"))
+    .with(PdfOptions.builder().version(PdfVersion.PDF_A_2B).tagged(true).build())
+    .execute();
+```
+
+**5)** Applying save options and filters (`LocalConverter`).
 
 ```java
 import java.io.File;
@@ -135,9 +149,7 @@ import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.filter.RefreshFilter;
 
 Map<String, Object> pdfOptions = new HashMap<>();
-// Example of a well-known option key for LO: embed standard fonts, etc.
-pdfOptions.put("SelectPdfVersion", 1); // PDF/A-1 (value may differ by LO version)
-pdfOptions.put("EmbedStandardFonts", true);
+pdfOptions.put("SelectPdfVersion", 1); // PDF/A-1
 
 LocalConverter
     .builder()

@@ -23,6 +23,7 @@ package org.jodconverter.core.job;
 import java.io.File;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.util.FileUtils;
 
@@ -31,6 +32,15 @@ import org.jodconverter.core.util.FileUtils;
  * conversion process.
  */
 public interface TargetDocumentSpecs extends DocumentSpecs {
+
+  /**
+   * Gets the options that apply to the target document of this conversion only.
+   *
+   * @return The options, or {@code null} if there are none.
+   */
+  default @Nullable TargetOptions getOptions() {
+    return null;
+  }
 
   /**
    * Called if the conversion was completed successfully.

@@ -39,11 +39,11 @@ JODConverter logs through SLF4J 2 (`slf4j-api` 2.0) instead of SLF4J 1.7. An app
 1.7 binding (`slf4j-log4j12`, `slf4j-reload4j`, `log4j-slf4j-impl`, Logback 1.2...) needs the SLF4J 2 version of its
 provider, for example:
 
-| Backend   | SLF4J 1.7 binding                             | SLF4J 2 provider                                     |
-|-----------|-----------------------------------------------|------------------------------------------------------|
-| Log4j 2   | `org.apache.logging.log4j:log4j-slf4j-impl`   | `org.apache.logging.log4j:log4j-slf4j2-impl`         |
-| Logback   | `ch.qos.logback:logback-classic` 1.2.x        | `ch.qos.logback:logback-classic` 1.3.x or later      |
-| reload4j  | `org.slf4j:slf4j-reload4j` 1.7.x              | `org.slf4j:slf4j-reload4j` 2.0.x                     |
+| Backend  | SLF4J 1.7 binding                           | SLF4J 2 provider                                |
+|----------|---------------------------------------------|-------------------------------------------------|
+| Log4j 2  | `org.apache.logging.log4j:log4j-slf4j-impl` | `org.apache.logging.log4j:log4j-slf4j2-impl`    |
+| Logback  | `ch.qos.logback:logback-classic` 1.2.x      | `ch.qos.logback:logback-classic` 1.3.x or later |
+| reload4j | `org.slf4j:slf4j-reload4j` 1.7.x            | `org.slf4j:slf4j-reload4j` 2.0.x                |
 
 Otherwise, SLF4J prints `No SLF4J providers were found` and JODConverter logs nothing. Spring Boot 3 applications
 are not affected: Spring Boot already uses SLF4J 2.
@@ -165,6 +165,9 @@ columns wide.
 
 ## New features
 
+- [`PdfOptions`](../getting-started/pdf-options.md): typed options to convert to PDF (PDF/A, PDF/UA, images, page
+  range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
+  `with(...)` method: `converter.convert(source).to(target).with(PdfOptions.archive()).execute()`.
 - [`poolSize`](../configuration/local-manager.md): start a number of office processes on free ports, without choosing
   them (`jodconverter.local.pool-size` with Spring Boot).
 - [`officeExecutable`](../configuration/local-manager.md): start the office processes through a launcher, such as a

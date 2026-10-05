@@ -22,6 +22,7 @@ package org.jodconverter.remote.task;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -137,14 +138,15 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
 
         // We suppose that the server supports custom store properties, but LibreOffice Online
         // does not support custom store properties, only the sample web service do.
+        // The options of this conversion take precedence over the properties of the target format.
+        final Map<String, Object> storeProperties = new LinkedHashMap<>();
         Optional.ofNullable(source.getFormat())
             .map(DocumentFormat::getInputFamily)
-            .ifPresent(
-                family ->
-                    addPropertiesToBuilder(
-                        uriBuilder,
-                        STORE_PROPERTIES_PREFIX_PARAM,
-                        Objects.requireNonNull(target.getFormat()).getStoreProperties(family)));
+            .map(family -> Objects.requireNonNull(target.getFormat()).getStoreProperties(family))
+            .ifPresent(storeProperties::putAll);
+        Optional.ofNullable(target.getOptions())
+            .ifPresent(options -> options.applyTo(storeProperties));
+        addPropertiesToBuilder(uriBuilder, STORE_PROPERTIES_PREFIX_PARAM, storeProperties);
 
         Executor.newInstance(remoteContext.getHttpClient())
             .execute(

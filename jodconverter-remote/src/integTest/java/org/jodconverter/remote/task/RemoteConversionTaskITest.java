@@ -44,6 +44,8 @@ import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.pdf.PdfOptions;
+import org.jodconverter.core.pdf.PdfVersion;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
@@ -99,6 +101,54 @@ class RemoteConversionTaskITest {
                   .withQueryParam("sfdPageRange", equalTo("2"))
                   .withQueryParam("sfdRestrictPermissions", equalTo("true"))
                   .withQueryParam("sfdPrinting", equalTo("0")));
+
+        } finally {
+          OfficeUtils.stopQuietly(manager);
+        }
+      } finally {
+        wireMockServer.stop();
+      }
+    }
+
+    @Test
+    void withTargetOptions_ShouldSendThemWithPrecedenceOverTheTargetFormat(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final File inputFile = new File(SOURCE_FILE_PATH);
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      wireMockServer.start();
+      try {
+        final OfficeManager manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("http://localhost:8000/lool/convert-to/")
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/pdf")).willReturn(aResponse().withStatus(200)));
+
+          final Map<String, Object> filterData = new HashMap<>();
+          filterData.put("PageRange", "2");
+          filterData.put("SelectPdfVersion", 16);
+          final DocumentFormat pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
+          Objects.requireNonNull(pdf.getStoreProperties(DocumentFamily.TEXT))
+              .put("FilterData", filterData);
+
+          RemoteConverter.make(manager)
+              .convert(inputFile)
+              .to(outputFile)
+              .as(pdf)
+              .with(PdfOptions.builder().version(PdfVersion.PDF_A_2B).tagged(true).build())
+              .execute();
+
+          wireMockServer.verify(
+              postRequestedFor(urlPathEqualTo("/lool/convert-to/pdf"))
+                  .withQueryParam("sFilterName", equalTo("writer_pdf_Export"))
+                  .withQueryParam("sfdPageRange", equalTo("2"))
+                  .withQueryParam("sfdSelectPdfVersion", equalTo("2"))
+                  .withQueryParam("sfdUseTaggedPDF", equalTo("true")));
 
         } finally {
           OfficeUtils.stopQuietly(manager);

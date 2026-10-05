@@ -22,6 +22,8 @@ package org.jodconverter.core.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import java.io.File;
@@ -36,6 +38,7 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.SimpleOfficeManager;
+import org.jodconverter.core.pdf.PdfOptions;
 
 /** Contains tests for the {@link AbstractConversionJob} class. */
 class AbstractConversionJobTest {
@@ -109,6 +112,82 @@ class AbstractConversionJobTest {
                   new TargetDocumentSpecsFromFile(targetFile))
               .as(DefaultDocumentFormatRegistry.PDF);
       assertThat(job.target.getFormat()).isEqualTo(DefaultDocumentFormatRegistry.PDF);
+    }
+  }
+
+  @Nested
+  class With {
+
+    private AbstractConversionJob newJob(final File testFolder, final String targetName)
+        throws IOException {
+      return newJob(SimpleOfficeManager.make(), testFolder, targetName);
+    }
+
+    private AbstractConversionJob newJob(
+        final OfficeManager manager, final File testFolder, final String targetName)
+        throws IOException {
+
+      final File sourceFile = new File(testFolder, "source.txt");
+      assertThat(sourceFile.createNewFile()).isTrue();
+      final TargetDocumentSpecsFromFile target =
+          new TargetDocumentSpecsFromFile(new File(testFolder, targetName));
+      target.setDocumentFormat(
+          DefaultDocumentFormatRegistry.getFormatByExtension(
+              targetName.substring(targetName.lastIndexOf('.') + 1)));
+      return new SimpleConverter.SimpleConversionJob(
+          manager, new SourceDocumentSpecsFromFile(sourceFile), target);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
+        throws IOException {
+
+      final AbstractConversionJob job = newJob(testFolder, "target.pdf");
+      assertThatNullPointerException().isThrownBy(() -> job.with(null));
+    }
+
+    @Test
+    void whenNotNull_ShouldSetTargetOptions(@TempDir final File testFolder) throws IOException {
+
+      final PdfOptions options = PdfOptions.archive();
+      final AbstractConversionJob job = newJob(testFolder, "target.pdf");
+
+      assertThat(job.target.getOptions()).isNull();
+      assertThat(job.with(options)).isSameAs(job);
+      assertThat(job.target.getOptions()).isSameAs(options);
+    }
+
+    @Test
+    void whenOptionsSupportTargetFormat_ShouldExecute(@TempDir final File testFolder)
+        throws IOException, OfficeException {
+
+      final OfficeManager manager = SimpleOfficeManager.make();
+      try {
+        manager.start();
+        final AbstractConversionJob job = newJob(manager, testFolder, "target.pdf");
+        assertThatCode(() -> job.with(PdfOptions.archive()).execute()).doesNotThrowAnyException();
+      } finally {
+        OfficeUtils.stopQuietly(manager);
+      }
+    }
+
+    @Test
+    void whenOptionsDoNotSupportTargetFormat_ShouldThrowIllegalArgumentException(
+        @TempDir final File testFolder) throws IOException {
+
+      final AbstractConversionJob job = newJob(testFolder, "target.odt");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> job.with(PdfOptions.archive()).execute())
+          .withMessage("PdfOptions cannot be applied to a target document of format 'odt'");
+    }
+
+    @Test
+    void whenJobDoesNotSupportOptions_ShouldThrowUnsupportedOperationException() {
+
+      final ConversionJob job = () -> {};
+      assertThatExceptionOfType(UnsupportedOperationException.class)
+          .isThrownBy(() -> job.with(PdfOptions.archive()));
     }
   }
 

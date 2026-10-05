@@ -44,6 +44,7 @@ import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.job.DocumentSpecs;
 import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.job.TargetDocumentSpecs;
+import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.util.AssertUtils;
@@ -122,6 +123,8 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       }
     }
 
+    warnUnsupportedOptions(localContext);
+
     // Get a source file that the office process can load. If the source
     // is an input stream, then a temporary file will be created from the
     // stream. The temporary file will be deleted once the task is done.
@@ -170,6 +173,31 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     }
   }
 
+  // Logs a warning for each target option the office installation does not
+  // support, since it would silently ignore them.
+  private void warnUnsupportedOptions(final LocalOfficeContext context) {
+
+    final TargetOptions options = target.getOptions();
+    final XComponentContext compContext = context.getComponentContext();
+    if (options == null || compContext == null || !LOGGER.isWarnEnabled()) {
+      return;
+    }
+
+    final boolean libreOffice = Info.isLibreOffice(compContext);
+    final String version = Info.getOfficeVersionShort(compContext);
+    if (version == null || !libreOffice && !Info.isOpenOffice(compContext)) {
+      return;
+    }
+
+    for (final String unsupported : options.getUnsupportedOptions(libreOffice, version)) {
+      LOGGER.warn(
+          "The option {}; {} {} will ignore it",
+          unsupported,
+          Info.getOfficeName(compContext),
+          version);
+    }
+  }
+
   // Gets the office properties to apply when the converted
   // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
@@ -180,6 +208,13 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
         storeProps,
         target.getFormat().getStoreProperties(LocalOfficeUtils.getDocumentFamily(document)));
     appendProperties(storeProps, storeProperties);
+
+    // The options of this conversion take precedence over the properties
+    // of the target format and of the converter.
+    final TargetOptions options = target.getOptions();
+    if (options != null) {
+      options.applyTo(storeProps);
+    }
 
     return storeProps;
   }
