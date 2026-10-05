@@ -1610,6 +1610,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#default-options-of-a-converter" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Default options of a converter
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Spring Boot
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#command-line" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2782,6 +2804,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#default-options-of-a-converter" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Default options of a converter
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Spring Boot
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#command-line" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3465,6 +3509,54 @@ property; set it with <code>filterData("SignatureCertificate", certificate)</cod
 last and are not validated.</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">filterData</span><span class="p">(</span><span class="s">"ExportNotesInMargin"</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
+<h2 id="default-options-of-a-converter">Default options of a converter<a class="headerlink" href="#default-options-of-a-converter" title="Permanent link">&para;</a></h2>
+<p>A converter can apply the same options to all its conversions to PDF:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">DocumentConverter</span><span class="w"> </span><span class="n">converter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">LocalConverter</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">officeManager</span><span class="p">(</span><span class="n">officeManager</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">defaultTargetOptions</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">archive</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+<span class="n">converter</span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">source</span><span class="p">).</span><span class="na">to</span><span class="p">(</span><span class="n">target</span><span class="p">).</span><span class="na">execute</span><span class="p">();</span><span class="w">   </span><span class="c1">// PDF/A-2b</span>
+</code></pre></div>
+<p>The default options only apply to the conversions whose target is a PDF document. Options given to a conversion with
+<code>with(...)</code> replace them entirely for that conversion; they are not merged.</p>
+<h2 id="spring-boot">Spring Boot<a class="headerlink" href="#spring-boot" title="Permanent link">&para;</a></h2>
+<p>With the Spring Boot starter, the <code>jodconverter.pdf</code> properties set the default PDF options of the auto-configured
+converters (local, external and remote):</p>
+<div class="language-yaml highlight"><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">local</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">pdf</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">archive</span>
+<span class="w">    </span><span class="nt">pages</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">skip-empty-pages</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">watermark</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DRAFT</span>
+</code></pre></div>
+<ul>
+<li><code>preset</code> is <code>archive</code>, <code>accessible</code> or <code>compact</code>; the other properties are applied on top of it.</li>
+<li>The properties have the names of the <a href="#command-line">command line</a> options: <code>jodconverter.pdf.tagged</code>,
+  <code>jodconverter.pdf.images.jpeg-quality</code>, <code>jodconverter.pdf.security.open-password</code>... Your IDE completes them, with
+  their description.</li>
+<li>A choice is the name of the constant, in any of the forms Spring Boot accepts: <code>low-resolution</code>, <code>LOW_RESOLUTION</code>.
+  The version is <code>pdf-1-7</code>, <code>pdf-2-0</code>, <code>pdf-a-2b</code>...</li>
+<li>The certificates of the signature are Spring resources, in the PEM format:
+  <code>jodconverter.pdf.signature.certificate</code>, <code>jodconverter.pdf.signature.private-key</code> (used together) and
+  <code>jodconverter.pdf.signature.certificate-authorities</code>, such as <code>classpath:signing/certificate.pem</code> or
+  <code>file:/etc/signing/key.pem</code>.</li>
+<li><code>jodconverter.pdf.filter-data.&lt;property&gt;</code> sets any other property.</li>
+<li>Properties that are not valid, or that cannot be used together, prevent the application from starting.</li>
+</ul>
+<p>The starter creates a <code>PdfOptions</code> bean from these properties, only when at least one of them is set. To build the
+options in Java instead, define your own <code>PdfOptions</code> bean: the auto-configured converters use it the same way, and
+the properties are then ignored.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="nd">@Bean</span>
+<span class="n">PdfOptions</span><span class="w"> </span><span class="nf">pdfOptions</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">archive</span><span class="p">().</span><span class="na">toBuilder</span><span class="p">().</span><span class="na">watermark</span><span class="p">(</span><span class="n">watermark</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">watermark</span><span class="p">.</span><span class="na">text</span><span class="p">(</span><span class="s">"DRAFT"</span><span class="p">)).</span><span class="na">build</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>A conversion can still use other options with <code>with(...)</code>.</p>
 <h2 id="command-line">Command line<a class="headerlink" href="#command-line" title="Permanent link">&para;</a></h2>
 <p>The <a href="../command-line-tool/">command line tool</a> takes a preset with <code>--pdf-preset</code> (<code>archive</code>, <code>accessible</code> or
 <code>compact</code>) and any option with <code>--pdf-option name=value</code>, which can be repeated:</p>

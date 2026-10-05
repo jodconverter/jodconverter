@@ -3048,7 +3048,9 @@ columns wide.</p>
 <li><a href="../../getting-started/pdf-options/"><code>PdfOptions</code></a>: typed options to convert to PDF (PDF/A, PDF/UA, images, page
   range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
   <code>with(...)</code> method: <code>converter.convert(source).to(target).with(PdfOptions.archive()).execute()</code>. The command line
-  tool takes them with its new <code>--pdf-preset</code> and <code>--pdf-option</code> arguments.</li>
+  tool takes them with its new <code>--pdf-preset</code> and <code>--pdf-option</code> arguments, a converter can apply them to all its
+  conversions with <code>defaultTargetOptions(...)</code>, and the Spring Boot starter sets them with the <code>jodconverter.pdf.*</code>
+  properties.</li>
 <li><a href="../../configuration/local-manager/"><code>poolSize</code></a>: start a number of office processes on free ports, without choosing
   them (<code>jodconverter.local.pool-size</code> with Spring Boot).</li>
 <li><a href="../../configuration/local-manager/"><code>officeExecutable</code></a>: start the office processes through a launcher, such as a
