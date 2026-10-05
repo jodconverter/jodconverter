@@ -154,6 +154,20 @@
     }
   },
   {
+    "name": "Markdown",
+    "extensions": [
+      "md",
+      "markdown"
+    ],
+    "mediaType": "text/markdown",
+    "inputFamily": "TEXT",
+    "storeProperties": {
+      "TEXT": {
+        "FilterName": "Markdown"
+      }
+    }
+  },
+  {
     "name": "OpenOffice.org 1.0 Text Document",
     "extensions": [
       "sxw"

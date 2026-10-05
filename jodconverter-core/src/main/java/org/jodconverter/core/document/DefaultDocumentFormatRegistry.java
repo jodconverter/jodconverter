@@ -191,6 +191,16 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
   public static final @NonNull DocumentFormat TXT = byExtension("txt");
 
   /**
+   * Markdown, supported by LibreOffice 26.2 and later.
+   *
+   * <ul>
+   *   <li>Extension: md, markdown
+   *   <li>Media Type: text/markdown
+   * </ul>
+   */
+  public static final @NonNull DocumentFormat MARKDOWN = byExtension("md");
+
+  /**
    * OpenDocument Spreadsheet.
    *
    * <ul>
