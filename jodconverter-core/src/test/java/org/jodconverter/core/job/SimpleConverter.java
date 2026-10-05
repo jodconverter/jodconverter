@@ -20,6 +20,8 @@
 
 package org.jodconverter.core.job;
 
+import java.util.List;
+
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
@@ -44,8 +46,10 @@ public final class SimpleConverter extends AbstractConverter {
   }
 
   private SimpleConverter(
-      final OfficeManager officeManager, final DocumentFormatRegistry formatRegistry) {
-    super(officeManager, formatRegistry);
+      final OfficeManager officeManager,
+      final DocumentFormatRegistry formatRegistry,
+      final List<TargetOptions> defaultTargetOptions) {
+    super(officeManager, formatRegistry, defaultTargetOptions);
   }
 
   @Override
@@ -106,7 +110,7 @@ public final class SimpleConverter extends AbstractConverter {
 
     @Override
     public SimpleConverter build() {
-      return new SimpleConverter(officeManager, formatRegistry);
+      return new SimpleConverter(officeManager, formatRegistry, defaultTargetOptions);
     }
   }
 }

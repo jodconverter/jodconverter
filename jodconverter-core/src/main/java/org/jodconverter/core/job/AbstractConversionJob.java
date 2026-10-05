@@ -20,6 +20,8 @@
 
 package org.jodconverter.core.job;
 
+import java.util.List;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DocumentFormat;
@@ -36,6 +38,8 @@ public abstract class AbstractConversionJob
 
   protected final AbstractSourceDocumentSpecs source;
   protected final AbstractTargetDocumentSpecs target;
+
+  private List<TargetOptions> defaultTargetOptions = List.of();
 
   protected AbstractConversionJob(
       final @NonNull AbstractSourceDocumentSpecs source,
@@ -69,8 +73,19 @@ public abstract class AbstractConversionJob
 
     final DocumentFormat format = target.getFormat();
     AssertUtils.notNull(format, "The target format is missing or not supported");
-    final TargetOptions options = target.getOptions();
-    if (options != null && !options.supports(format)) {
+    TargetOptions options = target.getOptions();
+    if (options == null) {
+      // No options for this conversion: use the first default options of the converter that
+      // support the target format, if any.
+      options =
+          defaultTargetOptions.stream()
+              .filter(defaultOptions -> defaultOptions.supports(format))
+              .findFirst()
+              .orElse(null);
+      if (options != null) {
+        target.setOptions(options);
+      }
+    } else if (!options.supports(format)) {
       throw new IllegalArgumentException(
           options.getClass().getSimpleName()
               + " cannot be applied to a target document of format '"
@@ -78,6 +93,15 @@ public abstract class AbstractConversionJob
               + "'");
     }
     doExecute();
+  }
+
+  /**
+   * Sets the options of the converter to apply when this conversion has no options of its own.
+   *
+   * @param defaultTargetOptions The default options.
+   */
+  /* default */ void setDefaultTargetOptions(final List<TargetOptions> defaultTargetOptions) {
+    this.defaultTargetOptions = defaultTargetOptions;
   }
 
   /**

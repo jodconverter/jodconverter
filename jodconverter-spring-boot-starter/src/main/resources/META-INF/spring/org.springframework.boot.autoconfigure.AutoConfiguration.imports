@@ -1,3 +1,4 @@
+org.jodconverter.boot.autoconfigure.JodConverterPdfAutoConfiguration
 org.jodconverter.boot.autoconfigure.JodConverterLocalAutoConfiguration
 org.jodconverter.boot.autoconfigure.JodConverterExternalAutoConfiguration
 org.jodconverter.boot.autoconfigure.JodConverterRemoteAutoConfiguration

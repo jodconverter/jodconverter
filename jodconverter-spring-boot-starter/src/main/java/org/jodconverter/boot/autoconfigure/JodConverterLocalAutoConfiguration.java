@@ -28,6 +28,7 @@ import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -45,6 +46,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistryInstanceHolde
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
@@ -162,7 +164,8 @@ public class JodConverterLocalAutoConfiguration {
   // parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter localDocumentConverter(
       final @Qualifier("localOfficeManager") OfficeManager localOfficeManager,
-      final DocumentFormatRegistry documentFormatRegistry) {
+      final DocumentFormatRegistry documentFormatRegistry,
+      final ObjectProvider<PdfOptions> pdfOptions) {
 
     final Map<String, Object> loadProperties = new HashMap<>();
     if (properties.isApplyDefaultLoadProperties()) {
@@ -172,11 +175,15 @@ public class JodConverterLocalAutoConfiguration {
       }
     }
 
-    return LocalConverter.builder()
-        .officeManager(localOfficeManager)
-        .formatRegistry(documentFormatRegistry)
-        .loadDocumentMode(properties.getLoadDocumentMode())
-        .loadProperties(loadProperties)
-        .build();
+    final LocalConverter.Builder builder =
+        LocalConverter.builder()
+            .officeManager(localOfficeManager)
+            .formatRegistry(documentFormatRegistry)
+            .loadDocumentMode(properties.getLoadDocumentMode())
+            .loadProperties(loadProperties);
+    // Apply the PDF options, from the jodconverter.pdf properties or from the application, to
+    // all the conversions to PDF.
+    pdfOptions.ifUnique(builder::defaultTargetOptions);
+    return builder.build();
   }
 }

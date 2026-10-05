@@ -20,6 +20,8 @@
 
 package org.jodconverter.remote;
 
+import java.util.List;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
@@ -29,6 +31,7 @@ import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecifie
 import org.jodconverter.core.job.AbstractConverter;
 import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
 import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
@@ -78,8 +81,10 @@ public final class RemoteConverter extends AbstractConverter {
   }
 
   private RemoteConverter(
-      final OfficeManager officeManager, final DocumentFormatRegistry formatRegistry) {
-    super(officeManager, formatRegistry);
+      final OfficeManager officeManager,
+      final DocumentFormatRegistry formatRegistry,
+      final List<TargetOptions> defaultTargetOptions) {
+    super(officeManager, formatRegistry, defaultTargetOptions);
   }
 
   @Override
@@ -150,7 +155,8 @@ public final class RemoteConverter extends AbstractConverter {
       // Create the converter
       return new RemoteConverter(
           manager,
-          formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry);
+          formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry,
+          defaultTargetOptions);
     }
   }
 }

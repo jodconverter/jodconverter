@@ -22,9 +22,12 @@ package org.jodconverter.core.job;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFormat;
@@ -47,9 +50,18 @@ public abstract class AbstractConverter implements DocumentConverter {
 
   protected final DocumentFormatRegistry formatRegistry;
 
+  private final List<TargetOptions> defaultTargetOptions;
+
   protected AbstractConverter(
       final @NonNull OfficeManager officeManager,
       final @NonNull DocumentFormatRegistry formatRegistry) {
+    this(officeManager, formatRegistry, null);
+  }
+
+  protected AbstractConverter(
+      final @NonNull OfficeManager officeManager,
+      final @NonNull DocumentFormatRegistry formatRegistry,
+      final @Nullable List<@NonNull TargetOptions> defaultTargetOptions) {
     super();
 
     // Both arguments are required.
@@ -57,6 +69,8 @@ public abstract class AbstractConverter implements DocumentConverter {
     AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
     this.officeManager = officeManager;
     this.formatRegistry = formatRegistry;
+    this.defaultTargetOptions =
+        defaultTargetOptions == null ? List.of() : List.copyOf(defaultTargetOptions);
   }
 
   @Override
@@ -71,7 +85,7 @@ public abstract class AbstractConverter implements DocumentConverter {
       specs.setDocumentFormat(format);
     }
 
-    return convert(specs);
+    return newJob(specs);
   }
 
   @Override
@@ -86,7 +100,7 @@ public abstract class AbstractConverter implements DocumentConverter {
       final @NonNull InputStream source, final boolean closeStream) {
 
     if (officeManager instanceof TemporaryFileMaker fileMaker) {
-      return convert(new SourceDocumentSpecsFromInputStream(source, fileMaker, closeStream));
+      return newJob(new SourceDocumentSpecsFromInputStream(source, fileMaker, closeStream));
     }
     throw new IllegalStateException(
         "An office manager must implements the TemporaryFileMaker "
@@ -101,6 +115,15 @@ public abstract class AbstractConverter implements DocumentConverter {
    */
   protected abstract @NonNull AbstractConversionJobWithSourceFormatUnspecified convert(
       @NonNull AbstractSourceDocumentSpecs source);
+
+  // Creates the conversion job of a source document, which knows the default target options.
+  private AbstractConversionJobWithSourceFormatUnspecified newJob(
+      final AbstractSourceDocumentSpecs source) {
+
+    final AbstractConversionJobWithSourceFormatUnspecified job = convert(source);
+    job.setDefaultTargetOptions(defaultTargetOptions);
+    return job;
+  }
 
   @Override
   public @NonNull DocumentFormatRegistry getFormatRegistry() {
@@ -117,6 +140,7 @@ public abstract class AbstractConverter implements DocumentConverter {
 
     protected OfficeManager officeManager;
     protected DocumentFormatRegistry formatRegistry;
+    protected final List<TargetOptions> defaultTargetOptions = new ArrayList<>();
 
     // Protected constructor so only subclasses can initialize an instance of this builder.
     protected AbstractConverterBuilder() {
@@ -154,6 +178,25 @@ public abstract class AbstractConverter implements DocumentConverter {
 
       AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
       this.formatRegistry = formatRegistry;
+      return (B) this;
+    }
+
+    /**
+     * Specifies options that the converter applies to the target document of every conversion whose
+     * target format they support, such as {@link org.jodconverter.core.pdf.PdfOptions} for all the
+     * conversions to PDF. This method can be called several times, for options of different
+     * formats; when several options support a target format, the first ones win.
+     *
+     * <p>The options given to a conversion with {@link ConversionJob#with(TargetOptions)} replace
+     * these default options for that conversion.
+     *
+     * @param options The default options.
+     * @return This builder instance.
+     */
+    public @NonNull B defaultTargetOptions(final @NonNull TargetOptions options) {
+
+      AssertUtils.notNull(options, "options must not be null");
+      this.defaultTargetOptions.add(options);
       return (B) this;
     }
   }

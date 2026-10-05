@@ -192,6 +192,90 @@ class AbstractConversionJobTest {
   }
 
   @Nested
+  class DefaultTargetOptions {
+
+    // Executes a conversion to the given target with the given converter options, and returns
+    // the options the conversion ended up with.
+    private TargetOptions execute(
+        final File testFolder,
+        final String targetName,
+        final TargetOptions conversionOptions,
+        final TargetOptions... converterOptions)
+        throws IOException, OfficeException {
+
+      final File sourceFile = new File(testFolder, "source.txt");
+      assertThat(sourceFile.createNewFile()).isTrue();
+
+      final OfficeManager manager = SimpleOfficeManager.make();
+      try {
+        manager.start();
+        final SimpleConverter.Builder builder =
+            SimpleConverter.builder()
+                .officeManager(manager)
+                .formatRegistry(DefaultDocumentFormatRegistry.getInstance());
+        for (final TargetOptions options : converterOptions) {
+          builder.defaultTargetOptions(options);
+        }
+        final AbstractConversionJob job =
+            (AbstractConversionJob)
+                builder.build().convert(sourceFile).to(new File(testFolder, targetName));
+        if (conversionOptions != null) {
+          job.with(conversionOptions);
+        }
+        job.execute();
+        return job.target.getOptions();
+      } finally {
+        OfficeUtils.stopQuietly(manager);
+      }
+    }
+
+    @Test
+    void withoutOptions_ShouldHaveNoOptions(@TempDir final File testFolder) throws Exception {
+      assertThat(execute(testFolder, "target.pdf", null)).isNull();
+    }
+
+    @Test
+    void whenDefaultOptionsSupportTargetFormat_ShouldUseThem(@TempDir final File testFolder)
+        throws Exception {
+
+      final PdfOptions defaultOptions = PdfOptions.archive();
+      assertThat(execute(testFolder, "target.pdf", null, defaultOptions)).isSameAs(defaultOptions);
+    }
+
+    @Test
+    void whenDefaultOptionsDoNotSupportTargetFormat_ShouldIgnoreThem(@TempDir final File testFolder)
+        throws Exception {
+
+      assertThat(execute(testFolder, "target.odt", null, PdfOptions.archive())).isNull();
+    }
+
+    @Test
+    void whenSeveralDefaultOptionsSupportTargetFormat_ShouldUseTheFirst(
+        @TempDir final File testFolder) throws Exception {
+
+      final PdfOptions first = PdfOptions.archive();
+      final PdfOptions second = PdfOptions.compact();
+      assertThat(execute(testFolder, "target.pdf", null, first, second)).isSameAs(first);
+    }
+
+    @Test
+    void whenConversionHasOptions_ShouldUseThemInsteadOfTheDefaultOnes(
+        @TempDir final File testFolder) throws Exception {
+
+      final PdfOptions conversionOptions = PdfOptions.compact();
+      assertThat(execute(testFolder, "target.pdf", conversionOptions, PdfOptions.archive()))
+          .isSameAs(conversionOptions);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void whenNullDefaultOptions_ShouldThrowNullPointerException() {
+      assertThatNullPointerException()
+          .isThrownBy(() -> SimpleConverter.builder().defaultTargetOptions(null));
+    }
+  }
+
+  @Nested
   class Execute {
 
     @Test

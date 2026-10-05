@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExternalOfficeManager;
 
@@ -90,7 +91,8 @@ public class JodConverterExternalAutoConfiguration {
   // 6.1, a parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter externalDocumentConverter(
       final @Qualifier("externalOfficeManager") OfficeManager externalOfficeManager,
-      final ObjectProvider<DocumentFormatRegistry> documentFormatRegistry) {
+      final ObjectProvider<DocumentFormatRegistry> documentFormatRegistry,
+      final ObjectProvider<PdfOptions> pdfOptions) {
 
     final LocalConverter.Builder builder =
         LocalConverter.builder()
@@ -102,6 +104,9 @@ public class JodConverterExternalAutoConfiguration {
                     : Map.of());
     // Use the document formats of the local auto-configuration when it also runs.
     documentFormatRegistry.ifAvailable(builder::formatRegistry);
+    // Apply the PDF options, from the jodconverter.pdf properties or from the application, to
+    // all the conversions to PDF.
+    pdfOptions.ifUnique(builder::defaultTargetOptions);
     return builder.build();
   }
 }

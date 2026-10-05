@@ -249,6 +249,66 @@ last and are not validated.
 PdfOptions.builder().filterData("ExportNotesInMargin", true).build();
 ```
 
+## Default options of a converter
+
+A converter can apply the same options to all its conversions to PDF:
+
+```java
+DocumentConverter converter =
+    LocalConverter.builder()
+        .officeManager(officeManager)
+        .defaultTargetOptions(PdfOptions.archive())
+        .build();
+
+converter.convert(source).to(target).execute();   // PDF/A-2b
+```
+
+The default options only apply to the conversions whose target is a PDF document. Options given to a conversion with
+`with(...)` replace them entirely for that conversion; they are not merged.
+
+## Spring Boot
+
+With the Spring Boot starter, the `jodconverter.pdf` properties set the default PDF options of the auto-configured
+converters (local, external and remote):
+
+```yaml
+jodconverter:
+  local:
+    enabled: true
+  pdf:
+    preset: archive
+    pages:
+      skip-empty-pages: true
+    watermark:
+      text: DRAFT
+```
+
+- `preset` is `archive`, `accessible` or `compact`; the other properties are applied on top of it.
+- The properties have the names of the [command line](#command-line) options: `jodconverter.pdf.tagged`,
+  `jodconverter.pdf.images.jpeg-quality`, `jodconverter.pdf.security.open-password`... Your IDE completes them, with
+  their description.
+- A choice is the name of the constant, in any of the forms Spring Boot accepts: `low-resolution`, `LOW_RESOLUTION`.
+  The version is `pdf-1-7`, `pdf-2-0`, `pdf-a-2b`...
+- The certificates of the signature are Spring resources, in the PEM format:
+  `jodconverter.pdf.signature.certificate`, `jodconverter.pdf.signature.private-key` (used together) and
+  `jodconverter.pdf.signature.certificate-authorities`, such as `classpath:signing/certificate.pem` or
+  `file:/etc/signing/key.pem`.
+- `jodconverter.pdf.filter-data.<property>` sets any other property.
+- Properties that are not valid, or that cannot be used together, prevent the application from starting.
+
+The starter creates a `PdfOptions` bean from these properties, only when at least one of them is set. To build the
+options in Java instead, define your own `PdfOptions` bean: the auto-configured converters use it the same way, and
+the properties are then ignored.
+
+```java
+@Bean
+PdfOptions pdfOptions() {
+  return PdfOptions.archive().toBuilder().watermark(watermark -> watermark.text("DRAFT")).build();
+}
+```
+
+A conversion can still use other options with `with(...)`.
+
 ## Command line
 
 The [command line tool](command-line-tool.md) takes a preset with `--pdf-preset` (`archive`, `accessible` or
