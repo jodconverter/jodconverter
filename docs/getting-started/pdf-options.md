@@ -262,6 +262,9 @@ had its effect:
   signature by subject name on Windows. No option was tested with Apache OpenOffice or with LibreOffice versions
   older than 25.2.
 
+The integration tests of JODConverter repeat these checks at each build, except for the digital signature, with the
+office installed on the build machine.
+
 One option of the export filter is not offered: `FirstPageOnLeft`. Every version of LibreOffice and OpenOffice reads
 it and then discards it, so it never has any effect.
 
