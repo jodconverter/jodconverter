@@ -1610,6 +1610,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Command line
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-the-options-were-tested" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2771,6 +2782,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Command line
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-the-options-were-tested" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3443,6 +3465,97 @@ property; set it with <code>filterData("SignatureCertificate", certificate)</cod
 last and are not validated.</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">filterData</span><span class="p">(</span><span class="s">"ExportNotesInMargin"</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
+<h2 id="command-line">Command line<a class="headerlink" href="#command-line" title="Permanent link">&para;</a></h2>
+<p>The <a href="../command-line-tool/">command line tool</a> takes a preset with <code>--pdf-preset</code> (<code>archive</code>, <code>accessible</code> or
+<code>compact</code>) and any option with <code>--pdf-option name=value</code>, which can be repeated:</p>
+<div class="language-text highlight"><pre><span></span><code>jodconverter-cli --pdf-preset archive --pdf-option pages.range=1-3 in.docx out.pdf
+jodconverter-cli --pdf-option version=1.7 --pdf-option tagged=true --pdf-option security.open-password=secret in.docx out.pdf
+</code></pre></div>
+<p>The name of an option is the name of its method, in lower case with hyphens, after the name of its group:</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Names</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General</td>
+<td><code>version</code>, <code>pdf-ua</code>, <code>tagged</code>, <code>embed-source-document</code>, <code>reference-xobjects</code></td>
+</tr>
+<tr>
+<td>Images</td>
+<td><code>images.lossless</code>, <code>images.jpeg-quality</code>, <code>images.reduce-resolution</code>, <code>images.max-resolution</code></td>
+</tr>
+<tr>
+<td>Pages</td>
+<td><code>pages.range</code>, <code>pages.skip-empty-pages</code>, <code>pages.placeholders</code>, <code>pages.tracked-changes</code></td>
+</tr>
+<tr>
+<td>Comments</td>
+<td><code>comments.as-pdf-annotations</code>, <code>comments.in-margin</code></td>
+</tr>
+<tr>
+<td>Bookmarks</td>
+<td><code>bookmarks.export</code>, <code>bookmarks.open-levels</code>, <code>bookmarks.as-named-destinations</code></td>
+</tr>
+<tr>
+<td>Forms</td>
+<td><code>forms.export</code>, <code>forms.submit-format</code>, <code>forms.allow-duplicate-names</code></td>
+</tr>
+<tr>
+<td>Links</td>
+<td><code>links.relative-file-links</code>, <code>links.convert-odf-targets-to-pdf</code>, <code>links.cross-document-links</code></td>
+</tr>
+<tr>
+<td>Initial view</td>
+<td><code>initial-view.pane</code>, <code>initial-view.page</code>, <code>initial-view.magnification</code>, <code>initial-view.zoom</code>, <code>initial-view.layout</code></td>
+</tr>
+<tr>
+<td>Viewer window</td>
+<td><code>viewer.resize-to-initial-page</code>, <code>viewer.center-window</code>, <code>viewer.full-screen</code>, <code>viewer.display-document-title</code>, <code>viewer.hide-menubar</code>, <code>viewer.hide-toolbar</code>, <code>viewer.hide-window-controls</code></td>
+</tr>
+<tr>
+<td>Security</td>
+<td><code>security.open-password</code>, <code>security.permission-password</code>, <code>security.printing</code>, <code>security.changes</code>, <code>security.copying</code>, <code>security.accessibility-access</code></td>
+</tr>
+<tr>
+<td>Watermark</td>
+<td><code>watermark.text</code>, <code>watermark.tiled-text</code>, <code>watermark.color</code>, <code>watermark.font-name</code>, <code>watermark.font-height</code>, <code>watermark.rotation</code></td>
+</tr>
+<tr>
+<td>Signature</td>
+<td><code>signature.certificate-subject-name</code>, <code>signature.certificate-file</code>, <code>signature.private-key-file</code>, <code>signature.ca-file</code>, <code>signature.password</code>, <code>signature.location</code>, <code>signature.reason</code>, <code>signature.contact-info</code>, <code>signature.timestamp-authority</code></td>
+</tr>
+<tr>
+<td>Presentation</td>
+<td><code>presentation.hidden-slides</code>, <code>presentation.notes-pages</code>, <code>presentation.only-notes-pages</code>, <code>presentation.transitions</code></td>
+</tr>
+<tr>
+<td>Spreadsheet</td>
+<td><code>spreadsheet.single-page-sheets</code>, <code>spreadsheet.sheet-range</code></td>
+</tr>
+<tr>
+<td>Any property</td>
+<td><code>filter-data.&lt;property&gt;</code>, such as <code>filter-data.ExportNotesInMargin=true</code></td>
+</tr>
+</tbody>
+</table>
+<p>The values:</p>
+<ul>
+<li><strong>Yes or no:</strong> <code>true</code> or <code>false</code>.</li>
+<li><strong>A choice:</strong> the name of the constant, in any case, with hyphens or underscores: <code>security.printing=low-resolution</code>,
+  <code>initial-view.magnification=fit-width</code>.</li>
+<li><strong><code>version</code>:</strong> <code>1.5</code>, <code>1.6</code>, <code>1.7</code>, <code>2.0</code>, <code>a-1b</code>, <code>a-2b</code>, <code>a-3b</code>, <code>a-4</code> or <code>default</code>.</li>
+<li><strong><code>watermark.color</code>:</strong> an RGB value such as <code>FF0000</code>.</li>
+<li><strong>The signature files:</strong> <code>signature.certificate-file</code> and <code>signature.private-key-file</code> are the paths of the
+  certificate and of its private key, in the PEM format, and must be used together; <code>signature.ca-file</code> is the path
+  of the certificates of the certificate authorities.</li>
+</ul>
+<p>An unknown name, a value that is not valid, or options that cannot be used together stop the tool before any
+conversion, with an error message and the exit status 255. A password given on a command line can be seen by the
+other users of the machine, in the list of the running processes.</p>
 <h2 id="how-the-options-were-tested">How the options were tested<a class="headerlink" href="#how-the-options-were-tested" title="Permanent link">&para;</a></h2>
 <p>Each option was converted with a real office installation, and the PDF document it produced was inspected (document
 catalog, encryption permissions, annotations, form fields, images, page content, signature) to check that the option

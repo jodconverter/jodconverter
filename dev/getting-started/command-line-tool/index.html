@@ -1671,6 +1671,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#-pdf-preset-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        --pdf-preset <code>&lt;name&gt;</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-pdf-option-namevalue" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        --pdf-option <code>&lt;name=value&gt;</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2818,6 +2840,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#-pdf-preset-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        --pdf-preset <code>&lt;name&gt;</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-pdf-option-namevalue" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        --pdf-option <code>&lt;name=value&gt;</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2914,6 +2958,16 @@ See <a href="../../../configuration/local-configuration#templateprofiledir">Conf
 <h4 id="-w-working-dir-dir">-w, --working-dir <code>&lt;dir&gt;</code><a class="headerlink" href="#-w-working-dir-dir" title="Permanent link">&para;</a></h4>
 <p>Directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir).
 See <a href="../../../configuration/local-configuration#workingdir">Configuration</a>.</p>
+<h4 id="-pdf-preset-name">--pdf-preset <code>&lt;name&gt;</code><a class="headerlink" href="#-pdf-preset-name" title="Permanent link">&para;</a></h4>
+<p>PDF options to start from, for the PDF outputs (optional): <code>archive</code> (PDF/A-2b), <code>accessible</code> (PDF/UA) or <code>compact</code>
+(reduced JPEG images). See <a href="../pdf-options/#presets">PDF Options</a>.</p>
+<h4 id="-pdf-option-namevalue">--pdf-option <code>&lt;name=value&gt;</code><a class="headerlink" href="#-pdf-option-namevalue" title="Permanent link">&para;</a></h4>
+<p>Option applied to the PDF outputs (optional). It can be repeated, and is applied on top of the preset if there is
+one:</p>
+<div class="language-text highlight"><pre><span></span><code>jodconverter-cli --pdf-preset archive --pdf-option pages.range=1-3 --pdf-option watermark.text=DRAFT in.docx out.pdf
+</code></pre></div>
+<p>See <a href="../pdf-options/#command-line">PDF Options</a> for the names and the values. The other outputs of the same command
+are converted without these options.</p>
 <h3 id="remarks">Remarks<a class="headerlink" href="#remarks" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Using <strong>-a</strong></li>
