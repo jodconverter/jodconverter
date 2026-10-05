@@ -99,12 +99,15 @@ class SuspendableThreadPoolExecutorTest {
     }
 
     @Test
-    void whenSetAvailableTrueWhileWaiting_ShouldExecuteTask() {
+    void whenSetAvailableTrueWhileWaiting_ShouldExecuteTask() throws Exception {
 
       final AtomicBoolean executed = new AtomicBoolean();
-      executor.execute(() -> executed.set(true));
+      final Future<?> task = executor.submit(() -> executed.set(true));
       sleep();
+      assertThat(executed).isFalse();
       executor.setAvailable(true);
+      // The task runs on the thread of the executor: wait for it.
+      task.get(10, TimeUnit.SECONDS);
       assertThat(executed).isTrue();
     }
 
