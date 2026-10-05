@@ -49,6 +49,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -177,11 +178,12 @@ class PdfOptionsITest {
     return Files.readString(file.toPath(), StandardCharsets.ISO_8859_1).substring(0, 8);
   }
 
-  // Gets the XMP metadata of the document, which tells its PDF/A and PDF/UA conformance.
+  // Gets the XMP metadata of the document, which tells its PDF/A and PDF/UA conformance. Older
+  // office versions only write it for these conformances; it is empty when absent.
   private static String xmp(final File file) throws IOException {
     try (PDDocument doc = Loader.loadPDF(file)) {
-      return new String(
-          doc.getDocumentCatalog().getMetadata().toByteArray(), StandardCharsets.UTF_8);
+      final PDMetadata metadata = doc.getDocumentCatalog().getMetadata();
+      return metadata == null ? "" : new String(metadata.toByteArray(), StandardCharsets.UTF_8);
     }
   }
 
