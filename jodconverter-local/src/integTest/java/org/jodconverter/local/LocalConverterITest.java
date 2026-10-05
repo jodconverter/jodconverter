@@ -45,6 +45,7 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.office.LocalOfficeUtils;
 import org.jodconverter.local.task.LoadDocumentMode;
 
 /** Contains tests for the {@link LocalConverter} class. */
@@ -63,6 +64,35 @@ class LocalConverterITest {
 
       assertThatCode(() -> converter.convert(SOURCE_FILE).to(outputFile).execute())
           .doesNotThrowAnyException();
+
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+
+    @Test
+    void withOfficeExecutable_ShouldStartTheExecutableAndConvert(final @TempDir File testFolder)
+        throws OfficeException {
+
+      // The office home doesn't contain any office: the process can only be started from the
+      // specified executable.
+      final File emptyOfficeHome = new File(testFolder, "empty");
+      assertThat(emptyOfficeHome.mkdir()).isTrue();
+      final File executable =
+          LocalOfficeUtils.getOfficeExecutable(LocalOfficeUtils.getDefaultOfficeHome());
+      final File outputFile = new File(testFolder, "out.pdf");
+
+      final OfficeManager manager =
+          LocalOfficeManager.builder()
+              .officeHome(emptyOfficeHome)
+              .officeExecutable(executable)
+              .portNumbers(2012)
+              .build();
+      manager.start();
+      try {
+        LocalConverter.make(manager).convert(SOURCE_FILE).to(outputFile).execute();
+      } finally {
+        manager.stop();
+      }
 
       assertThat(outputFile).isFile();
       assertThat(outputFile.length()).isGreaterThan(0L);

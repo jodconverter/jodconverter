@@ -45,6 +45,13 @@ public class JodConverterLocalProperties {
   private String officeHome;
 
   /**
+   * Program that starts the office processes, instead of the executable found in the office home.
+   * Use it for a launcher, such as the one of a snap (/snap/bin/libreoffice) or an AppImage. When
+   * set, the office home is not required.
+   */
+  private String officeExecutable;
+
+  /**
    * Host name that will be used in the --accept argument when starting an office process. Most of
    * the time, the default will work. But if it doesn't work (unable to connect to the started
    * process), using 'localhost' as the host name instead may work.
@@ -184,6 +191,14 @@ public class JodConverterLocalProperties {
 
   public void setOfficeHome(final @Nullable String officeHome) {
     this.officeHome = officeHome;
+  }
+
+  public @Nullable String getOfficeExecutable() {
+    return officeExecutable;
+  }
+
+  public void setOfficeExecutable(final @Nullable String officeExecutable) {
+    this.officeExecutable = officeExecutable;
   }
 
   public @Nullable String getHostName() {

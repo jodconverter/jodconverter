@@ -288,6 +288,39 @@ class LocalOfficeProcessManagerReflectTest {
   }
 
   @Test
+  void prepareProcessBuilder_WithOfficeExecutable_ShouldStartTheExecutable(
+      final @TempDir File testFolder) {
+
+    final OfficeUrl url = new OfficeUrl(9999);
+    final File launcher = new File(testFolder, "libreoffice");
+    final LocalOfficeProcessManager manager =
+        new LocalOfficeProcessManager(
+            url,
+            null,
+            launcher,
+            testFolder,
+            LocalOfficeUtils.findBestProcessManager(),
+            new ArrayList<>(),
+            null,
+            DEFAULT_PROCESS_TIMEOUT,
+            DEFAULT_PROCESS_RETRY_INTERVAL,
+            DEFAULT_AFTER_START_PROCESS_DELAY,
+            DEFAULT_EXISTING_PROCESS_ACTION,
+            DEFAULT_START_FAIL_FAST,
+            DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+            TestOfficeConnection.prepareTest(url));
+    ReflectionTestUtils.setField(
+        manager, "descriptor", ReflectionTestUtils.invokeMethod(manager, "detectOfficeDescriptor"));
+
+    final ProcessBuilder processBuilder =
+        ReflectionTestUtils.invokeMethod(manager, "prepareProcessBuilder", "acceptString");
+
+    assertThat(processBuilder).isNotNull();
+    assertThat(processBuilder.command())
+        .startsWith(launcher.getAbsolutePath(), "--accept=acceptString");
+  }
+
+  @Test
   void forciblyTerminateProcess_WhenNotStarted_ShouldDoNothing() {
 
     final OfficeUrl url = new OfficeUrl(9999);
