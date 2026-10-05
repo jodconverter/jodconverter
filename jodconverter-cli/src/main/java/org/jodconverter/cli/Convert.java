@@ -603,7 +603,8 @@ public final class Convert {
 
   private static void printInfo(final String message, final Object... values) {
 
-    System.out.printf(message + "%n", values); // NOPMD - Allow System.out.println
+    System.out.printf(message, values); // NOPMD - Allow System.out.println
+    System.out.println(); // NOPMD - Allow System.out.println
     System.out.flush();
   }
 }

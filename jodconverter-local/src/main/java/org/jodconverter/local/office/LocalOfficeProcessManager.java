@@ -481,6 +481,8 @@ class LocalOfficeProcessManager {
     if (!"socket".equalsIgnoreCase(unoUrl.getConnection())) {
       return; // Pipes and websockets have no port
     }
+    // The office API returns a raw map
+    @SuppressWarnings("unchecked")
     final Map<String, String> parameters = unoUrl.getConnectionParameters();
     final var host = parameters.get("host");
     final var port = Integer.parseInt(parameters.get("port"));

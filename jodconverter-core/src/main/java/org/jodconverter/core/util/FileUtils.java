@@ -230,7 +230,7 @@ public final class FileUtils {
     }
     final var name = Path.of(filename).getFileName().toString();
     final var i = name.lastIndexOf('.');
-    if (i == -1 || i == name.length()) {
+    if (i == -1) {
       return "";
     }
     return name.substring(i + 1);

@@ -241,12 +241,14 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       }
     } catch (com.sun.star.lang.DisposedException exception) {
       // LibreOffice 24+ will throw this exception for password protection.
-      handlePasswordProtection(document);
+      handlePasswordProtection();
       throw exception;
     }
 
     // Handle password protection request to throw a meaningful exception, if required.
-    handlePasswordProtection(document);
+    if (document == null) {
+      handlePasswordProtection();
+    }
     return document;
   }
 
@@ -276,10 +278,9 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
     }
   }
 
-  private void handlePasswordProtection(final XComponent document) throws OfficeException {
+  private void handlePasswordProtection() throws OfficeException {
 
-    if (document == null
-        && passwordPasswordInteractionHandler != null
+    if (passwordPasswordInteractionHandler != null
         && passwordPasswordInteractionHandler.hasPasswordInteractionRequest()) {
       throw new PasswordProtectedException(
           "Document password requested for " + passwordPasswordInteractionHandler.getDocumentName(),
