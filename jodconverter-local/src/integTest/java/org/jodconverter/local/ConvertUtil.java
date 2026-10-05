@@ -49,11 +49,11 @@ public final class ConvertUtil {
           "potx");
 
   // Output formats to be skipped when testing al possible conversion.
-  // They may fail on some OS or LO/OO version.
+  // They may fail on some OS or LO/OO version (md requires LibreOffice 26.2 or later).
   private static final List<String> SKIPPED_OUTPUT_FORMAT =
       List.of(
           "svg", "png", "jpg", "jpeg", "tif", "tiff", "gif", "swf", "sxc", "sxi", "sxw", "fodg",
-          "fodp", "fods", "fodt", "docx", "dotx", "xlsx", "xltx", "pptx", "potx", "xhtml");
+          "fodp", "fods", "fodt", "docx", "dotx", "xlsx", "xltx", "pptx", "potx", "xhtml", "md");
 
   /**
    * Runnable used to convert a document. This kind of runner is useful when a conversion must be
