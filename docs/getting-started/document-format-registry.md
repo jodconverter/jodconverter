@@ -26,7 +26,7 @@ drawing and image formats.
 - `DocumentFormat`: The immutable description of a format (`org.jodconverter.core.document.DocumentFormat`).
 - `DocumentFormatRegistry`: Interface to look up formats (`org.jodconverter.core.document.DocumentFormatRegistry`).
 - `DefaultDocumentFormatRegistry`: Static convenience access to the default registry and well-known constants (e.g.,
-  `DefaultDocumentFormatRegistry.PDF`).
+    `DefaultDocumentFormatRegistry.PDF`).
 - `SimpleDocumentFormatRegistry`: A mutable in-memory registry you can build programmatically.
 - `JsonDocumentFormatRegistry`: A registry that can be loaded from JSON.
 
@@ -40,7 +40,7 @@ top of the defaults (overrides existing formats or adds new ones).
 #### Typical Usage
 
 - Let **JODConverter** pick formats automatically by file extension: If you pass File or stream with an explicit target
-  format, converters will use the registry to resolve the correct configuration.
+    format, converters will use the registry to resolve the correct configuration.
 - Query formats yourself: Access by extension or media type
 
 ```java
@@ -115,7 +115,7 @@ Load properties used when opening a document are determined as follows:
 
 1. Input `DocumentFormat` load properties (from the registry), then
 2. Converter default load properties (`Hidden=true`, `ReadOnly=true`, `UpdateDocMode=NO_UPDATE` unless configured
-   otherwise), then
+    otherwise), then
 3. Explicit per-converter loadProperty/loadProperties you set in the builder
 
 Store properties used when saving the output are determined as follows:
@@ -126,7 +126,7 @@ Store properties used when saving the output are determined as follows:
 ### Where to put custom JSON
 
 - Place `custom-document-formats.json` on your application’s runtime classpath (e.g., in `src/main/resources`) to have
-  it automatically merged with the defaults
+    it automatically merged with the defaults
 - Or load any JSON at runtime and pass a `JsonDocumentFormatRegistry` instance to your converter
 
 ### Troubleshooting

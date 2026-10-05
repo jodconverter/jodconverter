@@ -23,9 +23,9 @@ resolution, and applying conversion options/filters.
 
 - Simplified conversion API: Compose conversions with a readable, fluent builder.
 - Format resolution: Uses a `DocumentFormatRegistry` to infer formats by extension/MIME type, and allows you to override
-  them explicitly.
+    them explicitly.
 - Options and filters: Provide document-family-specific options (e.g., PDF export options) and filter chains to adjust
-  content before saving.
+    content before saving.
 - Integration: Works with a provided `OfficeManager` or the globally installed manager.
 
 Without a Document Converter, you would have to craft and execute low-level OfficeTasks yourself.
@@ -35,9 +35,9 @@ Without a Document Converter, you would have to craft and execute low-level Offi
 **JODConverter** provides different converter implementations depending on where/how the office backend is running:
 
 - **LocalConverter**: Uses a **LocalOfficeManager** to communicate with local OOo processes.
-  See [LocalConverter](../configuration/local-converter.md) for all configuration options and examples.
+    See [LocalConverter](../configuration/local-converter.md) for all configuration options and examples.
 - **RemoteConverter**: Uses a **RemoteOfficeManager** to communicate with LibreOffice Online / Collabora Online.
-  See [RemoteConverter](../configuration/remote-converter.md) for configuration and examples.
+    See [RemoteConverter](../configuration/remote-converter.md) for configuration and examples.
 
 Internally, concrete converters extend an abstract base that wires the format registry, job pipeline, and office task
 execution.
@@ -170,10 +170,10 @@ Notes:
 ## Lifecycle and threading
 
 - Requires an `OfficeManager`: A converter relies on a running `OfficeManager`. Start the manager before executing
-  conversions and stop it on shutdown.
+    conversions and stop it on shutdown.
 - Thread-safe: Converters can be reused across threads; job execution is queued through the `OfficeManager`.
 - Format registry: `getFormatRegistry()` returns the formats supported by the converter. `LocalConverter` typically uses
-  `DefaultDocumentFormatRegistry`.
+    `DefaultDocumentFormatRegistry`.
 
 ## Best practices
 
@@ -181,7 +181,7 @@ Notes:
 - Prefer File I/O for very large documents to minimize memory pressure; streams are convenient but may incur buffering.
 - Specify formats explicitly when converting from streams without file extensions.
 - Tune OfficeManager timeouts and process counts for your workload (see the Office Managers page and LocalOfficeManager
-  configuration).
+    configuration).
 
 ## Related APIs
 

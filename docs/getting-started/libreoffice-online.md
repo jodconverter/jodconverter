@@ -26,11 +26,13 @@ avoid the LibreOffice installation on your server.
 ### Gradle Setup
 
 === "Groovy"
+
     ```groovy
     implementation "org.jodconverter:jodconverter-remote:4.4.11"
     ```
 
 === "Kotlin"
+
     ```kotlin
     implementation("org.jodconverter:jodconverter-remote:4.4.11")
     ```
@@ -122,32 +124,40 @@ It is possible to use the Online converting functionality directly, without the 
 
 ### LibreOffice Online API
 
-- API: HTTP POST to /lool/convert-to/<format>
+- API: HTTP POST to `/lool/convert-to/<format>`
+
     - the format is e.g. "png", "pdf" or "txt"
     - the file itself in the payload
-- example
-    - ```curl -F "data=@test.txt" https://localhost:9980/lool/convert-to/docx > out.docx```
-    - or in html:
-```
-<form action="https://localhost:9980/lool/convert-to/docx" enctype="multipart/form-data" method="post">
-    File: <input type="file" name="data"><br/>
-    <input type="submit" value="Convert to DOCX">
-</form>
-```
 
-- alternatively you can omit the <format>, and instead provide it as another
-  parameter
 - example
-    - ```curl -F "data=@test.odt" -F "format=pdf" https://localhost:9980/lool/convert-to > out.pdf```
+
+    - `curl -F "data=@test.txt" https://localhost:9980/lool/convert-to/docx > out.docx`
+
     - or in html:
 
-```
-     <form action="https://localhost:9980/lool/convert-to" enctype="multipart/form-data" method="post">
-          File: <input type="file" name="data"><br/>
-          Format: <input type="text" name="format"><br/>
-          <input type="submit" value="Convert">
-     </form>
-```
+        ```html
+        <form action="https://localhost:9980/lool/convert-to/docx" enctype="multipart/form-data" method="post">
+            File: <input type="file" name="data"><br/>
+            <input type="submit" value="Convert to DOCX">
+        </form>
+        ```
+
+- alternatively you can omit the `<format>`, and instead provide it as another
+    parameter
+
+- example
+
+    - `curl -F "data=@test.odt" -F "format=pdf" https://localhost:9980/lool/convert-to > out.pdf`
+
+    - or in html:
+
+        ```html
+        <form action="https://localhost:9980/lool/convert-to" enctype="multipart/form-data" method="post">
+            File: <input type="file" name="data"><br/>
+            Format: <input type="text" name="format"><br/>
+            <input type="submit" value="Convert">
+        </form>
+        ```
 
 ## Create your own Online server
 

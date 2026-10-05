@@ -47,12 +47,12 @@ Here are all the properties you can set through the builder:
 
     **JODConverter** uses milliseconds for all time values.
 
-#### &#128193;`workingDir`
+#### 📁`workingDir`
 
 This property is used to create a temporary directory where files will be created when conversions are done
 using InputStream/OutputStream.
 
-&nbsp;***Default***: The system temporary directory as specified by the `java.io.tmpdir` system property.
+&#160;***Default***: The system temporary directory as specified by the `java.io.tmpdir` system property.
 
 **NOTE** that
 [some OS automatically clean up the `java.io.tmpdir` directory periodically](https://github.com/jodconverter/jodconverter/issues/220).
@@ -66,12 +66,12 @@ OfficeManager officeManager =
         .build();
 ```
 
-#### &#128288;`hostName`
+#### 🔠`hostName`
 
 This property sets the host name that will be used in the `--accept` argument when connecting to an
 office process.
 
-&nbsp;***Default***: 127.0.0.1
+&#160;***Default***: 127.0.0.1
 
 ```java hl_lines="4"
 OfficeManager officeManager =
@@ -81,7 +81,7 @@ OfficeManager officeManager =
         .build();
 ```
 
-#### &#128290;`portNumbers` / &#128288;`pipeNames` / &#128288;`websocketUrls`
+#### 🔢`portNumbers` / 🔠`pipeNames` / 🔠`websocketUrls`
 
 This property sets the port number(s), pipe name(s) and websocket urls that will be used in the `--accept` argument
 when connecting to an office process.
@@ -89,7 +89,7 @@ when connecting to an office process.
 If you want to know more about web socket, read the
 [Pull Request](https://github.com/jodconverter/jodconverter/pull/355) where it has been introduced.
 
-&nbsp;***Default***: TCP socket, on port 2002.
+&#160;***Default***: TCP socket, on port 2002.
 
 === "Java"
 
@@ -105,12 +105,12 @@ OfficeManager officeManager =
         .build();
 ```
 
-#### &#10062;`connectOnStart`
+#### ❎`connectOnStart`
 
 This property controls whether a connection must be attempted when the manager starts. If `false`, a connection will
 only be attempted the first time a conversion task is executed.
 
-&nbsp;***Default***: true.
+&#160;***Default***: true.
 
 ```java hl_lines="4"
 OfficeManager officeManager =
@@ -120,11 +120,11 @@ OfficeManager officeManager =
         .build();
 ```
 
-#### &#8986;`connectTimeout`
+#### ⌚`connectTimeout`
 
 This property sets the timeout, in milliseconds, after which a connection attempt will fail.
 
-&nbsp;***Default***: 120000 (2 minutes)
+&#160;***Default***: 120000 (2 minutes)
 
 ```java hl_lines="4"
 OfficeManager officeManager =
@@ -134,11 +134,11 @@ OfficeManager officeManager =
         .build();
 ```
 
-#### &#8986;`connectRetryInterval`
+#### ⌚`connectRetryInterval`
 
 This property sets the delay, in milliseconds, between each try when trying to connect to the external OOo process.
 
-&nbsp;***Default***: 250 (0.25 seconds)
+&#160;***Default***: 250 (0.25 seconds)
 
 ```java hl_lines="4"
 OfficeManager officeManager =
@@ -148,14 +148,14 @@ OfficeManager officeManager =
         .build();
 ```
 
-#### &#10062;`connectFailFast`
+#### ❎`connectFailFast`
 
 This property controls whether the manager will "fail fast" if the connection to the external process fails. If set to
 `true`, a connection attempt will wait for the task to be completed, and will throw an exception the connection to the
 external process fails. If set to `false`, the task of connecting to the external process will be submitted and will
 return immediately, meaning a faster starting process. Only error logs will be produced if anything goes wrong.
 
-&nbsp;***Default***: false.
+&#160;***Default***: false.
 
 ```java hl_lines="4"
 OfficeManager officeManager =
@@ -165,12 +165,12 @@ OfficeManager officeManager =
         .build();
 ```
 
-#### &#128290;`maxTasksPerConnection`
+#### 🔢`maxTasksPerConnection`
 
 This property sets the maximum number of tasks an office process can execute before reconnecting to it. 0 means an
 infinite number of tasks (will never reconnect).
 
-&nbsp;***Default***: 1000
+&#160;***Default***: 1000
 
 ```java hl_lines="4"
 OfficeManager officeManager =
@@ -180,12 +180,12 @@ OfficeManager officeManager =
         .build();
 ```
 
-#### &#8986;`taskQueueTimeout`
+#### ⌚`taskQueueTimeout`
 
 This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
 the queue if the waiting time is longer than this timeout and an `OfficeException` will be thrown.
 
-&nbsp;***Default***: 30000 (30 seconds)
+&#160;***Default***: 30000 (30 seconds)
 
 ```java hl_lines="4"
 OfficeManager officeManager =
@@ -195,12 +195,12 @@ OfficeManager officeManager =
         .build();
 ```
 
-#### &#8986;`taskExecutionTimeout`
+#### ⌚`taskExecutionTimeout`
 
 This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
 timeout, this task will be aborted and the next task is processed.
 
-&nbsp;***Default***: 120000 (2 minutes)
+&#160;***Default***: 120000 (2 minutes)
 
 ```java hl_lines="4"
 OfficeManager officeManager =

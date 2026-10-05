@@ -5,22 +5,22 @@ This page is a landing hub for configuring JODConverter components. Use it to qu
 ## What do you want to configure?
 
 - Office Managers (how office processes are run and managed)
-  - LocalOfficeManager — start and manage local LibreOffice/AOO processes.
-  - ExternalOfficeManager — connect to an already-running local process you manage externally.
-  - RemoteOfficeManager — connect to a remote LibreOffice Online/Collabora server.
+    - LocalOfficeManager — start and manage local LibreOffice/AOO processes.
+    - ExternalOfficeManager — connect to an already-running local process you manage externally.
+    - RemoteOfficeManager — connect to a remote LibreOffice Online/Collabora server.
 - Document Converters (how to execute conversions)
-  - LocalConverter — convert using a local OfficeManager (UNO).
-  - RemoteConverter — convert via a remote HTTP API (LOOL/Collabora).
+    - LocalConverter — convert using a local OfficeManager (UNO).
+    - RemoteConverter — convert via a remote HTTP API (LOOL/Collabora).
 
 ## Quick matrix
 
-| Component              | Where it runs           | Typical use case                              | Key page |
-|------------------------|-------------------------|-----------------------------------------------|----------|
-| LocalOfficeManager     | Local machine (headless)| Server/service with LibreOffice/AOO installed | [LocalOfficeManager](./local-manager.md) |
-| ExternalOfficeManager  | Local, started externally| You control soffice lifecycle outside the JVM | [ExternalOfficeManager](./external-manager.md) |
-| RemoteOfficeManager    | Remote (HTTP/WebSocket) | Use LibreOffice Online/Collabora remotely      | [RemoteOfficeManager](./remote-manager.md) |
-| LocalConverter         | Local UNO               | In‑process conversions via local office        | [LocalConverter](./local-converter.md) |
-| RemoteConverter        | Remote HTTP             | Call a remote conversion service               | [RemoteConverter](./remote-converter.md) |
+| Component             | Where it runs             | Typical use case                              | Key page                                       |
+| --------------------- | ------------------------- | --------------------------------------------- | ---------------------------------------------- |
+| LocalOfficeManager    | Local machine (headless)  | Server/service with LibreOffice/AOO installed | [LocalOfficeManager](./local-manager.md)       |
+| ExternalOfficeManager | Local, started externally | You control soffice lifecycle outside the JVM | [ExternalOfficeManager](./external-manager.md) |
+| RemoteOfficeManager   | Remote (HTTP/WebSocket)   | Use LibreOffice Online/Collabora remotely     | [RemoteOfficeManager](./remote-manager.md)     |
+| LocalConverter        | Local UNO                 | In‑process conversions via local office       | [LocalConverter](./local-converter.md)         |
+| RemoteConverter       | Remote HTTP               | Call a remote conversion service              | [RemoteConverter](./remote-converter.md)       |
 
 ## Tips
 

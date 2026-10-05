@@ -64,7 +64,7 @@ to PDF. This is the most common reason why a converted document doesn't look lik
 Install the fonts your documents use, or fonts with the same metrics:
 
 | Font in the document                | Metric-compatible font       | Debian/Ubuntu package     |
-|-------------------------------------|------------------------------|---------------------------|
+| ----------------------------------- | ---------------------------- | ------------------------- |
 | Arial, Times New Roman, Courier New | Liberation Sans, Serif, Mono | `fonts-liberation`        |
 | Calibri                             | Carlito                      | `fonts-crosextra-carlito` |
 | Cambria                             | Caladea                      | `fonts-crosextra-caladea` |
@@ -77,9 +77,9 @@ replacement fonts visually, the community tool
 ## Size the container
 
 - Each port number (or pipe name) starts one office process, and each process has its own memory footprint, typically
-  hundreds of megabytes. Size the container memory for the number of processes you configure.
+    hundreds of megabytes. Size the container memory for the number of processes you configure.
 - Office processes write their profile and temporary files under the `workingDir` (the system temp directory by
-  default). Put it on a local disk with enough free space.
+    default). Put it on a local disk with enough free space.
 - Keep a `taskExecutionTimeout`: a document that makes LibreOffice hang is then killed and the process restarted.
 
 ## Related

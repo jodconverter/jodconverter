@@ -38,7 +38,7 @@ converter.
 This property specifies that this converter will apply the default load properties when loading a source
 document.
 
-&nbsp;***Default***: true.
+&#160;***Default***: true.
 
 Default load properties are:
 
@@ -65,9 +65,9 @@ Spreadsheet File Conversions</a>
 This property specifies how a document is loaded/stored when converting a document, whether it is loaded assuming the
 office process has access to the file on disk or not. If not, the conversion process will use stream adapters
 
-&nbsp;***Default***: LoadDocumentMode.AUTO
+&#160;***Default***: LoadDocumentMode.AUTO
 
-#### loadProperty(String, Object) / loadProperties(Map<String, Object>)
+#### `loadProperty(String, Object)` / `loadProperties(Map<String, Object>)`
 
 This property specifies a property, for this converter, that will be applied when a document is loaded during a
 conversion task, regardless of the input format of the document.
@@ -80,7 +80,7 @@ the `loadProperty(String, Object)` or `loadProperties(Map)` are put in the map.
 Any property set here will override the property with the same name from the input document format or the default load
 properties.
 
-#### storeProperty(String, Object) / storeProperties(Map<String, Object>)
+#### `storeProperty(String, Object)` / `storeProperties(Map<String, Object>)`
 
 This property specifies a property, for this converter, that will be applied when a document is stored during a
 conversion task, regardless of the output format of the document.
@@ -96,7 +96,7 @@ before the conversion (after it has been loaded). Filters are applied in the sam
 Notes:
 
 - Load and store property keys/values are UNO properties understood by LibreOffice. Valid keys and values vary by format
-  and LO version.
+    and LO version.
 - For PDF export, common options are provided via the PDF export filter (e.g., SelectPdfVersion, ExportBookmarks, etc.).
 
 --8<-- "note.md"

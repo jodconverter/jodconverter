@@ -6,5 +6,5 @@
 
 ### **Implemented enhancements**
 
-- Add support for named pipe in spring boot [\#431](https://github.com/jodconverter/jodconverter/issues/431)
-- `officeManager.isRunning\(\)` is meaningless with asynchronous process management [\#428](https://github.com/jodconverter/jodconverter/issues/428)
+- Add support for named pipe in spring boot [#431](https://github.com/jodconverter/jodconverter/issues/431)
+- `officeManager.isRunning\(\)` is meaningless with asynchronous process management [#428](https://github.com/jodconverter/jodconverter/issues/428)

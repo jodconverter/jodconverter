@@ -16,11 +16,11 @@ Here are all the properties you can set through the builder:
 
     **JODConverter** uses milliseconds for all time values.
 
-#### &#8986;`poolSize`
+#### ⌚`poolSize`
 
-This property sets the size of the pool. Setting this property controls how many conversions can be done concurrently. 
+This property sets the size of the pool. Setting this property controls how many conversions can be done concurrently.
 
-&nbsp;***Default***: 1
+&#160;***Default***: 1
 
 === "Java"
 
@@ -39,7 +39,7 @@ This property sets the size of the pool. Setting this property controls how many
       remote:
         pool-size: 1
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.pool-size = 1
     ```
@@ -48,13 +48,12 @@ This property sets the size of the pool. Setting this property controls how many
 
     `poolSize` can't be set with the command line tool, it will always be 1.
 
-
-#### &#128193;`workingDir`
+#### 📁`workingDir`
 
 This property is used to create a temporary directory where files will be created when conversions are done
 using InputStream/OutputStream.
 
-&nbsp;***Default***: The system temporary directory as specified by the `java.io.tmpdir` system property.
+&#160;***Default***: The system temporary directory as specified by the `java.io.tmpdir` system property.
 
 **NOTE** that
 [some OS automatically clean up the `java.io.tmpdir` directory periodically](https://github.com/jodconverter/jodconverter/issues/220).
@@ -77,7 +76,7 @@ It is recommended to check your OS to see if you have to set this property to a 
       remote:
         working-dir: "C:/jodconverter/tmp"
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.working-dir = "C:/jodconverter/tmp"
     ```
@@ -87,12 +86,14 @@ It is recommended to check your OS to see if you have to set this property to a 
     ```shell title="short option"
     jodconverter-cli -c "https://localhost:8001" -w "C:/jodconverter/tmp" timeout infile outfile
     ```
+
     or
+
     ```shell title="long option"
     jodconverter-cli --connection-url "https://localhost:8001" --wirking-dir "C:/jodconverter/tmp" timeout infile outfile
     ```
 
-#### &#128193;`urlConnection`
+#### 📁`urlConnection`
 
 This property sets the URL of the remote server.
 
@@ -113,7 +114,7 @@ This property sets the URL of the remote server.
       remote:
         url: "https://localhost:8001"
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.url = "https://localhost:8001"
     ```
@@ -123,17 +124,19 @@ This property sets the URL of the remote server.
     ```shell title="short option"
     jodconverter-cli -c "https://localhost:8001" infile outfile
     ```
+
     or
+
     ```shell title="long option"
     jodconverter-cli --connection-url "https://localhost:8001" infile outfile
     ```
 
-#### &#8986;`connectTimeout`
+#### ⌚`connectTimeout`
 
 This property sets the timeout in milliseconds until a connection is established. A timeout value of zero is
 interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
 
-&nbsp;***Default***: 60000 (1 minute)
+&#160;***Default***: 60000 (1 minute)
 
 === "Java"
 
@@ -152,7 +155,7 @@ interpreted as an infinite timeout. A negative value is interpreted as undefined
       remote:
         connect-timeout: 120000
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.connect-timeout = 120000
     ```
@@ -161,13 +164,13 @@ interpreted as an infinite timeout. A negative value is interpreted as undefined
 
     `connectTimeout` can't be set with the command line tool, it will always be 60000.
 
-#### &#8986;`socketTimeout`
+#### ⌚`socketTimeout`
 
 This property sets the socket timeout `SO_TIMEOUT` in milliseconds, which is the timeout for waiting for data or,
 to put differently, a maximum period inactivity between two consecutive data packets. A timeout value of zero is
 interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
 
-&nbsp;***Default***: 120000 (2 minutes)
+&#160;***Default***: 120000 (2 minutes)
 
 === "Java"
 
@@ -195,7 +198,7 @@ interpreted as an infinite timeout. A negative value is interpreted as undefined
 
     `socketTimeout` can't be set with the command line tool, it will always be 120000.
 
-#### &#128274;`sslConfig`
+#### 🔒`sslConfig`
 
 This property controls the SSL configuration to secure communication with the remote server
 
@@ -206,7 +209,7 @@ This property controls the SSL configuration to secure communication with the re
     sslConfig.setEnabled(true);
     sslConfig.setTrustStore("Path to the TrustStore");
     sslConfig.setTrustStorePassword("Password of the TrustStore");
-    
+
     OfficeManager officeManager =
         RemoteOfficeManager
             .builder()
@@ -236,7 +239,7 @@ This property controls the SSL configuration to secure communication with the re
           protocol: TLS
           verify-hostname: true
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.ssl.enabled = true
     jodconverter.remote.ssl.ciphers = TLS_RSA_WITH_AES_128_CBC_SHA
@@ -260,13 +263,13 @@ This property controls the SSL configuration to secure communication with the re
     When JODConverter remote is used as a Command Line Tool, you must provide the SSL configuration through an
     application context configuration file, which is the **`-a`** or **`--application-context`**. Here's an example of
     an SSL configuration file.
-    
+
     ```xml title="ssl.xml"
     <?xml version="1.0" encoding="UTF-8"?>
     <beans xmlns="http://www.springframework.org/schema/beans"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-    
+
         <!-- Configure the SSL to secure communication with a Libre Office Online server. -->
         <bean class="org.jodconverter.ssl.SslConfig">
             <!-- Indicates whether SSL support is enabled or not. -->
@@ -308,17 +311,19 @@ This property controls the SSL configuration to secure communication with the re
     ```shell title="short option"
     jodconverter-cli -c "https://localhost:8001" -a ssl.xml timeout infile outfile
     ```
+
     or
+
     ```shell title="long option"
     jodconverter-cli --connection-url "https://localhost:8001" --application-context ssl.xml timeout infile outfile
     ```
 
-#### &#128290;`maxTasksPerConnection`
+#### 🔢`maxTasksPerConnection`
 
 This property sets the maximum number of tasks an office process can execute before reconnecting to it. 0 means an
 infinite number of tasks (will never reconnect).
 
-&nbsp;***Default***: 1000
+&#160;***Default***: 1000
 
 === "Java"
 
@@ -337,7 +342,7 @@ infinite number of tasks (will never reconnect).
       remote:
         max-tasks-per-connection: 500
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.max-tasks-per-connection = 500
     ```
@@ -346,12 +351,12 @@ infinite number of tasks (will never reconnect).
 
     `maxTasksPerConnection` can't be set with the command line tool, it will always be 200.
 
-#### &#8986;`taskQueueTimeout`
+#### ⌚`taskQueueTimeout`
 
 This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
 the queue if the waiting time is longer than this timeout and an `OfficeException` will be thrown.
 
-&nbsp;***Default***: 30000 (30 seconds)
+&#160;***Default***: 30000 (30 seconds)
 
 === "Java"
 
@@ -370,7 +375,7 @@ the queue if the waiting time is longer than this timeout and an `OfficeExceptio
       remote:
         task-queue-timeout: 60000
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.task-queue-timeout = 60000
     ```
@@ -379,12 +384,12 @@ the queue if the waiting time is longer than this timeout and an `OfficeExceptio
 
     `taskQueueTimeout` can't be set with the command line tool, it will always be 30000.
 
-#### &#8986;`taskExecutionTimeout`
+#### ⌚`taskExecutionTimeout`
 
 This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
 timeout, this task will be aborted and the next task is processed.
 
-&nbsp;***Default***: 120000 (2 minutes)
+&#160;***Default***: 120000 (2 minutes)
 
 === "Java"
 
@@ -403,7 +408,7 @@ timeout, this task will be aborted and the next task is processed.
       remote:
         task-execution-timeout: 60000
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.task-execution-timeout = 60000
     ```
@@ -413,7 +418,9 @@ timeout, this task will be aborted and the next task is processed.
     ```shell title="short option"
     jodconverter-cli -c "https://localhost:8001" -t 60000 infile outfile
     ```
+
     or
+
     ```shell title="long option"
     jodconverter-cli --connection-url "https://localhost:8001" --timeout 60000 infile outfile
     ```

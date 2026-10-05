@@ -50,9 +50,9 @@ class: hide-toc
 
     By default, JODConverter will start a single office instance, listening for conversion request on port 2002. In
     order to process more than 1 conversion at the time, you must start multiple office instances.
-    
+
     This behavior can be achieved using the portNumbers configuration:
-    
+
     ```java
     // This example will use 4 TCP ports, which will cause
     // JODConverter to start 4 office processes when the
@@ -63,7 +63,7 @@ class: hide-toc
             .portNumbers(2002, 2003, 2004, 2005)
             .build();
     ```
-    
+
     The example above shows how to start an office manager that would be able to process 4 conversions at the time.
     Note that the more office process you start, the more RAM will be consumed by LibreOffice or Apache OpenOffice.
 
@@ -80,20 +80,20 @@ class: hide-toc
     ```
 
     With older versions, you must set 2 filter properties, `EncryptFile` and `DocumentOpenPassword`.
-    
+
     Here's how this could be done:
-    
+
     ```java
     File inputFile = new File("document.doc");
     File outputFile = new File("document.pdf");
-    
+
     Map<String, Object> filterData = new HashMap<>();
     filterData.put("EncryptFile",true);
     filterData.put("DocumentOpenPassword","test");
-    
+
     Map<String, Object> customProperties = new HashMap<>();
     customProperties.put("FilterData",filterData);
-    
+
     LocalConverter
         .builder()
         .storeProperties(customProperties)
@@ -102,21 +102,21 @@ class: hide-toc
         .to(outputFile)
         .execute();
     ```
-    
+
     OR
-    
+
     ```java
     Map<String, Object> filterData = new HashMap<>();
     filterData.put("EncryptFile",true);
     filterData.put("DocumentOpenPassword","test");
-    
+
     DocumentFormat format =
         DocumentFormat
             .builder()
             .from(DefaultDocumentFormatRegistry.PDF)
             .storeProperty(DocumentFamily.TEXT, "FilterData", filterData)
             .build();
-    
+
     JodConverter
         .convert(source)
         .to(target)
@@ -127,19 +127,19 @@ class: hide-toc
 ??? question "How could I specify the password of a password-protected file (input file) to convert?"
 
     If you want to be able to convert a password-protected file, you must set the `Password` load property.
-    
+
     Here's how this could be done:
-    
+
     ```java
     final File in = new File("path_to_password_protected_file");
     final File out = new File("path_to_output_file");
-    
+
     final OfficeManager manager = LocalOfficeManager.builder().startFailFast(true).build();
     try{
         manager.start();
         Map<String, Object> loadProperties = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
         loadProperties.put("Password","myPassword");
-      
+
         LocalConverter
             .builder()
             .officeManager(manager)
@@ -148,7 +148,7 @@ class: hide-toc
             .convert(in)
             .to(out)
             .execute();
-        
+
     } catch(Exception e) {
         e.printStackTrace();
     } finally {
@@ -204,8 +204,7 @@ class: hide-toc
 ??? question "Zombie processes (`<defunct>`) pile up in my container. Why?"
 
     The helper processes of LibreOffice are re-parented to process 1 of the container when an office process stops.
-    If process 1 is your Java application, nobody reaps them. Run the container with an init process (`docker run
-    --init`, `init: true` in Docker Compose, or tini); see
+    If process 1 is your Java application, nobody reaps them. Run the container with an init process (`docker run --init`, `init: true` in Docker Compose, or tini); see
     [Use an init process](getting-started/containers.md#use-an-init-process).
 
 ??? question "A conversion sometimes fails with `Task did not complete within timeout`. What happens?"

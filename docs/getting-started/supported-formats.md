@@ -96,12 +96,11 @@ the conversion does not work. All conversions supported by your OOo installation
         </td>
     </tr>
 </table>
-  
-&nbsp;
+
 > 1. HTML can be used as an input format but you should not expect OOo to properly render complex web pages as Chrome or
-     IE do. Works reasonably well for simple and "printer friendly" web pages only.
+>     IE do. Works reasonably well for simple and "printer friendly" web pages only.
 > 2. HTML can be used as an output format but while all other formats always generate a single output file, HTML can
-     produce multiple files. In addition to the HTML file in fact, any images contained in the input document will also
-     be saved in the same directory. This requires extra care in your code, especially in a web environment.
+>     produce multiple files. In addition to the HTML file in fact, any images contained in the input document will also
+>     be saved in the same directory. This requires extra care in your code, especially in a web environment.
 
 --8<-- "note.md"
