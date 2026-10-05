@@ -19,6 +19,7 @@ nav = [
       { "All Releases" = "release-notes/index.md" },
     ] },
     { "Migration Guides" = [
+      { "Migration 5.0.0" = "migration-guides/migration-guide-5.0.0.md" },
       { "Migration 4.4.11" = "migration-guides/migration-guide-4.4.11.md" },
       { "Migration 4.4.10" = "migration-guides/migration-guide-4.4.10.md" },
       { "Migration 4.4.9" = "migration-guides/migration-guide-4.4.9.md" },
