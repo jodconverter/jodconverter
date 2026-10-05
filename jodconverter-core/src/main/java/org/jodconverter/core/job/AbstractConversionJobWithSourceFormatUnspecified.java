@@ -22,6 +22,7 @@ package org.jodconverter.core.job;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -47,6 +48,8 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   protected final AbstractSourceDocumentSpecs source;
   protected final OfficeManager officeManager;
   protected final DocumentFormatRegistry formatRegistry;
+
+  private List<TargetOptions> defaultTargetOptions = List.of();
 
   protected AbstractConversionJobWithSourceFormatUnspecified(
       final @NonNull AbstractSourceDocumentSpecs source,
@@ -116,6 +119,17 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
     // No need to validate that the source format is provided. We will let
     // OOo deal with the detection of the source file format.
 
-    return to(target);
+    final AbstractConversionJob job = to(target);
+    job.setDefaultTargetOptions(defaultTargetOptions);
+    return job;
+  }
+
+  /**
+   * Sets the options of the converter to apply when the conversion has no options of its own.
+   *
+   * @param defaultTargetOptions The default options.
+   */
+  /* default */ void setDefaultTargetOptions(final List<TargetOptions> defaultTargetOptions) {
+    this.defaultTargetOptions = defaultTargetOptions;
   }
 }

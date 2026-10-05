@@ -21,6 +21,7 @@
 package org.jodconverter.boot.autoconfigure;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
@@ -92,8 +94,14 @@ public class JodConverterRemoteAutoConfiguration {
   // The qualifier is required when the local office manager also exists: since Spring 6.1, a
   // parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter remoteDocumentConverter(
-      final @Qualifier("remoteOfficeManager") OfficeManager remoteOfficeManager) {
+      final @Qualifier("remoteOfficeManager") OfficeManager remoteOfficeManager,
+      final ObjectProvider<PdfOptions> pdfOptions) {
 
-    return RemoteConverter.make(remoteOfficeManager);
+    final RemoteConverter.Builder builder =
+        RemoteConverter.builder().officeManager(remoteOfficeManager);
+    // Apply the PDF options, from the jodconverter.pdf properties or from the application, to
+    // all the conversions to PDF.
+    pdfOptions.ifUnique(builder::defaultTargetOptions);
+    return builder.build();
   }
 }

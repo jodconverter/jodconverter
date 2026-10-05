@@ -21,6 +21,7 @@
 package org.jodconverter.local;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
@@ -124,8 +125,9 @@ public final class LocalConverter extends AbstractConverter {
       final LoadDocumentMode loadDocumentMode,
       final Map<String, Object> loadProperties,
       final Map<String, Object> storeProperties,
-      final FilterChain filterChain) {
-    super(officeManager, formatRegistry);
+      final FilterChain filterChain,
+      final List<TargetOptions> defaultTargetOptions) {
+    super(officeManager, formatRegistry, defaultTargetOptions);
 
     this.loadDocumentMode = loadDocumentMode;
     this.loadProperties = loadProperties;
@@ -230,7 +232,8 @@ public final class LocalConverter extends AbstractConverter {
           loadDocumentMode,
           loadProperties,
           storeProperties,
-          filterChain);
+          filterChain,
+          defaultTargetOptions);
     }
 
     /**
