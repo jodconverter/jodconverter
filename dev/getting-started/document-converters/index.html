@@ -1179,6 +1179,8 @@
       
         
       
+        
+      
     
     
     
@@ -1450,6 +1452,33 @@
     
   
   Using Filters
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pdf-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  PDF Options
 
     
   </span>
@@ -2590,7 +2619,18 @@ execution.</p>
 <span class="w">      </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 <span class="p">}</span>
 </code></pre></div>
-<p><strong>4)</strong> Applying save options and filters (<code>LocalConverter</code>).</p>
+<p><strong>4)</strong> Converting to PDF with <a href="../pdf-options/">PDF options</a>.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.io.File</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.pdf.PdfOptions</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.pdf.PdfVersion</span><span class="p">;</span>
+
+<span class="n">converter</span>
+<span class="w">    </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"in.odt"</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"out.pdf"</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">version</span><span class="p">(</span><span class="n">PdfVersion</span><span class="p">.</span><span class="na">PDF_A_2B</span><span class="p">).</span><span class="na">tagged</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">())</span>
+<span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p><strong>5)</strong> Applying save options and filters (<code>LocalConverter</code>).</p>
 <div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.io.File</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.util.HashMap</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Map</span><span class="p">;</span>
@@ -2599,9 +2639,7 @@ execution.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.local.filter.RefreshFilter</span><span class="p">;</span>
 
 <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pdfOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="c1">// Example of a well-known option key for LO: embed standard fonts, etc.</span>
-<span class="n">pdfOptions</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"SelectPdfVersion"</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// PDF/A-1 (value may differ by LO version)</span>
-<span class="n">pdfOptions</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"EmbedStandardFonts"</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="n">pdfOptions</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"SelectPdfVersion"</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// PDF/A-1</span>
 
 <span class="n">LocalConverter</span>
 <span class="w">    </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>

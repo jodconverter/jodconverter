@@ -1172,6 +1172,8 @@
       
         
       
+        
+      
     
     
     
@@ -1319,6 +1321,33 @@
     
   
   Using Filters
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/pdf-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  PDF Options
 
     
   </span>
@@ -2471,8 +2500,14 @@ Note that the more office process you start, the more RAM will be consumed by Li
 </details>
 <details class="question">
 <summary>How could I set password protection when converting a file to PDF?</summary>
-<p>If you want to set password protection when converting to PDF, you must set 2 filter properties, <code>EncryptFile</code> and
-<code>DocumentOpenPassword</code>.</p>
+<p>Since JODConverter 5.0, use the <a href="../getting-started/pdf-options/#security-security">PDF options</a>:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">converter</span>
+<span class="w">    </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">inputFile</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">outputFile</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">security</span><span class="p">(</span><span class="n">security</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">security</span><span class="p">.</span><span class="na">openPassword</span><span class="p">(</span><span class="s">"test"</span><span class="p">)).</span><span class="na">build</span><span class="p">())</span>
+<span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p>With older versions, you must set 2 filter properties, <code>EncryptFile</code> and <code>DocumentOpenPassword</code>.</p>
 <p>Here's how this could be done:</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">File</span><span class="w"> </span><span class="n">inputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"document.doc"</span><span class="p">);</span>
 <span class="n">File</span><span class="w"> </span><span class="n">outputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"document.pdf"</span><span class="p">);</span>

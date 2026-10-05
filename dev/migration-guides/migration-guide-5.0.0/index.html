@@ -1488,6 +1488,8 @@
       
         
       
+        
+      
     
     
     
@@ -1635,6 +1637,33 @@
     
   
   Using Filters
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/pdf-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  PDF Options
 
     
   </span>
@@ -3016,6 +3045,9 @@ port numbers, pipe names or pool size, the office process uses port 2002.</p>
 columns wide.</p>
 <h2 id="new-features">New features<a class="headerlink" href="#new-features" title="Permanent link">&para;</a></h2>
 <ul>
+<li><a href="../../getting-started/pdf-options/"><code>PdfOptions</code></a>: typed options to convert to PDF (PDF/A, PDF/UA, images, page
+  range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
+  <code>with(...)</code> method: <code>converter.convert(source).to(target).with(PdfOptions.archive()).execute()</code>.</li>
 <li><a href="../../configuration/local-manager/"><code>poolSize</code></a>: start a number of office processes on free ports, without choosing
   them (<code>jodconverter.local.pool-size</code> with Spring Boot).</li>
 <li><a href="../../configuration/local-manager/"><code>officeExecutable</code></a>: start the office processes through a launcher, such as a

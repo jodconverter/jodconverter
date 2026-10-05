@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://jodconverter.github.io/jodconverter/latest/getting-started/performance/">
+        <link rel="canonical" href="https://jodconverter.github.io/jodconverter/latest/getting-started/pdf-options/">
       
       
-        <link rel="prev" href="../security/">
+        <link rel="prev" href="../using-filters/">
       
       
-        <link rel="next" href="../supported-formats/">
+        <link rel="next" href="../command-line-tool/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Performance - JODConverter</title>
+        <title>PDF Options - JODConverter</title>
       
     
     
@@ -83,7 +83,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#performance" class="md-skip">
+        <a href="#pdf-options" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Performance
+              PDF Options
             
           </span>
         </div>
@@ -1160,6 +1160,8 @@
                   
   
   
+    
+  
   
   
     
@@ -1186,11 +1188,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -1218,7 +1220,7 @@
           </div>
         
         
-          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
             <label class="md-nav__title" for="__nav_2_2">
               <span class="md-nav__icon md-icon"></span>
               
@@ -1342,10 +1344,36 @@
                   
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../pdf-options/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  PDF Options
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1360,6 +1388,253 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Presets
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-need-to-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        What you need to know
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Options
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        General
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#images-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Images: <code>images(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pages-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Pages: <code>pages(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comments-comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Comments: <code>comments(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bookmarks-bookmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Bookmarks: <code>bookmarks(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forms-forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Forms: <code>forms(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#links-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Links: <code>links(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-view-initialview" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Initial view: <code>initialView(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#viewer-window-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Viewer window: <code>viewer(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Security: <code>security(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watermark-watermark" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Watermark: <code>watermark(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#digital-signature-signature" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Digital signature: <code>signature(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#presentations-impress-presentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Presentations (Impress): <code>presentation(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spreadsheets-calc-spreadsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Spreadsheets (Calc): <code>spreadsheet(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#any-other-property" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Any other property
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-options-were-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        How the options were tested
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-versions-were-established" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        How the versions were established
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1513,19 +1788,10 @@
                   
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-        
-      
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../performance/" class="md-nav__link">
         
   
   
@@ -1540,7 +1806,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2278,6 +2543,11 @@
                       
                     
                     
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
                   
                   <div class="md-sidebar__inner">
                     
@@ -2289,6 +2559,240 @@
   
     
   
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Presets
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-need-to-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        What you need to know
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Options
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        General
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#images-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Images: <code>images(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pages-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Pages: <code>pages(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comments-comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Comments: <code>comments(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bookmarks-bookmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Bookmarks: <code>bookmarks(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forms-forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Forms: <code>forms(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#links-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Links: <code>links(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-view-initialview" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Initial view: <code>initialView(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#viewer-window-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Viewer window: <code>viewer(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Security: <code>security(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watermark-watermark" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Watermark: <code>watermark(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#digital-signature-signature" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Digital signature: <code>signature(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#presentations-impress-presentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Presentations (Impress): <code>presentation(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spreadsheets-calc-spreadsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Spreadsheets (Calc): <code>spreadsheet(...)</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#any-other-property" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Any other property
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-options-were-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        How the options were tested
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-versions-were-established" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        How the versions were established
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2307,65 +2811,658 @@
   
 
 
-<h1 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h1>
-<p>Conversion performance varies widely depending on the input document size and complexity, input and output formats etc.
-Since conversions are done by OOo, raw conversion time is not something that can be improved by <strong>JODConverter</strong>.</p>
-<p>Just to give an idea, the following table shows some benchmarks for converting different ODT documents to PDF:</p>
+<h1 id="pdf-options">PDF Options<a class="headerlink" href="#pdf-options" title="Permanent link">&para;</a></h1>
+<p><code>PdfOptions</code> sets the options of a conversion to PDF with plain Java methods, so you don't have to know the names and
+values of the <code>FilterData</code> properties of the office PDF export filter. It works with the local and the remote
+converters.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="c1">// A preset for the common cases</span>
+<span class="n">converter</span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">source</span><span class="p">).</span><span class="na">to</span><span class="p">(</span><span class="n">target</span><span class="p">).</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">archive</span><span class="p">()).</span><span class="na">execute</span><span class="p">();</span>
+
+<span class="c1">// Or built step by step</span>
+<span class="n">PdfOptions</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">version</span><span class="p">(</span><span class="n">PdfVersion</span><span class="p">.</span><span class="na">PDF_A_2B</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">tagged</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">images</span><span class="p">(</span><span class="n">images</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">images</span><span class="p">.</span><span class="na">jpegQuality</span><span class="p">(</span><span class="mi">85</span><span class="p">).</span><span class="na">maxResolution</span><span class="p">(</span><span class="mi">300</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">pages</span><span class="p">(</span><span class="n">pages</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">pages</span><span class="p">.</span><span class="na">range</span><span class="p">(</span><span class="s">"1-5"</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">watermark</span><span class="p">(</span><span class="n">watermark</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">watermark</span><span class="p">.</span><span class="na">text</span><span class="p">(</span><span class="s">"DRAFT"</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+<span class="n">converter</span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">source</span><span class="p">).</span><span class="na">to</span><span class="p">(</span><span class="n">target</span><span class="p">).</span><span class="na">with</span><span class="p">(</span><span class="n">options</span><span class="p">).</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p>The options apply to that conversion only. With a target that is not a PDF document, <code>execute()</code> throws an
+<code>IllegalArgumentException</code>. When the target is an <code>OutputStream</code>, give the format first:
+<code>.to(outputStream).as(DefaultDocumentFormatRegistry.PDF).with(options)</code>.</p>
+<h2 id="presets">Presets<a class="headerlink" href="#presets" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Document</th>
-<th>Size</th>
-<th>Pages</th>
-<th>Avg Time (ms)</th>
-<th>Throughput (per minute)</th>
+<th>Preset</th>
+<th>What it sets</th>
+<th>Requires</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Hello World!</td>
-<td>7 kb</td>
-<td>1 p</td>
-<td>98 ms</td>
-<td>612 p/m</td>
+<td><code>PdfOptions.archive()</code></td>
+<td>PDF/A-2b, tagged PDF, bookmarks, images compressed without loss</td>
+<td>LibreOffice 6.3+</td>
 </tr>
 <tr>
-<td><a href="http://www.oasis-open.org/committees/download.php/20492/UCR.odt">Metadata Use Cases and Requirements</a></td>
-<td>13 kb</td>
-<td>5 p</td>
-<td>710 ms</td>
-<td>422 p/m</td>
+<td><code>PdfOptions.accessible()</code></td>
+<td>PDF/UA, tagged PDF, bookmarks</td>
+<td>LibreOffice 7.0+</td>
 </tr>
 <tr>
-<td><a href="http://docs.oasis-open.org/office/office-accessibility/v1.0/cd01/ODF_Accessibility_Guidelines-v1.0.odt">Open Document Format v1.1 Accessibility Guidelines</a></td>
-<td>81 kb</td>
-<td>52 p</td>
-<td>2314 ms</td>
-<td>1348 p/m</td>
-</tr>
-<tr>
-<td><a href="http://docs.oasis-open.org/office/v1.1/OS/OpenDocument-v1.1.odt">OpenDocument v1.1 Specification</a></td>
-<td>475 kb</td>
-<td>737 p</td>
-<td>24084 ms</td>
-<td>1836 p/m</td>
+<td><code>PdfOptions.compact()</code></td>
+<td>Tagged PDF, images compressed as JPEG with a quality of 75 and reduced to 150 DPI</td>
+<td>any version</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>Tests made with jodconverter-cli and Apache OpenOffice 4.1.3 on a laptop with a quad-core Intel(R) Core(TM) i7-6500U
-CPU @ 2.50GHz processor and Windows 10</p>
-</blockquote>
-<p>In general, conversions to/from OpenDocument take less time than equivalent conversions involving other formats since
-OpenDocument is the native OOo format. (E.g., ODT to PDF is faster than DOC to PDF.) Other factors affecting performance
-include the presence of graphics, charts, and other objects in the document, macros etc.</p>
-<p>The bottom line is that you should make some benchmarks of your own - with documents of the types and complexities
-required by your application - to understand if the performance is adequate for your purposes, or if you need to throw
-more hardware at the problem.</p>
-<blockquote>
-<p>Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite
-derived from OOo such as <a href="https://www.openoffice.org">Apache OpenOffice</a> and <a href="https://www.libreoffice.org">LibreOffice</a>.</p>
-</blockquote>
+<p>A preset is a starting point: <code>PdfOptions.archive().toBuilder().pages(pages -&gt; pages.range("1-3")).build()</code>.</p>
+<h2 id="what-you-need-to-know">What you need to know<a class="headerlink" href="#what-you-need-to-know" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Options that are not set</p>
+<p>Without any option, the office installation exports with the PDF settings of its configuration, the ones of its
+PDF export dialog. As soon as <strong>one</strong> option is set, it no longer reads its configuration: every option that is
+not set takes the default value built into the export filter, which is not always the same.</p>
+<p>With LibreOffice 25.2 for example, a plain conversion produces a tagged PDF that opens with the bookmarks pane,
+and a conversion with only a page range produces a PDF that is not tagged and opens without that pane.
+According to the source code of the filter, the comments are then exported as PDF annotations as well.</p>
+<p>Set the options that matter for your documents explicitly; <code>tagged(true)</code> is the usual one.</p>
+</div>
+<ul>
+<li><strong>Only the options you set are sent.</strong> Empty options (<code>PdfOptions.builder().build()</code>) change nothing.</li>
+<li><strong>Office versions.</strong> An office installation silently ignores an option it does not know. The tables below give the
+  first version that supports each option, and the local converter logs a warning for each option the running office
+  is too old for. "all" means every LibreOffice version and Apache OpenOffice.</li>
+<li><strong>Invalid combinations.</strong> <code>build()</code> throws an <code>IllegalArgumentException</code> for options that cannot work together: a
+  password with a PDF/A version (the office would silently produce a document that is not encrypted), a permission
+  without a permission password, PDF/UA with <code>tagged(false)</code>, or signature details without a certificate.</li>
+<li><strong>Precedence.</strong> The options are merged into the <code>FilterData</code> set on the target format and on the converter, and
+  win when both set the same property.</li>
+<li><strong>Remote conversions.</strong> The options are sent as request parameters, like the other store properties. Only servers
+  that support custom properties, such as the JODConverter sample REST service, use them; LibreOffice Online and
+  Collabora ignore them. Passwords are then part of the request URL, so prefer a local conversion for them.</li>
+</ul>
+<h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
+<h3 id="general">General<a class="headerlink" href="#general" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version(PdfVersion)</code></td>
+<td><code>SelectPdfVersion</code></td>
+<td>see below</td>
+</tr>
+<tr>
+<td><code>pdfUa(boolean)</code></td>
+<td><code>PDFUACompliance</code></td>
+<td>LibreOffice 7.0+</td>
+</tr>
+<tr>
+<td><code>tagged(boolean)</code></td>
+<td><code>UseTaggedPDF</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>embedSourceDocument(boolean)</code></td>
+<td><code>IsAddStream</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>referenceXObjects(boolean)</code></td>
+<td><code>UseReferenceXObject</code></td>
+<td>LibreOffice 5.4+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><code>PdfVersion</code></th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DEFAULT</code></td>
+<td>all. PDF 1.7 since LibreOffice 7.6, 1.6 from 7.0 to 7.5, 1.5 from 6.1 to 6.4, 1.4 before and in OpenOffice</td>
+</tr>
+<tr>
+<td><code>PDF_1_5</code></td>
+<td>LibreOffice 7.0+</td>
+</tr>
+<tr>
+<td><code>PDF_1_6</code></td>
+<td>LibreOffice 6.2+</td>
+</tr>
+<tr>
+<td><code>PDF_1_7</code></td>
+<td>LibreOffice 7.5+</td>
+</tr>
+<tr>
+<td><code>PDF_2_0</code></td>
+<td>LibreOffice 25.2+</td>
+</tr>
+<tr>
+<td><code>PDF_A_1B</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>PDF_A_2B</code></td>
+<td>LibreOffice 6.3+</td>
+</tr>
+<tr>
+<td><code>PDF_A_3B</code></td>
+<td>LibreOffice 7.0+</td>
+</tr>
+<tr>
+<td><code>PDF_A_4</code></td>
+<td>LibreOffice 25.2+</td>
+</tr>
+</tbody>
+</table>
+<p>An office installation that does not know a version produces its default PDF version instead.</p>
+<h3 id="images-images">Images: <code>images(...)</code><a class="headerlink" href="#images-images" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lossless(boolean)</code></td>
+<td><code>UseLosslessCompression</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>jpegQuality(int)</code></td>
+<td><code>Quality</code>, from 1 to 100</td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>reduceResolution(boolean)</code></td>
+<td><code>ReduceImageResolution</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>maxResolution(int)</code></td>
+<td><code>MaxImageResolution</code>, in DPI; also sets <code>ReduceImageResolution</code></td>
+<td>all</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pages-pages">Pages: <code>pages(...)</code><a class="headerlink" href="#pages-pages" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>range(String)</code></td>
+<td><code>PageRange</code>, such as <code>"1-3;7"</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>skipEmptyPages(boolean)</code></td>
+<td><code>IsSkipEmptyPages</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>placeholders(boolean)</code></td>
+<td><code>ExportPlaceholders</code></td>
+<td>LibreOffice 5.1+</td>
+</tr>
+<tr>
+<td><code>trackedChanges(boolean)</code></td>
+<td><code>ExportTrackedChanges</code></td>
+<td>LibreOffice 26.2+</td>
+</tr>
+</tbody>
+</table>
+<h3 id="comments-comments">Comments: <code>comments(...)</code><a class="headerlink" href="#comments-comments" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>asPdfAnnotations(boolean)</code></td>
+<td><code>ExportNotes</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>inMargin(boolean)</code></td>
+<td><code>ExportNotesInMargin</code></td>
+<td>LibreOffice 7.5+</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bookmarks-bookmarks">Bookmarks: <code>bookmarks(...)</code><a class="headerlink" href="#bookmarks-bookmarks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>export(boolean)</code></td>
+<td><code>ExportBookmarks</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>openLevels(int)</code></td>
+<td><code>OpenBookmarkLevels</code>, -1 for all</td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>asNamedDestinations(boolean)</code></td>
+<td><code>ExportBookmarksToPDFDestination</code></td>
+<td>all</td>
+</tr>
+</tbody>
+</table>
+<h3 id="forms-forms">Forms: <code>forms(...)</code><a class="headerlink" href="#forms-forms" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>export(boolean)</code></td>
+<td><code>ExportFormFields</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>submitFormat(SubmitFormat)</code></td>
+<td><code>FormsType</code>: <code>FDF</code>, <code>PDF</code>, <code>HTML</code> or <code>XML</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>allowDuplicateNames(boolean)</code></td>
+<td><code>AllowDuplicateFieldNames</code></td>
+<td>all</td>
+</tr>
+</tbody>
+</table>
+<h3 id="links-links">Links: <code>links(...)</code><a class="headerlink" href="#links-links" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>relativeFileLinks(boolean)</code></td>
+<td><code>ExportLinksRelativeFsys</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>convertOdfTargetsToPdf(boolean)</code></td>
+<td><code>ConvertOOoTargetToPDFTarget</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>crossDocumentLinks(LinkTarget)</code></td>
+<td><code>PDFViewSelection</code>: <code>DEFAULT</code>, <code>PDF_READER</code> or <code>BROWSER</code></td>
+<td>all</td>
+</tr>
+</tbody>
+</table>
+<h3 id="initial-view-initialview">Initial view: <code>initialView(...)</code><a class="headerlink" href="#initial-view-initialview" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pane(Pane)</code></td>
+<td><code>InitialView</code>: <code>NONE</code>, <code>BOOKMARKS</code> or <code>THUMBNAILS</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>page(int)</code></td>
+<td><code>InitialPage</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>magnification(Magnification)</code></td>
+<td><code>Magnification</code>: <code>DEFAULT</code>, <code>FIT_PAGE</code>, <code>FIT_WIDTH</code> or <code>FIT_VISIBLE</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>zoom(int)</code></td>
+<td><code>Zoom</code>, in percent; also sets <code>Magnification</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>layout(PageLayout)</code></td>
+<td><code>PageLayout</code>: <code>DEFAULT</code>, <code>SINGLE_PAGE</code>, <code>CONTINUOUS</code> or <code>CONTINUOUS_FACING</code></td>
+<td>all</td>
+</tr>
+</tbody>
+</table>
+<h3 id="viewer-window-viewer">Viewer window: <code>viewer(...)</code><a class="headerlink" href="#viewer-window-viewer" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resizeToInitialPage(boolean)</code></td>
+<td><code>ResizeWindowToInitialPage</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>centerWindow(boolean)</code></td>
+<td><code>CenterWindow</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>fullScreen(boolean)</code></td>
+<td><code>OpenInFullScreenMode</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>displayDocumentTitle(boolean)</code></td>
+<td><code>DisplayPDFDocumentTitle</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>hideMenubar(boolean)</code></td>
+<td><code>HideViewerMenubar</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>hideToolbar(boolean)</code></td>
+<td><code>HideViewerToolbar</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>hideWindowControls(boolean)</code></td>
+<td><code>HideViewerWindowControls</code></td>
+<td>all</td>
+</tr>
+</tbody>
+</table>
+<h3 id="security-security">Security: <code>security(...)</code><a class="headerlink" href="#security-security" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>openPassword(String)</code></td>
+<td><code>EncryptFile</code> and <code>DocumentOpenPassword</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>permissionPassword(String)</code></td>
+<td><code>RestrictPermissions</code> and <code>PermissionPassword</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>printing(Printing)</code></td>
+<td><code>Printing</code>: <code>NONE</code>, <code>LOW_RESOLUTION</code> or <code>HIGH_RESOLUTION</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>changes(Changes)</code></td>
+<td><code>Changes</code>: <code>NONE</code>, <code>PAGES</code>, <code>FORMS</code>, <code>FORMS_AND_COMMENTS</code> or <code>ALL_EXCEPT_EXTRACTION</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>copying(boolean)</code></td>
+<td><code>EnableCopyingOfContent</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>accessibilityAccess(boolean)</code></td>
+<td><code>EnableTextAccessForAccessibilityTools</code></td>
+<td>all</td>
+</tr>
+</tbody>
+</table>
+<p>The permissions (the last four options) require a permission password. PDF/A does not allow encryption.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">security</span><span class="p">(</span><span class="n">security</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">security</span>
+<span class="w">        </span><span class="p">.</span><span class="na">openPassword</span><span class="p">(</span><span class="s">"to-open"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">permissionPassword</span><span class="p">(</span><span class="s">"to-change-permissions"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">printing</span><span class="p">(</span><span class="n">Printing</span><span class="p">.</span><span class="na">LOW_RESOLUTION</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">copying</span><span class="p">(</span><span class="kc">false</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="watermark-watermark">Watermark: <code>watermark(...)</code><a class="headerlink" href="#watermark-watermark" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text(String)</code></td>
+<td><code>Watermark</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>tiledText(String)</code></td>
+<td><code>TiledWatermark</code></td>
+<td>LibreOffice 6.3+</td>
+</tr>
+<tr>
+<td><code>color(int)</code></td>
+<td><code>WatermarkColor</code>, an RGB value such as <code>0xFF0000</code></td>
+<td>LibreOffice 7.4+</td>
+</tr>
+<tr>
+<td><code>fontName(String)</code></td>
+<td><code>WatermarkFontName</code></td>
+<td>LibreOffice 7.4+</td>
+</tr>
+<tr>
+<td><code>fontHeight(int)</code></td>
+<td><code>WatermarkFontHeight</code>, in points</td>
+<td>LibreOffice 7.4+</td>
+</tr>
+<tr>
+<td><code>rotation(int)</code></td>
+<td><code>WatermarkRotateAngle</code>, given in degrees</td>
+<td>LibreOffice 7.4+</td>
+</tr>
+</tbody>
+</table>
+<h3 id="digital-signature-signature">Digital signature: <code>signature(...)</code><a class="headerlink" href="#digital-signature-signature" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>certificateSubjectName(String)</code></td>
+<td><code>SignPDF</code> and <code>SignCertificateSubjectName</code></td>
+<td>LibreOffice 7.4+</td>
+</tr>
+<tr>
+<td><code>certificatePem(String, String)</code></td>
+<td><code>SignPDF</code>, <code>SignCertificateCertPem</code> and <code>SignCertificateKeyPem</code></td>
+<td>LibreOffice 25.2+</td>
+</tr>
+<tr>
+<td><code>caPem(String)</code></td>
+<td><code>SignCertificateCaPem</code></td>
+<td>LibreOffice 25.2+</td>
+</tr>
+<tr>
+<td><code>password(String)</code></td>
+<td><code>SignaturePassword</code></td>
+<td>LibreOffice 4.0+</td>
+</tr>
+<tr>
+<td><code>location(String)</code></td>
+<td><code>SignatureLocation</code></td>
+<td>LibreOffice 4.0+</td>
+</tr>
+<tr>
+<td><code>reason(String)</code></td>
+<td><code>SignatureReason</code></td>
+<td>LibreOffice 4.0+</td>
+</tr>
+<tr>
+<td><code>contactInfo(String)</code></td>
+<td><code>SignatureContactInfo</code></td>
+<td>LibreOffice 4.0+</td>
+</tr>
+<tr>
+<td><code>timestampAuthority(String)</code></td>
+<td><code>SignatureTSA</code></td>
+<td>LibreOffice 5.0+</td>
+</tr>
+</tbody>
+</table>
+<p><code>certificateSubjectName</code> takes the certificate, by its subject name such as <code>"CN=My Company"</code>, from the certificate
+store used by the office installation: the Windows certificate store on Windows, an NSS database on Linux (the
+<code>MOZILLA_CERTIFICATE_FOLDER</code> environment variable of the office process can point to it). <code>certificatePem</code> needs no
+certificate store. When the certificate cannot be found or used, the conversion fails with an <code>OfficeException</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Limitations of LibreOffice when signing</p>
+<ul>
+<li><strong>On Linux, an office process can only sign if its first PDF export is a signed one</strong> (observed with
+  LibreOffice 26.2). Once it has exported a PDF without signature, every signed export fails until the process is
+  restarted. Use an office manager dedicated to the signed conversions.</li>
+<li><strong>On Windows, a PEM certificate cannot be used</strong> (observed with LibreOffice 25.2 and 26.2): the conversion
+  fails. Use <code>certificateSubjectName</code> with a certificate of the Windows certificate store.</li>
+</ul>
+</div>
+<p>LibreOffice versions older than 7.4 can only sign with a certificate object given through the <code>SignatureCertificate</code>
+property; set it with <code>filterData("SignatureCertificate", certificate)</code> and <code>filterData("SignPDF", true)</code>.</p>
+<h3 id="presentations-impress-presentation">Presentations (Impress): <code>presentation(...)</code><a class="headerlink" href="#presentations-impress-presentation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hiddenSlides(boolean)</code></td>
+<td><code>ExportHiddenSlides</code></td>
+<td>all LibreOffice versions, not OpenOffice</td>
+</tr>
+<tr>
+<td><code>notesPages(boolean)</code></td>
+<td><code>ExportNotesPages</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>onlyNotesPages(boolean)</code></td>
+<td><code>ExportOnlyNotesPages</code></td>
+<td>LibreOffice 5.2+</td>
+</tr>
+<tr>
+<td><code>transitions(boolean)</code></td>
+<td><code>UseTransitionEffects</code></td>
+<td>all</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spreadsheets-calc-spreadsheet">Spreadsheets (Calc): <code>spreadsheet(...)</code><a class="headerlink" href="#spreadsheets-calc-spreadsheet" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>FilterData</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>singlePageSheets(boolean)</code></td>
+<td><code>SinglePageSheets</code></td>
+<td>LibreOffice 6.4+</td>
+</tr>
+<tr>
+<td><code>sheetRange(String)</code></td>
+<td><code>SheetRange</code>, sheet positions such as <code>"1-3"</code></td>
+<td>LibreOffice 24.8+</td>
+</tr>
+</tbody>
+</table>
+<p>LibreOffice ignores <code>sheetRange</code> when <code>singlePageSheets</code> is set.</p>
+<h3 id="any-other-property">Any other property<a class="headerlink" href="#any-other-property" title="Permanent link">&para;</a></h3>
+<p><code>filterData(name, value)</code> sets any <code>FilterData</code> property that has no dedicated method. These properties are applied
+last and are not validated.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">filterData</span><span class="p">(</span><span class="s">"ExportNotesInMargin"</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h2 id="how-the-options-were-tested">How the options were tested<a class="headerlink" href="#how-the-options-were-tested" title="Permanent link">&para;</a></h2>
+<p>Each option was converted with a real office installation, and the PDF document it produced was inspected (document
+catalog, encryption permissions, annotations, form fields, images, page content, signature) to check that the option
+had its effect:</p>
+<ul>
+<li><strong>LibreOffice 25.2.7 and 26.2.6 on Windows:</strong> every option, except the digital signature.</li>
+<li><strong>LibreOffice 26.2.6 on Linux:</strong> the digital signature, by subject name and with a PEM certificate, with its
+  location, reason and contact information.</li>
+<li><strong>Not tested:</strong> the <code>password</code> and <code>timestampAuthority</code> options of the signature, the effect of <code>caPem</code>, and the
+  signature by subject name on Windows. No option was tested with Apache OpenOffice or with LibreOffice versions
+  older than 25.2.</li>
+</ul>
+<p>The integration tests of JODConverter repeat these checks at each build, except for the digital signature, with the
+office installed on the build machine.</p>
+<p>One option of the export filter is not offered: <code>FirstPageOnLeft</code>. Every version of LibreOffice and OpenOffice reads
+it and then discards it, so it never has any effect.</p>
+<h2 id="how-the-versions-were-established">How the versions were established<a class="headerlink" href="#how-the-versions-were-established" title="Permanent link">&para;</a></h2>
+<p>The "Requires" columns come from the source code of the PDF export filter (<code>filter/source/pdf/pdfexport.cxx</code>) of
+every LibreOffice release branch from 3.5 to 26.8, and of Apache OpenOffice 4.1: an option requires the first version
+whose filter reads it. This tells when an option started to exist, not how well it worked at the time.</p>
 
 
 
@@ -2397,7 +3494,7 @@ derived from OOo such as <a href="https://www.openoffice.org">Apache OpenOffice<
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../security/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Security">
+          <a href="../using-filters/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Using Filters">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
@@ -2407,20 +3504,20 @@ derived from OOo such as <a href="https://www.openoffice.org">Apache OpenOffice<
                 Previous
               </span>
               <div class="md-ellipsis">
-                Security
+                Using Filters
               </div>
             </div>
           </a>
         
         
           
-          <a href="../supported-formats/" class="md-footer__link md-footer__link--next" aria-label="Next: Supported Formats">
+          <a href="../command-line-tool/" class="md-footer__link md-footer__link--next" aria-label="Next: Command Line Tool">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Supported Formats
+                Command Line Tool
               </div>
             </div>
             <div class="md-footer__button md-icon">
