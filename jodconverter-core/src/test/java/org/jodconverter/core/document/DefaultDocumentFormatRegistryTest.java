@@ -34,6 +34,7 @@ import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.FODT;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.GIF;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.HTML;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.JPEG;
+import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.MARKDOWN;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODG;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODP;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODS;
@@ -113,6 +114,7 @@ class DefaultDocumentFormatRegistryTest {
           "xhtml",
           "rtf",
           "txt",
+          "md",
           "sxw",
           "pdf",
           "jpg",
@@ -209,6 +211,8 @@ class DefaultDocumentFormatRegistryTest {
       assertByExt(ass, "rtf", RTF);
       assertByExt(ass, "wpd", WPD);
       assertByExt(ass, "txt", TXT);
+      assertByExt(ass, "md", MARKDOWN);
+      assertByExt(ass, "markdown", MARKDOWN);
       assertByExt(ass, "ods", ODS);
       assertByExt(ass, "ots", OTS);
       assertByExt(ass, "fods", FODS);
@@ -267,6 +271,7 @@ class DefaultDocumentFormatRegistryTest {
       assertByType(ass, "text/rtf", RTF);
       assertByType(ass, "application/wordperfect", WPD);
       assertByType(ass, "text/plain", TXT);
+      assertByType(ass, "text/markdown", MARKDOWN);
       assertByType(ass, "application/vnd.oasis.opendocument.spreadsheet", ODS);
       assertByType(ass, "application/vnd.oasis.opendocument.spreadsheet-template", OTS);
       assertByType(ass, "application/vnd.oasis.opendocument.spreadsheet-flat-xml", FODS);

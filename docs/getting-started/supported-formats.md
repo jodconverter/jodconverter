@@ -24,6 +24,7 @@ the conversion does not work. All conversions supported by your OOo installation
             <samp><b>*.docx</b>&nbsp;&nbsp;&nbsp;</samp>Microsoft Word XML<br>
             <samp><b>*.wpd</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>WordPerfect<br>
             <samp><b>*.txt</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Plain Text<br>
+            <samp><b>*.md</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</samp>Markdown (LibreOffice 26.2+)<br>
             <samp><b>*.html</b>&nbsp;&nbsp;&nbsp;</samp>HTML<sup>1</sup>
         </td>
         <td>
@@ -35,6 +36,7 @@ the conversion does not work. All conversions supported by your OOo installation
             <samp><b>*.doc</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Microsoft Word<br>
             <samp><b>*.docx</b>&nbsp;&nbsp;&nbsp;</samp>Microsoft Word XML<br>
             <samp><b>*.txt</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Plain Text<br>
+            <samp><b>*.md</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</samp>Markdown (LibreOffice 26.2+)<br>
             <samp><b>*.html</b>&nbsp;&nbsp;&nbsp;</samp>HTML<sup>2</sup><br>
             <samp><b>*.wiki</b>&nbsp;&nbsp;&nbsp;</samp>MediaWiki wikitext
         </td>
