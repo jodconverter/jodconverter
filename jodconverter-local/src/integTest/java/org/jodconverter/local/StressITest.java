@@ -21,28 +21,26 @@
 package org.jodconverter.local;
 
 import java.io.File;
-import java.io.OutputStreamWriter;
+import java.net.URI;
 import java.util.Objects;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.ConvertUtil.ConvertRunner;
 import org.jodconverter.local.office.LocalOfficeManager;
 
 /** Contain a stress test. */
 class StressITest {
 
-  private static final Logger LOGGER = Logger.getLogger(StressITest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StressITest.class);
 
   // private static final int MAX_CONVERSIONS = 10;
   private static final int MAX_CONVERSIONS = 1024;
@@ -54,8 +52,6 @@ class StressITest {
   private static final DocumentFormat OUTPUT_FORMAT =
       DefaultDocumentFormatRegistry.getFormatByExtension("pdf");
 
-  private static final String PATTERN = "%d %-5p --- [%t] %c{1.} - %m%n";
-
   /**
    * This test will run multiple parallel conversions, using 8 office processes. Just change the
    * MAX_* constants to control the numbers of conversion, threads and maximum conversion per office
@@ -66,26 +62,12 @@ class StressITest {
   @Test
   void runParallelConversions(final @TempDir File testFolder) throws Exception {
 
-    final File logFile = new File("build/integTest-results/test.log");
-    FileUtils.deleteQuietly(logFile);
-
-    // Create console appender
-    final ConsoleAppender console = new ConsoleAppender();
-    console.setWriter(new OutputStreamWriter(System.out));
-    console.setLayout(new PatternLayout(PATTERN));
-    console.setThreshold(Level.DEBUG);
-    console.activateOptions();
-    Logger.getRootLogger().addAppender(console);
-
-    // Keep a log file to be able to see if an error occurred
-    final FileAppender fileAppender = new FileAppender();
-    fileAppender.setName("FileLogger");
-    fileAppender.setFile(logFile.getPath());
-    fileAppender.setLayout(new PatternLayout(PATTERN));
-    fileAppender.setThreshold(Level.DEBUG);
-    fileAppender.setAppend(true);
-    fileAppender.activateOptions();
-    Logger.getRootLogger().addAppender(fileAppender);
+    // Log at DEBUG level, to the console and to a log file (build/integTest-results/test.log)
+    // to be able to see if an error occurred.
+    final LoggerContext context = (LoggerContext) LogManager.getContext(false);
+    final URI defaultConfig = context.getConfigLocation();
+    context.setConfigLocation(
+        Objects.requireNonNull(getClass().getResource("/log4j2-stress.xml")).toURI());
 
     // Configure the office manager in a way that maximizes possible race conditions.
     final OfficeManager officeManager =
@@ -121,9 +103,7 @@ class StressITest {
           first = false;
         }
 
-        if (LOGGER.isInfoEnabled()) {
-          LOGGER.info("Creating thread " + threadCount);
-        }
+        LOGGER.info("Creating thread {}", threadCount);
         final ConvertRunner runnable = new ConvertRunner(source, target, converter);
         threads[threadCount] = new Thread(runnable);
         threads[threadCount++].start();
@@ -143,8 +123,7 @@ class StressITest {
 
     } finally {
       officeManager.stop();
-      Logger.getRootLogger().removeAppender(console);
-      Logger.getRootLogger().removeAppender(fileAppender);
+      context.setConfigLocation(defaultConfig);
     }
   }
 }

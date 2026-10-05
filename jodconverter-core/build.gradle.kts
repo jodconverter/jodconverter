@@ -15,7 +15,7 @@ dependencies {
     testImplementation(libs.mockito.inline)
     testImplementation(libs.spring.test)
 
-    testRuntimeOnly(libs.slf4j.log4j)
+    testRuntimeOnly(libs.bundles.log4j)
 }
 
 // --- test setup -----------------------------------------------------------

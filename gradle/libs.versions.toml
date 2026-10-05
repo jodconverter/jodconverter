@@ -31,6 +31,10 @@ spring = "6.2.19"
 # Latest version -> https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 slf4j = "1.7.36"
 
+# Log4j 2, the logging backend of jodconverter-cli and of the tests
+# Latest version -> https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+log4j = "2.26.1"
+
 # Gson
 # Latest version -> https://mvnrepository.com/artifact/com.google.code.gson/gson
 gson = "2.9.1"
@@ -147,7 +151,8 @@ commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons
 
 # Logging
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
-slf4j-log4j = { module = "org.slf4j:slf4j-log4j12", version.ref = "slf4j" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j" }
 
 # Other
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -167,6 +172,10 @@ wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremoc
 # Plugins
 spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 maven-publish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "maven-publish" }
+
+[bundles]
+# SLF4J binding to Log4j 2, with its implementation
+log4j = ["log4j-slf4j", "log4j-core"]
 
 [plugins]
 # Use in settings.gradle.kts or plugins {} blocks
