@@ -1,6 +1,6 @@
 ### System Requirements
 
-- A Java runtime environment version 1.8 or higher.
+- A Java runtime environment version 17 or higher (JODConverter 4.4 requires version 1.8 or higher).
 - [Apache OpenOffice](https://www.openoffice.org) or [LibreOffice](https://www.libreoffice.org); the latest stable
   version is usually recommended.
 - Any operating system for which Java and Apache OpenOffice/LibreOffice are available (Windows, Linux, Mac OS X,
