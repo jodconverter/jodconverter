@@ -23,13 +23,15 @@ package org.jodconverter.cli;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.cli.help.HelpFormatter;
@@ -108,9 +110,9 @@ public final class Convert {
   private static final Option OPT_LOAD_PROPERTIES =
       Option.builder("l")
           .longOpt("load-properties")
-          .valueSeparator()
-          .hasArgs()
-          .desc("load properties (optional; eg. -lPassword=myPassword)")
+          .argName("name=value")
+          .hasArg()
+          .desc("load property; can be repeated (optional; eg. -lPassword=myPassword)")
           .get();
   private static final Option OPT_PROCESS_MANAGER =
       Option.builder("m")
@@ -146,9 +148,11 @@ public final class Convert {
   private static final Option OPT_STORE_PROPERTIES =
       Option.builder("s")
           .longOpt("store-properties")
-          .valueSeparator()
-          .hasArgs()
-          .desc("store properties (optional; eg. -sOverwrite=true -sFDPageRange=1-2)")
+          .argName("name=value")
+          .hasArg()
+          .desc(
+              "store property; can be repeated"
+                  + " (optional; eg. -sOverwrite=true -sFDPageRange=1-2)")
           .get();
   private static final Option OPT_TIMEOUT =
       Option.builder("t")
@@ -204,6 +208,9 @@ public final class Convert {
           .get();
 
   private static final Options OPTIONS = initOptions();
+
+  // A load or store property attached to its short option, such as -sOverwrite=true.
+  private static final Pattern ATTACHED_PROPERTY = Pattern.compile("^(-[ls])([^=]+=.*)$");
 
   // Returns true if the command line asked for some info, which is printed, and nothing else.
   private static boolean printInfoIfRequested(final CommandLine commandLine) {
@@ -369,7 +376,7 @@ public final class Convert {
   /* default */ static int run(final String... arguments) {
 
     try {
-      final CommandLine commandLine = new DefaultParser().parse(OPTIONS, arguments);
+      final CommandLine commandLine = parse(arguments);
 
       // Check if the command line contains arguments that is supposed
       // to print some info and then exit.
@@ -390,9 +397,12 @@ public final class Convert {
         return STATUS_INVALID_ARGUMENTS;
       }
 
-      // Build the PDF options, before anything is started, since they may be invalid.
+      // Build the properties and the PDF options, before anything is started, since they may
+      // be invalid.
       final PdfOptions pdfOptions;
       try {
+        buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
+        buildProperties("store", commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt()));
         pdfOptions =
             PdfOptionsParser.parse(
                 commandLine.getOptionValue(OPT_PDF_PRESET.getLongOpt()),
@@ -458,53 +468,70 @@ public final class Convert {
     }
   }
 
-  private static Map<String, Object> toMap(final String... options) {
+  /**
+   * Parses the arguments of the program.
+   *
+   * @param arguments program arguments.
+   * @return The parsed command line.
+   * @throws ParseException If the arguments are not valid.
+   */
+  /* default */ static CommandLine parse(final String... arguments) throws ParseException {
 
-    if (options.length % 2 != 0) {
-      return new HashMap<>();
+    // A property is written -lName=value or -sName=value, and its value may contain the equal
+    // sign. The name=value part is separated from its option here, since the parser would
+    // otherwise split it on every equal sign.
+    final List<String> normalized = new ArrayList<>();
+    for (final String argument : arguments) {
+      final Matcher matcher = ATTACHED_PROPERTY.matcher(argument);
+      if (matcher.matches()) {
+        normalized.add(matcher.group(1));
+        normalized.add(matcher.group(2));
+      } else {
+        normalized.add(argument);
+      }
     }
-
-    return IntStream.range(0, options.length)
-        .filter(i -> i % 2 == 0)
-        .boxed()
-        .collect(
-            Collectors.toMap(
-                i -> options[i],
-                i -> {
-                  final String val = options[i + 1];
-                  if ("true".equalsIgnoreCase(val)) {
-                    return Boolean.TRUE;
-                  }
-                  if ("false".equalsIgnoreCase(val)) {
-                    return Boolean.FALSE;
-                  }
-                  try {
-                    return Integer.parseInt(val);
-                  } catch (NumberFormatException nfe) {
-                    return val;
-                  }
-                }));
+    return new DefaultParser().parse(OPTIONS, normalized.toArray(new String[0]));
   }
 
-  private static Map<String, Object> buildProperties(final String... args) {
+  // Converts the value of a property: a boolean, an integer, or a text.
+  private static Object toPropertyValue(final String value) {
 
-    if (args == null || args.length == 0) {
-      return new HashMap<>();
+    if ("true".equalsIgnoreCase(value)) {
+      return Boolean.TRUE;
     }
+    if ("false".equalsIgnoreCase(value)) {
+      return Boolean.FALSE;
+    }
+    try {
+      return Integer.parseInt(value);
+    } catch (NumberFormatException nfe) {
+      return value;
+    }
+  }
 
-    final Map<String, Object> argsMap = toMap(args);
-    if (argsMap.isEmpty()) {
-      return new HashMap<>();
-    }
+  // Builds the properties given as "name=value" arguments. The properties whose name starts
+  // with FD are properties of the FilterData.
+  private static Map<String, Object> buildProperties(final String kind, final String... args) {
 
     final Map<String, Object> properties = new HashMap<>();
+    if (args == null) {
+      return properties;
+    }
+
     final Map<String, Object> filterDataProperties = new HashMap<>();
-    for (final Map.Entry<String, Object> entry : argsMap.entrySet()) {
-      final String key = entry.getKey();
+    for (final String arg : args) {
+      // Only the first equal sign separates the name from the value.
+      final int separator = arg.indexOf('=');
+      if (separator <= 0) {
+        throw new IllegalArgumentException(
+            "Invalid " + kind + " property '" + arg + "'; expected name=value");
+      }
+      final String key = arg.substring(0, separator);
+      final Object value = toPropertyValue(arg.substring(separator + 1));
       if (key.length() > 2 && key.startsWith("FD")) {
-        filterDataProperties.put(key.substring("FD".length()), entry.getValue());
+        filterDataProperties.put(key.substring("FD".length()), value);
       } else {
-        properties.put(key, entry.getValue());
+        properties.put(key, value);
       }
     }
     if (!filterDataProperties.isEmpty()) {
@@ -537,12 +564,12 @@ public final class Convert {
 
     // Specify custom load properties if required
     final Map<String, Object> loadProperties =
-        buildProperties(commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
+        buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
     builder.loadProperties(loadProperties);
 
     // Specify custom store properties if required
     final Map<String, Object> storeProperties =
-        buildProperties(commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt()));
+        buildProperties("store", commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt()));
     builder.storeProperties(storeProperties);
 
     // Specify a filter chain if required
