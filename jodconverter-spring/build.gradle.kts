@@ -15,6 +15,6 @@ dependencies {
     implementation(libs.spring.context)
 
     testImplementation(libs.spring.test)
-    testImplementation(libs.slf4j.log4j)
+    testRuntimeOnly(libs.bundles.log4j)
     testImplementation(libs.mockito.inline)
 }
