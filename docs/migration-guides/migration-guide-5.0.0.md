@@ -104,6 +104,11 @@ public long findPid(final ProcessQuery query) throws IOException {
 - The property maps of a `DocumentFormat` (load and store properties) reject `null` keys and values.
 - `LocalOfficeManager.Builder.runAsArgs(...)` no longer accepts `null` elements.
 
+### Removed deprecated methods
+
+`Lo.createInstanceMSF(...)` and `Lo.createInstanceMCF(...)` (local module), deprecated since 4.4.4, are removed; use the
+`Lo.createInstance(...)` overloads, which take the same arguments.
+
 ### FileUtils.readFileToString
 
 `org.jodconverter.core.util.FileUtils.readFileToString` now throws a `MalformedInputException` when the file contains
