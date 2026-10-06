@@ -142,14 +142,14 @@ class ConvertITest {
     @Test
     void withMultipleFilters_ShouldSucceed(final @TempDir File testFolder) {
 
-      final var filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
+      final var configFile = new File(CONFIG_DIR + "multiple-filters.yml");
       final var inputFile = new File(SOURCE_FILE);
       final var outputFile = new File(testFolder, "convert_WithMultipleFilters.pdf");
 
       final var status =
           Convert.run(
-              "-a",
-              filterChainFile.getPath(),
+              "--config",
+              configFile.getPath(),
               "-x",
               ExistingProcessAction.KILL.toString(),
               inputFile.getPath(),
@@ -160,18 +160,17 @@ class ConvertITest {
     }
 
     @Test
-    void withContextWithoutFilterChain_ShouldSucceed(final @TempDir File testFolder)
-        throws Exception {
+    void withConfigWithoutFilters_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
-      // A context that only defines an SslConfig, of no use for a local conversion.
-      final var contextFile = new File(CONFIG_DIR + "applicationContext_sslConfig.xml");
+      // A configuration that only has SSL options, of no use for a local conversion.
+      final var configFile = new File(CONFIG_DIR + "ssl.yml");
       final var inputFile = new File(SOURCE_MULTI_FILE);
-      final var outputFile = new File(testFolder, "convert_WithContextWithoutFilterChain.txt");
+      final var outputFile = new File(testFolder, "convert_WithConfigWithoutFilters.txt");
 
       final var status =
           Convert.run(
-              "-a",
-              contextFile.getPath(),
+              "--config",
+              configFile.getPath(),
               "-x",
               ExistingProcessAction.KILL.toString(),
               inputFile.getPath(),
@@ -184,15 +183,14 @@ class ConvertITest {
     @Test
     void withSingleFilter_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
-      final var filterChainFile =
-          new File(CONFIG_DIR + "applicationContext_pagesSelectorFilter.xml");
+      final var configFile = new File(CONFIG_DIR + "pages-selector-filter.json");
       final var inputFile = new File(SOURCE_MULTI_FILE);
       final var outputFile = new File(testFolder, "convert_WithSingleFilter.txt");
 
       final var status =
           Convert.run(
-              "-a",
-              filterChainFile.getPath(),
+              "--config",
+              configFile.getPath(),
               "-x",
               ExistingProcessAction.KILL.toString(),
               inputFile.getPath(),

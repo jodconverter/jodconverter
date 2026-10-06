@@ -112,7 +112,7 @@ class ConvertTest {
     }
 
     @Test
-    void withUnknownArgument_ShouldPrintErrorHelpAndExitWithCode2() {
+    void withUnknownArgument_ShouldPrintErrorHelpAndExitWithCode255() {
 
       SystemLogHandler.startCapture();
       final var status = Convert.run("-yz");
@@ -121,7 +121,7 @@ class ConvertTest {
           .contains(
               "Unrecognized option: -yz",
               "jodconverter-cli [options] infile outfile [infile outfile ...]");
-      assertThat(status).isEqualTo(2);
+      assertThat(status).isEqualTo(255);
     }
 
     @Test
@@ -374,7 +374,13 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
       final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
@@ -395,7 +401,13 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
       final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
@@ -418,7 +430,13 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
       final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
@@ -448,7 +466,13 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
       final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
@@ -484,7 +508,13 @@ class ConvertTest {
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
       final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");

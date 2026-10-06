@@ -1,0 +1,8 @@
+# The filters applied to the loaded document, in this order, before it is saved.
+filters:
+  - type: noop
+  - type: graphic-inserter
+    image: src/integTest/resources/images/sample-1.jpg
+    horizontal-position: 50  # 5 CM
+    vertical-position: 111   # 11.1 CM
+  - type: noop

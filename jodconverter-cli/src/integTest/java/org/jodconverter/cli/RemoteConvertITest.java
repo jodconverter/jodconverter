@@ -112,7 +112,7 @@ class RemoteConvertITest {
 
       final var inputFile = new File(SOURCE_FILE_DOC);
       final var outputFile = new File(testFolder, "out.txt");
-      final var contextFile = new File(CONFIG_DIR + "applicationContext_sslConfig.xml");
+      final var configFile = new File(CONFIG_DIR + "ssl.yml");
 
       final var wireMockServer =
           new WireMockServer(
@@ -132,8 +132,8 @@ class RemoteConvertITest {
             Convert.run(
                 "-c",
                 "https://localhost:8001/lool/convert-to/",
-                "-a",
-                contextFile.getPath(),
+                "--config",
+                configFile.getPath(),
                 inputFile.getPath(),
                 outputFile.getPath());
         assertThat(status).isEqualTo(0);
