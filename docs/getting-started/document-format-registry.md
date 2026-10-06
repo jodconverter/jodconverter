@@ -46,9 +46,11 @@ top of the defaults (overrides existing formats or adds new ones).
 ```java
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.document.DocumentFormatRegistry;
 
-DocumentFormat pdf = DefaultDocumentFormatRegistry.getFormatByExtension("pdf");
-DocumentFormat docx = DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+DocumentFormat pdf = registry.getFormatByExtension("pdf");
+DocumentFormat docx = registry.getFormatByMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 ```
 
 - List available output formats for a given family
@@ -57,7 +59,7 @@ DocumentFormat docx = DefaultDocumentFormatRegistry.getFormatByMediaType("applic
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFamily;
 
-var outputForText = DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.TEXT);
+var outputForText = DefaultDocumentFormatRegistry.getInstance().getOutputFormats(DocumentFamily.TEXT);
 ```
 
 ### Custom Registry
@@ -93,7 +95,6 @@ DocumentFormat myPdf = DocumentFormat.builder()
     // Customize store properties for TEXT family (export as PDF/A-1)
     .storeProperty(DocumentFamily.TEXT, "FilterName", "writer_pdf_Export")
     .storeProperty(DocumentFamily.TEXT, "SelectPdfVersion", 1)
-    .unmodifiable(true)
     .build();
 
 reg.addFormat(myPdf);
@@ -101,7 +102,10 @@ reg.addFormat(myPdf);
 
 ### Overriding the Default Registry
 
-If you prefer to change the global default used by `DefaultDocumentFormatRegistry` constants, set the instance:
+If you prefer to change the global default returned by `DefaultDocumentFormatRegistry.getInstance()`, which the
+converters use when no registry is given to their builder, set the instance before anything uses it. The constants of
+`DefaultDocumentFormatRegistry` (`PDF`, `DOCX`...) are read once, when that class is loaded, so set it before they
+are touched too:
 
 ```java
 import org.jodconverter.core.document.*;
