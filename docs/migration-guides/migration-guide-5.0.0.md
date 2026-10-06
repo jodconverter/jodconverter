@@ -149,9 +149,6 @@ JODConverter are built this way.
 converter no longer checks for it at runtime before converting a stream. A custom office manager must implement
 `makeTemporaryFile(String extension)` (the no-argument overload has a default implementation).
 
-`AbstractOfficeWorkerPool.getWorkerStates()` and `getQueueSize()` are removed in favor of `getStatus()`, which gives
-the same values in one snapshot (`workers()` and `queueSize()`), and `getTempDir()` is no longer public.
-
 ### Immutable document formats
 
 `DocumentFormat` is always immutable: `DocumentFormat.copy(format)`, `unmodifiableCopy(format)` and
@@ -306,5 +303,3 @@ columns wide.
 - [`AbstractOfficeWorkerPool.getStatus()`](../getting-started/office-managers.md): a snapshot of the office processes
     (state, tasks executed, restarts, failed start attempts) and of the queue; with Spring Boot Actuator, the
     `jodconverter` health indicator of the starter reports it.
-- `AbstractOfficeWorkerPool.getTempDir()`: the directory where an office manager creates the temporary files used by
-    conversions.
