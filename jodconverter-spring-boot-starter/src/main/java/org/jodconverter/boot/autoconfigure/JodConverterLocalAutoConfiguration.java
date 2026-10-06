@@ -35,12 +35,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ResourceLoader;
 
 import org.jodconverter.core.DocumentConverter;
-import org.jodconverter.core.document.DefaultDocumentFormatRegistryInstanceHolder;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.core.util.StringUtils;
@@ -50,14 +47,12 @@ import org.jodconverter.local.office.LocalOfficeUtils;
 import org.jodconverter.local.process.ProcessManager;
 
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter local module. */
-@AutoConfiguration
+@AutoConfiguration(after = JodConverterDocumentFormatsAutoConfiguration.class)
 @ConditionalOnClass(LocalConverter.class)
 @ConditionalOnProperty(prefix = "jodconverter.local", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(JodConverterLocalProperties.class)
 public class JodConverterLocalAutoConfiguration {
 
-  private static final String DEFAULT_FORMATS_PATH = "classpath:document-formats.json";
-  private static final String CUSTOM_FORMATS_PATH = "classpath:custom-document-formats.json";
   private static final Logger LOGGER =
       LoggerFactory.getLogger(JodConverterLocalAutoConfiguration.class);
 
@@ -108,41 +103,6 @@ public class JodConverterLocalAutoConfiguration {
   @ConditionalOnMissingBean(name = "processManager")
   /* default */ ProcessManager processManager() {
     return LocalOfficeUtils.findBestProcessManager();
-  }
-
-  @Bean
-  @ConditionalOnMissingBean(name = "documentFormatRegistry")
-  /* default */ DocumentFormatRegistry documentFormatRegistry(final ResourceLoader resourceLoader)
-      throws Exception {
-
-    // Load the json resource containing default document formats.
-    final var registryResourceName =
-        StringUtils.isBlank(properties.getDocumentFormatRegistry())
-            ? DEFAULT_FORMATS_PATH
-            : properties.getDocumentFormatRegistry();
-    LOGGER.debug("Loading document formats registry from resource [{}]", registryResourceName);
-    try (var in = resourceLoader.getResource(registryResourceName).getInputStream()) {
-
-      // Create the registry.
-      final var registry =
-          properties.getFormatOptions() == null
-              ? JsonDocumentFormatRegistry.create(in)
-              : JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
-
-      // Load the custom formats, if any.
-      final var resource = resourceLoader.getResource(CUSTOM_FORMATS_PATH);
-      if (resource.exists()) {
-        LOGGER.debug(
-            "Loading custom document formats registry from resource [{}]", CUSTOM_FORMATS_PATH);
-        registry.addRegistry(JsonDocumentFormatRegistry.create(resource.getInputStream()));
-      }
-
-      // Set as default.
-      DefaultDocumentFormatRegistryInstanceHolder.setInstance(registry);
-
-      // Return it.
-      return registry;
-    }
   }
 
   @Bean(name = "localOfficeManager", initMethod = "start", destroyMethod = "stop")

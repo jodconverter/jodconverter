@@ -79,6 +79,27 @@ LocalConverter converter = LocalConverter.builder()
     .build();
 ```
 
+### Spring Boot
+
+With the Spring Boot starter, one registry is shared by every converter it creates, local, external or remote, and
+is also exposed as the `documentFormatRegistry` bean. It is configured under `jodconverter.document-formats`:
+
+```yaml
+jodconverter:
+  document-formats:
+    registry: classpath:my-document-formats.json   # defaults to the registry shipped with JODConverter
+    options:                                        # load/store properties added to a format, by extension
+      txt:
+        load:
+          FilterOptions: utf16
+        store:
+          TEXT:
+            FilterOptions: utf16
+```
+
+A `classpath:custom-document-formats.json` resource, if present, is added to the registry. An application that
+declares its own `DocumentFormatRegistry` bean replaces the one of the starter.
+
 ### Programmatic Customization
 
 Build a registry in code when you only need a few tweaks:

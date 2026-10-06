@@ -34,13 +34,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter remote module. */
-@AutoConfiguration
+@AutoConfiguration(after = JodConverterDocumentFormatsAutoConfiguration.class)
 @ConditionalOnClass(RemoteConverter.class)
 @ConditionalOnProperty(prefix = "jodconverter.remote", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(JodConverterRemoteProperties.class)
@@ -91,9 +92,13 @@ public class JodConverterRemoteAutoConfiguration {
   // parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter remoteDocumentConverter(
       final @Qualifier("remoteOfficeManager") OfficeManager remoteOfficeManager,
+      final DocumentFormatRegistry documentFormatRegistry,
       final ObjectProvider<PdfOptions> pdfOptions) {
 
-    final var builder = RemoteConverter.builder().officeManager(remoteOfficeManager);
+    final var builder =
+        RemoteConverter.builder()
+            .officeManager(remoteOfficeManager)
+            .formatRegistry(documentFormatRegistry);
     // Apply the PDF options, from the jodconverter.pdf properties or from the application, to
     // all the conversions to PDF.
     pdfOptions.ifUnique(builder::defaultTargetOptions);

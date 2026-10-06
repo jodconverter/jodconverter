@@ -22,14 +22,12 @@ package org.jodconverter.boot.autoconfigure;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
-import org.jodconverter.core.document.DocumentFormatProperties;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
@@ -146,12 +144,6 @@ public class JodConverterLocalProperties extends JodConverterPoolProperties {
 
   /** Maximum number of tasks an office process can execute before restarting. */
   private int maxTasksPerProcess = LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-
-  /** Path to the registry which contains the document formats that will be supported by default. */
-  private String documentFormatRegistry;
-
-  /** Custom properties required to load(open) and store(save) documents. */
-  private Map<String, DocumentFormatProperties> formatOptions;
 
   /**
    * Specifies this converter will apply the default load properties when loading a source document.
@@ -298,23 +290,6 @@ public class JodConverterLocalProperties extends JodConverterPoolProperties {
 
   public void setMaxTasksPerProcess(final int maxTasksPerProcess) {
     this.maxTasksPerProcess = maxTasksPerProcess;
-  }
-
-  public @Nullable String getDocumentFormatRegistry() {
-    return documentFormatRegistry;
-  }
-
-  public void setDocumentFormatRegistry(final @Nullable String documentFormatRegistry) {
-    this.documentFormatRegistry = documentFormatRegistry;
-  }
-
-  public @Nullable Map<@NonNull String, @NonNull DocumentFormatProperties> getFormatOptions() {
-    return formatOptions;
-  }
-
-  public void setFormatOptions(
-      final @Nullable Map<@NonNull String, @NonNull DocumentFormatProperties> formatOptions) {
-    this.formatOptions = formatOptions;
   }
 
   public boolean isApplyDefaultLoadProperties() {
