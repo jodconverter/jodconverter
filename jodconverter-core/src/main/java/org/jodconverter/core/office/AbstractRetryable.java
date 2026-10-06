@@ -103,8 +103,13 @@ public abstract class AbstractRetryable<T extends Throwable> {
           }
         } else {
           logger.debug("Execution failed on attempt #{}", attempt);
-          throw new RetryTimeoutException( // NOPMD - Only cause is relevant
-              temporaryException.getCause());
+          // The temporary exception may only carry a message: it is then the cause itself.
+          final var cause = temporaryException.getCause();
+          throw new RetryTimeoutException(
+              String.format(
+                  "Execution failed after %d attempts and %d ms (timeout: %d ms)",
+                  attempt, System.currentTimeMillis() - start, timeout),
+              cause == null ? temporaryException : cause);
         }
       }
     }

@@ -57,7 +57,7 @@ public class StreamPumper extends Thread {
     super();
 
     Objects.requireNonNull(stream, "stream must not be null");
-    Objects.requireNonNull(stream, "consumer must not be null");
+    Objects.requireNonNull(consumer, "consumer must not be null");
 
     this.stream = stream;
     this.consumer = consumer;

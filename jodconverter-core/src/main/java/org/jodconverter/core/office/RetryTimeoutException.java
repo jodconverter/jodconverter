@@ -39,4 +39,14 @@ public class RetryTimeoutException extends Exception {
   public RetryTimeoutException(final @NonNull Throwable cause) {
     super(cause);
   }
+
+  /**
+   * Constructs a new exception with the specified message and cause.
+   *
+   * @param message The message.
+   * @param cause The cause.
+   */
+  public RetryTimeoutException(final @NonNull String message, final @NonNull Throwable cause) {
+    super(message, cause);
+  }
 }

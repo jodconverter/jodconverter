@@ -22,6 +22,7 @@ package org.jodconverter.local;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
@@ -321,7 +322,7 @@ public final class LocalConverter extends AbstractConverter {
 
       return StringUtils.isBlank(loadDocumentMode)
           ? this
-          : loadDocumentMode(LoadDocumentMode.valueOf(loadDocumentMode.toUpperCase()));
+          : loadDocumentMode(LoadDocumentMode.valueOf(loadDocumentMode.toUpperCase(Locale.ROOT)));
     }
 
     /**

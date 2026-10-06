@@ -263,7 +263,6 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       if (closeable == null) {
         // If close is not supported by this model - try to dispose it.
         document.dispose();
-        Lo.qi(XComponent.class, document).dispose();
       } else {
         try {
           // The boolean parameter deliverOwnership tells objects vetoing the

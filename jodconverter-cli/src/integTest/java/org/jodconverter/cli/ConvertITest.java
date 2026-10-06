@@ -160,6 +160,28 @@ class ConvertITest {
     }
 
     @Test
+    void withContextWithoutFilterChain_ShouldSucceed(final @TempDir File testFolder)
+        throws Exception {
+
+      // A context that only defines an SslConfig, of no use for a local conversion.
+      final var contextFile = new File(CONFIG_DIR + "applicationContext_sslConfig.xml");
+      final var inputFile = new File(SOURCE_MULTI_FILE);
+      final var outputFile = new File(testFolder, "convert_WithContextWithoutFilterChain.txt");
+
+      final var status =
+          Convert.run(
+              "-a",
+              contextFile.getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+
+      assertThat(status).isEqualTo(0);
+      assertThat(outputFile).isFile();
+    }
+
+    @Test
     void withSingleFilter_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
       final var filterChainFile =

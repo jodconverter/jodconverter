@@ -24,12 +24,16 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.util.AssertUtils;
@@ -114,9 +118,10 @@ public final class CliConverter {
       } else {
 
         // If the filename is not a file, check if it has wildcards to match multiple files.
-        final var inputFileParent = inputFile.getParentFile();
+        // Without a directory, the wildcards apply to the current directory.
+        final var inputFileParent = inputFile.getAbsoluteFile().getParentFile();
         if (inputFileParent.isDirectory()) {
-          convertFiles(inputFileParent, filename, outputDir, outputFormat, overwrite);
+          convertFiles(inputFileParent, inputFile.getName(), outputDir, outputFormat, overwrite);
         } else {
           printInfo("Skipping filename '%s' since it doesn't match an existing file...", inputFile);
         }
@@ -187,23 +192,40 @@ public final class CliConverter {
   private void convert(final File inputFile, final File outputFile) throws OfficeException {
 
     printInfo("Converting '%s' to '%s'", inputFile, outputFile);
-    final var job = converter.convert(inputFile).to(outputFile);
-    if (supportsTargetOptions(outputFile)) {
-      job.with(targetOptions);
+
+    // An existing output file is only replaced once the conversion succeeded: the conversion
+    // goes to a temporary file next to it, with its format.
+    final var format = formatOf(outputFile);
+    final var target =
+        outputFile.exists() && format != null
+            ? new File(outputFile.getParentFile(), "." + outputFile.getName() + ".converting")
+            : outputFile;
+    try {
+      final var job =
+          target == outputFile
+              ? converter.convert(inputFile).to(outputFile)
+              : converter.convert(inputFile).to(target).as(format);
+      if (format != null && targetOptions != null && targetOptions.supports(format)) {
+        job.with(targetOptions);
+      }
+      job.execute();
+      if (target != outputFile) {
+        Files.move(target.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      }
+    } catch (IOException ex) {
+      throw new OfficeException(
+          String.format("Could not replace the output file '%s'", outputFile), ex);
+    } finally {
+      if (target != outputFile) {
+        FileUtils.deleteQuietly(target);
+      }
     }
-    job.execute();
   }
 
-  // The target options only apply to the output files whose format they support.
-  private boolean supportsTargetOptions(final File outputFile) {
+  private @Nullable DocumentFormat formatOf(final File outputFile) {
 
-    if (targetOptions == null) {
-      return false;
-    }
     final var extension = FileUtils.getExtension(outputFile.getName());
-    final var format =
-        extension == null ? null : converter.getFormatRegistry().getFormatByExtension(extension);
-    return format != null && targetOptions.supports(format);
+    return extension == null ? null : converter.getFormatRegistry().getFormatByExtension(extension);
   }
 
   private void convertFile(
@@ -234,12 +256,12 @@ public final class CliConverter {
       final boolean overwrite)
       throws OfficeException {
 
-    final var wildcard = FilenameUtils.getBaseName(filename);
+    // The wildcards apply to the whole file name, extension included.
     final var files =
         inputDir.listFiles(
             (FileFilter)
                 WildcardFileFilter.builder()
-                    .setWildcards(wildcard)
+                    .setWildcards(filename)
                     .setIoCase(IOCase.INSENSITIVE)
                     .get());
     if (files != null) {
@@ -325,13 +347,6 @@ public final class CliConverter {
         printInfo(
             "Skipping file '%s' because the output file '%s' already exists and the "
                 + "overwrite switch is off",
-            inputFile, outputFile);
-        return false;
-      }
-
-      if (!outputFile.delete()) {
-        printInfo(
-            "Skipping file '%s' because the output file '%s' already exists and cannot be deleted",
             inputFile, outputFile);
         return false;
       }

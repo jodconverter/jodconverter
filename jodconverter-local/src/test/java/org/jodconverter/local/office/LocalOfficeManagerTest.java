@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
@@ -404,6 +405,26 @@ class LocalOfficeManagerTest {
                       .containsExactly(
                           new OfficeUrl("test").getConnectString(),
                           new OfficeUrl("test").getConnectString()));
+    }
+
+    @Test
+    void withExistingProcessActionName_ShouldNotDependOnTheDefaultLocale() {
+
+      // The dotless i of the Turkish locale would break "kill".
+      final var locale = Locale.getDefault();
+      Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+      try {
+        final var manager = builder().existingProcessAction("kill").build();
+
+        assertThat(manager)
+            .extracting("workers")
+            .asInstanceOf(InstanceOfAssertFactories.LIST)
+            .first()
+            .hasFieldOrPropertyWithValue(
+                "officeProcessManager.existingProcessAction", ExistingProcessAction.KILL);
+      } finally {
+        Locale.setDefault(locale);
+      }
     }
 
     @Test

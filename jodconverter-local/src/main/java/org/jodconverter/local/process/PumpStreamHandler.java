@@ -68,13 +68,10 @@ public class PumpStreamHandler {
   public void stop() {
     try {
       outputPumper.join();
-    } catch (InterruptedException e) {
-      // ignore
-    }
-    try {
       errorPumper.join();
-    } catch (InterruptedException e) {
-      // ignore
+    } catch (InterruptedException ex) {
+      // The caller decides what to do with the interruption.
+      Thread.currentThread().interrupt();
     }
   }
 }

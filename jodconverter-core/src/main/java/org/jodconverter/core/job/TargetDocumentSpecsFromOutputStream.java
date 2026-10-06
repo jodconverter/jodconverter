@@ -38,6 +38,9 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
 
   private final OutputStream outputStream;
   private final boolean closeStream;
+
+  // The file the conversion writes to, for the duration of a conversion.
+  private File tempFile;
   private final TemporaryFileMaker fileMaker;
 
   /**
@@ -63,9 +66,14 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
   @Override
   public @NonNull File getFile() {
 
-    return Optional.ofNullable(getFormat())
-        .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
-        .orElse(fileMaker.makeTemporaryFile());
+    // The same temp file is given on every call.
+    if (tempFile == null) {
+      tempFile =
+          Optional.ofNullable(getFormat())
+              .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
+              .orElseGet(fileMaker::makeTemporaryFile);
+    }
+    return tempFile;
   }
 
   @Override
@@ -84,6 +92,14 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
     } finally {
       // Ensure the created tempFile is deleted
       FileUtils.deleteQuietly(tempFile);
+      this.tempFile = null;
     }
+  }
+
+  @Override
+  public void onFailure(final @NonNull File tempFile, final @NonNull Exception exception) {
+
+    FileUtils.deleteQuietly(tempFile);
+    this.tempFile = null;
   }
 }

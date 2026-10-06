@@ -208,13 +208,13 @@ class AbstractLocalOfficeTaskTest {
     void whenCloseableIsNull_ShouldCallComponentDispose(final UnoRuntime unoRuntime) {
 
       final var document = mock(XComponent.class);
-      final var component = mock(XComponent.class);
       given(unoRuntime.queryInterface(XCloseable.class, document)).willReturn(null);
-      given(unoRuntime.queryInterface(XComponent.class, document)).willReturn(component);
 
       final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       task.closeDocument(document);
-      verify(component, times(1)).dispose();
+
+      // The document is the component: it is disposed once.
+      verify(document, times(1)).dispose();
     }
 
     @Test

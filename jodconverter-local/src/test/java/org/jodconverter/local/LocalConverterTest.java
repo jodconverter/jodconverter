@@ -28,6 +28,7 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
@@ -450,6 +451,24 @@ class LocalConverterTest {
       final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("useStreamAdapters").isEqualTo(true);
+    }
+
+    @Test
+    void withLoadDocumentModeName_ShouldNotDependOnTheDefaultLocale() {
+
+      // The dotless i of the Turkish locale would break "remote" or "local".
+      final var locale = Locale.getDefault();
+      Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+      try {
+        assertThat(
+                LocalConverter.builder()
+                    .officeManager(officeManager)
+                    .loadDocumentMode("local")
+                    .build())
+            .hasFieldOrPropertyWithValue("loadDocumentMode", LoadDocumentMode.LOCAL);
+      } finally {
+        Locale.setDefault(locale);
+      }
     }
 
     @Test

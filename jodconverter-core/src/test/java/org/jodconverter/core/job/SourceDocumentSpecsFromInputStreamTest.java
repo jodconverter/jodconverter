@@ -27,6 +27,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import org.junit.jupiter.api.Nested;
@@ -58,6 +59,28 @@ class SourceDocumentSpecsFromInputStreamTest {
         final var specs = new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
         specs.setDocumentFormat(DefaultDocumentFormatRegistry.TXT);
         assertThat(specs.getFile()).isEqualTo(tempFile);
+      }
+    }
+
+    @Test
+    void whenCalledTwice_ShouldReturnTheSameFile(@TempDir final File testFolder)
+        throws IOException {
+
+      final var fileMaker = mock(TemporaryFileMaker.class);
+      given(fileMaker.makeTemporaryFile())
+          .willReturn(new File(testFolder, "temp1"), new File(testFolder, "temp2"));
+      try (var inputStream = new ByteArrayInputStream("content".getBytes(StandardCharsets.UTF_8))) {
+        final var specs = new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
+
+        final var file = specs.getFile();
+
+        // The stream can only be written once: the second call gives the same file.
+        assertThat(specs.getFile()).isEqualTo(file);
+        assertThat(file).hasContent("content");
+
+        // Once consumed, the next conversion gets a file of its own.
+        specs.onConsumed(file);
+        assertThat(specs.getFile()).isEqualTo(new File(testFolder, "temp2"));
       }
     }
 
