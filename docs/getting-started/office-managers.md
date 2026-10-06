@@ -40,7 +40,11 @@ Without an Office Manager, there’s no running office backend to perform conver
 
 Internally, pool-capable managers derive from an abstract pool (`AbstractOfficeWorkerPool`) that dispatches the tasks
 to a pool of workers, one per office process or connection (via multiple ports or pipes), for concurrency and
-resilience.
+resilience. The tasks wait in a single queue, and a worker only takes a task when its office process is ready: while a
+process is starting or restarting (after its maximum number of tasks, a lost connection, a crash or a timed-out task),
+the tasks go to the other processes. `taskQueueCapacity` can bound the queue so that an overloaded application fails
+fast, and two timeouts apply to a task: `taskQueueTimeout`, from its submission until a worker takes it, and
+`taskExecutionTimeout`, from the moment a worker starts it.
 
 The pool can be observed: `getStatus()` returns a snapshot with the state of each worker (`STARTING`, `READY`, `BUSY`,
 `RESTARTING` or `STOPPED`), the tasks it executed since it was last made ready, its restarts and its failed start

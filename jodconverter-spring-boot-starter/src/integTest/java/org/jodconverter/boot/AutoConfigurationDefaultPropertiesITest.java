@@ -79,6 +79,7 @@ class AutoConfigurationDefaultPropertiesITest {
             "existingProcessAction",
             "startFailFast",
             "keepAliveOnShutdown",
+            "taskQueueCapacity",
             "taskQueueTimeout",
             "taskExecutionTimeout",
             "maxTasksPerProcess",
@@ -100,6 +101,7 @@ class AutoConfigurationDefaultPropertiesITest {
             "kill",
             false,
             false,
+            0,
             30_000L,
             120_000L,
             200,
@@ -119,8 +121,9 @@ class AutoConfigurationDefaultPropertiesITest {
             "workingDir",
             "poolSize",
             "taskExecutionTimeout",
+            "taskQueueCapacity",
             "taskQueueTimeout",
             "ssl")
-        .containsExactly(true, "https://localhost:8001", null, 1, 120_000L, 30_000L, null);
+        .containsExactly(true, "https://localhost:8001", null, 1, 120_000L, 0, 30_000L, null);
   }
 }

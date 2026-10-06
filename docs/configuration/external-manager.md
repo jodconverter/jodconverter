@@ -28,6 +28,7 @@ jodconverter:
     connect-retry-interval: 250
     connect-fail-fast: false
     max-tasks-per-connection: 1000
+    task-queue-capacity: 0          # no limit
     task-queue-timeout: 30000
     task-execution-timeout: 120000
     apply-default-load-properties: true
@@ -151,9 +152,10 @@ OfficeManager officeManager =
 #### ❎`connectFailFast`
 
 This property controls whether the manager will "fail fast" if the connection to the external process fails. If set to
-`true`, a connection attempt will wait for the task to be completed, and will throw an exception the connection to the
-external process fails. If set to `false`, the task of connecting to the external process will be submitted and will
-return immediately, meaning a faster starting process. Only error logs will be produced if anything goes wrong.
+`true`, `start()` waits for all the connections to be established, and throws an exception if one of them cannot be;
+the manager cannot be used after that. If set to `false`, `start()` returns immediately: the tasks wait in the queue
+for a connection to be established (see `taskQueueTimeout`), and a connection that fails is retried, with a growing
+delay between the attempts (1, 2, 5, 10, then every 30 seconds). Only logs are produced if anything goes wrong.
 
 &#160;***Default***: false.
 
@@ -180,10 +182,27 @@ OfficeManager officeManager =
         .build();
 ```
 
+#### 🔢`taskQueueCapacity`
+
+This property sets the maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+full fails at once with an `OfficeException`, instead of waiting for the queue timeout; a web application can thus
+answer right away that it is overloaded. 0 means no limit.
+
+&#160;***Default***: 0 (no limit)
+
+```java hl_lines="4"
+OfficeManager officeManager =
+    ExternalOfficeManager
+        .builder()
+        .taskQueueCapacity(100)
+        .build();
+```
+
 #### ⌚`taskQueueTimeout`
 
-This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
-the queue if the waiting time is longer than this timeout and an `OfficeException` will be thrown.
+This property sets the maximum time a task waits in the conversion queue, from its submission until an office process
+takes it. Waiting for a process to start or restart is part of it. When it expires, the task is removed from the queue
+without having been executed and fails with an `OfficeException`.
 
 &#160;***Default***: 30000 (30 seconds)
 
@@ -197,8 +216,9 @@ OfficeManager officeManager =
 
 #### ⌚`taskExecutionTimeout`
 
-This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
-timeout, this task will be aborted and the next task is processed.
+This property sets the maximum time allowed to execute a task, counted from the moment a connection starts it, not
+from its submission. When it expires, the task fails with an `OfficeException`, the connection is closed and
+established again, and the next task is processed by another connection in the meantime.
 
 &#160;***Default***: 120000 (2 minutes)
 
