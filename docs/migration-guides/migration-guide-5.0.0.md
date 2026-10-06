@@ -249,6 +249,13 @@ from the getters; the properties shared by the three (`working-dir`, `task-queue
 directly to an `SslConfig`: `JodConverterRemoteProperties.getSsl()` returns one, and the `SslProperties` copy of its
 fields is gone (same property names, same defaults).
 
+The document format registry is configured once for every converter of the starter, under
+`jodconverter.document-formats`: `jodconverter.local.document-format-registry` becomes
+`jodconverter.document-formats.registry`, and `jodconverter.local.format-options` becomes
+`jodconverter.document-formats.options`. The `documentFormatRegistry` bean exists whether or not the local manager is
+enabled, and the external and remote converters use it too (the remote converter used to ignore it). An application
+that declares its own `DocumentFormatRegistry` bean, of any name, replaces it.
+
 ### Command line tool
 
 The `-a` / `--application-context` option, which loaded a Spring XML context for the filter chain and the SSL

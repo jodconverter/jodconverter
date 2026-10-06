@@ -44,7 +44,11 @@ import org.jodconverter.local.office.ExternalOfficeManager;
  * {@link EnableAutoConfiguration Auto-configuration} for JodConverter connecting to external office
  * processes, which are started and managed outside of the application.
  */
-@AutoConfiguration(after = JodConverterLocalAutoConfiguration.class)
+@AutoConfiguration(
+    after = {
+      JodConverterDocumentFormatsAutoConfiguration.class,
+      JodConverterLocalAutoConfiguration.class
+    })
 @ConditionalOnClass(ExternalOfficeManager.class)
 @ConditionalOnProperty(prefix = "jodconverter.external", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(JodConverterExternalProperties.class)
@@ -87,19 +91,18 @@ public class JodConverterExternalAutoConfiguration {
   // 6.1, a parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter externalDocumentConverter(
       final @Qualifier("externalOfficeManager") OfficeManager externalOfficeManager,
-      final ObjectProvider<DocumentFormatRegistry> documentFormatRegistry,
+      final DocumentFormatRegistry documentFormatRegistry,
       final ObjectProvider<PdfOptions> pdfOptions) {
 
     final var builder =
         LocalConverter.builder()
             .officeManager(externalOfficeManager)
+            .formatRegistry(documentFormatRegistry)
             .loadDocumentMode(properties.getLoadDocumentMode())
             .loadProperties(
                 properties.isApplyDefaultLoadProperties()
                     ? LocalConverter.DEFAULT_LOAD_PROPERTIES
                     : Map.of());
-    // Use the document formats of the local auto-configuration when it also runs.
-    documentFormatRegistry.ifAvailable(builder::formatRegistry);
     // Apply the PDF options, from the jodconverter.pdf properties or from the application, to
     // all the conversions to PDF.
     pdfOptions.ifUnique(builder::defaultTargetOptions);

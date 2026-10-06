@@ -87,7 +87,6 @@ class AutoConfigurationPropertiesITest {
             "taskQueueTimeout",
             "taskExecutionTimeout",
             "maxTasksPerProcess",
-            "documentFormatRegistry",
             "applyDefaultLoadProperties",
             "useUnsafeQuietUpdate",
             "loadDocumentMode")
@@ -109,7 +108,6 @@ class AutoConfigurationPropertiesITest {
             Duration.ofMillis(70_000L),
             Duration.ofMillis(70_000L),
             20,
-            null,
             true,
             true,
             LoadDocumentMode.REMOTE);
