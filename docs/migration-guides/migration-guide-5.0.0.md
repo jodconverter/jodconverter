@@ -182,5 +182,8 @@ columns wide.
 - [Asynchronous conversions](../getting-started/document-converters.md#lifecycle-and-threading):
     `converter.convert(source).to(target).executeAsync()` returns a `CompletableFuture<Void>` instead of blocking, and
     `OfficeManager.submit(task)` does the same for an `OfficeTask`.
+- [`AbstractOfficeWorkerPool.getStatus()`](../getting-started/office-managers.md): a snapshot of the office processes
+    (state, tasks executed, restarts, failed start attempts) and of the queue; with Spring Boot Actuator, the
+    `jodconverter` health indicator of the starter reports it.
 - `AbstractOfficeWorkerPool.getTempDir()`: the directory where an office manager creates the temporary files used by
     conversions.

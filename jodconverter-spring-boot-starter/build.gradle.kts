@@ -16,11 +16,14 @@ dependencies {
     annotationProcessor(libs.spring.boot.configuration.processor)
 
     implementation(libs.spring.boot.starter)
+    // The health indicator is only configured when the application has the actuator.
+    compileOnly(libs.spring.boot.starter.actuator)
 
     testImplementation(project(":jodconverter-local"))
     testImplementation(project(":jodconverter-remote"))
 
     testImplementation(libs.wiremock)
     testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.spring.boot.starter.actuator)
     testImplementation(libs.jakarta.annotations)
 }

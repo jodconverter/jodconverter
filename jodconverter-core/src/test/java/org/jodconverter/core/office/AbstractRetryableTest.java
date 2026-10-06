@@ -22,6 +22,10 @@ package org.jodconverter.core.office;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -95,6 +99,47 @@ class AbstractRetryableTest {
 
   @Nested
   class Sleep {
+
+    @Test
+    void whenInterruptedWhileSleeping_ShouldThrowRetryTimeoutException() throws Exception {
+
+      // The first attempt fails, and the thread is interrupted while it waits for the next one.
+      final var attempted = new CountDownLatch(1);
+      final AbstractRetryable<RuntimeException> retryable =
+          new AbstractRetryable<>() {
+            @Override
+            protected void attempt() throws TemporaryException {
+              attempted.countDown();
+              throw new TemporaryException("attempt failed");
+            }
+          };
+      final var thrown = new AtomicReference<Throwable>();
+      final var thread =
+          new Thread(
+              () -> {
+                try {
+                  retryable.execute(60_000L, 120_000L);
+                } catch (Exception ex) {
+                  thrown.set(ex);
+                }
+              });
+
+      thread.start();
+      assertThat(attempted.await(10, TimeUnit.SECONDS)).isTrue();
+      // Interrupt the thread once it sleeps, not before it checks its interrupted status.
+      final var deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+      while (thread.getState() != Thread.State.TIMED_WAITING) {
+        assertThat(System.nanoTime()).isLessThan(deadline);
+        Thread.onSpinWait();
+      }
+      thread.interrupt();
+      thread.join(10_000L);
+
+      assertThat(thread.isAlive()).isFalse();
+      assertThat(thrown.get())
+          .isExactlyInstanceOf(RetryTimeoutException.class)
+          .hasCauseExactlyInstanceOf(InterruptedException.class);
+    }
 
     @Test
     void whenInterruptedWhileWaitingForTheNextAttempt_ShouldThrowRetryTimeoutException() {
