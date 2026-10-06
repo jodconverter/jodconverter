@@ -31,9 +31,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.cli.*;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.cli.help.TextHelpAppendable;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
@@ -41,12 +39,10 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
-import org.jodconverter.remote.ssl.SslConfig;
 
 /** Command line interface executable. */
 public final class Convert {
@@ -54,8 +50,7 @@ public final class Convert {
   /** Status returned when the program runs without errors. */
   public static final int STATUS_OK = 0;
 
-  // public static final int STATUS_MISSING_INPUT_FILE = 1;
-  /** Status returned an error occurred while running the program. */
+  /** Status returned when an error occurred while running the program. */
   public static final int STATUS_ERROR = 2;
 
   /** Status returned when the program arguments are invalid. */
@@ -64,12 +59,14 @@ public final class Convert {
   // Wide enough for most option descriptions to fit on one line (the default is 74).
   private static final int HELP_WIDTH = 120;
 
-  private static final Option OPT_APPLICATION_CONTEXT =
-      Option.builder("a")
-          .longOpt("application-context")
+  private static final Option OPT_CONFIG =
+      Option.builder()
+          .longOpt("config")
           .argName("file")
           .hasArg()
-          .desc("Application context file (optional)")
+          .desc(
+              "configuration file, JSON or YAML, with the filters applied to the documents"
+                  + " and the SSL options of a remote conversion (optional)")
           .get();
   private static final Option OPT_CONNECTION_URL =
       Option.builder("c")
@@ -224,12 +221,12 @@ public final class Convert {
   }
 
   private static OfficeManager createOfficeManager(
-      final CommandLine commandLine, final AbstractApplicationContext context) {
+      final CommandLine commandLine, final @Nullable CliConfig config) {
 
     // If the URL is present, we will use the remote office manager and thus,
     // an office installation won't be required locally.
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
-      return createRemoteOfficeManager(commandLine, context);
+      return createRemoteOfficeManager(commandLine, config);
     }
 
     // Not remote conversion...
@@ -274,34 +271,23 @@ public final class Convert {
   }
 
   private static OfficeManager createRemoteOfficeManager(
-      final CommandLine commandLine, final AbstractApplicationContext context) {
+      final CommandLine commandLine, final @Nullable CliConfig config) {
 
     final var connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
     assert connectionUrl != null;
     return RemoteOfficeManager.builder()
         .urlConnection(connectionUrl)
-        .sslConfig(
-            context == null ? null : context.getBeanProvider(SslConfig.class).getIfAvailable())
+        .sslConfig(config == null ? null : config.ssl())
         .build();
   }
 
-  private static AbstractApplicationContext getApplicationContextOption(
-      final CommandLine commandLine) {
+  private static @Nullable CliConfig getConfigOption(final CommandLine commandLine) {
 
-    if (commandLine.hasOption(OPT_APPLICATION_CONTEXT.getOpt())) {
-
-      return new FileSystemXmlApplicationContext(
-          commandLine.getOptionValue(OPT_APPLICATION_CONTEXT.getOpt()));
+    if (commandLine.hasOption(OPT_CONFIG.getLongOpt())) {
+      return CliConfigReader.read(new File(commandLine.getOptionValue(OPT_CONFIG.getLongOpt())));
     }
 
     return null;
-  }
-
-  private static FilterChain getFilterChain(final ApplicationContext context) {
-
-    return Optional.ofNullable(context)
-        .map(ctx -> ctx.getBeanProvider(FilterChain.class).getIfAvailable())
-        .orElse(null);
   }
 
   private static DocumentFormatRegistry getRegistryOption(final CommandLine commandLine)
@@ -329,7 +315,6 @@ public final class Convert {
   private static Options initOptions() {
 
     final var options = new Options();
-    options.addOption(OPT_APPLICATION_CONTEXT); // -a, --application-context
     options.addOption(OPT_CONNECTION_URL); // -c, --connection-url
     options.addOption(OPT_OUTPUT_DIRECTORY); // -d, --output-directory
     options.addOption(OPT_OUTPUT_FORMAT); // -f, --output-format
@@ -348,6 +333,7 @@ public final class Convert {
     options.addOption(OPT_VERSION); // -v, --version
     options.addOption(OPT_WORKING_DIR); // -i, --office-home
     options.addOption(OPT_EXISTING_PROCESS_ACTION); // -x, --existing-process-action
+    options.addOption(OPT_CONFIG); // --config
     options.addOption(OPT_PDF_PRESET); // --pdf-preset
     options.addOption(OPT_PDF_OPTION); // --pdf-option
 
@@ -395,26 +381,20 @@ public final class Convert {
         return STATUS_INVALID_ARGUMENTS;
       }
 
-      // Build the properties and the PDF options, before anything is started, since they may
-      // be invalid.
-      final PdfOptions pdfOptions;
+      // Build the conversion options and read the configuration file, before anything is
+      // started, since they may be invalid.
+      final ConversionOptions options;
+      final CliConfig config;
       try {
-        buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
-        buildProperties("store", commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt()));
-        pdfOptions =
-            PdfOptionsParser.parse(
-                commandLine.getOptionValue(OPT_PDF_PRESET.getLongOpt()),
-                commandLine.getOptionValues(OPT_PDF_OPTION.getLongOpt()));
+        options = ConversionOptions.parse(commandLine);
+        config = getConfigOption(commandLine);
       } catch (IllegalArgumentException ex) {
         printErr(ex.getMessage());
         return STATUS_INVALID_ARGUMENTS;
       }
 
-      // Load the application context if provided
-      final var context = getApplicationContextOption(commandLine);
-
       // Create a default office manager from the command line
-      final var officeManager = createOfficeManager(commandLine, context);
+      final var officeManager = createOfficeManager(commandLine, config);
 
       try {
         // Starts the manager
@@ -423,7 +403,7 @@ public final class Convert {
 
         // Build a client converter and start the conversion
         final var converter =
-            createCliConverter(commandLine, context, officeManager, registry, pdfOptions);
+            createCliConverter(commandLine, config, officeManager, registry, options);
 
         if (outputFormat == null) {
 
@@ -446,11 +426,6 @@ public final class Convert {
       } finally {
         printInfo("Stopping office");
         OfficeUtils.stopQuietly(officeManager);
-
-        // Close the application context if required
-        if (context != null) {
-          context.close();
-        }
       }
 
       return STATUS_OK;
@@ -458,7 +433,7 @@ public final class Convert {
     } catch (ParseException e) {
       printErr(e.getMessage());
       printHelp();
-      return STATUS_ERROR;
+      return STATUS_INVALID_ARGUMENTS;
     } catch (Exception e) {
       printErr(e.getMessage());
       e.printStackTrace(System.err);
@@ -542,40 +517,65 @@ public final class Convert {
 
   private static CliConverter createCliConverter(
       final CommandLine commandLine,
-      final AbstractApplicationContext context,
+      final @Nullable CliConfig config,
       final OfficeManager officeManager,
-      final DocumentFormatRegistry registry,
-      final PdfOptions pdfOptions) {
+      final @Nullable DocumentFormatRegistry registry,
+      final ConversionOptions options) {
 
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
       final var builder = RemoteConverter.builder().officeManager(officeManager);
       if (registry != null) {
         builder.formatRegistry(registry);
       }
-      return new CliConverter(builder.build(), pdfOptions);
+      return new CliConverter(builder.build(), options.pdfOptions());
     }
 
-    final var builder = LocalConverter.builder().officeManager(officeManager);
+    final var builder =
+        LocalConverter.builder()
+            .officeManager(officeManager)
+            .loadProperties(options.loadProperties())
+            .storeProperties(options.storeProperties());
     if (registry != null) {
       builder.formatRegistry(registry);
     }
 
-    // Specify custom load properties if required
-    final var loadProperties =
-        buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
-    builder.loadProperties(loadProperties);
-
-    // Specify custom store properties if required
-    final var storeProperties =
-        buildProperties("store", commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt()));
-    builder.storeProperties(storeProperties);
-
     // Specify a filter chain if required
-    final var filterChain = getFilterChain(context);
+    final var filterChain = config == null ? null : config.filterChain();
     if (filterChain != null) {
       builder.filterChain(filterChain);
     }
-    return new CliConverter(builder.build(), pdfOptions);
+    return new CliConverter(builder.build(), options.pdfOptions());
+  }
+
+  /**
+   * The options of the conversions given on the command line, parsed before the office manager is
+   * started since they may be invalid.
+   *
+   * @param loadProperties The load properties, from the {@code -l} arguments.
+   * @param storeProperties The store properties, from the {@code -s} arguments.
+   * @param pdfOptions The PDF options, from the {@code --pdf-preset} and {@code --pdf-option}
+   *     arguments, or null if there is none.
+   */
+  record ConversionOptions(
+      Map<String, Object> loadProperties,
+      Map<String, Object> storeProperties,
+      @Nullable PdfOptions pdfOptions) {
+
+    /**
+     * Parses the options of the given command line.
+     *
+     * @param commandLine The command line.
+     * @return The options.
+     * @throws IllegalArgumentException If an option is not valid.
+     */
+    static ConversionOptions parse(final CommandLine commandLine) {
+      return new ConversionOptions(
+          buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt())),
+          buildProperties("store", commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt())),
+          PdfOptionsParser.parse(
+              commandLine.getOptionValue(OPT_PDF_PRESET.getLongOpt()),
+              commandLine.getOptionValues(OPT_PDF_OPTION.getLongOpt())));
+    }
   }
 
   private static void printHelp() {

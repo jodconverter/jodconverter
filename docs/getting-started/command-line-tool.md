@@ -31,10 +31,6 @@ files to convert. Thus, it is possible with the jodconverter-cli tool to convert
 
 The target file which is the result of the conversion.
 
-#### -a, --application-context `<file>`
-
-Application context file (optional).
-
 #### -c, --connection-url `<url>`
 
 Remote LibreOffice Online server URL for conversion (optional).
@@ -107,6 +103,11 @@ Displays version information and exit.
 Directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir).
 See [Configuration](../../configuration/local-configuration#workingdir).
 
+#### --config `<file>`
+
+Configuration file, JSON or YAML (optional): the [filters](#filters) applied to the documents of a local conversion,
+and the [SSL options](#ssl-options) of a remote conversion. See [Configuration file](#configuration-file).
+
 #### --pdf-preset `<name>`
 
 PDF options to start from, for the PDF outputs (optional): `archive` (PDF/A-2b), `accessible` (PDF/UA) or `compact`
@@ -124,125 +125,124 @@ jodconverter-cli --pdf-preset archive --pdf-option pages.range=1-3 --pdf-option 
 See [PDF Options](pdf-options.md#command-line) for the names and the values. The other outputs of the same command
 are converted without these options.
 
-### Remarks
+### Configuration file
 
-- Using **-a**
+The `--config` option reads a file that holds what the other options cannot express: the filters applied to a loaded
+document before it is saved, and the SSL options of the connection to a LibreOffice Online server. The file is YAML
+when its name ends with `.yml` or `.yaml`, and JSON otherwise. Both sections are optional.
 
-An application context configuration file is really a Spring configuration file, so a configuration file will start
-with the following:
+#### Filters
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+The `filters` section lists the [filters](using-filters.md) applied to the loaded document, in order, before it is
+saved to the desired format. Each entry names a built-in filter with `type`, followed by the keys of that filter, or a
+custom filter with `class`. Here is a configuration that inserts a text into the document, then inserts a graphic, and
+finally replaces some text strings:
 
-  <!-- Configuration goes here! -->
-
-</beans>
+```yaml title="filters.yml"
+filters:
+  - type: text-inserter
+    text: text to insert
+    width: 100               # Width, 10 CM
+    height: 10               # Height, 1 CM
+    horizontal-position: 50  # Horizontal position, 5 CM
+    vertical-position: 100   # Vertical position, 10 CM
+  - type: graphic-inserter
+    image: /path/to/the/image.jpg
+    horizontal-position: 50  # Horizontal position, 5 CM
+    vertical-position: 111   # Vertical position, 11.1 CM (just under the text box)
+  - type: text-replacer
+    replacements:
+      text: Text
+      to insert: describing the image below
 ```
 
-A configuration file can be used to initialize
-the [filter chain](using-filters.md) that will be applied to the loaded
-document before it is saved to the desired format. Here's an example of a configuration to create a filter chain that
-will first insert a given text to the document, then will insert a graphic into it, and finally will apply the
-configured text strings replacement:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-  <!-- Creation of all the required filters we want to add to the filter chain. -->
-  <bean id="textInserterFilter" class="org.jodconverter.filter.text.TextInserterFilter">
-    <!-- Text to insert -->
-    <constructor-arg value="text to insert" />
-    <!-- Arguments related to the added box size and position -->
-    <constructor-arg value="100" /> <!-- Width, 10 CM -->
-    <constructor-arg value="10" />  <!-- Height, 1 CM -->
-    <constructor-arg value="50" />  <!-- Horizontal Position, 5 CM -->
-    <constructor-arg value="100" /> <!-- Vertical Position, 10 CM -->
-  </bean>
-  <bean id="graphicInserterFilter" class="org.jodconverter.filter.text.GraphicInserterFilter">
-    <!-- Path to the image -->
-    <constructor-arg value="src/integTest/resources/images/sample-1.jpg" />
-    <!-- Arguments related to the added box size and position -->
-    <constructor-arg value="50" />  <!-- Horizontal Position, 5 CM -->
-    <constructor-arg value="111" /> <!-- Vertical Position, 11.1 CM (just under text box) -->
-  </bean>
-  <bean id="textReplacerFilter" class="org.jodconverter.filter.text.TextReplacerFilter">
-    <constructor-arg name="searchList">
-      <list>
-        <value>text</value>
-        <value>to insert</value>
-      </list>
-    </constructor-arg>
-    <constructor-arg name="replacementList">
-      <list>
-        <value>Text</value>
-        <value>describing the image below</value>
-      </list>
-    </constructor-arg>
-  </bean>
-
-  <!-- Configure the filter chain that will be used while converting a document. -->
-  <bean id="filterChain" class="org.jodconverter.filter.DefaultFilterChain">
-    <constructor-arg>
-      <list>
-        <ref bean="textInserterFilter" />
-        <ref bean="graphicInserterFilter" />
-        <ref bean="textReplacerFilter" />
-      </list>
-    </constructor-arg>
-  </bean>
-
-</beans>
+```shell
+jodconverter-cli --config filters.yml infile outfile
 ```
 
-Combine with the *-c* switch, a configuration file can be used to initialize
-the [SSL Context](../libreoffice-remote/#ssl-support) of the connection
-to the Libre Office Online server:
+The same configuration in JSON:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-  <!-- Configure the SSL to secure communication with a Libre Office Online server. -->
-  <bean class="org.jodconverter.ssl.SslConfig">
-    <!-- Indicates whether SSL support is enabled or not. -->
-    <property name="enabled" value="true" />
-    <!-- Comma separated values of the supported SSL ciphers. Defaults to the JVM default values. -->
-    <property name="ciphers" value="ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA" />
-    <!-- Comma separated values of the enabled SSL protocols. Defaults to the JVM default values. -->
-    <property name="enabledProtocols" value="enabledProtocols" />
-    <!-- The alias that identifies the key in the key store. -->
-    <property name="keyAlias" value="keyalias" />
-    <!-- The password used to access the key in the key store. -->
-    <property name="keyPassword" value="keypassword" />
-    <!-- The path to the key store. -->
-    <property name="keyStore" value="/path/to/the/keystore.jks" />
-    <!-- The password used to load the key store. -->
-    <property name="keyStorePassword" value="keystorepassword" />
-    <!-- The type of key store. -->
-    <property name="keyStoreType" value="JKS" />
-    <!-- The provider for the key store. -->
-    <property name="keyStoreProvider" value="BC" />
-    <!-- The path to the trust store. -->
-    <property name="trustStore" value="/path/to/the/truststore.p12" />
-    <!-- The password used to load the trust store . -->
-    <property name="trustStorePassword" value="truststorepassword" />
-    <!-- The type of trust store. -->
-    <property name="trustStoreType" value="PKCS12" />
-    <!-- The provider for the trust store. -->
-    <property name="trustStoreProvider" value="SUN" />
-    <!-- The SSL protocol to use. Default to TLS. -->
-    <property name="protocol" value="TLS" />
-    <!-- Indicates whether hostname should be verify during SSL handshake. Defaults to true. -->
-    <property name="verifyHostname" value="true" />
-  </bean>
-</beans>
+```json title="filters.json"
+{
+  "filters": [
+    { "type": "text-inserter", "text": "text to insert", "width": 100, "height": 10,
+      "horizontal-position": 50, "vertical-position": 100 },
+    { "type": "graphic-inserter", "image": "/path/to/the/image.jpg",
+      "horizontal-position": 50, "vertical-position": 111 },
+    { "type": "text-replacer", "replacements": { "text": "Text", "to insert": "describing the image below" } }
+  ]
+}
+```
+
+The built-in filters and their keys are (the positions and sizes are in millimeters):
+
+| `type` | Keys |
+|---|---|
+| `pages-selector` | `pages`: a page number, or a list of page numbers; only these pages are converted. |
+| `text-inserter` | `text`, `width`, `height`; `horizontal-position` and `vertical-position`, or `shape-properties`, a map of the properties of the created text shape. |
+| `graphic-inserter` | `image`, the path of the image; `horizontal-position` and `vertical-position`, or `shape-properties`; optionally `width` and `height`, which resize the image. |
+| `document-inserter` | `document`, the path of the document appended to the converted one. |
+| `text-replacer` | `replacements`, a map of the texts to search and their replacements. |
+| `page-margins` | `left`, `top`, `right`, `bottom`, each optional. |
+| `table-of-content-updater` | `level`, the number of levels of the table of content, optional. |
+| `linked-images-embedder` | None; the linked images are embedded in the document. |
+| `refresh` | None; the document is refreshed. |
+
+A custom filter is a class that implements the
+[Filter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/Filter.java)
+interface, with a public no-argument constructor, in a jar added to the `lib` directory of the distribution:
+
+```yaml
+filters:
+  - type: pages-selector
+    pages: [1, 2]
+  - class: com.example.WatermarkFilter
+```
+
+#### SSL options
+
+Combined with the `-c` option, the `ssl` section configures the
+[SSL support](libreoffice-online.md#ssl-support) of the connection to the LibreOffice Online server. Its
+keys are the properties of the `SslConfig` class, in kebab case:
+
+```yaml title="ssl.yml"
+ssl:
+  # Whether SSL support is enabled. Defaults to false.
+  enabled: true
+  # The supported SSL ciphers; a list, or comma-separated. Defaults to the JVM default values.
+  ciphers: [ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA]
+  # The enabled SSL protocols; a list, or comma-separated. Defaults to the JVM default values.
+  enabled-protocols: [TLSv1.2, TLSv1.3]
+  # The alias that identifies the key in the key store.
+  key-alias: keyalias
+  # The password used to access the key in the key store.
+  key-password: keypassword
+  # The path to the key store.
+  key-store: /path/to/the/keystore.jks
+  # The password used to load the key store.
+  key-store-password: keystorepassword
+  # The type of key store.
+  key-store-type: JKS
+  # The provider for the key store.
+  key-store-provider: BC
+  # The path to the trust store.
+  trust-store: /path/to/the/truststore.p12
+  # The password used to load the trust store.
+  trust-store-password: truststorepassword
+  # The type of trust store.
+  trust-store-type: PKCS12
+  # The provider for the trust store.
+  trust-store-provider: SUN
+  # The SSL protocol to use. Defaults to TLS.
+  protocol: TLS
+  # Whether every certificate is trusted, without a trust store. Defaults to false.
+  trust-all: false
+  # Whether the host name is verified during the SSL handshake. Defaults to true.
+  verify-hostname: true
+```
+
+```shell
+jodconverter-cli -c "https://localhost:8001/lool/convert-to/" --config ssl.yml infile outfile
 ```
 
 --8<-- "note.md"

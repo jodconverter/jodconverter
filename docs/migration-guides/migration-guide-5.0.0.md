@@ -62,6 +62,9 @@ no longer import the Spring Boot BOM (`spring-boot-dependencies`). Each dependen
 An application that relied on JODConverter to bring Spring Boot's dependency management, without importing the
 Spring Boot BOM itself, may now resolve different versions of the libraries that BOM used to manage.
 
+The command line tool no longer depends on the Spring Framework: its distribution ships Gson and SnakeYAML Engine
+instead of the Spring jars, for its configuration file.
+
 ## API changes
 
 These changes only affect code that extends or calls these classes directly.
@@ -238,6 +241,32 @@ does not conflict with the new `jodconverter.local.pool-size` property. The effe
 port numbers, pipe names or pool size, the office process uses port 2002.
 
 ### Command line tool
+
+The `-a` / `--application-context` option, which loaded a Spring XML context for the filter chain and the SSL
+configuration, is replaced by `--config <file>`, a JSON or YAML file with a `filters` section and an `ssl` section.
+The built-in filters are named by `type` with their own keys, and a custom filter by `class`, which needs a public
+no-argument constructor:
+
+```yaml
+ssl:
+  enabled: true
+  trust-store: /path/to/truststore.p12
+  trust-store-password: secret
+filters:
+  - type: pages-selector
+    pages: [2]
+  - type: graphic-inserter
+    image: /path/to/image.jpg
+    horizontal-position: 50
+    vertical-position: 111
+  - class: com.example.MyFilter
+```
+
+The keys of the `ssl` section are the properties of `SslConfig` in kebab case; see the
+[command line tool](../getting-started/command-line-tool.md#configuration-file) page for the filters and their keys.
+A filter chain that needed Spring to wire constructor arguments beyond these keys becomes a custom filter class.
+
+An unknown option, like a missing file name, now exits with status 255 (invalid arguments) instead of 2 (error).
 
 The `--help` output now uses the new commons-cli help formatter: the options are printed as a table, up to 120
 columns wide.
