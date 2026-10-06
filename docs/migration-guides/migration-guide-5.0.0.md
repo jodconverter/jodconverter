@@ -104,6 +104,19 @@ public long findPid(final ProcessQuery query) throws IOException {
 - The property maps of a `DocumentFormat` (load and store properties) reject `null` keys and values.
 - `LocalOfficeManager.Builder.runAsArgs(...)` no longer accepts `null` elements.
 
+### Office manager pool
+
+The pool of office processes was rewritten. The classes of the previous pool, `AbstractOfficeManagerPool`,
+`AbstractOfficeManagerPoolEntry` and `SuspendableThreadPoolExecutor`, are removed. An office manager that extended
+them now extends `AbstractOfficeWorkerPool` and gives it its workers, one per office process or connection, each
+implementing `OfficeWorker` (start, restart, is-ready, execute, abort, stop). The three office managers of
+JODConverter are built this way.
+
+- `OfficeManager` has a new `submit(task)` method, with a default implementation that executes the task before
+    returning: a custom office manager keeps compiling and behaving as before.
+- `ConversionJob` has a new abstract `executeAsync()` method, and `AbstractConversionJob` asks its subclasses for
+    `getOfficeManager()` and `createTask()` instead of a `doExecute()` implementation.
+
 ### Removed deprecated methods
 
 `Lo.createInstanceMSF(...)` and `Lo.createInstanceMCF(...)` (local module), deprecated since 4.4.4, are removed; use the
@@ -149,13 +162,25 @@ When the port of a local office process is already used by another program, `sta
 `Port X on host 'Y' is already used by another program` error, instead of hanging until the process timeout. With
 `startFailFast` set to `false`, the error is logged.
 
-### Lost connections and timed-out tasks
+### Office manager pool
 
+The tasks of an office manager wait in a single queue, and an office process only takes a task when it is ready: a
+process that is starting or restarting is never given a task while another one is free, and a task submitted while a
+process starts waits in the queue instead of failing with the execution timeout.
+
+- `taskQueueTimeout` runs from the submission of a task until an office process takes it, so it includes the wait for a
+    process to be ready; `taskExecutionTimeout` runs from the moment the process starts the task. Before, the wait for
+    a process could count against the execution timeout.
+- With `startFailFast` (or `connectFailFast`) set to `false`, an office process that cannot be started is retried with
+    a growing delay instead of being logged once; set to `true`, a manager whose start fails is shut down for good.
+- A task that exceeds the task execution timeout, or whose calling thread is interrupted, is now cancelled: its office
+    process is killed and restarted. Before, the task could keep the process busy, and every following task waited
+    behind it. The exception keeps its `TimeoutException` cause.
 - After an unexpected loss of connection, an office process that is still running gets at most 2 seconds to exit by
     itself before it is killed and restarted, instead of the whole process timeout (2 minutes by default).
-- A task that exceeds the task execution timeout, or whose calling thread is interrupted, is now cancelled. Before,
-    it could keep the office process busy, and every following task waited behind it.
-- An interrupted calling thread no longer makes the pool lose an office manager.
+- When the manager is stopped, an idle office process is asked to terminate as before, but a process that is executing
+    a task is killed, even with `keepAliveOnShutdown`.
+- The restarts of an office process are visible: see `getStatus()` under the new features.
 
 ### Spring Boot starter
 
@@ -178,6 +203,9 @@ columns wide.
     properties.
 - [`poolSize`](../configuration/local-manager.md): start a number of office processes on free ports, without choosing
     them (`jodconverter.local.pool-size` with Spring Boot).
+- [`taskQueueCapacity`](../configuration/local-manager.md): bound the conversion queue, so that a task submitted while
+    the queue is full fails at once (`jodconverter.local.task-queue-capacity`, and the same for the external and
+    remote managers, with Spring Boot).
 - [`officeExecutable`](../configuration/local-manager.md): start the office processes through a launcher, such as a
     snap or an AppImage (`jodconverter.local.office-executable` with Spring Boot).
 - [External office manager in the Spring Boot starter](../configuration/external-manager.md#spring-boot): the

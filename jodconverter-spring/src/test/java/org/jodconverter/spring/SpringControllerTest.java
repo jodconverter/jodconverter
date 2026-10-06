@@ -45,6 +45,7 @@ class SpringControllerTest {
         .extracting(
             "workingDir",
             "taskExecutionTimeout",
+            "taskQueueCapacity",
             "taskQueueTimeout",
             "portNumbers",
             "officeHome",
@@ -61,6 +62,7 @@ class SpringControllerTest {
         .containsExactly(
             null,
             DEFAULT_TASK_EXECUTION_TIMEOUT,
+            DEFAULT_TASK_QUEUE_CAPACITY,
             DEFAULT_TASK_QUEUE_TIMEOUT,
             null,
             null,
@@ -82,6 +84,7 @@ class SpringControllerTest {
     final var bean = new JodConverterBean();
     bean.setWorkingDir(new File(testFolder, "workingDir").getPath());
     bean.setTaskExecutionTimeout(500L);
+    bean.setTaskQueueCapacity(7);
     bean.setTaskQueueTimeout(501L);
     bean.setPortNumbers("2005");
     bean.setOfficeHome(new File(testFolder, "officeHome").getPath());
@@ -101,6 +104,7 @@ class SpringControllerTest {
         .extracting(
             "workingDir",
             "taskExecutionTimeout",
+            "taskQueueCapacity",
             "taskQueueTimeout",
             "portNumbers",
             "officeHome",
@@ -117,6 +121,7 @@ class SpringControllerTest {
         .containsExactly(
             new File(testFolder, "workingDir").getPath(),
             500L,
+            7,
             501L,
             "2005",
             new File(testFolder, "officeHome").getPath(),

@@ -318,12 +318,13 @@ This property controls the SSL configuration to secure communication with the re
     jodconverter-cli --connection-url "https://localhost:8001" --application-context ssl.xml timeout infile outfile
     ```
 
-#### 🔢`maxTasksPerConnection`
+#### 🔢`taskQueueCapacity`
 
-This property sets the maximum number of tasks an office process can execute before reconnecting to it. 0 means an
-infinite number of tasks (will never reconnect).
+This property sets the maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+full fails at once with an `OfficeException`, instead of waiting for the queue timeout; a web application can thus
+answer right away that it is overloaded. 0 means no limit.
 
-&#160;***Default***: 1000
+&#160;***Default***: 0 (no limit)
 
 === "Java"
 
@@ -331,7 +332,7 @@ infinite number of tasks (will never reconnect).
     OfficeManager officeManager =
         RemoteOfficeManager
             .builder()
-            .maxTasksPerConnection(500)
+            .taskQueueCapacity(100)
             .build();
     ```
 
@@ -340,21 +341,22 @@ infinite number of tasks (will never reconnect).
     ```yml title="application.yml"
     jodconverter:
       remote:
-        max-tasks-per-connection: 500
+        task-queue-capacity: 100
     ```
 
     ```conf title="application.properties"
-    jodconverter.remote.max-tasks-per-connection = 500
+    jodconverter.remote.task-queue-capacity = 100
     ```
 
 === "Command Line"
 
-    `maxTasksPerConnection` can't be set with the command line tool, it will always be 200.
+    `taskQueueCapacity` can't be set with the command line tool, it will always be 0.
 
 #### ⌚`taskQueueTimeout`
 
-This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
-the queue if the waiting time is longer than this timeout and an `OfficeException` will be thrown.
+This property sets the maximum time a task waits in the conversion queue, from its submission until a worker of the
+pool takes it. When it expires, the task is removed from the queue without having been executed and fails with an
+`OfficeException`.
 
 &#160;***Default***: 30000 (30 seconds)
 
@@ -386,8 +388,8 @@ the queue if the waiting time is longer than this timeout and an `OfficeExceptio
 
 #### ⌚`taskExecutionTimeout`
 
-This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
-timeout, this task will be aborted and the next task is processed.
+This property sets the maximum time allowed to execute a task, counted from the moment a worker of the pool starts it.
+When it expires, the task fails with an `OfficeException` and its request to the server is aborted.
 
 &#160;***Default***: 120000 (2 minutes)
 

@@ -73,6 +73,7 @@ public class JodConverterExternalAutoConfiguration {
         .pipeNames(properties.getPipeNames())
         .websocketUrls(properties.getWebsocketUrls())
         .workingDir(properties.getWorkingDir())
+        .taskQueueCapacity(properties.getTaskQueueCapacity())
         .taskQueueTimeout(properties.getTaskQueueTimeout())
         .taskExecutionTimeout(properties.getTaskExecutionTimeout())
         .connectOnStart(properties.isConnectOnStart())

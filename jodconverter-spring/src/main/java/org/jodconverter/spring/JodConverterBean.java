@@ -60,6 +60,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
 
   private String workingDir;
   private Long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
+  private Integer taskQueueCapacity = DEFAULT_TASK_QUEUE_CAPACITY;
   private Long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
 
   private String hostName = DEFAULT_HOSTNAME;
@@ -102,6 +103,7 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
         .hostName(hostName)
         .workingDir(workingDir)
         .taskExecutionTimeout(taskExecutionTimeout)
+        .taskQueueCapacity(taskQueueCapacity)
         .taskQueueTimeout(taskQueueTimeout)
         .officeHome(officeHome)
         .processManager(processManagerClass)
@@ -194,6 +196,18 @@ public class JodConverterBean implements InitializingBean, DisposableBean {
    */
   public void setTaskExecutionTimeout(final @Nullable Long taskExecutionTimeout) {
     this.taskExecutionTimeout = taskExecutionTimeout;
+  }
+
+  /**
+   * Specifies the maximum number of tasks waiting in the conversion queue. A task submitted while
+   * the queue is full fails at once.
+   *
+   * <p>&nbsp; <b><i>Default</i></b>: 0 (no limit)
+   *
+   * @param taskQueueCapacity The task queue capacity; 0 means no limit.
+   */
+  public void setTaskQueueCapacity(final @Nullable Integer taskQueueCapacity) {
+    this.taskQueueCapacity = taskQueueCapacity;
   }
 
   /**
