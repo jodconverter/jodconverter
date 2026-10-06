@@ -52,6 +52,11 @@ final class OfficeWorkerRunner implements Runnable {
   private volatile boolean stopping;
   private volatile Thread thread;
 
+  // Written by the thread of this runner, read by the status of the pool.
+  private volatile int tasksSinceStart;
+  private volatile int restarts;
+  private volatile int startFailures;
+
   // Only used by the thread of this runner.
   private boolean startAttempted;
   private boolean started;
@@ -73,6 +78,15 @@ final class OfficeWorkerRunner implements Runnable {
 
   /* default */ OfficeWorkerState getState() {
     return state;
+  }
+
+  /**
+   * Gets a snapshot of the state and counters of this worker.
+   *
+   * @return The status of the worker.
+   */
+  /* default */ OfficeWorkerStatus getStatus() {
+    return new OfficeWorkerStatus(state, tasksSinceStart, restarts, startFailures);
   }
 
   /* default */ CompletableFuture<Void> getFirstStart() {
@@ -127,7 +141,6 @@ final class OfficeWorkerRunner implements Runnable {
     }
 
     state = started ? OfficeWorkerState.RESTARTING : OfficeWorkerState.STARTING;
-    var failures = 0;
     while (!stopping) {
       try {
         if (startAttempted) {
@@ -136,8 +149,14 @@ final class OfficeWorkerRunner implements Runnable {
           startAttempted = true;
           worker.start();
         }
+        if (started) {
+          // A retry of the first start is not a restart.
+          restarts++;
+        }
         started = true;
         restartRequired = false;
+        startFailures = 0;
+        tasksSinceStart = 0;
         firstStart.complete(null);
         return true;
       } catch (OfficeException | RuntimeException ex) {
@@ -148,7 +167,7 @@ final class OfficeWorkerRunner implements Runnable {
           firstStart.completeExceptionally(ex);
           return false;
         }
-        final var delay = pool.getRestartDelay(failures++);
+        final var delay = pool.getRestartDelay(startFailures++);
         LOGGER.warn("An office worker could not be made ready; retrying in {} ms", delay, ex);
         sleep(delay);
       }
@@ -191,6 +210,7 @@ final class OfficeWorkerRunner implements Runnable {
       failure = ex;
     }
 
+    tasksSinceStart++;
     synchronized (jobLock) {
       currentJob = null;
     }

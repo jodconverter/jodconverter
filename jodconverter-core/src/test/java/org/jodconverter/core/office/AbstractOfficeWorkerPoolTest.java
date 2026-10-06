@@ -768,6 +768,97 @@ class AbstractOfficeWorkerPoolTest {
   }
 
   @Nested
+  class Status {
+
+    @Test
+    void whenNeverStarted_ShouldHaveNoWorker() {
+
+      pool = builder(new FakeOfficeWorker()).build();
+
+      final var status = pool.getStatus();
+
+      assertThat(status.workers()).isEmpty();
+      assertThat(status.queueSize()).isZero();
+      assertThat(status.isRunning()).isFalse();
+    }
+
+    @Test
+    void whenStarted_ShouldReportReadyWorkersWithoutAnyTask() throws OfficeException {
+
+      started(new FakeOfficeWorker(), new FakeOfficeWorker());
+
+      final var status = pool.getStatus();
+
+      assertThat(status.workers())
+          .containsExactly(
+              new OfficeWorkerStatus(OfficeWorkerState.READY, 0, 0, 0),
+              new OfficeWorkerStatus(OfficeWorkerState.READY, 0, 0, 0));
+      assertThat(status.count(OfficeWorkerState.READY)).isEqualTo(2);
+      assertThat(status.count(OfficeWorkerState.BUSY)).isZero();
+      assertThat(status.isRunning()).isTrue();
+    }
+
+    @Test
+    void shouldCountTheTasksSinceTheLastStartAndTheRestarts() throws OfficeException {
+
+      final var worker = new FakeOfficeWorker();
+      worker.maxTasks = 2;
+      started(worker);
+
+      pool.execute(NOOP);
+      assertThat(pool.getStatus().workers())
+          .containsExactly(new OfficeWorkerStatus(OfficeWorkerState.READY, 1, 0, 0));
+
+      // The second task reaches the limit: the worker restarts before the third one.
+      pool.execute(NOOP);
+      pool.execute(NOOP);
+
+      await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.READY);
+      assertThat(pool.getStatus().workers())
+          .containsExactly(new OfficeWorkerStatus(OfficeWorkerState.READY, 1, 1, 0));
+    }
+
+    @Test
+    void whenAWorkerCannotBeMadeReady_ShouldCountTheFailedAttempts() throws Exception {
+
+      final var worker = new FakeOfficeWorker();
+      worker.failingStarts.set(2);
+      pool = builder(worker).startFailFast(false).build();
+
+      pool.start();
+
+      // The attempts that fail are counted while the worker is not ready...
+      await(() -> pool.getStatus().workers().get(0).startFailures() > 0);
+      await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.READY);
+      // ...and forgotten once it is ready. The attempts of the start are not restarts.
+      assertThat(pool.getStatus().workers())
+          .containsExactly(new OfficeWorkerStatus(OfficeWorkerState.READY, 0, 0, 0));
+    }
+
+    @Test
+    void whileATaskWaits_ShouldReportTheBusyWorkerAndTheQueue() throws Exception {
+
+      final var worker = new FakeOfficeWorker();
+      started(worker);
+      final var blocking = new BlockingTask();
+      final var running = pool.submit(blocking);
+      blocking.awaitStarted();
+      final var waiting = pool.submit(NOOP);
+
+      final var status = pool.getStatus();
+
+      assertThat(status.workers().get(0).state()).isEqualTo(OfficeWorkerState.BUSY);
+      assertThat(status.count(OfficeWorkerState.BUSY)).isEqualTo(1);
+      assertThat(status.queueSize()).isEqualTo(1);
+      assertThat(status.isRunning()).isTrue();
+
+      blocking.release.countDown();
+      running.get(10, TimeUnit.SECONDS);
+      waiting.get(10, TimeUnit.SECONDS);
+    }
+  }
+
+  @Nested
   class Stop {
 
     @Test

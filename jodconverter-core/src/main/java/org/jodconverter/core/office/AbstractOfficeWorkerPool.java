@@ -290,6 +290,17 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
   }
 
   /**
+   * Gets a snapshot of this pool: the status of each worker, in the order of the workers, and the
+   * number of tasks waiting in the queue.
+   *
+   * @return The status of the pool; without any worker if the pool was never started.
+   */
+  public @NonNull OfficeWorkerPoolStatus getStatus() {
+    return new OfficeWorkerPoolStatus(
+        runners.stream().map(OfficeWorkerRunner::getStatus).toList(), queue.size());
+  }
+
+  /**
    * Submits a task, to be executed as soon as a worker is ready, and returns at once.
    *
    * <p>The returned future completes when the task is done. It completes exceptionally, with an
