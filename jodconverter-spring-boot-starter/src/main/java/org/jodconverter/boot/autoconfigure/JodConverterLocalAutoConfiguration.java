@@ -30,7 +30,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -83,18 +82,15 @@ public class JodConverterLocalAutoConfiguration {
             .hostName(properties.getHostName())
             .portNumbers(properties.getPortNumbers())
             .pipeNames(properties.getPipeNames())
-            .workingDir(properties.getWorkingDir())
             .templateProfileDir(properties.getTemplateProfileDir())
             .existingProcessAction(properties.getExistingProcessAction())
-            .processTimeout(properties.getProcessTimeout())
-            .processRetryInterval(properties.getProcessRetryInterval())
-            .afterStartProcessDelay(properties.getAfterStartProcessDelay())
+            .processTimeout(properties.getProcessTimeout().toMillis())
+            .processRetryInterval(properties.getProcessRetryInterval().toMillis())
+            .afterStartProcessDelay(properties.getAfterStartProcessDelay().toMillis())
             .startFailFast(properties.isStartFailFast())
             .keepAliveOnShutdown(properties.isKeepAliveOnShutdown())
-            .taskQueueCapacity(properties.getTaskQueueCapacity())
-            .taskQueueTimeout(properties.getTaskQueueTimeout())
-            .taskExecutionTimeout(properties.getTaskExecutionTimeout())
             .maxTasksPerProcess(properties.getMaxTasksPerProcess());
+    properties.applyTo(builder);
     if (properties.getPoolSize() != null) {
       builder.poolSize(properties.getPoolSize());
     }
@@ -156,10 +152,8 @@ public class JodConverterLocalAutoConfiguration {
     return createOfficeManager(processManager);
   }
 
-  // Must appear after the localOfficeManager bean creation. Do not reorder this class by name.
   @Bean
   @ConditionalOnMissingBean(name = "localDocumentConverter")
-  @ConditionalOnBean(name = {"localOfficeManager", "documentFormatRegistry"})
   // The qualifier is required when the remote office manager also exists: since Spring 6.1, a
   // parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter localDocumentConverter(

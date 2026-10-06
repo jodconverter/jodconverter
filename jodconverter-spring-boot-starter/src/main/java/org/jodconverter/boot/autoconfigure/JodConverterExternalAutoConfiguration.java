@@ -27,7 +27,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -67,27 +66,23 @@ public class JodConverterExternalAutoConfiguration {
   @ConditionalOnMissingBean(name = "externalOfficeManager")
   /* default */ OfficeManager externalOfficeManager() {
 
-    return ExternalOfficeManager.builder()
-        .hostName(properties.getHostName())
-        .portNumbers(properties.getPortNumbers())
-        .pipeNames(properties.getPipeNames())
-        .websocketUrls(properties.getWebsocketUrls())
-        .workingDir(properties.getWorkingDir())
-        .taskQueueCapacity(properties.getTaskQueueCapacity())
-        .taskQueueTimeout(properties.getTaskQueueTimeout())
-        .taskExecutionTimeout(properties.getTaskExecutionTimeout())
-        .connectOnStart(properties.isConnectOnStart())
-        .connectTimeout(properties.getConnectTimeout())
-        .connectRetryInterval(properties.getConnectRetryInterval())
-        .connectFailFast(properties.isConnectFailFast())
-        .maxTasksPerConnection(properties.getMaxTasksPerConnection())
-        .build();
+    final var builder =
+        ExternalOfficeManager.builder()
+            .hostName(properties.getHostName())
+            .portNumbers(properties.getPortNumbers())
+            .pipeNames(properties.getPipeNames())
+            .websocketUrls(properties.getWebsocketUrls())
+            .connectOnStart(properties.isConnectOnStart())
+            .connectTimeout(properties.getConnectTimeout().toMillis())
+            .connectRetryInterval(properties.getConnectRetryInterval().toMillis())
+            .connectFailFast(properties.isConnectFailFast())
+            .maxTasksPerConnection(properties.getMaxTasksPerConnection());
+    properties.applyTo(builder);
+    return builder.build();
   }
 
-  // Must appear after the externalOfficeManager bean creation. Do not reorder this class by name.
   @Bean
   @ConditionalOnMissingBean(name = "externalDocumentConverter")
-  @ConditionalOnBean(name = "externalOfficeManager")
   // The qualifier is required when the local or remote office manager also exists: since Spring
   // 6.1, a parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter externalDocumentConverter(

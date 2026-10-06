@@ -20,10 +20,14 @@
 
 package org.jodconverter.boot.autoconfigure;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.convert.DurationUnit;
 
 import org.jodconverter.remote.office.RemoteOfficeManager;
 import org.jodconverter.remote.ssl.SslConfig;
@@ -37,7 +41,7 @@ import org.jodconverter.remote.ssl.SslConfig;
   "PMD.TooManyFields",
   "PMD.UseVarargs"
 })
-public class JodConverterRemoteProperties {
+public class JodConverterRemoteProperties extends JodConverterPoolProperties {
 
   /** Enable JODConverter Remote. */
   private boolean enabled;
@@ -46,46 +50,24 @@ public class JodConverterRemoteProperties {
   private String url;
 
   /**
-   * The timeout in milliseconds until a connection is established. A timeout value of zero is
-   * interpreted as an infinite timeout. A negative value is interpreted as undefined (system
-   * default).
+   * The timeout until a connection is established. A timeout value of zero is interpreted as an
+   * infinite timeout. A negative value is interpreted as undefined (system default). A plain number
+   * is in milliseconds.
    */
-  private long connectTimeout = RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT;
+  @DurationUnit(ChronoUnit.MILLIS)
+  private Duration connectTimeout = Duration.ofMillis(RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT);
 
   /**
-   * The socket timeout in milliseconds, which is the timeout for waiting for data or, put
-   * differently, a maximum period inactivity between two consecutive data packets. A timeout value
-   * of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined
-   * (system default).
+   * The socket timeout, which is the timeout for waiting for data or, put differently, a maximum
+   * period inactivity between two consecutive data packets. A timeout value of zero is interpreted
+   * as an infinite timeout. A negative value is interpreted as undefined (system default). A plain
+   * number is in milliseconds.
    */
-  private long socketTimeout = RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT;
+  @DurationUnit(ChronoUnit.MILLIS)
+  private Duration socketTimeout = Duration.ofMillis(RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT);
 
   /** Pool size of the manager. */
-  private int poolSize = 1;
-
-  /**
-   * Directory where temporary files will be created. If not set, it defaults to the system
-   * temporary directory as specified by the java.io.tmpdir system property.
-   */
-  private String workingDir;
-
-  /**
-   * Maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
-   * full fails at once. 0 means no limit.
-   */
-  private int taskQueueCapacity;
-
-  /**
-   * Maximum living time of a task in the conversion queue. The task will be removed from the queue
-   * if the waiting time is longer than this timeout.
-   */
-  private long taskQueueTimeout = 30_000L;
-
-  /**
-   * Maximum time allowed to process a task. If the processing time of a task is longer than this
-   * timeout, this task will be aborted and the next task is processed.
-   */
-  private long taskExecutionTimeout = 120_000L;
+  private int poolSize = RemoteOfficeManager.DEFAULT_POOL_SIZE;
 
   @NestedConfigurationProperty private SslProperties ssl;
 
@@ -105,19 +87,19 @@ public class JodConverterRemoteProperties {
     this.url = url;
   }
 
-  public long getConnectTimeout() {
+  public @NonNull Duration getConnectTimeout() {
     return connectTimeout;
   }
 
-  public void setConnectTimeout(final long connectTimeout) {
+  public void setConnectTimeout(final @NonNull Duration connectTimeout) {
     this.connectTimeout = connectTimeout;
   }
 
-  public long getSocketTimeout() {
+  public @NonNull Duration getSocketTimeout() {
     return socketTimeout;
   }
 
-  public void setSocketTimeout(final long socketTimeout) {
+  public void setSocketTimeout(final @NonNull Duration socketTimeout) {
     this.socketTimeout = socketTimeout;
   }
 
@@ -127,38 +109,6 @@ public class JodConverterRemoteProperties {
 
   public void setPoolSize(final int poolSize) {
     this.poolSize = poolSize;
-  }
-
-  public @Nullable String getWorkingDir() {
-    return workingDir;
-  }
-
-  public void setWorkingDir(final @Nullable String workingDir) {
-    this.workingDir = workingDir;
-  }
-
-  public int getTaskQueueCapacity() {
-    return taskQueueCapacity;
-  }
-
-  public void setTaskQueueCapacity(final int taskQueueCapacity) {
-    this.taskQueueCapacity = taskQueueCapacity;
-  }
-
-  public long getTaskQueueTimeout() {
-    return taskQueueTimeout;
-  }
-
-  public void setTaskQueueTimeout(final long taskQueueTimeout) {
-    this.taskQueueTimeout = taskQueueTimeout;
-  }
-
-  public long getTaskExecutionTimeout() {
-    return taskExecutionTimeout;
-  }
-
-  public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
-    this.taskExecutionTimeout = taskExecutionTimeout;
   }
 
   public @Nullable SslProperties getSsl() {

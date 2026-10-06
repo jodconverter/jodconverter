@@ -22,6 +22,8 @@ package org.jodconverter.boot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +34,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.jodconverter.boot.autoconfigure.JodConverterLocalProperties;
 import org.jodconverter.boot.autoconfigure.JodConverterRemoteProperties;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
 /**
@@ -95,20 +99,20 @@ class AutoConfigurationDefaultPropertiesITest {
             new String[] {},
             null,
             null,
-            120_000L,
-            250L,
-            0L,
-            "kill",
+            Duration.ofMillis(120_000L),
+            Duration.ofMillis(250L),
+            Duration.ZERO,
+            ExistingProcessAction.KILL,
             false,
             false,
             0,
-            30_000L,
-            120_000L,
+            Duration.ofMillis(30_000L),
+            Duration.ofMillis(120_000L),
             200,
             null,
             true,
             false,
-            "auto");
+            LoadDocumentMode.AUTO);
   }
 
   @Test
@@ -129,13 +133,13 @@ class AutoConfigurationDefaultPropertiesITest {
         .containsExactly(
             true,
             "https://localhost:8001",
-            RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT,
-            RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT,
+            Duration.ofMillis(RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT),
+            Duration.ofMillis(RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT),
             null,
             1,
-            120_000L,
+            Duration.ofMillis(120_000L),
             0,
-            30_000L,
+            Duration.ofMillis(30_000L),
             null);
   }
 }

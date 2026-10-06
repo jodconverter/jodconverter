@@ -549,7 +549,7 @@ and to learn more about a use case where this properly is useful.
     ```
 
     ```conf title="application.properties"
-    jodconverter.local.existing-process-action = onnect_or_kill
+    jodconverter.local.existing-process-action = connect_or_kill
     ```
 
 === "Command Line"

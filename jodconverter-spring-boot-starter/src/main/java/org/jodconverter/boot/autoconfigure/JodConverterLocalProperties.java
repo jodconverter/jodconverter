@@ -20,20 +20,24 @@
 
 package org.jodconverter.boot.autoconfigure;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationUnit;
 
 import org.jodconverter.core.document.DocumentFormatProperties;
-import org.jodconverter.core.office.AbstractOfficeWorkerPool;
 import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.task.LoadDocumentMode;
 
 /** Configuration class for JODConverter. */
 @ConfigurationProperties("jodconverter.local")
-public class JodConverterLocalProperties {
+public class JodConverterLocalProperties extends JodConverterPoolProperties {
 
   /** Enable JODConverter, which means that office instances will be launched. */
   private boolean enabled;
@@ -80,12 +84,6 @@ public class JodConverterLocalProperties {
   private String[] pipeNames = {};
 
   /**
-   * Directory where temporary office profiles will be created. If not set, it defaults to the
-   * system temporary directory as specified by the java.io.tmpdir system property.
-   */
-  private String workingDir;
-
-  /**
    * Template profile directory to copy to a created office profile directory when an office
    * processed is launched.
    */
@@ -98,25 +96,34 @@ public class JodConverterLocalProperties {
   private String processManagerClass;
 
   /**
-   * Process timeout (milliseconds). Used when trying to execute an office process call
-   * (start/connect/terminate).
+   * Process timeout, used when trying to execute an office process call (start/connect/terminate).
+   * A plain number is in milliseconds.
    */
-  private long processTimeout = LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
+  @DurationUnit(ChronoUnit.MILLIS)
+  private Duration processTimeout = Duration.ofMillis(LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT);
 
   /**
-   * Process retry interval (milliseconds). Used for waiting between office process call tries
-   * (start/connect/terminate).
+   * Process retry interval, used for waiting between office process call tries
+   * (start/connect/terminate). A plain number is in milliseconds.
    */
-  private long processRetryInterval = LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
+  @DurationUnit(ChronoUnit.MILLIS)
+  private Duration processRetryInterval =
+      Duration.ofMillis(LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL);
 
-  /** Specifies the delay after an attempt to start an office process before doing anything else. */
-  private long afterStartProcessDelay = LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
+  /**
+   * Specifies the delay after an attempt to start an office process before doing anything else. A
+   * plain number is in milliseconds.
+   */
+  @DurationUnit(ChronoUnit.MILLIS)
+  private Duration afterStartProcessDelay =
+      Duration.ofMillis(LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY);
 
   /**
    * Specifies the action that must be taken when starting a new office process, and there already
    * is an existing running process for the same connection string.
    */
-  private String existingProcessAction = LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION_STRING;
+  private ExistingProcessAction existingProcessAction =
+      LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
 
   /**
    * Controls whether the manager will "fail fast" if an office process cannot be started or the
@@ -136,24 +143,6 @@ public class JodConverterLocalProperties {
    * stopped gracefully).
    */
   private boolean keepAliveOnShutdown = LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-
-  /**
-   * Maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
-   * full fails at once. 0 means no limit.
-   */
-  private int taskQueueCapacity = AbstractOfficeWorkerPool.DEFAULT_TASK_QUEUE_CAPACITY;
-
-  /**
-   * Maximum living time of a task in the conversion queue. The task will be removed from the queue
-   * if the waiting time is longer than this timeout.
-   */
-  private long taskQueueTimeout = AbstractOfficeWorkerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-
-  /**
-   * Maximum time allowed to process a task. If the processing time of a task is longer than this
-   * timeout, this task will be aborted and the next task is processed.
-   */
-  private long taskExecutionTimeout = AbstractOfficeWorkerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
 
   /** Maximum number of tasks an office process can execute before restarting. */
   private int maxTasksPerProcess = LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
@@ -181,7 +170,7 @@ public class JodConverterLocalProperties {
    * assuming the office process has access to the file on disk or not. If not, the conversion
    * process will use stream adapters.
    */
-  private String loadDocumentMode = LocalConverter.DEFAULT_LOAD_DOCUMENT_MODE_STRING;
+  private LoadDocumentMode loadDocumentMode = LocalConverter.DEFAULT_LOAD_DOCUMENT_MODE;
 
   public boolean isEnabled() {
     return enabled;
@@ -239,14 +228,6 @@ public class JodConverterLocalProperties {
     this.pipeNames = pipeNames;
   }
 
-  public @Nullable String getWorkingDir() {
-    return workingDir;
-  }
-
-  public void setWorkingDir(final @Nullable String workingDir) {
-    this.workingDir = workingDir;
-  }
-
   public @Nullable String getTemplateProfileDir() {
     return templateProfileDir;
   }
@@ -263,35 +244,35 @@ public class JodConverterLocalProperties {
     this.processManagerClass = processManagerClass;
   }
 
-  public long getProcessTimeout() {
+  public @NonNull Duration getProcessTimeout() {
     return processTimeout;
   }
 
-  public void setProcessTimeout(final long processTimeout) {
+  public void setProcessTimeout(final @NonNull Duration processTimeout) {
     this.processTimeout = processTimeout;
   }
 
-  public long getProcessRetryInterval() {
+  public @NonNull Duration getProcessRetryInterval() {
     return processRetryInterval;
   }
 
-  public void setProcessRetryInterval(final long procesRetryInterval) {
+  public void setProcessRetryInterval(final @NonNull Duration procesRetryInterval) {
     this.processRetryInterval = procesRetryInterval;
   }
 
-  public long getAfterStartProcessDelay() {
+  public @NonNull Duration getAfterStartProcessDelay() {
     return afterStartProcessDelay;
   }
 
-  public void setAfterStartProcessDelay(final long afterStartProcessDelay) {
+  public void setAfterStartProcessDelay(final @NonNull Duration afterStartProcessDelay) {
     this.afterStartProcessDelay = afterStartProcessDelay;
   }
 
-  public @Nullable String getExistingProcessAction() {
+  public @NonNull ExistingProcessAction getExistingProcessAction() {
     return existingProcessAction;
   }
 
-  public void setExistingProcessAction(final @Nullable String existingProcessAction) {
+  public void setExistingProcessAction(final @NonNull ExistingProcessAction existingProcessAction) {
     this.existingProcessAction = existingProcessAction;
   }
 
@@ -309,30 +290,6 @@ public class JodConverterLocalProperties {
 
   public void setKeepAliveOnShutdown(final boolean keepAliveOnShutdown) {
     this.keepAliveOnShutdown = keepAliveOnShutdown;
-  }
-
-  public int getTaskQueueCapacity() {
-    return taskQueueCapacity;
-  }
-
-  public void setTaskQueueCapacity(final int taskQueueCapacity) {
-    this.taskQueueCapacity = taskQueueCapacity;
-  }
-
-  public long getTaskQueueTimeout() {
-    return taskQueueTimeout;
-  }
-
-  public void setTaskQueueTimeout(final long taskQueueTimeout) {
-    this.taskQueueTimeout = taskQueueTimeout;
-  }
-
-  public long getTaskExecutionTimeout() {
-    return taskExecutionTimeout;
-  }
-
-  public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
-    this.taskExecutionTimeout = taskExecutionTimeout;
   }
 
   public int getMaxTasksPerProcess() {
@@ -376,11 +333,11 @@ public class JodConverterLocalProperties {
     this.useUnsafeQuietUpdate = useUnsafeQuietUpdate;
   }
 
-  public @Nullable String getLoadDocumentMode() {
+  public @NonNull LoadDocumentMode getLoadDocumentMode() {
     return loadDocumentMode;
   }
 
-  public void setLoadDocumentMode(final @Nullable String loadDocumentMode) {
+  public void setLoadDocumentMode(final @NonNull LoadDocumentMode loadDocumentMode) {
     this.loadDocumentMode = loadDocumentMode;
   }
 }
