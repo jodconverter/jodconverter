@@ -72,50 +72,48 @@ final OfficeManager manager =
         .build();
 ```
 
-When JODConverter remote is used as a Command Line Tool, you must provide the SSL configuration through an application
-context configuration file, which is the **-a** or **--application-context**. Here's an example of an SSL configuration
-file.
+When JODConverter remote is used as a Command Line Tool, you provide the SSL configuration through the configuration
+file of the **--config** option, JSON or YAML, in its `ssl` section. Here is an example of an SSL configuration file,
+with every key; see the [command line tool](command-line-tool.md#ssl-options) page.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+```yaml title="ssl.yml"
+ssl:
+  # Whether SSL support is enabled. Defaults to false.
+  enabled: true
+  # The supported SSL ciphers; a list, or comma-separated. Defaults to the JVM default values.
+  ciphers: [ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA]
+  # The enabled SSL protocols; a list, or comma-separated. Defaults to the JVM default values.
+  enabled-protocols: [TLSv1.2, TLSv1.3]
+  # The alias that identifies the key in the key store.
+  key-alias: keyalias
+  # The password used to access the key in the key store.
+  key-password: keypassword
+  # The path to the key store.
+  key-store: /path/to/the/keystore.jks
+  # The password used to load the key store.
+  key-store-password: keystorepassword
+  # The type of key store.
+  key-store-type: JKS
+  # The provider for the key store.
+  key-store-provider: BC
+  # The path to the trust store.
+  trust-store: /path/to/the/truststore.p12
+  # The password used to load the trust store.
+  trust-store-password: truststorepassword
+  # The type of trust store.
+  trust-store-type: PKCS12
+  # The provider for the trust store.
+  trust-store-provider: SUN
+  # The SSL protocol to use. Defaults to TLS.
+  protocol: TLS
+  # Whether every certificate is trusted, without a trust store. Defaults to false.
+  trust-all: false
+  # Whether the host name is verified during the SSL handshake. Defaults to true.
+  verify-hostname: true
+```
 
-    <!-- Configure the SSL to secure communication with a Libre Office Online server. -->
-    <bean class="org.jodconverter.ssl.SslConfig">
-        <!-- Indicates whether SSL support is enabled or not. -->
-        <property name="enabled" value="true"/>
-        <!-- Comma separated values of the supported SSL ciphers. Defaults to the JVM default values. -->
-        <property name="ciphers" value="ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"/>
-        <!-- Comma separated values of the enabled SSL protocols. Defaults to the JVM default values. -->
-        <property name="enabledProtocols" value="enabledProtocols"/>
-        <!-- The alias that identifies the key in the key store. -->
-        <property name="keyAlias" value="keyalias"/>
-        <!-- The password used to access the key in the key store. -->
-        <property name="keyPassword" value="keypassword"/>
-        <!-- The path to the key store. -->
-        <property name="keyStore" value="/path/to/the/keystore.jks"/>
-        <!-- The password used to load the key store. -->
-        <property name="keyStorePassword" value="keystorepassword"/>
-        <!-- The type of key store. -->
-        <property name="keyStoreType" value="JKS"/>
-        <!-- The provider for the key store. -->
-        <property name="keyStoreProvider" value="BC"/>
-        <!-- The path to the trust store. -->
-        <property name="trustStore" value="/path/to/the/truststore.p12"/>
-        <!-- The password used to load the trust store . -->
-        <property name="trustStorePassword" value="truststorepassword"/>
-        <!-- The type of trust store. -->
-        <property name="trustStoreType" value="PKCS12"/>
-        <!-- The provider for the trust store. -->
-        <property name="trustStoreProvider" value="SUN"/>
-        <!-- The SSL protocol to use. Default to TLS. -->
-        <property name="protocol" value="TLS"/>
-        <!-- Indicates whether hostname should be verify during SSL handshake. Defaults to true. -->
-        <property name="verifyHostname" value="true"/>
-    </bean>
-</beans>
+```shell
+jodconverter-cli -c "https://localhost:8001/lool/convert-to/" --config ssl.yml infile outfile
 ```
 
 ## Using the Collabora Online / LibreOffice Online without JODConverter

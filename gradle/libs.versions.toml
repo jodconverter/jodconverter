@@ -22,7 +22,7 @@ commons-io = "2.22.0"
 # Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
 spring-boot = "3.5.16"
 
-# Spring Framework, used by jodconverter-cli and by the tests (spring-test)
+# Spring Framework, only spring-test is used, by the tests of the modules
 # Stay on the version line used by the Spring Boot version above
 # Latest version -> https://mvnrepository.com/artifact/org.springframework/spring-core
 spring = "6.2.19"
@@ -38,6 +38,10 @@ log4j = "2.26.1"
 # Gson
 # Latest version -> https://mvnrepository.com/artifact/com.google.code.gson/gson
 gson = "2.9.1"
+
+# SnakeYAML Engine, used by jodconverter-cli for the YAML configuration files
+# Latest version -> https://mvnrepository.com/artifact/org.snakeyaml/snakeyaml-engine
+snakeyaml-engine = "2.9"
 
 # Apache HttpComponents
 # Latest version -> https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
@@ -140,8 +144,6 @@ oo-ridl = { module = "org.openoffice:ridl", version.ref = "oo" }
 oo-unoil = { module = "org.openoffice:unoil", version.ref = "oo" }
 
 # Spring Core
-spring-core = { module = "org.springframework:spring-core", version.ref = "spring" }
-spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
 spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
 # Jakarta (version from the Spring Boot BOM)
@@ -161,6 +163,7 @@ log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.r
 
 # Other
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyaml-engine" }
 
 # Test
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }

@@ -1,0 +1,6 @@
+# The SSL options of the connection to a LibreOffice Online server.
+ssl:
+  enabled: true
+  trust-store: src/integTest/resources/clienttruststore.jks
+  trust-store-password: clienttruststore
+  verify-hostname: false

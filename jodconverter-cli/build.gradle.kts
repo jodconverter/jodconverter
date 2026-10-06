@@ -19,8 +19,8 @@ dependencies {
 
     implementation(libs.commons.cli)
     implementation(libs.commons.io)
-    implementation(libs.spring.core)
-    implementation(libs.spring.context)
+    implementation(libs.gson)
+    implementation(libs.snakeyaml.engine)
 
     runtimeOnly(libs.bundles.log4j) // Runtime so it is included in the distribution
 
