@@ -59,7 +59,7 @@ import org.jodconverter.local.office.LocalOfficeManager;
 public class Example {
   public static void main(String[] args) throws OfficeException {
     // Install a LocalOfficeManager as the global default
-    LocalOfficeManager officeManager = LocalOfficeManager.builder().install();
+    LocalOfficeManager officeManager = LocalOfficeManager.install();
     try {
       officeManager.start();
 
