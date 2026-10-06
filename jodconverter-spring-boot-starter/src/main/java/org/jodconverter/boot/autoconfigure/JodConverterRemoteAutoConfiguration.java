@@ -71,7 +71,7 @@ public class JodConverterRemoteAutoConfiguration {
             .poolSize(properties.getPoolSize());
     properties.applyTo(builder);
     if (properties.getSsl() != null) {
-      builder.sslConfig(properties.getSsl().sslConfig());
+      builder.sslConfig(properties.getSsl());
     }
 
     // Starts the manager
