@@ -117,6 +117,11 @@ JODConverter are built this way.
 - `ConversionJob` has a new abstract `executeAsync()` method, and `AbstractConversionJob` asks its subclasses for
     `getOfficeManager()` and `createTask()` instead of a `doExecute()` implementation.
 
+### Removed deprecated methods
+
+`Lo.createInstanceMSF(...)` and `Lo.createInstanceMCF(...)` (local module), deprecated since 4.4.4, are removed; use the
+`Lo.createInstance(...)` overloads, which take the same arguments.
+
 ### FileUtils.readFileToString
 
 `org.jodconverter.core.util.FileUtils.readFileToString` now throws a `MalformedInputException` when the file contains
