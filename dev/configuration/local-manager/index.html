@@ -1967,6 +1967,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#taskqueuecapacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>taskQueueCapacity</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#taskqueuetimeout" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2715,6 +2726,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#taskqueuecapacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>taskQueueCapacity</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#taskqueuetimeout" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3249,10 +3271,11 @@ and to learn more about a use case where this properly is useful.</p>
 </div>
 <h4 id="startfailfast">❎<code>startFailFast</code><a class="headerlink" href="#startfailfast" title="Permanent link">&para;</a></h4>
 <p>This property controls whether the manager will "fail fast" if an office process cannot be started or the connection
-to the started process fails. If set to <code>true</code>, the start of a process will wait for the task to be completed, and will
-throw an exception if the office process is not started successfully or if the connection to the started process fails.
-If set to <code>false</code>, the task of starting the process and connecting to it will be submitted and will return immediately,
-meaning a faster starting process. Only error logs will be produced if anything goes wrong.</p>
+to the started process fails. If set to <code>true</code>, <code>start()</code> waits for all the office processes to be started and
+connected, and throws an exception if one of them cannot be; the manager cannot be used after that. If set to <code>false</code>,
+<code>start()</code> returns immediately: the tasks wait in the queue for an office process to be ready (see <code>taskQueueTimeout</code>),
+and a process that cannot be started is retried, with a growing delay between the attempts (1, 2, 5, 10, then every 30
+seconds). Only logs are produced if anything goes wrong.</p>
 <p>&#160;<strong><em>Default</em></strong>: false.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="15:3"><input checked="checked" id="__tabbed_15_1" name="__tabbed_15" type="radio" /><input id="__tabbed_15_2" name="__tabbed_15" type="radio" /><input id="__tabbed_15_3" name="__tabbed_15" type="radio" /><div class="tabbed-labels"><label for="__tabbed_15_1">Java</label><label for="__tabbed_15_2">Spring Boot</label><label for="__tabbed_15_3">Command Line</label></div>
 <div class="tabbed-content">
@@ -3306,11 +3329,40 @@ is known to have memory leaks when converting documents.</p>
 </div>
 </div>
 </div>
-<h4 id="taskqueuetimeout">⌚<code>taskQueueTimeout</code><a class="headerlink" href="#taskqueuetimeout" title="Permanent link">&para;</a></h4>
-<p>This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
-the queue if the waiting time is longer than this timeout and an <code>OfficeException</code> will be thrown.</p>
-<p>&#160;<strong><em>Default</em></strong>: 30000 (30 seconds)</p>
+<h4 id="taskqueuecapacity">🔢<code>taskQueueCapacity</code><a class="headerlink" href="#taskqueuecapacity" title="Permanent link">&para;</a></h4>
+<p>This property sets the maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+full fails at once with an <code>OfficeException</code>, instead of waiting for the queue timeout; a web application can thus
+answer right away that it is overloaded. 0 means no limit.</p>
+<p>&#160;<strong><em>Default</em></strong>: 0 (no limit)</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="17:3"><input checked="checked" id="__tabbed_17_1" name="__tabbed_17" type="radio" /><input id="__tabbed_17_2" name="__tabbed_17" type="radio" /><input id="__tabbed_17_3" name="__tabbed_17" type="radio" /><div class="tabbed-labels"><label for="__tabbed_17_1">Java</label><label for="__tabbed_17_2">Spring Boot</label><label for="__tabbed_17_3">Command Line</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">LocalOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">taskQueueCapacity</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-yml highlight"><span class="filename">application.yml</span><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">local</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">task-queue-capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+</code></pre></div>
+<div class="language-text highlight"><span class="filename">application.properties</span><pre><span></span><code>jodconverter.local.task-queue-capacity = 100
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p><code>taskQueueCapacity</code> can't be set with the command line tool, it will always be 0.</p>
+</div>
+</div>
+</div>
+<h4 id="taskqueuetimeout">⌚<code>taskQueueTimeout</code><a class="headerlink" href="#taskqueuetimeout" title="Permanent link">&para;</a></h4>
+<p>This property sets the maximum time a task waits in the conversion queue, from its submission until an office process
+takes it. Waiting for a process to start or restart is part of it. When it expires, the task is removed from the queue
+without having been executed and fails with an <code>OfficeException</code>.</p>
+<p>&#160;<strong><em>Default</em></strong>: 30000 (30 seconds)</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="18:3"><input checked="checked" id="__tabbed_18_1" name="__tabbed_18" type="radio" /><input id="__tabbed_18_2" name="__tabbed_18" type="radio" /><input id="__tabbed_18_3" name="__tabbed_18" type="radio" /><div class="tabbed-labels"><label for="__tabbed_18_1">Java</label><label for="__tabbed_18_2">Spring Boot</label><label for="__tabbed_18_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -3334,10 +3386,11 @@ the queue if the waiting time is longer than this timeout and an <code>OfficeExc
 </div>
 </div>
 <h4 id="taskexecutiontimeout">⌚<code>taskExecutionTimeout</code><a class="headerlink" href="#taskexecutiontimeout" title="Permanent link">&para;</a></h4>
-<p>This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
-timeout, this task will be aborted and the next task is processed.</p>
+<p>This property sets the maximum time allowed to execute a task, counted from the moment an office process starts it,
+not from its submission. When it expires, the task fails with an <code>OfficeException</code>, the office process is killed and
+restarted, and the next task is processed by another process in the meantime.</p>
 <p>&#160;<strong><em>Default</em></strong>: 120000 (2 minutes)</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="18:3"><input checked="checked" id="__tabbed_18_1" name="__tabbed_18" type="radio" /><input id="__tabbed_18_2" name="__tabbed_18" type="radio" /><input id="__tabbed_18_3" name="__tabbed_18" type="radio" /><div class="tabbed-labels"><label for="__tabbed_18_1">Java</label><label for="__tabbed_18_2">Spring Boot</label><label for="__tabbed_18_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="19:3"><input checked="checked" id="__tabbed_19_1" name="__tabbed_19" type="radio" /><input id="__tabbed_19_2" name="__tabbed_19" type="radio" /><input id="__tabbed_19_3" name="__tabbed_19" type="radio" /><div class="tabbed-labels"><label for="__tabbed_19_1">Java</label><label for="__tabbed_19_2">Spring Boot</label><label for="__tabbed_19_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>

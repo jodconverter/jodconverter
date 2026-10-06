@@ -1929,6 +1929,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#taskqueuecapacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>taskQueueCapacity</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#taskqueuetimeout" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2590,6 +2601,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#taskqueuecapacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>taskQueueCapacity</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#taskqueuetimeout" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2657,6 +2679,7 @@ it. Each property below matches the builder property of the same name; the value
 <span class="w">    </span><span class="nt">connect-retry-interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250</span>
 <span class="w">    </span><span class="nt">connect-fail-fast</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">    </span><span class="nt">max-tasks-per-connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">    </span><span class="nt">task-queue-capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">          </span><span class="c1"># no limit</span>
 <span class="w">    </span><span class="nt">task-queue-timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30000</span>
 <span class="w">    </span><span class="nt">task-execution-timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120000</span>
 <span class="w">    </span><span class="nt">apply-default-load-properties</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -2746,9 +2769,10 @@ only be attempted the first time a conversion task is executed.</p>
 </code></pre></div>
 <h4 id="connectfailfast">❎<code>connectFailFast</code><a class="headerlink" href="#connectfailfast" title="Permanent link">&para;</a></h4>
 <p>This property controls whether the manager will "fail fast" if the connection to the external process fails. If set to
-<code>true</code>, a connection attempt will wait for the task to be completed, and will throw an exception the connection to the
-external process fails. If set to <code>false</code>, the task of connecting to the external process will be submitted and will
-return immediately, meaning a faster starting process. Only error logs will be produced if anything goes wrong.</p>
+<code>true</code>, <code>start()</code> waits for all the connections to be established, and throws an exception if one of them cannot be;
+the manager cannot be used after that. If set to <code>false</code>, <code>start()</code> returns immediately: the tasks wait in the queue
+for a connection to be established (see <code>taskQueueTimeout</code>), and a connection that fails is retried, with a growing
+delay between the attempts (1, 2, 5, 10, then every 30 seconds). Only logs are produced if anything goes wrong.</p>
 <p>&#160;<strong><em>Default</em></strong>: false.</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">ExternalOfficeManager</span>
@@ -2766,9 +2790,21 @@ infinite number of tasks (will never reconnect).</p>
 <span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">maxTasksPerConnection</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
 </span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
+<h4 id="taskqueuecapacity">🔢<code>taskQueueCapacity</code><a class="headerlink" href="#taskqueuecapacity" title="Permanent link">&para;</a></h4>
+<p>This property sets the maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+full fails at once with an <code>OfficeException</code>, instead of waiting for the queue timeout; a web application can thus
+answer right away that it is overloaded. 0 means no limit.</p>
+<p>&#160;<strong><em>Default</em></strong>: 0 (no limit)</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">ExternalOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">taskQueueCapacity</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
 <h4 id="taskqueuetimeout">⌚<code>taskQueueTimeout</code><a class="headerlink" href="#taskqueuetimeout" title="Permanent link">&para;</a></h4>
-<p>This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
-the queue if the waiting time is longer than this timeout and an <code>OfficeException</code> will be thrown.</p>
+<p>This property sets the maximum time a task waits in the conversion queue, from its submission until an office process
+takes it. Waiting for a process to start or restart is part of it. When it expires, the task is removed from the queue
+without having been executed and fails with an <code>OfficeException</code>.</p>
 <p>&#160;<strong><em>Default</em></strong>: 30000 (30 seconds)</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">ExternalOfficeManager</span>
@@ -2777,8 +2813,9 @@ the queue if the waiting time is longer than this timeout and an <code>OfficeExc
 </span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
 <h4 id="taskexecutiontimeout">⌚<code>taskExecutionTimeout</code><a class="headerlink" href="#taskexecutiontimeout" title="Permanent link">&para;</a></h4>
-<p>This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
-timeout, this task will be aborted and the next task is processed.</p>
+<p>This property sets the maximum time allowed to execute a task, counted from the moment a connection starts it, not
+from its submission. When it expires, the task fails with an <code>OfficeException</code>, the connection is closed and
+established again, and the next task is processed by another connection in the meantime.</p>
 <p>&#160;<strong><em>Default</em></strong>: 120000 (2 minutes)</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">ExternalOfficeManager</span>

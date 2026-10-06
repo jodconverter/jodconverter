@@ -1911,10 +1911,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#maxtasksperconnection" class="md-nav__link">
+  <a href="#taskqueuecapacity" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        🔢<code>maxTasksPerConnection</code>
+        🔢<code>taskQueueCapacity</code>
       </span>
     </span>
   </a>
@@ -2506,10 +2506,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#maxtasksperconnection" class="md-nav__link">
+  <a href="#taskqueuecapacity" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        🔢<code>maxTasksPerConnection</code>
+        🔢<code>taskQueueCapacity</code>
       </span>
     </span>
   </a>
@@ -2820,36 +2820,38 @@ an SSL configuration file.</p>
 </div>
 </div>
 </div>
-<h4 id="maxtasksperconnection">🔢<code>maxTasksPerConnection</code><a class="headerlink" href="#maxtasksperconnection" title="Permanent link">&para;</a></h4>
-<p>This property sets the maximum number of tasks an office process can execute before reconnecting to it. 0 means an
-infinite number of tasks (will never reconnect).</p>
-<p>&#160;<strong><em>Default</em></strong>: 1000</p>
+<h4 id="taskqueuecapacity">🔢<code>taskQueueCapacity</code><a class="headerlink" href="#taskqueuecapacity" title="Permanent link">&para;</a></h4>
+<p>This property sets the maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+full fails at once with an <code>OfficeException</code>, instead of waiting for the queue timeout; a web application can thus
+answer right away that it is overloaded. 0 means no limit.</p>
+<p>&#160;<strong><em>Default</em></strong>: 0 (no limit)</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="7:3"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Java</label><label for="__tabbed_7_2">Spring Boot</label><label for="__tabbed_7_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">RemoteOfficeManager</span>
 <span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">maxTasksPerConnection</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">taskQueueCapacity</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 </span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
 <div class="language-yml highlight"><span class="filename">application.yml</span><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">remote</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">max-tasks-per-connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span>
+<span class="w">    </span><span class="nt">task-queue-capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 </code></pre></div>
-<div class="language-text highlight"><span class="filename">application.properties</span><pre><span></span><code>jodconverter.remote.max-tasks-per-connection = 500
+<div class="language-text highlight"><span class="filename">application.properties</span><pre><span></span><code>jodconverter.remote.task-queue-capacity = 100
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<p><code>maxTasksPerConnection</code> can't be set with the command line tool, it will always be 200.</p>
+<p><code>taskQueueCapacity</code> can't be set with the command line tool, it will always be 0.</p>
 </div>
 </div>
 </div>
 <h4 id="taskqueuetimeout">⌚<code>taskQueueTimeout</code><a class="headerlink" href="#taskqueuetimeout" title="Permanent link">&para;</a></h4>
-<p>This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
-the queue if the waiting time is longer than this timeout and an <code>OfficeException</code> will be thrown.</p>
+<p>This property sets the maximum time a task waits in the conversion queue, from its submission until a worker of the
+pool takes it. When it expires, the task is removed from the queue without having been executed and fails with an
+<code>OfficeException</code>.</p>
 <p>&#160;<strong><em>Default</em></strong>: 30000 (30 seconds)</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="8:3"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><input id="__tabbed_8_3" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Java</label><label for="__tabbed_8_2">Spring Boot</label><label for="__tabbed_8_3">Command Line</label></div>
 <div class="tabbed-content">
@@ -2875,8 +2877,8 @@ the queue if the waiting time is longer than this timeout and an <code>OfficeExc
 </div>
 </div>
 <h4 id="taskexecutiontimeout">⌚<code>taskExecutionTimeout</code><a class="headerlink" href="#taskexecutiontimeout" title="Permanent link">&para;</a></h4>
-<p>This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
-timeout, this task will be aborted and the next task is processed.</p>
+<p>This property sets the maximum time allowed to execute a task, counted from the moment a worker of the pool starts it.
+When it expires, the task fails with an <code>OfficeException</code> and its request to the server is aborted.</p>
 <p>&#160;<strong><em>Default</em></strong>: 120000 (2 minutes)</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><input id="__tabbed_9_3" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">Java</label><label for="__tabbed_9_2">Spring Boot</label><label for="__tabbed_9_3">Command Line</label></div>
 <div class="tabbed-content">

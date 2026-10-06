@@ -1032,6 +1032,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#office-manager-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Office manager pool
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fileutilsreadfiletostring" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1104,10 +1115,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lost-connections-and-timed-out-tasks" class="md-nav__link">
+  <a href="#office-manager-pool_1" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Lost connections and timed-out tasks
+        Office manager pool
       </span>
     </span>
   </a>
@@ -2744,6 +2755,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#office-manager-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Office manager pool
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fileutilsreadfiletostring" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2816,10 +2838,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lost-connections-and-timed-out-tasks" class="md-nav__link">
+  <a href="#office-manager-pool_1" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Lost connections and timed-out tasks
+        Office manager pool
       </span>
     </span>
   </a>
@@ -3001,6 +3023,18 @@ record naming:</p>
 <li>The property maps of a <code>DocumentFormat</code> (load and store properties) reject <code>null</code> keys and values.</li>
 <li><code>LocalOfficeManager.Builder.runAsArgs(...)</code> no longer accepts <code>null</code> elements.</li>
 </ul>
+<h3 id="office-manager-pool">Office manager pool<a class="headerlink" href="#office-manager-pool" title="Permanent link">&para;</a></h3>
+<p>The pool of office processes was rewritten. The classes of the previous pool, <code>AbstractOfficeManagerPool</code>,
+<code>AbstractOfficeManagerPoolEntry</code> and <code>SuspendableThreadPoolExecutor</code>, are removed. An office manager that extended
+them now extends <code>AbstractOfficeWorkerPool</code> and gives it its workers, one per office process or connection, each
+implementing <code>OfficeWorker</code> (start, restart, is-ready, execute, abort, stop). The three office managers of
+JODConverter are built this way.</p>
+<ul>
+<li><code>OfficeManager</code> has a new <code>submit(task)</code> method, with a default implementation that executes the task before
+    returning: a custom office manager keeps compiling and behaving as before.</li>
+<li><code>ConversionJob</code> has a new abstract <code>executeAsync()</code> method, and <code>AbstractConversionJob</code> asks its subclasses for
+    <code>getOfficeManager()</code> and <code>createTask()</code> instead of a <code>doExecute()</code> implementation.</li>
+</ul>
 <h3 id="fileutilsreadfiletostring">FileUtils.readFileToString<a class="headerlink" href="#fileutilsreadfiletostring" title="Permanent link">&para;</a></h3>
 <p><code>org.jodconverter.core.util.FileUtils.readFileToString</code> now throws a <code>MalformedInputException</code> when the file contains
 bytes that are not valid in the given charset, instead of replacing them.</p>
@@ -3028,13 +3062,24 @@ set the <code>workingDir</code> of the office manager to that place instead.</p>
 <p>When the port of a local office process is already used by another program, <code>start()</code> now fails right away with a
 <code>Port X on host 'Y' is already used by another program</code> error, instead of hanging until the process timeout. With
 <code>startFailFast</code> set to <code>false</code>, the error is logged.</p>
-<h3 id="lost-connections-and-timed-out-tasks">Lost connections and timed-out tasks<a class="headerlink" href="#lost-connections-and-timed-out-tasks" title="Permanent link">&para;</a></h3>
+<h3 id="office-manager-pool_1">Office manager pool<a class="headerlink" href="#office-manager-pool_1" title="Permanent link">&para;</a></h3>
+<p>The tasks of an office manager wait in a single queue, and an office process only takes a task when it is ready: a
+process that is starting or restarting is never given a task while another one is free, and a task submitted while a
+process starts waits in the queue instead of failing with the execution timeout.</p>
 <ul>
+<li><code>taskQueueTimeout</code> runs from the submission of a task until an office process takes it, so it includes the wait for a
+    process to be ready; <code>taskExecutionTimeout</code> runs from the moment the process starts the task. Before, the wait for
+    a process could count against the execution timeout.</li>
+<li>With <code>startFailFast</code> (or <code>connectFailFast</code>) set to <code>false</code>, an office process that cannot be started is retried with
+    a growing delay instead of being logged once; set to <code>true</code>, a manager whose start fails is shut down for good.</li>
+<li>A task that exceeds the task execution timeout, or whose calling thread is interrupted, is now cancelled: its office
+    process is killed and restarted. Before, the task could keep the process busy, and every following task waited
+    behind it. The exception keeps its <code>TimeoutException</code> cause.</li>
 <li>After an unexpected loss of connection, an office process that is still running gets at most 2 seconds to exit by
     itself before it is killed and restarted, instead of the whole process timeout (2 minutes by default).</li>
-<li>A task that exceeds the task execution timeout, or whose calling thread is interrupted, is now cancelled. Before,
-    it could keep the office process busy, and every following task waited behind it.</li>
-<li>An interrupted calling thread no longer makes the pool lose an office manager.</li>
+<li>When the manager is stopped, an idle office process is asked to terminate as before, but a process that is executing
+    a task is killed, even with <code>keepAliveOnShutdown</code>.</li>
+<li>The restarts of an office process are visible: see <code>getStatus()</code> under the new features.</li>
 </ul>
 <h3 id="spring-boot-starter">Spring Boot starter<a class="headerlink" href="#spring-boot-starter" title="Permanent link">&para;</a></h3>
 <p>The <code>jodconverter.local.port-numbers</code> property no longer has a default value in the properties class, so that it
@@ -3053,6 +3098,9 @@ columns wide.</p>
     properties.</li>
 <li><a href="../../configuration/local-manager/"><code>poolSize</code></a>: start a number of office processes on free ports, without choosing
     them (<code>jodconverter.local.pool-size</code> with Spring Boot).</li>
+<li><a href="../../configuration/local-manager/"><code>taskQueueCapacity</code></a>: bound the conversion queue, so that a task submitted while
+    the queue is full fails at once (<code>jodconverter.local.task-queue-capacity</code>, and the same for the external and
+    remote managers, with Spring Boot).</li>
 <li><a href="../../configuration/local-manager/"><code>officeExecutable</code></a>: start the office processes through a launcher, such as a
     snap or an AppImage (<code>jodconverter.local.office-executable</code> with Spring Boot).</li>
 <li><a href="../../configuration/external-manager/#spring-boot">External office manager in the Spring Boot starter</a>: the

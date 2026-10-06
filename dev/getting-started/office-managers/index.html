@@ -2547,7 +2547,11 @@ recovers from failures.</p>
 </ul>
 <p>Internally, pool-capable managers derive from an abstract pool (<code>AbstractOfficeWorkerPool</code>) that dispatches the tasks
 to a pool of workers, one per office process or connection (via multiple ports or pipes), for concurrency and
-resilience.</p>
+resilience. The tasks wait in a single queue, and a worker only takes a task when its office process is ready: while a
+process is starting or restarting (after its maximum number of tasks, a lost connection, a crash or a timed-out task),
+the tasks go to the other processes. <code>taskQueueCapacity</code> can bound the queue so that an overloaded application fails
+fast, and two timeouts apply to a task: <code>taskQueueTimeout</code>, from its submission until a worker takes it, and
+<code>taskExecutionTimeout</code>, from the moment a worker starts it.</p>
 <p>The pool can be observed: <code>getStatus()</code> returns a snapshot with the state of each worker (<code>STARTING</code>, <code>READY</code>, <code>BUSY</code>,
 <code>RESTARTING</code> or <code>STOPPED</code>), the tasks it executed since it was last made ready, its restarts and its failed start
 attempts in a row, plus the number of tasks waiting in the queue. With the Spring Boot starter and Spring Boot Actuator
