@@ -3222,7 +3222,9 @@ accepted. <code>existing-process-action</code> and <code>load-document-mode</cod
 <code>JodConverterLocalProperties</code>, <code>JodConverterExternalProperties</code> or <code>JodConverterRemoteProperties</code> gets these types
 from the getters; the properties shared by the three (<code>working-dir</code>, <code>task-queue-capacity</code>, <code>task-queue-timeout</code>,
 <code>task-execution-timeout</code>) come from their new <code>JodConverterPoolProperties</code> base class. <code>ExternalOfficeManager</code>'s
-<code>DEFAULT_*</code> constants are public, like those of the other managers.</p>
+<code>DEFAULT_*</code> constants are public, like those of the other managers. The <code>jodconverter.remote.ssl.*</code> properties are bound
+directly to an <code>SslConfig</code>: <code>JodConverterRemoteProperties.getSsl()</code> returns one, and the <code>SslProperties</code> copy of its
+fields is gone (same property names, same defaults).</p>
 <h3 id="command-line-tool_1">Command line tool<a class="headerlink" href="#command-line-tool_1" title="Permanent link">&para;</a></h3>
 <p>The <code>-a</code> / <code>--application-context</code> option, which loaded a Spring XML context for the filter chain and the SSL
 configuration, is replaced by <code>--config &lt;file&gt;</code>, a JSON or YAML file with a <code>filters</code> section and an <code>ssl</code> section.
