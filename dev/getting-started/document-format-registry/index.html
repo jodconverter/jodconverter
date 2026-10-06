@@ -2685,9 +2685,11 @@ top of the defaults (overrides existing formats or adds new ones).</p>
 </ul>
 <div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.document.DefaultDocumentFormatRegistry</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.document.DocumentFormat</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.document.DocumentFormatRegistry</span><span class="p">;</span>
 
-<span class="n">DocumentFormat</span><span class="w"> </span><span class="n">pdf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DefaultDocumentFormatRegistry</span><span class="p">.</span><span class="na">getFormatByExtension</span><span class="p">(</span><span class="s">"pdf"</span><span class="p">);</span>
-<span class="n">DocumentFormat</span><span class="w"> </span><span class="n">docx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DefaultDocumentFormatRegistry</span><span class="p">.</span><span class="na">getFormatByMediaType</span><span class="p">(</span><span class="s">"application/vnd.openxmlformats-officedocument.wordprocessingml.document"</span><span class="p">);</span>
+<span class="n">DocumentFormatRegistry</span><span class="w"> </span><span class="n">registry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DefaultDocumentFormatRegistry</span><span class="p">.</span><span class="na">getInstance</span><span class="p">();</span>
+<span class="n">DocumentFormat</span><span class="w"> </span><span class="n">pdf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">registry</span><span class="p">.</span><span class="na">getFormatByExtension</span><span class="p">(</span><span class="s">"pdf"</span><span class="p">);</span>
+<span class="n">DocumentFormat</span><span class="w"> </span><span class="n">docx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">registry</span><span class="p">.</span><span class="na">getFormatByMediaType</span><span class="p">(</span><span class="s">"application/vnd.openxmlformats-officedocument.wordprocessingml.document"</span><span class="p">);</span>
 </code></pre></div>
 <ul>
 <li>List available output formats for a given family</li>
@@ -2695,7 +2697,7 @@ top of the defaults (overrides existing formats or adds new ones).</p>
 <div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.document.DefaultDocumentFormatRegistry</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.document.DocumentFamily</span><span class="p">;</span>
 
-<span class="kd">var</span><span class="w"> </span><span class="n">outputForText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DefaultDocumentFormatRegistry</span><span class="p">.</span><span class="na">getOutputFormats</span><span class="p">(</span><span class="n">DocumentFamily</span><span class="p">.</span><span class="na">TEXT</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">outputForText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DefaultDocumentFormatRegistry</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getOutputFormats</span><span class="p">(</span><span class="n">DocumentFamily</span><span class="p">.</span><span class="na">TEXT</span><span class="p">);</span>
 </code></pre></div>
 <h3 id="custom-registry">Custom Registry<a class="headerlink" href="#custom-registry" title="Permanent link">&para;</a></h3>
 <p>Both <code>LocalConverter</code> and <code>RemoteConverter</code> accept a format registry in their builder.</p>
@@ -2723,13 +2725,15 @@ top of the defaults (overrides existing formats or adds new ones).</p>
 <span class="w">    </span><span class="c1">// Customize store properties for TEXT family (export as PDF/A-1)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">storeProperty</span><span class="p">(</span><span class="n">DocumentFamily</span><span class="p">.</span><span class="na">TEXT</span><span class="p">,</span><span class="w"> </span><span class="s">"FilterName"</span><span class="p">,</span><span class="w"> </span><span class="s">"writer_pdf_Export"</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">storeProperty</span><span class="p">(</span><span class="n">DocumentFamily</span><span class="p">.</span><span class="na">TEXT</span><span class="p">,</span><span class="w"> </span><span class="s">"SelectPdfVersion"</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">unmodifiable</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="n">reg</span><span class="p">.</span><span class="na">addFormat</span><span class="p">(</span><span class="n">myPdf</span><span class="p">);</span>
 </code></pre></div>
 <h3 id="overriding-the-default-registry">Overriding the Default Registry<a class="headerlink" href="#overriding-the-default-registry" title="Permanent link">&para;</a></h3>
-<p>If you prefer to change the global default used by <code>DefaultDocumentFormatRegistry</code> constants, set the instance:</p>
+<p>If you prefer to change the global default returned by <code>DefaultDocumentFormatRegistry.getInstance()</code>, which the
+converters use when no registry is given to their builder, set the instance before anything uses it. The constants of
+<code>DefaultDocumentFormatRegistry</code> (<code>PDF</code>, <code>DOCX</code>...) are read once, when that class is loaded, so set it before they
+are touched too:</p>
 <div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.document.*</span><span class="p">;</span>
 
 <span class="n">DefaultDocumentFormatRegistryInstanceHolder</span><span class="p">.</span><span class="na">setInstance</span><span class="p">(</span><span class="n">registry</span><span class="p">);</span>
