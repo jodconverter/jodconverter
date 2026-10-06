@@ -74,7 +74,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.KILL,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               new OfficeConnection(CONNECT_URL));
       try {
@@ -107,7 +106,6 @@ class LocalOfficeProcessManagerITest {
                 DEFAULT_PROCESS_RETRY_INTERVAL,
                 10L,
                 ExistingProcessAction.KILL,
-                true,
                 DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                 new OfficeConnection(url));
         try {
@@ -140,7 +138,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               10L,
               ExistingProcessAction.FAIL,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               new OfficeConnection(CONNECT_URL));
       try {
@@ -178,7 +175,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.CONNECT,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               new OfficeConnection(CONNECT_URL));
       try {
@@ -214,7 +210,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.CONNECT_OR_KILL,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               new OfficeConnection(CONNECT_URL));
       try {
@@ -273,7 +268,6 @@ class LocalOfficeProcessManagerITest {
               1000L,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.CONNECT_OR_KILL,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               connection);
       managerRef.set(manager);
@@ -310,7 +304,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               DEFAULT_EXISTING_PROCESS_ACTION,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               connection);
       try {
@@ -351,7 +344,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.KILL,
               true,
-              true,
               connection);
       try {
         manager.start();
@@ -372,7 +364,6 @@ class LocalOfficeProcessManagerITest {
                 DEFAULT_PROCESS_RETRY_INTERVAL,
                 DEFAULT_AFTER_START_PROCESS_DELAY,
                 ExistingProcessAction.FAIL,
-                true,
                 DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                 connection);
 
@@ -394,7 +385,6 @@ class LocalOfficeProcessManagerITest {
                 DEFAULT_PROCESS_RETRY_INTERVAL,
                 DEFAULT_AFTER_START_PROCESS_DELAY,
                 ExistingProcessAction.CONNECT_OR_KILL,
-                true,
                 DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                 connection);
 
@@ -424,7 +414,6 @@ class LocalOfficeProcessManagerITest {
             DEFAULT_PROCESS_RETRY_INTERVAL,
             DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             connection);
     processManager.start();

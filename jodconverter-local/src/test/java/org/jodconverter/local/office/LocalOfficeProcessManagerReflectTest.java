@@ -74,7 +74,6 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_PROCESS_RETRY_INTERVAL,
             DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             connection);
 
@@ -117,7 +116,6 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_PROCESS_RETRY_INTERVAL,
             DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             connection);
 
@@ -134,7 +132,7 @@ class LocalOfficeProcessManagerReflectTest {
 
   @Test
   void restartDueToLostConnection_WhenProcessStillRunning_ShouldKillItWithoutWaitingProcessTimeout(
-      final @TempDir File testFolder) throws InterruptedException {
+      final @TempDir File testFolder) {
 
     final var url = new OfficeUrl(9999);
     final var connection = TestOfficeConnection.prepareTest(url);
@@ -157,7 +155,6 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_PROCESS_RETRY_INTERVAL,
             DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             connection);
 
@@ -167,11 +164,14 @@ class LocalOfficeProcessManagerReflectTest {
     ReflectionTestUtils.setField(manager, "pid", 0L);
     ReflectionTestUtils.setField(manager, "process", verboseProcess);
 
-    ReflectionTestUtils.invokeMethod(manager, "restartDueToLostConnection");
+    final var start = System.nanoTime();
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(manager::restartDueToLostConnection);
 
     // Killed after the short grace period, far before the process timeout
     assertThat(DEFAULT_PROCESS_TIMEOUT).isGreaterThan(10_000L);
-    assertThat(killed.await(10L, TimeUnit.SECONDS)).isTrue();
+    assertThat(killed.getCount()).isZero();
+    assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start)).isLessThan(10_000L);
   }
 
   @Test
@@ -191,7 +191,6 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_PROCESS_RETRY_INTERVAL,
             DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             TestOfficeConnection.prepareTest(url));
     ReflectionTestUtils.setField(
@@ -275,7 +274,6 @@ class LocalOfficeProcessManagerReflectTest {
         DEFAULT_PROCESS_RETRY_INTERVAL,
         DEFAULT_AFTER_START_PROCESS_DELAY,
         DEFAULT_EXISTING_PROCESS_ACTION,
-        DEFAULT_START_FAIL_FAST,
         DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
         TestOfficeConnection.prepareTest(url));
   }
@@ -299,7 +297,6 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_PROCESS_RETRY_INTERVAL,
             DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             TestOfficeConnection.prepareTest(url));
     ReflectionTestUtils.setField(
@@ -330,7 +327,6 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_PROCESS_RETRY_INTERVAL,
             DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             connection);
 

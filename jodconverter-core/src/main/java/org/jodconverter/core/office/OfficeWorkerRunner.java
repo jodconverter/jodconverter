@@ -85,6 +85,8 @@ final class OfficeWorkerRunner implements Runnable {
    * @param threadFactory The factory of the thread.
    */
   /* default */ void start(final ThreadFactory threadFactory) {
+    // The worker is starting from now on, not when its thread gets to run.
+    state = OfficeWorkerState.STARTING;
     thread = threadFactory.newThread(this);
     thread.start();
   }
@@ -100,7 +102,7 @@ final class OfficeWorkerRunner implements Runnable {
           // Nothing to do yet: check that the worker is still ready, then wait again.
           continue;
         }
-        if (!worker.isReady() || stopping) {
+        if (!worker.isReady()) {
           // This worker cannot execute the job after all: leave it to the others.
           pool.requeueJob(job);
           continue;
@@ -166,12 +168,16 @@ final class OfficeWorkerRunner implements Runnable {
   @SuppressWarnings("PMD.AvoidCatchingThrowable")
   private void execute(final OfficeJob job) {
 
-    if (!job.tryStart(this)) {
-      // The job timed out in the queue, or was cancelled, just before it was taken.
-      return;
-    }
-
     synchronized (jobLock) {
+      if (stopping) {
+        // The stop found this worker idle, and did not abort it: the job must not be started.
+        pool.requeueJob(job);
+        return;
+      }
+      if (!job.tryStart(this)) {
+        // The job timed out in the queue, or was cancelled, just before it was taken.
+        return;
+      }
       currentJob = job;
     }
     state = OfficeWorkerState.BUSY;
@@ -217,14 +223,15 @@ final class OfficeWorkerRunner implements Runnable {
   /* default */ void abort(final OfficeJob job) {
     synchronized (jobLock) {
       if (currentJob == job) {
-        abortWorker();
+        interruptWorker(true);
       }
     }
   }
 
   /**
-   * Asks this runner to end: the job it executes is cancelled, and whatever its worker is blocked
-   * in is aborted.
+   * Asks this runner to end. The job it executes is cancelled, and whatever its worker is blocked
+   * in (a task, a start, a restart) is aborted. A worker that is idle is only woken up: it has
+   * nothing to abort, and can be stopped properly.
    */
   /* default */ void requestStop() {
 
@@ -232,7 +239,11 @@ final class OfficeWorkerRunner implements Runnable {
     final OfficeJob cancelled;
     synchronized (jobLock) {
       cancelled = currentJob != null && currentJob.tryEndRunning() ? currentJob : null;
-      abortWorker();
+      final var current = state;
+      interruptWorker(
+          currentJob != null
+              || current == OfficeWorkerState.STARTING
+              || current == OfficeWorkerState.RESTARTING);
     }
     if (cancelled != null) {
       cancelled
@@ -257,16 +268,19 @@ final class OfficeWorkerRunner implements Runnable {
     }
   }
 
-  private void abortWorker() {
+  // Interrupts the thread of this runner, after having aborted its worker if asked to.
+  private void interruptWorker(final boolean abort) {
     final var runnerThread = thread;
     if (runnerThread == null || !runnerThread.isAlive()) {
-      // The worker is not driven by any thread: there is nothing to abort.
+      // The worker is not driven by any thread: there is nothing to interrupt.
       return;
     }
-    try {
-      worker.abort();
-    } catch (RuntimeException ex) {
-      LOGGER.warn("An office worker could not be aborted", ex);
+    if (abort) {
+      try {
+        worker.abort();
+      } catch (RuntimeException ex) {
+        LOGGER.warn("An office worker could not be aborted", ex);
+      }
     }
     runnerThread.interrupt();
   }

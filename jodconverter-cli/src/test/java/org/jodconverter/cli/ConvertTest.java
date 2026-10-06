@@ -166,9 +166,11 @@ class ConvertTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(officeManager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
+          .hasFieldOrPropertyWithValue("startFailFast", true);
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
@@ -176,7 +178,6 @@ class ConvertTest {
               o ->
                   assertThat(o)
                       .extracting(
-                          "taskExecutionTimeout",
                           "maxTasksPerProcess",
                           "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.officeHome",
@@ -187,11 +188,9 @@ class ConvertTest {
                           "officeProcessManager.processRetryInterval",
                           "officeProcessManager.afterStartProcessDelay",
                           "officeProcessManager.existingProcessAction",
-                          "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
                           "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
                           "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
                           LocalOfficeUtils.getDefaultOfficeHome(),
@@ -202,7 +201,6 @@ class ConvertTest {
                           DEFAULT_PROCESS_RETRY_INTERVAL,
                           DEFAULT_AFTER_START_PROCESS_DELAY,
                           DEFAULT_EXISTING_PROCESS_ACTION,
-                          true,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                           "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
     }
@@ -253,9 +251,11 @@ class ConvertTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(officeManager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", 30_000L)
+          .hasFieldOrPropertyWithValue("startFailFast", true);
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
@@ -263,7 +263,6 @@ class ConvertTest {
               o ->
                   assertThat(o)
                       .extracting(
-                          "taskExecutionTimeout",
                           "maxTasksPerProcess",
                           "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.officeHome",
@@ -274,11 +273,9 @@ class ConvertTest {
                           "officeProcessManager.processRetryInterval",
                           "officeProcessManager.afterStartProcessDelay",
                           "officeProcessManager.existingProcessAction",
-                          "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
                           "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
-                          30_000L,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
                           "socket,host=localhost,port=2003,tcpNoDelay=1",
                           ooHome,
@@ -289,7 +286,6 @@ class ConvertTest {
                           DEFAULT_PROCESS_RETRY_INTERVAL,
                           DEFAULT_AFTER_START_PROCESS_DELAY,
                           ExistingProcessAction.KILL,
-                          true,
                           true,
                           "socket,host=localhost,port=2003,tcpNoDelay=1"));
     }
@@ -304,7 +300,7 @@ class ConvertTest {
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
 
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
@@ -328,7 +324,7 @@ class ConvertTest {
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
 
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
@@ -352,7 +348,7 @@ class ConvertTest {
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
 
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)

@@ -64,7 +64,6 @@ class ExternalOfficeManagerITest {
             DEFAULT_PROCESS_RETRY_INTERVAL,
             DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
-            true,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             connection);
     manager.start();

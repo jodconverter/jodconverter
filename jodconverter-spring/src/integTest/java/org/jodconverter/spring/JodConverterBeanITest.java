@@ -61,9 +61,12 @@ class JodConverterBeanITest {
                                 .asInstanceOf(InstanceOfAssertFactories.FILE)
                                 .hasParent(OfficeUtils.getDefaultWorkingDir()));
                 assertThat(manager)
-                    .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+                    .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+                    .hasFieldOrPropertyWithValue(
+                        "taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
+                    .hasFieldOrPropertyWithValue("startFailFast", DEFAULT_START_FAIL_FAST);
                 assertThat(manager)
-                    .extracting("entries")
+                    .extracting("workers")
                     .asList()
                     .hasSize(1)
                     .element(0)
@@ -71,7 +74,6 @@ class JodConverterBeanITest {
                         o ->
                             assertThat(o)
                                 .extracting(
-                                    "taskExecutionTimeout",
                                     "maxTasksPerProcess",
                                     "officeProcessManager.officeUrl.connectString",
                                     "officeProcessManager.officeHome",
@@ -82,11 +84,9 @@ class JodConverterBeanITest {
                                     "officeProcessManager.processRetryInterval",
                                     "officeProcessManager.afterStartProcessDelay",
                                     "officeProcessManager.existingProcessAction",
-                                    "officeProcessManager.startFailFast",
                                     "officeProcessManager.keepAliveOnShutdown",
                                     "officeProcessManager.connection.officeUrl.connectString")
                                 .containsExactly(
-                                    DEFAULT_TASK_EXECUTION_TIMEOUT,
                                     DEFAULT_MAX_TASKS_PER_PROCESS,
                                     "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
                                     LocalOfficeUtils.getDefaultOfficeHome(),
@@ -97,7 +97,6 @@ class JodConverterBeanITest {
                                     DEFAULT_PROCESS_RETRY_INTERVAL,
                                     DEFAULT_AFTER_START_PROCESS_DELAY,
                                     DEFAULT_EXISTING_PROCESS_ACTION,
-                                    DEFAULT_START_FAIL_FAST,
                                     DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                                     "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
               });
@@ -151,9 +150,12 @@ class JodConverterBeanITest {
                             assertThat(o)
                                 .asInstanceOf(InstanceOfAssertFactories.FILE)
                                 .hasParent(workingDir));
-                assertThat(manager).hasFieldOrPropertyWithValue("taskQueueTimeout", 501L);
                 assertThat(manager)
-                    .extracting("entries")
+                    .hasFieldOrPropertyWithValue("taskQueueTimeout", 501L)
+                    .hasFieldOrPropertyWithValue("taskExecutionTimeout", 500L)
+                    .hasFieldOrPropertyWithValue("startFailFast", true);
+                assertThat(manager)
+                    .extracting("workers")
                     .asList()
                     .hasSize(1)
                     .element(0)
@@ -161,7 +163,6 @@ class JodConverterBeanITest {
                         o ->
                             assertThat(o)
                                 .extracting(
-                                    "taskExecutionTimeout",
                                     "maxTasksPerProcess",
                                     "officeProcessManager.officeUrl.connectString",
                                     "officeProcessManager.officeHome",
@@ -172,11 +173,9 @@ class JodConverterBeanITest {
                                     "officeProcessManager.processRetryInterval",
                                     "officeProcessManager.afterStartProcessDelay",
                                     "officeProcessManager.existingProcessAction",
-                                    "officeProcessManager.startFailFast",
                                     "officeProcessManager.keepAliveOnShutdown",
                                     "officeProcessManager.connection.officeUrl.connectString")
                                 .containsExactly(
-                                    500L,
                                     99,
                                     "socket,host=localhost,port=2006,tcpNoDelay=1",
                                     LocalOfficeUtils.getDefaultOfficeHome(),
@@ -187,7 +186,6 @@ class JodConverterBeanITest {
                                     255L,
                                     3000L,
                                     ExistingProcessAction.KILL,
-                                    true,
                                     false,
                                     "socket,host=localhost,port=2006,tcpNoDelay=1"));
               });
@@ -220,9 +218,12 @@ class JodConverterBeanITest {
                                 .asInstanceOf(InstanceOfAssertFactories.FILE)
                                 .hasParent(OfficeUtils.getDefaultWorkingDir()));
                 assertThat(manager)
-                    .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+                    .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+                    .hasFieldOrPropertyWithValue(
+                        "taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
+                    .hasFieldOrPropertyWithValue("startFailFast", DEFAULT_START_FAIL_FAST);
                 assertThat(manager)
-                    .extracting("entries")
+                    .extracting("workers")
                     .asList()
                     .hasSize(1)
                     .element(0)
@@ -230,7 +231,6 @@ class JodConverterBeanITest {
                         o ->
                             assertThat(o)
                                 .extracting(
-                                    "taskExecutionTimeout",
                                     "maxTasksPerProcess",
                                     "officeProcessManager.officeUrl.connectString",
                                     "officeProcessManager.officeHome",
@@ -241,11 +241,9 @@ class JodConverterBeanITest {
                                     "officeProcessManager.processRetryInterval",
                                     "officeProcessManager.afterStartProcessDelay",
                                     "officeProcessManager.existingProcessAction",
-                                    "officeProcessManager.startFailFast",
                                     "officeProcessManager.keepAliveOnShutdown",
                                     "officeProcessManager.connection.officeUrl.connectString")
                                 .containsExactly(
-                                    DEFAULT_TASK_EXECUTION_TIMEOUT,
                                     DEFAULT_MAX_TASKS_PER_PROCESS,
                                     "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
                                     LocalOfficeUtils.getDefaultOfficeHome(),
@@ -256,7 +254,6 @@ class JodConverterBeanITest {
                                     DEFAULT_PROCESS_RETRY_INTERVAL,
                                     DEFAULT_AFTER_START_PROCESS_DELAY,
                                     DEFAULT_EXISTING_PROCESS_ACTION,
-                                    DEFAULT_START_FAIL_FAST,
                                     DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                                     "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
               });

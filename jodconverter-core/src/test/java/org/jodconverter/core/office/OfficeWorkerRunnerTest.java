@@ -56,6 +56,17 @@ class OfficeWorkerRunnerTest {
   }
 
   @Test
+  void start_ShouldBeStartingBeforeItsThreadRuns() {
+
+    final var runner = newRunner(new FakeOfficeWorker());
+
+    // A thread that never gets to drive the worker.
+    runner.start(runnable -> new Thread(() -> {}));
+
+    assertThat(runner.getState()).isEqualTo(OfficeWorkerState.STARTING);
+  }
+
+  @Test
   void abort_WithAJobThatIsNotBeingExecuted_ShouldNotAbortTheWorker() {
 
     // The job that timed out may have ended, and another one started, in the meantime.
@@ -112,7 +123,8 @@ class OfficeWorkerRunnerTest {
     assertThat(pool.getQueueSize()).isEqualTo(1);
     assertThat(job.getFuture()).isNotDone();
     assertThat(runner.getState()).isEqualTo(OfficeWorkerState.STOPPED);
-    assertThat(worker.calls).containsExactly("start", "abort", "stop");
+    // The worker was idle when the stop was requested: it is stopped without being aborted.
+    assertThat(worker.calls).containsExactly("start", "stop");
   }
 
   @Test

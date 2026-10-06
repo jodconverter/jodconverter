@@ -73,7 +73,8 @@ public interface OfficeWorker {
    * Makes the method this worker is blocked in ({@link #execute(OfficeTask)}, {@link #start()} or
    * {@link #restart()}) end as soon as possible, by killing the office process for example. It is
    * called from another thread, when a task exceeds its execution timeout or is cancelled, and when
-   * the pool is stopped. The thread of the worker is interrupted right after this call.
+   * the pool is stopped while the worker is not idle. The thread of the worker is interrupted right
+   * after this call.
    *
    * <p>This method must not block for long, and must not fail when the worker is not blocked. After
    * an aborted task, the worker is restarted before it is given another task.
