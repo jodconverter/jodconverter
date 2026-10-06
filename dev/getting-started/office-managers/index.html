@@ -2545,8 +2545,9 @@ recovers from failures.</p>
     The office process lifecycle is remote; the manager controls the connection pool.
     See <a href="../../configuration/remote-manager/">RemoteOfficeManager</a> for all configuration options.</li>
 </ul>
-<p>Internally, pool-capable managers derive from an abstract pool (<code>AbstractOfficeManagerPool</code>) that can manage multiple
-office processes simultaneously (via multiple ports or pipes) for concurrency and resilience.</p>
+<p>Internally, pool-capable managers derive from an abstract pool (<code>AbstractOfficeWorkerPool</code>) that dispatches the tasks
+to a pool of workers, one per office process or connection (via multiple ports or pipes), for concurrency and
+resilience.</p>
 <h2 id="typical-usage-patterns">Typical usage patterns<a class="headerlink" href="#typical-usage-patterns" title="Permanent link">&para;</a></h2>
 <p><strong>1)</strong> Install a global (default) manager.</p>
 <ul>
