@@ -20,10 +20,10 @@
 
 package org.jodconverter.local.office.utils;
 
+import java.util.Objects;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * The purpose of this class is to provide a single access point to the {@link
@@ -48,7 +48,7 @@ public class UnoRuntime {
    * @param unoRuntime The default {@link UnoRuntime}.
    */
   public static void setInstance(final @NonNull UnoRuntime unoRuntime) {
-    AssertUtils.notNull(unoRuntime, "uno must not be null");
+    Objects.requireNonNull(unoRuntime, "uno must not be null");
     synchronized (UnoRuntime.class) {
       instance = unoRuntime;
     }

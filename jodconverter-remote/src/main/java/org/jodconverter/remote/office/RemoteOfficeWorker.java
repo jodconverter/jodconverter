@@ -47,8 +47,6 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeWorker;
 import org.jodconverter.core.task.OfficeTask;
-import org.jodconverter.core.util.AssertUtils;
-import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.remote.ssl.SslConfig;
 
 /**
@@ -137,7 +135,7 @@ class RemoteOfficeWorker implements OfficeWorker {
   // Taken from spring org.springframework.util.ResourceUtils class
   private static File getFile(final String resourceLocation) throws FileNotFoundException {
 
-    AssertUtils.notNull(resourceLocation, "resourceLocation must not be null");
+    Objects.requireNonNull(resourceLocation, "resourceLocation must not be null");
     if (resourceLocation.startsWith("classpath:")) {
       final var path = resourceLocation.substring("classpath:".length());
       final var description = "class path resource [" + path + "]";
@@ -191,12 +189,13 @@ class RemoteOfficeWorker implements OfficeWorker {
 
     final var url = new URL(connectionUrl);
     final var path = url.toExternalForm().toLowerCase(Locale.ROOT);
-    if (StringUtils.endsWithAny(path, "lool/convert-to", "lool/convert-to/")) {
-      return StringUtils.appendIfMissing(connectionUrl, "/");
-    } else if (StringUtils.endsWithAny(path, "lool", "lool/")) {
-      return StringUtils.appendIfMissing(connectionUrl, "/") + "convert-to/";
+    final var base = connectionUrl.endsWith("/") ? connectionUrl : connectionUrl + "/";
+    if (path.endsWith("lool/convert-to") || path.endsWith("lool/convert-to/")) {
+      return base;
+    } else if (path.endsWith("lool") || path.endsWith("lool/")) {
+      return base + "convert-to/";
     }
-    return StringUtils.appendIfMissing(connectionUrl, "/") + "lool/convert-to/";
+    return base + "lool/convert-to/";
   }
 
   private void configureKeyMaterial(final SSLContextBuilder sslBuilder)
@@ -342,7 +341,7 @@ class RemoteOfficeWorker implements OfficeWorker {
           NoSuchProviderException {
 
     if (store != null) {
-      AssertUtils.notNull(
+      Objects.requireNonNull(
           storePassword, String.format("storePassword of store %s must not be null", store));
 
       KeyStore keyStore;

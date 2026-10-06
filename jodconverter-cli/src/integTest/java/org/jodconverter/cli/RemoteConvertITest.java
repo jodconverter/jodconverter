@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +36,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
-import org.jodconverter.core.util.FileUtils;
 
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
@@ -99,7 +99,7 @@ class RemoteConvertITest {
                 inputFile.getPath(),
                 outputFile.getPath());
         assertThat(status).isEqualTo(0);
-        final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+        final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
         assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         wireMockServer.stop();
@@ -137,7 +137,7 @@ class RemoteConvertITest {
                 inputFile.getPath(),
                 outputFile.getPath());
         assertThat(status).isEqualTo(0);
-        final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+        final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
         assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         wireMockServer.stop();

@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import javax.net.ssl.SSLHandshakeException;
@@ -40,7 +41,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.ssl.SslConfig;
 
@@ -169,7 +169,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -224,7 +224,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -377,7 +377,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -466,7 +466,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -513,7 +513,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -701,7 +701,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -799,7 +799,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -896,7 +896,7 @@ class RemoteOfficeManagerSslITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();

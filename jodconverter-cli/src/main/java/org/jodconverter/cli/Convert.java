@@ -23,6 +23,8 @@ package org.jodconverter.cli;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -37,7 +39,6 @@ import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.pdf.PdfOptions;
-import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
@@ -295,8 +296,8 @@ public final class Convert {
 
     if (commandLine.hasOption(OPT_REGISTRY.getOpt())) {
       return JsonDocumentFormatRegistry.create(
-          FileUtils.readFileToString(
-              new File(commandLine.getOptionValue(OPT_REGISTRY.getOpt())), StandardCharsets.UTF_8));
+          Files.readString(
+              Path.of(commandLine.getOptionValue(OPT_REGISTRY.getOpt())), StandardCharsets.UTF_8));
     }
 
     return null;

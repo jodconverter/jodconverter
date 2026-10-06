@@ -39,7 +39,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.TestProcessManager;
 
 /** Contains tests for the {@link LocalOfficeManager} class. */
@@ -207,92 +206,6 @@ class LocalOfficeManagerTest {
       assertThatIllegalArgumentException()
           .isThrownBy(() -> builder().poolSize(0))
           .withMessage("poolSize 0 must be greater than 0");
-    }
-
-    @Test
-    @SuppressWarnings("RedundantArrayCreation")
-    void withNullValues_ShouldInitializedManagerWithDefaultValues() {
-
-      final var manager =
-          builder()
-              .workingDir((String) null)
-              .workingDir((File) null)
-              .taskExecutionTimeout(null)
-              .taskQueueTimeout(null)
-              .pipeNames((String[]) null)
-              .pipeNames(new String[] {})
-              .hostName(null)
-              .portNumbers((int[]) null)
-              .portNumbers(new int[] {})
-              .poolSize(null)
-              .officeHome((String) null)
-              .officeHome((File) null)
-              .processManager((String) null)
-              .processManager((ProcessManager) null)
-              .officeHome((File) null)
-              .runAsArgs((String[]) null)
-              .runAsArgs(new String[] {})
-              .templateProfileDir((String) null)
-              .templateProfileDir((File) null)
-              .templateProfileDirOrDefault((String) null)
-              .templateProfileDirOrDefault((File) null)
-              .processTimeout(null)
-              .processRetryInterval(null)
-              .afterStartProcessDelay(null)
-              .existingProcessAction((String) null)
-              .existingProcessAction((ExistingProcessAction) null)
-              .startFailFast(null)
-              .keepAliveOnShutdown(null)
-              .maxTasksPerProcess(null)
-              .build();
-
-      assertThat(manager).isInstanceOf(LocalOfficeManager.class);
-      assertThat(manager)
-          .extracting("tempDir")
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .asInstanceOf(InstanceOfAssertFactories.FILE)
-                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
-      assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
-          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
-          .hasFieldOrPropertyWithValue("startFailFast", DEFAULT_START_FAIL_FAST);
-      assertThat(manager)
-          .extracting("workers")
-          .asList()
-          .hasSize(1)
-          .element(0)
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .isInstanceOf(LocalOfficeWorker.class)
-                      .extracting(
-                          "maxTasksPerProcess",
-                          "officeProcessManager.officeUrl.connectString",
-                          "officeProcessManager.officeHome",
-                          "officeProcessManager.processManager.class.name",
-                          "officeProcessManager.runAsArgs",
-                          "officeProcessManager.templateProfileDir",
-                          "officeProcessManager.processTimeout",
-                          "officeProcessManager.processRetryInterval",
-                          "officeProcessManager.afterStartProcessDelay",
-                          "officeProcessManager.existingProcessAction",
-                          "officeProcessManager.keepAliveOnShutdown",
-                          "officeProcessManager.connection.officeUrl.connectString")
-                      .containsExactly(
-                          DEFAULT_MAX_TASKS_PER_PROCESS,
-                          new OfficeUrl(2002).getConnectString(),
-                          LocalOfficeUtils.getDefaultOfficeHome(),
-                          LocalOfficeUtils.findBestProcessManager().getClass().getName(),
-                          Collections.EMPTY_LIST,
-                          null,
-                          DEFAULT_PROCESS_TIMEOUT,
-                          DEFAULT_PROCESS_RETRY_INTERVAL,
-                          DEFAULT_AFTER_START_PROCESS_DELAY,
-                          DEFAULT_EXISTING_PROCESS_ACTION,
-                          DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-                          new OfficeUrl(2002).getConnectString()));
     }
 
     @Test

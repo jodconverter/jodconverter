@@ -23,6 +23,7 @@ package org.jodconverter.core.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import java.io.File;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -56,6 +57,11 @@ class OfficeManagerTest {
 
     @Override
     public void stop() {}
+
+    @Override
+    public File makeTemporaryFile(final String extension) {
+      throw new UnsupportedOperationException();
+    }
   }
 
   @Nested

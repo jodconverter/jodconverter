@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.office.AbstractOfficeWorkerPool;
-import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.StringUtils;
@@ -252,10 +251,7 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
               taskExecutionTimeout,
               taskQueueTimeout,
               taskQueueCapacity);
-      if (install) {
-        InstalledOfficeManagerHolder.setInstance(manager);
-      }
-      return manager;
+      return installed(manager);
     }
 
     /**
@@ -315,13 +311,11 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
      * @param poolSize The number of office processes, which must be greater than 0.
      * @return This builder instance.
      */
-    public @NonNull Builder poolSize(final @Nullable Integer poolSize) {
+    public @NonNull Builder poolSize(final int poolSize) {
 
-      if (poolSize != null) {
-        AssertUtils.isTrue(
-            poolSize > 0, String.format("poolSize %s must be greater than 0", poolSize));
-        this.poolSize = poolSize;
-      }
+      AssertUtils.isTrue(
+          poolSize > 0, String.format("poolSize %s must be greater than 0", poolSize));
+      this.poolSize = poolSize;
       return this;
     }
 
@@ -510,14 +504,12 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
      * @param processTimeout The process timeout, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder processTimeout(final @Nullable Long processTimeout) {
+    public @NonNull Builder processTimeout(final long processTimeout) {
 
-      if (processTimeout != null) {
-        AssertUtils.isTrue(
-            processTimeout >= 0,
-            String.format("processTimeout %s must be greater than or equal to 0", processTimeout));
-        this.processTimeout = processTimeout;
-      }
+      AssertUtils.isTrue(
+          processTimeout >= 0,
+          String.format("processTimeout %s must be greater than or equal to 0", processTimeout));
+      this.processTimeout = processTimeout;
       return this;
     }
 
@@ -530,17 +522,15 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
      * @param processRetryInterval The retry interval, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder processRetryInterval(final @Nullable Long processRetryInterval) {
+    public @NonNull Builder processRetryInterval(final long processRetryInterval) {
 
-      if (processRetryInterval != null) {
-        AssertUtils.isTrue(
-            processRetryInterval >= MIN_PROCESS_RETRY_INTERVAL
-                && processRetryInterval <= MAX_PROCESS_RETRY_INTERVAL,
-            String.format(
-                "processRetryInterval %s must be in the inclusive range of %s to %s",
-                processRetryInterval, MIN_PROCESS_RETRY_INTERVAL, MAX_PROCESS_RETRY_INTERVAL));
-        this.processRetryInterval = processRetryInterval;
-      }
+      AssertUtils.isTrue(
+          processRetryInterval >= MIN_PROCESS_RETRY_INTERVAL
+              && processRetryInterval <= MAX_PROCESS_RETRY_INTERVAL,
+          String.format(
+              "processRetryInterval %s must be in the inclusive range of %s to %s",
+              processRetryInterval, MIN_PROCESS_RETRY_INTERVAL, MAX_PROCESS_RETRY_INTERVAL));
+      this.processRetryInterval = processRetryInterval;
       return this;
     }
 
@@ -556,19 +546,17 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
      * @param afterStartProcessDelay The delay, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder afterStartProcessDelay(final @Nullable Long afterStartProcessDelay) {
+    public @NonNull Builder afterStartProcessDelay(final long afterStartProcessDelay) {
 
-      if (afterStartProcessDelay != null) {
-        AssertUtils.isTrue(
-            afterStartProcessDelay >= MIN_AFTER_START_PROCESS_DELAY
-                && afterStartProcessDelay <= MAX_AFTER_START_PROCESS_DELAY,
-            String.format(
-                "afterStartProcessDelay %s must be in the inclusive range of %s to %s",
-                afterStartProcessDelay,
-                MIN_AFTER_START_PROCESS_DELAY,
-                MAX_AFTER_START_PROCESS_DELAY));
-        this.afterStartProcessDelay = afterStartProcessDelay;
-      }
+      AssertUtils.isTrue(
+          afterStartProcessDelay >= MIN_AFTER_START_PROCESS_DELAY
+              && afterStartProcessDelay <= MAX_AFTER_START_PROCESS_DELAY,
+          String.format(
+              "afterStartProcessDelay %s must be in the inclusive range of %s to %s",
+              afterStartProcessDelay,
+              MIN_AFTER_START_PROCESS_DELAY,
+              MAX_AFTER_START_PROCESS_DELAY));
+      this.afterStartProcessDelay = afterStartProcessDelay;
       return this;
     }
 
@@ -621,11 +609,9 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
      * @param startFailFast {@code true} to "fail fast", {@code false} otherwise.
      * @return This builder instance.
      */
-    public @NonNull Builder startFailFast(final @Nullable Boolean startFailFast) {
+    public @NonNull Builder startFailFast(final boolean startFailFast) {
 
-      if (startFailFast != null) {
-        this.startFailFast = startFailFast;
-      }
+      this.startFailFast = startFailFast;
       return this;
     }
 
@@ -640,11 +626,9 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
      * @param keepAliveOnShutdown {@code true} to keep the process alive, {@code false} otherwise.
      * @return This builder instance.
      */
-    public @NonNull Builder keepAliveOnShutdown(final @Nullable Boolean keepAliveOnShutdown) {
+    public @NonNull Builder keepAliveOnShutdown(final boolean keepAliveOnShutdown) {
 
-      if (keepAliveOnShutdown != null) {
-        this.keepAliveOnShutdown = keepAliveOnShutdown;
-      }
+      this.keepAliveOnShutdown = keepAliveOnShutdown;
       return this;
     }
 
@@ -657,15 +641,13 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
      * @param maxTasksPerProcess The new maximum number of tasks an office process can execute.
      * @return This builder instance.
      */
-    public @NonNull Builder maxTasksPerProcess(final @Nullable Integer maxTasksPerProcess) {
+    public @NonNull Builder maxTasksPerProcess(final int maxTasksPerProcess) {
 
-      if (maxTasksPerProcess != null) {
-        AssertUtils.isTrue(
-            maxTasksPerProcess >= 0,
-            String.format(
-                "maxTasksPerProcess %s must be greater than or equal to 0", maxTasksPerProcess));
-        this.maxTasksPerProcess = maxTasksPerProcess;
-      }
+      AssertUtils.isTrue(
+          maxTasksPerProcess >= 0,
+          String.format(
+              "maxTasksPerProcess %s must be greater than or equal to 0", maxTasksPerProcess));
+      this.maxTasksPerProcess = maxTasksPerProcess;
       return this;
     }
   }

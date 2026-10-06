@@ -20,10 +20,12 @@
 
 package org.jodconverter.local;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -228,13 +230,16 @@ public final class LocalConverter extends AbstractConverter {
         loadProperties.putAll(this.loadProperties);
       }
 
-      // Create the converter
+      // Create the converter, with its own copies of the maps so that a reused builder does not
+      // change it.
       return new LocalConverter(
           manager,
           formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry,
           loadDocumentMode,
-          loadProperties,
-          storeProperties,
+          Collections.unmodifiableMap(loadProperties),
+          storeProperties == null
+              ? Map.of()
+              : Collections.unmodifiableMap(new HashMap<>(storeProperties)),
           filterChain,
           defaultTargetOptions);
     }
@@ -344,8 +349,8 @@ public final class LocalConverter extends AbstractConverter {
      */
     public @NonNull Builder loadProperty(final @NonNull String name, final @NonNull Object value) {
 
-      AssertUtils.notNull(name, "name must not be null");
-      AssertUtils.notNull(value, "value must not be null");
+      Objects.requireNonNull(name, "name must not be null");
+      Objects.requireNonNull(value, "value must not be null");
       if (this.loadProperties == null) {
         this.loadProperties = new HashMap<>();
       }
@@ -372,7 +377,7 @@ public final class LocalConverter extends AbstractConverter {
     public @NonNull Builder loadProperties(
         final @NonNull Map<@NonNull String, @NonNull Object> loadProperties) {
 
-      AssertUtils.notNull(loadProperties, "loadProperties must not be null");
+      Objects.requireNonNull(loadProperties, "loadProperties must not be null");
       if (this.loadProperties == null) {
         this.loadProperties = new HashMap<>();
       }
@@ -407,7 +412,7 @@ public final class LocalConverter extends AbstractConverter {
      */
     public @NonNull Builder filterChain(final @NonNull FilterChain filterChain) {
 
-      AssertUtils.notNull(filterChain, "filterChain must not be null");
+      Objects.requireNonNull(filterChain, "filterChain must not be null");
       this.filterChain = filterChain;
       return this;
     }
@@ -426,8 +431,8 @@ public final class LocalConverter extends AbstractConverter {
      */
     public @NonNull Builder storeProperty(final @NonNull String name, final @NonNull Object value) {
 
-      AssertUtils.notNull(name, "name must not be null");
-      AssertUtils.notNull(value, "value must not be null");
+      Objects.requireNonNull(name, "name must not be null");
+      Objects.requireNonNull(value, "value must not be null");
       if (this.storeProperties == null) {
         this.storeProperties = new HashMap<>();
       }
@@ -450,7 +455,7 @@ public final class LocalConverter extends AbstractConverter {
     public @NonNull Builder storeProperties(
         final @NonNull Map<@NonNull String, @NonNull Object> storeProperties) {
 
-      AssertUtils.notNull(storeProperties, "storeProperties must not be null");
+      Objects.requireNonNull(storeProperties, "storeProperties must not be null");
       if (this.storeProperties == null) {
         this.storeProperties = new HashMap<>();
       }

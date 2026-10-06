@@ -170,24 +170,4 @@ class AssertUtilsTest {
           .doesNotThrowAnyException();
     }
   }
-
-  @Nested
-  class NotNull {
-
-    @Test
-    @SuppressWarnings("ConstantConditions")
-    void withNullObject_ShouldThrowNullPointerException() {
-
-      assertThatNullPointerException()
-          .isThrownBy(() -> AssertUtils.notNull(null, "object must not be null"));
-    }
-
-    @Test
-    @SuppressWarnings("ObviousNullCheck")
-    void withNotNullObject_NoExceptionThrown() {
-
-      assertThatCode(() -> AssertUtils.notNull(new Object(), "object must not be null"))
-          .doesNotThrowAnyException();
-    }
-  }
 }

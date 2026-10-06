@@ -23,6 +23,7 @@ package org.jodconverter.local.filter.text;
 import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.sun.star.awt.Size;
 import com.sun.star.text.*;
@@ -30,7 +31,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.office.utils.Lo;
 
@@ -121,7 +121,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
       final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super();
 
-    AssertUtils.notNull(shapeProperties, "shapeProperties must not be null");
+    Objects.requireNonNull(shapeProperties, "shapeProperties must not be null");
 
     this.shapeProperties = new LinkedHashMap<>(shapeProperties);
   }
@@ -140,7 +140,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
       final @NonNull Dimension size, final int horizontalPosition, final int verticalPosition) {
     super();
 
-    AssertUtils.notNull(size, "size must not be null");
+    Objects.requireNonNull(size, "size must not be null");
 
     this.rectSize = new Dimension(size.width, size.height);
     this.shapeProperties = createDefaultShapeProperties(horizontalPosition, verticalPosition);
@@ -161,8 +161,8 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
       final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super();
 
-    AssertUtils.notNull(size, "size must not be null");
-    AssertUtils.notNull(shapeProperties, "shapeProperties must not be null");
+    Objects.requireNonNull(size, "size must not be null");
+    Objects.requireNonNull(shapeProperties, "shapeProperties must not be null");
 
     this.rectSize = new Dimension(size.width, size.height);
     this.shapeProperties = new LinkedHashMap<>(shapeProperties);

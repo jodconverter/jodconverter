@@ -23,13 +23,12 @@ package org.jodconverter.core.document;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /** A SimpleDocumentFormatRegistry contains a collection of document formats supported by office. */
 public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
@@ -65,14 +64,14 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
   @Override
   public @Nullable DocumentFormat getFormatByExtension(final @NonNull String extension) {
 
-    AssertUtils.notNull(extension, "extension must not be null");
+    Objects.requireNonNull(extension, "extension must not be null");
     return fmtsByExtension.get(extension.toLowerCase(Locale.ROOT));
   }
 
   @Override
   public @Nullable DocumentFormat getFormatByMediaType(final @NonNull String mediaType) {
 
-    AssertUtils.notNull(mediaType, "mediaType must not be null");
+    Objects.requireNonNull(mediaType, "mediaType must not be null");
     return fmtsByMediaType.get(mediaType.toLowerCase(Locale.ROOT));
   }
 
@@ -80,7 +79,7 @@ public class SimpleDocumentFormatRegistry implements DocumentFormatRegistry {
   public @NonNull Set<@NonNull DocumentFormat> getOutputFormats(
       final @NonNull DocumentFamily documentFamily) {
 
-    AssertUtils.notNull(documentFamily, "documentFamily must not be null");
+    Objects.requireNonNull(documentFamily, "documentFamily must not be null");
     // Use fmtsByMediaType since fmtsByExtension may contain the same
     // DocumentFormat with multiple extensions (e.g.: jpg, jpeg).
     return fmtsByMediaType.values().stream()

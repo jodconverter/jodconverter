@@ -56,7 +56,7 @@ class DefaultDocumentFormatRegistryTest {
       // TEXT output format
       assertExpectedExtensions(
           ass,
-          getOutputFormats(DocumentFamily.TEXT),
+          getInstance().getOutputFormats(DocumentFamily.TEXT),
           "odt",
           "ott",
           "fodt",
@@ -77,7 +77,7 @@ class DefaultDocumentFormatRegistryTest {
       // SPREADSHEET output format
       assertExpectedExtensions(
           ass,
-          getOutputFormats(DocumentFamily.SPREADSHEET),
+          getInstance().getOutputFormats(DocumentFamily.SPREADSHEET),
           "html",
           "xhtml",
           "ods",
@@ -98,7 +98,7 @@ class DefaultDocumentFormatRegistryTest {
       // PRESENTATION output format
       assertExpectedExtensions(
           ass,
-          getOutputFormats(DocumentFamily.PRESENTATION),
+          getInstance().getOutputFormats(DocumentFamily.PRESENTATION),
           "html",
           "xhtml",
           "odp",
@@ -120,7 +120,7 @@ class DefaultDocumentFormatRegistryTest {
       // DRAWING output format
       assertExpectedExtensions(
           ass,
-          getOutputFormats(DocumentFamily.DRAWING),
+          getInstance().getOutputFormats(DocumentFamily.DRAWING),
           "odg",
           "otg",
           "fodg",
@@ -137,13 +137,20 @@ class DefaultDocumentFormatRegistryTest {
 
       // WEB output format
       assertExpectedExtensions(
-          ass, getOutputFormats(DocumentFamily.WEB), "odt", "ott", "pdf", "jpg", "png", "svg");
+          ass,
+          getInstance().getOutputFormats(DocumentFamily.WEB),
+          "odt",
+          "ott",
+          "pdf",
+          "jpg",
+          "png",
+          "svg");
     }
   }
 
   private void assertByExt(
       final SoftAssertions soft, final String ext, final DocumentFormat expected) {
-    soft.assertThat(getFormatByExtension(ext)).isEqualTo(expected);
+    soft.assertThat(getInstance().getFormatByExtension(ext)).isEqualTo(expected);
   }
 
   @Test
@@ -201,7 +208,7 @@ class DefaultDocumentFormatRegistryTest {
 
   private void assertByType(
       final SoftAssertions soft, final String mediaType, final DocumentFormat expected) {
-    soft.assertThat(getFormatByMediaType(mediaType)).isEqualTo(expected);
+    soft.assertThat(getInstance().getFormatByMediaType(mediaType)).isEqualTo(expected);
   }
 
   @Test

@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.sun.star.beans.PropertyValue;
@@ -40,7 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.utils.Lo;
@@ -292,7 +292,7 @@ public final class LocalOfficeUtils {
    */
   public static @Nullable DocumentFamily getDocumentFamilySilently(
       final @NonNull XComponent document) {
-    AssertUtils.notNull(document, "document must not be null");
+    Objects.requireNonNull(document, "document must not be null");
 
     final var serviceInfo = Lo.qi(XServiceInfo.class, document);
     // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument.
@@ -400,7 +400,7 @@ public final class LocalOfficeUtils {
    * @throws IllegalStateException If the specified directory if not a valid office home directory.
    */
   public static void validateOfficeHome(final @NonNull File officeHome) {
-    AssertUtils.notNull(officeHome, "officeHome must not be null");
+    Objects.requireNonNull(officeHome, "officeHome must not be null");
 
     if (!officeHome.isDirectory()) {
       throw new IllegalStateException(

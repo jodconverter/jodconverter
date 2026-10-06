@@ -32,8 +32,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.office.TemporaryFileMaker;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.FileUtils;
 
 /**
@@ -64,8 +62,8 @@ public abstract class AbstractConverter implements DocumentConverter {
     super();
 
     // Both arguments are required.
-    AssertUtils.notNull(officeManager, "officeManager must not be null");
-    AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
+    Objects.requireNonNull(officeManager, "officeManager must not be null");
+    Objects.requireNonNull(formatRegistry, "formatRegistry must not be null");
     this.officeManager = officeManager;
     this.formatRegistry = formatRegistry;
     this.defaultTargetOptions =
@@ -98,12 +96,7 @@ public abstract class AbstractConverter implements DocumentConverter {
   public @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
       final @NonNull InputStream source, final boolean closeStream) {
 
-    if (officeManager instanceof TemporaryFileMaker fileMaker) {
-      return newJob(new SourceDocumentSpecsFromInputStream(source, fileMaker, closeStream));
-    }
-    throw new IllegalStateException(
-        "An office manager must implements the TemporaryFileMaker "
-            + "interface in order to be able to convert InputStream");
+    return newJob(new SourceDocumentSpecsFromInputStream(source, officeManager, closeStream));
   }
 
   /**
@@ -161,7 +154,7 @@ public abstract class AbstractConverter implements DocumentConverter {
      */
     public @NonNull B officeManager(final @NonNull OfficeManager officeManager) {
 
-      AssertUtils.notNull(officeManager, "officeManager must not be null");
+      Objects.requireNonNull(officeManager, "officeManager must not be null");
       this.officeManager = officeManager;
       return (B) this;
     }
@@ -175,7 +168,7 @@ public abstract class AbstractConverter implements DocumentConverter {
      */
     public @NonNull B formatRegistry(final @NonNull DocumentFormatRegistry formatRegistry) {
 
-      AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
+      Objects.requireNonNull(formatRegistry, "formatRegistry must not be null");
       this.formatRegistry = formatRegistry;
       return (B) this;
     }
@@ -194,7 +187,7 @@ public abstract class AbstractConverter implements DocumentConverter {
      */
     public @NonNull B defaultTargetOptions(final @NonNull TargetOptions options) {
 
-      AssertUtils.notNull(options, "options must not be null");
+      Objects.requireNonNull(options, "options must not be null");
       this.defaultTargetOptions.add(options);
       return (B) this;
     }

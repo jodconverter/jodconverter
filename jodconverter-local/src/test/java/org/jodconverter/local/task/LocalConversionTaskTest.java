@@ -292,11 +292,14 @@ class LocalConversionTaskTest {
 
     @Override
     public DocumentFormat getFormat() {
-      final var fmt = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
-      if (fmt.getStoreProperties() != null) {
-        fmt.getStoreProperties().clear();
-      }
-      return fmt;
+      // The PDF format without its store properties.
+      final var pdf = DefaultDocumentFormatRegistry.PDF;
+      return DocumentFormat.builder()
+          .name(pdf.getName())
+          .extension(pdf.getExtension())
+          .mediaType(pdf.getMediaType())
+          .inputFamily(pdf.getInputFamily())
+          .build();
     }
   }
 }

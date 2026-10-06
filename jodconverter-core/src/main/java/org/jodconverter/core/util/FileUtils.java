@@ -23,11 +23,11 @@ package org.jodconverter.core.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -48,62 +48,6 @@ public final class FileUtils {
   }
 
   /**
-   * Copies a file to another path, preserving the last modified date.
-   *
-   * @param srcFile An existing file to copy, must not be {@code null}.
-   * @param destFile The target file, must not be {@code null}.
-   * @param options Options specifying how the copy should be done.
-   * @throws IOException If an IO error occurs.
-   */
-  @SuppressWarnings("ResultOfMethodCallIgnored")
-  public static void copyFile(
-      final @NonNull File srcFile,
-      final @NonNull File destFile,
-      final @Nullable CopyOption... options)
-      throws IOException {
-    AssertUtils.notNull(srcFile, "srcFile must not be null");
-    AssertUtils.notNull(destFile, "destFile must not be null");
-
-    final var srcPath = srcFile.toPath();
-
-    AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
-
-    Files.copy(srcPath, destFile.toPath(), options);
-    destFile.setLastModified(srcFile.lastModified());
-  }
-
-  /**
-   * Copies a file to a directory, preserving the last modified date.
-   *
-   * @param srcFile An existing file to copy, must not be {@code null}.
-   * @param destDir The directory to place the copy in, must not be {@code null}.
-   * @param options Options specifying how the copy should be done.
-   * @throws IOException If an IO error occurs.
-   */
-  @SuppressWarnings("ResultOfMethodCallIgnored")
-  public static void copyFileToDirectory(
-      final @NonNull File srcFile,
-      final @NonNull File destDir,
-      final @Nullable CopyOption... options)
-      throws IOException {
-    AssertUtils.notNull(srcFile, "srcFile must not be null");
-    AssertUtils.notNull(destDir, "destDir must not be null");
-
-    final var srcPath = srcFile.toPath();
-    final var destPath = destDir.toPath();
-
-    AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
-    AssertUtils.isTrue(!Files.isRegularFile(destPath), "destDir cannot be an existing file");
-
-    // Ensure the target directory exists
-    destPath.toFile().mkdirs();
-
-    final var destFilePath = destPath.resolve(srcFile.getName());
-    Files.copy(srcPath, destFilePath, options);
-    destFilePath.toFile().setLastModified(srcFile.lastModified());
-  }
-
-  /**
    * Copies a directory recursively, preserving the files last modified date.
    *
    * @param srcDir An existing directory to copy, must not be {@code null}.
@@ -116,8 +60,8 @@ public final class FileUtils {
       final @NonNull File destDir,
       final @Nullable CopyOption... options)
       throws IOException {
-    AssertUtils.notNull(srcDir, "srcDir must not be null");
-    AssertUtils.notNull(destDir, "destDir must not be null");
+    Objects.requireNonNull(srcDir, "srcDir must not be null");
+    Objects.requireNonNull(destDir, "destDir must not be null");
 
     final var srcPath = srcDir.toPath();
     final var destPath = destDir.toPath();
@@ -251,26 +195,6 @@ public final class FileUtils {
       return "";
     }
     return Path.of(filename).getFileName().toString();
-  }
-
-  /**
-   * Reads the contents of a file into a String.
-   *
-   * @param file The file to read, must not be {@code null}.
-   * @param encoding The encoding to use, must not be {@code null}.
-   * @return the file contents, never {@code null}.
-   * @throws IOException If an IO error occurs.
-   */
-  public static @NonNull String readFileToString(
-      final @NonNull File file, final @NonNull Charset encoding) throws IOException {
-    AssertUtils.notNull(file, "file must not be null");
-    AssertUtils.notNull(encoding, "encoding must not be null");
-
-    final var srcPath = file.toPath();
-
-    AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
-
-    return Files.readString(srcPath, encoding);
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

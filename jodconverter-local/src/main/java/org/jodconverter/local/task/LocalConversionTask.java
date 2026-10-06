@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.sun.star.frame.XStorable;
@@ -199,7 +200,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   // Gets the office properties to apply when the converted
   // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
-    AssertUtils.notNull(target.getFormat(), "Target format must not be null");
+    Objects.requireNonNull(target.getFormat(), "Target format must not be null");
 
     final var storeProps = new HashMap<String, Object>();
     appendProperties(

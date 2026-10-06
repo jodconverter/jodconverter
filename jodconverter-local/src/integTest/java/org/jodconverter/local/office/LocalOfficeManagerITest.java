@@ -34,6 +34,7 @@ import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.OfficeWorkerState;
+import org.jodconverter.core.office.OfficeWorkerStatus;
 import org.jodconverter.core.test.util.TestUtil;
 
 /** Contains tests for the {@link LocalOfficeManager} class, with real office processes. */
@@ -88,6 +89,11 @@ class LocalOfficeManagerITest {
    * Tests that the tasks are not given to an office process that is restarting while another one is
    * ready (issue 451).
    */
+  // The state of each worker of the manager, in the order of the workers.
+  private static List<OfficeWorkerState> states(final LocalOfficeManager manager) {
+    return manager.getStatus().workers().stream().map(OfficeWorkerStatus::state).toList();
+  }
+
   @Test
   void whenAProcessIsRestarting_ShouldGiveTheTasksToTheProcessThatIsReady() throws OfficeException {
 
@@ -99,12 +105,11 @@ class LocalOfficeManagerITest {
             .startFailFast(true)
             .build();
     manager.start();
-    assertThat(manager.getWorkerStates())
-        .containsExactly(OfficeWorkerState.READY, OfficeWorkerState.READY);
+    assertThat(states(manager)).containsExactly(OfficeWorkerState.READY, OfficeWorkerState.READY);
 
     // The first office process crashes.
     processManager(0).kill();
-    await(() -> manager.getWorkerStates().get(0) == OfficeWorkerState.RESTARTING);
+    await(() -> states(manager).get(0) == OfficeWorkerState.RESTARTING);
 
     for (int i = 0; i < 3; i++) {
       final var task = new RecordingTask();
@@ -112,12 +117,12 @@ class LocalOfficeManagerITest {
       assertThat(task.isCompleted()).isTrue();
       assertThat(task.context).isSameAs(processManager(1).getConnection());
     }
-    assertThat(manager.getWorkerStates().get(0)).isEqualTo(OfficeWorkerState.RESTARTING);
+    assertThat(states(manager).get(0)).isEqualTo(OfficeWorkerState.RESTARTING);
 
     // The first office process comes back, and executes tasks again.
-    await(() -> manager.getWorkerStates().get(0) == OfficeWorkerState.READY);
+    await(() -> states(manager).get(0) == OfficeWorkerState.READY);
     final var blocking = manager.submit(new MockOfficeTask(3_000L));
-    await(() -> manager.getWorkerStates().contains(OfficeWorkerState.BUSY));
+    await(() -> states(manager).contains(OfficeWorkerState.BUSY));
     final var task = new RecordingTask();
     manager.execute(task);
     assertThat(task.isCompleted()).isTrue();
@@ -142,13 +147,13 @@ class LocalOfficeManagerITest {
             .startFailFast(false)
             .build();
     manager.start();
-    assertThat(manager.getWorkerStates()).containsExactly(OfficeWorkerState.STARTING);
+    assertThat(states(manager)).containsExactly(OfficeWorkerState.STARTING);
 
     final var task = new MockOfficeTask();
     manager.execute(task);
 
     assertThat(task.isCompleted()).isTrue();
-    assertThat(manager.getWorkerStates()).containsExactly(OfficeWorkerState.READY);
+    assertThat(states(manager)).containsExactly(OfficeWorkerState.READY);
   }
 
   /** Tests that an office process is restarted when the execution of a task times out. */

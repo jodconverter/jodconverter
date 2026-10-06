@@ -21,6 +21,7 @@
 package org.jodconverter.core.pdf;
 
 import java.util.*;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -276,7 +277,7 @@ public final class PdfOptions implements TargetOptions {
      * @return This builder instance.
      */
     public @NonNull Builder version(final @NonNull PdfVersion version) {
-      AssertUtils.notNull(version, "version must not be null");
+      Objects.requireNonNull(version, "version must not be null");
       values.put(PdfOption.SELECT_PDF_VERSION, version.getValue());
       return this;
     }

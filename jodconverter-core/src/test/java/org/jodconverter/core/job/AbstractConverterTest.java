@@ -31,9 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.SimpleOfficeManager;
-import org.jodconverter.core.task.OfficeTask;
 
 /** Contains tests for the {@link AbstractConverter} class. */
 class AbstractConverterTest {
@@ -125,51 +123,6 @@ class AbstractConverterTest {
             (SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified)
                 converter.convert(inputStream, false);
         assertThat(job.source).hasFieldOrPropertyWithValue("closeStream", false);
-      }
-    }
-
-    @Test
-    void withManagerNotSupportingFileMaker_ShouldThrowIllegalStateException(
-        @TempDir final File testFolder) throws IOException {
-
-      final var sourceFile = new File(testFolder, "source.txt");
-      assertThat(sourceFile.createNewFile()).isTrue();
-
-      try (var inputStream = Files.newInputStream(sourceFile.toPath())) {
-        final var converter =
-            SimpleConverter.builder()
-                .officeManager(
-                    new OfficeManager() {
-
-                      @Override
-                      public void execute(
-                          @SuppressWarnings("NullableProblems") final OfficeTask task) {
-                        // Ignore
-                      }
-
-                      @Override
-                      public boolean isRunning() {
-                        return false;
-                      }
-
-                      @Override
-                      public void start() {
-                        // Ignore
-                      }
-
-                      @Override
-                      public void stop() {
-                        // Ignore
-                      }
-                    })
-                .formatRegistry(DefaultDocumentFormatRegistry.getInstance())
-                .build();
-
-        assertThatIllegalStateException()
-            .isThrownBy(() -> converter.convert(inputStream))
-            .withMessage(
-                "An office manager must implements the TemporaryFileMaker "
-                    + "interface in order to be able to convert InputStream");
       }
     }
   }

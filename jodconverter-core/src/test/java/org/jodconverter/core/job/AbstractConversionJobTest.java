@@ -130,8 +130,8 @@ class AbstractConversionJobTest {
       assertThat(sourceFile.createNewFile()).isTrue();
       final var target = new TargetDocumentSpecsFromFile(new File(testFolder, targetName));
       target.setDocumentFormat(
-          DefaultDocumentFormatRegistry.getFormatByExtension(
-              targetName.substring(targetName.lastIndexOf('.') + 1)));
+          DefaultDocumentFormatRegistry.getInstance()
+              .getFormatByExtension(targetName.substring(targetName.lastIndexOf('.') + 1)));
       return new SimpleConverter.SimpleConversionJob(
           manager, new SourceDocumentSpecsFromFile(sourceFile), target);
     }
@@ -373,6 +373,11 @@ class AbstractConversionJobTest {
 
             @Override
             public void stop() {}
+
+            @Override
+            public File makeTemporaryFile(final String extension) {
+              return new File(testFolder, "temp." + extension);
+            }
           };
       final var job =
           new SimpleConverter.SimpleConversionJob(

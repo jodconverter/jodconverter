@@ -23,6 +23,7 @@ package org.jodconverter.core.office;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -122,7 +123,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
       final boolean startFailFast) {
     super();
 
-    AssertUtils.notNull(workingDir, "workingDir must not be null");
+    Objects.requireNonNull(workingDir, "workingDir must not be null");
 
     this.taskQueueTimeout = taskQueueTimeout;
     this.taskExecutionTimeout = taskExecutionTimeout;
@@ -262,31 +263,14 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
 
     if (poolState.get() == POOL_STARTED) {
       // Check for at least one worker that is ready, or executing a task.
-      for (final var state : getWorkerStates()) {
+      for (final var runner : runners) {
+        final var state = runner.getState();
         if (state == OfficeWorkerState.READY || state == OfficeWorkerState.BUSY) {
           return true;
         }
       }
     }
     return false;
-  }
-
-  /**
-   * Gets the state of each worker of this pool, in the order of the workers.
-   *
-   * @return The states; empty if the pool was never started.
-   */
-  public @NonNull List<@NonNull OfficeWorkerState> getWorkerStates() {
-    return runners.stream().map(OfficeWorkerRunner::getState).toList();
-  }
-
-  /**
-   * Gets the number of tasks waiting in the queue for a worker.
-   *
-   * @return The number of waiting tasks.
-   */
-  public int getQueueSize() {
-    return queue.size();
   }
 
   /**
@@ -318,7 +302,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
   @Override
   public final @NonNull CompletableFuture<Void> submit(final @NonNull OfficeTask task) {
 
-    AssertUtils.notNull(task, "task must not be null");
+    Objects.requireNonNull(task, "task must not be null");
     if (poolState.get() != POOL_STARTED) {
       throw new IllegalStateException(ERROR_NOT_RUNNING);
     }
@@ -508,13 +492,8 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
    *
    * @return The temporary directory.
    */
-  public @NonNull File getTempDir() {
+  /* default */ @NonNull File getTempDir() {
     return tempDir;
-  }
-
-  @Override
-  public @NonNull File makeTemporaryFile() {
-    return makeTemporaryFile(null);
   }
 
   @Override
@@ -607,15 +586,12 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
      * @param taskExecutionTimeout The task execution timeout, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull B taskExecutionTimeout(final @Nullable Long taskExecutionTimeout) {
-
-      if (taskExecutionTimeout != null) {
-        AssertUtils.isTrue(
-            taskExecutionTimeout >= 0,
-            String.format(
-                "taskExecutionTimeout %s must greater than or equal to 0", taskExecutionTimeout));
-        this.taskExecutionTimeout = taskExecutionTimeout;
-      }
+    public @NonNull B taskExecutionTimeout(final long taskExecutionTimeout) {
+      AssertUtils.isTrue(
+          taskExecutionTimeout >= 0,
+          String.format(
+              "taskExecutionTimeout %s must be greater than or equal to 0", taskExecutionTimeout));
+      this.taskExecutionTimeout = taskExecutionTimeout;
       return (B) this;
     }
 
@@ -628,15 +604,12 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
      * @param taskQueueCapacity The task queue capacity; 0 means no limit.
      * @return This builder instance.
      */
-    public @NonNull B taskQueueCapacity(final @Nullable Integer taskQueueCapacity) {
-
-      if (taskQueueCapacity != null) {
-        AssertUtils.isTrue(
-            taskQueueCapacity >= 0,
-            String.format(
-                "taskQueueCapacity %s must greater than or equal to 0", taskQueueCapacity));
-        this.taskQueueCapacity = taskQueueCapacity;
-      }
+    public @NonNull B taskQueueCapacity(final int taskQueueCapacity) {
+      AssertUtils.isTrue(
+          taskQueueCapacity >= 0,
+          String.format(
+              "taskQueueCapacity %s must be greater than or equal to 0", taskQueueCapacity));
+      this.taskQueueCapacity = taskQueueCapacity;
       return (B) this;
     }
 
@@ -650,15 +623,28 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
      * @param taskQueueTimeout The task queue timeout, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull B taskQueueTimeout(final @Nullable Long taskQueueTimeout) {
-
-      if (taskQueueTimeout != null) {
-        AssertUtils.isTrue(
-            taskQueueTimeout >= 0,
-            String.format("taskQueueTimeout %s must greater than or equal to 0", taskQueueTimeout));
-        this.taskQueueTimeout = taskQueueTimeout;
-      }
+    public @NonNull B taskQueueTimeout(final long taskQueueTimeout) {
+      AssertUtils.isTrue(
+          taskQueueTimeout >= 0,
+          String.format(
+              "taskQueueTimeout %s must be greater than or equal to 0", taskQueueTimeout));
+      this.taskQueueTimeout = taskQueueTimeout;
       return (B) this;
+    }
+
+    /**
+     * Installs the given manager as the unique instance of the {@link InstalledOfficeManagerHolder}
+     * if {@link #install()} was called.
+     *
+     * @param manager The manager just built.
+     * @param <M> The type of the manager.
+     * @return The given manager.
+     */
+    protected <M extends AbstractOfficeWorkerPool> @NonNull M installed(final @NonNull M manager) {
+      if (install) {
+        InstalledOfficeManagerHolder.setInstance(manager);
+      }
+      return manager;
     }
   }
 }

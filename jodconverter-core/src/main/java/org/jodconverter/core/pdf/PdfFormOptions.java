@@ -21,10 +21,9 @@
 package org.jodconverter.core.pdf;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Options for the form fields of a PDF document. Supported by all the versions of LibreOffice and
@@ -82,7 +81,7 @@ public final class PdfFormOptions extends AbstractPdfOptionGroup {
    * @return This group.
    */
   public @NonNull PdfFormOptions submitFormat(final @NonNull SubmitFormat format) {
-    AssertUtils.notNull(format, "format must not be null");
+    Objects.requireNonNull(format, "format must not be null");
     set(PdfOption.FORMS_TYPE, format.value);
     return this;
   }

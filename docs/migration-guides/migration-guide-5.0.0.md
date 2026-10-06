@@ -143,10 +143,41 @@ JODConverter are built this way.
 `Lo.createInstanceMSF(...)` and `Lo.createInstanceMCF(...)` (local module), deprecated since 4.4.4, are removed; use the
 `Lo.createInstance(...)` overloads, which take the same arguments.
 
-### FileUtils.readFileToString
+### Office managers make temporary files
 
-`org.jodconverter.core.util.FileUtils.readFileToString` now throws a `MalformedInputException` when the file contains
-bytes that are not valid in the given charset, instead of replacing them.
+`OfficeManager` now extends `TemporaryFileMaker`, which every office manager of JODConverter already implemented, so a
+converter no longer checks for it at runtime before converting a stream. A custom office manager must implement
+`makeTemporaryFile(String extension)` (the no-argument overload has a default implementation).
+
+`AbstractOfficeWorkerPool.getWorkerStates()` and `getQueueSize()` are removed in favor of `getStatus()`, which gives
+the same values in one snapshot (`workers()` and `queueSize()`), and `getTempDir()` is no longer public.
+
+### Immutable document formats
+
+`DocumentFormat` is always immutable: `DocumentFormat.copy(format)`, `unmodifiableCopy(format)` and
+`Builder.unmodifiable(boolean)` are gone; `DocumentFormat.builder(format)` gives a builder initialized from a format.
+`getLoadProperties()` and `getStoreProperties()` return empty maps instead of `null` when the format has no property,
+and `getStoreProperties(family)` still returns `null` for a family without properties. A format needs at least one
+extension, and `equals`/`hashCode` compare every field. `DefaultDocumentFormatRegistry` keeps only `getInstance()`:
+`getFormatByExtension`, `getFormatByMediaType` and `getOutputFormats` are called on that instance. A custom
+`document-formats.json` that drops one of the formats named by the `DefaultDocumentFormatRegistry` constants now fails
+when the class is loaded, instead of giving a silent placeholder format.
+
+### Builder setters take primitives
+
+The numeric and boolean setters of the office manager builders (`taskExecutionTimeout`, `taskQueueTimeout`,
+`taskQueueCapacity`, `poolSize`, `processTimeout`, `processRetryInterval`, `afterStartProcessDelay`, `startFailFast`,
+`keepAliveOnShutdown`, `maxTasksPerProcess`, `connectOnStart`, `connectTimeout`, `connectRetryInterval`,
+`connectFailFast`, `maxTasksPerConnection`, `socketTimeout`) take `long`, `int` or `boolean` instead of nullable
+wrappers that kept the default on `null`. A caller that passed a possibly null value keeps the default by not calling
+the setter.
+
+### Removed utilities
+
+In `org.jodconverter.core.util`, `IOUtils` is removed (`InputStream.transferTo` and `readAllBytes`),
+`FileUtils.copyFile`, `copyFileToDirectory` and `readFileToString` are removed (`Files.copy` and `Files.readString`),
+`StringUtils.isEmpty`, `isNotEmpty`, `appendIfMissing` and `endsWithAny` are removed, `AssertUtils.notNull` is removed
+(`Objects.requireNonNull`), and `OSUtils` keeps `IS_OS_FREE_BSD`, `IS_OS_MAC`, `IS_OS_UNIX` and `IS_OS_WINDOWS` only.
 
 ## Behavior changes
 

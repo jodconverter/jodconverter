@@ -120,7 +120,7 @@ class OfficeWorkerRunnerTest {
 
     // The job was not executed: it is back in the queue, for the stop of the pool to fail it.
     assertThat(worker.executedTasks).hasValue(0);
-    assertThat(pool.getQueueSize()).isEqualTo(1);
+    assertThat(pool.getStatus().queueSize()).isEqualTo(1);
     assertThat(job.getFuture()).isNotDone();
     assertThat(runner.getState()).isEqualTo(OfficeWorkerState.STOPPED);
     // The worker was idle when the stop was requested: it is stopped without being aborted.

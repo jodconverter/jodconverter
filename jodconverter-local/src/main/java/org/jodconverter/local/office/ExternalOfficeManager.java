@@ -28,7 +28,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.AbstractOfficeWorkerPool;
-import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.util.AssertUtils;
@@ -167,10 +166,7 @@ public final class ExternalOfficeManager extends AbstractOfficeWorkerPool {
               taskExecutionTimeout,
               taskQueueTimeout,
               taskQueueCapacity);
-      if (install) {
-        InstalledOfficeManagerHolder.setInstance(manager);
-      }
-      return manager;
+      return installed(manager);
     }
 
     /**
@@ -238,11 +234,9 @@ public final class ExternalOfficeManager extends AbstractOfficeWorkerPool {
      * @param connectOnStart {@code true} to connect on start, {@code false} otherwise.
      * @return This builder instance.
      */
-    public @NonNull Builder connectOnStart(final @Nullable Boolean connectOnStart) {
+    public @NonNull Builder connectOnStart(final boolean connectOnStart) {
 
-      if (connectOnStart != null) {
-        this.connectOnStart = connectOnStart;
-      }
+      this.connectOnStart = connectOnStart;
       return this;
     }
 
@@ -254,14 +248,12 @@ public final class ExternalOfficeManager extends AbstractOfficeWorkerPool {
      * @param connectTimeout the process timeout, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder connectTimeout(final @Nullable Long connectTimeout) {
+    public @NonNull Builder connectTimeout(final long connectTimeout) {
 
-      if (connectTimeout != null) {
-        AssertUtils.isTrue(
-            connectTimeout >= 0L,
-            String.format("connectTimeout %s must be greater than or equal to 0", connectTimeout));
-        this.connectTimeout = connectTimeout;
-      }
+      AssertUtils.isTrue(
+          connectTimeout >= 0L,
+          String.format("connectTimeout %s must be greater than or equal to 0", connectTimeout));
+      this.connectTimeout = connectTimeout;
       return this;
     }
 
@@ -273,16 +265,14 @@ public final class ExternalOfficeManager extends AbstractOfficeWorkerPool {
      * @param connectRetryInterval the connection retry interval, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder connectRetryInterval(final @Nullable Long connectRetryInterval) {
+    public @NonNull Builder connectRetryInterval(final long connectRetryInterval) {
 
-      if (connectRetryInterval != null) {
-        AssertUtils.isTrue(
-            connectRetryInterval >= 0L && connectRetryInterval <= MAX_CONNECT_RETRY_INTERVAL,
-            String.format(
-                "retryInterval %s must be in the inclusive range of %s to %s",
-                connectRetryInterval, 0, MAX_CONNECT_RETRY_INTERVAL));
-        this.connectRetryInterval = connectRetryInterval;
-      }
+      AssertUtils.isTrue(
+          connectRetryInterval >= 0L && connectRetryInterval <= MAX_CONNECT_RETRY_INTERVAL,
+          String.format(
+              "retryInterval %s must be in the inclusive range of %s to %s",
+              connectRetryInterval, 0, MAX_CONNECT_RETRY_INTERVAL));
+      this.connectRetryInterval = connectRetryInterval;
       return this;
     }
 
@@ -300,11 +290,9 @@ public final class ExternalOfficeManager extends AbstractOfficeWorkerPool {
      * @param connectFailFast {@code true} to "fail fast", {@code false} otherwise.
      * @return This builder instance.
      */
-    public @NonNull Builder connectFailFast(final @Nullable Boolean connectFailFast) {
+    public @NonNull Builder connectFailFast(final boolean connectFailFast) {
 
-      if (connectFailFast != null) {
-        this.connectFailFast = connectFailFast;
-      }
+      this.connectFailFast = connectFailFast;
       return this;
     }
 
@@ -317,16 +305,14 @@ public final class ExternalOfficeManager extends AbstractOfficeWorkerPool {
      * @param maxTasksPerConnection The new maximum number of tasks an office process can execute.
      * @return This builder instance.
      */
-    public @NonNull Builder maxTasksPerConnection(final @Nullable Integer maxTasksPerConnection) {
+    public @NonNull Builder maxTasksPerConnection(final int maxTasksPerConnection) {
 
-      if (maxTasksPerConnection != null) {
-        AssertUtils.isTrue(
-            maxTasksPerConnection >= 0,
-            String.format(
-                "maxTasksPerConnection %s must be greater than or equal to 0",
-                maxTasksPerConnection));
-        this.maxTasksPerConnection = maxTasksPerConnection;
-      }
+      AssertUtils.isTrue(
+          maxTasksPerConnection >= 0,
+          String.format(
+              "maxTasksPerConnection %s must be greater than or equal to 0",
+              maxTasksPerConnection));
+      this.maxTasksPerConnection = maxTasksPerConnection;
       return this;
     }
   }

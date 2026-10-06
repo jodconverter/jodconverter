@@ -40,7 +40,6 @@ import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.job.TargetDocumentSpecs;
 import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.remote.office.RemoteOfficeContext;
 
 /** Represents the default behavior for a remote conversion task. */
@@ -179,7 +178,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
     // an example URL is like:
     // http://localhost:9980/lool/convert-to/docx
 
-    return StringUtils.appendIfMissing(connectionUrl, "/")
+    return (connectionUrl.endsWith("/") ? connectionUrl : connectionUrl + "/")
         + Objects.requireNonNull(target.getFormat()).getExtension();
   }
 

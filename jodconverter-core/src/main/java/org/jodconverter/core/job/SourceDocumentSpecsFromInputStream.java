@@ -24,14 +24,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.TemporaryFileMaker;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.FileUtils;
-import org.jodconverter.core.util.IOUtils;
 
 /** Source document specifications for from an input stream. */
 public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
@@ -57,8 +56,8 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
       final boolean closeStream) {
     super();
 
-    AssertUtils.notNull(inputStream, "inputStream must not be null");
-    AssertUtils.notNull(fileMaker, "fileMaker must not be null");
+    Objects.requireNonNull(inputStream, "inputStream must not be null");
+    Objects.requireNonNull(fileMaker, "fileMaker must not be null");
     this.inputStream = inputStream;
     this.fileMaker = fileMaker;
     this.closeStream = closeStream;
@@ -74,7 +73,7 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
               .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
               .orElseGet(fileMaker::makeTemporaryFile);
       try (var outputStream = new FileOutputStream(file)) {
-        IOUtils.copy(inputStream, outputStream);
+        inputStream.transferTo(outputStream);
       } catch (IOException ex) {
         throw new DocumentSpecsIOException(
             String.format("Could not write stream to file '%s'", file), ex);
