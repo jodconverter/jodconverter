@@ -32,8 +32,8 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.job.*;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.filter.DefaultFilterChain;
@@ -166,7 +166,12 @@ public final class LocalConverter extends AbstractConverter {
     }
 
     @Override
-    public void doExecute() throws OfficeException {
+    protected @NonNull OfficeManager getOfficeManager() {
+      return officeManager;
+    }
+
+    @Override
+    protected @NonNull OfficeTask createTask() {
 
       // Determine whether we must use stream adapters.
       final var useStreamAdapters =
@@ -174,11 +179,8 @@ public final class LocalConverter extends AbstractConverter {
               || (loadDocumentMode == LoadDocumentMode.AUTO
                   && officeManager instanceof ExternalOfficeManager);
 
-      // Create a conversion task and execute it.
-      final var task =
-          new LocalConversionTask(
-              source, target, useStreamAdapters, loadProperties, storeProperties, filterChain);
-      officeManager.execute(task);
+      return new LocalConversionTask(
+          source, target, useStreamAdapters, loadProperties, storeProperties, filterChain);
     }
   }
 

@@ -21,11 +21,14 @@
 package org.jodconverter.core.job;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.util.AssertUtils;
 
 /**
@@ -71,6 +74,18 @@ public abstract class AbstractConversionJob
   @Override
   public final void execute() throws OfficeException {
 
+    getOfficeManager().execute(prepareTask());
+  }
+
+  @Override
+  public final @NonNull CompletableFuture<Void> executeAsync() {
+
+    return getOfficeManager().submit(prepareTask());
+  }
+
+  // Checks the target format and options of the conversion, then creates its task.
+  private OfficeTask prepareTask() {
+
     final var format = target.getFormat();
     AssertUtils.notNull(format, "The target format is missing or not supported");
     var options = target.getOptions();
@@ -92,7 +107,7 @@ public abstract class AbstractConversionJob
               + format.getExtension()
               + "'");
     }
-    doExecute();
+    return createTask();
   }
 
   /**
@@ -105,10 +120,17 @@ public abstract class AbstractConversionJob
   }
 
   /**
-   * Executes the conversion and blocks until the conversion terminates. Both source and target
-   * document formats are known and valid at this point.
+   * Gets the office manager that executes the task of this conversion.
    *
-   * @throws OfficeException If the conversion failed.
+   * @return The office manager.
    */
-  protected abstract void doExecute() throws OfficeException;
+  protected abstract @NonNull OfficeManager getOfficeManager();
+
+  /**
+   * Creates the task of this conversion. Both source and target document formats are known and
+   * valid at this point.
+   *
+   * @return The task to execute.
+   */
+  protected abstract @NonNull OfficeTask createTask();
 }

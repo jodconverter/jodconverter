@@ -304,6 +304,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
    * @return The future of the task.
    * @throws IllegalStateException If this manager is not running.
    */
+  @Override
   public final @NonNull CompletableFuture<Void> submit(final @NonNull OfficeTask task) {
 
     AssertUtils.notNull(task, "task must not be null");

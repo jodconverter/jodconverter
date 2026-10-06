@@ -27,6 +27,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -216,6 +219,56 @@ class LocalConverterITest {
 
       assertThat(outputFile).isFile();
       assertThat(outputFile.length()).isGreaterThan(0L);
+    }
+  }
+
+  @Nested
+  class ExecuteAsync {
+
+    @Test
+    void withSeveralConversions_ShouldRunThemAndCompleteEachFuture(
+        final @TempDir File testFolder, final DocumentConverter converter) {
+
+      final var outputFiles =
+          List.of(
+              new File(testFolder, "out1.pdf"),
+              new File(testFolder, "out2.txt"),
+              new File(testFolder, "out3.odt"));
+
+      // The conversions are submitted at once, and joined later.
+      final var futures =
+          outputFiles.stream()
+              .map(outputFile -> converter.convert(SOURCE_FILE).to(outputFile).executeAsync())
+              .toList();
+      CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+
+      for (final var outputFile : outputFiles) {
+        assertThat(outputFile).isFile();
+        assertThat(outputFile.length()).isGreaterThan(0L);
+      }
+      assertThat(futures).allSatisfy(future -> assertThat(future).isCompleted());
+    }
+
+    @Test
+    void whenTheConversionFails_ShouldCompleteExceptionallyWithOfficeException(
+        final @TempDir File testFolder, final OfficeManager manager) {
+
+      // A filter that fails every conversion.
+      final var converter =
+          LocalConverter.builder()
+              .officeManager(manager)
+              .filterChain(
+                  (context, document, chain) -> {
+                    throw new OfficeException("The filter failed");
+                  })
+              .build();
+      final var outputFile = new File(testFolder, "out.pdf");
+
+      final var future = converter.convert(SOURCE_FILE).to(outputFile).executeAsync();
+
+      assertThatExceptionOfType(CompletionException.class)
+          .isThrownBy(future::join)
+          .withCauseInstanceOf(OfficeException.class);
     }
   }
 

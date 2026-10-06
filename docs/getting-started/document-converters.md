@@ -171,7 +171,25 @@ Notes:
 
 - Requires an `OfficeManager`: A converter relies on a running `OfficeManager`. Start the manager before executing
     conversions and stop it on shutdown.
+
 - Thread-safe: Converters can be reused across threads; job execution is queued through the `OfficeManager`.
+
+- Asynchronous execution: `executeAsync()` submits the conversion and returns a `CompletableFuture<Void>` at once,
+    instead of blocking like `execute()`. The future completes when the conversion is done, or exceptionally with an
+    `OfficeException` when it fails; cancelling it abandons the conversion. Several conversions can thus run in
+    parallel, one per office process of the manager, and be joined later:
+
+    ```java
+    final var futures =
+        sources.stream()
+            .map(source -> converter.convert(source).to(targetOf(source)).executeAsync())
+            .toList();
+    CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+    ```
+
+    The actions chained to the future (`thenRun`, `whenComplete`...) may run on a thread of the office manager, so
+    they must not block. `OfficeManager.submit(task)` is the same for an `OfficeTask`.
+
 - Format registry: `getFormatRegistry()` returns the formats supported by the converter. `LocalConverter` typically uses
     `DefaultDocumentFormatRegistry`.
 
@@ -187,7 +205,7 @@ Notes:
 
 - `DocumentConverter` (core): high-level conversion contract.
 - `DefaultDocumentFormatRegistry` (core): common formats and MIME mappings.
-- Conversion job API (core.job): fluent pipeline (convert(...).to(...).execute()).
+- Conversion job API (core.job): fluent pipeline (convert (...).to (...).execute ()).
 - `LocalConverter` (local): converter for local office processes.
 - `RemoteConverter` (remote): converter for LibreOffice Online / Collabora Online.
 - `InstalledOfficeManagerHolder` (core): global singleton used when no manager is provided explicitly.

@@ -24,9 +24,9 @@ import java.util.List;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.SimpleOfficeManager;
+import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.task.SimpleOfficeTask;
 
 /** Converter for testing purposes. */
@@ -93,11 +93,13 @@ public final class SimpleConverter extends AbstractConverter {
     }
 
     @Override
-    public void doExecute() throws OfficeException {
+    protected OfficeManager getOfficeManager() {
+      return officeManager;
+    }
 
-      // Create a default conversion task and execute it
-      final var task = new SimpleOfficeTask();
-      officeManager.execute(task);
+    @Override
+    protected OfficeTask createTask() {
+      return new SimpleOfficeTask();
     }
   }
 
