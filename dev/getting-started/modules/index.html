@@ -1261,10 +1261,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#jodconverter-spring" class="md-nav__link">
+  <a href="#spring-framework-without-spring-boot" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        jodconverter-spring
+        Spring Framework without Spring Boot
       </span>
     </span>
   </a>
@@ -2504,10 +2504,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#jodconverter-spring" class="md-nav__link">
+  <a href="#spring-framework-without-spring-boot" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        jodconverter-spring
+        Spring Framework without Spring Boot
       </span>
     </span>
   </a>
@@ -2605,13 +2605,27 @@ active development and broader format support.</p>
 remote document conversion REST API, such as those exposed by LibreOffice Online or Collabora Online.</p>
 <p>Instead of managing a local or UNO-based office process, this module sends documents and conversion requests over
 HTTP(S) to a remote server that handles the conversion, making it ideal for cloud-native or containerized environments.</p>
-<h2 id="jodconverter-spring">jodconverter-spring<a class="headerlink" href="#jodconverter-spring" title="Permanent link">&para;</a></h2>
-<p><a href="https://central.sonatype.com/artifact/org.jodconverter/jodconverter-spring/4.4.11/dependencies">Dependencies</a></p>
-<p>The <code>jodconverter-spring</code> module provides seamless integration of JODConverter with the Spring Framework, enabling
-developers to easily configure and use document conversion services within Spring-based applications.</p>
-<p>This module offers Spring-friendly beans and configuration support for managing office processes and document
-converters, helping you embed JODConverter capabilities in your web applications, microservices, or backend systems
-built with Spring.</p>
+<h2 id="spring-framework-without-spring-boot">Spring Framework without Spring Boot<a class="headerlink" href="#spring-framework-without-spring-boot" title="Permanent link">&para;</a></h2>
+<p>There is no module for the Spring Framework alone (the <code>jodconverter-spring</code> module of 4.x is gone in 5.0): the
+builders of the office managers and converters are all a Spring application needs. Declare the manager as a bean
+started and stopped with the context, and a converter on top of it:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="nd">@Configuration</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">JodConverterConfiguration</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="nd">@Bean</span><span class="p">(</span><span class="n">initMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"start"</span><span class="p">,</span><span class="w"> </span><span class="n">destroyMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"stop"</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">OfficeManager</span><span class="w"> </span><span class="nf">officeManager</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">LocalOfficeManager</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">portNumbers</span><span class="p">(</span><span class="mi">2002</span><span class="p">,</span><span class="w"> </span><span class="mi">2003</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@Bean</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">DocumentConverter</span><span class="w"> </span><span class="nf">documentConverter</span><span class="p">(</span><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">LocalConverter</span><span class="p">.</span><span class="na">make</span><span class="p">(</span><span class="n">officeManager</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>With XML configuration, <code>LocalOfficeManager.make()</code> and <code>LocalConverter.make(officeManager)</code> are static factory
+methods: <code>&lt;bean id="officeManager" class="org.jodconverter.local.office.LocalOfficeManager" factory-method="make"
+init-method="start" destroy-method="stop"/&gt;</code>.</p>
 <h2 id="jodconverter-spring-boot-starter">jodconverter-spring-boot-starter<a class="headerlink" href="#jodconverter-spring-boot-starter" title="Permanent link">&para;</a></h2>
 <p><a href="https://central.sonatype.com/artifact/org.jodconverter/jodconverter-spring-boot-starter/4.4.11/dependencies">Dependencies</a></p>
 <p>The <code>jodconverter-spring-boot-starter</code> module provides a convenient Spring Boot starter that simplifies integrating
@@ -2626,7 +2640,7 @@ with minimal setup.</p>
 <li>Use jodconverter-local-oo if you must target Apache OpenOffice.</li>
 <li>Use jodconverter-remote if you rely on a remote conversion service (LO Online/Collabora).</li>
 <li>Use jodconverter-cli for one-off or scripted conversions without Java coding.</li>
-<li>Add jodconverter-spring or jodconverter-spring-boot-starter for Spring-based apps.</li>
+<li>Add jodconverter-spring-boot-starter for Spring Boot apps.</li>
 </ul>
 <blockquote>
 <p>Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite

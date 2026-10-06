@@ -921,10 +921,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#spring-boot-3-and-spring-framework-6" class="md-nav__link">
+  <a href="#spring-boot-3" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Spring Boot 3 and Spring Framework 6
+        Spring Boot 3
       </span>
     </span>
   </a>
@@ -953,17 +953,6 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         SLF4J 2
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#no-logging-backend-from-jodconverter-spring" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        No logging backend from jodconverter-spring
       </span>
     </span>
   </a>
@@ -1008,6 +997,17 @@
   
     <nav class="md-nav" aria-label="API changes">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jodconverter-spring-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        jodconverter-spring removed
+      </span>
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#records" class="md-nav__link">
@@ -2655,10 +2655,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#spring-boot-3-and-spring-framework-6" class="md-nav__link">
+  <a href="#spring-boot-3" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Spring Boot 3 and Spring Framework 6
+        Spring Boot 3
       </span>
     </span>
   </a>
@@ -2687,17 +2687,6 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         SLF4J 2
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#no-logging-backend-from-jodconverter-spring" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        No logging backend from jodconverter-spring
       </span>
     </span>
   </a>
@@ -2742,6 +2731,17 @@
   
     <nav class="md-nav" aria-label="API changes">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jodconverter-spring-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        jodconverter-spring removed
+      </span>
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#records" class="md-nav__link">
@@ -2943,13 +2943,10 @@ Boot and logging setup; the API changes only affect code that extends JODConvert
 <h3 id="java-17">Java 17<a class="headerlink" href="#java-17" title="Permanent link">&para;</a></h3>
 <p>JODConverter 5.0 requires Java 17 or later, at build time and at runtime. Applications that must stay on Java 8 or
 11 must stay on JODConverter 4.4.</p>
-<h3 id="spring-boot-3-and-spring-framework-6">Spring Boot 3 and Spring Framework 6<a class="headerlink" href="#spring-boot-3-and-spring-framework-6" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>jodconverter-spring-boot-starter</code> requires Spring Boot 3. It is built and tested with Spring Boot 3.5.</li>
-<li><code>jodconverter-spring</code> requires Spring Framework 6. It is built and tested with Spring Framework 6.2.</li>
-</ul>
-<p>Spring Boot 2 and Spring Framework 5 applications must stay on JODConverter 4.4. The migration of the application
-itself (<code>javax.*</code> to <code>jakarta.*</code>, and so on) is covered by the
+<h3 id="spring-boot-3">Spring Boot 3<a class="headerlink" href="#spring-boot-3" title="Permanent link">&para;</a></h3>
+<p><code>jodconverter-spring-boot-starter</code> requires Spring Boot 3. It is built and tested with Spring Boot 3.5. Spring Boot 2
+applications must stay on JODConverter 4.4. The migration of the application itself (<code>javax.*</code> to <code>jakarta.*</code>, and so
+on) is covered by the
 <a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide">Spring Boot 3.0 Migration Guide</a>.</p>
 <p>The auto-configurations of the starter are registered in
 <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code>; the <code>META-INF/spring.factories</code>
@@ -2987,10 +2984,6 @@ provider, for example:</p>
 </table>
 <p>Otherwise, SLF4J prints <code>No SLF4J providers were found</code> and JODConverter logs nothing. Spring Boot 3 applications
 are not affected: Spring Boot already uses SLF4J 2.</p>
-<h3 id="no-logging-backend-from-jodconverter-spring">No logging backend from jodconverter-spring<a class="headerlink" href="#no-logging-backend-from-jodconverter-spring" title="Permanent link">&para;</a></h3>
-<p><code>jodconverter-spring</code> declared the SLF4J log4j 1 binding as a runtime dependency, so every application using it got
-log4j 1 on its classpath. It now only depends on <code>slf4j-api</code>, like the other modules: an application that relied on
-that binding without declaring it must now add a logging backend of its own.</p>
 <h3 id="command-line-tool">Command line tool<a class="headerlink" href="#command-line-tool" title="Permanent link">&para;</a></h3>
 <p>The command line tool logs through Log4j 2. Its configuration file is now <code>conf/log4j2.xml</code> instead of
 <code>conf/log4j.properties</code> (same default: errors only, on the standard output). On Linux and macOS, the tool now
@@ -2998,13 +2991,34 @@ actually loads that file: the start script did not expand the installation direc
 ignored their <code>conf/log4j.properties</code>.</p>
 <h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h2>
 <p>The published POMs and Gradle module metadata of <code>jodconverter-core</code>, <code>jodconverter-local</code> and <code>jodconverter-remote</code>
-no longer import the Spring Boot BOM (<code>spring-boot-dependencies</code>), and <code>jodconverter-spring</code> no longer imports it
-either. Each dependency has its own version instead. Only <code>jodconverter-spring-boot-starter</code> uses the Spring Boot
-BOM.</p>
+no longer import the Spring Boot BOM (<code>spring-boot-dependencies</code>). Each dependency has its own version instead. Only
+<code>jodconverter-spring-boot-starter</code> uses the Spring Boot BOM.</p>
 <p>An application that relied on JODConverter to bring Spring Boot's dependency management, without importing the
 Spring Boot BOM itself, may now resolve different versions of the libraries that BOM used to manage.</p>
 <h2 id="api-changes">API changes<a class="headerlink" href="#api-changes" title="Permanent link">&para;</a></h2>
 <p>These changes only affect code that extends or calls these classes directly.</p>
+<h3 id="jodconverter-spring-removed">jodconverter-spring removed<a class="headerlink" href="#jodconverter-spring-removed" title="Permanent link">&para;</a></h3>
+<p>The <code>jodconverter-spring</code> module and its <code>JodConverterBean</code> are gone. It configured the local office manager only,
+with setters, and lagged the Spring Boot starter on every feature. A Spring Framework application declares the manager
+and the converter as beans instead; the builders do the rest:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="nd">@Bean</span><span class="p">(</span><span class="n">initMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"start"</span><span class="p">,</span><span class="w"> </span><span class="n">destroyMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"stop"</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">OfficeManager</span><span class="w"> </span><span class="nf">officeManager</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">LocalOfficeManager</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">      </span><span class="p">.</span><span class="na">portNumbers</span><span class="p">(</span><span class="mi">2002</span><span class="p">)</span>
+<span class="w">      </span><span class="p">.</span><span class="na">taskExecutionTimeout</span><span class="p">(</span><span class="mi">120_000L</span><span class="p">)</span>
+<span class="w">      </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="nd">@Bean</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">DocumentConverter</span><span class="w"> </span><span class="nf">documentConverter</span><span class="p">(</span><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">LocalConverter</span><span class="p">.</span><span class="na">make</span><span class="p">(</span><span class="n">officeManager</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Each setter of <code>JodConverterBean</code> has the builder method of the same name on <code>LocalOfficeManager.Builder</code> (the
+<code>portNumbers</code> setter took a comma-separated string; the builder takes <code>int...</code>). With XML configuration, use the
+static <code>LocalOfficeManager.make()</code> and <code>LocalConverter.make(officeManager)</code> factory methods with <code>factory-method</code>,
+<code>init-method="start"</code> and <code>destroy-method="stop"</code>. Spring Boot applications are not affected: the starter never
+used this module.</p>
 <h3 id="records">Records<a class="headerlink" href="#records" title="Permanent link">&para;</a></h3>
 <p><code>ProcessQuery</code> (local module) and <code>RequestConfig</code> (remote module) are now records, and their accessors follow the
 record naming:</p>
