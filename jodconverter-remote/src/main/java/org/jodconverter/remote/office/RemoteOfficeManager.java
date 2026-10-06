@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import org.jodconverter.core.office.AbstractOfficeManagerPool;
+import org.jodconverter.core.office.AbstractOfficeWorkerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.AssertUtils;
@@ -36,8 +36,7 @@ import org.jodconverter.remote.ssl.SslConfig;
  * {@link org.jodconverter.core.office.OfficeManager} pool implementation that does not depend on an
  * office installation to process conversion tasks.
  */
-public final class RemoteOfficeManager
-    extends AbstractOfficeManagerPool<RemoteOfficeManagerPoolEntry> {
+public final class RemoteOfficeManager extends AbstractOfficeWorkerPool {
 
   // The default pool size.
   public static final int DEFAULT_POOL_SIZE = 1;
@@ -89,19 +88,15 @@ public final class RemoteOfficeManager
       final long connectTimeout,
       final long socketTimeout,
       final long taskExecutionTimeout,
-      final long taskQueueTimeout) {
-    super(poolSize, workingDir, taskQueueTimeout);
+      final long taskQueueTimeout,
+      final int taskQueueCapacity) {
+    super(workingDir, taskQueueTimeout, taskExecutionTimeout, taskQueueCapacity, true);
 
-    setEntries(
+    setWorkers(
         IntStream.range(0, poolSize)
             .mapToObj(
                 i ->
-                    new RemoteOfficeManagerPoolEntry(
-                        urlConnection,
-                        sslConfig,
-                        connectTimeout,
-                        socketTimeout,
-                        taskExecutionTimeout))
+                    new RemoteOfficeWorker(urlConnection, sslConfig, connectTimeout, socketTimeout))
             .toList());
   }
 
@@ -110,7 +105,7 @@ public final class RemoteOfficeManager
    *
    * @see RemoteOfficeManager
    */
-  public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
+  public static final class Builder extends AbstractOfficeWorkerPoolBuilder<Builder> {
 
     private int poolSize = DEFAULT_POOL_SIZE;
     private String urlConnection;
@@ -140,7 +135,8 @@ public final class RemoteOfficeManager
               connectTimeout,
               socketTimeout,
               taskExecutionTimeout,
-              taskQueueTimeout);
+              taskQueueTimeout,
+              taskQueueCapacity);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }

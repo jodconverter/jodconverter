@@ -38,8 +38,9 @@ Without an Office Manager, there’s no running office backend to perform conver
     The office process lifecycle is remote; the manager controls the connection pool.
     See [RemoteOfficeManager](../configuration/remote-manager.md) for all configuration options.
 
-Internally, pool-capable managers derive from an abstract pool (`AbstractOfficeManagerPool`) that can manage multiple
-office processes simultaneously (via multiple ports or pipes) for concurrency and resilience.
+Internally, pool-capable managers derive from an abstract pool (`AbstractOfficeWorkerPool`) that dispatches the tasks
+to a pool of workers, one per office process or connection (via multiple ports or pipes), for concurrency and
+resilience.
 
 ## Typical usage patterns
 

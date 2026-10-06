@@ -55,11 +55,10 @@ class LocalOfficeWorker implements OfficeWorker {
   // Set by the thread that aborts this worker.
   private volatile boolean aborted;
 
-  // Guards the task being executed, so that only that task is interrupted when the connection is
-  // lost.
-  private final Object taskLock = new Object();
-  private OfficeTask currentTask;
-  private Thread currentThread;
+  // We don't have to interrupt a task whose password interaction caused the disconnection. A
+  // PasswordProtectedException has already been thrown or will be thrown by the task.
+  private final RunningTask runningTask =
+      new RunningTask(task -> !hasPasswordInteractionRequest(task));
 
   /**
    * Creates a new worker with the specified configuration.
@@ -87,25 +86,9 @@ class LocalOfficeWorker implements OfficeWorker {
 
               @Override
               public void disconnected(final OfficeConnectionEvent event) {
-                interruptCurrentTask();
+                runningTask.interrupt();
               }
             });
-  }
-
-  // A task that is being executed when the connection is lost cannot succeed anymore: its thread
-  // is interrupted, in case the task does not notice by itself.
-  private void interruptCurrentTask() {
-
-    synchronized (taskLock) {
-      if (currentTask == null || hasPasswordInteractionRequest(currentTask)) {
-        // We don't have to interrupt a task whose password interaction caused the
-        // disconnection. A PasswordProtectedException has already been thrown or will
-        // be thrown by the task.
-        return;
-      }
-      LOGGER.warn("Connection lost unexpectedly; interrupting the task being executed");
-      currentThread.interrupt();
-    }
   }
 
   private static boolean hasPasswordInteractionRequest(final OfficeTask task) {
@@ -157,17 +140,11 @@ class LocalOfficeWorker implements OfficeWorker {
   public void execute(final @NonNull OfficeTask task) throws OfficeException {
     LOGGER.debug("Executing task: {}", task);
 
-    synchronized (taskLock) {
-      currentTask = task;
-      currentThread = Thread.currentThread();
-    }
+    runningTask.begin(task);
     try {
       task.execute(officeProcessManager.getConnection());
     } finally {
-      synchronized (taskLock) {
-        currentTask = null;
-        currentThread = null;
-      }
+      runningTask.end();
       // We have to check here for password protection for LibreOffice 24+ since
       // a password interaction causes a disconnection when the password is not
       // provided.

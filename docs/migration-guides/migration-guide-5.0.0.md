@@ -179,5 +179,5 @@ columns wide.
     `jodconverter.external.*` properties auto-configure an `ExternalOfficeManager` and its converter.
 - [Markdown](../getting-started/supported-formats.md): the default registry knows the Markdown format (`md`,
     `markdown`), supported by LibreOffice 26.2 and later.
-- `AbstractOfficeManagerPool.getTempDir()`: the directory where an office manager creates the temporary files used by
+- `AbstractOfficeWorkerPool.getTempDir()`: the directory where an office manager creates the temporary files used by
     conversions.
