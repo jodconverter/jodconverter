@@ -136,5 +136,6 @@ the best idea from a performance point of view. If you're integrating JODConvert
 you may want to initialize a single OfficeManager instance when the app is started and stop it when the app is stopped.
 
 There are many different ways to do this depending on which web framework (if any) you're using, so I'm not going to
-explain it here. For plain Servlet API you can use a context listener, for Spring you can use the jodconverter-spring
-or jodconverter-spring-boot-starter module, and so on.
+explain it here. For plain Servlet API you can use a context listener, for Spring Boot you can use the
+jodconverter-spring-boot-starter module, for the Spring Framework alone a bean with `start` and `stop` as its init
+and destroy methods (see the [modules](../modules.md#spring-framework-without-spring-boot) page), and so on.

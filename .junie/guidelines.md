@@ -81,7 +81,7 @@ Audience: Advanced Java developers contributing to this repository.
   - jodconverter-remote — Client for remote conversion services. Some tests may use WireMock; ensure ports are free.
 - CLI and Spring integrations:
   - jodconverter-cli — Command-line wrapper around converters.
-  - jodconverter-spring, jodconverter-spring-boot-starter — Spring integration. Spring Boot version is aligned in libs.versions.toml; current tree targets Java 8-compatible Spring Boot 2.x for baseline.
+  - jodconverter-spring-boot-starter — Spring Boot integration. Spring Boot version is aligned in libs.versions.toml.
 
 6. Common Troubleshooting
 

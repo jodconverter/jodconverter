@@ -13,6 +13,5 @@ include(
     "jodconverter-local-oo",
     "jodconverter-remote",
     "jodconverter-cli",
-    "jodconverter-spring",
     "jodconverter-spring-boot-starter"
 )
