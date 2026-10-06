@@ -41,7 +41,6 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.office.LocalOfficeUtils;
 import org.jodconverter.local.task.LoadDocumentMode;
@@ -445,7 +444,7 @@ class LocalConverterITest {
             .doesNotThrowAnyException();
       }
 
-      final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
     }
 

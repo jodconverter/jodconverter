@@ -21,10 +21,9 @@
 package org.jodconverter.core.pdf;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Options for the way a PDF document is displayed when it is opened. Supported by all the versions
@@ -107,7 +106,7 @@ public final class PdfInitialViewOptions extends AbstractPdfOptionGroup {
    * @return This group.
    */
   public @NonNull PdfInitialViewOptions pane(final @NonNull Pane pane) {
-    AssertUtils.notNull(pane, "pane must not be null");
+    Objects.requireNonNull(pane, "pane must not be null");
     set(PdfOption.INITIAL_VIEW, pane.value);
     return this;
   }
@@ -134,7 +133,7 @@ public final class PdfInitialViewOptions extends AbstractPdfOptionGroup {
    * @return This group.
    */
   public @NonNull PdfInitialViewOptions magnification(final @NonNull Magnification magnification) {
-    AssertUtils.notNull(magnification, "magnification must not be null");
+    Objects.requireNonNull(magnification, "magnification must not be null");
     set(PdfOption.MAGNIFICATION, magnification.value);
     return this;
   }
@@ -148,7 +147,7 @@ public final class PdfInitialViewOptions extends AbstractPdfOptionGroup {
    * @return This group.
    */
   public @NonNull PdfInitialViewOptions layout(final @NonNull PageLayout layout) {
-    AssertUtils.notNull(layout, "layout must not be null");
+    Objects.requireNonNull(layout, "layout must not be null");
     set(PdfOption.PAGE_LAYOUT, layout.value);
     return this;
   }

@@ -46,9 +46,9 @@ class StressITest {
   private static final int MAX_PROCESS_TASKS = 10;
 
   private static final DocumentFormat INPUT_FORMAT =
-      DefaultDocumentFormatRegistry.getFormatByExtension("rtf");
+      DefaultDocumentFormatRegistry.getInstance().getFormatByExtension("rtf");
   private static final DocumentFormat OUTPUT_FORMAT =
-      DefaultDocumentFormatRegistry.getFormatByExtension("pdf");
+      DefaultDocumentFormatRegistry.getInstance().getFormatByExtension("pdf");
 
   /**
    * This test will run multiple parallel conversions, using 8 office processes. Just change the

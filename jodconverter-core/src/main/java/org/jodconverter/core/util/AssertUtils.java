@@ -120,19 +120,6 @@ public final class AssertUtils {
     }
   }
 
-  /**
-   * Validates that the specified argument is not {@code null}.
-   *
-   * @param object The object to validate.
-   * @param message The exception message to use if the assertion fails.
-   * @throws NullPointerException If the object is {@code null}.
-   */
-  public static void notNull(final @Nullable Object object, final @NonNull String message) {
-    if (object == null) {
-      throw new NullPointerException(message);
-    }
-  }
-
   // Suppresses default constructor, ensuring non-instantiability.
   private AssertUtils() {
     throw new AssertionError("Utility class must not be instantiated");

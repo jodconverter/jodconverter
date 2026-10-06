@@ -20,6 +20,8 @@
 
 package org.jodconverter.boot.autoconfigure;
 
+import java.util.Objects;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,7 +37,6 @@ import org.springframework.context.annotation.Bean;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.pdf.PdfOptions;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
@@ -61,7 +62,7 @@ public class JodConverterRemoteAutoConfiguration {
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager() {
 
-    AssertUtils.notNull(properties.getUrl(), "urlConnection is required");
+    Objects.requireNonNull(properties.getUrl(), "urlConnection is required");
 
     final var builder =
         RemoteOfficeManager.builder()

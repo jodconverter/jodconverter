@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,6 @@ import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.remote.RemoteConverter;
 
 /** Contains tests for the {@link RemoteConverter} class. */
@@ -85,7 +85,7 @@ class RemoteConverterITest {
       converter.convert(inputFile).to(outputFile).execute();
 
       // Check that the output file was created with the expected content.
-      final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
 
       // Verify that it is actually the remote converter that did the conversion.

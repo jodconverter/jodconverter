@@ -24,12 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.TemporaryFileMaker;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.FileUtils;
 
 /** Target document specifications for from an input stream. */
@@ -56,8 +56,8 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
       final boolean closeStream) {
     super();
 
-    AssertUtils.notNull(outputStream, "outputStream must not be null");
-    AssertUtils.notNull(fileMaker, "fileMaker must not be null");
+    Objects.requireNonNull(outputStream, "outputStream must not be null");
+    Objects.requireNonNull(fileMaker, "fileMaker must not be null");
     this.outputStream = outputStream;
     this.closeStream = closeStream;
     this.fileMaker = fileMaker;

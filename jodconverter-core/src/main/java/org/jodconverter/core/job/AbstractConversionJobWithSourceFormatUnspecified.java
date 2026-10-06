@@ -30,8 +30,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.office.TemporaryFileMaker;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.FileUtils;
 
 /**
@@ -58,9 +56,9 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
     super();
 
     // All arguments are required.
-    AssertUtils.notNull(source, "source must not be null");
-    AssertUtils.notNull(officeManager, "officeManager must not be null");
-    AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
+    Objects.requireNonNull(source, "source must not be null");
+    Objects.requireNonNull(officeManager, "officeManager must not be null");
+    Objects.requireNonNull(formatRegistry, "formatRegistry must not be null");
     this.source = source;
     this.officeManager = officeManager;
     this.formatRegistry = formatRegistry;
@@ -98,12 +96,7 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   public @NonNull AbstractConversionJob to(
       final @NonNull OutputStream target, final boolean closeStream) {
 
-    if (officeManager instanceof TemporaryFileMaker fileMaker) {
-      return toInternal(new TargetDocumentSpecsFromOutputStream(target, fileMaker, closeStream));
-    }
-    throw new IllegalStateException(
-        "An office manager must implements the TemporaryFileMaker "
-            + "interface in order to be able to convert to OutputStream");
+    return toInternal(new TargetDocumentSpecsFromOutputStream(target, officeManager, closeStream));
   }
 
   /**

@@ -126,6 +126,11 @@ class AbstractOfficeWorkerPoolTest {
     }
   }
 
+  // The state of each worker of the pool, in the order of the workers.
+  private static List<OfficeWorkerState> states(final AbstractOfficeWorkerPool pool) {
+    return pool.getStatus().workers().stream().map(OfficeWorkerStatus::state).toList();
+  }
+
   @Nested
   class Start {
 
@@ -136,7 +141,7 @@ class AbstractOfficeWorkerPoolTest {
       final var worker2 = new FakeOfficeWorker();
 
       pool = builder(worker1, worker2).build();
-      assertThat(pool.getWorkerStates()).isEmpty();
+      assertThat(states(pool)).isEmpty();
       assertThat(pool.isRunning()).isFalse();
 
       pool.start();
@@ -145,10 +150,7 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(worker2.calls).containsExactly("start");
       assertThat(pool.isRunning()).isTrue();
       assertThat(pool.getTempDir()).isDirectory();
-      await(
-          () ->
-              pool.getWorkerStates()
-                  .equals(List.of(OfficeWorkerState.READY, OfficeWorkerState.READY)));
+      await(() -> states(pool).equals(List.of(OfficeWorkerState.READY, OfficeWorkerState.READY)));
     }
 
     @Test
@@ -200,7 +202,7 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(bad.calls).contains("start", "stop").doesNotContain("restart");
       assertThat(pool.isRunning()).isFalse();
       assertThat(pool.getTempDir()).doesNotExist();
-      assertThat(pool.getWorkerStates()).containsOnly(OfficeWorkerState.STOPPED);
+      assertThat(states(pool)).containsOnly(OfficeWorkerState.STOPPED);
       assertThatIllegalStateException().isThrownBy(() -> pool.start());
       assertThatIllegalStateException().isThrownBy(() -> pool.submit(NOOP));
     }
@@ -260,13 +262,13 @@ class AbstractOfficeWorkerPoolTest {
 
       pool.start();
       assertThat(worker.startBegun.await(10, TimeUnit.SECONDS)).isTrue();
-      assertThat(pool.getWorkerStates()).containsExactly(OfficeWorkerState.STARTING);
+      assertThat(states(pool)).containsExactly(OfficeWorkerState.STARTING);
       assertThat(pool.isRunning()).isFalse();
 
       final var future = pool.submit(NOOP);
       Thread.sleep(150);
       assertThat(future).isNotDone();
-      assertThat(pool.getQueueSize()).isEqualTo(1);
+      assertThat(pool.getStatus().queueSize()).isEqualTo(1);
 
       worker.startGate.countDown();
 
@@ -290,7 +292,7 @@ class AbstractOfficeWorkerPoolTest {
       // The first attempt is a start, the following ones are restarts.
       assertThat(worker.calls).containsExactly("start", "restart", "restart", "restart", "execute");
       // The worker is ready again once its thread is back at the queue.
-      await(() -> pool.getWorkerStates().equals(List.of(OfficeWorkerState.READY)));
+      await(() -> states(pool).equals(List.of(OfficeWorkerState.READY)));
     }
 
     @Test
@@ -445,7 +447,7 @@ class AbstractOfficeWorkerPoolTest {
       final var future = pool.submit(task);
       task.awaitStarted();
       assertThat(future).isNotDone();
-      assertThat(pool.getWorkerStates()).containsExactly(OfficeWorkerState.BUSY);
+      assertThat(states(pool)).containsExactly(OfficeWorkerState.BUSY);
       assertThat(pool.isRunning()).isTrue();
 
       task.release.countDown();
@@ -470,7 +472,7 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(rejected).isCompletedExceptionally();
       assertThat(failureOf(rejected))
           .hasMessageStartingWith("The task queue is full (1 tasks waiting)");
-      assertThat(pool.getQueueSize()).isEqualTo(1);
+      assertThat(pool.getStatus().queueSize()).isEqualTo(1);
 
       running.release.countDown();
       first.get(10, TimeUnit.SECONDS);
@@ -488,11 +490,11 @@ class AbstractOfficeWorkerPoolTest {
       running.awaitStarted();
       final var executed = new AtomicBoolean();
       final var waiting = pool.submit(context -> executed.set(true));
-      assertThat(pool.getQueueSize()).isEqualTo(1);
+      assertThat(pool.getStatus().queueSize()).isEqualTo(1);
 
       assertThat(waiting.cancel(true)).isTrue();
 
-      assertThat(pool.getQueueSize()).isZero();
+      assertThat(pool.getStatus().queueSize()).isZero();
       running.release.countDown();
       first.get(10, TimeUnit.SECONDS);
       pool.execute(NOOP);
@@ -544,7 +546,7 @@ class AbstractOfficeWorkerPoolTest {
       // The first worker loses its office process, and its restart takes a long time.
       restarting.startGate = new CountDownLatch(1);
       restarting.setReady(false);
-      await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.RESTARTING);
+      await(() -> states(pool).get(0) == OfficeWorkerState.RESTARTING);
 
       for (var i = 0; i < 5; i++) {
         pool.execute(NOOP);
@@ -555,7 +557,7 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(pool.isRunning()).isTrue();
 
       restarting.startGate.countDown();
-      await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.READY);
+      await(() -> states(pool).get(0) == OfficeWorkerState.READY);
     }
 
     @Test
@@ -566,7 +568,7 @@ class AbstractOfficeWorkerPoolTest {
       // The worker waits for a task without checking that it is still ready.
       pool.setIdleCheckInterval(60_000L);
       pool.start();
-      await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.READY);
+      await(() -> states(pool).get(0) == OfficeWorkerState.READY);
 
       // The office process is lost at the moment the worker takes the task.
       final var lost = new AtomicBoolean();
@@ -591,7 +593,7 @@ class AbstractOfficeWorkerPoolTest {
       worker.setReady(false);
 
       await(() -> worker.count("restart") == 1);
-      await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.READY);
+      await(() -> states(pool).get(0) == OfficeWorkerState.READY);
     }
 
     @Test
@@ -636,7 +638,7 @@ class AbstractOfficeWorkerPoolTest {
 
       pool.requeueJob(ended);
 
-      await(() -> pool.getQueueSize() == 0);
+      await(() -> pool.getStatus().queueSize() == 0);
       pool.execute(NOOP);
       assertThat(worker.executedTasks).hasValue(1);
       assertThat(ended.getFuture()).isNotDone();
@@ -661,7 +663,7 @@ class AbstractOfficeWorkerPoolTest {
           .isThrownBy(() -> pool.execute(context -> executed.set(true)))
           .withMessage("No office manager available after 100 millisec");
 
-      assertThat(pool.getQueueSize()).isZero();
+      assertThat(pool.getStatus().queueSize()).isZero();
       running.release.countDown();
       first.get(10, TimeUnit.SECONDS);
       pool.execute(NOOP);
@@ -737,7 +739,7 @@ class AbstractOfficeWorkerPoolTest {
 
       assertThat(failureOf(future))
           .hasMessageStartingWith("Task did not complete within timeout (100 ms): ");
-      assertThat(pool.getWorkerStates()).containsExactly(OfficeWorkerState.BUSY);
+      assertThat(states(pool)).containsExactly(OfficeWorkerState.BUSY);
       release.set(true);
       await(ended::get);
 
@@ -817,7 +819,7 @@ class AbstractOfficeWorkerPoolTest {
       pool.execute(NOOP);
       pool.execute(NOOP);
 
-      await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.READY);
+      await(() -> states(pool).get(0) == OfficeWorkerState.READY);
       assertThat(pool.getStatus().workers())
           .containsExactly(new OfficeWorkerStatus(OfficeWorkerState.READY, 1, 1, 0));
     }
@@ -833,7 +835,7 @@ class AbstractOfficeWorkerPoolTest {
 
       // The attempts that fail are counted while the worker is not ready...
       await(() -> pool.getStatus().workers().get(0).startFailures() > 0);
-      await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.READY);
+      await(() -> states(pool).get(0) == OfficeWorkerState.READY);
       // ...and forgotten once it is ready. The attempts of the start are not restarts.
       assertThat(pool.getStatus().workers())
           .containsExactly(new OfficeWorkerStatus(OfficeWorkerState.READY, 0, 0, 0));
@@ -884,9 +886,9 @@ class AbstractOfficeWorkerPoolTest {
           .hasMessageStartingWith("Task was not executed, the office manager is stopped: ");
       assertThat(task.interrupted).isTrue();
       assertThat(worker.calls).containsExactly("start", "execute", "abort", "stop");
-      assertThat(pool.getWorkerStates()).containsExactly(OfficeWorkerState.STOPPED);
+      assertThat(states(pool)).containsExactly(OfficeWorkerState.STOPPED);
       assertThat(pool.isRunning()).isFalse();
-      assertThat(pool.getQueueSize()).isZero();
+      assertThat(pool.getStatus().queueSize()).isZero();
       assertThat(tempDir).doesNotExist();
     }
 
@@ -1067,7 +1069,7 @@ class AbstractOfficeWorkerPoolTest {
 
       assertThat(failureOf(job.getFuture()))
           .hasMessageStartingWith("Task was not executed, the office manager is stopped: ");
-      assertThat(pool.getQueueSize()).isZero();
+      assertThat(pool.getStatus().queueSize()).isZero();
     }
 
     @Test
@@ -1085,7 +1087,7 @@ class AbstractOfficeWorkerPoolTest {
       pool.stop();
 
       assertThat(ended.getFuture()).isNotDone();
-      assertThat(pool.getQueueSize()).isZero();
+      assertThat(pool.getStatus().queueSize()).isZero();
     }
   }
 
@@ -1113,7 +1115,7 @@ class AbstractOfficeWorkerPoolTest {
   class Builder {
 
     @Test
-    void shouldKeepTheDefaultsWhenGivenNulls() throws Exception {
+    void shouldKeepTheDefaultWorkingDirWhenGivenNullsOrBlank() throws Exception {
 
       final var worker = new FakeOfficeWorker();
       final var builder =
@@ -1121,10 +1123,7 @@ class AbstractOfficeWorkerPoolTest {
               .workers(worker)
               .workingDir((File) null)
               .workingDir((String) null)
-              .workingDir(" ")
-              .taskExecutionTimeout(null)
-              .taskQueueTimeout(null)
-              .taskQueueCapacity(null);
+              .workingDir(" ");
 
       assertThat(builder.getWorkingDir()).isEqualTo(OfficeUtils.getDefaultWorkingDir());
       assertThat(builder.isInstall()).isFalse();
@@ -1152,13 +1151,13 @@ class AbstractOfficeWorkerPoolTest {
 
       assertThatIllegalArgumentException()
           .isThrownBy(() -> FakeOfficeWorkerPool.builder().taskExecutionTimeout(-1L))
-          .withMessage("taskExecutionTimeout -1 must greater than or equal to 0");
+          .withMessage("taskExecutionTimeout -1 must be greater than or equal to 0");
       assertThatIllegalArgumentException()
           .isThrownBy(() -> FakeOfficeWorkerPool.builder().taskQueueTimeout(-1L))
-          .withMessage("taskQueueTimeout -1 must greater than or equal to 0");
+          .withMessage("taskQueueTimeout -1 must be greater than or equal to 0");
       assertThatIllegalArgumentException()
           .isThrownBy(() -> FakeOfficeWorkerPool.builder().taskQueueCapacity(-1))
-          .withMessage("taskQueueCapacity -1 must greater than or equal to 0");
+          .withMessage("taskQueueCapacity -1 must be greater than or equal to 0");
     }
 
     @Test

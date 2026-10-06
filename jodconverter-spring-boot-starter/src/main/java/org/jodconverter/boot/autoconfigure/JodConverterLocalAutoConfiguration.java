@@ -83,7 +83,6 @@ public class JodConverterLocalAutoConfiguration {
             .hostName(properties.getHostName())
             .portNumbers(properties.getPortNumbers())
             .pipeNames(properties.getPipeNames())
-            .poolSize(properties.getPoolSize())
             .workingDir(properties.getWorkingDir())
             .templateProfileDir(properties.getTemplateProfileDir())
             .existingProcessAction(properties.getExistingProcessAction())
@@ -96,6 +95,9 @@ public class JodConverterLocalAutoConfiguration {
             .taskQueueTimeout(properties.getTaskQueueTimeout())
             .taskExecutionTimeout(properties.getTaskExecutionTimeout())
             .maxTasksPerProcess(properties.getMaxTasksPerProcess());
+    if (properties.getPoolSize() != null) {
+      builder.poolSize(properties.getPoolSize());
+    }
     if (StringUtils.isBlank(properties.getProcessManagerClass())) {
       builder.processManager(processManager);
     } else {

@@ -40,7 +40,6 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.SimpleOfficeTask;
-import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.remote.RemoteConverter;
 
 /** Contains tests for the {@link RemoteOfficeManager} class. */
@@ -122,7 +121,7 @@ class RemoteOfficeManagerITest {
               RemoteConverter.make(manager).convert(inputFile).to(outputFile).executeAsync();
 
           assertThat(future.join()).isNull();
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -168,7 +167,7 @@ class RemoteOfficeManagerITest {
               post(urlPathEqualTo("/lool/convert-to/txt"))
                   .willReturn(aResponse().withStatus(200).withBody("Test Document")));
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -202,7 +201,7 @@ class RemoteOfficeManagerITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -244,7 +243,7 @@ class RemoteOfficeManagerITest {
           }
 
           // Check that the output file was created with the expected content.
-          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();

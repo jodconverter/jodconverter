@@ -37,105 +37,12 @@ class OSUtilsTest {
   }
 
   @Test
-  void IS_OS_AIX() {
-    assumeTrue(OSUtils.IS_OS_AIX);
-
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
-  }
-
-  @Test
   void IS_OS_FREE_BSD() {
     assumeTrue(OSUtils.IS_OS_FREE_BSD);
 
     try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
       softly.assertThat(OSUtils.IS_OS_FREE_BSD).isTrue();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
       softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
-  }
-
-  @Test
-  void IS_OS_HP_UX() {
-    assumeTrue(OSUtils.IS_OS_HP_UX);
-
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
-  }
-
-  @Test
-  void IS_OS_IRIX() {
-    assumeTrue(OSUtils.IS_OS_IRIX);
-
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
-  }
-
-  @Test
-  void IS_OS_LINUX() {
-    assumeTrue(OSUtils.IS_OS_LINUX);
-
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
       softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
       softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
     }
@@ -146,123 +53,10 @@ class OSUtilsTest {
     assumeTrue(OSUtils.IS_OS_MAC);
 
     try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
       softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
       softly.assertThat(OSUtils.IS_OS_MAC).isTrue();
       // softly.assertThat(OSUtils.IS_OS_MAC_OSX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
       // softly.assertThat(OSUtils.IS_OS_UNIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
-  }
-
-  @Test
-  void IS_OS_MAC_OSX() {
-    assumeTrue(OSUtils.IS_OS_MAC_OSX);
-
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC).isTrue();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
-  }
-
-  @Test
-  void IS_OS_NET_BSD() {
-    assumeTrue(OSUtils.IS_OS_NET_BSD);
-
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isTrue();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
-  }
-
-  @Test
-  void IS_OS_OPEN_BSD() {
-    assumeTrue(OSUtils.IS_OS_OPEN_BSD);
-
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isTrue();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
-  }
-
-  @Test
-  void IS_OS_SOLARIS() {
-    assumeTrue(OSUtils.IS_OS_SOLARIS);
-
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isTrue();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
-  }
-
-  @Test
-  void IS_OS_SUN_OS() {
-    assumeTrue(OSUtils.IS_OS_SUN_OS);
-
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isTrue();
-      softly.assertThat(OSUtils.IS_OS_UNIX).isTrue();
       softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
     }
   }
@@ -272,20 +66,7 @@ class OSUtilsTest {
     assumeTrue(OSUtils.IS_OS_UNIX);
 
     try (var softly = new AutoCloseableSoftAssertions()) {
-      softly
-          .assertThat(
-              OSUtils.IS_OS_AIX
-                  || OSUtils.IS_OS_FREE_BSD
-                  || OSUtils.IS_OS_HP_UX
-                  || OSUtils.IS_OS_IRIX
-                  || OSUtils.IS_OS_LINUX
-                  || OSUtils.IS_OS_MAC_OSX
-                  || OSUtils.IS_OS_NET_BSD
-                  || OSUtils.IS_OS_OPEN_BSD
-                  || OSUtils.IS_OS_SOLARIS
-                  || OSUtils.IS_OS_SUN_OS)
-          .isTrue();
-      // softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
+      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
       softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
     }
   }
@@ -295,17 +76,8 @@ class OSUtilsTest {
     assumeTrue(OSUtils.IS_OS_WINDOWS);
 
     try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_AIX).isFalse();
       softly.assertThat(OSUtils.IS_OS_FREE_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_HP_UX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_IRIX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_LINUX).isFalse();
       softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_MAC_OSX).isFalse();
-      softly.assertThat(OSUtils.IS_OS_NET_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_OPEN_BSD).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SOLARIS).isFalse();
-      softly.assertThat(OSUtils.IS_OS_SUN_OS).isFalse();
       softly.assertThat(OSUtils.IS_OS_UNIX).isFalse();
       softly.assertThat(OSUtils.IS_OS_WINDOWS).isTrue();
     }

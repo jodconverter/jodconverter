@@ -102,65 +102,6 @@ class ExternalOfficeManagerTest {
   class Build {
 
     @Test
-    @SuppressWarnings("RedundantArrayCreation")
-    void withNullValues_ShouldInitializedManagerWithDefaultValues() {
-
-      final var manager =
-          ExternalOfficeManager.builder()
-              .workingDir((String) null)
-              .workingDir((File) null)
-              .taskExecutionTimeout(null)
-              .taskQueueTimeout(null)
-              .pipeNames((String[]) null)
-              .pipeNames(new String[] {})
-              .hostName(null)
-              .portNumbers((int[]) null)
-              .portNumbers(new int[] {})
-              .websocketUrls((String[]) null)
-              .websocketUrls(new String[] {})
-              .connectOnStart(null)
-              .connectTimeout(null)
-              .connectRetryInterval(null)
-              .connectFailFast(null)
-              .maxTasksPerConnection(null)
-              .build();
-
-      assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
-      assertThat(manager)
-          .extracting("tempDir")
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .asInstanceOf(InstanceOfAssertFactories.FILE)
-                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
-      assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
-          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
-          .hasFieldOrPropertyWithValue("startFailFast", DEFAULT_CONNECT_FAIL_FAST);
-      assertThat(manager)
-          .extracting("workers")
-          .asList()
-          .hasSize(1)
-          .element(0)
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .isInstanceOf(ExternalOfficeWorker.class)
-                      .extracting(
-                          "connectOnStart",
-                          "maxTasksPerConnection",
-                          "connectionManager.connectTimeout",
-                          "connectionManager.connectRetryInterval",
-                          "connectionManager.connection.officeUrl.connectString")
-                      .containsExactly(
-                          DEFAULT_CONNECT_ON_START,
-                          DEFAULT_MAX_TASKS_PER_CONNECTION,
-                          DEFAULT_CONNECT_TIMEOUT,
-                          DEFAULT_CONNECT_RETRY_INTERVAL,
-                          new OfficeUrl(DEFAULT_HOSTNAME, 2002).getConnectString()));
-    }
-
-    @Test
     void withCustomValues_ShouldInitializedManagerWithCustomValues(final @TempDir File testFolder) {
 
       final var manager =

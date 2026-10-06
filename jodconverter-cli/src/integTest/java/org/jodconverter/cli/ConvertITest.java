@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Nested;
@@ -114,7 +115,7 @@ class ConvertITest {
 
       assertThat(status).isEqualTo(0);
       assertThat(odtFile).isFile();
-      final var pdf = FileUtils.readFileToString(pdfFile, StandardCharsets.ISO_8859_1);
+      final var pdf = Files.readString(pdfFile.toPath(), StandardCharsets.ISO_8859_1);
       assertThat(pdf).startsWith("%PDF-1.5");
       // One page, and tagged by the preset.
       assertThat(pdf.split("/Type\\s*/Page\\b(?!s)", -1)).hasSize(2);
@@ -125,7 +126,7 @@ class ConvertITest {
     void withOutputFormat_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
       final var inputFile = new File(SOURCE_FILE);
-      FileUtils.copyFileToDirectory(inputFile, testFolder);
+      Files.copy(inputFile.toPath(), new File(testFolder, inputFile.getName()).toPath());
       final var inputFileTmp =
           new File(testFolder, Objects.requireNonNull(FileUtils.getName(SOURCE_FILE)));
       final var outputFile =
@@ -198,7 +199,7 @@ class ConvertITest {
               inputFile.getPath(),
               outputFile.getPath());
       assertThat(status).isEqualTo(0);
-      final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
       assertThat(content)
           .as("Check content: %s", content)
           .contains("Test document Page 2")

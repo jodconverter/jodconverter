@@ -20,6 +20,7 @@
 
 package org.jodconverter.local.office.utils;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.sun.star.lang.XComponent;
@@ -27,8 +28,6 @@ import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.XComponentContext;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * A collection of utility functions to make Office easier to use.
@@ -63,12 +62,12 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    */
   public static <T> @NonNull T qi(final @NonNull Class<T> type, final @NonNull Object object) {
 
-    AssertUtils.notNull(type, "type must not be null");
-    AssertUtils.notNull(object, "object must not be null");
+    Objects.requireNonNull(type, "type must not be null");
+    Objects.requireNonNull(object, "object must not be null");
 
     final var obj = UnoRuntime.getInstance().queryInterface(type, object);
 
-    AssertUtils.notNull(
+    Objects.requireNonNull(
         obj,
         String.format(
             "UNO object of type %s must not be null for object of type %s",

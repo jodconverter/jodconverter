@@ -21,6 +21,7 @@
 package org.jodconverter.core.job;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -29,7 +30,6 @@ import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.task.OfficeTask;
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Base class for all conversion job implementations.
@@ -50,8 +50,8 @@ public abstract class AbstractConversionJob
     super();
 
     // Both arguments are required.
-    AssertUtils.notNull(source, "source must not be null");
-    AssertUtils.notNull(target, "target must not be null");
+    Objects.requireNonNull(source, "source must not be null");
+    Objects.requireNonNull(target, "target must not be null");
     this.source = source;
     this.target = target;
   }
@@ -66,7 +66,7 @@ public abstract class AbstractConversionJob
   @Override
   public @NonNull AbstractConversionJob with(final @NonNull TargetOptions options) {
 
-    AssertUtils.notNull(options, "options must not be null");
+    Objects.requireNonNull(options, "options must not be null");
     target.setOptions(options);
     return this;
   }
@@ -87,7 +87,7 @@ public abstract class AbstractConversionJob
   private OfficeTask prepareTask() {
 
     final var format = target.getFormat();
-    AssertUtils.notNull(format, "The target format is missing or not supported");
+    Objects.requireNonNull(format, "The target format is missing or not supported");
     var options = target.getOptions();
     if (options == null) {
       // No options for this conversion: use the first default options of the converter that

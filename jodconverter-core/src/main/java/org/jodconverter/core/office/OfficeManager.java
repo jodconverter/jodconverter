@@ -31,7 +31,7 @@ import org.jodconverter.core.task.OfficeTask;
  * before performing conversion tasks and must be stopped once it is no longer required. Once
  * stopped, an office manager cannot be restarted.
  */
-public interface OfficeManager {
+public interface OfficeManager extends TemporaryFileMaker {
 
   /**
    * Executes the specified task and blocks until the task terminates.

@@ -27,7 +27,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.AbstractOfficeWorkerPool;
-import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.remote.ssl.SslConfig;
@@ -137,10 +136,7 @@ public final class RemoteOfficeManager extends AbstractOfficeWorkerPool {
               taskExecutionTimeout,
               taskQueueTimeout,
               taskQueueCapacity);
-      if (install) {
-        InstalledOfficeManagerHolder.setInstance(manager);
-      }
-      return manager;
+      return installed(manager);
     }
 
     /**
@@ -149,14 +145,12 @@ public final class RemoteOfficeManager extends AbstractOfficeWorkerPool {
      * @param poolSize The pool size.
      * @return This builder instance.
      */
-    public @NonNull Builder poolSize(final @Nullable Integer poolSize) {
+    public @NonNull Builder poolSize(final int poolSize) {
 
-      if (poolSize != null) {
-        AssertUtils.isTrue(
-            poolSize >= 0 && poolSize <= MAX_POOL_SIZE,
-            String.format("poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
-        this.poolSize = poolSize;
-      }
+      AssertUtils.isTrue(
+          poolSize >= 0 && poolSize <= MAX_POOL_SIZE,
+          String.format("poolSize %s must be between %d and %d", poolSize, 1, MAX_POOL_SIZE));
+      this.poolSize = poolSize;
       return this;
     }
 
@@ -194,14 +188,12 @@ public final class RemoteOfficeManager extends AbstractOfficeWorkerPool {
      * @param connectTimeout The "connect" timeout, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder connectTimeout(final @Nullable Long connectTimeout) {
+    public @NonNull Builder connectTimeout(final long connectTimeout) {
 
-      if (connectTimeout != null) {
-        AssertUtils.isTrue(
-            connectTimeout >= 0,
-            String.format("connectTimeout %s must greater than or equal to 0", connectTimeout));
-        this.connectTimeout = connectTimeout;
-      }
+      AssertUtils.isTrue(
+          connectTimeout >= 0,
+          String.format("connectTimeout %s must be greater than or equal to 0", connectTimeout));
+      this.connectTimeout = connectTimeout;
       return this;
     }
 
@@ -216,14 +208,12 @@ public final class RemoteOfficeManager extends AbstractOfficeWorkerPool {
      * @param socketTimeout The socket timeout, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder socketTimeout(final @Nullable Long socketTimeout) {
+    public @NonNull Builder socketTimeout(final long socketTimeout) {
 
-      if (socketTimeout != null) {
-        AssertUtils.isTrue(
-            socketTimeout >= 0,
-            String.format("socketTimeout %s must greater than or equal to 0", socketTimeout));
-        this.socketTimeout = socketTimeout;
-      }
+      AssertUtils.isTrue(
+          socketTimeout >= 0,
+          String.format("socketTimeout %s must be greater than or equal to 0", socketTimeout));
+      this.socketTimeout = socketTimeout;
       return this;
     }
   }

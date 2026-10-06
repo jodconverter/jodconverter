@@ -32,8 +32,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import org.jodconverter.core.util.IOUtils;
-
 /**
  * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office
  * that has been loaded from a JSON source.
@@ -50,7 +48,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
   public static JsonDocumentFormatRegistry create(final @NonNull InputStream source)
       throws IOException {
 
-    return create(IOUtils.toString(source, StandardCharsets.UTF_8));
+    return create(new String(source.readAllBytes(), StandardCharsets.UTF_8));
   }
 
   /**
@@ -66,7 +64,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
       final @NonNull Map<@NonNull String, @NonNull DocumentFormatProperties> customProperties)
       throws IOException {
 
-    return create(IOUtils.toString(source, StandardCharsets.UTF_8), customProperties);
+    return create(new String(source.readAllBytes(), StandardCharsets.UTF_8), customProperties);
   }
 
   /**
@@ -136,16 +134,16 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
     final var collectionType = new TypeToken<Collection<DocumentFormat>>() {}.getType();
     final Collection<DocumentFormat> formats = gson.fromJson(source, collectionType);
 
-    // Fill the registry with loaded formats. Note that we have to use
-    // the constructor in order top create read-only formats.
+    // Fill the registry with the loaded formats. Gson fills the fields without the constructor,
+    // so each format is rebuilt to get a validated, immutable one.
     formats.stream()
         .map(
             fmt -> {
               if (customProperties == null || !customProperties.containsKey(fmt.getExtension())) {
-                return DocumentFormat.unmodifiableCopy(fmt);
+                return DocumentFormat.builder(fmt).build();
               }
               final var props = customProperties.get(fmt.getExtension());
-              final var builder = DocumentFormat.builder().from(fmt).unmodifiable(true);
+              final var builder = DocumentFormat.builder(fmt);
               // Add custom load/store properties.
               props.getLoad().forEach(builder::loadProperty);
               props

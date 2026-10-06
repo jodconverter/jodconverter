@@ -142,7 +142,8 @@ public final class ConvertUtil {
     // Detect input format
     final var inputExt = FileUtils.getExtension(sourceFile.getName());
     final var inputFormat =
-        DefaultDocumentFormatRegistry.getFormatByExtension(Objects.requireNonNull(inputExt));
+        DefaultDocumentFormatRegistry.getInstance()
+            .getFormatByExtension(Objects.requireNonNull(inputExt));
     if (inputFormat == null) {
       LOGGER.info("Skipping unsupported input format {}", inputExt);
       return;
@@ -153,7 +154,8 @@ public final class ConvertUtil {
     final Set<DocumentFormat> outputFormats =
         inputFormat.getInputFamily() == null
             ? new HashSet<>()
-            : DefaultDocumentFormatRegistry.getOutputFormats(inputFormat.getInputFamily());
+            : DefaultDocumentFormatRegistry.getInstance()
+                .getOutputFormats(inputFormat.getInputFamily());
 
     // Convert the input file into all the supported output formats.
     // This will create 1 output file per output format.

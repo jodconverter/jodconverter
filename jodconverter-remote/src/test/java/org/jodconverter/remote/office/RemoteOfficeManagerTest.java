@@ -93,46 +93,6 @@ class RemoteOfficeManagerTest {
   class Build {
 
     @Test
-    void withNullValues_ShouldInitializedManagerWithDefaultValues() {
-
-      final var manager =
-          RemoteOfficeManager.builder()
-              .workingDir((String) null)
-              .workingDir((File) null)
-              .poolSize(null)
-              .taskExecutionTimeout(null)
-              .taskQueueTimeout(null)
-              .urlConnection("localhost")
-              .connectTimeout(null)
-              .socketTimeout(null)
-              .build();
-
-      assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
-      assertThat(manager)
-          .extracting("tempDir")
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .asInstanceOf(InstanceOfAssertFactories.FILE)
-                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
-      assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
-          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT);
-      assertThat(manager)
-          .extracting("workers")
-          .asList()
-          .hasSize(1)
-          .element(0)
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .isInstanceOf(RemoteOfficeWorker.class)
-                      .extracting("connectionUrl", "sslConfig", "connectTimeout", "socketTimeout")
-                      .containsExactly(
-                          "localhost", null, DEFAULT_CONNECT_TIMEOUT, DEFAULT_SOCKET_TIMEOUT));
-    }
-
-    @Test
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void withCustomValues_ShouldInitializedManagerWithCustomValues() {
 

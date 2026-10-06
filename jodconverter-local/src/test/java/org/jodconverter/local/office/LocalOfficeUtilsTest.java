@@ -47,7 +47,6 @@ import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.test.util.AssertUtil;
 import org.jodconverter.core.util.OSUtils;
-import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.MockUnoRuntimeExtension;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.UnoRuntime;
@@ -380,7 +379,9 @@ class LocalOfficeUtilsTest {
       assumeTrue(OSUtils.IS_OS_WINDOWS);
 
       var tempDir = testFolder.getPath();
-      tempDir = StringUtils.appendIfMissing(tempDir, File.separator).replace('\\', '/');
+      tempDir =
+          (tempDir.endsWith(File.separator) ? tempDir : tempDir + File.separator)
+              .replace('\\', '/');
 
       assertThat(toUrl(new File(testFolder, "document.odt")))
           .isEqualTo("file:///" + tempDir + "document.odt");

@@ -27,13 +27,13 @@ import static org.jodconverter.local.ResourceUtil.documentFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
@@ -62,7 +62,7 @@ class TableOfContentUpdaterFilterITest {
                     .execute())
         .doesNotThrowAnyException();
 
-    final var content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    final var content = Files.readString(targetFile.toPath(), StandardCharsets.UTF_8);
     assertThat(content)
         .as("Check content: %s", content)
         .containsPattern(
@@ -112,7 +112,7 @@ class TableOfContentUpdaterFilterITest {
                     .execute())
         .doesNotThrowAnyException();
 
-    final var content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    final var content = Files.readString(targetFile.toPath(), StandardCharsets.UTF_8);
     assertThat(content)
         .as("Check content: %s", content)
         .containsPattern(

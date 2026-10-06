@@ -26,7 +26,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Objects;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.Nested;
@@ -81,9 +80,10 @@ class RemoteConversionTaskITest {
           customProperties.put("Primitive", 10);
           customProperties.put("NonStringNorPrimitive", Collections.EMPTY_LIST);
 
-          final var pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
-          Objects.requireNonNull(pdf.getStoreProperties(DocumentFamily.TEXT))
-              .putAll(customProperties);
+          final var builder = DocumentFormat.builder(DefaultDocumentFormatRegistry.PDF);
+          customProperties.forEach(
+              (name, value) -> builder.storeProperty(DocumentFamily.TEXT, name, value));
+          final var pdf = builder.build();
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).as(pdf).execute();
 
           wireMockServer.verify(
@@ -126,9 +126,10 @@ class RemoteConversionTaskITest {
           final var filterData = new HashMap<String, Object>();
           filterData.put("PageRange", "2");
           filterData.put("SelectPdfVersion", 16);
-          final var pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
-          Objects.requireNonNull(pdf.getStoreProperties(DocumentFamily.TEXT))
-              .put("FilterData", filterData);
+          final var pdf =
+              DocumentFormat.builder(DefaultDocumentFormatRegistry.PDF)
+                  .storeProperty(DocumentFamily.TEXT, "FilterData", filterData)
+                  .build();
 
           RemoteConverter.make(manager)
               .convert(inputFile)
@@ -219,9 +220,10 @@ class RemoteConversionTaskITest {
           final var customProperties = new HashMap<String, Object>();
           customProperties.put("FilterData", "foo");
 
-          final var pdf = DocumentFormat.copy(DefaultDocumentFormatRegistry.PDF);
-          Objects.requireNonNull(pdf.getStoreProperties(DocumentFamily.TEXT))
-              .putAll(customProperties);
+          final var builder = DocumentFormat.builder(DefaultDocumentFormatRegistry.PDF);
+          customProperties.forEach(
+              (name, value) -> builder.storeProperty(DocumentFamily.TEXT, name, value));
+          final var pdf = builder.build();
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).as(pdf).execute();
 
           wireMockServer.verify(

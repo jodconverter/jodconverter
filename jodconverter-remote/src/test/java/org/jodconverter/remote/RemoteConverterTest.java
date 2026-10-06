@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.nio.file.Files;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -107,44 +106,5 @@ class RemoteConverterTest {
   }
 
   @Nested
-  class Convert {
-
-    @Test
-    void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForInputStream(
-        final @TempDir File testFolder) {
-
-      final var targetFile = new File(testFolder, "test.pdf");
-      assertThatIllegalStateException()
-          .isThrownBy(
-              () -> {
-                try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
-                  RemoteConverter.make(officeManager)
-                      .convert(stream)
-                      .as(DefaultDocumentFormatRegistry.TXT)
-                      .to(targetFile)
-                      .execute();
-                }
-              })
-          .withMessageMatching(".*TemporaryFileMaker.*InputStream.*");
-    }
-
-    @Test
-    void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForOutputStream(
-        final @TempDir File testFolder) {
-
-      final var targetFile = new File(testFolder, "test.pdf");
-      assertThatIllegalStateException()
-          .isThrownBy(
-              () -> {
-                try (var stream = Files.newOutputStream(targetFile.toPath())) {
-                  RemoteConverter.make(officeManager)
-                      .convert(SOURCE_FILE)
-                      .to(stream)
-                      .as(DefaultDocumentFormatRegistry.PDF)
-                      .execute();
-                }
-              })
-          .withMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
-    }
-  }
+  class Convert {}
 }

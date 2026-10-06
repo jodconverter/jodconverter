@@ -21,11 +21,10 @@
 package org.jodconverter.core.pdf;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Options for the encryption and the permissions of a PDF document. Supported by all the versions
@@ -125,7 +124,7 @@ public final class PdfSecurityOptions extends AbstractPdfOptionGroup {
    * @return This group.
    */
   public @NonNull PdfSecurityOptions printing(final @NonNull Printing printing) {
-    AssertUtils.notNull(printing, "printing must not be null");
+    Objects.requireNonNull(printing, "printing must not be null");
     set(PdfOption.PRINTING, printing.value);
     return this;
   }
@@ -139,7 +138,7 @@ public final class PdfSecurityOptions extends AbstractPdfOptionGroup {
    * @return This group.
    */
   public @NonNull PdfSecurityOptions changes(final @NonNull Changes changes) {
-    AssertUtils.notNull(changes, "changes must not be null");
+    Objects.requireNonNull(changes, "changes must not be null");
     set(PdfOption.CHANGES, changes.value);
     return this;
   }

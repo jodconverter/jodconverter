@@ -111,13 +111,13 @@ class DocumentFormatBuilderTest {
         softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
         softly.assertThat(format.getMediaType()).isEqualTo("application/foo");
         softly.assertThat(format.getInputFamily()).isEqualTo(DocumentFamily.TEXT);
-        softly.assertThat(format.getLoadProperties()).isNull();
-        softly.assertThat(format.getStoreProperties()).isNull();
+        softly.assertThat(format.getLoadProperties()).isEmpty();
+        softly.assertThat(format.getStoreProperties()).isEmpty();
       }
     }
 
     @Test
-    void removingLoadStoreProperties_ShouldCreateDocumentFormatWithNullLoadStoreProperties() {
+    void removingLoadStoreProperties_ShouldCreateDocumentFormatWithEmptyLoadStoreProperties() {
 
       final var builder =
           DocumentFormat.builder()
@@ -139,8 +139,8 @@ class DocumentFormatBuilderTest {
         softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
         softly.assertThat(format.getMediaType()).isEqualTo("application/foo");
         softly.assertThat(format.getInputFamily()).isEqualTo(DocumentFamily.TEXT);
-        softly.assertThat(format.getLoadProperties()).isNull();
-        softly.assertThat(format.getStoreProperties()).isNull();
+        softly.assertThat(format.getLoadProperties()).isEmpty();
+        softly.assertThat(format.getStoreProperties()).isEmpty();
       }
     }
   }

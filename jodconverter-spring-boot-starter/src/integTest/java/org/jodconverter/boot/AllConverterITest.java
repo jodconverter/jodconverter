@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import jakarta.annotation.Resource;
@@ -35,7 +36,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.core.DocumentConverter;
-import org.jodconverter.core.util.FileUtils;
 
 /** Tests that an application can use both a remote converter and a local converter. */
 @SpringBootTest
@@ -64,7 +64,7 @@ class AllConverterITest {
       localConverter.convert(inputFile).to(outputFile).execute();
 
       // Check that the output file was created with the expected content.
-      final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
     } finally {
       wireMockServer.stop();
@@ -89,7 +89,7 @@ class AllConverterITest {
       remoteConverter.convert(inputFile).to(outputFile).execute();
 
       // Check that the output file was created with the expected content.
-      final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
 
       // Verify that it is actually the remote converter that did the conversion.

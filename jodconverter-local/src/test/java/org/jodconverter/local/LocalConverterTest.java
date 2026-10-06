@@ -26,7 +26,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -572,44 +571,6 @@ class LocalConverterTest {
               arg.getValue(), arg.getValue().getClass(), "getStoreProperties", document);
       assertThat(loadProperties).containsAllEntriesOf(expectedLoadProperties);
       assertThat(storeProperties).isEqualTo(expectedStoreProperties);
-    }
-
-    @Test
-    void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForInputStream(
-        final @TempDir File testFolder) {
-
-      final var targetFile = new File(testFolder, "test.pdf");
-      assertThatIllegalStateException()
-          .isThrownBy(
-              () -> {
-                try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
-                  LocalConverter.make(officeManager)
-                      .convert(stream)
-                      .as(DefaultDocumentFormatRegistry.TXT)
-                      .to(targetFile)
-                      .execute();
-                }
-              })
-          .withMessageMatching(".*TemporaryFileMaker.*InputStream.*");
-    }
-
-    @Test
-    void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForOutputStream(
-        final @TempDir File testFolder) {
-
-      final var targetFile = new File(testFolder, "test.pdf");
-      assertThatIllegalStateException()
-          .isThrownBy(
-              () -> {
-                try (var stream = Files.newOutputStream(targetFile.toPath())) {
-                  LocalConverter.make(officeManager)
-                      .convert(SOURCE_FILE)
-                      .to(stream)
-                      .as(DefaultDocumentFormatRegistry.PDF)
-                      .execute();
-                }
-              })
-          .withMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
     }
 
     @Test

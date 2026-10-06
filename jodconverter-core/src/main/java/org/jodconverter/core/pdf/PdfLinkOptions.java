@@ -21,10 +21,9 @@
 package org.jodconverter.core.pdf;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * Options for the hyperlinks of a PDF document. Supported by all the versions of LibreOffice and by
@@ -92,7 +91,7 @@ public final class PdfLinkOptions extends AbstractPdfOptionGroup {
    * @return This group.
    */
   public @NonNull PdfLinkOptions crossDocumentLinks(final @NonNull LinkTarget target) {
-    AssertUtils.notNull(target, "target must not be null");
+    Objects.requireNonNull(target, "target must not be null");
     set(PdfOption.PDF_VIEW_SELECTION, target.value);
     return this;
   }

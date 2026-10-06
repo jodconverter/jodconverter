@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.lang.XComponent;
@@ -43,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.AbstractOfficeTask;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeContext;
 import org.jodconverter.local.office.PasswordProtectedException;
@@ -197,14 +197,14 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
 
     final var loader = context.getComponentLoader();
 
-    AssertUtils.notNull(loader, "Context component loader must not be null");
+    Objects.requireNonNull(loader, "Context component loader must not be null");
 
     try {
       final var loadProps = getLoadProperties();
       final var document = loadDocumentFromURL(loader, sourceFile, loadProps);
 
       // The document cannot be null
-      AssertUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
+      Objects.requireNonNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
 
       return document;
 

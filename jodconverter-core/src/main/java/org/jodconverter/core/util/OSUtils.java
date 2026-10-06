@@ -21,57 +21,34 @@
 package org.jodconverter.core.util;
 
 import java.util.Locale;
+import java.util.Set;
 
 /** Contains os helper functions. */
 public final class OSUtils {
 
   private static final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.ROOT);
 
-  /** {@code true} if the current OS is AIX, false otherwise. */
-  public static final boolean IS_OS_AIX = OS_NAME.startsWith("aix");
-
   /** {@code true} if the current OS is MAC, false otherwise. */
   public static final boolean IS_OS_FREE_BSD = OS_NAME.startsWith("freebsd");
-
-  /** {@code true} if the current OS is HP-UX, false otherwise. */
-  public static final boolean IS_OS_HP_UX = OS_NAME.startsWith("hp-ux");
-
-  /** {@code true} if the current OS is Irix, false otherwise. */
-  public static final boolean IS_OS_IRIX = OS_NAME.startsWith("irix");
-
-  /** {@code true} if the current OS is Linux, false otherwise. */
-  public static final boolean IS_OS_LINUX = OS_NAME.startsWith("linux");
 
   /** {@code true} if the current OS is MAC, false otherwise. */
   public static final boolean IS_OS_MAC = OS_NAME.startsWith("mac");
 
-  /** {@code true} if the current OS is Mac OS X, false otherwise. */
-  public static final boolean IS_OS_MAC_OSX = OS_NAME.startsWith("mac os x");
-
-  /** {@code true} if the current OS is NetBSD, false otherwise. */
-  public static final boolean IS_OS_NET_BSD = OS_NAME.startsWith("netbsd");
-
-  /** {@code true} if the current OS is OpenBSD, false otherwise. */
-  public static final boolean IS_OS_OPEN_BSD = OS_NAME.startsWith("openbsd");
-
-  /** {@code true} if the current OS is Solaris, false otherwise. */
-  public static final boolean IS_OS_SOLARIS = OS_NAME.startsWith("solaris");
-
-  /** {@code true} if the current OS is SunOS, false otherwise. */
-  public static final boolean IS_OS_SUN_OS = OS_NAME.startsWith("sunos");
-
   /** {@code true} if the current OS is Unix, false otherwise. */
   public static final boolean IS_OS_UNIX =
-      IS_OS_AIX
-          || IS_OS_FREE_BSD
-          || IS_OS_HP_UX
-          || IS_OS_IRIX
-          || IS_OS_LINUX
-          || IS_OS_MAC_OSX
-          || IS_OS_NET_BSD
-          || IS_OS_OPEN_BSD
-          || IS_OS_SOLARIS
-          || IS_OS_SUN_OS;
+      Set.of(
+              "aix",
+              "freebsd",
+              "hp-ux",
+              "irix",
+              "linux",
+              "mac os x",
+              "netbsd",
+              "openbsd",
+              "solaris",
+              "sunos")
+          .stream()
+          .anyMatch(OS_NAME::startsWith);
 
   /** {@code true} if the current OS is Windows, false otherwise. */
   public static final boolean IS_OS_WINDOWS = OS_NAME.startsWith("windows");
