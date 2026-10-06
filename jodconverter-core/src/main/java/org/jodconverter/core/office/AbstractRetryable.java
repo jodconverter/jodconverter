@@ -80,6 +80,11 @@ public abstract class AbstractRetryable<T extends Throwable> {
     }
 
     while (true) {
+      if (Thread.currentThread().isInterrupted()) {
+        // Nobody waits for the task anymore, whatever the interval between the attempts.
+        throw new RetryTimeoutException(
+            new InterruptedException("Interrupted while executing the task"));
+      }
       attempt++;
       try {
         logger.debug("Execution attempt #{}", attempt);

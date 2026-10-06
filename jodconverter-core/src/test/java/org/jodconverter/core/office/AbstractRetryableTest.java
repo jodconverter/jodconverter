@@ -73,5 +73,49 @@ class AbstractRetryableTest {
       assertThatCode(() -> retryable.execute(NO_SLEEP, 750L)).doesNotThrowAnyException();
       assertThat(retryable.getAttempts()).isEqualTo(3);
     }
+
+    @Test
+    void whenInterruptedWithNoInterval_ShouldThrowRetryTimeoutException() {
+
+      final var retryable = new SimpleRetryable(Integer.MAX_VALUE);
+
+      Thread.currentThread().interrupt();
+      try {
+        assertThatExceptionOfType(RetryTimeoutException.class)
+            .isThrownBy(() -> retryable.execute(NO_SLEEP, 60_000L))
+            .withCauseExactlyInstanceOf(InterruptedException.class);
+      } finally {
+        // Clear the interrupted status of the test thread.
+        assertThat(Thread.interrupted()).isTrue();
+      }
+      assertThat(retryable.getAttempts()).isZero();
+    }
+  }
+
+  @Nested
+  class Sleep {
+
+    @Test
+    void whenInterruptedWhileWaitingForTheNextAttempt_ShouldThrowRetryTimeoutException() {
+
+      // The thread is interrupted during the first attempt, which fails.
+      final AbstractRetryable<RuntimeException> retryable =
+          new AbstractRetryable<>() {
+            @Override
+            protected void attempt() throws TemporaryException {
+              Thread.currentThread().interrupt();
+              throw new TemporaryException("attempt failed");
+            }
+          };
+
+      try {
+        assertThatExceptionOfType(RetryTimeoutException.class)
+            .isThrownBy(() -> retryable.execute(60_000L, 120_000L))
+            .withCauseExactlyInstanceOf(InterruptedException.class);
+      } finally {
+        // The interrupted status is kept for the caller; clear it for the next tests.
+        assertThat(Thread.interrupted()).isTrue();
+      }
+    }
   }
 }

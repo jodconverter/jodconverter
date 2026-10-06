@@ -400,7 +400,8 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
               new OfficeException(
                   String.format(
                       "Task did not complete within timeout (%s ms): %s",
-                      taskExecutionTimeout, job.getTask())));
+                      taskExecutionTimeout, job.getTask()),
+                  new TimeoutException()));
       job.getRunner().abort(job);
     }
   }

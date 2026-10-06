@@ -22,7 +22,6 @@ package org.jodconverter.boot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,8 +44,8 @@ class LocalConverterPureJavaITest {
   void testProcessManagerProperty() {
 
     assertThat(manager)
-        .extracting("entries")
-        .asInstanceOf(InstanceOfAssertFactories.LIST)
+        .extracting("workers")
+        .asList()
         .hasSize(1)
         .element(0)
         .satisfies(

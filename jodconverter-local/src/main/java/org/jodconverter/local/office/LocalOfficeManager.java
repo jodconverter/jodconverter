@@ -30,7 +30,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.core.office.AbstractOfficeManagerPool;
+import org.jodconverter.core.office.AbstractOfficeWorkerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.AssertUtils;
@@ -40,9 +40,11 @@ import org.jodconverter.local.process.ProcessManager;
 /**
  * Default {@link org.jodconverter.core.office.OfficeManager} implementation that uses a pool of
  * office processes to execute conversion tasks.
+ *
+ * <p>Each office process has its own worker. A task is only given to a worker whose office process
+ * is ready: while a process is starting or restarting, the tasks go to the other ones.
  */
-public final class LocalOfficeManager
-    extends AbstractOfficeManagerPool<LocalOfficeManagerPoolEntry> {
+public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeManager.class);
 
@@ -125,16 +127,16 @@ public final class LocalOfficeManager
       final boolean keepAliveOnShutdown,
       final int maxTasksPerProcess,
       final long taskExecutionTimeout,
-      final long taskQueueTimeout) {
-    super(officeUrls.size(), workingDir, taskQueueTimeout);
+      final long taskQueueTimeout,
+      final int taskQueueCapacity) {
+    super(workingDir, taskQueueTimeout, taskExecutionTimeout, taskQueueCapacity, startFailFast);
 
-    setEntries(
+    setWorkers(
         officeUrls.stream()
             .map(
                 officeUrl ->
-                    new LocalOfficeManagerPoolEntry(
+                    new LocalOfficeWorker(
                         maxTasksPerProcess,
-                        taskExecutionTimeout,
                         new LocalOfficeProcessManager(
                             officeUrl,
                             officeHome,
@@ -147,7 +149,6 @@ public final class LocalOfficeManager
                             processRetryInterval,
                             afterStartProcessDelay,
                             existingProcessAction,
-                            startFailFast,
                             keepAliveOnShutdown,
                             new OfficeConnection(officeUrl))))
             .toList());
@@ -158,7 +159,7 @@ public final class LocalOfficeManager
    *
    * @see LocalOfficeManager
    */
-  public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
+  public static final class Builder extends AbstractOfficeWorkerPoolBuilder<Builder> {
 
     private List<String> pipeNames;
     private String hostName = DEFAULT_HOSTNAME;
@@ -248,7 +249,8 @@ public final class LocalOfficeManager
               keepAliveOnShutdown,
               maxTasksPerProcess,
               taskExecutionTimeout,
-              taskQueueTimeout);
+              taskQueueTimeout,
+              taskQueueCapacity);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
@@ -606,12 +608,12 @@ public final class LocalOfficeManager
 
     /**
      * Controls whether the manager will "fail fast" if an office process cannot be started or the
-     * connection to the started process fails. If set to {@code true}, the start of a process will
-     * wait for the task to be completed, and will throw an exception if the office process is not
-     * started successfully or if the connection to the started process fails. If set to {@code
-     * false}, the task of starting the process and connecting to it will be submitted and will
-     * return immediately, meaning a faster starting process. Only error logs will be produced if
-     * anything goes wrong.
+     * connection to the started process fails. If set to {@code true}, the start of the manager
+     * waits for all the office processes to be started and connected, and throws an exception if
+     * one of them cannot be; the manager cannot be used after that. If set to {@code false}, the
+     * start of the manager returns immediately, meaning a faster start: the tasks wait for an
+     * office process to be ready, and a process that cannot be started is retried, with a growing
+     * delay between the attempts. Only logs will be produced if anything goes wrong.
      *
      * <p>&nbsp; <b><i>Default</i></b>: false
      *

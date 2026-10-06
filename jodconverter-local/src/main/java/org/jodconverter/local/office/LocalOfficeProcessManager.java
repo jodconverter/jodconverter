@@ -30,17 +30,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import com.sun.star.lang.DisposedException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.core.office.NamedThreadFactory;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.RetryTimeoutException;
@@ -52,6 +47,10 @@ import org.jodconverter.local.process.ProcessQuery;
 /**
  * An {@link LocalOfficeProcessManager} is responsible to manage an office process and the
  * connection (bridge) to this office process.
+ *
+ * <p>All its functions block until they are done, and are called by a single thread, the one of the
+ * {@link LocalOfficeWorker} that owns the manager. Only {@link #kill()} may be called by another
+ * thread.
  *
  * @see OfficeConnection
  */
@@ -67,11 +66,11 @@ class LocalOfficeProcessManager {
   // How long to wait for a connection when checking whether a port is already used.
   private static final int PORT_CHECK_TIMEOUT = 1_000;
 
-  private VerboseProcess process;
-  private long pid = PID_UNKNOWN;
+  // Volatile: read by the thread that kills the process.
+  private volatile VerboseProcess process;
+  private volatile long pid = PID_UNKNOWN;
   private OfficeDescriptor descriptor;
   private final OfficeConnection connection;
-  private final ExecutorService executor;
   private final File instanceProfileDir;
   private final OfficeUrl officeUrl;
   private final File officeHome;
@@ -83,7 +82,6 @@ class LocalOfficeProcessManager {
   private final long processRetryInterval;
   private final long afterStartProcessDelay;
   private final ExistingProcessAction existingProcessAction;
-  private final boolean startFailFast;
   private final boolean keepAliveOnShutdown;
 
   /**
@@ -104,11 +102,6 @@ class LocalOfficeProcessManager {
    *     before doing anything else.
    * @param existingProcessAction Represents the action to take when starting a new office process,
    *     and there already is a process running with the same connection string.
-   * @param startFailFast Controls whether the manager will "fail fast" if the office process cannot
-   *     be started. If set to {@code true}, the {@link #start()} operation will wait for the task
-   *     to be completed, and will throw an exception if the office process is not started
-   *     successfully. If set to {@code false}, the {@link #start()} operation will submit the task
-   *     and return immediately, meaning a faster operation.
    * @param keepAliveOnShutdown Controls whether the manager will keep the office process alive on
    *     shutdown. If set to {@code true}, the {@link #stop()} will only disconnect from the office
    *     process, which will stay alive. If set to {@code false}, the office process will be stopped
@@ -126,7 +119,6 @@ class LocalOfficeProcessManager {
       final long processRetryInterval,
       final long afterStartProcessDelay,
       final ExistingProcessAction existingProcessAction,
-      final boolean startFailFast,
       final boolean keepAliveOnShutdown,
       final OfficeConnection connection) {
 
@@ -142,7 +134,6 @@ class LocalOfficeProcessManager {
         processRetryInterval,
         afterStartProcessDelay,
         existingProcessAction,
-        startFailFast,
         keepAliveOnShutdown,
         connection);
   }
@@ -169,8 +160,6 @@ class LocalOfficeProcessManager {
    *     before doing anything else.
    * @param existingProcessAction Represents the action to take when starting a new office process,
    *     and there already is a process running with the same connection string.
-   * @param startFailFast Controls whether the manager will "fail fast" if the office process cannot
-   *     be started.
    * @param keepAliveOnShutdown Controls whether the manager will keep the office process alive on
    *     shutdown.
    * @param connection The object that will manage the connection to the office process.
@@ -187,7 +176,6 @@ class LocalOfficeProcessManager {
       final long processRetryInterval,
       final long afterStartProcessDelay,
       final ExistingProcessAction existingProcessAction,
-      final boolean startFailFast,
       final boolean keepAliveOnShutdown,
       final OfficeConnection connection) {
 
@@ -201,11 +189,9 @@ class LocalOfficeProcessManager {
     this.processRetryInterval = processRetryInterval;
     this.afterStartProcessDelay = afterStartProcessDelay;
     this.existingProcessAction = existingProcessAction;
-    this.startFailFast = startFailFast;
     this.keepAliveOnShutdown = keepAliveOnShutdown;
     this.connection = connection;
 
-    executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("jodconverter-offprocmng"));
     instanceProfileDir =
         new File(
             workingDir,
@@ -222,205 +208,95 @@ class LocalOfficeProcessManager {
   }
 
   /**
-   * Starts an office process and connect to the running process.
-   *
-   * <p>If {@link #startFailFast} is set to {@code true}, the operation will wait for the task to be
-   * completed, and will throw an exception if the office process is not started successfully or
-   * that we cannot connect to the started process. If set to {@code false}, the operation will
-   * submit the task and return immediately, meaning a faster operation.
+   * Starts an office process and connects to it. The function returns when the connection is
+   * established.
    *
    * @throws OfficeException If the office process cannot be started, or we are unable to connect to
    *     the started process.
    */
   /* default */ void start() throws OfficeException {
 
-    if (startFailFast) {
-      // Submit the start task to the executor.
-      LOGGER.debug("Submitting start task...");
-      final var future = executor.submit(() -> startProcessAndConnect(false, true));
-
-      // Wait for completion of the task.
-      try {
-        LOGGER.debug("Waiting for start task to complete...");
-        future.get();
-        LOGGER.debug("Start task executed successfully.");
-
-      } catch (ExecutionException ex) {
-
-        // An error occurred while executing the start and connect task...
-        throw handleStartTaskExecutionException(ex);
-
-      } catch (InterruptedException ex) {
-        Thread.currentThread().interrupt(); // ignore/reset
-        throw new OfficeException("Interruption while starting the office process.", ex);
-      }
-    } else {
-      // Submit a start task to the executor and return immediately.
-      executor.execute(
-          () -> {
-            try {
-              startProcessAndConnect(false, true);
-            } catch (OfficeException ex) {
-              LOGGER.error("Could not start the office process.", ex);
-            }
-          });
-    }
-  }
-
-  private OfficeException handleStartTaskExecutionException(
-      final ExecutionException executionException) {
-
-    // Rethrow the original (cause) exception
-    if (executionException.getCause() instanceof OfficeException officeEx) {
-      return officeEx;
-    }
-
-    return new OfficeException("Start task did not complete", executionException.getCause());
+    startProcessAndConnect(false, true);
   }
 
   /**
-   * Restarts an office process.
+   * Restarts an office process that is still usable, after it executed its maximum number of tasks
+   * for example. The office process is asked to terminate, and a new one is started with the same
+   * instance profile directory, which makes its start faster. The function returns when the
+   * connection to the new process is established.
    *
-   * <p>The task of restarting the process and connecting to it is executed by a single thread
-   * {@link ExecutorService} and thus, the current {@code restart()} function returns immediately.
-   * The restart will be done as soon as the executor is available to execute the task.
+   * @throws OfficeException If the office process cannot be started, or we are unable to connect to
+   *     the started process.
    */
-  /* default */ void restart() {
+  /* default */ void restart() throws OfficeException {
     LOGGER.info("Restarting...");
 
-    executor.execute(
-        () -> {
-          // On clean restart, we won't delete the instance profile directory,
-          // causing a faster start of an office process.
-          stopProcess(false);
-          try {
-            startProcessAndConnect(true);
-          } catch (OfficeException ex) {
-            LOGGER.error("Could not restart the office process.", ex);
-          }
-        });
+    stopProcess(false);
+    startProcessAndConnect(true, false);
   }
 
   /**
-   * Restarts the office process when the connection is lost.
+   * Restarts an office process that cannot be used anymore: its connection was lost, it was killed,
+   * or it could not be started. The function returns when the connection to the new process is
+   * established.
    *
-   * <p>The task of restarting the process and connecting to it is executed by a single thread
-   * {@link ExecutorService} and thus, the current {@code restartDueToLostConnection()} function
-   * returns immediately.
+   * @throws OfficeException If the office process cannot be started, or we are unable to connect to
+   *     the started process.
    */
-  /* default */ void restartDueToLostConnection() {
+  /* default */ void restartDueToLostConnection() throws OfficeException {
     LOGGER.info("Restarting due to lost connection...");
 
-    executor.execute(
-        () -> {
-          LOGGER.debug("Connection lost unexpectedly");
+    // When no office process was started, the port is checked as it is on the first start.
+    final var neverStarted = process == null && pid <= PID_UNKNOWN;
 
-          // Since we have lost the connection unexpectedly, it could mean that
-          // the office process has crashed. Thus, we want a clean instance profile
-          // directory on restart. A process still running is killed after a short
-          // grace period: without its connection, it cannot be used anymore.
-          ensureProcessExited(true, Math.min(processTimeout, LOST_CONNECTION_EXIT_TIMEOUT));
-          try {
-            startProcessAndConnect(false);
-          } catch (OfficeException ex) {
-            LOGGER.error(
-                "Could not restart the office process after an unexpected lost connection.", ex);
-          }
-        });
+    // Since we have lost the connection unexpectedly, it could mean that
+    // the office process has crashed. Thus, we want a clean instance profile
+    // directory on restart. A process still running is killed after a short
+    // grace period: without its connection, it cannot be used anymore.
+    ensureProcessExited(true, Math.min(processTimeout, LOST_CONNECTION_EXIT_TIMEOUT));
+    startProcessAndConnect(false, neverStarted);
   }
 
   /**
-   * Restarts the office process when there is a timeout while executing a task.
-   *
-   * <p>The function will only forcibly kill the office process, causing an unexpected disconnection
-   * and later restart.
-   *
-   * @see LocalOfficeManagerPoolEntry
+   * Forcibly terminates the office process, if any. This is how a task that must not go on is
+   * ended: the function may be called by any thread, while another function of this manager is
+   * running, and does not wait for the process to exit.
    */
-  /* default */ void restartDueToTaskTimeout() {
-    LOGGER.info("Restarting due to task timeout...");
+  /* default */ void kill() {
 
-    // This will cause unexpected disconnection and later restart.
     forciblyTerminateProcess();
   }
 
   /**
-   * Stops an office process and waits until the process is stopped.
-   *
-   * @throws OfficeException If we are not able to stop the office process.
+   * Stops the office process and waits until the process is stopped. If the process must be kept
+   * alive on shutdown, the connection is only closed.
    */
-  /* default */ void stop() throws OfficeException {
+  /* default */ void stop() {
 
-    // Submit a task to stop the office process and wait task termination.
-    // This is required if we don't want to let garbage on disk since the
-    // stopProcess must be fully executed to clean the temp files and
-    // directories.
-    LOGGER.debug("Submitting stop task...");
-
-    // If we must keep the process alive, just disconnect.
     if (keepAliveOnShutdown) {
       // We must disconnect from the process
-      executor.execute(connection::disconnect);
+      LOGGER.debug("Disconnecting from the office process, which is kept alive...");
+      connection.disconnect();
     } else {
-      // We must stop the process.
-      executor.execute(() -> stopProcess(true));
-    }
-
-    // Shutdown the executor, no other task will be accepted.
-    executor.shutdown();
-
-    // Await for task termination. This is required if we don't want to let garbage on disk.
-    try {
-      // +1000L to allow the deletion of the templateProfileDir.
-      // But is it really necessary? It is a wild guess...
-      final var stopTimeout = processTimeout + 1000L;
-      LOGGER.debug("Waiting for stop task to complete ({} millisecs)...", stopTimeout);
-      if (executor.awaitTermination(stopTimeout, TimeUnit.MILLISECONDS)) {
-        LOGGER.debug("Stop task executed successfully.");
-      } else {
-        // TODO: Should we do something special ?
-        LOGGER.debug("Could not execute stop task within {} millisecs...", stopTimeout);
-      }
-    } catch (InterruptedException ex) {
-      Thread.currentThread().interrupt();
-      throw new OfficeException("Interruption while stopping the office process.", ex);
+      // We must stop the process. This is required if we don't want to let garbage on disk
+      // since the stopProcess must be fully executed to clean the temp files and directories.
+      stopProcess(true);
     }
   }
 
   /**
    * Starts the office process managed by this manager and connect to the started process.
-   *
-   * <p>This function is always called into tasks that are executed by a single thread {@link
-   * ExecutorService}.
    *
    * @param restart Indicates whether it is a fresh start or a restart. A restart will assume that
    *     the instance profile directory is already created. To recreate the instance profile
    *     directory, {@code restart} should be set to {@code false}.
-   * @return {@code null}. So it could be used in a {@link java.util.concurrent.Callable}.
-   * @throws OfficeException If the office process cannot be started, or we are unable to connect to
-   *     the started process.
-   */
-  private Void startProcessAndConnect(final boolean restart) throws OfficeException {
-    return startProcessAndConnect(restart, false);
-  }
-
-  /**
-   * Starts the office process managed by this manager and connect to the started process.
-   *
-   * <p>This function is always called into tasks that are executed by a single thread {@link
-   * ExecutorService}.
-   *
-   * @param restart Indicates whether it is a fresh start or a restart. See {@link
-   *     #startProcessAndConnect(boolean)}.
    * @param checkPortAvailable If {@code true}, fails right away when the port of a socket
-   *     connection is already used by another program. Only done on the first start: on a restart,
-   *     the previous office process may still be releasing the port.
-   * @return {@code null}. So it could be used in a {@link java.util.concurrent.Callable}.
+   *     connection is already used by another program. Not done when an office process was started
+   *     before: it may still be releasing the port.
    * @throws OfficeException If the office process cannot be started, or we are unable to connect to
    *     the started process.
    */
-  @SuppressWarnings("SameReturnValue")
-  private Void startProcessAndConnect(final boolean restart, final boolean checkPortAvailable)
+  private void startProcessAndConnect(final boolean restart, final boolean checkPortAvailable)
       throws OfficeException {
 
     // Reinitialize pid and process.
@@ -442,7 +318,7 @@ class LocalOfficeProcessManager {
     // If we already have a PID, it means that the process is already started and that
     // the configuration didn't tell us to kill the process.
     if (pid > PID_UNKNOWN) {
-      return null;
+      return;
     }
 
     // No office process uses the connection string. If another program already listens on the
@@ -465,8 +341,6 @@ class LocalOfficeProcessManager {
           String.format(
               "A process with --accept '%s' started but its pid could not be found", acceptString));
     }
-
-    return null;
   }
 
   /**
@@ -541,16 +415,11 @@ class LocalOfficeProcessManager {
   /**
    * Stops the office process managed by this manager.
    *
-   * <p>This function is always called into tasks that are executed by a single thread {@link
-   * ExecutorService} and thus, the function must manage its own exception handling.
-   *
    * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
    *     deleted. We don't always want to delete the instance profile directory on restart since it
    *     may be an expensive operation.
-   * @return {@code null}. So it could be used in a {@link java.util.concurrent.Callable}.
    */
-  @SuppressWarnings("SameReturnValue")
-  private Void stopProcess(final boolean deleteInstanceProfileDir) {
+  private void stopProcess(final boolean deleteInstanceProfileDir) {
     LOGGER.debug(
         "Stopping the office process with deleteInstanceProfileDir set to {}...",
         deleteInstanceProfileDir);
@@ -578,8 +447,6 @@ class LocalOfficeProcessManager {
     } finally {
       ensureProcessExited(deleteInstanceProfileDir);
     }
-
-    return null;
   }
 
   private void killExistingProcess(final long pid, final ProcessQuery processQuery)
@@ -782,6 +649,10 @@ class LocalOfficeProcessManager {
   /** Kills the office process instance. */
   private void forciblyTerminateProcess() {
 
+    // The process may be replaced by the thread of this manager while another thread kills it.
+    final var process = this.process;
+    final var pid = this.pid;
+
     // No need to terminate anything if we don't have anything to terminate.
     if (process == null && pid <= PID_UNKNOWN) {
       return;
@@ -804,9 +675,6 @@ class LocalOfficeProcessManager {
   /**
    * Ensures that the process exited.
    *
-   * <p>This function is always called into tasks that are executed by a single thread {@link
-   * ExecutorService} and thus, the function must manage its own exception handling.
-   *
    * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
    *     deleted. We don't always want to delete the instance profile directory on restart since it
    *     may be an expensive operation.
@@ -819,9 +687,6 @@ class LocalOfficeProcessManager {
   /**
    * Ensures that the process exited, forcibly terminating it if it is still running after the
    * specified timeout.
-   *
-   * <p>This function is always called into tasks that are executed by a single thread {@link
-   * ExecutorService} and thus, the function must manage its own exception handling.
    *
    * @param deleteInstanceProfileDir If {@code true}, the instance profile directory will be
    *     deleted.

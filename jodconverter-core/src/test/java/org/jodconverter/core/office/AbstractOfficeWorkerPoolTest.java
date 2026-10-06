@@ -27,10 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
@@ -702,7 +699,8 @@ class AbstractOfficeWorkerPoolTest {
 
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> pool.execute(task))
-          .withMessageStartingWith("Task did not complete within timeout (100 ms): ");
+          .withMessageStartingWith("Task did not complete within timeout (100 ms): ")
+          .withCauseExactlyInstanceOf(TimeoutException.class);
 
       await(task.interrupted::get);
       await(() -> worker.count("restart") == 1);
@@ -823,6 +821,23 @@ class AbstractOfficeWorkerPoolTest {
     }
 
     @Test
+    void whenTheWorkersAreIdle_ShouldStopThemWithoutAbortingThem() throws Exception {
+
+      final var worker1 = new FakeOfficeWorker();
+      final var worker2 = new FakeOfficeWorker();
+      started(worker1, worker2);
+      pool.execute(context -> {});
+
+      pool.stop();
+
+      // An idle worker has nothing to abort: it can stop properly.
+      assertThat(worker1.count("abort")).isZero();
+      assertThat(worker2.count("abort")).isZero();
+      assertThat(worker1.count("stop")).isEqualTo(1);
+      assertThat(worker2.count("stop")).isEqualTo(1);
+    }
+
+    @Test
     void whileAWorkerIsStarting_ShouldAbortItsStart() throws Exception {
 
       final var worker = new FakeOfficeWorker();
@@ -834,6 +849,21 @@ class AbstractOfficeWorkerPoolTest {
       pool.stop();
 
       assertThat(worker.calls).containsExactly("start", "abort", "stop");
+    }
+
+    @Test
+    void whileAWorkerIsRestarting_ShouldAbortItsRestart() throws Exception {
+
+      final var worker = new FakeOfficeWorker();
+      started(worker);
+      // The worker loses its office process, and its restart does not end.
+      worker.startGate = new CountDownLatch(1);
+      worker.setReady(false);
+      await(() -> worker.count("restart") == 1);
+
+      pool.stop();
+
+      assertThat(worker.calls).containsExactly("start", "restart", "abort", "stop");
     }
 
     @Test
