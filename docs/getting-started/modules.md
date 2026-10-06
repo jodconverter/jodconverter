@@ -74,16 +74,31 @@ remote document conversion REST API, such as those exposed by LibreOffice Online
 Instead of managing a local or UNO-based office process, this module sends documents and conversion requests over
 HTTP(S) to a remote server that handles the conversion, making it ideal for cloud-native or containerized environments.
 
-## jodconverter-spring
+## Spring Framework without Spring Boot
 
-[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-spring/4.4.11/dependencies)
+There is no module for the Spring Framework alone (the `jodconverter-spring` module of 4.x is gone in 5.0): the
+builders of the office managers and converters are all a Spring application needs. Declare the manager as a bean
+started and stopped with the context, and a converter on top of it:
 
-The `jodconverter-spring` module provides seamless integration of JODConverter with the Spring Framework, enabling
-developers to easily configure and use document conversion services within Spring-based applications.
+```java
+@Configuration
+public class JodConverterConfiguration {
 
-This module offers Spring-friendly beans and configuration support for managing office processes and document
-converters, helping you embed JODConverter capabilities in your web applications, microservices, or backend systems
-built with Spring.
+  @Bean(initMethod = "start", destroyMethod = "stop")
+  public OfficeManager officeManager() {
+    return LocalOfficeManager.builder().portNumbers(2002, 2003).build();
+  }
+
+  @Bean
+  public DocumentConverter documentConverter(OfficeManager officeManager) {
+    return LocalConverter.make(officeManager);
+  }
+}
+```
+
+With XML configuration, `LocalOfficeManager.make()` and `LocalConverter.make(officeManager)` are static factory
+methods: `<bean id="officeManager" class="org.jodconverter.local.office.LocalOfficeManager" factory-method="make"
+init-method="start" destroy-method="stop"/>`.
 
 ## jodconverter-spring-boot-starter
 
@@ -104,6 +119,6 @@ ______________________________________________________________________
 - Use jodconverter-local-oo if you must target Apache OpenOffice.
 - Use jodconverter-remote if you rely on a remote conversion service (LO Online/Collabora).
 - Use jodconverter-cli for one-off or scripted conversions without Java coding.
-- Add jodconverter-spring or jodconverter-spring-boot-starter for Spring-based apps.
+- Add jodconverter-spring-boot-starter for Spring Boot apps.
 
 --8<-- "note.md"

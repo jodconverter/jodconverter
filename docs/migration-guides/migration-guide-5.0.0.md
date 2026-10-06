@@ -18,13 +18,11 @@ Boot and logging setup; the API changes only affect code that extends JODConvert
 JODConverter 5.0 requires Java 17 or later, at build time and at runtime. Applications that must stay on Java 8 or
 11 must stay on JODConverter 4.4.
 
-### Spring Boot 3 and Spring Framework 6
+### Spring Boot 3
 
-- `jodconverter-spring-boot-starter` requires Spring Boot 3. It is built and tested with Spring Boot 3.5.
-- `jodconverter-spring` requires Spring Framework 6. It is built and tested with Spring Framework 6.2.
-
-Spring Boot 2 and Spring Framework 5 applications must stay on JODConverter 4.4. The migration of the application
-itself (`javax.*` to `jakarta.*`, and so on) is covered by the
+`jodconverter-spring-boot-starter` requires Spring Boot 3. It is built and tested with Spring Boot 3.5. Spring Boot 2
+applications must stay on JODConverter 4.4. The migration of the application itself (`javax.*` to `jakarta.*`, and so
+on) is covered by the
 [Spring Boot 3.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide).
 
 The auto-configurations of the starter are registered in
@@ -48,12 +46,6 @@ provider, for example:
 Otherwise, SLF4J prints `No SLF4J providers were found` and JODConverter logs nothing. Spring Boot 3 applications
 are not affected: Spring Boot already uses SLF4J 2.
 
-### No logging backend from jodconverter-spring
-
-`jodconverter-spring` declared the SLF4J log4j 1 binding as a runtime dependency, so every application using it got
-log4j 1 on its classpath. It now only depends on `slf4j-api`, like the other modules: an application that relied on
-that binding without declaring it must now add a logging backend of its own.
-
 ### Command line tool
 
 The command line tool logs through Log4j 2. Its configuration file is now `conf/log4j2.xml` instead of
@@ -64,9 +56,8 @@ ignored their `conf/log4j.properties`.
 ## Dependencies
 
 The published POMs and Gradle module metadata of `jodconverter-core`, `jodconverter-local` and `jodconverter-remote`
-no longer import the Spring Boot BOM (`spring-boot-dependencies`), and `jodconverter-spring` no longer imports it
-either. Each dependency has its own version instead. Only `jodconverter-spring-boot-starter` uses the Spring Boot
-BOM.
+no longer import the Spring Boot BOM (`spring-boot-dependencies`). Each dependency has its own version instead. Only
+`jodconverter-spring-boot-starter` uses the Spring Boot BOM.
 
 An application that relied on JODConverter to bring Spring Boot's dependency management, without importing the
 Spring Boot BOM itself, may now resolve different versions of the libraries that BOM used to manage.
@@ -74,6 +65,33 @@ Spring Boot BOM itself, may now resolve different versions of the libraries that
 ## API changes
 
 These changes only affect code that extends or calls these classes directly.
+
+### jodconverter-spring removed
+
+The `jodconverter-spring` module and its `JodConverterBean` are gone. It configured the local office manager only,
+with setters, and lagged the Spring Boot starter on every feature. A Spring Framework application declares the manager
+and the converter as beans instead; the builders do the rest:
+
+```java
+@Bean(initMethod = "start", destroyMethod = "stop")
+public OfficeManager officeManager() {
+  return LocalOfficeManager.builder()
+      .portNumbers(2002)
+      .taskExecutionTimeout(120_000L)
+      .build();
+}
+
+@Bean
+public DocumentConverter documentConverter(OfficeManager officeManager) {
+  return LocalConverter.make(officeManager);
+}
+```
+
+Each setter of `JodConverterBean` has the builder method of the same name on `LocalOfficeManager.Builder` (the
+`portNumbers` setter took a comma-separated string; the builder takes `int...`). With XML configuration, use the
+static `LocalOfficeManager.make()` and `LocalConverter.make(officeManager)` factory methods with `factory-method`,
+`init-method="start"` and `destroy-method="stop"`. Spring Boot applications are not affected: the starter never
+used this module.
 
 ### Records
 
