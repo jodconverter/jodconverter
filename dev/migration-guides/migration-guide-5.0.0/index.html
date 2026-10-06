@@ -1043,6 +1043,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#removed-deprecated-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Removed deprecated methods
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fileutilsreadfiletostring" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2766,6 +2777,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#removed-deprecated-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Removed deprecated methods
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fileutilsreadfiletostring" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3035,6 +3057,9 @@ JODConverter are built this way.</p>
 <li><code>ConversionJob</code> has a new abstract <code>executeAsync()</code> method, and <code>AbstractConversionJob</code> asks its subclasses for
     <code>getOfficeManager()</code> and <code>createTask()</code> instead of a <code>doExecute()</code> implementation.</li>
 </ul>
+<h3 id="removed-deprecated-methods">Removed deprecated methods<a class="headerlink" href="#removed-deprecated-methods" title="Permanent link">&para;</a></h3>
+<p><code>Lo.createInstanceMSF(...)</code> and <code>Lo.createInstanceMCF(...)</code> (local module), deprecated since 4.4.4, are removed; use the
+<code>Lo.createInstance(...)</code> overloads, which take the same arguments.</p>
 <h3 id="fileutilsreadfiletostring">FileUtils.readFileToString<a class="headerlink" href="#fileutilsreadfiletostring" title="Permanent link">&para;</a></h3>
 <p><code>org.jodconverter.core.util.FileUtils.readFileToString</code> now throws a <code>MalformedInputException</code> when the file contains
 bytes that are not valid in the given charset, instead of replacing them.</p>
