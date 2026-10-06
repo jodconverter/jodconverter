@@ -2995,6 +2995,8 @@ no longer import the Spring Boot BOM (<code>spring-boot-dependencies</code>). Ea
 <code>jodconverter-spring-boot-starter</code> uses the Spring Boot BOM.</p>
 <p>An application that relied on JODConverter to bring Spring Boot's dependency management, without importing the
 Spring Boot BOM itself, may now resolve different versions of the libraries that BOM used to manage.</p>
+<p>The command line tool no longer depends on the Spring Framework: its distribution ships Gson and SnakeYAML Engine
+instead of the Spring jars, for its configuration file.</p>
 <h2 id="api-changes">API changes<a class="headerlink" href="#api-changes" title="Permanent link">&para;</a></h2>
 <p>These changes only affect code that extends or calls these classes directly.</p>
 <h3 id="jodconverter-spring-removed">jodconverter-spring removed<a class="headerlink" href="#jodconverter-spring-removed" title="Permanent link">&para;</a></h3>
@@ -3125,6 +3127,27 @@ process starts waits in the queue instead of failing with the execution timeout.
 does not conflict with the new <code>jodconverter.local.pool-size</code> property. The effective default is unchanged: with no
 port numbers, pipe names or pool size, the office process uses port 2002.</p>
 <h3 id="command-line-tool_1">Command line tool<a class="headerlink" href="#command-line-tool_1" title="Permanent link">&para;</a></h3>
+<p>The <code>-a</code> / <code>--application-context</code> option, which loaded a Spring XML context for the filter chain and the SSL
+configuration, is replaced by <code>--config &lt;file&gt;</code>, a JSON or YAML file with a <code>filters</code> section and an <code>ssl</code> section.
+The built-in filters are named by <code>type</code> with their own keys, and a custom filter by <code>class</code>, which needs a public
+no-argument constructor:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span class="nt">ssl</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">trust-store</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/truststore.p12</span>
+<span class="w">  </span><span class="nt">trust-store-password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret</span>
+<span class="nt">filters</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pages-selector</span>
+<span class="w">    </span><span class="nt">pages</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">graphic-inserter</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/image.jpg</span>
+<span class="w">    </span><span class="nt">horizontal-position</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
+<span class="w">    </span><span class="nt">vertical-position</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">111</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">class</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">com.example.MyFilter</span>
+</code></pre></div>
+<p>The keys of the <code>ssl</code> section are the properties of <code>SslConfig</code> in kebab case; see the
+<a href="../../getting-started/command-line-tool/#configuration-file">command line tool</a> page for the filters and their keys.
+A filter chain that needed Spring to wire constructor arguments beyond these keys becomes a custom filter class.</p>
+<p>An unknown option, like a missing file name, now exits with status 255 (invalid arguments) instead of 2 (error).</p>
 <p>The <code>--help</code> output now uses the new commons-cli help formatter: the options are printed as a table, up to 120
 columns wide.</p>
 <h2 id="new-features">New features<a class="headerlink" href="#new-features" title="Permanent link">&para;</a></h2>

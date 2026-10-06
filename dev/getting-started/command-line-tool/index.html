@@ -1485,17 +1485,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#-a-application-context-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -a, --application-context <code>&lt;file&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#-c-connection-url-url" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1672,6 +1661,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#-config-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        --config <code>&lt;file&gt;</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-pdf-preset-name" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1699,13 +1699,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#remarks" class="md-nav__link">
+  <a href="#configuration-file" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Remarks
+        Configuration file
       </span>
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Configuration file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Filters
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssl-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        SSL options
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2654,17 +2682,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#-a-application-context-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        -a, --application-context <code>&lt;file&gt;</code>
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#-c-connection-url-url" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2841,6 +2858,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#-config-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        --config <code>&lt;file&gt;</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-pdf-preset-name" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2868,13 +2896,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#remarks" class="md-nav__link">
+  <a href="#configuration-file" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Remarks
+        Configuration file
       </span>
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Configuration file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Filters
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssl-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        SSL options
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2916,8 +2972,6 @@ module distribution.</p>
 files to convert. Thus, it is possible with the jodconverter-cli tool to convert more than 1 file at the time.</p>
 <h4 id="outfile">outfile<a class="headerlink" href="#outfile" title="Permanent link">&para;</a></h4>
 <p>The target file which is the result of the conversion.</p>
-<h4 id="-a-application-context-file">-a, --application-context <code>&lt;file&gt;</code><a class="headerlink" href="#-a-application-context-file" title="Permanent link">&para;</a></h4>
-<p>Application context file (optional).</p>
 <h4 id="-c-connection-url-url">-c, --connection-url <code>&lt;url&gt;</code><a class="headerlink" href="#-c-connection-url-url" title="Permanent link">&para;</a></h4>
 <p>Remote LibreOffice Online server URL for conversion (optional).</p>
 <h4 id="-d-output-directory-dir">-d, --output-directory <code>&lt;dir&gt;</code><a class="headerlink" href="#-d-output-directory-dir" title="Permanent link">&para;</a></h4>
@@ -2958,6 +3012,9 @@ See <a href="../../../configuration/local-configuration#templateprofiledir">Conf
 <h4 id="-w-working-dir-dir">-w, --working-dir <code>&lt;dir&gt;</code><a class="headerlink" href="#-w-working-dir-dir" title="Permanent link">&para;</a></h4>
 <p>Directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir).
 See <a href="../../../configuration/local-configuration#workingdir">Configuration</a>.</p>
+<h4 id="-config-file">--config <code>&lt;file&gt;</code><a class="headerlink" href="#-config-file" title="Permanent link">&para;</a></h4>
+<p>Configuration file, JSON or YAML (optional): the <a href="#filters">filters</a> applied to the documents of a local conversion,
+and the <a href="#ssl-options">SSL options</a> of a remote conversion. See <a href="#configuration-file">Configuration file</a>.</p>
 <h4 id="-pdf-preset-name">--pdf-preset <code>&lt;name&gt;</code><a class="headerlink" href="#-pdf-preset-name" title="Permanent link">&para;</a></h4>
 <p>PDF options to start from, for the PDF outputs (optional): <code>archive</code> (PDF/A-2b), <code>accessible</code> (PDF/UA) or <code>compact</code>
 (reduced JPEG images). See <a href="../pdf-options/#presets">PDF Options</a>.</p>
@@ -2968,117 +3025,138 @@ one:</p>
 </code></pre></div>
 <p>See <a href="../pdf-options/#command-line">PDF Options</a> for the names and the values. The other outputs of the same command
 are converted without these options.</p>
-<h3 id="remarks">Remarks<a class="headerlink" href="#remarks" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Using <strong>-a</strong></li>
-</ul>
-<p>An application context configuration file is really a Spring configuration file, so a configuration file will start
-with the following:</p>
-<div class="language-xml highlight"><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;beans</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
-<span class="w">       </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-<span class="w">       </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
-
-<span class="w">  </span><span class="cm">&lt;!-- Configuration goes here! --&gt;</span>
-
-<span class="nt">&lt;/beans&gt;</span>
+<h3 id="configuration-file">Configuration file<a class="headerlink" href="#configuration-file" title="Permanent link">&para;</a></h3>
+<p>The <code>--config</code> option reads a file that holds what the other options cannot express: the filters applied to a loaded
+document before it is saved, and the SSL options of the connection to a LibreOffice Online server. The file is YAML
+when its name ends with <code>.yml</code> or <code>.yaml</code>, and JSON otherwise. Both sections are optional.</p>
+<h4 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">&para;</a></h4>
+<p>The <code>filters</code> section lists the <a href="../using-filters/">filters</a> applied to the loaded document, in order, before it is
+saved to the desired format. Each entry names a built-in filter with <code>type</code>, followed by the keys of that filter, or a
+custom filter with <code>class</code>. Here is a configuration that inserts a text into the document, then inserts a graphic, and
+finally replaces some text strings:</p>
+<div class="language-yaml highlight"><span class="filename">filters.yml</span><pre><span></span><code><span class="nt">filters</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-inserter</span>
+<span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text to insert</span>
+<span class="w">    </span><span class="nt">width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w">               </span><span class="c1"># Width, 10 CM</span>
+<span class="w">    </span><span class="nt">height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w">               </span><span class="c1"># Height, 1 CM</span>
+<span class="w">    </span><span class="nt">horizontal-position</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span><span class="w">  </span><span class="c1"># Horizontal position, 5 CM</span>
+<span class="w">    </span><span class="nt">vertical-position</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w">   </span><span class="c1"># Vertical position, 10 CM</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">graphic-inserter</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/the/image.jpg</span>
+<span class="w">    </span><span class="nt">horizontal-position</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span><span class="w">  </span><span class="c1"># Horizontal position, 5 CM</span>
+<span class="w">    </span><span class="nt">vertical-position</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">111</span><span class="w">   </span><span class="c1"># Vertical position, 11.1 CM (just under the text box)</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-replacer</span>
+<span class="w">    </span><span class="nt">replacements</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Text</span>
+<span class="w">      </span><span class="nt">to insert</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">describing the image below</span>
 </code></pre></div>
-<p>A configuration file can be used to initialize
-the <a href="../using-filters/">filter chain</a> that will be applied to the loaded
-document before it is saved to the desired format. Here's an example of a configuration to create a filter chain that
-will first insert a given text to the document, then will insert a graphic into it, and finally will apply the
-configured text strings replacement:</p>
-<div class="language-xml highlight"><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;beans</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
-<span class="w">       </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-<span class="w">       </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
-
-<span class="w">  </span><span class="cm">&lt;!-- Creation of all the required filters we want to add to the filter chain. --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"textInserterFilter"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.filter.text.TextInserterFilter"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Text to insert --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"text to insert"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Arguments related to the added box size and position --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"100"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w"> </span><span class="cm">&lt;!-- Width, 10 CM --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"10"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w">  </span><span class="cm">&lt;!-- Height, 1 CM --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"50"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w">  </span><span class="cm">&lt;!-- Horizontal Position, 5 CM --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"100"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w"> </span><span class="cm">&lt;!-- Vertical Position, 10 CM --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"graphicInserterFilter"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.filter.text.GraphicInserterFilter"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Path to the image --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"src/integTest/resources/images/sample-1.jpg"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Arguments related to the added box size and position --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"50"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w">  </span><span class="cm">&lt;!-- Horizontal Position, 5 CM --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">value=</span><span class="s">"111"</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w"> </span><span class="cm">&lt;!-- Vertical Position, 11.1 CM (just under text box) --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"textReplacerFilter"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.filter.text.TextReplacerFilter"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">name=</span><span class="s">"searchList"</span><span class="nt">&gt;</span>
-<span class="w">      </span><span class="nt">&lt;list&gt;</span>
-<span class="w">        </span><span class="nt">&lt;value&gt;</span>text<span class="nt">&lt;/value&gt;</span>
-<span class="w">        </span><span class="nt">&lt;value&gt;</span>to<span class="w"> </span>insert<span class="nt">&lt;/value&gt;</span>
-<span class="w">      </span><span class="nt">&lt;/list&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/constructor-arg&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">name=</span><span class="s">"replacementList"</span><span class="nt">&gt;</span>
-<span class="w">      </span><span class="nt">&lt;list&gt;</span>
-<span class="w">        </span><span class="nt">&lt;value&gt;</span>Text<span class="nt">&lt;/value&gt;</span>
-<span class="w">        </span><span class="nt">&lt;value&gt;</span>describing<span class="w"> </span>the<span class="w"> </span>image<span class="w"> </span>below<span class="nt">&lt;/value&gt;</span>
-<span class="w">      </span><span class="nt">&lt;/list&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/constructor-arg&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-
-<span class="w">  </span><span class="cm">&lt;!-- Configure the filter chain that will be used while converting a document. --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"filterChain"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.filter.DefaultFilterChain"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;constructor-arg&gt;</span>
-<span class="w">      </span><span class="nt">&lt;list&gt;</span>
-<span class="w">        </span><span class="nt">&lt;ref</span><span class="w"> </span><span class="na">bean=</span><span class="s">"textInserterFilter"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;ref</span><span class="w"> </span><span class="na">bean=</span><span class="s">"graphicInserterFilter"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;ref</span><span class="w"> </span><span class="na">bean=</span><span class="s">"textReplacerFilter"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">      </span><span class="nt">&lt;/list&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/constructor-arg&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-
-<span class="nt">&lt;/beans&gt;</span>
+<div class="language-shell highlight"><pre><span></span><code>jodconverter-cli<span class="w"> </span>--config<span class="w"> </span>filters.yml<span class="w"> </span>infile<span class="w"> </span>outfile
 </code></pre></div>
-<p>Combine with the <em>-c</em> switch, a configuration file can be used to initialize
-the <a href="../../libreoffice-remote/#ssl-support">SSL Context</a> of the connection
-to the Libre Office Online server:</p>
-<div class="language-xml highlight"><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;beans</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
-<span class="w">       </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-<span class="w">       </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="cm">&lt;!-- Configure the SSL to secure communication with a Libre Office Online server. --&gt;</span>
-<span class="w">  </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.jodconverter.ssl.SslConfig"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Indicates whether SSL support is enabled or not. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"enabled"</span><span class="w"> </span><span class="na">value=</span><span class="s">"true"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Comma separated values of the supported SSL ciphers. Defaults to the JVM default values. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"ciphers"</span><span class="w"> </span><span class="na">value=</span><span class="s">"ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Comma separated values of the enabled SSL protocols. Defaults to the JVM default values. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"enabledProtocols"</span><span class="w"> </span><span class="na">value=</span><span class="s">"enabledProtocols"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The alias that identifies the key in the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyAlias"</span><span class="w"> </span><span class="na">value=</span><span class="s">"keyalias"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The password used to access the key in the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyPassword"</span><span class="w"> </span><span class="na">value=</span><span class="s">"keypassword"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The path to the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyStore"</span><span class="w"> </span><span class="na">value=</span><span class="s">"/path/to/the/keystore.jks"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The password used to load the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyStorePassword"</span><span class="w"> </span><span class="na">value=</span><span class="s">"keystorepassword"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The type of key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyStoreType"</span><span class="w"> </span><span class="na">value=</span><span class="s">"JKS"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The provider for the key store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"keyStoreProvider"</span><span class="w"> </span><span class="na">value=</span><span class="s">"BC"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The path to the trust store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"trustStore"</span><span class="w"> </span><span class="na">value=</span><span class="s">"/path/to/the/truststore.p12"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The password used to load the trust store . --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"trustStorePassword"</span><span class="w"> </span><span class="na">value=</span><span class="s">"truststorepassword"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The type of trust store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"trustStoreType"</span><span class="w"> </span><span class="na">value=</span><span class="s">"PKCS12"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The provider for the trust store. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"trustStoreProvider"</span><span class="w"> </span><span class="na">value=</span><span class="s">"SUN"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- The SSL protocol to use. Default to TLS. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"protocol"</span><span class="w"> </span><span class="na">value=</span><span class="s">"TLS"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Indicates whether hostname should be verify during SSL handshake. Defaults to true. --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"verifyHostname"</span><span class="w"> </span><span class="na">value=</span><span class="s">"true"</span><span class="w"> </span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/bean&gt;</span>
-<span class="nt">&lt;/beans&gt;</span>
+<p>The same configuration in JSON:</p>
+<div class="language-json highlight"><span class="filename">filters.json</span><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"filters"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text-inserter"</span><span class="p">,</span><span class="w"> </span><span class="nt">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text to insert"</span><span class="p">,</span><span class="w"> </span><span class="nt">"width"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nt">"height"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"horizontal-position"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nt">"vertical-position"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"graphic-inserter"</span><span class="p">,</span><span class="w"> </span><span class="nt">"image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/path/to/the/image.jpg"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"horizontal-position"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nt">"vertical-position"</span><span class="p">:</span><span class="w"> </span><span class="mi">111</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text-replacer"</span><span class="p">,</span><span class="w"> </span><span class="nt">"replacements"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Text"</span><span class="p">,</span><span class="w"> </span><span class="nt">"to insert"</span><span class="p">:</span><span class="w"> </span><span class="s2">"describing the image below"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The built-in filters and their keys are (the positions and sizes are in millimeters):</p>
+<table>
+<thead>
+<tr>
+<th><code>type</code></th>
+<th>Keys</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pages-selector</code></td>
+<td><code>pages</code>: a page number, or a list of page numbers; only these pages are converted.</td>
+</tr>
+<tr>
+<td><code>text-inserter</code></td>
+<td><code>text</code>, <code>width</code>, <code>height</code>; <code>horizontal-position</code> and <code>vertical-position</code>, or <code>shape-properties</code>, a map of the properties of the created text shape.</td>
+</tr>
+<tr>
+<td><code>graphic-inserter</code></td>
+<td><code>image</code>, the path of the image; <code>horizontal-position</code> and <code>vertical-position</code>, or <code>shape-properties</code>; optionally <code>width</code> and <code>height</code>, which resize the image.</td>
+</tr>
+<tr>
+<td><code>document-inserter</code></td>
+<td><code>document</code>, the path of the document appended to the converted one.</td>
+</tr>
+<tr>
+<td><code>text-replacer</code></td>
+<td><code>replacements</code>, a map of the texts to search and their replacements.</td>
+</tr>
+<tr>
+<td><code>page-margins</code></td>
+<td><code>left</code>, <code>top</code>, <code>right</code>, <code>bottom</code>, each optional.</td>
+</tr>
+<tr>
+<td><code>table-of-content-updater</code></td>
+<td><code>level</code>, the number of levels of the table of content, optional.</td>
+</tr>
+<tr>
+<td><code>linked-images-embedder</code></td>
+<td>None; the linked images are embedded in the document.</td>
+</tr>
+<tr>
+<td><code>refresh</code></td>
+<td>None; the document is refreshed.</td>
+</tr>
+</tbody>
+</table>
+<p>A custom filter is a class that implements the
+<a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/Filter.java">Filter</a>
+interface, with a public no-argument constructor, in a jar added to the <code>lib</code> directory of the distribution:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span class="nt">filters</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pages-selector</span>
+<span class="w">    </span><span class="nt">pages</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">class</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">com.example.WatermarkFilter</span>
+</code></pre></div>
+<h4 id="ssl-options">SSL options<a class="headerlink" href="#ssl-options" title="Permanent link">&para;</a></h4>
+<p>Combined with the <code>-c</code> option, the <code>ssl</code> section configures the
+<a href="../libreoffice-online/#ssl-support">SSL support</a> of the connection to the LibreOffice Online server. Its
+keys are the properties of the <code>SslConfig</code> class, in kebab case:</p>
+<div class="language-yaml highlight"><span class="filename">ssl.yml</span><pre><span></span><code><span class="nt">ssl</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Whether SSL support is enabled. Defaults to false.</span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="c1"># The supported SSL ciphers; a list, or comma-separated. Defaults to the JVM default values.</span>
+<span class="w">  </span><span class="nt">ciphers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ECDHE_RSA_WITH_AES_256_CBC_SHA384</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="c1"># The enabled SSL protocols; a list, or comma-separated. Defaults to the JVM default values.</span>
+<span class="w">  </span><span class="nt">enabled-protocols</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">TLSv1.2</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">TLSv1.3</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="c1"># The alias that identifies the key in the key store.</span>
+<span class="w">  </span><span class="nt">key-alias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">keyalias</span>
+<span class="w">  </span><span class="c1"># The password used to access the key in the key store.</span>
+<span class="w">  </span><span class="nt">key-password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">keypassword</span>
+<span class="w">  </span><span class="c1"># The path to the key store.</span>
+<span class="w">  </span><span class="nt">key-store</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/the/keystore.jks</span>
+<span class="w">  </span><span class="c1"># The password used to load the key store.</span>
+<span class="w">  </span><span class="nt">key-store-password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">keystorepassword</span>
+<span class="w">  </span><span class="c1"># The type of key store.</span>
+<span class="w">  </span><span class="nt">key-store-type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">JKS</span>
+<span class="w">  </span><span class="c1"># The provider for the key store.</span>
+<span class="w">  </span><span class="nt">key-store-provider</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BC</span>
+<span class="w">  </span><span class="c1"># The path to the trust store.</span>
+<span class="w">  </span><span class="nt">trust-store</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/the/truststore.p12</span>
+<span class="w">  </span><span class="c1"># The password used to load the trust store.</span>
+<span class="w">  </span><span class="nt">trust-store-password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">truststorepassword</span>
+<span class="w">  </span><span class="c1"># The type of trust store.</span>
+<span class="w">  </span><span class="nt">trust-store-type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PKCS12</span>
+<span class="w">  </span><span class="c1"># The provider for the trust store.</span>
+<span class="w">  </span><span class="nt">trust-store-provider</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SUN</span>
+<span class="w">  </span><span class="c1"># The SSL protocol to use. Defaults to TLS.</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TLS</span>
+<span class="w">  </span><span class="c1"># Whether every certificate is trusted, without a trust store. Defaults to false.</span>
+<span class="w">  </span><span class="nt">trust-all</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="c1"># Whether the host name is verified during the SSL handshake. Defaults to true.</span>
+<span class="w">  </span><span class="nt">verify-hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<div class="language-shell highlight"><pre><span></span><code>jodconverter-cli<span class="w"> </span>-c<span class="w"> </span><span class="s2">"https://localhost:8001/lool/convert-to/"</span><span class="w"> </span>--config<span class="w"> </span>ssl.yml<span class="w"> </span>infile<span class="w"> </span>outfile
 </code></pre></div>
 <blockquote>
 <p>Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite
