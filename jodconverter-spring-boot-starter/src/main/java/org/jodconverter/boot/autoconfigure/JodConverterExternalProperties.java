@@ -20,9 +20,17 @@
 
 package org.jodconverter.boot.autoconfigure;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationUnit;
+
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.ExternalOfficeManager;
+import org.jodconverter.local.task.LoadDocumentMode;
 
 /**
  * Configuration class for JODConverter External: connects to office processes that are started and
@@ -36,13 +44,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
   "PMD.TooManyFields",
   "PMD.UseVarargs"
 })
-public class JodConverterExternalProperties {
+public class JodConverterExternalProperties extends JodConverterPoolProperties {
 
   /** Enable JODConverter External, which connects to already running office processes. */
   private boolean enabled;
 
   /** Host name of the office processes to connect to, used with the port numbers. */
-  private String hostName = "127.0.0.1";
+  private String hostName = ExternalOfficeManager.DEFAULT_HOSTNAME;
 
   /**
    * List of ports, separated by commas, of the office processes to connect to. One connection is
@@ -57,63 +65,46 @@ public class JodConverterExternalProperties {
   /** List of websocket URLs, separated by commas, of the office processes to connect to. */
   private String[] websocketUrls;
 
-  /**
-   * Directory where temporary files will be created. If not set, it defaults to the system
-   * temporary directory as specified by the java.io.tmpdir system property.
-   */
-  private String workingDir;
-
-  /**
-   * Maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
-   * full fails at once. 0 means no limit.
-   */
-  private int taskQueueCapacity;
-
-  /**
-   * Maximum living time of a task in the conversion queue. The task will be removed from the queue
-   * if the waiting time is longer than this timeout.
-   */
-  private long taskQueueTimeout = 30_000L;
-
-  /**
-   * Maximum time allowed to process a task. If the processing time of a task is longer than this
-   * timeout, this task will be aborted and the next task is processed.
-   */
-  private long taskExecutionTimeout = 120_000L;
-
   /** Whether the connections are made when the manager starts, or on the first conversion. */
-  private boolean connectOnStart = true;
+  private boolean connectOnStart = ExternalOfficeManager.DEFAULT_CONNECT_ON_START;
 
-  /** Timeout, in milliseconds, after which a connection attempt is considered failed. */
-  private long connectTimeout = 120_000L;
+  /**
+   * Timeout after which a connection attempt is considered failed. A plain number is in
+   * milliseconds.
+   */
+  @DurationUnit(ChronoUnit.MILLIS)
+  private Duration connectTimeout =
+      Duration.ofMillis(ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT);
 
-  /** Delay, in milliseconds, between each connection attempt. */
-  private long connectRetryInterval = 250L;
+  /** Delay between each connection attempt. A plain number is in milliseconds. */
+  @DurationUnit(ChronoUnit.MILLIS)
+  private Duration connectRetryInterval =
+      Duration.ofMillis(ExternalOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL);
 
   /**
    * Whether the manager start fails when a connection cannot be made, instead of retrying in the
    * background.
    */
-  private boolean connectFailFast;
+  private boolean connectFailFast = ExternalOfficeManager.DEFAULT_CONNECT_FAIL_FAST;
 
   /**
    * Maximum number of tasks executed through a connection before reconnecting. 0 means an infinite
    * number of tasks (never reconnects).
    */
-  private int maxTasksPerConnection = 1_000;
+  private int maxTasksPerConnection = ExternalOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION;
 
   /**
    * Whether the default load properties (Hidden, ReadOnly and UpdateDocMode NO_UPDATE) are applied
    * when loading a document.
    */
-  private boolean applyDefaultLoadProperties = true;
+  private boolean applyDefaultLoadProperties = LocalConverter.DEFAULT_APPLY_DEFAULT_LOAD_PROPS;
 
   /**
-   * How documents are loaded and stored: "local" (the office process reads and writes the files
-   * directly), "remote" (documents are streamed, for an office process running on another host or
-   * container) or "auto".
+   * How documents are loaded and stored: local (the office process reads and writes the files
+   * directly), remote (documents are streamed, for an office process running on another host or
+   * container) or auto.
    */
-  private String loadDocumentMode = "auto";
+  private LoadDocumentMode loadDocumentMode = LocalConverter.DEFAULT_LOAD_DOCUMENT_MODE;
 
   public boolean isEnabled() {
     return enabled;
@@ -155,38 +146,6 @@ public class JodConverterExternalProperties {
     this.websocketUrls = websocketUrls;
   }
 
-  public @Nullable String getWorkingDir() {
-    return workingDir;
-  }
-
-  public void setWorkingDir(final @Nullable String workingDir) {
-    this.workingDir = workingDir;
-  }
-
-  public int getTaskQueueCapacity() {
-    return taskQueueCapacity;
-  }
-
-  public void setTaskQueueCapacity(final int taskQueueCapacity) {
-    this.taskQueueCapacity = taskQueueCapacity;
-  }
-
-  public long getTaskQueueTimeout() {
-    return taskQueueTimeout;
-  }
-
-  public void setTaskQueueTimeout(final long taskQueueTimeout) {
-    this.taskQueueTimeout = taskQueueTimeout;
-  }
-
-  public long getTaskExecutionTimeout() {
-    return taskExecutionTimeout;
-  }
-
-  public void setTaskExecutionTimeout(final long taskExecutionTimeout) {
-    this.taskExecutionTimeout = taskExecutionTimeout;
-  }
-
   public boolean isConnectOnStart() {
     return connectOnStart;
   }
@@ -195,19 +154,19 @@ public class JodConverterExternalProperties {
     this.connectOnStart = connectOnStart;
   }
 
-  public long getConnectTimeout() {
+  public @NonNull Duration getConnectTimeout() {
     return connectTimeout;
   }
 
-  public void setConnectTimeout(final long connectTimeout) {
+  public void setConnectTimeout(final @NonNull Duration connectTimeout) {
     this.connectTimeout = connectTimeout;
   }
 
-  public long getConnectRetryInterval() {
+  public @NonNull Duration getConnectRetryInterval() {
     return connectRetryInterval;
   }
 
-  public void setConnectRetryInterval(final long connectRetryInterval) {
+  public void setConnectRetryInterval(final @NonNull Duration connectRetryInterval) {
     this.connectRetryInterval = connectRetryInterval;
   }
 
@@ -235,11 +194,11 @@ public class JodConverterExternalProperties {
     this.applyDefaultLoadProperties = applyDefaultLoadProperties;
   }
 
-  public @NonNull String getLoadDocumentMode() {
+  public @NonNull LoadDocumentMode getLoadDocumentMode() {
     return loadDocumentMode;
   }
 
-  public void setLoadDocumentMode(final @NonNull String loadDocumentMode) {
+  public void setLoadDocumentMode(final @NonNull LoadDocumentMode loadDocumentMode) {
     this.loadDocumentMode = loadDocumentMode;
   }
 }

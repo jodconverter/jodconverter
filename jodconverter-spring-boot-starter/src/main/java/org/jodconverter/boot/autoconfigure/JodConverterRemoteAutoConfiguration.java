@@ -27,7 +27,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -67,13 +66,10 @@ public class JodConverterRemoteAutoConfiguration {
     final var builder =
         RemoteOfficeManager.builder()
             .urlConnection(properties.getUrl())
-            .connectTimeout(properties.getConnectTimeout())
-            .socketTimeout(properties.getSocketTimeout())
-            .poolSize(properties.getPoolSize())
-            .workingDir(properties.getWorkingDir())
-            .taskQueueCapacity(properties.getTaskQueueCapacity())
-            .taskQueueTimeout(properties.getTaskQueueTimeout())
-            .taskExecutionTimeout(properties.getTaskExecutionTimeout());
+            .connectTimeout(properties.getConnectTimeout().toMillis())
+            .socketTimeout(properties.getSocketTimeout().toMillis())
+            .poolSize(properties.getPoolSize());
+    properties.applyTo(builder);
     if (properties.getSsl() != null) {
       builder.sslConfig(properties.getSsl().sslConfig());
     }
@@ -89,10 +85,8 @@ public class JodConverterRemoteAutoConfiguration {
     return createOfficeManager();
   }
 
-  // Must appear after the OfficeManager bean creation. Do not reorder this class by name.
   @Bean
   @ConditionalOnMissingBean(name = "remoteDocumentConverter")
-  @ConditionalOnBean(name = "remoteOfficeManager")
   // The qualifier is required when the local office manager also exists: since Spring 6.1, a
   // parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter remoteDocumentConverter(

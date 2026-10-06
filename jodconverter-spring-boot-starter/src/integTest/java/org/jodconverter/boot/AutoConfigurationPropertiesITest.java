@@ -22,6 +22,8 @@ package org.jodconverter.boot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +34,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.jodconverter.boot.autoconfigure.JodConverterLocalProperties;
 import org.jodconverter.boot.autoconfigure.JodConverterRemoteProperties;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
 /**
@@ -95,20 +99,20 @@ class AutoConfigurationPropertiesITest {
             new String[] {"pipe1", "pipe2"},
             "working-dir",
             "template-profile-dir",
-            190_000L,
-            1_000L,
-            3_000L,
-            "fail",
+            Duration.ofMillis(190_000L),
+            Duration.ofMillis(1_000L),
+            Duration.ofMillis(3_000L),
+            ExistingProcessAction.FAIL,
             true,
             true,
             5,
-            70_000L,
-            70_000L,
+            Duration.ofMillis(70_000L),
+            Duration.ofMillis(70_000L),
             20,
             null,
             true,
             true,
-            "Remote");
+            LoadDocumentMode.REMOTE);
   }
 
   @Test
@@ -144,13 +148,13 @@ class AutoConfigurationPropertiesITest {
         .containsExactly(
             true,
             "https://localhost:8001",
-            30_000L,
-            60_000L,
+            Duration.ofMillis(30_000L),
+            Duration.ofMillis(60_000L),
             "working-dir",
             1,
-            70_000L,
+            Duration.ofMillis(70_000L),
             7,
-            70_000L,
+            Duration.ofMillis(70_000L),
             true,
             new String[] {"TLS_RSA_WITH_AES_128_CBC_SHA"},
             new String[] {"TLSv1.1", "TLSv1.2"},

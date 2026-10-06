@@ -83,9 +83,10 @@ class JodConverterRemotePropertiesTest {
 
     final var properties = new JodConverterRemoteProperties();
 
-    assertThat(properties.getConnectTimeout())
+    assertThat(properties.getConnectTimeout().toMillis())
         .isEqualTo(RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT);
-    assertThat(properties.getSocketTimeout()).isEqualTo(RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT);
+    assertThat(properties.getSocketTimeout().toMillis())
+        .isEqualTo(RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT);
     // Trusting every certificate must be an explicit choice.
     assertThat(new JodConverterRemoteProperties.SslProperties().isTrustAll())
         .isEqualTo(new SslConfig().isTrustAll())

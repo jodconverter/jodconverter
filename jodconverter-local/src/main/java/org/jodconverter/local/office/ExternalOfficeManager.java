@@ -53,20 +53,26 @@ import org.jodconverter.core.util.AssertUtils;
  */
 public final class ExternalOfficeManager extends AbstractOfficeWorkerPool {
 
-  // The default value for hostName.
-  /* default */ static final String DEFAULT_HOSTNAME = "127.0.0.1";
-  // The default value for connection on start.
-  /* default */ static final boolean DEFAULT_CONNECT_ON_START = true;
-  // The default timeout when connecting to office.
-  /* default */ static final long DEFAULT_CONNECT_TIMEOUT = 120_000L; // 2 minutes
-  // The default delay between each try to connect.
-  /* default */ static final long DEFAULT_CONNECT_RETRY_INTERVAL = 250L; // 0.25 secs.
-  // The default "fail fast" behavior when a connection attempt is made.
-  /* default */ static final boolean DEFAULT_CONNECT_FAIL_FAST = false;
+  /** The default host name of the office processes. */
+  public static final String DEFAULT_HOSTNAME = "127.0.0.1";
+
+  /** The default value for connecting when the manager starts. */
+  public static final boolean DEFAULT_CONNECT_ON_START = true;
+
+  /** The default timeout when connecting to an office process, in milliseconds (2 minutes). */
+  public static final long DEFAULT_CONNECT_TIMEOUT = 120_000L;
+
+  /** The default delay between two connection attempts, in milliseconds. */
+  public static final long DEFAULT_CONNECT_RETRY_INTERVAL = 250L;
+
+  /** The default "fail fast" behavior when a connection attempt is made. */
+  public static final boolean DEFAULT_CONNECT_FAIL_FAST = false;
+
+  /** The default maximum number of tasks a connection can execute before reconnecting. */
+  public static final int DEFAULT_MAX_TASKS_PER_CONNECTION = 1_000;
+
   // The maximum value for the delay between each try to connect.
   /* default */ static final long MAX_CONNECT_RETRY_INTERVAL = 10_000L; // 10 sec.
-  // The default maximum number of tasks an office process can execute before reconnecting.
-  /* default */ static final int DEFAULT_MAX_TASKS_PER_CONNECTION = 1_000;
 
   /**
    * Creates a new builder instance.
