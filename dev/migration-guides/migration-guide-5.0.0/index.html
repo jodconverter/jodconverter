@@ -3062,6 +3062,9 @@ columns wide.</p>
 <li><a href="../../getting-started/document-converters/#lifecycle-and-threading">Asynchronous conversions</a>:
     <code>converter.convert(source).to(target).executeAsync()</code> returns a <code>CompletableFuture&lt;Void&gt;</code> instead of blocking, and
     <code>OfficeManager.submit(task)</code> does the same for an <code>OfficeTask</code>.</li>
+<li><a href="../../getting-started/office-managers/"><code>AbstractOfficeWorkerPool.getStatus()</code></a>: a snapshot of the office processes
+    (state, tasks executed, restarts, failed start attempts) and of the queue; with Spring Boot Actuator, the
+    <code>jodconverter</code> health indicator of the starter reports it.</li>
 <li><code>AbstractOfficeWorkerPool.getTempDir()</code>: the directory where an office manager creates the temporary files used by
     conversions.</li>
 </ul>

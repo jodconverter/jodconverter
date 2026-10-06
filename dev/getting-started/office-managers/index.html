@@ -2548,6 +2548,11 @@ recovers from failures.</p>
 <p>Internally, pool-capable managers derive from an abstract pool (<code>AbstractOfficeWorkerPool</code>) that dispatches the tasks
 to a pool of workers, one per office process or connection (via multiple ports or pipes), for concurrency and
 resilience.</p>
+<p>The pool can be observed: <code>getStatus()</code> returns a snapshot with the state of each worker (<code>STARTING</code>, <code>READY</code>, <code>BUSY</code>,
+<code>RESTARTING</code> or <code>STOPPED</code>), the tasks it executed since it was last made ready, its restarts and its failed start
+attempts in a row, plus the number of tasks waiting in the queue. With the Spring Boot starter and Spring Boot Actuator
+on the classpath, the <code>jodconverter</code> health indicator reports these details for every office manager bean, and is down
+when a manager has no worker able to execute tasks (<code>management.health.jodconverter.enabled=false</code> disables it).</p>
 <h2 id="typical-usage-patterns">Typical usage patterns<a class="headerlink" href="#typical-usage-patterns" title="Permanent link">&para;</a></h2>
 <p><strong>1)</strong> Install a global (default) manager.</p>
 <ul>
