@@ -26,12 +26,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.job.AbstractConversionJob;
-import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecified;
-import org.jodconverter.core.job.AbstractConverter;
-import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
-import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
-import org.jodconverter.core.job.TargetOptions;
+import org.jodconverter.core.job.*;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
@@ -122,7 +117,7 @@ public final class RemoteConverter extends AbstractConverter {
     public void doExecute() throws OfficeException {
 
       // Create a default conversion task and execute it
-      final RemoteConversionTask task = new RemoteConversionTask(source, target);
+      final var task = new RemoteConversionTask(source, target);
       officeManager.execute(task);
     }
   }
@@ -143,7 +138,7 @@ public final class RemoteConverter extends AbstractConverter {
     public @NonNull RemoteConverter build() {
 
       // An office manager is required.
-      OfficeManager manager = officeManager;
+      var manager = officeManager;
       if (manager == null) {
         manager = InstalledOfficeManagerHolder.getInstance();
         if (manager == null) {

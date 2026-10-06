@@ -165,7 +165,7 @@ class PdfOptionsAutoConfigurationITest {
             "jodconverter.pdf.signature.certificate-authorities=classpath:pdf/test-certificate.pem")
         .run(
             context -> {
-              final PdfOptions options = context.getBean(PdfOptions.class);
+              final var options = context.getBean(PdfOptions.class);
               assertThat(options.getFilterData()).containsEntry("SignPDF", true);
               assertThat((String) options.getFilterData().get("SignCertificateCertPem"))
                   .contains("TESTCERT");

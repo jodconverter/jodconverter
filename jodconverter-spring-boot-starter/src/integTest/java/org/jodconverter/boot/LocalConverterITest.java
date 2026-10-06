@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.util.Map;
 import java.util.Objects;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -41,7 +40,6 @@ import org.springframework.test.context.TestPropertySource;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFamily;
-import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
 
 /** Contains tests for the {@link org.jodconverter.local.LocalConverter} class. */
@@ -50,7 +48,8 @@ import org.jodconverter.core.office.OfficeException;
 @TestPropertySource(locations = "classpath:config/application-local.properties")
 class LocalConverterITest {
 
-  /* default */ @TempDir File testFolder;
+  /* default */
+  @TempDir File testFolder;
   private File inputFileTxt;
 
   @Autowired private DocumentConverter converter;
@@ -59,7 +58,7 @@ class LocalConverterITest {
   void setUp() throws IOException {
 
     inputFileTxt = new File(testFolder, "inputFile.txt");
-    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
+    try (var writer = new PrintWriter(Files.newBufferedWriter(inputFileTxt.toPath()))) {
       writer.println("This is the first line of the input file.");
       writer.println("This is the second line of the input file.");
     }
@@ -68,7 +67,7 @@ class LocalConverterITest {
   @Test
   void testTxtToRtf() throws OfficeException {
 
-    final File outputFile = new File(testFolder, "outputFile.rtf");
+    final var outputFile = new File(testFolder, "outputFile.rtf");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -80,7 +79,7 @@ class LocalConverterITest {
   @Test
   void testTxtToDoc() throws OfficeException {
 
-    final File outputFile = new File(testFolder, "outputFile.doc");
+    final var outputFile = new File(testFolder, "outputFile.doc");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -92,7 +91,7 @@ class LocalConverterITest {
   @Test
   void testTxtToPdf() throws OfficeException {
 
-    final File outputFile = new File(testFolder, "outputFile.pdf");
+    final var outputFile = new File(testFolder, "outputFile.pdf");
     converter.convert(inputFileTxt).to(outputFile).execute();
 
     assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
@@ -105,10 +104,10 @@ class LocalConverterITest {
   @SuppressWarnings("ResultOfMethodCallIgnored")
   void testDocToHtml() throws OfficeException {
 
-    final File outputDir = new File(testFolder, "html");
+    final var outputDir = new File(testFolder, "html");
     outputDir.mkdirs();
-    final File outputFile = new File(outputDir, "outputFile.html");
-    final File inputFile = new File("src/integTest/resources/documents/test1.doc");
+    final var outputFile = new File(outputDir, "outputFile.html");
+    final var inputFile = new File("src/integTest/resources/documents/test1.doc");
 
     converter.convert(inputFile).to(outputFile).execute();
 
@@ -120,35 +119,19 @@ class LocalConverterITest {
   }
 
   // The following test fails on Apache Open Office.
-  //  @Test
-  //  @SuppressWarnings("ResultOfMethodCallIgnored")
-  //  void testDocToXhtml() throws OfficeException {
-  //    final File outputDir = new File(testFolder, "xhtml");
-  //    outputDir.mkdirs();
-  //
-  //    final File outputFile = new File(outputDir, "outputFile.xhtml");
-  //    final File inputFile = new File("src/integTest/resources/documents/test1.doc");
-  //    converter.convert(inputFile).to(outputFile).execute();
-  //
-  //    assertThat(outputFile).as("Check %s file creation", outputFile.getName()).isFile();
-  //    // Check that the EmbedImages option has been applied
-  //    assertThat(Objects.requireNonNull(outputDir.list()).length)
-  //        .as("Check %s file EmbedImages", outputFile.getName())
-  //        .isEqualTo(1);
-  //  }
 
   /** Test custom properties. */
   @Test
   void testCustomProperties() {
 
-    final DocumentFormat format = converter.getFormatRegistry().getFormatByExtension("txt");
+    final var format = converter.getFormatRegistry().getFormatByExtension("txt");
     assertThat(format).isNotNull();
 
-    final Map<String, Object> loadProperties = format.getLoadProperties();
+    final var loadProperties = format.getLoadProperties();
     assertThat(loadProperties).isNotNull();
     assertThat(loadProperties).containsEntry("FilterOptions", "utf16");
 
-    final Map<String, Object> storeProperties = format.getStoreProperties(DocumentFamily.TEXT);
+    final var storeProperties = format.getStoreProperties(DocumentFamily.TEXT);
     assertThat(storeProperties).isNotNull();
     assertThat(storeProperties).containsEntry("FilterOptions", "utf16");
   }
@@ -157,13 +140,13 @@ class LocalConverterITest {
   @Test
   void testCustomRegistry() {
 
-    final DocumentFormat format = converter.getFormatRegistry().getFormatByExtension("html");
+    final var format = converter.getFormatRegistry().getFormatByExtension("html");
     assertThat(format).isNotNull();
 
-    final Map<String, Object> properties = format.getStoreProperties(DocumentFamily.PRESENTATION);
+    final var properties = format.getStoreProperties(DocumentFamily.PRESENTATION);
     assertThat(properties).isNotNull();
 
-    final Object filterData = properties.get("FilterData");
+    final var filterData = properties.get("FilterData");
     assertThat(filterData).isNotNull();
     assertThat(filterData).asInstanceOf(InstanceOfAssertFactories.MAP).containsKey("PublishMode");
   }

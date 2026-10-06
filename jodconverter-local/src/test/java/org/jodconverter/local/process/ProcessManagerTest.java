@@ -24,9 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.jodconverter.local.process.ProcessManager.PID_UNKNOWN;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -49,7 +47,7 @@ class ProcessManagerTest {
   private static long waitForPidNotFound(
       final ProcessManager processManager, final ProcessQuery query) throws IOException {
 
-    int tryCount = 0;
+    var tryCount = 0;
     long pid;
     do {
       tryCount++;
@@ -73,11 +71,11 @@ class ProcessManagerTest {
     void shouldFindPidAndBeAbleToKillProcess() throws IOException {
       assumeTrue(OSUtils.IS_OS_FREE_BSD);
 
-      final ProcessManager processManager = FreeBSDProcessManager.getDefault();
-      final Process process = Runtime.getRuntime().exec("ping -c 5 127.0.0.1");
-      final ProcessQuery query = new ProcessQuery("ping", "-c 5 127.0.0.1");
+      final var processManager = FreeBSDProcessManager.getDefault();
+      final var process = Runtime.getRuntime().exec("ping -c 5 127.0.0.1");
+      final var query = new ProcessQuery("ping", "-c 5 127.0.0.1");
 
-      final long pid = processManager.findPid(query);
+      final var pid = processManager.findPid(query);
       assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
       assertThat(process.pid()).isEqualTo(pid);
 
@@ -89,14 +87,14 @@ class ProcessManagerTest {
     void pureJavaShouldReturnPidUnknown() throws IOException {
       assumeTrue(OSUtils.IS_OS_FREE_BSD);
 
-      final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
-      final ProcessManager processManager = PureJavaProcessManager.getDefault();
-      final Process process = Runtime.getRuntime().exec("ping -c 5 127.0.0.1");
-      final ProcessQuery query = new ProcessQuery("ping", "-c 5 127.0.0.1");
+      final var defaultManager = LocalOfficeUtils.findBestProcessManager();
+      final var processManager = PureJavaProcessManager.getDefault();
+      final var process = Runtime.getRuntime().exec("ping -c 5 127.0.0.1");
+      final var query = new ProcessQuery("ping", "-c 5 127.0.0.1");
 
       assertThat(processManager.canFindPid()).isEqualTo(false);
 
-      final long pid = processManager.findPid(query);
+      final var pid = processManager.findPid(query);
       assertThat(pid).isEqualTo(PID_UNKNOWN);
 
       processManager.kill(process, pid);
@@ -116,11 +114,11 @@ class ProcessManagerTest {
     void shouldFindPidAndBeAbleToKillProcess() throws IOException {
       assumeTrue(OSUtils.IS_OS_UNIX && !OSUtils.IS_OS_MAC && !OSUtils.IS_OS_FREE_BSD);
 
-      final ProcessManager processManager = UnixProcessManager.getDefault();
-      final Process process = Runtime.getRuntime().exec("sleep 5s");
-      final ProcessQuery query = new ProcessQuery("sleep", "5s");
+      final var processManager = UnixProcessManager.getDefault();
+      final var process = Runtime.getRuntime().exec("sleep 5s");
+      final var query = new ProcessQuery("sleep", "5s");
 
-      final long pid = processManager.findPid(query);
+      final var pid = processManager.findPid(query);
       assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
       assertThat(process.pid()).isEqualTo(pid);
 
@@ -132,14 +130,14 @@ class ProcessManagerTest {
     void pureJavaShouldReturnPidUnknown() throws IOException {
       assumeTrue(OSUtils.IS_OS_UNIX && !OSUtils.IS_OS_MAC && !OSUtils.IS_OS_FREE_BSD);
 
-      final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
-      final ProcessManager processManager = PureJavaProcessManager.getDefault();
-      final Process process = Runtime.getRuntime().exec("sleep 5s");
-      final ProcessQuery query = new ProcessQuery("sleep", "5s");
+      final var defaultManager = LocalOfficeUtils.findBestProcessManager();
+      final var processManager = PureJavaProcessManager.getDefault();
+      final var process = Runtime.getRuntime().exec("sleep 5s");
+      final var query = new ProcessQuery("sleep", "5s");
 
       assertThat(processManager.canFindPid()).isEqualTo(false);
 
-      final long pid = processManager.findPid(query);
+      final var pid = processManager.findPid(query);
       assertThat(pid).isEqualTo(PID_UNKNOWN);
 
       processManager.kill(process, pid);
@@ -149,8 +147,8 @@ class ProcessManagerTest {
     @Test
     void kill_withKnownPid_ShouldCallExecute() throws IOException {
 
-      final AtomicBoolean executed = new AtomicBoolean();
-      final UnixProcessManager manager =
+      final var executed = new AtomicBoolean();
+      final var manager =
           new UnixProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) {
@@ -165,9 +163,9 @@ class ProcessManagerTest {
     @Test
     void kill_withUnknownPid_ShouldCallProcessDestroy() throws IOException {
 
-      final Process process = mock(Process.class);
-      final AtomicBoolean executed = new AtomicBoolean();
-      final UnixProcessManager manager =
+      final var process = mock(Process.class);
+      final var executed = new AtomicBoolean();
+      final var manager =
           new UnixProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) {
@@ -192,14 +190,14 @@ class ProcessManagerTest {
     void shouldFindPidAndBeAbleToKillProcess() throws IOException {
       assumeTrue(OSUtils.IS_OS_MAC);
 
-      final ProcessManager processManager = MacProcessManager.getDefault();
+      final var processManager = MacProcessManager.getDefault();
 
       // In Mac OS X, sleep command does nt work with quantifiers
       // and takes argument num just as num seconds.
-      final Process process = Runtime.getRuntime().exec("sleep 5");
-      final ProcessQuery query = new ProcessQuery("sleep", "5");
+      final var process = Runtime.getRuntime().exec("sleep 5");
+      final var query = new ProcessQuery("sleep", "5");
 
-      final long pid = processManager.findPid(query);
+      final var pid = processManager.findPid(query);
       assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
 
       processManager.kill(process, pid);
@@ -210,14 +208,14 @@ class ProcessManagerTest {
     void pureJavaShouldReturnPidUnknown() throws IOException {
       assumeTrue(OSUtils.IS_OS_MAC);
 
-      final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
-      final ProcessManager processManager = PureJavaProcessManager.getDefault();
-      final Process process = Runtime.getRuntime().exec("sleep 5s");
-      final ProcessQuery query = new ProcessQuery("sleep", "5s");
+      final var defaultManager = LocalOfficeUtils.findBestProcessManager();
+      final var processManager = PureJavaProcessManager.getDefault();
+      final var process = Runtime.getRuntime().exec("sleep 5s");
+      final var query = new ProcessQuery("sleep", "5s");
 
       assertThat(processManager.canFindPid()).isEqualTo(false);
 
-      final long pid = processManager.findPid(query);
+      final var pid = processManager.findPid(query);
       assertThat(pid).isEqualTo(PID_UNKNOWN);
 
       processManager.kill(process, pid);
@@ -238,16 +236,13 @@ class ProcessManagerTest {
     void shouldFindPidAndBeAbleToKillProcess() throws IOException {
       assumeTrue(OSUtils.IS_OS_WINDOWS);
 
-      final ProcessManager processManager = WindowsProcessManager.getDefault();
-      final Process process = Runtime.getRuntime().exec("ping 127.0.0.1 -n 5");
-      final ProcessQuery query = new ProcessQuery("ping", "127.0.0.1 -n 5");
+      final var processManager = WindowsProcessManager.getDefault();
+      final var process = Runtime.getRuntime().exec("ping 127.0.0.1 -n 5");
+      final var query = new ProcessQuery("ping", "127.0.0.1 -n 5");
 
-      final long pid = processManager.findPid(query);
+      final var pid = processManager.findPid(query);
       assertThat(pid).isNotEqualTo(ProcessManager.PID_NOT_FOUND);
       // Won't work on Windows, skip this assertion
-      // assertThat(process).extracting("pid")
-      //        .isInstanceOfSatisfying(
-      //            Number.class, number -> assertThat(number.longValue()).isEqualTo(pid));
 
       processManager.kill(process, pid);
       assertThat(waitForPidNotFound(processManager, query)).isEqualTo(ProcessManager.PID_NOT_FOUND);
@@ -257,14 +252,14 @@ class ProcessManagerTest {
     void pureJavaShouldReturnPidUnknown() throws IOException {
       assumeTrue(OSUtils.IS_OS_WINDOWS);
 
-      final ProcessManager defaultManager = LocalOfficeUtils.findBestProcessManager();
-      final ProcessManager processManager = PureJavaProcessManager.getDefault();
-      final Process process = Runtime.getRuntime().exec("ping 127.0.0.1 -n 5");
-      final ProcessQuery query = new ProcessQuery("ping", "127.0.0.1 -n 5");
+      final var defaultManager = LocalOfficeUtils.findBestProcessManager();
+      final var processManager = PureJavaProcessManager.getDefault();
+      final var process = Runtime.getRuntime().exec("ping 127.0.0.1 -n 5");
+      final var query = new ProcessQuery("ping", "127.0.0.1 -n 5");
 
       assertThat(processManager.canFindPid()).isEqualTo(false);
 
-      final long pid = processManager.findPid(query);
+      final var pid = processManager.findPid(query);
       assertThat(pid).isEqualTo(PID_UNKNOWN);
 
       processManager.kill(process, pid);
@@ -274,7 +269,7 @@ class ProcessManagerTest {
     @Test
     void isUsable_WhenIOExceptionCatched_ShouldReturnFalse() {
 
-      final WindowsProcessManager manager =
+      final var manager =
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) throws IOException {
@@ -287,7 +282,7 @@ class ProcessManagerTest {
     @Test
     void isUsable_WhenNoExceptionCatched_ShouldReturnTrue() {
 
-      final WindowsProcessManager manager =
+      final var manager =
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) {
@@ -300,7 +295,7 @@ class ProcessManagerTest {
     @Test
     void isUsable_WhenWmicIsMissingAndPowershellQueryWorks_ShouldReturnTrue() {
 
-      final WindowsProcessManager manager =
+      final var manager =
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) throws IOException {
@@ -319,7 +314,7 @@ class ProcessManagerTest {
     @Test
     void isUsable_WhenWmicIsMissingAndPowershellQueryReturnsNothing_ShouldReturnFalse() {
 
-      final WindowsProcessManager manager =
+      final var manager =
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) throws IOException {
@@ -335,7 +330,7 @@ class ProcessManagerTest {
     @Test
     void getRunningProcessesCommand_WhenWmicIsAvailable_ShouldUseWmic() {
 
-      final WindowsProcessManager manager =
+      final var manager =
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) {
@@ -350,14 +345,14 @@ class ProcessManagerTest {
     @Test
     void getRunningProcessesCommand_WhenWmicIsMissing_ShouldUsePowershell() {
 
-      final WindowsProcessManager manager =
+      final var manager =
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) throws IOException {
               throw new IOException();
             }
           };
-      final String[] command = manager.getRunningProcessesCommand("soffice");
+      final var command = manager.getRunningProcessesCommand("soffice");
       assertThat(command)
           .startsWith("powershell", "-NoProfile", "-NonInteractive", "-EncodedCommand")
           .hasSize(5);
@@ -371,8 +366,8 @@ class ProcessManagerTest {
     @Test
     void kill_withKnownPid_ShouldCallExecute() throws IOException {
 
-      final AtomicBoolean executed = new AtomicBoolean();
-      final WindowsProcessManager manager =
+      final var executed = new AtomicBoolean();
+      final var manager =
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) {
@@ -387,9 +382,9 @@ class ProcessManagerTest {
     @Test
     void kill_withUnknownPid_ShouldCallProcessDestroy() throws IOException {
 
-      final Process process = mock(Process.class);
-      final AtomicBoolean executed = new AtomicBoolean();
-      final WindowsProcessManager manager =
+      final var process = mock(Process.class);
+      final var executed = new AtomicBoolean();
+      final var manager =
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... cmdarray) {

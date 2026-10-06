@@ -72,7 +72,7 @@ class VerboseProcess {
   /* default */ Integer getExitCode() {
 
     try {
-      final int exitValue = process.exitValue();
+      final var exitValue = process.exitValue();
       streamHandler.stop();
       LOGGER.trace("Process has been terminated with exit value {}", exitValue);
       return exitValue;

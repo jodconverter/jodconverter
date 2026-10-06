@@ -12,10 +12,10 @@ The class: `org.jodconverter.LocalConverter` is now `org.jodconverter.local.Loca
 
 ## Deprecated classes removed
 
-* `org.jodconverter.filter.text.PageCounterFilter`. Please use `org.jodconverter.local.filter.PagesCounterFilter`
-* `org.jodconverter.filter.text.PageSelectorFilter`. Please use `org.jodconverter.local.filter.PagesSelectorFilter`
-* `org.jodconverter.office.LocalOfficeUtils#closeQuietly`. Please use
-  `org.jodconverter.core.office.OfficeUtils#closeQuietly`
+- `org.jodconverter.filter.text.PageCounterFilter`. Please use `org.jodconverter.local.filter.PagesCounterFilter`
+- `org.jodconverter.filter.text.PageSelectorFilter`. Please use `org.jodconverter.local.filter.PagesSelectorFilter`
+- `org.jodconverter.office.LocalOfficeUtils#closeQuietly`. Please use
+    `org.jodconverter.core.office.OfficeUtils#closeQuietly`
 
 ## New jodconverter-remote module
 
@@ -78,4 +78,3 @@ client that can send conversion requests to a server. Hopefully, this new name w
     ```kotlin
     compile("org.jodconverter:jodconverter-remote:4.3.0")
     ```
-

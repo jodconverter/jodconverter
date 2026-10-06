@@ -20,13 +20,7 @@
 
 package org.jodconverter.core.pdf;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -139,7 +133,7 @@ public final class PdfOptions implements TargetOptions {
    * @return A new builder instance.
    */
   public @NonNull Builder toBuilder() {
-    final Builder builder = new Builder();
+    final var builder = new Builder();
     builder.values.putAll(values);
     builder.extraFilterData.putAll(extraFilterData);
     return builder;
@@ -151,7 +145,7 @@ public final class PdfOptions implements TargetOptions {
    * @return The properties, by name. Empty when no option is set.
    */
   public @NonNull Map<@NonNull String, @NonNull Object> getFilterData() {
-    final Map<String, Object> filterData = new LinkedHashMap<>();
+    final var filterData = new LinkedHashMap<String, Object>();
     values.forEach((option, value) -> filterData.put(option.getFilterDataName(), value));
     filterData.putAll(extraFilterData);
     return filterData;
@@ -166,10 +160,10 @@ public final class PdfOptions implements TargetOptions {
   @Override
   public void applyTo(final @NonNull Map<@NonNull String, @NonNull Object> storeProperties) {
 
-    final Map<String, Object> filterData = new LinkedHashMap<>();
+    final var filterData = new LinkedHashMap<String, Object>();
 
     // Keep the FilterData properties already set by the target format or by the converter.
-    final Object existing = storeProperties.get(FILTER_DATA);
+    final var existing = storeProperties.get(FILTER_DATA);
     if (existing instanceof Map<?, ?> existingMap) {
       existingMap.forEach((name, value) -> filterData.put(String.valueOf(name), value));
     } else if (existing != null) {
@@ -192,7 +186,7 @@ public final class PdfOptions implements TargetOptions {
   public @NonNull List<@NonNull String> getUnsupportedOptions(
       final boolean libreOffice, final @NonNull String officeVersion) {
 
-    final List<String> unsupported = new ArrayList<>();
+    final var unsupported = new ArrayList<String>();
     values.forEach(
         (option, value) -> {
           if (!option.getSupport().isSupportedBy(libreOffice, officeVersion)) {
@@ -200,7 +194,7 @@ public final class PdfOptions implements TargetOptions {
                 option.getFilterDataName() + " " + requirement(option.getSupport(), libreOffice));
           }
           if (option == PdfOption.SELECT_PDF_VERSION) {
-            final PdfVersion version = PdfVersion.fromValue((Integer) value);
+            final var version = PdfVersion.fromValue((Integer) value);
             if (version != null
                 && !version.getSupport().isSupportedBy(libreOffice, officeVersion)) {
               unsupported.add(
@@ -223,9 +217,9 @@ public final class PdfOptions implements TargetOptions {
 
   @Override
   public @NonNull String toString() {
-    final StringBuilder builder = new StringBuilder("PdfOptions{");
-    String separator = "";
-    for (final Map.Entry<PdfOption, Object> entry : values.entrySet()) {
+    final var builder = new StringBuilder("PdfOptions{");
+    var separator = "";
+    for (final var entry : values.entrySet()) {
       builder
           .append(separator)
           .append(entry.getKey().getFilterDataName())
@@ -233,7 +227,7 @@ public final class PdfOptions implements TargetOptions {
           .append(entry.getKey().isSecret() ? "***" : entry.getValue());
       separator = ", ";
     }
-    for (final Map.Entry<String, Object> entry : extraFilterData.entrySet()) {
+    for (final var entry : extraFilterData.entrySet()) {
       builder
           .append(separator)
           .append(entry.getKey())
@@ -245,7 +239,7 @@ public final class PdfOptions implements TargetOptions {
   }
 
   private static boolean isSecretName(final String name) {
-    final String lowerName = name.toLowerCase(Locale.ROOT);
+    final var lowerName = name.toLowerCase(Locale.ROOT);
     return lowerName.contains("password") || lowerName.endsWith("pem");
   }
 
@@ -542,8 +536,8 @@ public final class PdfOptions implements TargetOptions {
 
     // PDF/A does not allow encryption, and the office installation would silently drop it.
     private void validateEncryption() {
-      final Object versionValue = values.get(PdfOption.SELECT_PDF_VERSION);
-      final PdfVersion version =
+      final var versionValue = values.get(PdfOption.SELECT_PDF_VERSION);
+      final var version =
           versionValue == null ? null : PdfVersion.fromValue((Integer) versionValue);
       if (version != null && version.isPdfA()) {
         AssertUtils.isTrue(
@@ -555,7 +549,7 @@ public final class PdfOptions implements TargetOptions {
     // The permissions are ignored without a permission password.
     private void validatePermissions() {
       if (!isTrue(PdfOption.RESTRICT_PERMISSIONS)) {
-        for (final PdfOption option :
+        for (final var option :
             List.of(
                 PdfOption.PRINTING,
                 PdfOption.CHANGES,
@@ -571,7 +565,7 @@ public final class PdfOptions implements TargetOptions {
     // The signature details are ignored without a certificate to sign with.
     private void validateSignature() {
       if (!isTrue(PdfOption.SIGN_PDF) && !extraFilterData.containsKey("SignatureCertificate")) {
-        for (final PdfOption option :
+        for (final var option :
             List.of(
                 PdfOption.SIGN_CERTIFICATE_CA_PEM,
                 PdfOption.SIGNATURE_PASSWORD,

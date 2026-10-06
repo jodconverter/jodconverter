@@ -20,11 +20,8 @@
 
 package org.jodconverter.local.filter.text;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
@@ -49,16 +46,16 @@ class TableOfContentUpdaterFilterTest {
     void withUnsupportedDocument_ShouldCallNextFilter(final UnoRuntime unoRuntime)
         throws Exception {
 
-      final OfficeContext context = mock(OfficeContext.class);
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var context = mock(OfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(anyString())).willReturn(false);
 
-      final TableOfContentUpdaterFilter filter = new TableOfContentUpdaterFilter();
-      final Filter next = mock(Filter.class);
+      final var filter = new TableOfContentUpdaterFilter();
+      final var next = mock(Filter.class);
 
-      final DefaultFilterChain chain = new DefaultFilterChain(false, filter, next);
+      final var chain = new DefaultFilterChain(false, filter, next);
       chain.doFilter(context, document);
 
       verify(next, times(1)).doFilter(context, document, chain);

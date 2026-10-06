@@ -68,7 +68,7 @@ public final class DocumentFormat {
         final JsonElement json, final Type type, final JsonDeserializationContext cxt) {
 
       if (json.isJsonArray()) {
-        final Type listType = new TypeToken<List<String>>() {}.getType();
+        final var listType = new TypeToken<List<String>>() {}.getType();
         return cxt.deserialize(json, listType);
       }
       return List.of(json.getAsString());
@@ -178,8 +178,7 @@ public final class DocumentFormat {
     if (storeProperties == null) {
       this.storeProperties = null;
     } else {
-      final Map<DocumentFamily, Map<String, Object>> familyMap =
-          new EnumMap<>(DocumentFamily.class);
+      final var familyMap = new EnumMap<DocumentFamily, Map<String, Object>>(DocumentFamily.class);
       storeProperties.forEach(
           (family, props) ->
               familyMap.put(family, unmodifiable ? Map.copyOf(props) : new HashMap<>(props)));
@@ -522,7 +521,7 @@ public final class DocumentFormat {
 
       // Remove the property if the value is null.
       if (storeProperties != null) {
-        final Map<String, Object> props = storeProperties.get(documentFamily);
+        final var props = storeProperties.get(documentFamily);
         if (props != null) {
           props.remove(name);
           if (props.isEmpty()) {

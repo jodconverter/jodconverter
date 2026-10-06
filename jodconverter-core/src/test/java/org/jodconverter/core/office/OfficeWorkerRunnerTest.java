@@ -42,15 +42,14 @@ class OfficeWorkerRunnerTest {
   @TempDir File workingDir;
 
   private OfficeWorkerRunner newRunner(final FakeOfficeWorker worker) {
-    final FakeOfficeWorkerPool pool =
-        FakeOfficeWorkerPool.builder().workingDir(workingDir).workers(worker).build();
+    final var pool = FakeOfficeWorkerPool.builder().workingDir(workingDir).workers(worker).build();
     return new OfficeWorkerRunner(pool, worker, true);
   }
 
   @Test
   void new_ShouldBeStoppedAndNotStartedYet() {
 
-    final OfficeWorkerRunner runner = newRunner(new FakeOfficeWorker());
+    final var runner = newRunner(new FakeOfficeWorker());
 
     assertThat(runner.getState()).isEqualTo(OfficeWorkerState.STOPPED);
     assertThat(runner.getFirstStart()).isNotDone();
@@ -60,8 +59,8 @@ class OfficeWorkerRunnerTest {
   void abort_WithAJobThatIsNotBeingExecuted_ShouldNotAbortTheWorker() {
 
     // The job that timed out may have ended, and another one started, in the meantime.
-    final FakeOfficeWorker worker = new FakeOfficeWorker();
-    final OfficeWorkerRunner runner = newRunner(worker);
+    final var worker = new FakeOfficeWorker();
+    final var runner = newRunner(worker);
 
     runner.abort(new OfficeJob(context -> {}));
 
@@ -71,8 +70,8 @@ class OfficeWorkerRunnerTest {
   @Test
   void requestStopAndJoin_WhenNeverStarted_ShouldNotFail() {
 
-    final FakeOfficeWorker worker = new FakeOfficeWorker();
-    final OfficeWorkerRunner runner = newRunner(worker);
+    final var worker = new FakeOfficeWorker();
+    final var runner = newRunner(worker);
 
     assertThatCode(
             () -> {
@@ -87,12 +86,11 @@ class OfficeWorkerRunnerTest {
   @Test
   void run_WhenStoppedJustAfterTakingAJob_ShouldLeaveTheJobInTheQueue() throws Exception {
 
-    final FakeOfficeWorker worker = new FakeOfficeWorker();
-    final FakeOfficeWorkerPool pool =
-        FakeOfficeWorkerPool.builder().workingDir(workingDir).workers(worker).build();
+    final var worker = new FakeOfficeWorker();
+    final var pool = FakeOfficeWorkerPool.builder().workingDir(workingDir).workers(worker).build();
     // The worker waits for a job without checking that it is still ready.
     pool.setIdleCheckInterval(60_000L);
-    final OfficeWorkerRunner runner = new OfficeWorkerRunner(pool, worker, true);
+    final var runner = new OfficeWorkerRunner(pool, worker, true);
     runner.start(new NamedThreadFactory("test-runner"));
     runner.getFirstStart().get(10, TimeUnit.SECONDS);
     while (runner.getState() != OfficeWorkerState.READY) {
@@ -105,7 +103,7 @@ class OfficeWorkerRunnerTest {
           runner.requestStop();
           worker.setReady(true);
         };
-    final OfficeJob job = new OfficeJob(context -> {});
+    final var job = new OfficeJob(context -> {});
     pool.requeueJob(job);
     runner.join();
 
@@ -120,8 +118,8 @@ class OfficeWorkerRunnerTest {
   @Test
   void run_WhenStoppedBeforeTheWorkerIsReady_ShouldFailTheFirstStart() throws Exception {
 
-    final FakeOfficeWorker worker = new FakeOfficeWorker();
-    final OfficeWorkerRunner runner = newRunner(worker);
+    final var worker = new FakeOfficeWorker();
+    final var runner = newRunner(worker);
     runner.requestStop();
 
     runner.run();

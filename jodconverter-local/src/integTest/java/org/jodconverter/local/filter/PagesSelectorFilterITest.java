@@ -61,10 +61,10 @@ class PagesSelectorFilterITest {
     void whenPage2Selected_ShouldOnlyHaveTextFromPage2(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, CALC_FILENAME + ".sheet2.pdf");
+      final var targetFile = new File(testFolder, CALC_FILENAME + ".sheet2.pdf");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(
@@ -87,10 +87,10 @@ class PagesSelectorFilterITest {
     void whenPage1And3Selected_ShouldOnlyHaveTextFromPage1And3(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, CALC_FILENAME + ".sheet1And3.xls");
+      final var targetFile = new File(testFolder, CALC_FILENAME + ".sheet1And3.xls");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(
@@ -117,10 +117,10 @@ class PagesSelectorFilterITest {
     void whenPage2Selected_ShouldOnlyHaveTextFromPage2(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, DRAW_FILENAME + ".page2.pdf");
+      final var targetFile = new File(testFolder, DRAW_FILENAME + ".page2.pdf");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(
@@ -143,10 +143,10 @@ class PagesSelectorFilterITest {
     void whenPage1And3Selected_ShouldOnlyHaveTextFromPage1And3(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, DRAW_FILENAME + ".page1And3.pdf");
+      final var targetFile = new File(testFolder, DRAW_FILENAME + ".page1And3.pdf");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(
@@ -173,10 +173,10 @@ class PagesSelectorFilterITest {
     void whenPage2Selected_ShouldOnlyHaveTextFromPage2(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, IMPRESS_FILENAME + ".page2.pdf");
+      final var targetFile = new File(testFolder, IMPRESS_FILENAME + ".page2.pdf");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(
@@ -199,10 +199,10 @@ class PagesSelectorFilterITest {
     void whenPage1And3Selected_ShouldOnlyHaveTextFromPage1And3(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File targetFile = new File(testFolder, IMPRESS_FILENAME + ".page1And3.pdf");
+      final var targetFile = new File(testFolder, IMPRESS_FILENAME + ".page1And3.pdf");
 
-      final PageCounterFilter count1 = new PageCounterFilter();
-      final PageCounterFilter count2 = new PageCounterFilter();
+      final var count1 = new PageCounterFilter();
+      final var count2 = new PageCounterFilter();
 
       // Test the filter
       assertThatCode(
@@ -229,7 +229,7 @@ class PagesSelectorFilterITest {
     void whenPage2Selected_ShouldOnlyHaveTextFromPage2(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-      final File targetFile = new File(testFolder, TEXT_FILENAME + ".page2.txt");
+      final var targetFile = new File(testFolder, TEXT_FILENAME + ".page2.txt");
 
       // Test the filter
       assertThatCode(
@@ -243,7 +243,7 @@ class PagesSelectorFilterITest {
                       .execute())
           .doesNotThrowAnyException();
 
-      final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+      final var content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
       assertThat(content)
           .as("Check content: %s", content)
           .doesNotContain("Test document Page 1")
@@ -255,7 +255,7 @@ class PagesSelectorFilterITest {
     void whenPage1And3Selected_ShouldOnlyHaveTextFromPage1And3(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-      final File targetFile = new File(testFolder, TEXT_FILENAME + ".page1And3.txt");
+      final var targetFile = new File(testFolder, TEXT_FILENAME + ".page1And3.txt");
 
       // Test the filter
       assertThatCode(
@@ -269,7 +269,7 @@ class PagesSelectorFilterITest {
                       .execute())
           .doesNotThrowAnyException();
 
-      final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+      final var content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
       assertThat(content)
           .as("Check content: %s", content)
           .contains("Test document Page 1")
@@ -281,7 +281,7 @@ class PagesSelectorFilterITest {
     void withPageOutOfRange_ShouldIgnoreNonexistentPages(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-      final File targetFile = new File(testFolder, TEXT_FILENAME + ".page2Only.txt");
+      final var targetFile = new File(testFolder, TEXT_FILENAME + ".page2Only.txt");
 
       // Test the filter
       assertThatCode(
@@ -295,7 +295,7 @@ class PagesSelectorFilterITest {
                       .execute())
           .doesNotThrowAnyException();
 
-      final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+      final var content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
       assertThat(content)
           .as("Check content: %s", content)
           .doesNotContain("Test document Page 1")

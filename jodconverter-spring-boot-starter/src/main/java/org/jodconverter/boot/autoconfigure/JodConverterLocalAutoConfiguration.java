@@ -20,9 +20,7 @@
 
 package org.jodconverter.boot.autoconfigure;
 
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -38,7 +36,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import org.jodconverter.core.DocumentConverter;
@@ -79,7 +76,7 @@ public class JodConverterLocalAutoConfiguration {
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager(final ProcessManager processManager) {
 
-    final LocalOfficeManager.Builder builder =
+    final var builder =
         LocalOfficeManager.builder()
             .officeHome(properties.getOfficeHome())
             .officeExecutable(properties.getOfficeExecutable())
@@ -120,21 +117,21 @@ public class JodConverterLocalAutoConfiguration {
       throws Exception {
 
     // Load the json resource containing default document formats.
-    final String registryResourceName =
+    final var registryResourceName =
         StringUtils.isBlank(properties.getDocumentFormatRegistry())
             ? DEFAULT_FORMATS_PATH
             : properties.getDocumentFormatRegistry();
     LOGGER.debug("Loading document formats registry from resource [{}]", registryResourceName);
-    try (InputStream in = resourceLoader.getResource(registryResourceName).getInputStream()) {
+    try (var in = resourceLoader.getResource(registryResourceName).getInputStream()) {
 
       // Create the registry.
-      final JsonDocumentFormatRegistry registry =
+      final var registry =
           properties.getFormatOptions() == null
               ? JsonDocumentFormatRegistry.create(in)
               : JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
 
       // Load the custom formats, if any.
-      final Resource resource = resourceLoader.getResource(CUSTOM_FORMATS_PATH);
+      final var resource = resourceLoader.getResource(CUSTOM_FORMATS_PATH);
       if (resource.exists()) {
         LOGGER.debug(
             "Loading custom document formats registry from resource [{}]", CUSTOM_FORMATS_PATH);
@@ -167,7 +164,7 @@ public class JodConverterLocalAutoConfiguration {
       final DocumentFormatRegistry documentFormatRegistry,
       final ObjectProvider<PdfOptions> pdfOptions) {
 
-    final Map<String, Object> loadProperties = new HashMap<>();
+    final var loadProperties = new HashMap<String, Object>();
     if (properties.isApplyDefaultLoadProperties()) {
       loadProperties.putAll(LocalConverter.DEFAULT_LOAD_PROPERTIES);
       if (properties.isUseUnsafeQuietUpdate()) {
@@ -175,7 +172,7 @@ public class JodConverterLocalAutoConfiguration {
       }
     }
 
-    final LocalConverter.Builder builder =
+    final var builder =
         LocalConverter.builder()
             .officeManager(localOfficeManager)
             .formatRegistry(documentFormatRegistry)

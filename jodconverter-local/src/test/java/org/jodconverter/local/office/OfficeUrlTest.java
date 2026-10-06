@@ -20,7 +20,6 @@
 
 package org.jodconverter.local.office;
 
-import com.sun.star.lib.uno.helper.UnoUrl;
 import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -30,9 +29,9 @@ class OfficeUrlTest {
   @Test
   void withPipeName_ShouldReturnSameAsOriginalUnoUrl() {
 
-    final OfficeUrl officeUrl = new OfficeUrl("testPipeName");
-    final UnoUrl unoUrl = OfficeUrl.pipe("testPipeName");
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+    final var officeUrl = new OfficeUrl("testPipeName");
+    final var unoUrl = OfficeUrl.pipe("testPipeName");
+    try (var softly = new AutoCloseableSoftAssertions()) {
       softly
           .assertThat(officeUrl.getConnectString())
           .isEqualTo(unoUrl.getConnectionAndParametersAsString());
@@ -42,9 +41,9 @@ class OfficeUrlTest {
   @Test
   void withPortNumber_ShouldReturnSameAsOriginalUnoUrl() {
 
-    final OfficeUrl officeUrl = new OfficeUrl(2005);
-    final UnoUrl unoUrl = OfficeUrl.socket(2005);
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+    final var officeUrl = new OfficeUrl(2005);
+    final var unoUrl = OfficeUrl.socket(2005);
+    try (var softly = new AutoCloseableSoftAssertions()) {
       softly
           .assertThat(officeUrl.getConnectString())
           .isEqualTo(unoUrl.getConnectionAndParametersAsString());
@@ -54,9 +53,9 @@ class OfficeUrlTest {
   @Test
   void withWebSocket_ShouldReturnSameAsOriginalUnoUrl() {
 
-    final OfficeUrl officeUrl = OfficeUrl.createForWebsocket("test");
-    final UnoUrl unoUrl = OfficeUrl.websocket("test");
-    try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+    final var officeUrl = OfficeUrl.createForWebsocket("test");
+    final var unoUrl = OfficeUrl.websocket("test");
+    try (var softly = new AutoCloseableSoftAssertions()) {
       softly
           .assertThat(officeUrl.getConnectString())
           .isEqualTo(unoUrl.getConnectionAndParametersAsString());

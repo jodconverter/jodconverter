@@ -48,10 +48,10 @@ class TextReplacerFilterITest {
   void shouldReplaceWords(final @TempDir File testFolder, final OfficeManager manager)
       throws IOException {
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".txt");
+    final var targetFile = new File(testFolder, SOURCE_FILENAME + ".txt");
 
     // Create the TextReplacerFilter to test.
-    final TextReplacerFilter filter =
+    final var filter =
         new TextReplacerFilter(
             new String[] {"SEARCH_WORD", "that", "have", "new common language will be more simple"},
             new String[] {
@@ -73,7 +73,7 @@ class TextReplacerFilterITest {
                     .execute())
         .doesNotThrowAnyException();
 
-    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    final var content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
         .as("Check content: %s", content)
         .contains("REPLACEMENT_STRING")

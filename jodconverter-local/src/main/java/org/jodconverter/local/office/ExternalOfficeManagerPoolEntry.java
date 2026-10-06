@@ -76,7 +76,7 @@ class ExternalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     // This connection event listener will be notified when a connection
     // is established or closed/lost to/from an office instance.
-    final OfficeConnectionEventListener connectionEventListener =
+    final var connectionEventListener =
         new OfficeConnectionEventListener() {
 
           // A connection is established.
@@ -125,7 +125,7 @@ class ExternalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     task.execute(connectionManager.getConnection());
 
     // Increment the task count.
-    final int count = taskCount.incrementAndGet();
+    final var count = taskCount.incrementAndGet();
 
     // Now check if we must reconnect to the external process.
     if (count == maxTasksPerConnection) {

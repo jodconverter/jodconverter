@@ -22,15 +22,7 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_FAIL_FAST;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_ON_START;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_HOSTNAME;
-import static org.jodconverter.local.office.ExternalOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION;
-import static org.jodconverter.local.office.ExternalOfficeManager.MAX_CONNECT_RETRY_INTERVAL;
+import static org.jodconverter.local.office.ExternalOfficeManager.*;
 
 import java.io.File;
 
@@ -40,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 
 /** Contains tests for the {@link ExternalOfficeManager} class. */
@@ -52,7 +43,7 @@ class ExternalOfficeManagerTest {
     @Test
     void shouldInitializedManagerWithDefaultValues() {
 
-      final OfficeManager manager = ExternalOfficeManager.make();
+      final var manager = ExternalOfficeManager.make();
 
       assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
       assertThat(manager)
@@ -99,9 +90,9 @@ class ExternalOfficeManagerTest {
     void shouldSetInstalledOfficeManagerHolder() {
 
       // Ensure we do not replace the current installed manager
-      final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
+      final var installedManager = InstalledOfficeManagerHolder.getInstance();
       try {
-        final OfficeManager manager = ExternalOfficeManager.install();
+        final var manager = ExternalOfficeManager.install();
         assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
       } finally {
         InstalledOfficeManagerHolder.setInstance(installedManager);
@@ -116,7 +107,7 @@ class ExternalOfficeManagerTest {
     @SuppressWarnings("RedundantArrayCreation")
     void withNullValues_ShouldInitializedManagerWithDefaultValues() {
 
-      final OfficeManager manager =
+      final var manager =
           ExternalOfficeManager.builder()
               .workingDir((String) null)
               .workingDir((File) null)
@@ -176,7 +167,7 @@ class ExternalOfficeManagerTest {
     @Test
     void withCustomValues_ShouldInitializedManagerWithCustomValues(final @TempDir File testFolder) {
 
-      final OfficeManager manager =
+      final var manager =
           ExternalOfficeManager.builder()
               .workingDir(testFolder.getPath())
               .taskExecutionTimeout(11_000L)

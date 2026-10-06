@@ -7,10 +7,10 @@
 ### **Implemented enhancements**
 
 - Added the ability to provide a custom-document-formats.json
-  file [\#323](https://github.com/jodconverter/jodconverter/issues/323)
-- Jodconverter not working with spring-boot 3 [\#320](https://github.com/jodconverter/jodconverter/issues/320)
+    file [#323](https://github.com/jodconverter/jodconverter/issues/323)
+- Jodconverter not working with spring-boot 3 [#320](https://github.com/jodconverter/jodconverter/issues/320)
 
 ### **Merged pull requests**
 
 - Spring boot 3.0 compatibility fixes
-  \#320 [\#322](https://github.com/jodconverter/jodconverter/pull/322) ([EugenMayer](https://github.com/EugenMayer))
+    #320 [#322](https://github.com/jodconverter/jodconverter/pull/322) ([EugenMayer](https://github.com/EugenMayer))

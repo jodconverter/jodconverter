@@ -54,10 +54,10 @@ class PerformanceITest {
       throw new IllegalArgumentException("Duration must be greater than zero!");
     }
 
-    long localMillis = millis;
-    final long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+    var localMillis = millis;
+    final var minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
     localMillis -= TimeUnit.MINUTES.toMillis(minutes);
-    final long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+    final var seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
     localMillis -= TimeUnit.SECONDS.toMillis(seconds);
 
     return String.format("%d min, %d sec, %d millisec", minutes, seconds, localMillis);
@@ -66,12 +66,12 @@ class PerformanceITest {
   private void convertFileXTimes(final DocumentConverter converter, final File inputFile)
       throws IOException, OfficeException {
 
-    final String baseName = FileUtils.getBaseName(inputFile.getName());
+    final var baseName = FileUtils.getBaseName(inputFile.getName());
 
-    final long start = System.currentTimeMillis();
-    long split = start;
-    for (int i = 0; i < MAX_CONVERSIONS; i++) {
-      final File outputFile = File.createTempFile("test", "." + OUTPUT_FORMAT.getExtension());
+    final var start = System.currentTimeMillis();
+    var split = start;
+    for (var i = 0; i < MAX_CONVERSIONS; i++) {
+      final var outputFile = File.createTempFile("test", "." + OUTPUT_FORMAT.getExtension());
       outputFile.deleteOnExit();
 
       LOGGER.info(
@@ -81,14 +81,14 @@ class PerformanceITest {
           OUTPUT_FORMAT.getExtension());
       converter.convert(inputFile).to(outputFile).as(OUTPUT_FORMAT).execute();
 
-      final long now = System.currentTimeMillis();
+      final var now = System.currentTimeMillis();
       if (LOGGER.isInfoEnabled()) {
         LOGGER.info("{} -- Conversion done in {} millisec.", baseName, now - split);
       }
       split = now;
     }
 
-    final long total = System.currentTimeMillis() - start;
+    final var total = System.currentTimeMillis() - start;
     LOGGER.info(
         "{} -- All {} conversions done in {}. The average per document is {} ms.",
         baseName,
@@ -100,14 +100,13 @@ class PerformanceITest {
   @Test
   void runTest(final DocumentConverter converter) {
 
-    final File dir = new File("src/integTest/resources/performance");
-    final File[] files =
-        dir.listFiles((dir1, name) -> name.toLowerCase(Locale.ROOT).endsWith(".odt"));
+    final var dir = new File("src/integTest/resources/performance");
+    final var files = dir.listFiles((dir1, name) -> name.toLowerCase(Locale.ROOT).endsWith(".odt"));
 
     assert files != null;
     assertThatCode(
             () -> {
-              for (final File inputFile : files) {
+              for (final var inputFile : files) {
                 convertFileXTimes(converter, inputFile);
               }
             })

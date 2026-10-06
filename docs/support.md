@@ -35,17 +35,17 @@ You can support the project through:
 All donors are warmly thanked in the project’s release notes and can be featured in our **Hall of Fame**. Corporate
 sponsors may also be listed on the project page with logos and links.
 
----
+______________________________________________________________________
 
 ## 🌟 Hall of Fame
 
 We gratefully recognize these generous supporters: No supporter yet
 
 | Contributor | Contribution Level | Website |
-|-------------|--------------------|---------|
+| ----------- | ------------------ | ------- |
 | --          | --                 | --      |
 
----
+______________________________________________________________________
 
 ## 🛠️ Other Ways to Help
 
@@ -56,6 +56,6 @@ If you can’t donate financially, here are other ways to support:
 - 📣 Share the project with others
 - 📦 Contribute code or documentation
 
----
+______________________________________________________________________
 
 Thank you for being part of the JODConverter community. Your support keeps the project alive and thriving.

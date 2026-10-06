@@ -20,12 +20,7 @@
 
 package org.jodconverter.boot;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,16 +55,16 @@ class AllConverterITest {
   void execute_UsingLocalConverter_TargetShouldContaingExpectedResult(
       final @TempDir File testFolder) throws Exception {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "local_out.txt");
+    final var inputFile = new File(SOURCE_FILE_PATH);
+    final var outputFile = new File(testFolder, "local_out.txt");
 
-    final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+    final var wireMockServer = new WireMockServer(options().port(8000));
     wireMockServer.start();
     try {
       localConverter.convert(inputFile).to(outputFile).execute();
 
       // Check that the output file was created with the expected content.
-      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
     } finally {
       wireMockServer.stop();
@@ -80,10 +75,10 @@ class AllConverterITest {
   void execute_UsingRemoteConverter_TargetShouldContaingExpectedResult(
       final @TempDir File testFolder) throws Exception {
 
-    final File inputFile = new File(SOURCE_FILE_PATH);
-    final File outputFile = new File(testFolder, "remote_out.txt");
+    final var inputFile = new File(SOURCE_FILE_PATH);
+    final var outputFile = new File(testFolder, "remote_out.txt");
 
-    final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+    final var wireMockServer = new WireMockServer(options().port(8000));
     wireMockServer.start();
     try {
       wireMockServer.stubFor(
@@ -94,7 +89,7 @@ class AllConverterITest {
       remoteConverter.convert(inputFile).to(outputFile).execute();
 
       // Check that the output file was created with the expected content.
-      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
 
       // Verify that it is actually the remote converter that did the conversion.

@@ -28,15 +28,15 @@ Without an Office Manager, there’s no running office backend to perform conver
 **JODConverter** ships with different Office Manager implementations depending on how and where OOo runs:
 
 - **LocalOfficeManager**: Starts and manages one or more local office processes on the same machine as your application.
-  Best for typical server-side use when OOo is installed locally.
-  See [LocalOfficeManager](../configuration/local-manager.md) for all configuration options.
+    Best for typical server-side use when OOo is installed locally.
+    See [LocalOfficeManager](../configuration/local-manager.md) for all configuration options.
 - **ExternalOfficeManager**: Connects to an already running local office process you start externally (you manage the
-  process lifecycle). Useful when the process must be controlled outside the JVM.
-  See [ExternalOfficeManager](../configuration/external-manager.md) for all configuration options.
+    process lifecycle). Useful when the process must be controlled outside the JVM.
+    See [ExternalOfficeManager](../configuration/external-manager.md) for all configuration options.
 - **RemoteOfficeManager**: Connects to a remote LibreOffice Online (LOOL/Collabora Online) server through
-  HTTP/WebSocket.
-  The office process lifecycle is remote; the manager controls the connection pool.
-  See [RemoteOfficeManager](../configuration/remote-manager.md) for all configuration options.
+    HTTP/WebSocket.
+    The office process lifecycle is remote; the manager controls the connection pool.
+    See [RemoteOfficeManager](../configuration/remote-manager.md) for all configuration options.
 
 Internally, pool-capable managers derive from an abstract pool (`AbstractOfficeManagerPool`) that can manage multiple
 office processes simultaneously (via multiple ports or pipes) for concurrency and resilience.
@@ -46,7 +46,7 @@ office processes simultaneously (via multiple ports or pipes) for concurrency an
 **1)** Install a global (default) manager.
 
 - Installing a manager in the `InstalledOfficeManagerHolder` lets converter builders use it automatically when you
-  don't specify any office manager.
+    don't specify any office manager.
 
 Java example:
 
@@ -117,23 +117,23 @@ See [RemoteOfficeManager](../configuration/remote-manager.md).
 
 - Start before use: Always call `start()` before invoking `execute()` through a converter.
 - Stop on shutdown: Call `stop()` when your application shuts down. OfficeUtils.stopQuietly(...) is provided for
-  convenience in finally blocks.
+    convenience in finally blocks.
 - Not restartable: Once stopped, a given manager instance cannot be restarted; create a new instance if needed.
 - Thread-safe queueing: Managers queue and dispatch tasks to their office processes. Timeouts like
-  `taskExecutionTimeout` and `taskQueueTimeout` protect against slow or stuck tasks
-  ([see LocalOfficeManager configuration page](../configuration/local-manager.md) for more details).
+    `taskExecutionTimeout` and `taskQueueTimeout` protect against slow or stuck tasks
+    ([see LocalOfficeManager configuration page](../configuration/local-manager.md) for more details).
 
 ## Best practices
 
 - One manager per application: Create one `OfficeManager` and reuse it across conversions. Avoid creating a manager per
-  request.
+    request.
 - Start early: Start the manager during application boot (e.g., in a servlet context listener or Spring Boot lifecycle)
-  and stop it with a shutdown hook.
+    and stop it with a shutdown hook.
 - Tune for throughput: For concurrent workloads, configure multiple ports/pipes so the manager can spawn multiple office
-  processes.
+    processes.
 - Mitigate leaks: Keep `maxTasksPerProcess` at a reasonable value so office processes are recycled periodically.
 - Use the holder wisely: install() sets the `InstalledOfficeManagerHolder`; this is convenient for libraries and reduces
-  boilerplate.
+    boilerplate.
 
 ## Related APIs
 

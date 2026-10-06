@@ -20,17 +20,13 @@
 
 package org.jodconverter.cli;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.entry;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -70,8 +66,7 @@ class PdfOptionsParserTest {
     @Test
     void withPresetAndOptions_ShouldApplyTheOptionsOnTopOfThePreset() {
 
-      final PdfOptions options =
-          PdfOptionsParser.parse("archive", "pages.range=1-3", "version=pdf-a-3b");
+      final var options = PdfOptionsParser.parse("archive", "pages.range=1-3", "version=pdf-a-3b");
 
       assertThat(options.getFilterData())
           .containsEntry("SelectPdfVersion", 3)
@@ -83,7 +78,7 @@ class PdfOptionsParserTest {
     @Test
     void withVersion_ShouldAcceptTheShortAndTheFullNames() {
 
-      final Map<String, Integer> expected = new HashMap<>();
+      final var expected = new HashMap<String, Integer>();
       expected.put("1.5", 15);
       expected.put("1.7", 17);
       expected.put("2.0", 20);
@@ -104,7 +99,7 @@ class PdfOptionsParserTest {
     @Test
     void withTypedValues_ShouldConvertThem() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptionsParser.parse(
               null,
               "tagged=TRUE",
@@ -134,7 +129,7 @@ class PdfOptionsParserTest {
     @Test
     void withFilterData_ShouldSetAnyProperty() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptionsParser.parse(
               null, "filter-data.Unknown=text", "filter-data.Count=3", "filter-data.Flag=true");
 
@@ -145,11 +140,11 @@ class PdfOptionsParserTest {
     @Test
     void withEveryOptionName_ShouldBuildOptions(final @TempDir File testFolder) throws IOException {
 
-      final File pem = new File(testFolder, "file.pem");
+      final var pem = new File(testFolder, "file.pem");
       Files.writeString(pem.toPath(), "PEM");
 
       // A valid value for each option: by name for the ones that are not booleans.
-      final Map<String, String> values = new HashMap<>();
+      final var values = new HashMap<String, String>();
       values.put("version", "1.7");
       values.put("images.jpeg-quality", "90");
       values.put("images.max-resolution", "300");
@@ -183,12 +178,12 @@ class PdfOptionsParserTest {
       values.put("signature.timestamp-authority", "h");
       values.put("spreadsheet.sheet-range", "1-2");
 
-      final List<String> arguments = new ArrayList<>();
-      for (final String name : PdfOptionsParser.getOptionNames()) {
+      final var arguments = new ArrayList<String>();
+      for (final var name : PdfOptionsParser.getOptionNames()) {
         arguments.add(name + "=" + values.getOrDefault(name, "true"));
       }
 
-      final PdfOptions options = PdfOptionsParser.parse(null, arguments.toArray(new String[0]));
+      final var options = PdfOptionsParser.parse(null, arguments.toArray(new String[0]));
 
       // The 66 properties of PdfOptions: every one of them can be set from the command line.
       assertThat(options.getFilterData()).hasSize(66);

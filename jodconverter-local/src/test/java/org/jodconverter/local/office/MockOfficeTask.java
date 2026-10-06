@@ -25,8 +25,6 @@ import static org.jodconverter.local.office.utils.Props.makeProperty;
 import java.util.Objects;
 
 import com.sun.star.beans.PropertyValue;
-import com.sun.star.frame.XComponentLoader;
-import com.sun.star.lang.XComponent;
 import com.sun.star.util.XCloseable;
 
 import org.jodconverter.core.office.OfficeContext;
@@ -60,11 +58,11 @@ public class MockOfficeTask implements OfficeTask {
   @SuppressWarnings("NullableProblems")
   public void execute(final OfficeContext context) throws OfficeException {
 
-    final LocalOfficeContext ctx = (LocalOfficeContext) context;
-    final XComponentLoader loader = ctx.getComponentLoader();
+    final var ctx = (LocalOfficeContext) context;
+    final var loader = ctx.getComponentLoader();
     try {
       final PropertyValue[] arguments = {makeProperty("Hidden", true)};
-      final XComponent document =
+      final var document =
           Objects.requireNonNull(loader)
               .loadComponentFromURL("private:factory/swriter", "_blank", 0, arguments);
       if (delayTime > 0) {

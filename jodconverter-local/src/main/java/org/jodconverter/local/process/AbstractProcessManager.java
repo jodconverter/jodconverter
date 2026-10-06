@@ -23,7 +23,6 @@ package org.jodconverter.local.process;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -63,9 +62,9 @@ public abstract class AbstractProcessManager implements ProcessManager {
   protected @NonNull List<@NonNull String> execute(final @NonNull String... cmdarray)
       throws IOException {
 
-    final Process process = Runtime.getRuntime().exec(cmdarray);
+    final var process = Runtime.getRuntime().exec(cmdarray);
 
-    final LinesPumpStreamHandler streamsHandler =
+    final var streamsHandler =
         new LinesPumpStreamHandler(process.getInputStream(), process.getErrorStream());
 
     streamsHandler.start();
@@ -81,11 +80,11 @@ public abstract class AbstractProcessManager implements ProcessManager {
       Thread.currentThread().interrupt();
     }
 
-    final List<String> outLines = streamsHandler.getOutputPumper().getLines();
+    final var outLines = streamsHandler.getOutputPumper().getLines();
 
     if (LOGGER.isTraceEnabled()) {
-      final String out = buildOutput(outLines);
-      final String err = buildOutput(streamsHandler.getErrorPumper().getLines());
+      final var out = buildOutput(outLines);
+      final var err = buildOutput(streamsHandler.getErrorPumper().getLines());
 
       if (!StringUtils.isBlank(out)) {
         LOGGER.trace("Command Output: {}", out);
@@ -105,45 +104,45 @@ public abstract class AbstractProcessManager implements ProcessManager {
       return PID_UNKNOWN;
     }
 
-    final Pattern commandPattern =
+    final var commandPattern =
         Pattern.compile(Pattern.quote(query.command()) + ".*" + Pattern.quote(query.argument()));
-    final Pattern processLinePattern = getRunningProcessLinePattern();
-    final String[] currentProcessesCommand = getRunningProcessesCommand(query.command());
+    final var processLinePattern = getRunningProcessLinePattern();
+    final var currentProcessesCommand = getRunningProcessesCommand(query.command());
 
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace(
           """
-          Finding PID using
-          Command to get current running processes: {}
-          Regex used to match current running process lines: {}
-          Regex used to match running office process we are looking for: {}""",
+                            Finding PID using
+                            Command to get current running processes: {}
+                            Regex used to match current running process lines: {}
+                            Regex used to match running office process we are looking for: {}""",
           currentProcessesCommand,
           processLinePattern.pattern(),
           commandPattern.pattern());
     }
 
-    final List<String> lines = execute(currentProcessesCommand);
-    for (final String line : lines) {
+    final var lines = execute(currentProcessesCommand);
+    for (final var line : lines) {
       if (StringUtils.isBlank(line)) {
         // Skip this one
         continue;
       }
       LOGGER.trace(
           "Checking if process line matches the process line regex\nProcess line: {}", line);
-      final Matcher lineMatcher = processLinePattern.matcher(line);
+      final var lineMatcher = processLinePattern.matcher(line);
       if (lineMatcher.matches()) {
-        final String pid = lineMatcher.group("Pid");
-        final String commandLine = lineMatcher.group("CommandLine");
+        final var pid = lineMatcher.group("Pid");
+        final var commandLine = lineMatcher.group("CommandLine");
         if (LOGGER.isTraceEnabled()) {
           LOGGER.trace(
               """
-              Line matches!
-              pid: {}; Command line: {}
-              Checking if this command line matches the office command line regex""",
+                                    Line matches!
+                                    pid: {}; Command line: {}
+                                    Checking if this command line matches the office command line regex""",
               pid,
               commandLine);
         }
-        final Matcher commandMatcher = commandPattern.matcher(commandLine);
+        final var commandMatcher = commandPattern.matcher(commandLine);
         if (commandMatcher.find()) {
           LOGGER.debug("Command line matches! Returning pid: {}", pid);
           return Long.parseLong(pid);

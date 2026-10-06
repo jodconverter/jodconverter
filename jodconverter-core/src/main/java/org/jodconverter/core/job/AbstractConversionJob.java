@@ -71,9 +71,9 @@ public abstract class AbstractConversionJob
   @Override
   public final void execute() throws OfficeException {
 
-    final DocumentFormat format = target.getFormat();
+    final var format = target.getFormat();
     AssertUtils.notNull(format, "The target format is missing or not supported");
-    TargetOptions options = target.getOptions();
+    var options = target.getOptions();
     if (options == null) {
       // No options for this conversion: use the first default options of the converter that
       // support the target format, if any.

@@ -23,7 +23,6 @@ package org.jodconverter.local.filter.text;
 import java.util.Arrays;
 
 import com.sun.star.lang.XComponent;
-import com.sun.star.util.XReplaceDescriptor;
 import com.sun.star.util.XReplaceable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -63,8 +62,8 @@ public class TextReplacerFilter implements Filter {
     AssertUtils.notEmpty(replacementList, "replacementList must not be null nor empty");
 
     // Make sure lengths are ok, these need to be equal
-    final int searchLength = searchList.length;
-    final int replacementLength = replacementList.length;
+    final var searchLength = searchList.length;
+    final var replacementLength = replacementList.length;
     AssertUtils.isTrue(
         searchLength == replacementLength,
         String.format(
@@ -96,13 +95,13 @@ public class TextReplacerFilter implements Filter {
 
   private void replaceText(final @NonNull XComponent document) {
 
-    final XReplaceable replaceable = Lo.qi(XReplaceable.class, document);
+    final var replaceable = Lo.qi(XReplaceable.class, document);
 
     // We need a descriptor to set properties for Replace
-    final XReplaceDescriptor replaceDesc = replaceable.createReplaceDescriptor();
+    final var replaceDesc = replaceable.createReplaceDescriptor();
 
     LOGGER.debug("Changing all occurrences of ...");
-    for (int i = 0; i < searchList.length; i++) {
+    for (var i = 0; i < searchList.length; i++) {
       LOGGER.debug("{} -> {}", searchList[i], replacementList[i]);
       // Set the properties the replace method need
       replaceDesc.setSearchString(searchList[i]);

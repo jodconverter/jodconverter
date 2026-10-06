@@ -20,14 +20,12 @@
 
 package org.jodconverter.local.filter.text;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.Map;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.drawing.XShape;
 import com.sun.star.lang.XComponent;
-import com.sun.star.text.XText;
-import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextFrame;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -121,29 +119,29 @@ public class TextInserterFilter extends AbstractTextContentInserterFilter {
 
     // Use the document's factory to create a new text frame and
     // immediately access its XTextFrame interface
-    final XTextFrame textFrame =
+    final var textFrame =
         Lo.createInstance(document, XTextFrame.class, "com.sun.star.text.TextFrame");
 
     // Access the XShape interface of the TextFrame
-    final XShape shape = Lo.qi(XShape.class, textFrame);
+    final var shape = Lo.qi(XShape.class, textFrame);
 
     // Set the size of the new Text Frame using the XShape's 'setSize'
     shape.setSize(toOfficeSize(getRectSize()));
 
     // Access the XPropertySet interface of the TextFrame
-    final XPropertySet propSet = Lo.qi(XPropertySet.class, textFrame);
+    final var propSet = Lo.qi(XPropertySet.class, textFrame);
 
     // Assign all the other properties
-    for (final Map.Entry<String, Object> entry : getShapeProperties().entrySet()) {
+    for (final var entry : getShapeProperties().entrySet()) {
       propSet.setPropertyValue(entry.getKey(), entry.getValue());
     }
 
     // Querying for the interface XTextDocument (text interface) on the XComponent
-    final XTextDocument docText = Lo.qi(XTextDocument.class, document);
+    final var docText = Lo.qi(XTextDocument.class, document);
 
     // Access the XText interface of the text contained within the frame
-    XText text = docText.getText();
-    XTextCursor textCursor = text.createTextCursor();
+    var text = docText.getText();
+    var textCursor = text.createTextCursor();
 
     // Apply the AnchorPageNo fix
     applyAnchorPageNoFix(docText, textCursor);

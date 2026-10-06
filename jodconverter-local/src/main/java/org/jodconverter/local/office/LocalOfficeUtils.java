@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,12 +45,7 @@ import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.Props;
-import org.jodconverter.local.process.FreeBSDProcessManager;
-import org.jodconverter.local.process.MacProcessManager;
-import org.jodconverter.local.process.ProcessManager;
-import org.jodconverter.local.process.PureJavaProcessManager;
-import org.jodconverter.local.process.UnixProcessManager;
-import org.jodconverter.local.process.WindowsProcessManager;
+import org.jodconverter.local.process.*;
 
 /** Provides helper functions for local office. */
 public final class LocalOfficeUtils {
@@ -82,8 +77,8 @@ public final class LocalOfficeUtils {
         // Try to find the most recent version of LibreOffice or OpenOffice,
         // starting with the 64-bit version. %ProgramFiles(x86)% on 64-bit
         // machines; %ProgramFiles% on 32-bit ones
-        final String programFiles64 = System.getenv("ProgramFiles");
-        final String programFiles32 = System.getenv("ProgramFiles(x86)");
+        final var programFiles64 = System.getenv("ProgramFiles");
+        final var programFiles32 = System.getenv("ProgramFiles(x86)");
 
         INSTANCE =
             findOfficeHome(
@@ -101,7 +96,7 @@ public final class LocalOfficeUtils {
 
       } else if (OSUtils.IS_OS_MAC) {
 
-        File homeDir =
+        var homeDir =
             findOfficeHome(
                 EXECUTABLE_MAC_41,
                 "/Applications/LibreOffice.app/Contents",
@@ -156,7 +151,7 @@ public final class LocalOfficeUtils {
     private static File findOfficeHome(final String executablePath, final String... homePaths) {
 
       return Stream.of(homePaths)
-          .filter(homePath -> Files.isRegularFile(Paths.get(homePath, executablePath)))
+          .filter(homePath -> Files.isRegularFile(Path.of(homePath, executablePath)))
           .findFirst()
           .map(File::new)
           .orElse(null);
@@ -178,7 +173,7 @@ public final class LocalOfficeUtils {
     } else if (OSUtils.IS_OS_UNIX) {
       return UnixProcessManager.getDefault();
     } else if (OSUtils.IS_OS_WINDOWS) {
-      final WindowsProcessManager windowsProcessManager = WindowsProcessManager.getDefault();
+      final var windowsProcessManager = WindowsProcessManager.getDefault();
       if (windowsProcessManager.isUsable()) {
         return windowsProcessManager;
       }
@@ -202,19 +197,20 @@ public final class LocalOfficeUtils {
    * @return The free port numbers.
    * @throws IllegalStateException If the free ports cannot be found.
    */
-  /* default */ static @NonNull List<@NonNull Integer> findFreePorts(final int count) {
+  /* default */
+  static @NonNull List<@NonNull Integer> findFreePorts(final int count) {
 
     // All the sockets are kept open until every port is found, so the ports are distinct.
-    final List<ServerSocket> sockets = new ArrayList<>(count);
+    final var sockets = new ArrayList<ServerSocket>(count);
     try {
-      for (int i = 0; i < count; i++) {
+      for (var i = 0; i < count; i++) {
         sockets.add(new ServerSocket(0));
       }
       return sockets.stream().map(ServerSocket::getLocalPort).toList();
     } catch (IOException ex) {
       throw new IllegalStateException(String.format("Could not find %d free ports", count), ex);
     } finally {
-      for (final ServerSocket socket : sockets) {
+      for (final var socket : sockets) {
         try {
           socket.close();
         } catch (IOException ex) {
@@ -248,7 +244,8 @@ public final class LocalOfficeUtils {
    * @return a list of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  /* default */ static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
+  /* default */
+  static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable String host,
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames,
@@ -262,7 +259,7 @@ public final class LocalOfficeUtils {
     }
 
     // Build the office URL list and return it
-    final List<OfficeUrl> officeUrls = new ArrayList<>();
+    final var officeUrls = new ArrayList<OfficeUrl>();
     if (portNumbers != null) {
       portNumbers.stream().map(p -> new OfficeUrl(host, p)).forEach(officeUrls::add);
     }
@@ -297,7 +294,7 @@ public final class LocalOfficeUtils {
       final @NonNull XComponent document) {
     AssertUtils.notNull(document, "document must not be null");
 
-    final XServiceInfo serviceInfo = Lo.qi(XServiceInfo.class, document);
+    final var serviceInfo = Lo.qi(XServiceInfo.class, document);
     // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument.
     // So we must test for WebDocument first.
     if (serviceInfo.supportsService(Lo.WEB_SERVICE)) {
@@ -325,7 +322,7 @@ public final class LocalOfficeUtils {
   public static @NonNull DocumentFamily getDocumentFamily(final @NonNull XComponent document)
       throws OfficeException {
 
-    final DocumentFamily family = getDocumentFamilySilently(document);
+    final var family = getDocumentFamilySilently(document);
     if (family == null) {
       throw new OfficeException("Document of unknown family: " + document.getClass().getName());
     }
@@ -344,7 +341,7 @@ public final class LocalOfficeUtils {
     if (OSUtils.IS_OS_MAC) {
       // Starting with LibreOffice 4.1 the location of the executable has changed on Mac.
       // It's now in program/soffice. Handle both cases!
-      File executableFile = new File(officeHome, EXECUTABLE_MAC_41);
+      var executableFile = new File(officeHome, EXECUTABLE_MAC_41);
       if (!executableFile.isFile()) {
         executableFile = new File(officeHome, EXECUTABLE_MAC);
       }
@@ -370,12 +367,12 @@ public final class LocalOfficeUtils {
   public static @NonNull PropertyValue[] toUnoProperties(
       final @NonNull Map<@NonNull String, @NonNull Object> properties) {
 
-    final List<PropertyValue> propertyValues = new ArrayList<>(properties.size());
-    for (final Map.Entry<String, Object> entry : properties.entrySet()) {
-      Object value = entry.getValue();
+    final var propertyValues = new ArrayList<PropertyValue>(properties.size());
+    for (final var entry : properties.entrySet()) {
+      var value = entry.getValue();
       if (value instanceof Map) {
         @SuppressWarnings("unchecked")
-        final Map<String, Object> subProperties = (Map<String, Object>) value;
+        final var subProperties = (Map<String, Object>) value;
         value = toUnoProperties(subProperties);
       }
       propertyValues.add(Props.makeProperty(entry.getKey(), value));
@@ -391,8 +388,8 @@ public final class LocalOfficeUtils {
    */
   public static @NonNull String toUrl(final @NonNull File file) {
 
-    final String path = file.toURI().getRawPath();
-    final String url = path.startsWith("//") ? "file:" + path : "file://" + path;
+    final var path = file.toURI().getRawPath();
+    final var url = path.startsWith("//") ? "file:" + path : "file://" + path;
     return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
   }
 
@@ -400,8 +397,7 @@ public final class LocalOfficeUtils {
    * Validates that the specified File instance is a valid office home directory.
    *
    * @param officeHome The home to validate.
-   * @exception IllegalStateException If the specified directory if not a valid office home
-   *     directory.
+   * @throws IllegalStateException If the specified directory if not a valid office home directory.
    */
   public static void validateOfficeHome(final @NonNull File officeHome) {
     AssertUtils.notNull(officeHome, "officeHome must not be null");
@@ -421,8 +417,8 @@ public final class LocalOfficeUtils {
    * Validates that the specified File instance is a valid office template profile directory.
    *
    * @param templateProfileDir The directory to validate.
-   * @exception IllegalStateException If the specified directory is not a valid office template
-   *     profile directory.
+   * @throws IllegalStateException If the specified directory is not a valid office template profile
+   *     directory.
    */
   public static void validateOfficeTemplateProfileDirectory(
       final @Nullable File templateProfileDir) {

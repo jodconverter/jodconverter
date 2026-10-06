@@ -26,11 +26,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 
 import org.junit.jupiter.api.Nested;
@@ -51,16 +47,15 @@ class SourceDocumentSpecsFromInputStreamTest {
     void withFormat_ShouldCreateTempFileWithExtension(@TempDir final File testFolder)
         throws IOException {
 
-      final File tempFile = new File(testFolder, "temp.txt");
-      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+      final var tempFile = new File(testFolder, "temp.txt");
+      final var fileMaker = mock(TemporaryFileMaker.class);
       given(fileMaker.makeTemporaryFile("txt")).willReturn(tempFile);
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (InputStream inputStream = Files.newInputStream(sourceFile.toPath())) {
-        final SourceDocumentSpecsFromInputStream specs =
-            new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
+      try (var inputStream = Files.newInputStream(sourceFile.toPath())) {
+        final var specs = new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
         specs.setDocumentFormat(DefaultDocumentFormatRegistry.TXT);
         assertThat(specs.getFile()).isEqualTo(tempFile);
       }
@@ -70,16 +65,15 @@ class SourceDocumentSpecsFromInputStreamTest {
     void withoutFormat_ShouldCreateTempFileWithoutExtension(@TempDir final File testFolder)
         throws IOException {
 
-      final File tempFile = new File(testFolder, "temp");
-      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+      final var tempFile = new File(testFolder, "temp");
+      final var fileMaker = mock(TemporaryFileMaker.class);
       given(fileMaker.makeTemporaryFile()).willReturn(tempFile);
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (InputStream inputStream = Files.newInputStream(sourceFile.toPath())) {
-        final SourceDocumentSpecsFromInputStream specs =
-            new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
+      try (var inputStream = Files.newInputStream(sourceFile.toPath())) {
+        final var specs = new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
         assertThat(specs.getFile()).isEqualTo(tempFile);
       }
     }
@@ -89,15 +83,14 @@ class SourceDocumentSpecsFromInputStreamTest {
         throws IOException {
 
       // FileOutputStream will fail with an IOException
-      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+      final var fileMaker = mock(TemporaryFileMaker.class);
       given(fileMaker.makeTemporaryFile()).willReturn(testFolder);
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (InputStream inputStream = Files.newInputStream(sourceFile.toPath())) {
-        final SourceDocumentSpecsFromInputStream specs =
-            new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
+      try (var inputStream = Files.newInputStream(sourceFile.toPath())) {
+        final var specs = new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
 
         assertThatExceptionOfType(DocumentSpecsIOException.class)
             .isThrownBy(specs::getFile)
@@ -114,15 +107,14 @@ class SourceDocumentSpecsFromInputStreamTest {
     void whenIoExceptionOccurs_ShouldThrowDocumentSpecsIoException(@TempDir final File testFolder)
         throws IOException {
 
-      final File tempFile = new File(testFolder, "temp");
-      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+      final var tempFile = new File(testFolder, "temp");
+      final var fileMaker = mock(TemporaryFileMaker.class);
       given(fileMaker.makeTemporaryFile()).willReturn(tempFile);
 
-      final FileInputStream inputStream = mock(FileInputStream.class);
+      final var inputStream = mock(FileInputStream.class);
       doThrow(IOException.class).when(inputStream).close();
 
-      final SourceDocumentSpecsFromInputStream specs =
-          new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, true);
+      final var specs = new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, true);
 
       assertThatExceptionOfType(DocumentSpecsIOException.class)
           .isThrownBy(() -> specs.onConsumed(tempFile))
@@ -134,17 +126,15 @@ class SourceDocumentSpecsFromInputStreamTest {
     void whenCloseStreamIsTrue_ShouldDeleteTempFileAndCloseInputStream(
         @TempDir final File testFolder) throws IOException {
 
-      final File tempFile = new File(testFolder, "temp");
-      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+      final var tempFile = new File(testFolder, "temp");
+      final var fileMaker = mock(TemporaryFileMaker.class);
       given(fileMaker.makeTemporaryFile()).willReturn(tempFile);
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (CloseTrackingInputStream inputStream =
-          new CloseTrackingInputStream(new FileInputStream(sourceFile))) {
-        final SourceDocumentSpecsFromInputStream specs =
-            new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, true);
+      try (var inputStream = new CloseTrackingInputStream(new FileInputStream(sourceFile))) {
+        final var specs = new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, true);
 
         specs.onConsumed(tempFile);
 
@@ -160,17 +150,15 @@ class SourceDocumentSpecsFromInputStreamTest {
     void whenCloseStreamIsFalse_ShouldDeleteTempFileAndNotCloseInputStream(
         @TempDir final File testFolder) throws IOException {
 
-      final File tempFile = new File(testFolder, "temp");
-      final TemporaryFileMaker fileMaker = mock(TemporaryFileMaker.class);
+      final var tempFile = new File(testFolder, "temp");
+      final var fileMaker = mock(TemporaryFileMaker.class);
       given(fileMaker.makeTemporaryFile()).willReturn(tempFile);
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (CloseTrackingInputStream inputStream =
-          new CloseTrackingInputStream(new FileInputStream(sourceFile))) {
-        final SourceDocumentSpecsFromInputStream specs =
-            new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
+      try (var inputStream = new CloseTrackingInputStream(new FileInputStream(sourceFile))) {
+        final var specs = new SourceDocumentSpecsFromInputStream(inputStream, fileMaker, false);
 
         specs.onConsumed(tempFile);
 

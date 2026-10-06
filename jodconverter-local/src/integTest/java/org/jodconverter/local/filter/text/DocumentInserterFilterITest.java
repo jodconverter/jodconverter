@@ -45,14 +45,12 @@ class DocumentInserterFilterITest {
   void with2Filter_TargetShouldContainAllDocuments(
       final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-    final File sourceFile = documentFile("test.doc");
-    final File targetFile = new File(testFolder, "target.txt");
+    final var sourceFile = documentFile("test.doc");
+    final var targetFile = new File(testFolder, "target.txt");
 
     // Create the DocumentInserterFilter to test.
-    final DocumentInserterFilter filter1 =
-        new DocumentInserterFilter(documentFile("test_multi_page.doc"));
-    final DocumentInserterFilter filter2 =
-        new DocumentInserterFilter(documentFile("test_replace.doc"));
+    final var filter1 = new DocumentInserterFilter(documentFile("test_multi_page.doc"));
+    final var filter2 = new DocumentInserterFilter(documentFile("test_replace.doc"));
 
     // Test the filter
     assertThatCode(
@@ -66,7 +64,7 @@ class DocumentInserterFilterITest {
                     .execute())
         .doesNotThrowAnyException();
 
-    final String content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
+    final var content = FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8);
     assertThat(content)
         .as("Check content: %s", content)
         .contains("Test document")

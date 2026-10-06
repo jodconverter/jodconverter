@@ -20,20 +20,12 @@
 
 package org.jodconverter.local;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,10 +76,10 @@ class LocalConverterTest {
     @Test
     void withOfficeManagerInstalled_ShouldSuccess(final @TempDir File testFolder) {
 
-      final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
+      final var manager = InstalledOfficeManagerHolder.getInstance();
       InstalledOfficeManagerHolder.setInstance(officeManager);
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
       try {
         assertThatCode(() -> LocalConverter.make().convert(SOURCE_FILE).to(targetFile).execute())
             .doesNotThrowAnyException();
@@ -100,10 +92,10 @@ class LocalConverterTest {
     void withoutOfficeManagerInstalled_ShouldThrowIllegalStateException(
         final @TempDir File testFolder) {
 
-      final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
+      final var manager = InstalledOfficeManagerHolder.getInstance();
       InstalledOfficeManagerHolder.setInstance(null);
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
       try {
         assertThatIllegalStateException()
             .isThrownBy(() -> LocalConverter.make().convert(SOURCE_FILE).to(targetFile).execute());
@@ -119,10 +111,10 @@ class LocalConverterTest {
     @Test
     void withCustomFormatRegistry_ShouldUseCustomRegistry() {
 
-      final SimpleDocumentFormatRegistry registry = new SimpleDocumentFormatRegistry();
+      final var registry = new SimpleDocumentFormatRegistry();
       registry.addFormat(DefaultDocumentFormatRegistry.DOC);
       registry.addFormat(DefaultDocumentFormatRegistry.PDF);
-      final LocalConverter converter =
+      final var converter =
           LocalConverter.builder().officeManager(officeManager).formatRegistry(registry).build();
 
       assertThat(converter)
@@ -143,7 +135,7 @@ class LocalConverterTest {
     @Test
     void withNullFilters_ShouldThrowNullPointerException(final @TempDir File testFolder) {
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatNullPointerException()
           .isThrownBy(
@@ -160,7 +152,7 @@ class LocalConverterTest {
     @Test
     void withEmptyFilter_ShouldThrowIllegalArgumentException(final @TempDir File testFolder) {
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatIllegalArgumentException()
           .isThrownBy(
@@ -177,7 +169,7 @@ class LocalConverterTest {
     @Test
     void withNullFilterChain_ShouldThrowNullPointerException(final @TempDir File testFolder) {
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatNullPointerException()
           .isThrownBy(
@@ -199,8 +191,8 @@ class LocalConverterTest {
     void withFilters_ShouldCreateConverterWithExpectedFilters(final @TempDir File testFolder)
         throws Exception {
 
-      final Filter filter = mock(Filter.class);
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var filter = mock(Filter.class);
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -212,8 +204,7 @@ class LocalConverterTest {
                       .to(targetFile)
                       .execute())
           .doesNotThrowAnyException();
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue())
           .extracting("filterChain.filters")
@@ -225,9 +216,9 @@ class LocalConverterTest {
     void withFilterChain_ShouldCreateConverterWithExpectedFilters(final @TempDir File testFolder)
         throws Exception {
 
-      final Filter filter = mock(Filter.class);
-      final FilterChain chain = new DefaultFilterChain(filter);
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var filter = mock(Filter.class);
+      final var chain = new DefaultFilterChain(filter);
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -239,8 +230,7 @@ class LocalConverterTest {
                       .to(targetFile)
                       .execute())
           .doesNotThrowAnyException();
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue())
           .extracting("filterChain.filters")
@@ -252,16 +242,16 @@ class LocalConverterTest {
     void withCustomLoadProperties_ShouldCreateConverterWithExpectedLoadProperties(
         final @TempDir File testFolder) throws OfficeException {
 
-      final Map<String, Object> loadProperties = new HashMap<>();
+      final var loadProperties = new HashMap<String, Object>();
       loadProperties.put("ReadOnly", true);
       loadProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
 
-      final Map<String, Object> expectedProperties = new HashMap<>();
+      final var expectedProperties = new HashMap<String, Object>();
       expectedProperties.put("Hidden", true);
       expectedProperties.put("ReadOnly", true);
       expectedProperties.put("UpdateDocMode", UpdateDocMode.ACCORDING_TO_CONFIG);
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -275,8 +265,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
     }
@@ -285,12 +274,11 @@ class LocalConverterTest {
     void withCustomLoadProperty_ShouldCreateConverterWithExpectedLoadProperties(
         final @TempDir File testFolder) throws OfficeException {
 
-      final Map<String, Object> expectedProperties =
-          new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      final var expectedProperties = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
       expectedProperties.put("Hidden", false);
       expectedProperties.put("Password", "myPassword");
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -305,8 +293,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
     }
@@ -315,10 +302,10 @@ class LocalConverterTest {
     void withCustomLoadPropertiesWithoutDefault_ShouldCreateConverterWithExpectedLoadProperties(
         final @TempDir File testFolder) throws OfficeException {
 
-      final Map<String, Object> loadProperties = new HashMap<>();
+      final var loadProperties = new HashMap<String, Object>();
       loadProperties.put("Hidden", false);
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -333,8 +320,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(loadProperties);
     }
@@ -343,10 +329,10 @@ class LocalConverterTest {
     void withCustomLoadPropertyWithoutDefault_ShouldCreateConverterWithExpectedLoadProperties(
         final @TempDir File testFolder) throws OfficeException {
 
-      final Map<String, Object> expectedProperties = new HashMap<>();
+      final var expectedProperties = new HashMap<String, Object>();
       expectedProperties.put("Hidden", false);
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -361,8 +347,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
     }
@@ -371,11 +356,11 @@ class LocalConverterTest {
     void withCustomStoreProperties_ShouldCreateConverterWithExpectedStoreProperties(
         final @TempDir File testFolder) throws OfficeException {
 
-      final Map<String, Object> filterData = new HashMap<>();
+      final var filterData = new HashMap<String, Object>();
       filterData.put("PageRange", "1");
-      final Map<String, Object> storeProperties = new HashMap<>();
+      final var storeProperties = new HashMap<String, Object>();
       storeProperties.put("FilterData", filterData);
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -389,8 +374,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("storeProperties").isEqualTo(storeProperties);
     }
@@ -399,11 +383,11 @@ class LocalConverterTest {
     void withCustomStoreProperty_ShouldCreateConverterWithExpectedStoreProperties(
         final @TempDir File testFolder) throws OfficeException {
 
-      final Map<String, Object> filterData = new HashMap<>();
+      final var filterData = new HashMap<String, Object>();
       filterData.put("PageRange", "1");
-      final Map<String, Object> storeProperties = new HashMap<>();
+      final var storeProperties = new HashMap<String, Object>();
       storeProperties.put("FilterData", filterData);
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -417,8 +401,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("storeProperties").isEqualTo(storeProperties);
     }
@@ -427,7 +410,7 @@ class LocalConverterTest {
     void withLoadDocumentModeLocal_ShouldCreateTaskWithUseStreamAdaptersFalse(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -441,8 +424,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("useStreamAdapters").isEqualTo(false);
     }
@@ -451,7 +433,7 @@ class LocalConverterTest {
     void withLoadDocumentModeRemote_ShouldCreateTaskWithUseStreamAdaptersTrue(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -465,8 +447,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("useStreamAdapters").isEqualTo(true);
     }
@@ -476,7 +457,7 @@ class LocalConverterTest {
         withLoadDocumentModeAutoAndNotExternalOfficeManager_ShouldCreateTaskWithUseStreamAdaptersFalse(
             final @TempDir File testFolder) throws OfficeException {
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -490,8 +471,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("useStreamAdapters").isEqualTo(false);
     }
@@ -500,8 +480,8 @@ class LocalConverterTest {
     void withLoadDocumentModeAutoAndExternalOfficeManager_ShouldCreateTaskWithUseStreamAdaptersTrue(
         final @TempDir File testFolder) throws OfficeException {
 
-      final File targetFile = new File(testFolder, "test.pdf");
-      final ExternalOfficeManager externalOfficeManager = mock(ExternalOfficeManager.class);
+      final var targetFile = new File(testFolder, "test.pdf");
+      final var externalOfficeManager = mock(ExternalOfficeManager.class);
       assertThatCode(
               () ->
                   LocalConverter.builder()
@@ -514,8 +494,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(externalOfficeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("useStreamAdapters").isEqualTo(true);
     }
@@ -524,31 +503,31 @@ class LocalConverterTest {
     void withCustomFilterNames_ShouldCreateConverterWithExpectedFilterNames(
         final @TempDir File testFolder, final UnoRuntime unoRuntime) throws OfficeException {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(true);
 
-      final DocumentFormat sourceFormat =
+      final var sourceFormat =
           DocumentFormat.builder(DefaultDocumentFormatRegistry.TXT)
               .loadFilterName("Text Filter")
               .build();
-      final DocumentFormat targetFormat =
+      final var targetFormat =
           DocumentFormat.builder(DefaultDocumentFormatRegistry.PDF)
               .storeFilterName(DocumentFamily.TEXT, "PDF Filter")
               .build();
 
-      final Map<String, Object> expectedLoadProperties = new HashMap<>();
+      final var expectedLoadProperties = new HashMap<String, Object>();
       expectedLoadProperties.put("Hidden", true);
       expectedLoadProperties.put("ReadOnly", true);
       expectedLoadProperties.put("UpdateDocMode", UpdateDocMode.NO_UPDATE);
       expectedLoadProperties.put("FilterName", "Text Filter");
       expectedLoadProperties.put("FilterOptions", "utf8");
 
-      final Map<String, Object> expectedStoreProperties = new HashMap<>();
+      final var expectedStoreProperties = new HashMap<String, Object>();
       expectedStoreProperties.put("FilterName", "PDF Filter");
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -563,8 +542,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
 
       final Map<String, Object> loadProperties =
@@ -581,11 +559,11 @@ class LocalConverterTest {
     void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForInputStream(
         final @TempDir File testFolder) {
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
       assertThatIllegalStateException()
           .isThrownBy(
               () -> {
-                try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+                try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
                   LocalConverter.make(officeManager)
                       .convert(stream)
                       .as(DefaultDocumentFormatRegistry.TXT)
@@ -600,11 +578,11 @@ class LocalConverterTest {
     void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForOutputStream(
         final @TempDir File testFolder) {
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
       assertThatIllegalStateException()
           .isThrownBy(
               () -> {
-                try (OutputStream stream = Files.newOutputStream(targetFile.toPath())) {
+                try (var stream = Files.newOutputStream(targetFile.toPath())) {
                   LocalConverter.make(officeManager)
                       .convert(SOURCE_FILE)
                       .to(stream)
@@ -619,12 +597,12 @@ class LocalConverterTest {
     void withoutUseUnsafeQuietMode_ShouldCreateConverterWithExpectedLoadProperties(
         final @TempDir File testFolder) throws OfficeException {
 
-      final Map<String, Object> expectedProperties = new HashMap<>();
+      final var expectedProperties = new HashMap<String, Object>();
       expectedProperties.put("Hidden", true);
       expectedProperties.put("ReadOnly", true);
       expectedProperties.put("UpdateDocMode", UpdateDocMode.NO_UPDATE);
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -638,8 +616,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
     }
@@ -648,12 +625,12 @@ class LocalConverterTest {
     void withUseUnsafeQuietMode_ShouldCreateConverterWithExpectedLoadProperties(
         final @TempDir File testFolder) throws OfficeException {
 
-      final Map<String, Object> expectedProperties = new HashMap<>();
+      final var expectedProperties = new HashMap<String, Object>();
       expectedProperties.put("Hidden", true);
       expectedProperties.put("ReadOnly", true);
       expectedProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
 
       assertThatCode(
               () ->
@@ -667,8 +644,7 @@ class LocalConverterTest {
           .doesNotThrowAnyException();
 
       // Verify that the office manager has executed a task with the expected properties.
-      final ArgumentCaptor<LocalConversionTask> arg =
-          ArgumentCaptor.forClass(LocalConversionTask.class);
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
     }

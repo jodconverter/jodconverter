@@ -54,12 +54,12 @@ class ConvertITest {
     @Test
     void withCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf(final @TempDir File testFolder) {
 
-      final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
-      final File inputFile = new File(SOURCE_FILE);
-      final File outputFile = new File(testFolder, "convert_WithMultipleFilters.doc");
+      final var registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
+      final var inputFile = new File(SOURCE_FILE);
+      final var outputFile = new File(testFolder, "convert_WithMultipleFilters.doc");
 
       SystemLogHandler.startCapture();
-      final int status =
+      final var status =
           Convert.run(
               "-r",
               registryFile.getPath(),
@@ -67,7 +67,7 @@ class ConvertITest {
               ExistingProcessAction.KILL.toString(),
               inputFile.getPath(),
               outputFile.getPath());
-      final String capturedlog = SystemLogHandler.stopCapture();
+      final var capturedlog = SystemLogHandler.stopCapture();
       assertThat(status).isEqualTo(2);
       assertThat(capturedlog).contains("The target format is missing or not supported");
     }
@@ -75,10 +75,10 @@ class ConvertITest {
     @Test
     void withFilenames_ShouldSucceed(final @TempDir File testFolder) {
 
-      final File inputFile = new File(SOURCE_FILE);
-      final File outputFile = new File(testFolder, "convert_WithFilenames.pdf");
+      final var inputFile = new File(SOURCE_FILE);
+      final var outputFile = new File(testFolder, "convert_WithFilenames.pdf");
 
-      final int status =
+      final var status =
           Convert.run(
               "-x",
               ExistingProcessAction.KILL.toString(),
@@ -93,11 +93,11 @@ class ConvertITest {
     void withPdfOptions_ShouldApplyThemToThePdfOutputsOnly(final @TempDir File testFolder)
         throws Exception {
 
-      final File inputFile = new File(SOURCE_MULTI_FILE);
-      final File pdfFile = new File(testFolder, "convert_WithPdfOptions.pdf");
-      final File odtFile = new File(testFolder, "convert_WithPdfOptions.odt");
+      final var inputFile = new File(SOURCE_MULTI_FILE);
+      final var pdfFile = new File(testFolder, "convert_WithPdfOptions.pdf");
+      final var odtFile = new File(testFolder, "convert_WithPdfOptions.odt");
 
-      final int status =
+      final var status =
           Convert.run(
               "-x",
               ExistingProcessAction.KILL.toString(),
@@ -114,7 +114,7 @@ class ConvertITest {
 
       assertThat(status).isEqualTo(0);
       assertThat(odtFile).isFile();
-      final String pdf = FileUtils.readFileToString(pdfFile, StandardCharsets.ISO_8859_1);
+      final var pdf = FileUtils.readFileToString(pdfFile, StandardCharsets.ISO_8859_1);
       assertThat(pdf).startsWith("%PDF-1.5");
       // One page, and tagged by the preset.
       assertThat(pdf.split("/Type\\s*/Page\\b(?!s)", -1)).hasSize(2);
@@ -124,14 +124,14 @@ class ConvertITest {
     @Test
     void withOutputFormat_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
-      final File inputFile = new File(SOURCE_FILE);
+      final var inputFile = new File(SOURCE_FILE);
       FileUtils.copyFileToDirectory(inputFile, testFolder);
-      final File inputFileTmp =
+      final var inputFileTmp =
           new File(testFolder, Objects.requireNonNull(FileUtils.getName(SOURCE_FILE)));
-      final File outputFile =
+      final var outputFile =
           new File(testFolder, FileUtils.getBaseName(inputFile.getName()) + ".pdf");
 
-      final int status =
+      final var status =
           Convert.run(
               "-f", "pdf", "-x", ExistingProcessAction.KILL.toString(), inputFileTmp.getPath());
       assertThat(status).isEqualTo(0);
@@ -142,11 +142,11 @@ class ConvertITest {
     @Test
     void withMultipleFilters_ShouldSucceed(final @TempDir File testFolder) {
 
-      final File filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
-      final File inputFile = new File(SOURCE_FILE);
-      final File outputFile = new File(testFolder, "convert_WithMultipleFilters.pdf");
+      final var filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
+      final var inputFile = new File(SOURCE_FILE);
+      final var outputFile = new File(testFolder, "convert_WithMultipleFilters.pdf");
 
-      final int status =
+      final var status =
           Convert.run(
               "-a",
               filterChainFile.getPath(),
@@ -162,12 +162,12 @@ class ConvertITest {
     @Test
     void withSingleFilter_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
-      final File filterChainFile =
+      final var filterChainFile =
           new File(CONFIG_DIR + "applicationContext_pagesSelectorFilter.xml");
-      final File inputFile = new File(SOURCE_MULTI_FILE);
-      final File outputFile = new File(testFolder, "convert_WithSingleFilter.txt");
+      final var inputFile = new File(SOURCE_MULTI_FILE);
+      final var outputFile = new File(testFolder, "convert_WithSingleFilter.txt");
 
-      final int status =
+      final var status =
           Convert.run(
               "-a",
               filterChainFile.getPath(),
@@ -176,7 +176,7 @@ class ConvertITest {
               inputFile.getPath(),
               outputFile.getPath());
       assertThat(status).isEqualTo(0);
-      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content)
           .as("Check content: %s", content)
           .contains("Test document Page 2")
@@ -187,10 +187,10 @@ class ConvertITest {
     @Test
     void withCustomStoreProperties_ShouldSucceed(final @TempDir File testFolder) {
 
-      final File inputFile = new File(SOURCE_MULTI_FILE);
-      final File outputFile = new File(testFolder, "convert_WithCustomStoreProperties.pdf");
+      final var inputFile = new File(SOURCE_MULTI_FILE);
+      final var outputFile = new File(testFolder, "convert_WithCustomStoreProperties.pdf");
 
-      final int status =
+      final var status =
           Convert.run(
               "-sFDPageRange=2-2",
               "-x",
@@ -212,7 +212,7 @@ class ConvertITest {
     @Test
     void withAllCustomizableOption_ShouldExecuteAndExitWithCode0() {
 
-      final int status =
+      final var status =
           Convert.run(
               "-i",
               LocalOfficeUtils.getDefaultOfficeHome().getPath(),

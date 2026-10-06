@@ -74,7 +74,7 @@ class AbstractOfficeWorkerPoolTest {
   }
 
   private static void await(final BooleanSupplier condition) {
-    final long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+    final var deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
     while (!condition.getAsBoolean()) {
       if (System.nanoTime() > deadline) {
         fail("The expected condition was not met in time");
@@ -135,8 +135,8 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void withFailFast_ShouldWaitForAllTheWorkersToBeReady() throws OfficeException {
 
-      final FakeOfficeWorker worker1 = new FakeOfficeWorker();
-      final FakeOfficeWorker worker2 = new FakeOfficeWorker();
+      final var worker1 = new FakeOfficeWorker();
+      final var worker2 = new FakeOfficeWorker();
 
       pool = builder(worker1, worker2).build();
       assertThat(pool.getWorkerStates()).isEmpty();
@@ -189,8 +189,8 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void withFailFastAndWorkerThatCannotStart_ShouldThrowAndShutdown() {
 
-      final FakeOfficeWorker good = new FakeOfficeWorker();
-      final FakeOfficeWorker bad = new FakeOfficeWorker();
+      final var good = new FakeOfficeWorker();
+      final var bad = new FakeOfficeWorker();
       bad.failingStarts.set(1);
       pool = builder(good, bad).build();
 
@@ -211,7 +211,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void withFailFastAndUnexpectedStartFailure_ShouldThrowOfficeException() {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       worker.failingStarts.set(1);
       worker.failWithRuntimeException = true;
       pool = builder(worker).build();
@@ -225,12 +225,12 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void withFailFastWhenInterrupted_ShouldThrowAndShutdown() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       worker.startGate = new CountDownLatch(1);
       pool = builder(worker).build();
 
-      final AtomicReference<Throwable> thrown = new AtomicReference<>();
-      final Thread starter =
+      final var thrown = new AtomicReference<Throwable>();
+      final var starter =
           new Thread(
               () -> {
                 try {
@@ -257,7 +257,7 @@ class AbstractOfficeWorkerPoolTest {
 
       // The start of the worker takes longer than the execution timeout: the task must wait in
       // the queue, and not fail with an execution timeout.
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       worker.startGate = new CountDownLatch(1);
       pool = builder(worker).startFailFast(false).taskExecutionTimeout(50L).build();
 
@@ -266,7 +266,7 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(pool.getWorkerStates()).containsExactly(OfficeWorkerState.STARTING);
       assertThat(pool.isRunning()).isFalse();
 
-      final CompletableFuture<Void> future = pool.submit(NOOP);
+      final var future = pool.submit(NOOP);
       Thread.sleep(150);
       assertThat(future).isNotDone();
       assertThat(pool.getQueueSize()).isEqualTo(1);
@@ -282,7 +282,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void withoutFailFastAndFailingStarts_ShouldRetryUntilReady() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       worker.failingStarts.set(3);
       worker.failWithRuntimeException = true;
       pool = builder(worker).startFailFast(false).build();
@@ -299,7 +299,7 @@ class AbstractOfficeWorkerPoolTest {
     void whenTempDirExists_ShouldReplaceIt() throws Exception {
 
       pool = builder(new FakeOfficeWorker()).build();
-      final File leftover = new File(pool.getTempDir(), "leftover.txt");
+      final var leftover = new File(pool.getTempDir(), "leftover.txt");
       assertThat(pool.getTempDir().mkdirs()).isTrue();
       Files.writeString(leftover.toPath(), "old");
 
@@ -312,9 +312,9 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenTempDirCannotBeCreated_ShouldThrowOfficeException() throws IOException {
 
-      final File notADirectory = new File(workingDir, "file.txt");
+      final var notADirectory = new File(workingDir, "file.txt");
       Files.writeString(notADirectory.toPath(), "content");
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       pool = FakeOfficeWorkerPool.builder().workingDir(notADirectory).workers(worker).build();
 
       assertThatExceptionOfType(OfficeException.class)
@@ -330,9 +330,9 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void shouldExecuteTheTaskOnAWorker() throws OfficeException {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
-      final AtomicBoolean done = new AtomicBoolean();
+      final var done = new AtomicBoolean();
 
       pool.execute(context -> done.set(true));
 
@@ -344,7 +344,7 @@ class AbstractOfficeWorkerPoolTest {
     void whenTaskFails_ShouldThrowItsOfficeException() throws OfficeException {
 
       started(new FakeOfficeWorker());
-      final OfficeException failure = new OfficeException("The task failed");
+      final var failure = new OfficeException("The task failed");
 
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(
@@ -403,13 +403,13 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenCallerIsInterrupted_ShouldAbortTheTask() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
-      final BlockingTask task = new BlockingTask();
+      final var task = new BlockingTask();
 
-      final AtomicReference<Throwable> thrown = new AtomicReference<>();
-      final AtomicBoolean interruptedAfter = new AtomicBoolean();
-      final Thread caller =
+      final var thrown = new AtomicReference<Throwable>();
+      final var interruptedAfter = new AtomicBoolean();
+      final var caller =
           new Thread(
               () -> {
                 try {
@@ -442,9 +442,9 @@ class AbstractOfficeWorkerPoolTest {
     void shouldReturnAFutureCompletedWhenTheTaskIsDone() throws Exception {
 
       started(new FakeOfficeWorker());
-      final BlockingTask task = new BlockingTask();
+      final var task = new BlockingTask();
 
-      final CompletableFuture<Void> future = pool.submit(task);
+      final var future = pool.submit(task);
       task.awaitStarted();
       assertThat(future).isNotDone();
       assertThat(pool.getWorkerStates()).containsExactly(OfficeWorkerState.BUSY);
@@ -459,15 +459,15 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenQueueIsFull_ShouldFailAtOnce() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       pool = builder(worker).taskQueueCapacity(1).build();
       pool.start();
-      final BlockingTask running = new BlockingTask();
-      final CompletableFuture<Void> first = pool.submit(running);
+      final var running = new BlockingTask();
+      final var first = pool.submit(running);
       running.awaitStarted();
 
-      final CompletableFuture<Void> waiting = pool.submit(NOOP);
-      final CompletableFuture<Void> rejected = pool.submit(NOOP);
+      final var waiting = pool.submit(NOOP);
+      final var rejected = pool.submit(NOOP);
 
       assertThat(rejected).isCompletedExceptionally();
       assertThat(failureOf(rejected))
@@ -483,13 +483,13 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenCancelledWhileWaiting_ShouldNeverExecuteTheTask() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
-      final BlockingTask running = new BlockingTask();
-      final CompletableFuture<Void> first = pool.submit(running);
+      final var running = new BlockingTask();
+      final var first = pool.submit(running);
       running.awaitStarted();
-      final AtomicBoolean executed = new AtomicBoolean();
-      final CompletableFuture<Void> waiting = pool.submit(context -> executed.set(true));
+      final var executed = new AtomicBoolean();
+      final var waiting = pool.submit(context -> executed.set(true));
       assertThat(pool.getQueueSize()).isEqualTo(1);
 
       assertThat(waiting.cancel(true)).isTrue();
@@ -505,10 +505,10 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenCancelledWhileRunning_ShouldAbortAndRestartTheWorker() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
-      final BlockingTask task = new BlockingTask();
-      final CompletableFuture<Void> future = pool.submit(task);
+      final var task = new BlockingTask();
+      final var future = pool.submit(task);
       task.awaitStarted();
 
       assertThat(future.cancel(true)).isTrue();
@@ -523,9 +523,9 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenCancelledAfterCompletion_ShouldDoNothing() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
-      final CompletableFuture<Void> future = pool.submit(NOOP);
+      final var future = pool.submit(NOOP);
       future.get(10, TimeUnit.SECONDS);
 
       assertThat(future.cancel(true)).isFalse();
@@ -539,8 +539,8 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenAWorkerIsRestarting_ShouldGiveTheTasksToTheReadyWorkers() throws Exception {
 
-      final FakeOfficeWorker restarting = new FakeOfficeWorker();
-      final FakeOfficeWorker ready = new FakeOfficeWorker();
+      final var restarting = new FakeOfficeWorker();
+      final var ready = new FakeOfficeWorker();
       started(restarting, ready);
 
       // The first worker loses its office process, and its restart takes a long time.
@@ -548,7 +548,7 @@ class AbstractOfficeWorkerPoolTest {
       restarting.setReady(false);
       await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.RESTARTING);
 
-      for (int i = 0; i < 5; i++) {
+      for (var i = 0; i < 5; i++) {
         pool.execute(NOOP);
       }
 
@@ -563,7 +563,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenAWorkerIsNoLongerReadyWhenItTakesATask_ShouldRestartFirst() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       pool = builder(worker).build();
       // The worker waits for a task without checking that it is still ready.
       pool.setIdleCheckInterval(60_000L);
@@ -571,7 +571,7 @@ class AbstractOfficeWorkerPoolTest {
       await(() -> pool.getWorkerStates().get(0) == OfficeWorkerState.READY);
 
       // The office process is lost at the moment the worker takes the task.
-      final AtomicBoolean lost = new AtomicBoolean();
+      final var lost = new AtomicBoolean();
       worker.onIsReady =
           () -> {
             if (lost.compareAndSet(false, true)) {
@@ -587,7 +587,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenAnIdleWorkerIsNoLongerReady_ShouldRestartIt() throws OfficeException {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
 
       worker.setReady(false);
@@ -599,11 +599,11 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenAWorkerReachesItsTaskLimit_ShouldRestartItBetweenTheTasks() throws OfficeException {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       worker.maxTasks = 2;
       started(worker);
 
-      for (int i = 0; i < 5; i++) {
+      for (var i = 0; i < 5; i++) {
         pool.execute(NOOP);
       }
 
@@ -615,7 +615,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenARestartFails_ShouldRetryAndKeepTheTasksWaiting() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
 
       worker.failingStarts.set(2);
@@ -631,9 +631,9 @@ class AbstractOfficeWorkerPoolTest {
     void whenATaskWasEndedWhileOutOfTheQueue_ShouldSkipIt() throws OfficeException {
 
       // A worker can put back a task that timed out or was cancelled in the meantime.
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
-      final OfficeJob ended = new OfficeJob(NOOP);
+      final var ended = new OfficeJob(NOOP);
       assertThat(ended.tryEndWaiting()).isTrue();
 
       pool.requeueJob(ended);
@@ -651,13 +651,13 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenNoWorkerTakesTheTaskInTime_ShouldFailWithoutExecutingIt() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       pool = builder(worker).taskQueueTimeout(100L).build();
       pool.start();
-      final BlockingTask running = new BlockingTask();
-      final CompletableFuture<Void> first = pool.submit(running);
+      final var running = new BlockingTask();
+      final var first = pool.submit(running);
       running.awaitStarted();
-      final AtomicBoolean executed = new AtomicBoolean();
+      final var executed = new AtomicBoolean();
 
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> pool.execute(context -> executed.set(true)))
@@ -678,7 +678,7 @@ class AbstractOfficeWorkerPoolTest {
 
       // Waiting for a worker to start is queue time: the task fails with the queue timeout, and
       // the worker that is starting is left alone.
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       worker.startGate = new CountDownLatch(1);
       pool = builder(worker).startFailFast(false).taskQueueTimeout(100L).build();
       pool.start();
@@ -695,10 +695,10 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenTheExecutionTakesTooLong_ShouldFailAbortAndRestartTheWorker() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       pool = builder(worker).taskExecutionTimeout(100L).build();
       pool.start();
-      final BlockingTask task = new BlockingTask();
+      final var task = new BlockingTask();
 
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> pool.execute(task))
@@ -716,14 +716,14 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenATimedOutTaskEndsLater_ShouldDiscardItsResultAndRestartTheWorker() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       pool = builder(worker).taskExecutionTimeout(100L).build();
       pool.start();
 
       // A task that ignores the interruption, and ends normally after its timeout.
-      final AtomicBoolean release = new AtomicBoolean();
-      final AtomicBoolean ended = new AtomicBoolean();
-      final CompletableFuture<Void> future =
+      final var release = new AtomicBoolean();
+      final var ended = new AtomicBoolean();
+      final var future =
           pool.submit(
               context -> {
                 while (!release.get()) {
@@ -751,9 +751,9 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenTheJobIsAlreadyDone_ShouldDoNothing() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
-      final OfficeJob job = new OfficeJob(NOOP);
+      final var job = new OfficeJob(NOOP);
       pool.enqueue(job);
       job.getFuture().get(10, TimeUnit.SECONDS);
 
@@ -774,13 +774,13 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void shouldFailTheTasksStopTheWorkersAndDeleteTheTempDir() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
-      final File tempDir = pool.getTempDir();
-      final BlockingTask task = new BlockingTask();
-      final CompletableFuture<Void> running = pool.submit(task);
+      final var tempDir = pool.getTempDir();
+      final var task = new BlockingTask();
+      final var running = pool.submit(task);
       task.awaitStarted();
-      final CompletableFuture<Void> waiting = pool.submit(NOOP);
+      final var waiting = pool.submit(NOOP);
 
       pool.stop();
 
@@ -799,7 +799,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenNeverStarted_ShouldShutdownWithoutTouchingTheWorkers() throws OfficeException {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       pool = builder(worker).build();
 
       pool.stop();
@@ -813,7 +813,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenAlreadyStopped_ShouldDoNothing() throws OfficeException {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
 
       pool.stop();
@@ -825,7 +825,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whileAWorkerIsStarting_ShouldAbortItsStart() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       worker.startGate = new CountDownLatch(1);
       pool = builder(worker).startFailFast(false).build();
       pool.start();
@@ -839,7 +839,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whileAWorkerWaitsToRetry_ShouldNotWaitForTheDelay() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       worker.failingStarts.set(Integer.MAX_VALUE);
       pool = builder(worker).startFailFast(false).build();
       pool.setRestartDelays(60_000L);
@@ -856,11 +856,11 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenAWorkerFailsToAbortAndStop_ShouldStopAnyway() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
       worker.failAbortAndStop = true;
-      final BlockingTask task = new BlockingTask();
-      final CompletableFuture<Void> running = pool.submit(task);
+      final var task = new BlockingTask();
+      final var running = pool.submit(task);
       task.awaitStarted();
 
       assertThatCode(() -> pool.stop()).doesNotThrowAnyException();
@@ -873,13 +873,13 @@ class AbstractOfficeWorkerPoolTest {
     void whileATimedOutTaskIsStillRunning_ShouldWaitForItWithoutCompletingItAgain()
         throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       pool = builder(worker).taskExecutionTimeout(100L).build();
       pool.start();
 
       // A task that ignores the interruption: it is still running after its timeout.
-      final AtomicBoolean release = new AtomicBoolean();
-      final CompletableFuture<Void> future =
+      final var release = new AtomicBoolean();
+      final var future =
           pool.submit(
               context -> {
                 while (!release.get()) {
@@ -890,9 +890,9 @@ class AbstractOfficeWorkerPoolTest {
                   }
                 }
               });
-      final OfficeException timeout = failureOf(future);
+      final var timeout = failureOf(future);
 
-      final Thread stopper =
+      final var stopper =
           new Thread(
               () -> {
                 try {
@@ -918,7 +918,7 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenInterruptedWhileWaitingForTheWorkers_ShouldStayInterrupted() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
 
       Thread.currentThread().interrupt();
@@ -935,7 +935,7 @@ class AbstractOfficeWorkerPoolTest {
       // A task can be submitted at the very moment the manager stops.
       started(new FakeOfficeWorker());
       pool.stop();
-      final OfficeJob job = new OfficeJob(NOOP);
+      final var job = new OfficeJob(NOOP);
 
       pool.enqueue(job);
 
@@ -947,12 +947,12 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void withAnEndedTaskLeftInTheQueue_ShouldIgnoreIt() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
+      final var worker = new FakeOfficeWorker();
       started(worker);
-      final BlockingTask task = new BlockingTask();
+      final var task = new BlockingTask();
       pool.submit(task);
       task.awaitStarted();
-      final OfficeJob ended = new OfficeJob(NOOP);
+      final var ended = new OfficeJob(NOOP);
       assertThat(ended.tryEndWaiting()).isTrue();
       pool.requeueJob(ended);
 
@@ -971,9 +971,9 @@ class AbstractOfficeWorkerPoolTest {
 
       pool = builder(new FakeOfficeWorker()).build();
 
-      final File first = pool.makeTemporaryFile();
-      final File second = pool.makeTemporaryFile("pdf");
-      final File third = pool.makeTemporaryFile(" ");
+      final var first = pool.makeTemporaryFile();
+      final var second = pool.makeTemporaryFile("pdf");
+      final var third = pool.makeTemporaryFile(" ");
 
       assertThat(pool.getTempDir().getParentFile()).isEqualTo(workingDir);
       assertThat(pool.getTempDir().getName()).startsWith(".jodconverter_");
@@ -989,8 +989,8 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void shouldKeepTheDefaultsWhenGivenNulls() throws Exception {
 
-      final FakeOfficeWorker worker = new FakeOfficeWorker();
-      final FakeOfficeWorkerPool.Builder builder =
+      final var worker = new FakeOfficeWorker();
+      final var builder =
           FakeOfficeWorkerPool.builder()
               .workers(worker)
               .workingDir((File) null)
@@ -1008,10 +1008,10 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(builder.getWorkingDir()).isEqualTo(workingDir);
       assertThat(builder.isInstall()).isTrue();
       pool.start();
-      final BlockingTask running = new BlockingTask();
-      final List<CompletableFuture<Void>> futures = new ArrayList<>();
+      final var running = new BlockingTask();
+      final var futures = new ArrayList<CompletableFuture<Void>>();
       futures.add(pool.submit(running));
-      for (int i = 0; i < 10; i++) {
+      for (var i = 0; i < 10; i++) {
         futures.add(pool.submit(NOOP));
       }
       running.awaitStarted();

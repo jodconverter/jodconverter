@@ -20,11 +20,13 @@
 
 package org.jodconverter.core.office;
 
+import java.io.Serial;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /** An exception that provides information on an error while dealing with office. */
 public class OfficeException extends Exception {
-  private static final long serialVersionUID = -1360754252407765922L;
+  @Serial private static final long serialVersionUID = -1360754252407765922L;
 
   /**
    * Constructs a new office exception with the specified detail message. The cause is not

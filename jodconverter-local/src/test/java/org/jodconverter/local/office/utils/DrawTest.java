@@ -58,8 +58,8 @@ class DrawTest {
     @Test
     void withDrawDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.DRAW_SERVICE)).willReturn(true);
 
@@ -69,8 +69,8 @@ class DrawTest {
     @Test
     void withoutDrawDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.DRAW_SERVICE)).willReturn(false);
 
@@ -93,8 +93,8 @@ class DrawTest {
     @Test
     void withImpressDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.IMPRESS_SERVICE)).willReturn(true);
 
@@ -104,8 +104,8 @@ class DrawTest {
     @Test
     void withoutImpressDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.IMPRESS_SERVICE)).willReturn(false);
 

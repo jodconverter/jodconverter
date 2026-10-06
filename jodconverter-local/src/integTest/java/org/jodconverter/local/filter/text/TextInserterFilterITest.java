@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 
 import java.io.File;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,10 +45,10 @@ class TextInserterFilterITest {
   @Test
   void withCustomizedProperties(final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
+    final var targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
 
     // Create the properties of the filter
-    final Map<String, Object> props =
+    final var props =
         GraphicInserterFilter.createDefaultShapeProperties(
             50, // Horizontal Position, 5 CM
             100 // Vertical Position, 10 CM
@@ -59,8 +58,7 @@ class TextInserterFilterITest {
     props.put("AnchorPageNo", (short) 2);
 
     // Create the TextInserterFilter to test.
-    final TextInserterFilter filter =
-        new TextInserterFilter("This is a test of text insertion", 2, 10, props);
+    final var filter = new TextInserterFilter("This is a test of text insertion", 2, 10, props);
 
     // Convert to PDF
     assertThatCode(
@@ -78,10 +76,10 @@ class TextInserterFilterITest {
   @Test
   void withDefaultProperties(final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".pdf");
+    final var targetFile = new File(testFolder, SOURCE_FILENAME + ".pdf");
 
     // Create the TextInserterFilter to test.
-    final TextInserterFilter filter =
+    final var filter =
         new TextInserterFilter(
             "This is a test of text insertion",
             100, // Width, 10 CM

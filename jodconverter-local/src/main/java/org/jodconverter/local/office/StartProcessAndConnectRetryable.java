@@ -137,7 +137,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
 
   private StartProcessResult startProcess() throws IOException {
 
-    final StartProcessResult attemptResult = new StartProcessResult();
+    final var attemptResult = new StartProcessResult();
 
     // Start the process.
     attemptResult.process = new VerboseProcess(processBuilder.start());
@@ -153,7 +153,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
     }
 
     // Try to retrieve the PID.
-    int tryCount = 0;
+    var tryCount = 0;
     while (true) {
       tryCount++;
       LOGGER.debug("Trying to find pid, attempt #{}", tryCount);
@@ -237,7 +237,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
       throws TemporaryException, OfficeException {
 
     // Here, we can get the exit code of the process.
-    final Integer exitCode = result.process.getExitCode();
+    final var exitCode = result.process.getExitCode();
     if (exitCode == null) {
       // Process is still running; we must retry to reconnect only.
       throw new TemporaryException(ex);

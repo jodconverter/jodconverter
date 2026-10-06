@@ -24,14 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
-import java.nio.file.CopyOption;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -45,21 +38,12 @@ public final class FileUtils {
   private static final char UNIX_SEPARATOR = '/';
   private static final char WINDOWS_SEPARATOR = '\\';
 
-  //  private static int lastIndexOfSeparator(final @NonNull String filename) {
-  //
-  //    final int idx = filename.lastIndexOf(UNIX_SEPARATOR);
-  //    if (idx == -1) {
-  //      return filename.lastIndexOf(WINDOWS_SEPARATOR);
-  //    }
-  //    return idx;
-  //  }
-
   private static boolean endsWithSeparator(final @NonNull String filename) {
 
     if (filename.isEmpty()) {
       return false;
     }
-    final char lastChar = filename.charAt(filename.length() - 1);
+    final var lastChar = filename.charAt(filename.length() - 1);
     return lastChar == UNIX_SEPARATOR || lastChar == WINDOWS_SEPARATOR;
   }
 
@@ -80,7 +64,7 @@ public final class FileUtils {
     AssertUtils.notNull(srcFile, "srcFile must not be null");
     AssertUtils.notNull(destFile, "destFile must not be null");
 
-    final Path srcPath = srcFile.toPath();
+    final var srcPath = srcFile.toPath();
 
     AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
 
@@ -105,8 +89,8 @@ public final class FileUtils {
     AssertUtils.notNull(srcFile, "srcFile must not be null");
     AssertUtils.notNull(destDir, "destDir must not be null");
 
-    final Path srcPath = srcFile.toPath();
-    final Path destPath = destDir.toPath();
+    final var srcPath = srcFile.toPath();
+    final var destPath = destDir.toPath();
 
     AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
     AssertUtils.isTrue(!Files.isRegularFile(destPath), "destDir cannot be an existing file");
@@ -114,7 +98,7 @@ public final class FileUtils {
     // Ensure the target directory exists
     destPath.toFile().mkdirs();
 
-    final Path destFilePath = destPath.resolve(srcFile.getName());
+    final var destFilePath = destPath.resolve(srcFile.getName());
     Files.copy(srcPath, destFilePath, options);
     destFilePath.toFile().setLastModified(srcFile.lastModified());
   }
@@ -135,8 +119,8 @@ public final class FileUtils {
     AssertUtils.notNull(srcDir, "srcDir must not be null");
     AssertUtils.notNull(destDir, "destDir must not be null");
 
-    final Path srcPath = srcDir.toPath();
-    final Path destPath = destDir.toPath();
+    final var srcPath = srcDir.toPath();
+    final var destPath = destDir.toPath();
 
     AssertUtils.isTrue(Files.isDirectory(srcPath), "srcDir must be an existing directory");
     AssertUtils.isTrue(!Files.isRegularFile(destPath), "destDir cannot be an existing file");
@@ -170,7 +154,7 @@ public final class FileUtils {
       return false;
     }
 
-    final Path pathToDelete = file.toPath();
+    final var pathToDelete = file.toPath();
 
     if (Files.isDirectory(pathToDelete)) {
       try {
@@ -223,8 +207,8 @@ public final class FileUtils {
     if (endsWithSeparator(filename)) {
       return "";
     }
-    final String name = Paths.get(filename).getFileName().toString();
-    final int i = name.lastIndexOf('.');
+    final var name = Path.of(filename).getFileName().toString();
+    final var i = name.lastIndexOf('.');
     if (i == -1) {
       return name;
     }
@@ -244,9 +228,9 @@ public final class FileUtils {
     if (endsWithSeparator(filename)) {
       return "";
     }
-    final String name = Paths.get(filename).getFileName().toString();
-    final int i = name.lastIndexOf('.');
-    if (i == -1 || i == name.length()) {
+    final var name = Path.of(filename).getFileName().toString();
+    final var i = name.lastIndexOf('.');
+    if (i == -1) {
       return "";
     }
     return name.substring(i + 1);
@@ -266,7 +250,7 @@ public final class FileUtils {
     if (endsWithSeparator(filename)) {
       return "";
     }
-    return Paths.get(filename).getFileName().toString();
+    return Path.of(filename).getFileName().toString();
   }
 
   /**
@@ -282,7 +266,7 @@ public final class FileUtils {
     AssertUtils.notNull(file, "file must not be null");
     AssertUtils.notNull(encoding, "encoding must not be null");
 
-    final Path srcPath = file.toPath();
+    final var srcPath = file.toPath();
 
     AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
 
@@ -313,7 +297,7 @@ public final class FileUtils {
     public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes)
         throws IOException {
 
-      final Path targetFile = targetDir.resolve(sourceDir.relativize(file));
+      final var targetFile = targetDir.resolve(sourceDir.relativize(file));
       Files.copy(file, targetFile, options);
       targetFile.toFile().setLastModified(file.toFile().lastModified());
 
@@ -324,7 +308,7 @@ public final class FileUtils {
     public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attributes)
         throws IOException {
 
-      final Path newDir = targetDir.resolve(sourceDir.relativize(dir));
+      final var newDir = targetDir.resolve(sourceDir.relativize(dir));
       Files.createDirectory(newDir);
 
       return FileVisitResult.CONTINUE;

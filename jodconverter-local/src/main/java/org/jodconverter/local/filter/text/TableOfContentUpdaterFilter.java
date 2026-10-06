@@ -82,27 +82,26 @@ public class TableOfContentUpdaterFilter implements Filter {
   private void updateToc(final XComponent document) throws Exception {
 
     // Get the DocumentIndexesSupplier interface of the document
-    final XDocumentIndexesSupplier documentIndexesSupplier =
-        Lo.qi(XDocumentIndexesSupplier.class, document);
+    final var documentIndexesSupplier = Lo.qi(XDocumentIndexesSupplier.class, document);
 
     // Get an XIndexAccess of DocumentIndexes
-    final XIndexAccess documentIndexes =
+    final var documentIndexes =
         Lo.qi(XIndexAccess.class, documentIndexesSupplier.getDocumentIndexes());
 
-    for (int i = 0; i < documentIndexes.getCount(); i++) {
+    for (var i = 0; i < documentIndexes.getCount(); i++) {
 
       // Update each index
-      final XDocumentIndex docIndex = Lo.qi(XDocumentIndex.class, documentIndexes.getByIndex(i));
+      final var docIndex = Lo.qi(XDocumentIndex.class, documentIndexes.getByIndex(i));
 
       // Update the level if required
       if (level > 0) {
 
         // Get the service interface of the ContentIndex
-        final String indexType = docIndex.getServiceName();
+        final var indexType = docIndex.getServiceName();
 
         if (indexType.contains("com.sun.star.text.ContentIndex")) {
 
-          final XPropertySet index = Lo.qi(XPropertySet.class, docIndex);
+          final var index = Lo.qi(XPropertySet.class, docIndex);
 
           // Set TOC levels
           index.setPropertyValue("Level", (short) level);

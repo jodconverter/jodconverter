@@ -34,7 +34,8 @@ abstract class AbstractPdfOptionGroup {
   }
 
   // Sets the value of an option, or removes the option if the value is null.
-  /* default */ final void set(final PdfOption option, final Object value) {
+  /* default */
+  final void set(final PdfOption option, final Object value) {
     if (value == null) {
       values.remove(option);
     } else {
@@ -43,7 +44,8 @@ abstract class AbstractPdfOptionGroup {
   }
 
   // Sets a text option, or removes it if the text is null.
-  /* default */ final void setText(final PdfOption option, final String text) {
+  /* default */
+  final void setText(final PdfOption option, final String text) {
     if (text != null) {
       AssertUtils.notBlank(text, option.getFilterDataName() + " must not be blank");
     }
@@ -51,7 +53,8 @@ abstract class AbstractPdfOptionGroup {
   }
 
   // Sets a number option that must not be lower than a minimum.
-  /* default */ final void setAtLeast(
+  /* default */
+  final void setAtLeast(
       final PdfOption option, final String name, final int value, final int minimum) {
     AssertUtils.isTrue(value >= minimum, name + " must be at least " + minimum);
     set(option, value);

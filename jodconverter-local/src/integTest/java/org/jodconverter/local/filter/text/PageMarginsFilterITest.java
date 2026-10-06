@@ -43,7 +43,7 @@ class PageMarginsFilterITest {
   @Test
   void withMargins(final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".margins.pdf");
+    final var targetFile = new File(testFolder, SOURCE_FILENAME + ".margins.pdf");
 
     // Test the filter
     assertThatCode(
@@ -61,7 +61,7 @@ class PageMarginsFilterITest {
   @Test
   void withNullMargins(final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".nullmargins.pdf");
+    final var targetFile = new File(testFolder, SOURCE_FILENAME + ".nullmargins.pdf");
 
     // Test the filter
     assertThatCode(

@@ -30,7 +30,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.DocumentConverter;
-import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.TemporaryFileMaker;
@@ -77,8 +76,8 @@ public abstract class AbstractConverter implements DocumentConverter {
   public @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
       final @NonNull File source) {
 
-    final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(source);
-    final DocumentFormat format =
+    final var specs = new SourceDocumentSpecsFromFile(source);
+    final var format =
         formatRegistry.getFormatByExtension(
             Objects.requireNonNull(FileUtils.getExtension(source.getName())));
     if (format != null) {
@@ -120,7 +119,7 @@ public abstract class AbstractConverter implements DocumentConverter {
   private AbstractConversionJobWithSourceFormatUnspecified newJob(
       final AbstractSourceDocumentSpecs source) {
 
-    final AbstractConversionJobWithSourceFormatUnspecified job = convert(source);
+    final var job = convert(source);
     job.setDefaultTargetOptions(defaultTargetOptions);
     return job;
   }

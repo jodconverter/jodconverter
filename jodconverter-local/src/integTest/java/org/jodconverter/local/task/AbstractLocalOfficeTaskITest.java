@@ -52,7 +52,7 @@ class AbstractLocalOfficeTaskITest {
   void close_WhenVetoCloseExceptionCatch_DocumentNotClosed(final OfficeManager manager)
       throws OfficeException {
 
-    final VetoCloseOfficeTask task = new VetoCloseOfficeTask(new FooSourceSpecs(SOURCE_FILE));
+    final var task = new VetoCloseOfficeTask(new FooSourceSpecs(SOURCE_FILE));
 
     try {
       manager.execute(task);
@@ -112,8 +112,8 @@ class AbstractLocalOfficeTaskITest {
     @SuppressWarnings("NullableProblems")
     public void execute(final OfficeContext context) throws OfficeException {
 
-      final LocalOfficeContext localContext = (LocalOfficeContext) context;
-      final XComponent document = loadDocument(localContext, source.getFile());
+      final var localContext = (LocalOfficeContext) context;
+      final var document = loadDocument(localContext, source.getFile());
       closeDocument(document);
     }
 

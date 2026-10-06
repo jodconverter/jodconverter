@@ -106,7 +106,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
         LOGGER.debug("Interaction detected with request {}", interactionRequest.getRequest());
       }
 
-      final Object request = interactionRequest.getRequest();
+      final var request = interactionRequest.getRequest();
 
       if (request instanceof PasswordRequest pwdRequest) {
         passwordRequest = pwdRequest;
@@ -172,7 +172,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
   // Gets the office properties to apply when the input file will be loaded.
   protected @NonNull Map<@NonNull String, @NonNull Object> getLoadProperties() {
 
-    final Map<String, Object> loadProps = new HashMap<>();
+    final var loadProps = new HashMap<String, Object>();
     if (source.getFormat() != null) {
       appendProperties(loadProps, source.getFormat().getLoadProperties());
     }
@@ -195,13 +195,13 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       final @NonNull LocalOfficeContext context, final @NonNull File sourceFile)
       throws OfficeException {
 
-    final XComponentLoader loader = context.getComponentLoader();
+    final var loader = context.getComponentLoader();
 
     AssertUtils.notNull(loader, "Context component loader must not be null");
 
     try {
-      final Map<String, Object> loadProps = getLoadProperties();
-      final XComponent document = loadDocumentFromURL(loader, sourceFile, loadProps);
+      final var loadProps = getLoadProperties();
+      final var document = loadDocumentFromURL(loader, sourceFile, loadProps);
 
       // The document cannot be null
       AssertUtils.notNull(document, ERROR_MESSAGE_LOAD + sourceFile.getName());
@@ -225,7 +225,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
     try {
       if (useStreamAdapters) {
         try {
-          final byte[] bytes = Files.readAllBytes(sourceFile.toPath());
+          final var bytes = Files.readAllBytes(sourceFile.toPath());
           loadProps.put("InputStream", new ByteArrayToXInputStreamAdapter(bytes));
 
           document =
@@ -241,12 +241,14 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       }
     } catch (com.sun.star.lang.DisposedException exception) {
       // LibreOffice 24+ will throw this exception for password protection.
-      handlePasswordProtection(document, loadProps);
+      handlePasswordProtection();
       throw exception;
     }
 
     // Handle password protection request to throw a meaningful exception, if required.
-    handlePasswordProtection(document, loadProps);
+    if (document == null) {
+      handlePasswordProtection();
+    }
     return document;
   }
 
@@ -257,7 +259,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
 
       // Closing the converted document. Use XCloseable.close if the
       // interface is supported, otherwise use XComponent.dispose
-      final XCloseable closeable = Lo.qiOptional(XCloseable.class, document).orElse(null);
+      final var closeable = Lo.qiOptional(XCloseable.class, document).orElse(null);
       if (closeable == null) {
         // If close is not supported by this model - try to dispose it.
         document.dispose();
@@ -276,11 +278,9 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
     }
   }
 
-  private void handlePasswordProtection(
-      final XComponent document, final Map<String, Object> loadProps) throws OfficeException {
+  private void handlePasswordProtection() throws OfficeException {
 
-    if (document == null
-        && passwordPasswordInteractionHandler != null
+    if (passwordPasswordInteractionHandler != null
         && passwordPasswordInteractionHandler.hasPasswordInteractionRequest()) {
       throw new PasswordProtectedException(
           "Document password requested for " + passwordPasswordInteractionHandler.getDocumentName(),

@@ -6,7 +6,7 @@ with the Java Library page and come back for details.
 - Java Library: [Java Library](java-library/index.md)
 - Command Line Tool: [Command Line Tool](command-line-tool.md)
 
----
+______________________________________________________________________
 
 ## jodconverter-cli
 
@@ -96,7 +96,7 @@ It auto-configures and manages all necessary beans, including the office manager
 sensible defaults and externalized configuration properties, allowing developers to quickly enable document conversion
 with minimal setup.
 
----
+______________________________________________________________________
 
 ## Choosing a module
 

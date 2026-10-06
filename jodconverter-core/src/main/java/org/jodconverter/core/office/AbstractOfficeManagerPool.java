@@ -114,7 +114,7 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
       }
 
       // Start all entries and make them available to execute tasks.
-      for (final E manager : entries) {
+      for (final var manager : entries) {
         manager.start();
         releaseManager(manager);
       }
@@ -142,7 +142,7 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
         pool.clear();
 
         // Stop all the managers.
-        for (final E manager : entries) {
+        for (final var manager : entries) {
           manager.stop();
         }
 
@@ -157,7 +157,7 @@ public abstract class AbstractOfficeManagerPool<E extends AbstractOfficeManagerP
 
     if (poolState.get() == POOL_STARTED) {
       // Check for at least 1 available entry.
-      for (final E manager : entries) {
+      for (final var manager : entries) {
         if (manager.isRunning()) {
           return true;
         }

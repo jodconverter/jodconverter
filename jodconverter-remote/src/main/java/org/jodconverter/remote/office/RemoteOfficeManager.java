@@ -131,7 +131,7 @@ public final class RemoteOfficeManager
       // Validate the working directory
       OfficeUtils.validateWorkingDir(workingDir);
 
-      final RemoteOfficeManager manager =
+      final var manager =
           new RemoteOfficeManager(
               poolSize,
               workingDir,

@@ -22,23 +22,10 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
@@ -70,7 +57,7 @@ class LocalOfficeManagerPoolEntryITest {
     @Test
     void whenEverythingWorksFine_ShouldSucceed() throws OfficeException {
 
-      final LocalOfficeManagerPoolEntry poolEntry =
+      final var poolEntry =
           new LocalOfficeManagerPoolEntry(
               DEFAULT_MAX_TASKS_PER_PROCESS,
               DEFAULT_TASK_EXECUTION_TIMEOUT,
@@ -92,7 +79,7 @@ class LocalOfficeManagerPoolEntryITest {
         poolEntry.start();
         assertStartedAndConnected(poolEntry);
 
-        final MockOfficeTask task = new MockOfficeTask();
+        final var task = new MockOfficeTask();
         poolEntry.execute(task);
         assertThat(task.isCompleted()).isTrue();
 
@@ -107,8 +94,8 @@ class LocalOfficeManagerPoolEntryITest {
     @Test
     void whenOfficeProcessCrash_ShouldRestartAfterCrash() throws OfficeException {
 
-      final OfficeConnection connection = new OfficeConnection(CONNECT_URL);
-      final LocalOfficeProcessManager processManager =
+      final var connection = new OfficeConnection(CONNECT_URL);
+      final var processManager =
           new LocalOfficeProcessManager(
               CONNECT_URL,
               LocalOfficeUtils.getDefaultOfficeHome(),
@@ -123,7 +110,7 @@ class LocalOfficeManagerPoolEntryITest {
               DEFAULT_START_FAIL_FAST,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               connection);
-      final LocalOfficeManagerPoolEntry poolEntry =
+      final var poolEntry =
           new LocalOfficeManagerPoolEntry(
               DEFAULT_MAX_TASKS_PER_PROCESS, DEFAULT_TASK_EXECUTION_TIMEOUT, processManager);
       try {
@@ -131,17 +118,17 @@ class LocalOfficeManagerPoolEntryITest {
         assertStartedAndConnected(poolEntry);
 
         // Submit the task to an executor
-        final ExecutorService pool = Executors.newFixedThreadPool(1);
+        final var pool = Executors.newFixedThreadPool(1);
         try {
-          final Callable<Boolean> task = new RestartAfterCrashTask(poolEntry);
-          final Future<Boolean> future = pool.submit(task);
+          final var task = new RestartAfterCrashTask(poolEntry);
+          final var future = pool.submit(task);
 
           TestUtil.sleepQuietly(500L);
 
           // Simulate crash
-          final VerboseProcess verboseProcess =
+          final var verboseProcess =
               (VerboseProcess) ReflectionTestUtils.getField(processManager, "process");
-          final Process underlyingProcess = verboseProcess.getProcess();
+          final var underlyingProcess = verboseProcess.getProcess();
           assertThat(underlyingProcess).isNotNull();
           LOGGER.debug("Simulating the crash");
           underlyingProcess.destroy();
@@ -161,7 +148,7 @@ class LocalOfficeManagerPoolEntryITest {
 
         assertStartedAndConnected(poolEntry);
 
-        final MockOfficeTask goodTask = new MockOfficeTask();
+        final var goodTask = new MockOfficeTask();
         poolEntry.execute(goodTask);
         assertThat(goodTask.isCompleted()).isTrue();
 
@@ -176,7 +163,7 @@ class LocalOfficeManagerPoolEntryITest {
     @Test
     void whenTimeoutExceptionOccured_ShouldRestartAfterTaskTimeout() throws OfficeException {
 
-      final LocalOfficeManagerPoolEntry poolEntry =
+      final var poolEntry =
           new LocalOfficeManagerPoolEntry(
               DEFAULT_MAX_TASKS_PER_PROCESS,
               1_500L,
@@ -198,7 +185,7 @@ class LocalOfficeManagerPoolEntryITest {
         poolEntry.start();
         assertStartedAndConnected(poolEntry);
 
-        final MockOfficeTask task = new MockOfficeTask(2_000L);
+        final var task = new MockOfficeTask(2_000L);
 
         assertThatExceptionOfType(OfficeException.class)
             .isThrownBy(() -> poolEntry.execute(task))
@@ -208,7 +195,7 @@ class LocalOfficeManagerPoolEntryITest {
 
         assertStartedAndConnected(poolEntry);
 
-        final MockOfficeTask goodTask = new MockOfficeTask();
+        final var goodTask = new MockOfficeTask();
         poolEntry.execute(goodTask);
         assertThat(goodTask.isCompleted()).isTrue();
 
@@ -226,7 +213,7 @@ class LocalOfficeManagerPoolEntryITest {
     @Test
     void whenMaxTasksPerProcessReached_ShouldRestart() throws OfficeException {
 
-      final LocalOfficeManagerPoolEntry poolEntry =
+      final var poolEntry =
           new LocalOfficeManagerPoolEntry(
               3,
               DEFAULT_TASK_EXECUTION_TIMEOUT,
@@ -248,8 +235,8 @@ class LocalOfficeManagerPoolEntryITest {
         poolEntry.start();
         assertStartedAndConnected(poolEntry);
 
-        for (int i = 0; i < 3; i++) {
-          final MockOfficeTask task = new MockOfficeTask();
+        for (var i = 0; i < 3; i++) {
+          final var task = new MockOfficeTask();
           poolEntry.execute(task);
           assertThat(task.isCompleted()).isTrue();
           assertThat(poolEntry)
@@ -258,7 +245,7 @@ class LocalOfficeManagerPoolEntryITest {
               .hasValue(i + 1);
         }
 
-        final MockOfficeTask task = new MockOfficeTask();
+        final var task = new MockOfficeTask();
         poolEntry.execute(task);
         assertThat(task.isCompleted()).isTrue();
         assertThat(poolEntry)
@@ -276,11 +263,11 @@ class LocalOfficeManagerPoolEntryITest {
 
   private static void assertStartedAndConnected(final LocalOfficeManagerPoolEntry manager) {
 
-    final long start = System.currentTimeMillis();
+    final var start = System.currentTimeMillis();
 
     TestUtil.sleepQuietly(START_INITIAL_WAIT);
 
-    final long limit = start + START_WAIT_TIMEOUT;
+    final var limit = start + START_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (manager.isRunning()) {
         return;
@@ -297,11 +284,11 @@ class LocalOfficeManagerPoolEntryITest {
 
   private static void assertStoppedAndDisconnected(final LocalOfficeManagerPoolEntry manager) {
 
-    final long start = System.currentTimeMillis();
+    final var start = System.currentTimeMillis();
 
     TestUtil.sleepQuietly(STOP_INITIAL_WAIT);
 
-    final long limit = start + STOP_WAIT_TIMEOUT;
+    final var limit = start + STOP_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (!manager.isRunning()) {
         return;
@@ -322,7 +309,7 @@ class LocalOfficeManagerPoolEntryITest {
 
     @Override
     public Boolean call() throws Exception {
-      final MockOfficeTask badTask = new MockOfficeTask(10 * 1000);
+      final var badTask = new MockOfficeTask(10 * 1000);
 
       officeManager.execute(badTask);
       return true;

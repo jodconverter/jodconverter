@@ -22,56 +22,9 @@ package org.jodconverter.core.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.BMP;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.CSV;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.DOC;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.DOCX;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.DOTX;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.FODG;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.FODP;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.FODS;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.FODT;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.GIF;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.HTML;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.JPEG;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.MARKDOWN;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODG;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODP;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODS;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODT;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.OTG;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.OTP;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.OTS;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.OTT;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.PDF;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.PNG;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.POTX;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.PPT;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.PPTX;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.RTF;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.SVG;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.SWF;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.SXC;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.SXI;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.SXW;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.TIFF;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.TSV;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.TXT;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.VSD;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.VSDX;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.WPD;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XHTML;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLS;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLSM;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLSX;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLTM;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLTX;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.getFormatByExtension;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.getFormatByMediaType;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.getOutputFormats;
+import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.*;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.assertj.core.api.AutoCloseableSoftAssertions;
@@ -99,7 +52,7 @@ class DefaultDocumentFormatRegistryTest {
   @Test
   void getInstance_AllOutputFormatsLoadedSuccessfully() {
 
-    try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
+    try (var ass = new AutoCloseableSoftAssertions()) {
       // TEXT output format
       assertExpectedExtensions(
           ass,
@@ -196,7 +149,7 @@ class DefaultDocumentFormatRegistryTest {
   @Test
   void getFormatByExtension_AllFormatsLoadedSuccessfully() {
 
-    try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
+    try (var ass = new AutoCloseableSoftAssertions()) {
       assertByExt(ass, "pdf", PDF);
       assertByExt(ass, "swf", SWF);
       assertByExt(ass, "html", HTML);
@@ -254,7 +207,7 @@ class DefaultDocumentFormatRegistryTest {
   @Test
   void getFormatByMediaType_AllFormatsLoadedSuccessfully() {
 
-    try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
+    try (var ass = new AutoCloseableSoftAssertions()) {
       assertByType(ass, "application/pdf", PDF);
       assertByType(ass, "application/x-shockwave-flash", SWF);
       assertByType(ass, "text/html", HTML);
@@ -309,7 +262,7 @@ class DefaultDocumentFormatRegistryTest {
   @Test
   void getFormatX_ReturnReadOnlyFormat() {
 
-    final DocumentFormat format = CSV;
+    final var format = CSV;
 
     assertThat(format.getLoadProperties()).isNotNull();
     assertThat(format.getStoreProperties()).isNotNull();
@@ -320,7 +273,7 @@ class DefaultDocumentFormatRegistryTest {
     assertThatExceptionOfType(UnsupportedOperationException.class)
         .isThrownBy(() -> format.getStoreProperties().put(DocumentFamily.DRAWING, new HashMap<>()));
 
-    final Map<String, Object> map = format.getStoreProperties(DocumentFamily.SPREADSHEET);
+    final var map = format.getStoreProperties(DocumentFamily.SPREADSHEET);
     assertThat(map).isNotNull();
 
     assertThatExceptionOfType(UnsupportedOperationException.class)

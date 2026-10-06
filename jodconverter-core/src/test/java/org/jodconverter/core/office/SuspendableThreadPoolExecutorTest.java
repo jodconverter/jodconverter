@@ -21,9 +21,7 @@
 package org.jodconverter.core.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -82,7 +80,7 @@ class SuspendableThreadPoolExecutorTest {
     @Test
     void whenNotAvailable_ShouldNotExecuteTask() {
 
-      final AtomicBoolean executed = new AtomicBoolean();
+      final var executed = new AtomicBoolean();
       executor.execute(() -> executed.set(true));
       sleep();
       assertThat(executed).isFalse();
@@ -91,7 +89,7 @@ class SuspendableThreadPoolExecutorTest {
     @Test
     void whenAvailable_ShouldExecuteTask() {
 
-      final AtomicBoolean executed = new AtomicBoolean();
+      final var executed = new AtomicBoolean();
       executor.setAvailable(true);
       executor.execute(() -> executed.set(true));
       sleep();
@@ -101,25 +99,14 @@ class SuspendableThreadPoolExecutorTest {
     @Test
     void whenSetAvailableTrueWhileWaiting_ShouldExecuteTask() throws Exception {
 
-      final AtomicBoolean executed = new AtomicBoolean();
-      final Future<?> task = executor.submit(() -> executed.set(true));
+      final var executed = new AtomicBoolean();
+      final var task = executor.submit(() -> executed.set(true));
       sleep();
       assertThat(executed).isFalse();
       executor.setAvailable(true);
       // The task runs on the thread of the executor: wait for it.
       task.get(10, TimeUnit.SECONDS);
       assertThat(executed).isTrue();
-    }
-
-    // @Test // TODO: Investigate why this doesn't always work on cirrus ci
-    void whenInterruptedWhileWaiting_ShouldNotExecuteTask() {
-
-      final AtomicBoolean executed = new AtomicBoolean();
-      final Future<?> task = executor.submit(() -> executed.set(true));
-      sleep();
-      Thread.currentThread().interrupt();
-      assertThatExceptionOfType(InterruptedException.class).isThrownBy(task::get);
-      assertThat(executed).isFalse();
     }
   }
 }

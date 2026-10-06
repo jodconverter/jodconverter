@@ -20,7 +20,6 @@
 
 package org.jodconverter.local.filter;
 
-import com.sun.star.drawing.XDrawPages;
 import com.sun.star.drawing.XDrawPagesSupplier;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
@@ -49,7 +48,7 @@ public class PageCounterFilter implements Filter {
       final @NonNull FilterChain chain)
       throws Exception {
 
-    final DocumentFamily family = LocalOfficeUtils.getDocumentFamilySilently(document);
+    final var family = LocalOfficeUtils.getDocumentFamilySilently(document);
     if (family != null) {
 
       switch (family) {
@@ -69,7 +68,7 @@ public class PageCounterFilter implements Filter {
           LOGGER.debug(
               "Applying the PageCounterFilter for a {} document",
               family == DocumentFamily.DRAWING ? "Draw" : "Impress");
-          final XDrawPages xDrawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
+          final var xDrawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
           pageCount = xDrawPages.getCount();
         }
       }

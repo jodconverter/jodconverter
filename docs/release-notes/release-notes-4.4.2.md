@@ -6,4 +6,4 @@
 
 ### **Fixed bugs**
 
-- DocumentFormat.input family should be optional. [\#249](https://github.com/jodconverter/jodconverter/issues/249)
+- DocumentFormat.input family should be optional. [#249](https://github.com/jodconverter/jodconverter/issues/249)

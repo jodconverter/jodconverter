@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Nested;
@@ -47,10 +46,10 @@ class IOUtilsTest {
     @Test
     void withInputStream_ShouldReturnInputStreamAsString() throws IOException {
 
-      final Charset encoding = StandardCharsets.UTF_8;
-      final String test = "ABDCEF\nGHIJKL  \nMNOPQRS\n\tTUVWXYZééé^ç^ç^ç^ç^pawewew";
+      final var encoding = StandardCharsets.UTF_8;
+      final var test = "ABDCEF\nGHIJKL  \nMNOPQRS\n\tTUVWXYZééé^ç^ç^ç^ç^pawewew";
 
-      try (ByteArrayInputStream in = new ByteArrayInputStream(test.getBytes(encoding))) {
+      try (var in = new ByteArrayInputStream(test.getBytes(encoding))) {
         assertThat(IOUtils.toString(in, encoding)).isEqualTo(test);
       }
     }
@@ -62,13 +61,13 @@ class IOUtilsTest {
     @Test
     void withInputStream_ShouldReturnOutputStreamWithSameContent() throws IOException {
 
-      final Charset encoding = StandardCharsets.UTF_8;
-      final String test = "pç^pçàè^pç^ç;à;èàè.!@#!@#$@#$%ABDCEF\nGHIJKL  \nMNRS\n\tTUVWew";
+      final var encoding = StandardCharsets.UTF_8;
+      final var test = "pç^pçàè^pç^ç;à;èàè.!@#!@#$@#$%ABDCEF\nGHIJKL  \nMNRS\n\tTUVWew";
 
-      try (ByteArrayInputStream in = new ByteArrayInputStream(test.getBytes(encoding));
-          ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      try (var in = new ByteArrayInputStream(test.getBytes(encoding));
+          var out = new ByteArrayOutputStream()) {
         IOUtils.copy(in, out);
-        assertThat(out.toString(encoding.name())).isEqualTo(test);
+        assertThat(out.toString(encoding)).isEqualTo(test);
       }
     }
   }

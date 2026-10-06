@@ -40,9 +40,9 @@ class AbstractFilterChainTest {
     @Test
     void whenReadOnlyIsFalse_ShouldBeEditable() {
 
-      final TestFilterChain chain = new TestFilterChain(false);
+      final var chain = new TestFilterChain(false);
 
-      final Filter filter = new TestFilter();
+      final var filter = new TestFilter();
       chain.addFilter(filter);
 
       assertThat(chain).extracting("filters").asList().hasSize(1).containsExactly(filter);
@@ -51,7 +51,7 @@ class AbstractFilterChainTest {
     @Test
     void whenReadOnlyIsTrue_ShouldBeReadOnly() {
 
-      final TestFilterChain chain = new TestFilterChain(true);
+      final var chain = new TestFilterChain(true);
 
       assertThatExceptionOfType(UnsupportedOperationException.class)
           .isThrownBy(() -> chain.addFilter(new TestFilter()));
@@ -60,7 +60,7 @@ class AbstractFilterChainTest {
     @Test
     void withoutFilters_ShouldBeEmpty() {
 
-      final TestFilterChain chain = new TestFilterChain(false);
+      final var chain = new TestFilterChain(false);
       assertThat(chain).extracting("filters").asList().hasSize(0);
     }
   }
@@ -102,7 +102,7 @@ class AbstractFilterChainTest {
     @Test
     void withFilters_ShouldExecuteAllFilters() throws OfficeException {
 
-      final TestFilterChain chain =
+      final var chain =
           new TestFilterChain(
               false,
               new TestFilter(),
@@ -146,7 +146,7 @@ class AbstractFilterChainTest {
     @Test
     void withFilters_ShouldExecuteAllAgainAfterReset() throws OfficeException {
 
-      final TestFilterChain chain =
+      final var chain =
           new TestFilterChain(
               false,
               new TestFilter(),

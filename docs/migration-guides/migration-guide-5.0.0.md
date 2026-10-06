@@ -40,7 +40,7 @@ JODConverter logs through SLF4J 2 (`slf4j-api` 2.0) instead of SLF4J 1.7. An app
 provider, for example:
 
 | Backend  | SLF4J 1.7 binding                           | SLF4J 2 provider                                |
-|----------|---------------------------------------------|-------------------------------------------------|
+| -------- | ------------------------------------------- | ----------------------------------------------- |
 | Log4j 2  | `org.apache.logging.log4j:log4j-slf4j-impl` | `org.apache.logging.log4j:log4j-slf4j2-impl`    |
 | Logback  | `ch.qos.logback:logback-classic` 1.2.x      | `ch.qos.logback:logback-classic` 1.3.x or later |
 | reload4j | `org.slf4j:slf4j-reload4j` 1.7.x            | `org.slf4j:slf4j-reload4j` 2.0.x                |
@@ -81,7 +81,7 @@ These changes only affect code that extends or calls these classes directly.
 record naming:
 
 | Class                                          | 4.4                                                     | 5.0                                            |
-|------------------------------------------------|---------------------------------------------------------|------------------------------------------------|
+| ---------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------- |
 | `org.jodconverter.local.process.ProcessQuery`  | `getCommand()`, `getArgument()`                         | `command()`, `argument()`                      |
 | `org.jodconverter.remote.office.RequestConfig` | `getUrl()`, `getConnectTimeout()`, `getSocketTimeout()` | `url()`, `connectTimeout()`, `socketTimeout()` |
 
@@ -100,7 +100,7 @@ public long findPid(final ProcessQuery query) throws IOException {
 ### Unmodifiable collections
 
 - `LocalConverter.DEFAULT_LOAD_PROPERTIES` is still unmodifiable, but its iteration order is no longer fixed, and
-  looking up a `null` key throws a `NullPointerException`.
+    looking up a `null` key throws a `NullPointerException`.
 - The property maps of a `DocumentFormat` (load and store properties) reject `null` keys and values.
 - `LocalOfficeManager.Builder.runAsArgs(...)` no longer accepts `null` elements.
 
@@ -147,9 +147,9 @@ When the port of a local office process is already used by another program, `sta
 ### Lost connections and timed-out tasks
 
 - After an unexpected loss of connection, an office process that is still running gets at most 2 seconds to exit by
-  itself before it is killed and restarted, instead of the whole process timeout (2 minutes by default).
+    itself before it is killed and restarted, instead of the whole process timeout (2 minutes by default).
 - A task that exceeds the task execution timeout, or whose calling thread is interrupted, is now cancelled. Before,
-  it could keep the office process busy, and every following task waited behind it.
+    it could keep the office process busy, and every following task waited behind it.
 - An interrupted calling thread no longer makes the pool lose an office manager.
 
 ### Spring Boot starter
@@ -166,18 +166,18 @@ columns wide.
 ## New features
 
 - [`PdfOptions`](../getting-started/pdf-options.md): typed options to convert to PDF (PDF/A, PDF/UA, images, page
-  range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
-  `with(...)` method: `converter.convert(source).to(target).with(PdfOptions.archive()).execute()`. The command line
-  tool takes them with its new `--pdf-preset` and `--pdf-option` arguments, a converter can apply them to all its
-  conversions with `defaultTargetOptions(...)`, and the Spring Boot starter sets them with the `jodconverter.pdf.*`
-  properties.
+    range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
+    `with(...)` method: `converter.convert(source).to(target).with(PdfOptions.archive()).execute()`. The command line
+    tool takes them with its new `--pdf-preset` and `--pdf-option` arguments, a converter can apply them to all its
+    conversions with `defaultTargetOptions(...)`, and the Spring Boot starter sets them with the `jodconverter.pdf.*`
+    properties.
 - [`poolSize`](../configuration/local-manager.md): start a number of office processes on free ports, without choosing
-  them (`jodconverter.local.pool-size` with Spring Boot).
+    them (`jodconverter.local.pool-size` with Spring Boot).
 - [`officeExecutable`](../configuration/local-manager.md): start the office processes through a launcher, such as a
-  snap or an AppImage (`jodconverter.local.office-executable` with Spring Boot).
+    snap or an AppImage (`jodconverter.local.office-executable` with Spring Boot).
 - [External office manager in the Spring Boot starter](../configuration/external-manager.md#spring-boot): the
-  `jodconverter.external.*` properties auto-configure an `ExternalOfficeManager` and its converter.
+    `jodconverter.external.*` properties auto-configure an `ExternalOfficeManager` and its converter.
 - [Markdown](../getting-started/supported-formats.md): the default registry knows the Markdown format (`md`,
-  `markdown`), supported by LibreOffice 26.2 and later.
+    `markdown`), supported by LibreOffice 26.2 and later.
 - `AbstractOfficeManagerPool.getTempDir()`: the directory where an office manager creates the temporary files used by
-  conversions.
+    conversions.

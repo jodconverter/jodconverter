@@ -59,8 +59,8 @@ class WriteTest {
     @Test
     void withTextDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(true);
 
@@ -70,8 +70,8 @@ class WriteTest {
     @Test
     void withoutTextDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(false);
 
@@ -94,8 +94,8 @@ class WriteTest {
     @Test
     void withWebDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WEB_SERVICE)).willReturn(true);
 
@@ -105,8 +105,8 @@ class WriteTest {
     @Test
     void withoutWebDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WEB_SERVICE)).willReturn(false);
 
@@ -126,8 +126,8 @@ class WriteTest {
     @Test
     void withTextDoc_ShouldReturnXSpreadsheetDocument(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XTextDocument textDocument = mock(XTextDocument.class);
+      final var component = mock(XComponent.class);
+      final var textDocument = mock(XTextDocument.class);
       given(unoRuntime.queryInterface(XTextDocument.class, component)).willReturn(textDocument);
 
       assertThat(Write.getTextDoc(component)).isEqualTo(textDocument);
@@ -136,7 +136,7 @@ class WriteTest {
     @Test
     void withoutTextDoc_ShouldReturnNull(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
+      final var component = mock(XComponent.class);
       given(unoRuntime.queryInterface(XTextDocument.class, component)).willReturn(null);
 
       assertThat(Write.getTextDoc(component)).isNull();

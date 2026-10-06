@@ -231,7 +231,7 @@ public final class LocalOfficeManager
       }
 
       // Build the office URLs
-      final LocalOfficeManager manager =
+      final var manager =
           new LocalOfficeManager(
               LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames, null),
               officeHome,

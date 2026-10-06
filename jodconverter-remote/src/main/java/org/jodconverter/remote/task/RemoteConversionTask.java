@@ -20,14 +20,12 @@
 
 package org.jodconverter.remote.task;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
@@ -44,7 +42,6 @@ import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.remote.office.RemoteOfficeContext;
-import org.jodconverter.remote.office.RequestConfig;
 
 /** Represents the default behavior for a remote conversion task. */
 public class RemoteConversionTask extends AbstractRemoteOfficeTask {
@@ -76,14 +73,14 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
       final Map<String, Object> properties) {
 
     if (properties != null) {
-      for (final Map.Entry<String, Object> entry : properties.entrySet()) {
-        final String key = entry.getKey();
-        final Object value = entry.getValue();
+      for (final var entry : properties.entrySet()) {
+        final var key = entry.getKey();
+        final var value = entry.getValue();
 
         // First, check if we are dealing with the FilterData property
         if (FILTER_DATA.equalsIgnoreCase(key) && value instanceof Map<?, ?> filterData) {
           // Add all the FilterData properties
-          for (final Map.Entry<?, ?> fdentry : filterData.entrySet()) {
+          for (final var fdentry : filterData.entrySet()) {
             uriBuilder.addParameter(
                 parameterPrefix + FILTER_DATA_PREFIX_PARAM + fdentry.getKey(),
                 fdentry.getValue().toString());
@@ -99,23 +96,23 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
   public void execute(final @NonNull OfficeContext context) throws OfficeException {
 
     LOGGER.info("Executing remote conversion task...");
-    final RemoteOfficeContext remoteContext = (RemoteOfficeContext) context;
+    final var remoteContext = (RemoteOfficeContext) context;
 
     // Obtain a source file that can be loaded by office. If the source
     // is an input stream, then a temporary file will be created from the
     // stream. The temporary file will be deleted once the task is done.
-    final File sourceFile = source.getFile();
+    final var sourceFile = source.getFile();
     try {
 
       // Get the target file (which is a temporary file if the
       // output target is an output stream).
-      final File targetFile = target.getFile();
+      final var targetFile = target.getFile();
 
       try {
         // TODO: Add the ability to pass on a custom charset to FileBody
 
         // See https://github.com/LibreOffice/online/blob/master/wsd/reference.txt
-        final HttpEntity entity =
+        final var entity =
             MultipartEntityBuilder.create()
                 .setLaxMode()
                 .setCharset(StandardCharsets.UTF_8)
@@ -123,8 +120,8 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
                 .build();
 
         // Use the fluent API to post the file and save the response into the target file.
-        final RequestConfig requestConfig = remoteContext.getRequestConfig();
-        final URIBuilder uriBuilder = new URIBuilder(buildUrl(requestConfig.url()));
+        final var requestConfig = remoteContext.getRequestConfig();
+        final var uriBuilder = new URIBuilder(buildUrl(requestConfig.url()));
 
         // We suppose that the server supports custom load properties, but LibreOffice Online
         // does not support custom load properties, only the sample web service do.
@@ -139,7 +136,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
         // We suppose that the server supports custom store properties, but LibreOffice Online
         // does not support custom store properties, only the sample web service do.
         // The options of this conversion take precedence over the properties of the target format.
-        final Map<String, Object> storeProperties = new LinkedHashMap<>();
+        final var storeProperties = new LinkedHashMap<String, Object>();
         Optional.ofNullable(source.getFormat())
             .map(DocumentFormat::getInputFamily)
             .map(family -> Objects.requireNonNull(target.getFormat()).getStoreProperties(family))
@@ -164,7 +161,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
 
       } catch (Exception ex) {
         LOGGER.error("Remote conversion failed.", ex);
-        final OfficeException officeEx = new OfficeException("Remote conversion failed", ex);
+        final var officeEx = new OfficeException("Remote conversion failed", ex);
         target.onFailure(targetFile, officeEx);
         throw officeEx;
       }

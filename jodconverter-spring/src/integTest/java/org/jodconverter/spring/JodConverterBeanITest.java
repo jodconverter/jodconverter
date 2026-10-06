@@ -21,15 +21,7 @@
 package org.jodconverter.spring;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+import static org.jodconverter.local.office.LocalOfficeManager.*;
 
 import java.io.File;
 import java.util.Collections;
@@ -51,7 +43,7 @@ class JodConverterBeanITest {
   void build_WithDefaultValues_ShouldInitializedOfficeManagerWithDefaultValues()
       throws OfficeException {
 
-    final JodConverterBean bean = new JodConverterBean();
+    final var bean = new JodConverterBean();
     try {
       bean.afterPropertiesSet();
 
@@ -120,13 +112,13 @@ class JodConverterBeanITest {
   void build_WithCustomValues_ShouldInitializedOfficeManagerWithCustomValues(
       final @TempDir File testFolder) throws OfficeException {
 
-    final File workingDir = new File(testFolder, "temp");
+    final var workingDir = new File(testFolder, "temp");
     workingDir.mkdirs();
 
-    final File templateProfileDir = new File(testFolder, "template");
+    final var templateProfileDir = new File(testFolder, "template");
     new File(templateProfileDir, "user").mkdirs();
 
-    final JodConverterBean bean = new JodConverterBean();
+    final var bean = new JodConverterBean();
     bean.setWorkingDir(workingDir.getPath());
     bean.setTaskExecutionTimeout(500L);
     bean.setTaskQueueTimeout(501L);
@@ -209,7 +201,7 @@ class JodConverterBeanITest {
   void build_WithBadPortNumber_ShouldInitializedOfficeManagerWithDefaultValues()
       throws OfficeException {
 
-    final JodConverterBean bean = new JodConverterBean();
+    final var bean = new JodConverterBean();
     bean.setPortNumbers("potato");
     try {
       bean.afterPropertiesSet();

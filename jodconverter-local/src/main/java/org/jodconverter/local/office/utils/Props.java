@@ -77,7 +77,7 @@ public final class Props { // NOPMD - Disable utility class name rule violation
   public static @NonNull PropertyValue makeProperty(
       final @NonNull String name, final @NonNull Object value) {
 
-    final PropertyValue prop = new PropertyValue();
+    final var prop = new PropertyValue();
     prop.Name = name;
     prop.Value = value;
     return prop;
@@ -131,8 +131,8 @@ public final class Props { // NOPMD - Disable utility class name rule violation
       throw new IllegalArgumentException("Mismatch in lengths of names and values");
     }
 
-    final PropertyValue[] props = new PropertyValue[names.length];
-    for (int i = 0; i < names.length; i++) {
+    final var props = new PropertyValue[names.length];
+    for (var i = 0; i < names.length; i++) {
       props[i] = makeProperty(names[i], values[i]);
     }
     return props;

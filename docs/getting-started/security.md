@@ -22,11 +22,11 @@ images in a document can still be fetched while it is loaded. Isolation is what 
 ## Isolate the office process
 
 - **Network:** run the office processes where they can't reach internal services, cloud metadata endpoints or the
-  Internet. A container or a network policy without outbound access blocks SSRF whatever the document contains.
+    Internet. A container or a network policy without outbound access blocks SSRF whatever the document contains.
 - **File system:** run them as a dedicated, unprivileged user that can only read the documents to convert and its own
-  working directory, so that a `file:///` reference has nothing sensitive to read.
+    working directory, so that a `file:///` reference has nothing sensitive to read.
 - **Dedicated installation:** don't share the office installation and its user profile with people who use it
-  interactively.
+    interactively.
 - **Limits:** keep a `taskExecutionTimeout`, and limit the size of the uploaded documents in your application.
 - **Updates:** keep LibreOffice up to date; security fixes in document filters are released regularly.
 

@@ -23,30 +23,18 @@ package org.jodconverter.remote.office;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.nio.file.Files;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import javax.net.ssl.SSLContext;
 
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.PrivateKeyDetails;
 import org.apache.http.ssl.PrivateKeyStrategy;
@@ -144,10 +132,10 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     AssertUtils.notNull(resourceLocation, "resourceLocation must not be null");
     if (resourceLocation.startsWith("classpath:")) {
-      final String path = resourceLocation.substring("classpath:".length());
-      final String description = "class path resource [" + path + "]";
-      final ClassLoader cl = getDefaultClassLoader();
-      final URL url = cl == null ? ClassLoader.getSystemResource(path) : cl.getResource(path);
+      final var path = resourceLocation.substring("classpath:".length());
+      final var description = "class path resource [" + path + "]";
+      final var cl = getDefaultClassLoader();
+      final var url = cl == null ? ClassLoader.getSystemResource(path) : cl.getResource(path);
       if (url == null) {
         throw new FileNotFoundException(
             description + " cannot be resolved to absolute file path because it does not exist");
@@ -199,8 +187,8 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     // An example URL is like:
     // http://localhost:9980/lool/convert-to/docx
 
-    final URL url = new URL(connectionUrl);
-    final String path = url.toExternalForm().toLowerCase(Locale.ROOT);
+    final var url = new URL(connectionUrl);
+    final var path = url.toExternalForm().toLowerCase(Locale.ROOT);
     if (StringUtils.endsWithAny(path, "lool/convert-to", "lool/convert-to/")) {
       return StringUtils.appendIfMissing(connectionUrl, "/");
     } else if (StringUtils.endsWithAny(path, "lool", "lool/")) {
@@ -217,7 +205,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
           IOException,
           NoSuchProviderException {
 
-    final KeyStore keystore =
+    final var keystore =
         loadStore(
             sslConfig.getKeyStore(),
             sslConfig.getKeyStorePassword(),
@@ -240,12 +228,12 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     }
 
     try {
-      final SSLContextBuilder sslBuilder = SSLContexts.custom();
+      final var sslBuilder = SSLContexts.custom();
       sslBuilder.setProtocol(sslConfig.getProtocol());
       configureKeyMaterial(sslBuilder);
       configureTrustMaterial(sslBuilder);
 
-      final SSLContext sslcontext = sslBuilder.build();
+      final var sslcontext = sslBuilder.build();
 
       return new SSLConnectionSocketFactory(
           sslcontext,
@@ -276,7 +264,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     if (sslConfig.isTrustAll()) {
       sslBuilder.loadTrustMaterial(null, TrustAllStrategy.INSTANCE);
     } else {
-      final KeyStore truststore =
+      final var truststore =
           loadStore(
               sslConfig.getTrustStore(),
               sslConfig.getTrustStorePassword(),
@@ -291,13 +279,12 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   @Override
   protected void doExecute(final OfficeTask task) throws OfficeException {
 
-    final SSLConnectionSocketFactory sslFactory = configureSsl();
-    try (CloseableHttpClient httpClient =
-        HttpClients.custom().setSSLSocketFactory(sslFactory).build()) {
+    final var sslFactory = configureSsl();
+    try (var httpClient = HttpClients.custom().setSSLSocketFactory(sslFactory).build()) {
 
       // Use the task execution timeout as connection and socket timeout.
       // TODO: Should the user be able to customize connection and socket timeout ?
-      final RequestConfig requestConfig =
+      final var requestConfig =
           new RequestConfig(buildUrl(connectionUrl), connectTimeout, socketTimeout);
       task.execute(new RemoteOfficeConnection(httpClient, requestConfig));
 
@@ -333,14 +320,14 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
       KeyStore keyStore;
 
-      final String type = storeType == null ? KeyStore.getDefaultType() : storeType;
+      final var type = storeType == null ? KeyStore.getDefaultType() : storeType;
       if (storeProvider == null) {
         keyStore = KeyStore.getInstance(type);
       } else {
         keyStore = KeyStore.getInstance(type, storeProvider);
       }
 
-      try (InputStream instream = Files.newInputStream(getFile(store).toPath())) {
+      try (var instream = Files.newInputStream(getFile(store).toPath())) {
         keyStore.load(instream, storePassword.toCharArray());
       }
 

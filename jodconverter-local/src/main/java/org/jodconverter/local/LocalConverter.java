@@ -169,13 +169,13 @@ public final class LocalConverter extends AbstractConverter {
     public void doExecute() throws OfficeException {
 
       // Determine whether we must use stream adapters.
-      final boolean useStreamAdapters =
+      final var useStreamAdapters =
           loadDocumentMode == LoadDocumentMode.REMOTE
               || (loadDocumentMode == LoadDocumentMode.AUTO
                   && officeManager instanceof ExternalOfficeManager);
 
       // Create a conversion task and execute it.
-      final LocalConversionTask task =
+      final var task =
           new LocalConversionTask(
               source, target, useStreamAdapters, loadProperties, storeProperties, filterChain);
       officeManager.execute(task);
@@ -205,7 +205,7 @@ public final class LocalConverter extends AbstractConverter {
     public @NonNull LocalConverter build() {
 
       // An office manager is required.
-      OfficeManager manager = officeManager;
+      var manager = officeManager;
       if (manager == null) {
         manager = InstalledOfficeManagerHolder.getInstance();
         if (manager == null) {
@@ -214,7 +214,7 @@ public final class LocalConverter extends AbstractConverter {
         }
       }
 
-      final Map<String, Object> loadProperties = new HashMap<>();
+      final var loadProperties = new HashMap<String, Object>();
       if (applyDefaultLoadProperties) {
         loadProperties.putAll(DEFAULT_LOAD_PROPERTIES);
         if (useUnsafeQuietUpdate) {
@@ -329,8 +329,8 @@ public final class LocalConverter extends AbstractConverter {
      * <p>When building the load properties map that will be used to load a source document, the
      * load properties of the input {@link org.jodconverter.core.document.DocumentFormat}, if any,
      * are put in the map first. Then, the {@link #DEFAULT_LOAD_PROPERTIES}, if required, are added
-     * to the map. Finally, any properties specified in the {@link #loadProperty(String, Object)} or
-     * {@link #loadProperties(Map)} are put in the map.
+     * to the map. Finally, any properties specified with this method or {@link
+     * #loadProperties(Map)} are put in the map.
      *
      * <p>Any property set here will override the property with the same name from the input
      * document format or the default load properties.
@@ -357,8 +357,8 @@ public final class LocalConverter extends AbstractConverter {
      * <p>When building the load properties map that will be used to load a source document, the
      * load properties of the input {@link org.jodconverter.core.document.DocumentFormat}, if any,
      * are put in the map first. Then, the {@link #DEFAULT_LOAD_PROPERTIES}, if required, are added
-     * to the map. Finally, any properties specified in the {@link #loadProperty(String, Object)} or
-     * {@link #loadProperties(Map)} are put in the map.
+     * to the map. Finally, any properties specified with {@link #loadProperty(String, Object)} or
+     * this method are put in the map.
      *
      * <p>Any property set here will override the property with the same name from the input
      * document format or the default load properties.

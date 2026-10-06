@@ -22,7 +22,6 @@ package org.jodconverter.local.office.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.XComponent;
@@ -69,10 +68,10 @@ public final class Info { // NOPMD - Disable utility class name rule violation
       return 1;
     }
 
-    final String[] numbers1 = normalizeVersion(version1, length).split("\\.");
-    final String[] numbers2 = normalizeVersion(version2, length).split("\\.");
+    final var numbers1 = normalizeVersion(version1, length).split("\\.");
+    final var numbers2 = normalizeVersion(version2, length).split("\\.");
 
-    for (int i = 0; i < numbers1.length; i++) {
+    for (var i = 0; i < numbers1.length; i++) {
       if (Integer.parseInt(numbers1[i]) < Integer.parseInt(numbers2[i])) {
         return -1;
       } else if (Integer.parseInt(numbers1[i]) > Integer.parseInt(numbers2[i])) {
@@ -169,8 +168,8 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   public static @Nullable String getConfig(
       final @NonNull XComponentContext context, final @NonNull String propName) {
 
-    for (final String nodePath : NODE_PATHS) {
-      final Object info = getConfig(context, nodePath, propName);
+    for (final var nodePath : NODE_PATHS) {
+      final var info = getConfig(context, nodePath, propName);
       if (info != null) {
         return (String) info;
       }
@@ -192,7 +191,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
       final @NonNull XComponentContext context,
       final @NonNull String nodePath,
       final @NonNull String propName) {
-    final XPropertySet set = getConfigProperties(context, nodePath);
+    final var set = getConfigProperties(context, nodePath);
     if (set == null) {
       return null;
     }
@@ -210,7 +209,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   public static @Nullable XPropertySet getConfigProperties(
       final @NonNull XComponentContext context, final @NonNull String nodePath) {
 
-    final Object configAccess = getConfigAccess(context, nodePath);
+    final var configAccess = getConfigAccess(context, nodePath);
     if (configAccess == null) {
       LOGGER.debug("Could not create configuration access service");
       return null;
@@ -222,7 +221,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   private static Object getConfigAccess(
       final XComponentContext context, final String serviceSpecifier, final String nodePath) {
 
-    final XMultiServiceFactory provider = getConfigProvider(context);
+    final var provider = getConfigProvider(context);
     if (provider == null) {
       LOGGER.debug("Could not create configuration provider");
       return null;
@@ -234,7 +233,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
           serviceSpecifier, Props.makeProperties("nodepath", nodePath));
     } catch (com.sun.star.uno.Exception ex) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Could not access config for: " + nodePath, ex);
+        LOGGER.debug("Could not access config for: {}", nodePath, ex);
       }
     }
 
@@ -271,7 +270,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
    */
   private static @NonNull String normalizeVersion(final @NonNull String version, final int length) {
 
-    final List<String> numbers = new ArrayList<>(Arrays.asList(version.split("\\.")));
+    final var numbers = new ArrayList<>(Arrays.asList(version.split("\\.")));
     while (numbers.size() < length) {
       numbers.add("0");
     }

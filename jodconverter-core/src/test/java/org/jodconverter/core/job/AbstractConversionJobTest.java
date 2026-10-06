@@ -20,11 +20,7 @@
 
 package org.jodconverter.core.job;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +45,7 @@ class AbstractConversionJobTest {
     @Test
     void whenNullSource_ShouldThrowNullPointerException(@TempDir final File testFolder) {
 
-      final File targetFile = new File(testFolder, "target.txt");
+      final var targetFile = new File(testFolder, "target.txt");
       assertThatNullPointerException()
           .isThrownBy(
               () ->
@@ -63,7 +59,7 @@ class AbstractConversionJobTest {
     void whenNullTarget_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
       assertThatNullPointerException()
@@ -84,8 +80,8 @@ class AbstractConversionJobTest {
     void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
       assertThatNullPointerException()
           .isThrownBy(
@@ -100,12 +96,12 @@ class AbstractConversionJobTest {
     @Test
     void whenNotNull_ShouldSetDocumentFormat(@TempDir final File testFolder) throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target.txt");
 
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final AbstractConversionJob job =
+      final var job =
           new SimpleConverter.SimpleConversionJob(
                   SimpleOfficeManager.make(),
                   new SourceDocumentSpecsFromFile(sourceFile),
@@ -127,10 +123,9 @@ class AbstractConversionJobTest {
         final OfficeManager manager, final File testFolder, final String targetName)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
-      final TargetDocumentSpecsFromFile target =
-          new TargetDocumentSpecsFromFile(new File(testFolder, targetName));
+      final var target = new TargetDocumentSpecsFromFile(new File(testFolder, targetName));
       target.setDocumentFormat(
           DefaultDocumentFormatRegistry.getFormatByExtension(
               targetName.substring(targetName.lastIndexOf('.') + 1)));
@@ -143,15 +138,15 @@ class AbstractConversionJobTest {
     void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final AbstractConversionJob job = newJob(testFolder, "target.pdf");
+      final var job = newJob(testFolder, "target.pdf");
       assertThatNullPointerException().isThrownBy(() -> job.with(null));
     }
 
     @Test
     void whenNotNull_ShouldSetTargetOptions(@TempDir final File testFolder) throws IOException {
 
-      final PdfOptions options = PdfOptions.archive();
-      final AbstractConversionJob job = newJob(testFolder, "target.pdf");
+      final var options = PdfOptions.archive();
+      final var job = newJob(testFolder, "target.pdf");
 
       assertThat(job.target.getOptions()).isNull();
       assertThat(job.with(options)).isSameAs(job);
@@ -162,10 +157,10 @@ class AbstractConversionJobTest {
     void whenOptionsSupportTargetFormat_ShouldExecute(@TempDir final File testFolder)
         throws IOException, OfficeException {
 
-      final OfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       try {
         manager.start();
-        final AbstractConversionJob job = newJob(manager, testFolder, "target.pdf");
+        final var job = newJob(manager, testFolder, "target.pdf");
         assertThatCode(() -> job.with(PdfOptions.archive()).execute()).doesNotThrowAnyException();
       } finally {
         OfficeUtils.stopQuietly(manager);
@@ -176,7 +171,7 @@ class AbstractConversionJobTest {
     void whenOptionsDoNotSupportTargetFormat_ShouldThrowIllegalArgumentException(
         @TempDir final File testFolder) throws IOException {
 
-      final AbstractConversionJob job = newJob(testFolder, "target.odt");
+      final var job = newJob(testFolder, "target.odt");
       assertThatIllegalArgumentException()
           .isThrownBy(() -> job.with(PdfOptions.archive()).execute())
           .withMessage("PdfOptions cannot be applied to a target document of format 'odt'");
@@ -203,20 +198,20 @@ class AbstractConversionJobTest {
         final TargetOptions... converterOptions)
         throws IOException, OfficeException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final OfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       try {
         manager.start();
-        final SimpleConverter.Builder builder =
+        final var builder =
             SimpleConverter.builder()
                 .officeManager(manager)
                 .formatRegistry(DefaultDocumentFormatRegistry.getInstance());
-        for (final TargetOptions options : converterOptions) {
+        for (final var options : converterOptions) {
           builder.defaultTargetOptions(options);
         }
-        final AbstractConversionJob job =
+        final var job =
             (AbstractConversionJob)
                 builder.build().convert(sourceFile).to(new File(testFolder, targetName));
         if (conversionOptions != null) {
@@ -238,7 +233,7 @@ class AbstractConversionJobTest {
     void whenDefaultOptionsSupportTargetFormat_ShouldUseThem(@TempDir final File testFolder)
         throws Exception {
 
-      final PdfOptions defaultOptions = PdfOptions.archive();
+      final var defaultOptions = PdfOptions.archive();
       assertThat(execute(testFolder, "target.pdf", null, defaultOptions)).isSameAs(defaultOptions);
     }
 
@@ -253,8 +248,8 @@ class AbstractConversionJobTest {
     void whenSeveralDefaultOptionsSupportTargetFormat_ShouldUseTheFirst(
         @TempDir final File testFolder) throws Exception {
 
-      final PdfOptions first = PdfOptions.archive();
-      final PdfOptions second = PdfOptions.compact();
+      final var first = PdfOptions.archive();
+      final var second = PdfOptions.compact();
       assertThat(execute(testFolder, "target.pdf", null, first, second)).isSameAs(first);
     }
 
@@ -262,7 +257,7 @@ class AbstractConversionJobTest {
     void whenConversionHasOptions_ShouldUseThemInsteadOfTheDefaultOnes(
         @TempDir final File testFolder) throws Exception {
 
-      final PdfOptions conversionOptions = PdfOptions.compact();
+      final var conversionOptions = PdfOptions.compact();
       assertThat(execute(testFolder, "target.pdf", conversionOptions, PdfOptions.archive()))
           .isSameAs(conversionOptions);
     }
@@ -282,11 +277,11 @@ class AbstractConversionJobTest {
     void withUnknownTargetFormat_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final AbstractConversionJob job =
+      final var job =
           new SimpleConverter.SimpleConversionJob(
               SimpleOfficeManager.make(),
               new SourceDocumentSpecsFromFile(sourceFile),
@@ -298,14 +293,14 @@ class AbstractConversionJobTest {
     void withKnownTargetFormat_ShouldExecute(@TempDir final File testFolder)
         throws IOException, OfficeException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final OfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       try {
         manager.start();
-        final AbstractConversionJob job =
+        final var job =
             new SimpleConverter.SimpleConversionJob(
                     manager,
                     new SourceDocumentSpecsFromFile(sourceFile),

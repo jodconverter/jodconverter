@@ -20,6 +20,8 @@
 
 package org.jodconverter.core.office;
 
+import java.io.Serial;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -27,7 +29,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * the same operation after an interval.
  */
 public class TemporaryException extends Exception {
-  private static final long serialVersionUID = 7237380113208327295L;
+  @Serial private static final long serialVersionUID = 7237380113208327295L;
 
   /**
    * Constructs a new exception with the specified message.

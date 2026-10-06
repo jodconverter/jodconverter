@@ -59,8 +59,8 @@ class CalcTest {
     @Test
     void withCalcDoc_ShouldReturnTrue(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.CALC_SERVICE)).willReturn(true);
 
@@ -70,8 +70,8 @@ class CalcTest {
     @Test
     void withoutCalcDoc_ShouldReturnFalse(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var component = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, component)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.CALC_SERVICE)).willReturn(false);
 
@@ -91,8 +91,8 @@ class CalcTest {
     @Test
     void withCalcDoc_ShouldReturnXSpreadsheetDocument(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
-      final XSpreadsheetDocument spreadsheetDocument = mock(XSpreadsheetDocument.class);
+      final var component = mock(XComponent.class);
+      final var spreadsheetDocument = mock(XSpreadsheetDocument.class);
       given(unoRuntime.queryInterface(XSpreadsheetDocument.class, component))
           .willReturn(spreadsheetDocument);
 
@@ -102,7 +102,7 @@ class CalcTest {
     @Test
     void withoutCalcDoc_ShouldReturnNull(final UnoRuntime unoRuntime) {
 
-      final XComponent component = mock(XComponent.class);
+      final var component = mock(XComponent.class);
       given(unoRuntime.queryInterface(XSpreadsheetDocument.class, component)).willReturn(null);
 
       assertThat(Calc.getCalcDoc(component)).isNull();

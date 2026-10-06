@@ -20,10 +20,7 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.isA;
@@ -36,10 +33,8 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import com.sun.star.beans.PropertyValue;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -112,12 +107,12 @@ class LocalOfficeUtilsTest {
     @Test
     void shouldReturnDistinctPortsThatCanBeBound() throws IOException {
 
-      final List<Integer> ports = LocalOfficeUtils.findFreePorts(3);
+      final var ports = LocalOfficeUtils.findFreePorts(3);
 
       assertThat(ports).hasSize(3).doesNotHaveDuplicates().allMatch(port -> port > 0);
-      for (final int port : ports) {
+      for (final var port : ports) {
         // The ports were released: they can be used again
-        try (ServerSocket socket = new ServerSocket(port)) {
+        try (var socket = new ServerSocket(port)) {
           assertThat(socket.getLocalPort()).isEqualTo(port);
         }
       }
@@ -174,7 +169,7 @@ class LocalOfficeUtilsTest {
     @Test
     void withPortNumbersOnly_ShouldReturnOfficeUrlsWithGivenPortNumbers() {
 
-      final List<Integer> portNumbers = List.of(2003, 2004, 2005);
+      final var portNumbers = List.of(2003, 2004, 2005);
       assertThat(LocalOfficeUtils.buildOfficeUrls(portNumbers, null))
           .hasSize(3)
           .satisfies(
@@ -194,7 +189,7 @@ class LocalOfficeUtilsTest {
     @Test
     void withPipeNamesOnly_ShouldReturnOfficeUrlsWithGivenPipeNames() {
 
-      final List<String> pipeNames = List.of("oo1", "oo2", "oo3");
+      final var pipeNames = List.of("oo1", "oo2", "oo3");
       assertThat(LocalOfficeUtils.buildOfficeUrls(null, pipeNames))
           .hasSize(3)
           .satisfies(
@@ -214,7 +209,7 @@ class LocalOfficeUtilsTest {
     @Test
     void withWebSocketUrlsOnly_ShouldReturnOfficeUrlsWithGivenWebSocketUrl() {
 
-      final List<String> webSocketUrls = List.of("test1", "test2", "test3");
+      final var webSocketUrls = List.of("test1", "test2", "test3");
       assertThat(LocalOfficeUtils.buildOfficeUrls(null, null, null, webSocketUrls))
           .hasSize(3)
           .satisfies(
@@ -238,8 +233,8 @@ class LocalOfficeUtilsTest {
     @Test
     void withWebDocument_ShouldReturnWebamily(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WEB_SERVICE)).willReturn(true);
 
@@ -250,8 +245,8 @@ class LocalOfficeUtilsTest {
     @Test
     void withTextDocument_ShouldReturnTextFamily(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(true);
 
@@ -262,8 +257,8 @@ class LocalOfficeUtilsTest {
     @Test
     void withCalcDocument_ShouldReturnSpreadsheetFamily(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.CALC_SERVICE)).willReturn(true);
 
@@ -274,8 +269,8 @@ class LocalOfficeUtilsTest {
     @Test
     void withImpressDocument_ShouldReturnPresentationFamily(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.IMPRESS_SERVICE)).willReturn(true);
 
@@ -286,8 +281,8 @@ class LocalOfficeUtilsTest {
     @Test
     void withDrawDocument_ShouldReturnDrawingFamily(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.DRAW_SERVICE)).willReturn(true);
 
@@ -298,8 +293,8 @@ class LocalOfficeUtilsTest {
     @Test
     void withInvalidDocument_ShouldReturnNull(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(isA(String.class))).willReturn(false);
 
@@ -313,8 +308,8 @@ class LocalOfficeUtilsTest {
     @Test
     void withInvalidDocument_ShouldThrowOfficeException(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(isA(String.class))).willReturn(false);
 
@@ -325,8 +320,8 @@ class LocalOfficeUtilsTest {
     @Test
     void withValidDocument_ShouldNotThrowAnyException(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(isA(String.class))).willReturn(true);
 
@@ -340,14 +335,14 @@ class LocalOfficeUtilsTest {
     @Test
     void shouldRecurseOnMapProperties() {
 
-      final Map<String, Object> properties = new LinkedHashMap<>();
+      final var properties = new LinkedHashMap<String, Object>();
       properties.put("Prop1", "Value1");
-      final Map<String, Object> embedded = new LinkedHashMap<>();
+      final var embedded = new LinkedHashMap<String, Object>();
       embedded.put("EmbedProp1", "EmbedValue1");
       embedded.put("EmbedProp2", "EmbedValue2");
       properties.put("Prop2", embedded);
 
-      final PropertyValue[] unoProps = LocalOfficeUtils.toUnoProperties(properties);
+      final var unoProps = LocalOfficeUtils.toUnoProperties(properties);
       assertThat(unoProps).hasSize(2);
       assertThat(unoProps[0]).extracting("Name", "Value").containsExactly("Prop1", "Value1");
       assertThat(unoProps[1])
@@ -384,7 +379,7 @@ class LocalOfficeUtilsTest {
     void onWindows(final @TempDir File testFolder) {
       assumeTrue(OSUtils.IS_OS_WINDOWS);
 
-      String tempDir = testFolder.getPath();
+      var tempDir = testFolder.getPath();
       tempDir = StringUtils.appendIfMissing(tempDir, File.separator).replace('\\', '/');
 
       assertThat(toUrl(new File(testFolder, "document.odt")))
@@ -403,7 +398,7 @@ class LocalOfficeUtilsTest {
     void whenNotDirectory_ShouldThrowIllegalStateException(final @TempDir File testFolder)
         throws IOException {
 
-      final File tempFile = new File(testFolder, "tmp");
+      final var tempFile = new File(testFolder, "tmp");
       tempFile.createNewFile();
       assertThatIllegalStateException()
           .isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(tempFile));
@@ -413,7 +408,7 @@ class LocalOfficeUtilsTest {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void whenOfficeBinNotFound_ShouldThrowIllegalStateException(final @TempDir File testFolder) {
 
-      final File officeHome = new File(testFolder, UUID.randomUUID().toString());
+      final var officeHome = new File(testFolder, UUID.randomUUID().toString());
       officeHome.mkdirs();
       assertThatIllegalStateException()
           .isThrownBy(() -> LocalOfficeUtils.validateOfficeHome(officeHome));
@@ -434,7 +429,7 @@ class LocalOfficeUtilsTest {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void whenChildUserDirFound_ValidateSuccessfully(final @TempDir File testFolder) {
 
-      final File profileDir = new File(testFolder, UUID.randomUUID().toString());
+      final var profileDir = new File(testFolder, UUID.randomUUID().toString());
       new File(profileDir, "user").mkdirs();
       assertThatCode(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir))
           .doesNotThrowAnyException();
@@ -444,7 +439,7 @@ class LocalOfficeUtilsTest {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void whenChildUserDirNotFound_ShouldThrowIllegalStateException(final @TempDir File testFolder) {
 
-      final File profileDir = new File(testFolder, UUID.randomUUID().toString());
+      final var profileDir = new File(testFolder, UUID.randomUUID().toString());
       profileDir.mkdirs();
       assertThatIllegalStateException()
           .isThrownBy(() -> LocalOfficeUtils.validateOfficeTemplateProfileDirectory(profileDir));

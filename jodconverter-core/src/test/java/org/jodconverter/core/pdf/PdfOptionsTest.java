@@ -20,17 +20,12 @@
 
 package org.jodconverter.core.pdf;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
-import static org.assertj.core.api.Assertions.entry;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -58,7 +53,7 @@ class PdfOptionsTest {
     @Test
     void withGeneralOptions_ShouldSetExpectedFilterData() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .version(PdfVersion.PDF_A_3B)
               .pdfUa(true)
@@ -79,7 +74,7 @@ class PdfOptionsTest {
     @Test
     void withEveryVersion_ShouldSetTheSelectPdfVersionValue() {
 
-      final Map<PdfVersion, Integer> expected = new HashMap<>();
+      final var expected = new HashMap<PdfVersion, Integer>();
       expected.put(PdfVersion.DEFAULT, 0);
       expected.put(PdfVersion.PDF_1_5, 15);
       expected.put(PdfVersion.PDF_1_6, 16);
@@ -100,7 +95,7 @@ class PdfOptionsTest {
     @Test
     void withImageOptions_ShouldSetExpectedFilterData() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .images(images -> images.lossless(false).jpegQuality(80).maxResolution(150))
               .build();
@@ -122,7 +117,7 @@ class PdfOptionsTest {
     @Test
     void withPageAndCommentOptions_ShouldSetExpectedFilterData() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .pages(
                   pages ->
@@ -147,7 +142,7 @@ class PdfOptionsTest {
     @Test
     void withBookmarkFormAndLinkOptions_ShouldSetExpectedFilterData() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .bookmarks(
                   bookmarks -> bookmarks.export(true).openLevels(2).asNamedDestinations(true))
@@ -178,7 +173,7 @@ class PdfOptionsTest {
     @Test
     void withInitialViewAndViewerOptions_ShouldSetExpectedFilterData() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .initialView(
                   view ->
@@ -222,7 +217,7 @@ class PdfOptionsTest {
     @Test
     void withSecurityOptions_ShouldSetExpectedFilterData() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .security(
                   security ->
@@ -250,7 +245,7 @@ class PdfOptionsTest {
     @Test
     void withNullPassword_ShouldRemoveTheEncryption() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .security(security -> security.openPassword("open").permissionPassword("owner"))
               .security(security -> security.openPassword(null).permissionPassword(null))
@@ -262,7 +257,7 @@ class PdfOptionsTest {
     @Test
     void withWatermarkOptions_ShouldSetExpectedFilterData() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .watermark(
                   watermark ->
@@ -288,7 +283,7 @@ class PdfOptionsTest {
     @Test
     void withSignatureOptions_ShouldSetExpectedFilterData() {
 
-      final PdfOptions bySubjectName =
+      final var bySubjectName =
           PdfOptions.builder()
               .signature(
                   signature ->
@@ -300,7 +295,7 @@ class PdfOptionsTest {
                           .contactInfo("me@example.org")
                           .timestampAuthority("https://tsa.example.org"))
               .build();
-      final PdfOptions byPem =
+      final var byPem =
           PdfOptions.builder()
               .signature(signature -> signature.certificatePem("CERT", "KEY").caPem("CA"))
               .build();
@@ -325,7 +320,7 @@ class PdfOptionsTest {
     @Test
     void withPresentationAndSpreadsheetOptions_ShouldSetExpectedFilterData() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .presentation(
                   presentation ->
@@ -350,7 +345,7 @@ class PdfOptionsTest {
     @Test
     void withFilterData_ShouldTakePrecedenceOverTheTypedOptions() {
 
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .filterData("UseTaggedPDF", false)
               .filterData("Unknown", "value")
@@ -367,7 +362,7 @@ class PdfOptionsTest {
     void shouldCoverAllThePdfOptions() {
 
       // Every PdfOption must be reachable through the builder.
-      final PdfOptions options =
+      final var options =
           PdfOptions.builder()
               .version(PdfVersion.PDF_1_7)
               .pdfUa(true)
@@ -425,7 +420,7 @@ class PdfOptionsTest {
               .spreadsheet(s -> s.singlePageSheets(true).sheetRange("1"))
               .build();
 
-      final Set<String> allNames = new HashSet<>();
+      final var allNames = new HashSet<String>();
       Arrays.stream(PdfOption.values()).forEach(o -> allNames.add(o.getFilterDataName()));
       assertThat(options.getFilterData().keySet()).containsExactlyInAnyOrderElementsOf(allNames);
     }
@@ -561,8 +556,8 @@ class PdfOptionsTest {
     @Test
     void toBuilder_ShouldDeriveNewOptionsWithoutChangingTheOriginal() {
 
-      final PdfOptions archive = PdfOptions.archive();
-      final PdfOptions derived =
+      final var archive = PdfOptions.archive();
+      final var derived =
           archive.toBuilder().pages(pages -> pages.range("1")).filterData("Extra", 1).build();
 
       assertThat(derived.getFilterData())
@@ -579,7 +574,7 @@ class PdfOptionsTest {
     @Test
     void shouldOnlySupportThePdfFormat() {
 
-      final PdfOptions options = PdfOptions.archive();
+      final var options = PdfOptions.archive();
 
       assertThat(options.supports(DefaultDocumentFormatRegistry.PDF)).isTrue();
       assertThat(options.supports(DefaultDocumentFormatRegistry.ODT)).isFalse();
@@ -593,7 +588,7 @@ class PdfOptionsTest {
     @Test
     void withoutOptions_ShouldNotAddFilterData() {
 
-      final Map<String, Object> storeProperties = new HashMap<>();
+      final var storeProperties = new HashMap<String, Object>();
       storeProperties.put("FilterName", "writer_pdf_Export");
 
       PdfOptions.builder().build().applyTo(storeProperties);
@@ -604,10 +599,10 @@ class PdfOptionsTest {
     @Test
     void withExistingFilterData_ShouldMergeAndTakePrecedence() {
 
-      final Map<String, Object> existing = new HashMap<>();
+      final var existing = new HashMap<String, Object>();
       existing.put("SelectPdfVersion", 16);
       existing.put("Quality", 50);
-      final Map<String, Object> storeProperties = new HashMap<>();
+      final var storeProperties = new HashMap<String, Object>();
       storeProperties.put("FilterName", "writer_pdf_Export");
       storeProperties.put("FilterData", existing);
 
@@ -627,7 +622,7 @@ class PdfOptionsTest {
     @Test
     void withFilterDataThatIsNotAMap_ShouldThrowIllegalStateException() {
 
-      final Map<String, Object> storeProperties = new HashMap<>();
+      final var storeProperties = new HashMap<String, Object>();
       storeProperties.put("FilterData", "foo");
 
       assertThatIllegalStateException()
@@ -689,7 +684,7 @@ class PdfOptionsTest {
     @Test
     void shouldHideTheSecrets() {
 
-      final String str =
+      final var str =
           PdfOptions.builder()
               .tagged(true)
               .security(security -> security.openPassword("open-secret"))

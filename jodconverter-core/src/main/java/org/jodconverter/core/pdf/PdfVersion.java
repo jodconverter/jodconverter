@@ -92,8 +92,9 @@ public enum PdfVersion {
     return support;
   }
 
-  /* default */ static PdfVersion fromValue(final int value) {
-    for (final PdfVersion version : values()) {
+  /* default */
+  static PdfVersion fromValue(final int value) {
+    for (final var version : values()) {
       if (version.value == value) {
         return version;
       }

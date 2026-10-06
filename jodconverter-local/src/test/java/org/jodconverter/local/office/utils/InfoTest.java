@@ -109,8 +109,8 @@ class InfoTest {
     @Test
     void whenSupportsServiceReturnsTrue_ReturnTrue(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(true);
 
@@ -120,8 +120,8 @@ class InfoTest {
     @Test
     void whenSupportsServiceReturnsFalse_ReturnFalse(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(false);
 
@@ -135,7 +135,7 @@ class InfoTest {
     @Test
     void whenNameIsOpenOffice_ReturnTrue(final UnoRuntime unoRuntime) throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
+      final var context = mock(XComponentContext.class);
       setUpConfigTest(unoRuntime, context, "ooName", "OpenOffice");
       assertThat(Info.isOpenOffice(context)).isTrue();
     }
@@ -143,7 +143,7 @@ class InfoTest {
     @Test
     void whenNameIsNotOpenOffice_ReturnTrue(final UnoRuntime unoRuntime) throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
+      final var context = mock(XComponentContext.class);
       setUpConfigTest(unoRuntime, context, "ooName", "LibreOffice");
       assertThat(Info.isOpenOffice(context)).isFalse();
     }
@@ -155,7 +155,7 @@ class InfoTest {
     @Test
     void whenNameIsLibreOffice_ReturnTrue(final UnoRuntime unoRuntime) throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
+      final var context = mock(XComponentContext.class);
       setUpConfigTest(unoRuntime, context, "ooName", "LibreOffice");
       assertThat(Info.isLibreOffice(context)).isTrue();
     }
@@ -163,7 +163,7 @@ class InfoTest {
     @Test
     void whenNameIsNotLibreOffice_ReturnTrue(final UnoRuntime unoRuntime) throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
+      final var context = mock(XComponentContext.class);
       setUpConfigTest(unoRuntime, context, "ooName", "OpenOffice");
       assertThat(Info.isLibreOffice(context)).isFalse();
     }
@@ -175,7 +175,7 @@ class InfoTest {
     @Test
     void shouldReturnOONameProperty(final UnoRuntime unoRuntime) throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
+      final var context = mock(XComponentContext.class);
       setUpConfigTest(unoRuntime, context, "ooName", "foo");
       assertThat(Info.getOfficeName(context)).isEqualTo("foo");
     }
@@ -184,7 +184,7 @@ class InfoTest {
     void shortVersion_ShouldReturnOOSetupVersionProperty(final UnoRuntime unoRuntime)
         throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
+      final var context = mock(XComponentContext.class);
       setUpConfigTest(unoRuntime, context, "ooSetupVersion", "6.1");
       assertThat(Info.getOfficeVersionShort(context)).isEqualTo("6.1");
     }
@@ -197,7 +197,7 @@ class InfoTest {
     void longVersion_ShouldReturnOOSetupVersionAboutBoxProperty(final UnoRuntime unoRuntime)
         throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
+      final var context = mock(XComponentContext.class);
       setUpConfigTest(unoRuntime, context, "ooSetupVersionAboutBox", "6.1.0.3");
       assertThat(Info.getOfficeVersionLong(context)).isEqualTo("6.1.0.3");
     }
@@ -206,7 +206,7 @@ class InfoTest {
     void shortVersion_ShouldReturnOOSetupVersionProperty(final UnoRuntime unoRuntime)
         throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
+      final var context = mock(XComponentContext.class);
       setUpConfigTest(unoRuntime, context, "ooSetupVersion", "6.1");
       assertThat(Info.getOfficeVersionShort(context)).isEqualTo("6.1");
     }
@@ -218,9 +218,9 @@ class InfoTest {
     @Test
     void whenUnoExceptionOccurs_ReturnNull() throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
-      final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
-      final XMultiServiceFactory sfactory = mock(XMultiServiceFactory.class);
+      final var context = mock(XComponentContext.class);
+      final var cfactory = mock(XMultiComponentFactory.class);
+      final var sfactory = mock(XMultiServiceFactory.class);
 
       given(context.getServiceManager()).willReturn(cfactory);
       given(
@@ -238,8 +238,8 @@ class InfoTest {
     @Test
     void whenProviderNotFound_ReturnNull() throws Exception {
 
-      final XComponentContext context = mock(XComponentContext.class);
-      final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
+      final var context = mock(XComponentContext.class);
+      final var cfactory = mock(XMultiComponentFactory.class);
 
       given(context.getServiceManager()).willReturn(cfactory);
       given(
@@ -258,11 +258,11 @@ class InfoTest {
       final Object propValue)
       throws Exception {
 
-    final XMultiComponentFactory contextServiceManager = mock(XMultiComponentFactory.class);
-    final Object provider = mock(Object.class);
-    final XMultiServiceFactory providerServiceFactory = mock(XMultiServiceFactory.class);
-    final Object configAccess = mock(Object.class);
-    final XPropertySet propertySet = mock(XPropertySet.class);
+    final var contextServiceManager = mock(XMultiComponentFactory.class);
+    final var provider = mock(Object.class);
+    final var providerServiceFactory = mock(XMultiServiceFactory.class);
+    final var configAccess = mock(Object.class);
+    final var propertySet = mock(XPropertySet.class);
 
     given(context.getServiceManager()).willReturn(contextServiceManager);
     given(

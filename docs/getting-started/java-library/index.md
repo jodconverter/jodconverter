@@ -13,7 +13,7 @@ you want to use **JODConverter** with the LibreOffice libraries or the OpenOffic
     ```groovy title="Groovy"
     implementation 'org.jodconverter:jodconverter-local-lo:4.4.11'
     ```
-    
+
     ```kotlin title="Kotlin"
     implementation("org.jodconverter:jodconverter-local-lo:4.4.11")
     ```
@@ -21,7 +21,7 @@ you want to use **JODConverter** with the LibreOffice libraries or the OpenOffic
 === "Maven"
 
     ```xml
-    
+
     <dependency>
         <groupId>org.jodconverter</groupId>
         <artifactId>jodconverter-local-lo</artifactId>

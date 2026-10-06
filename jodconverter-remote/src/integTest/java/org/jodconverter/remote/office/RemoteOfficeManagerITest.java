@@ -20,17 +20,13 @@
 
 package org.jodconverter.remote.office;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -41,7 +37,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.SimpleOfficeTask;
 import org.jodconverter.core.util.FileUtils;
@@ -58,7 +53,7 @@ class RemoteOfficeManagerITest {
     @Test
     void withBadUrl_ShouldThrowOfficeException() throws OfficeException {
 
-      final RemoteOfficeManager manager =
+      final var manager =
           RemoteOfficeManager.builder().urlConnection("url_that_could_not_work").build();
       try {
         manager.start();
@@ -75,13 +70,13 @@ class RemoteOfficeManagerITest {
     void whenReturnNot200OK_ShouldThrowOfficeException(final @TempDir File testFolder)
         throws OfficeException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      final var wireMockServer = new WireMockServer(options().port(8000));
       wireMockServer.start();
       try {
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("http://localhost:8000/lool/convert-to/")
                 .build();
@@ -106,13 +101,13 @@ class RemoteOfficeManagerITest {
     void fromFileToFileReturning200OK_TargetShouldContaingExpectedResult(
         final @TempDir File testFolder) throws OfficeException, IOException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      final var wireMockServer = new WireMockServer(options().port(8000));
       wireMockServer.start();
       try {
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("http://localhost:8000/lool/convert-to/")
                 .build();
@@ -126,7 +121,7 @@ class RemoteOfficeManagerITest {
           RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();
@@ -140,13 +135,13 @@ class RemoteOfficeManagerITest {
     void fromInputStreamToOutputStreamReturning200OK_TargetShouldContainExpectedResult(
         final @TempDir File testFolder) throws OfficeException, IOException {
 
-      final File inputFile = new File(SOURCE_FILE_PATH);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      final var wireMockServer = new WireMockServer(options().port(8000));
       wireMockServer.start();
       try {
-        final OfficeManager manager =
+        final var manager =
             RemoteOfficeManager.builder()
                 .urlConnection("http://localhost:8000/lool/convert-to/")
                 .build();
@@ -157,8 +152,8 @@ class RemoteOfficeManagerITest {
                   .willReturn(aResponse().withStatus(200).withBody("Test Document")));
 
           // Try to converter the input document
-          try (InputStream inputStream = Files.newInputStream(inputFile.toPath());
-              OutputStream outputStream = Files.newOutputStream(outputFile.toPath())) {
+          try (var inputStream = Files.newInputStream(inputFile.toPath());
+              var outputStream = Files.newOutputStream(outputFile.toPath())) {
             RemoteConverter.make(manager)
                 .convert(inputStream)
                 .as(DefaultDocumentFormatRegistry.DOC)
@@ -168,7 +163,7 @@ class RemoteOfficeManagerITest {
           }
 
           // Check that the output file was created with the expected content.
-          final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
           assertThat(content).as("Check content: %s", content).contains("Test Document");
         } finally {
           manager.stop();

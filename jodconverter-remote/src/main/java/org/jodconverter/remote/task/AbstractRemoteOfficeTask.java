@@ -40,9 +40,4 @@ public abstract class AbstractRemoteOfficeTask extends AbstractOfficeTask {
   public AbstractRemoteOfficeTask(final @NonNull SourceDocumentSpecs source) {
     super(source);
   }
-
-  @Override
-  public @NonNull String toString() {
-    return getClass().getSimpleName() + "{" + "source=" + source + '}';
-  }
 }

@@ -6,7 +6,7 @@ Since conversions are done by OOo, raw conversion time is not something that can
 Just to give an idea, the following table shows some benchmarks for converting different ODT documents to PDF:
 
 | Document                                                                                                                                                     | Size   | Pages | Avg Time (ms) | Throughput (per minute) |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|-------|---------------|-------------------------|
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | ----- | ------------- | ----------------------- |
 | Hello World!                                                                                                                                                 | 7 kb   | 1 p   | 98 ms         | 612 p/m                 |
 | [Metadata Use Cases and Requirements](http://www.oasis-open.org/committees/download.php/20492/UCR.odt)                                                       | 13 kb  | 5 p   | 710 ms        | 422 p/m                 |
 | [Open Document Format v1.1 Accessibility Guidelines](http://docs.oasis-open.org/office/office-accessibility/v1.0/cd01/ODF_Accessibility_Guidelines-v1.0.odt) | 81 kb  | 52 p  | 2314 ms       | 1348 p/m                |

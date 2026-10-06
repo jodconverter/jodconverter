@@ -23,7 +23,6 @@ package org.jodconverter.local.office;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -191,7 +190,7 @@ class ExternalOfficeConnectionManager {
 
     // Submit the connection task to the executor.
     LOGGER.debug("Submitting connect task...");
-    final Future<Void> future = executor.submit(this::connect0);
+    final var future = executor.submit(this::connect0);
 
     // Wait for completion of the task.
     try {

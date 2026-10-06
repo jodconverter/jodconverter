@@ -68,7 +68,7 @@ class PdfOptionsLocalConverterITest {
   void convertToPdf_ShouldApplyThePdfProperties(final @TempDir File testFolder)
       throws IOException, OfficeException {
 
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var outputFile = new File(testFolder, "out.pdf");
 
     converter.convert(SOURCE_FILE).to(outputFile).execute();
 
@@ -79,7 +79,7 @@ class PdfOptionsLocalConverterITest {
   void convertToPdfWithOptions_ShouldUseTheOptionsOfTheConversion(final @TempDir File testFolder)
       throws IOException, OfficeException {
 
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var outputFile = new File(testFolder, "out.pdf");
 
     converter
         .convert(SOURCE_FILE)
@@ -94,7 +94,7 @@ class PdfOptionsLocalConverterITest {
   void convertToAnotherFormat_ShouldNotApplyThePdfProperties(final @TempDir File testFolder)
       throws OfficeException {
 
-    final File outputFile = new File(testFolder, "out.odt");
+    final var outputFile = new File(testFolder, "out.odt");
 
     converter.convert(SOURCE_FILE).to(outputFile).execute();
 

@@ -20,9 +20,7 @@
 
 package org.jodconverter.core.office;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,14 +36,14 @@ class AbstractRetryableTest {
     @Test
     void whenExecuteOnTime_ShouldNotThrowAnyException() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(1);
+      final var retryable = new SimpleRetryable(1);
       assertThatCode(() -> retryable.execute(250L, 500L)).doesNotThrowAnyException();
     }
 
     @Test
     void withInitialDelay_ShouldApplyInitialDelayAndThrowRetryTimeoutException() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(2, 250L);
+      final var retryable = new SimpleRetryable(2, 250L);
       assertThatExceptionOfType(RetryTimeoutException.class)
           .isThrownBy(() -> retryable.execute(250L, NO_SLEEP, 300L));
       assertThat(retryable.getAttempts()).isEqualTo(1);
@@ -54,7 +52,7 @@ class AbstractRetryableTest {
     @Test
     void withoutInitialDelay_ShouldNotApplyInitialDelay() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(2, 100L);
+      final var retryable = new SimpleRetryable(2, 100L);
       assertThatCode(() -> retryable.execute(NO_SLEEP, 300L)).doesNotThrowAnyException();
       assertThat(retryable.getAttempts()).isEqualTo(2);
     }
@@ -62,7 +60,7 @@ class AbstractRetryableTest {
     @Test
     void withInterval_ShouldApplyIntervalDelayAndThrowRetryTimeoutException() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(3, 250L);
+      final var retryable = new SimpleRetryable(3, 250L);
       assertThatExceptionOfType(RetryTimeoutException.class)
           .isThrownBy(() -> retryable.execute(250L, 500L));
       assertThat(retryable.getAttempts()).isEqualTo(2);
@@ -71,47 +69,9 @@ class AbstractRetryableTest {
     @Test
     void withNoInterval_ShouldNotApplyIntervalDelay() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(3, 100L);
+      final var retryable = new SimpleRetryable(3, 100L);
       assertThatCode(() -> retryable.execute(NO_SLEEP, 750L)).doesNotThrowAnyException();
       assertThat(retryable.getAttempts()).isEqualTo(3);
     }
-  }
-
-  @Nested
-  class Sleep {
-
-    //    @Test
-    //    void whenInterrupted_ShouldNotApplyIntervalDelay() {
-    //
-    //      final SimpleRetryable retryable = new SimpleRetryable(2);
-    //      final AtomicReference<Exception> exep = new AtomicReference<>();
-    //      assertThatCode(
-    //              () -> {
-    //                final Thread thread =
-    //                    new Thread(
-    //                        () -> {
-    //                          try {
-    //                            retryable.execute(1_000L, 2_000L);
-    //                          } catch (Exception ex) {
-    //                            exep.set(ex);
-    //                          }
-    //                        });
-    //
-    //                // Start the thread.
-    //                thread.start();
-    //                // Let the execution begin.
-    //                Thread.sleep(250L);
-    //                // Interrupt the thread.
-    //                thread.interrupt();
-    //                //  Wait for thread to complete.
-    //                thread.join();
-    //              })
-    //          .doesNotThrowAnyException();
-    //
-    //      assertThat(retryable.getAttempts()).isEqualTo(1);
-    //      assertThat(exep.get())
-    //          .isExactlyInstanceOf(RetryTimeoutException.class)
-    //          .hasCauseExactlyInstanceOf(InterruptedException.class);
-    //    }
   }
 }

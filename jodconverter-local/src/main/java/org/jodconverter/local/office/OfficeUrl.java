@@ -51,7 +51,8 @@ record OfficeUrl(UnoUrl unoUrl) {
    * @param pipeName The pipe name.
    * @return The created UnoUrl.
    */
-  /* default */ static UnoUrl pipe(final @NonNull String pipeName) {
+  /* default */
+  static UnoUrl pipe(final @NonNull String pipeName) {
 
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
@@ -68,7 +69,8 @@ record OfficeUrl(UnoUrl unoUrl) {
    * @param port The port.
    * @return The created UnoUrl.
    */
-  /* default */ static UnoUrl socket(final int port) {
+  /* default */
+  static UnoUrl socket(final int port) {
     return socket(null, port);
   }
 
@@ -79,14 +81,13 @@ record OfficeUrl(UnoUrl unoUrl) {
    * @param port The port.
    * @return The created UnoUrl.
    */
-  /* default */ static UnoUrl socket(final String host, final int port) {
+  /* default */
+  static UnoUrl socket(final String host, final int port) {
 
-    final String h = host == null ? DEFAULT_HOST : host;
+    final var h = host == null ? DEFAULT_HOST : host;
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
     try {
-      // return UnoUrl.parseUnoUrl(
-      //    "socket,host=" + h + ",port=" + port + ";urp;StarOffice.ServiceManager");
       return UnoUrl.parseUnoUrl(
           "socket,host=" + h + ",port=" + port + ",tcpNoDelay=1;urp;StarOffice.ServiceManager");
     } catch (Exception ex) {
@@ -100,7 +101,8 @@ record OfficeUrl(UnoUrl unoUrl) {
    * @param url The url.
    * @return The created UnoUrl.
    */
-  /* default */ static UnoUrl websocket(final String url) {
+  /* default */
+  static UnoUrl websocket(final String url) {
     try {
       return UnoUrl.parseUnoUrl("uno:websocket,url=" + url + ";urp;StarOffice.ServiceManager");
     } catch (Exception ex) {
@@ -113,7 +115,8 @@ record OfficeUrl(UnoUrl unoUrl) {
    *
    * @param url The websocket url.
    */
-  /* default */ static OfficeUrl createForWebsocket(final String url) {
+  /* default */
+  static OfficeUrl createForWebsocket(final String url) {
     return new OfficeUrl(websocket(url));
   }
 
@@ -191,73 +194,4 @@ record OfficeUrl(UnoUrl unoUrl) {
   public String toString() {
     return unoUrl.toString();
   }
-
-  //  /**
-  //   * Main entry point of the program used to test this class.
-  //   *
-  //   * @param args program arguments.
-  //   */
-  //  public static void main(final String[] args) {
-  //
-  //    // Here we must use a try catch since OpenOffice and LibreOffice doesn't
-  //    // have the same UnoUrl.parseUnoUrl signature
-  //    try {
-  //      OfficeUrl url = new OfficeUrl(2002);
-  //
-  //      System.out.println("WITH PORT");
-  //      System.out.println(String.format("url.getConnection(): %s", url.getConnection()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getConnectionAndParametersAsString(): %s",
-  //              url.getConnectionAndParametersAsString()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getConnectionParametersAsString(): %s",
-  // url.getConnectionParametersAsString()));
-  //      System.out.println(
-  //          String.format("url.getConnectionParameters(): %s", url.getConnectionParameters()));
-  //      System.out.println(String.format("url.getProtocol(): %s", url.getProtocol()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getProtocolAndParametersAsString(): %s",
-  //              url.getProtocolAndParametersAsString()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getProtocolParametersAsString(): %s", url.getProtocolParametersAsString()));
-  //      System.out.println(
-  //          String.format("url.getProtocolParameters(): %s", url.getProtocolParameters()));
-  //      System.out.println(String.format("url.getRootOid(): %s", url.getRootOid()));
-  //
-  //      System.out.println();
-  //      System.out.println();
-  //
-  //      url = new OfficeUrl("office");
-  //
-  //      System.out.println("WITH PIPE");
-  //      System.out.println(String.format("url.getConnection(): %s", url.getConnection()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getConnectionAndParametersAsString(): %s",
-  //              url.getConnectionAndParametersAsString()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getConnectionParametersAsString(): %s",
-  // url.getConnectionParametersAsString()));
-  //      System.out.println(
-  //          String.format("url.getConnectionParameters(): %s", url.getConnectionParameters()));
-  //      System.out.println(String.format("url.getProtocol(): %s", url.getProtocol()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getProtocolAndParametersAsString(): %s",
-  //              url.getProtocolAndParametersAsString()));
-  //      System.out.println(
-  //          String.format(
-  //              "url.getProtocolParametersAsString(): %s", url.getProtocolParametersAsString()));
-  //      System.out.println(
-  //          String.format("url.getProtocolParameters(): %s", url.getProtocolParameters()));
-  //      System.out.println(String.format("url.getRootOid(): %s", url.getRootOid()));
-  //    } catch (Exception ex) {
-  //      throw new IllegalArgumentException(ex);
-  //    }
-  //  }
 }

@@ -5,6 +5,7 @@ The JODConverter documentation is built with [Zensical](https://zensical.org/), 
 ## Prerequisites
 
 - Python 3.10 or newer.
+
 - Zensical, preferably in a virtual environment, at the version the site is built with:
 
     ```bash
@@ -20,6 +21,18 @@ zensical serve
 ```
 
 Then open http://127.0.0.1:8000. Edits in `docs/` reload automatically. Before opening a pull request, check that `zensical build --strict` reports no issues: it also catches broken links and anchors.
+
+## Format the pages
+
+The pages are formatted with [mdformat](https://mdformat.readthedocs.io/), which is installed with the other packages of `requirements-docs.txt`. From the repository root, before opening a pull request:
+
+```bash
+mdformat --end-of-line keep --number docs
+```
+
+The `--end-of-line keep` option leaves the line endings of your checkout as they are, which matters on Windows where Git checks the files out with CRLF line endings.
+
+Do not use the Markdown formatter of an IDE: it does not know the content tabs, the admonitions and the snippets used by the pages, and it reformats the code blocks. Write code-like text such as `Map<String, Object>` between backticks, since the escapes added by the formatter would be displayed.
 
 ## Versioned docs
 

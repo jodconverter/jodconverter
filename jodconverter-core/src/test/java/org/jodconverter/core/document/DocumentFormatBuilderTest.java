@@ -27,8 +27,6 @@ import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.jodconverter.core.document.DocumentFormat.Builder;
-
 /** Contains tests for the {@link org.jodconverter.core.document.DocumentFormat.Builder} class. */
 class DocumentFormatBuilderTest {
 
@@ -38,7 +36,7 @@ class DocumentFormatBuilderTest {
     @Test
     void shouldCreateExpectedDocumentFormat() {
 
-      final Builder builder =
+      final var builder =
           DocumentFormat.builder()
               .name("Foo Format")
               .extension("foo")
@@ -58,8 +56,8 @@ class DocumentFormatBuilderTest {
               .storeFilterName(DocumentFamily.SPREADSHEET, "Text Filter 6")
               .storeFilterOptions(DocumentFamily.SPREADSHEET, "123456");
 
-      final DocumentFormat format = builder.build();
-      try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+      final var format = builder.build();
+      try (var softly = new AutoCloseableSoftAssertions()) {
         softly.assertThat(format.getName()).isEqualTo("Foo Format");
         softly.assertThat(format.getExtension()).isEqualTo("foo");
         softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
@@ -96,7 +94,7 @@ class DocumentFormatBuilderTest {
     @Test
     void withoutLoadStoreProperties_ShouldCreateExpectedDocumentFormat() {
 
-      final Builder builder =
+      final var builder =
           DocumentFormat.builder()
               .name("Foo Format")
               .extension("foo")
@@ -106,8 +104,8 @@ class DocumentFormatBuilderTest {
               .loadProperty("lprops1_name", null)
               .storeProperty(DocumentFamily.DRAWING, "sprops1_name", null);
 
-      final DocumentFormat format = builder.build();
-      try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+      final var format = builder.build();
+      try (var softly = new AutoCloseableSoftAssertions()) {
         softly.assertThat(format.getName()).isEqualTo("Foo Format");
         softly.assertThat(format.getExtension()).isEqualTo("foo");
         softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
@@ -121,7 +119,7 @@ class DocumentFormatBuilderTest {
     @Test
     void removingLoadStoreProperties_ShouldCreateDocumentFormatWithNullLoadStoreProperties() {
 
-      final Builder builder =
+      final var builder =
           DocumentFormat.builder()
               .name("Foo Format")
               .extension("foo")
@@ -134,8 +132,8 @@ class DocumentFormatBuilderTest {
               .storeProperty(DocumentFamily.TEXT, "sprops1_name", null)
               .storeProperty(DocumentFamily.DRAWING, "sprops1_name", null);
 
-      final DocumentFormat format = builder.build();
-      try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
+      final var format = builder.build();
+      try (var softly = new AutoCloseableSoftAssertions()) {
         softly.assertThat(format.getName()).isEqualTo("Foo Format");
         softly.assertThat(format.getExtension()).isEqualTo("foo");
         softly.assertThat(format.getExtensions()).containsExactly("foo", "fii");
@@ -153,8 +151,8 @@ class DocumentFormatBuilderTest {
     @Test
     void withNullValue_ShouldRemoveProperty() {
 
-      final Builder builder = DocumentFormat.builder().from(DefaultDocumentFormatRegistry.CSV);
-      DocumentFormat csv = builder.build();
+      final var builder = DocumentFormat.builder().from(DefaultDocumentFormatRegistry.CSV);
+      var csv = builder.build();
       assertThat(csv.getLoadProperties()).containsKey("FilterOptions");
       csv = builder.loadProperty("FilterOptions", null).build();
       assertThat(csv.getLoadProperties()).doesNotContainKey("FilterOptions");
@@ -167,8 +165,8 @@ class DocumentFormatBuilderTest {
     @Test
     void withNullBValue_ShouldRemoveProperty() {
 
-      final Builder builder = DocumentFormat.builder().from(DefaultDocumentFormatRegistry.CSV);
-      DocumentFormat csv = builder.build();
+      final var builder = DocumentFormat.builder().from(DefaultDocumentFormatRegistry.CSV);
+      var csv = builder.build();
       assertThat(csv.getStoreProperties()).isNotNull();
       assertThat(csv.getStoreProperties().get(DocumentFamily.SPREADSHEET))
           .containsKey("FilterOptions");

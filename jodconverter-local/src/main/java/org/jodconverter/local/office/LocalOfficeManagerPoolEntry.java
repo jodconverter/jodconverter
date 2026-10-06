@@ -78,7 +78,7 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
 
     // This connection event listener will be notified when a connection is established or
     // closed/lost to/from an office instance.
-    final OfficeConnectionEventListener connectionEventListener =
+    final var connectionEventListener =
         new OfficeConnectionEventListener() {
 
           // A connection is established.
@@ -108,8 +108,7 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
               // a password interaction causes a disconnection when the password is not
               // provided.
               // https://github.com/jodconverter/jodconverter/issues/423#issue-3000441635
-              final PasswordProtectedExceptionSupportTask task =
-                  passwordProtectedExceptionSupportTask.getAndSet(null);
+              final var task = passwordProtectedExceptionSupportTask.getAndSet(null);
               if (task != null && task.hasPasswordInteractionRequest()) {
 
                 // We don't have to cancel the task here. A PasswordProtectedException has
@@ -151,7 +150,7 @@ class LocalOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     LOGGER.debug("Task executed successfully: {}", task);
 
     // Increment the task count
-    final int count = taskCount.incrementAndGet();
+    final var count = taskCount.incrementAndGet();
 
     // Now check if the office process must be restarted.
     if (count == maxTasksPerProcess) {

@@ -36,6 +36,8 @@
         <exclude name="OnlyOneReturn"/>
         <exclude name="ShortVariable"/>
         <exclude name="TooManyStaticImports"/>
+        <!-- The code uses var when the initializer makes the type obvious -->
+        <exclude name="UseExplicitTypes"/>
     </rule>
     <rule ref="category/java/codestyle.xml/CommentDefaultAccessModifier">
         <properties>

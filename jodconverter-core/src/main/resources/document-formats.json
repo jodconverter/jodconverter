@@ -256,7 +256,8 @@
   {
     "name": "Microsoft Excel 2007-2013 XML Template",
     "extensions": [
-      "xltx", "xltm"
+      "xltx",
+      "xltm"
     ],
     "mediaType": "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
     "inputFamily": "SPREADSHEET",

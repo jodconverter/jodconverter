@@ -45,7 +45,7 @@ class RemoteOfficeManagerPoolEntryITest {
     @Test
     void whenMalformedUrlExceptionCatch_ShouldThrowOfficeException() throws Exception {
 
-      final RemoteOfficeManagerPoolEntry manager =
+      final var manager =
           new RemoteOfficeManagerPoolEntry(
               "localhost",
               null,
@@ -69,7 +69,7 @@ class RemoteOfficeManagerPoolEntryITest {
     @Test
     void whenIOExceptionExceptionCatch_ShouldThrowOfficeException() throws Exception {
 
-      final RemoteOfficeManagerPoolEntry manager =
+      final var manager =
           new RemoteOfficeManagerPoolEntry(
               "http://localhost/",
               null,
@@ -97,7 +97,7 @@ class RemoteOfficeManagerPoolEntryITest {
     @Test
     void withAllValidUrlOptions_ShoulReturnProperUrlWithLoolExtension() {
 
-      final RemoteOfficeManagerPoolEntry manager =
+      final var manager =
           new RemoteOfficeManagerPoolEntry(
               "http://localhost/",
               null,

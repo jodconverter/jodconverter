@@ -33,12 +33,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.DisposedException;
-import com.sun.star.lib.uno.helper.UnoUrl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -240,7 +237,7 @@ class LocalOfficeProcessManager {
     if (startFailFast) {
       // Submit the start task to the executor.
       LOGGER.debug("Submitting start task...");
-      final Future<Void> future = executor.submit(() -> startProcessAndConnect(false, true));
+      final var future = executor.submit(() -> startProcessAndConnect(false, true));
 
       // Wait for completion of the task.
       try {
@@ -376,7 +373,7 @@ class LocalOfficeProcessManager {
     try {
       // +1000L to allow the deletion of the templateProfileDir.
       // But is it really necessary? It is a wild guess...
-      final long stopTimeout = processTimeout + 1000L;
+      final var stopTimeout = processTimeout + 1000L;
       LOGGER.debug("Waiting for stop task to complete ({} millisecs)...", stopTimeout);
       if (executor.awaitTermination(stopTimeout, TimeUnit.MILLISECONDS)) {
         LOGGER.debug("Stop task executed successfully.");
@@ -436,10 +433,10 @@ class LocalOfficeProcessManager {
     }
 
     // Build the 'accept' argument (connection string).
-    final String acceptString = officeUrl.getAcceptString();
+    final var acceptString = officeUrl.getAcceptString();
 
     // Search for an existing process.
-    final ProcessQuery processQuery = new ProcessQuery("soffice", acceptString);
+    final var processQuery = new ProcessQuery("soffice", acceptString);
     pid = checkForExistingProcess(processQuery);
 
     // If we already have a PID, it means that the process is already started and that
@@ -480,15 +477,17 @@ class LocalOfficeProcessManager {
    */
   private void checkPortAvailable(final String acceptString) throws OfficeException {
 
-    final UnoUrl unoUrl = officeUrl.unoUrl();
+    final var unoUrl = officeUrl.unoUrl();
     if (!"socket".equalsIgnoreCase(unoUrl.getConnection())) {
       return; // Pipes and websockets have no port
     }
+    // The office API returns a raw map
+    @SuppressWarnings("unchecked")
     final Map<String, String> parameters = unoUrl.getConnectionParameters();
-    final String host = parameters.get("host");
-    final int port = Integer.parseInt(parameters.get("port"));
+    final var host = parameters.get("host");
+    final var port = Integer.parseInt(parameters.get("port"));
 
-    try (Socket socket = new Socket()) {
+    try (var socket = new Socket()) {
       socket.connect(new InetSocketAddress(host, port), PORT_CHECK_TIMEOUT);
     } catch (IOException ex) {
       // Nothing listens on the port: the office process can use it.
@@ -505,7 +504,7 @@ class LocalOfficeProcessManager {
       final String acceptString, final ProcessQuery processQuery) throws OfficeException {
 
     // Create the builder used to launch the office process
-    final ProcessBuilder processBuilder = prepareProcessBuilder(acceptString);
+    final var processBuilder = prepareProcessBuilder(acceptString);
 
     LOGGER.debug("OFFICE EXECUTABLE: {}", getOfficeExecutable());
     LOGGER.info(
@@ -516,7 +515,7 @@ class LocalOfficeProcessManager {
     // Launch the process.
     try {
       // Start the process.
-      final StartProcessAndConnectRetryable retryable =
+      final var retryable =
           new StartProcessAndConnectRetryable(
               processManager, processBuilder, processQuery, afterStartProcessDelay, connection);
       try {
@@ -557,13 +556,13 @@ class LocalOfficeProcessManager {
         deleteInstanceProfileDir);
 
     try {
-      final XDesktop desktop = connection.getDesktop();
+      final var desktop = connection.getDesktop();
       if (desktop == null) {
         // We are not connected to the office process. We can still try to terminate it.
         forciblyTerminateProcess();
       } else {
         // Try to terminate
-        final boolean terminated = connection.getDesktop().terminate();
+        final var terminated = connection.getDesktop().terminate();
 
         LOGGER.debug(
             "The office process {}",
@@ -635,11 +634,11 @@ class LocalOfficeProcessManager {
    */
   private long checkForExistingProcess(final ProcessQuery processQuery) throws OfficeException {
 
-    final String accept = processQuery.argument();
+    final var accept = processQuery.argument();
     try {
       // Search for an existing process that would prevent us to start a new
       // office process with the same connection string.
-      long pid = processManager.findPid(processQuery);
+      var pid = processManager.findPid(processQuery);
 
       if (pid <= PID_UNKNOWN) {
         // No process was found.
@@ -695,8 +694,8 @@ class LocalOfficeProcessManager {
   private @NonNull ProcessBuilder prepareProcessBuilder(final @NonNull String acceptString) {
 
     // Create the command used to launch the office process
-    final List<String> command = new ArrayList<>(runAsArgs);
-    final File executable = getOfficeExecutable();
+    final var command = new ArrayList<>(runAsArgs);
+    final var executable = getOfficeExecutable();
 
     // LibreOffice:
     // https://help.libreoffice.org/Common/Starting_the_Software_With_Parameters
@@ -705,8 +704,8 @@ class LocalOfficeProcessManager {
     // Apache OpenOffice:
     // https://wiki.openoffice.org/wiki/Framework/Article/Command_Line_Arguments
 
-    final String execPath = executable.getAbsolutePath();
-    final String prefix = descriptor.useLongOptionNameGnuStyle() ? "--" : "-";
+    final var execPath = executable.getAbsolutePath();
+    final var prefix = descriptor.useLongOptionNameGnuStyle() ? "--" : "-";
     command.add(execPath);
     command.add(prefix + "accept=" + acceptString);
     command.add(prefix + "headless");
@@ -728,16 +727,16 @@ class LocalOfficeProcessManager {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("ProcessBuilder command: {}", String.join(" ", command));
     }
-    final ProcessBuilder processBuilder = new ProcessBuilder(command);
+    final var processBuilder = new ProcessBuilder(command);
 
     // The office process writes its temporary files (lu*.tmp) into the instance profile
     // directory instead of the system temp directory. It only removes them on a graceful exit;
     // this way, they are also removed with the profile directory when the process is killed.
-    final File tempDir = getInstanceTempDir();
+    final var tempDir = getInstanceTempDir();
     if (!tempDir.isDirectory() && !tempDir.mkdirs()) {
       LOGGER.warn("Could not create the temp directory '{}'", tempDir);
     }
-    final Map<String, String> environment = processBuilder.environment();
+    final var environment = processBuilder.environment();
     environment.put("TMPDIR", tempDir.getAbsolutePath()); // Linux, macOS
     environment.put("TMP", tempDir.getAbsolutePath()); // Windows
     environment.put("TEMP", tempDir.getAbsolutePath()); // Windows
@@ -749,7 +748,8 @@ class LocalOfficeProcessManager {
    *
    * @return The temp directory, inside the instance profile directory.
    */
-  /* default */ @NonNull File getInstanceTempDir() {
+  /* default */
+  @NonNull File getInstanceTempDir() {
     return new File(instanceProfileDir, "tmp");
   }
 
@@ -760,9 +760,9 @@ class LocalOfficeProcessManager {
   private OfficeDescriptor detectOfficeDescriptor() {
 
     // Create the command used to launch the office process
-    final File executable = getOfficeExecutable();
+    final var executable = getOfficeExecutable();
 
-    final String execPath = executable.getAbsolutePath();
+    final var execPath = executable.getAbsolutePath();
 
     return OfficeDescriptor.fromExecutablePath(execPath);
   }
@@ -832,9 +832,9 @@ class LocalOfficeProcessManager {
     try {
       // If the process has never been started by us (process != null),
       // just return a success exit code (0).
-      int exitCode = 0;
+      var exitCode = 0;
       if (process != null) {
-        final ExitCodeRetryable retryable = new ExitCodeRetryable(process);
+        final var retryable = new ExitCodeRetryable(process);
         retryable.execute(processRetryInterval, exitTimeout);
         exitCode = retryable.getExitCode();
       }
@@ -865,10 +865,9 @@ class LocalOfficeProcessManager {
     }
 
     // Allow the templateProfileDir to be set using a System property for development.
-    File templateDir = templateProfileDir;
+    var templateDir = templateProfileDir;
     if (templateDir == null) {
-      final String property =
-          System.getProperty("org.jodconverter.local.manager.templateProfileDir");
+      final var property = System.getProperty("org.jodconverter.local.manager.templateProfileDir");
       if (StringUtils.isNotBlank(property)) {
         templateDir = new File(property);
       }

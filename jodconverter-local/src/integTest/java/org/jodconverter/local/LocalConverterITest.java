@@ -20,15 +20,11 @@
 
 package org.jodconverter.local;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -39,7 +35,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
@@ -60,7 +55,7 @@ class LocalConverterITest {
     @Test
     void docToPdf_ShouldSucceed(final @TempDir File testFolder, final DocumentConverter converter) {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
       assertThatCode(() -> converter.convert(SOURCE_FILE).to(outputFile).execute())
           .doesNotThrowAnyException();
@@ -75,13 +70,13 @@ class LocalConverterITest {
 
       // The office home doesn't contain any office: the process can only be started from the
       // specified executable.
-      final File emptyOfficeHome = new File(testFolder, "empty");
+      final var emptyOfficeHome = new File(testFolder, "empty");
       assertThat(emptyOfficeHome.mkdir()).isTrue();
-      final File executable =
+      final var executable =
           LocalOfficeUtils.getOfficeExecutable(LocalOfficeUtils.getDefaultOfficeHome());
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      final OfficeManager manager =
+      final var manager =
           LocalOfficeManager.builder()
               .officeHome(emptyOfficeHome)
               .officeExecutable(executable)
@@ -102,8 +97,8 @@ class LocalConverterITest {
     void withPoolSize_ShouldStartProcessesOnFreePortsAndConvert(final @TempDir File testFolder)
         throws OfficeException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
-      final OfficeManager manager = LocalOfficeManager.builder().poolSize(2).build();
+      final var outputFile = new File(testFolder, "out.pdf");
+      final var manager = LocalOfficeManager.builder().poolSize(2).build();
       manager.start();
       try {
         LocalConverter.make(manager).convert(SOURCE_FILE).to(outputFile).execute();
@@ -121,29 +116,29 @@ class LocalConverterITest {
         throws IOException, OfficeException {
 
       // SelectPdfVersion 15 = PDF 1.5; LibreOffice writes PDF 1.7 when it ignores the value
-      final DocumentFormatRegistry registry =
+      final var registry =
           JsonDocumentFormatRegistry.create(
               """
-              [
-                {
-                  "name": "Microsoft Word 97-2003",
-                  "extensions": ["doc"],
-                  "mediaType": "application/msword",
-                  "inputFamily": "TEXT"
-                },
-                {
-                  "name": "Portable Document Format",
-                  "extensions": ["pdf"],
-                  "mediaType": "application/pdf",
-                  "storeProperties": {
-                    "TEXT": {
-                      "FilterName": "writer_pdf_Export",
-                      "FilterData": { "SelectPdfVersion": 15 }
-                    }
-                  }
-                }
-              ]""");
-      final File outputFile = new File(testFolder, "out.pdf");
+                                    [
+                                      {
+                                        "name": "Microsoft Word 97-2003",
+                                        "extensions": ["doc"],
+                                        "mediaType": "application/msword",
+                                        "inputFamily": "TEXT"
+                                      },
+                                      {
+                                        "name": "Portable Document Format",
+                                        "extensions": ["pdf"],
+                                        "mediaType": "application/pdf",
+                                        "storeProperties": {
+                                          "TEXT": {
+                                            "FilterName": "writer_pdf_Export",
+                                            "FilterData": { "SelectPdfVersion": 15 }
+                                          }
+                                        }
+                                      }
+                                    ]""");
+      final var outputFile = new File(testFolder, "out.pdf");
 
       LocalConverter.builder()
           .officeManager(manager)
@@ -153,8 +148,8 @@ class LocalConverterITest {
           .to(outputFile)
           .execute();
 
-      final byte[] header = new byte[8];
-      try (InputStream in = Files.newInputStream(outputFile.toPath())) {
+      final var header = new byte[8];
+      try (var in = Files.newInputStream(outputFile.toPath())) {
         assertThat(in.read(header)).isEqualTo(header.length);
       }
       assertThat(new String(header, StandardCharsets.US_ASCII)).isEqualTo("%PDF-1.5");
@@ -164,7 +159,7 @@ class LocalConverterITest {
     void withLoadDocumentModeLocal_ShouldSucceed(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
       assertThatCode(
               () ->
@@ -185,7 +180,7 @@ class LocalConverterITest {
     void withLoadDocumentModeRemote_ShouldSucceed(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
       assertThatCode(
               () ->
@@ -206,7 +201,7 @@ class LocalConverterITest {
     void withLoadDocumentModeAuto_ShouldSucceed(
         final @TempDir File testFolder, final OfficeManager manager) {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
       assertThatCode(
               () ->
@@ -232,9 +227,9 @@ class LocalConverterITest {
     void withNullInputFormat_ShouldThrowNullPointerException(
         final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
         assertThatNullPointerException()
             .isThrownBy(() -> converter.convert(stream).as(null).to(outputFile).execute());
       }
@@ -244,8 +239,8 @@ class LocalConverterITest {
     void withoutInputFormat_ShouldSucceed(
         final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
-      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      final var outputFile = new File(testFolder, "out.pdf");
+      try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
         assertThatCode(() -> converter.convert(stream).to(outputFile).execute())
             .doesNotThrowAnyException();
       }
@@ -255,9 +250,9 @@ class LocalConverterITest {
     void withSupportedInputFormat_ShouldSucceed(
         final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
         assertThatCode(
                 () ->
                     converter
@@ -276,9 +271,9 @@ class LocalConverterITest {
     void withLoadDocumentModeLocal_ShouldSucceed(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
         assertThatCode(
                 () ->
                     LocalConverter.builder()
@@ -299,9 +294,9 @@ class LocalConverterITest {
     void withLoadDocumentModeRemote_ShouldSucceed(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
         assertThatCode(
                 () ->
                     LocalConverter.builder()
@@ -322,9 +317,9 @@ class LocalConverterITest {
     void withLoadDocumentModeAuto_ShouldSucceed(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
         assertThatCode(
                 () ->
                     LocalConverter.builder()
@@ -350,9 +345,9 @@ class LocalConverterITest {
     void withMissingOutputFormat_ShouldThrowNullPointerException(
         final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+      try (var stream = Files.newOutputStream(outputFile.toPath())) {
         assertThatNullPointerException()
             .isThrownBy(() -> converter.convert(SOURCE_FILE).to(stream).as(null).execute());
       }
@@ -362,9 +357,9 @@ class LocalConverterITest {
     void withSupportedOutputFormat_ShouldSucceed(
         final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+      try (var stream = Files.newOutputStream(outputFile.toPath())) {
         assertThatCode(
                 () ->
                     converter
@@ -383,10 +378,10 @@ class LocalConverterITest {
     void withoutExtension_ShouldSucceed(
         final @TempDir File testFolder, final DocumentConverter converter) throws IOException {
 
-      final File sourceFile = documentFile("test");
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var sourceFile = documentFile("test");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+      try (var stream = Files.newOutputStream(outputFile.toPath())) {
         assertThatCode(
                 () ->
                     converter
@@ -397,7 +392,7 @@ class LocalConverterITest {
             .doesNotThrowAnyException();
       }
 
-      final String content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+      final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
       assertThat(content).as("Check content: %s", content).contains("Test document");
     }
 
@@ -405,9 +400,9 @@ class LocalConverterITest {
     void withLoadDocumentModeLocal_ShouldSucceed(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+      try (var stream = Files.newOutputStream(outputFile.toPath())) {
         assertThatCode(
                 () ->
                     LocalConverter.builder()
@@ -429,9 +424,9 @@ class LocalConverterITest {
     void withLoadDocumentModeRemote_ShouldSucceed(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+      try (var stream = Files.newOutputStream(outputFile.toPath())) {
         assertThatCode(
                 () ->
                     LocalConverter.builder()
@@ -453,9 +448,9 @@ class LocalConverterITest {
     void withLoadDocumentModeAuto_ShouldSucceed(
         final @TempDir File testFolder, final OfficeManager manager) throws IOException {
 
-      final File outputFile = new File(testFolder, "out.pdf");
+      final var outputFile = new File(testFolder, "out.pdf");
 
-      try (OutputStream stream = Files.newOutputStream(outputFile.toPath())) {
+      try (var stream = Files.newOutputStream(outputFile.toPath())) {
         assertThatCode(
                 () ->
                     LocalConverter.builder()

@@ -58,7 +58,7 @@ public final class AssertUtils {
     if (str.isEmpty()) {
       throw new IllegalArgumentException(message);
     }
-    for (int i = 0; i < str.length(); i++) {
+    for (var i = 0; i < str.length(); i++) {
       if (!Character.isWhitespace(str.charAt(i))) {
         return;
       }

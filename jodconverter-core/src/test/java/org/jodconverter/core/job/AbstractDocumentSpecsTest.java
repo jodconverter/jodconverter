@@ -54,9 +54,9 @@ class AbstractDocumentSpecsTest {
     void whenNotNull_ShouldCreateSpecsWithExpectedValues(@TempDir final File testFolder)
         throws IOException {
 
-      final File file = new File(testFolder, "test.txt");
+      final var file = new File(testFolder, "test.txt");
       assertThat(file.createNewFile()).isTrue();
-      final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(file);
+      final var specs = new SourceDocumentSpecsFromFile(file);
 
       assertThat(specs.getFile()).isEqualTo(file);
     }
@@ -69,9 +69,9 @@ class AbstractDocumentSpecsTest {
     void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File file = new File(testFolder, "test.txt");
+      final var file = new File(testFolder, "test.txt");
       assertThat(file.createNewFile()).isTrue();
-      final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(file);
+      final var specs = new SourceDocumentSpecsFromFile(file);
 
       assertThatNullPointerException().isThrownBy(() -> specs.setDocumentFormat(null));
     }
@@ -80,9 +80,9 @@ class AbstractDocumentSpecsTest {
     void whenNotNull_ShouldAssignExpectedDocumentFormat(@TempDir final File testFolder)
         throws IOException {
 
-      final File file = new File(testFolder, "test.txt");
+      final var file = new File(testFolder, "test.txt");
       assertThat(file.createNewFile()).isTrue();
-      final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(file);
+      final var specs = new SourceDocumentSpecsFromFile(file);
       specs.setDocumentFormat(DefaultDocumentFormatRegistry.TXT);
 
       assertThat(specs.getFormat()).isEqualTo(DefaultDocumentFormatRegistry.TXT);
@@ -96,9 +96,9 @@ class AbstractDocumentSpecsTest {
     void whenDocumentFormatIsNull_ShouldReturnStringWithNullDocumentFormat(
         @TempDir final File testFolder) throws IOException {
 
-      final File file = new File(testFolder, "test.txt");
+      final var file = new File(testFolder, "test.txt");
       assertThat(file.createNewFile()).isTrue();
-      final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(file);
+      final var specs = new SourceDocumentSpecsFromFile(file);
 
       assertThat(specs.toString()).contains("file=test.txt", "format=null");
     }
@@ -107,9 +107,9 @@ class AbstractDocumentSpecsTest {
     void whenNotNull_ShouldAssignExpectedDocumentFormat(@TempDir final File testFolder)
         throws IOException {
 
-      final File file = new File(testFolder, "test.txt");
+      final var file = new File(testFolder, "test.txt");
       assertThat(file.createNewFile()).isTrue();
-      final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(file);
+      final var specs = new SourceDocumentSpecsFromFile(file);
       specs.setDocumentFormat(DefaultDocumentFormatRegistry.TXT);
 
       assertThat(specs.toString()).contains("file=test.txt", "format=txt");
