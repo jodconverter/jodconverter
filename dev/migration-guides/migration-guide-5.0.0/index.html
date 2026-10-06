@@ -3225,6 +3225,12 @@ from the getters; the properties shared by the three (<code>working-dir</code>, 
 <code>DEFAULT_*</code> constants are public, like those of the other managers. The <code>jodconverter.remote.ssl.*</code> properties are bound
 directly to an <code>SslConfig</code>: <code>JodConverterRemoteProperties.getSsl()</code> returns one, and the <code>SslProperties</code> copy of its
 fields is gone (same property names, same defaults).</p>
+<p>The document format registry is configured once for every converter of the starter, under
+<code>jodconverter.document-formats</code>: <code>jodconverter.local.document-format-registry</code> becomes
+<code>jodconverter.document-formats.registry</code>, and <code>jodconverter.local.format-options</code> becomes
+<code>jodconverter.document-formats.options</code>. The <code>documentFormatRegistry</code> bean exists whether or not the local manager is
+enabled, and the external and remote converters use it too (the remote converter used to ignore it). An application
+that declares its own <code>DocumentFormatRegistry</code> bean, of any name, replaces it.</p>
 <h3 id="command-line-tool_1">Command line tool<a class="headerlink" href="#command-line-tool_1" title="Permanent link">&para;</a></h3>
 <p>The <code>-a</code> / <code>--application-context</code> option, which loaded a Spring XML context for the filter chain and the SSL
 configuration, is replaced by <code>--config &lt;file&gt;</code>, a JSON or YAML file with a <code>filters</code> section and an <code>ssl</code> section.

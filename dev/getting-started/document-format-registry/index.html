@@ -1430,6 +1430,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Spring Boot
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#programmatic-customization" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2563,6 +2574,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Spring Boot
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#programmatic-customization" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2712,6 +2734,22 @@ top of the defaults (overrides existing formats or adds new ones).</p>
 <span class="w">    </span><span class="p">.</span><span class="na">formatRegistry</span><span class="p">(</span><span class="n">custom</span><span class="p">)</span><span class="w"> </span><span class="c1">// use your registry</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
+<h3 id="spring-boot">Spring Boot<a class="headerlink" href="#spring-boot" title="Permanent link">&para;</a></h3>
+<p>With the Spring Boot starter, one registry is shared by every converter it creates, local, external or remote, and
+is also exposed as the <code>documentFormatRegistry</code> bean. It is configured under <code>jodconverter.document-formats</code>:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">document-formats</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">registry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classpath:my-document-formats.json</span><span class="w">   </span><span class="c1"># defaults to the registry shipped with JODConverter</span>
+<span class="w">    </span><span class="nt">options</span><span class="p">:</span><span class="w">                                        </span><span class="c1"># load/store properties added to a format, by extension</span>
+<span class="w">      </span><span class="nt">txt</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">load</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">FilterOptions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">utf16</span>
+<span class="w">        </span><span class="nt">store</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">TEXT</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">FilterOptions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">utf16</span>
+</code></pre></div>
+<p>A <code>classpath:custom-document-formats.json</code> resource, if present, is added to the registry. An application that
+declares its own <code>DocumentFormatRegistry</code> bean replaces the one of the starter.</p>
 <h3 id="programmatic-customization">Programmatic Customization<a class="headerlink" href="#programmatic-customization" title="Permanent link">&para;</a></h3>
 <p>Build a registry in code when you only need a few tweaks:</p>
 <div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.document.*</span><span class="p">;</span>
