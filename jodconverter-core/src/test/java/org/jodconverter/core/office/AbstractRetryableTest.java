@@ -88,7 +88,8 @@ class AbstractRetryableTest {
         // Clear the interrupted status of the test thread.
         assertThat(Thread.interrupted()).isTrue();
       }
-      assertThat(retryable.getAttempts()).isZero();
+      // The first attempt is made: only the retries are given up.
+      assertThat(retryable.getAttempts()).isEqualTo(1);
     }
   }
 

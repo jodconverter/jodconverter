@@ -28,8 +28,8 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.job.*;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 import org.jodconverter.remote.task.RemoteConversionTask;
 
@@ -114,11 +114,13 @@ public final class RemoteConverter extends AbstractConverter {
     }
 
     @Override
-    public void doExecute() throws OfficeException {
+    protected @NonNull OfficeManager getOfficeManager() {
+      return officeManager;
+    }
 
-      // Create a default conversion task and execute it
-      final var task = new RemoteConversionTask(source, target);
-      officeManager.execute(task);
+    @Override
+    protected @NonNull OfficeTask createTask() {
+      return new RemoteConversionTask(source, target);
     }
   }
 

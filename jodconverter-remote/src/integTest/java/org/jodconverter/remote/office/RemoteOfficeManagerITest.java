@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.Nested;
@@ -91,6 +92,86 @@ class RemoteOfficeManagerITest {
 
         } finally {
           OfficeUtils.stopQuietly(manager);
+        }
+      } finally {
+        wireMockServer.stop();
+      }
+    }
+
+    @Test
+    void executeAsync_Returning200OK_ShouldCompleteWithExpectedResult(
+        final @TempDir File testFolder) throws OfficeException, IOException {
+
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
+
+      final var wireMockServer = new WireMockServer(options().port(8000));
+      wireMockServer.start();
+      try {
+        final var manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("http://localhost:8000/lool/convert-to/")
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withStatus(200).withBody("Test Document")));
+
+          final var future =
+              RemoteConverter.make(manager).convert(inputFile).to(outputFile).executeAsync();
+
+          assertThat(future.join()).isNull();
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
+        }
+      } finally {
+        wireMockServer.stop();
+      }
+    }
+
+    @Test
+    void whenTheServerIsTooSlow_ShouldFailWithTheExecutionTimeoutAndStayUsable(
+        final @TempDir File testFolder) throws OfficeException, IOException {
+
+      final var inputFile = new File(SOURCE_FILE_PATH);
+      final var outputFile = new File(testFolder, "out.txt");
+
+      final var wireMockServer = new WireMockServer(options().port(8000));
+      wireMockServer.start();
+      try {
+        final var manager =
+            RemoteOfficeManager.builder()
+                .urlConnection("http://localhost:8000/lool/convert-to/")
+                .taskExecutionTimeout(1_000L)
+                .build();
+        try {
+          manager.start();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(
+                      aResponse().withStatus(200).withBody("Test Document").withFixedDelay(5_000)));
+
+          // The request is aborted when the task times out.
+          final var start = System.nanoTime();
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(
+                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
+              .withMessageStartingWith("Task did not complete within timeout (1000 ms)");
+          assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start)).isLessThan(4_000L);
+
+          // The worker is usable again right after.
+          wireMockServer.resetAll();
+          wireMockServer.stubFor(
+              post(urlPathEqualTo("/lool/convert-to/txt"))
+                  .willReturn(aResponse().withStatus(200).withBody("Test Document")));
+          RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute();
+          final var content = FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
+          assertThat(content).as("Check content: %s", content).contains("Test Document");
+        } finally {
+          manager.stop();
         }
       } finally {
         wireMockServer.stop();
