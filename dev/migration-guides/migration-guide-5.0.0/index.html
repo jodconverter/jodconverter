@@ -3216,6 +3216,15 @@ process starts waits in the queue instead of failing with the execution timeout.
 <p>The <code>jodconverter.local.port-numbers</code> property no longer has a default value in the properties class, so that it
 does not conflict with the new <code>jodconverter.local.pool-size</code> property. The effective default is unchanged: with no
 port numbers, pipe names or pool size, the office process uses port 2002.</p>
+<p>The timeouts and delays of the starter (<code>task-queue-timeout</code>, <code>task-execution-timeout</code>, <code>process-timeout</code>,
+<code>process-retry-interval</code>, <code>after-start-process-delay</code>, <code>connect-timeout</code>, <code>connect-retry-interval</code>, <code>socket-timeout</code>)
+are bound as <code>Duration</code>: a plain number is still a number of milliseconds, and a duration such as <code>30s</code> or <code>2m</code> is
+accepted. <code>existing-process-action</code> and <code>load-document-mode</code> are bound to the <code>ExistingProcessAction</code> and
+<code>LoadDocumentMode</code> enums, in any case and with hyphens or underscores (<code>connect-or-kill</code>). An application that injects
+<code>JodConverterLocalProperties</code>, <code>JodConverterExternalProperties</code> or <code>JodConverterRemoteProperties</code> gets these types
+from the getters; the properties shared by the three (<code>working-dir</code>, <code>task-queue-capacity</code>, <code>task-queue-timeout</code>,
+<code>task-execution-timeout</code>) come from their new <code>JodConverterPoolProperties</code> base class. <code>ExternalOfficeManager</code>'s
+<code>DEFAULT_*</code> constants are public, like those of the other managers.</p>
 <h3 id="command-line-tool_1">Command line tool<a class="headerlink" href="#command-line-tool_1" title="Permanent link">&para;</a></h3>
 <p>The <code>-a</code> / <code>--application-context</code> option, which loaded a Spring XML context for the filter chain and the SSL
 configuration, is replaced by <code>--config &lt;file&gt;</code>, a JSON or YAML file with a <code>filters</code> section and an <code>ssl</code> section.
