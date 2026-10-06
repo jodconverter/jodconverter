@@ -31,54 +31,6 @@ import org.jodconverter.remote.ssl.SslConfig;
 class JodConverterRemotePropertiesTest {
 
   @Test
-  void sslConfig_ShouldCopyEveryProperty() {
-
-    final var ssl = new JodConverterRemoteProperties.SslProperties();
-    ssl.setEnabled(true);
-    ssl.setCiphers(new String[] {"cipher"});
-    ssl.setEnabledProtocols(new String[] {"TLSv1.3"});
-    ssl.setKeyAlias("alias");
-    ssl.setKeyPassword("keypassword");
-    ssl.setKeyStore("keystore");
-    ssl.setKeyStorePassword("keystorepassword");
-    ssl.setKeyStoreType("jks");
-    ssl.setKeyStoreProvider("SUN");
-    ssl.setTrustStore("truststore");
-    ssl.setTrustStorePassword("truststorepassword");
-    ssl.setTrustStoreType("pkcs12");
-    ssl.setTrustStoreProvider("SunJSSE");
-    ssl.setProtocol("TLS");
-    ssl.setTrustAll(true);
-    ssl.setVerifyHostname(false);
-
-    final var config = ssl.sslConfig();
-
-    assertThat(config)
-        .usingRecursiveComparison()
-        .isEqualTo(
-            new SslConfig() {
-              {
-                setEnabled(true);
-                setCiphers(new String[] {"cipher"});
-                setEnabledProtocols(new String[] {"TLSv1.3"});
-                setKeyAlias("alias");
-                setKeyPassword("keypassword");
-                setKeyStore("keystore");
-                setKeyStorePassword("keystorepassword");
-                setKeyStoreType("jks");
-                setKeyStoreProvider("SUN");
-                setTrustStore("truststore");
-                setTrustStorePassword("truststorepassword");
-                setTrustStoreType("pkcs12");
-                setTrustStoreProvider("SunJSSE");
-                setProtocol("TLS");
-                setTrustAll(true);
-                setVerifyHostname(false);
-              }
-            });
-  }
-
-  @Test
   void defaults_ShouldMatchTheManagerAndTheSslConfig() {
 
     final var properties = new JodConverterRemoteProperties();
@@ -88,8 +40,6 @@ class JodConverterRemotePropertiesTest {
     assertThat(properties.getSocketTimeout().toMillis())
         .isEqualTo(RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT);
     // Trusting every certificate must be an explicit choice.
-    assertThat(new JodConverterRemoteProperties.SslProperties().isTrustAll())
-        .isEqualTo(new SslConfig().isTrustAll())
-        .isFalse();
+    assertThat(new SslConfig().isTrustAll()).isFalse();
   }
 }

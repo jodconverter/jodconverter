@@ -245,7 +245,9 @@ accepted. `existing-process-action` and `load-document-mode` are bound to the `E
 `JodConverterLocalProperties`, `JodConverterExternalProperties` or `JodConverterRemoteProperties` gets these types
 from the getters; the properties shared by the three (`working-dir`, `task-queue-capacity`, `task-queue-timeout`,
 `task-execution-timeout`) come from their new `JodConverterPoolProperties` base class. `ExternalOfficeManager`'s
-`DEFAULT_*` constants are public, like those of the other managers.
+`DEFAULT_*` constants are public, like those of the other managers. The `jodconverter.remote.ssl.*` properties are bound
+directly to an `SslConfig`: `JodConverterRemoteProperties.getSsl()` returns one, and the `SslProperties` copy of its
+fields is gone (same property names, same defaults).
 
 ### Command line tool
 

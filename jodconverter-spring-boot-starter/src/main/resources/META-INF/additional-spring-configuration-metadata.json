@@ -1,0 +1,20 @@
+{
+  "properties": [
+    { "name": "jodconverter.remote.ssl.enabled", "type": "java.lang.Boolean", "description": "Enable SSL support.", "defaultValue": true },
+    { "name": "jodconverter.remote.ssl.ciphers", "type": "java.lang.String[]", "description": "Supported SSL ciphers." },
+    { "name": "jodconverter.remote.ssl.enabled-protocols", "type": "java.lang.String[]", "description": "Enabled SSL protocols." },
+    { "name": "jodconverter.remote.ssl.key-alias", "type": "java.lang.String", "description": "Alias that identifies the key in the key store." },
+    { "name": "jodconverter.remote.ssl.key-password", "type": "java.lang.String", "description": "Password used to access the key in the key store." },
+    { "name": "jodconverter.remote.ssl.key-store", "type": "java.lang.String", "description": "Path to the key store that holds the SSL certificate (typically a jks file)." },
+    { "name": "jodconverter.remote.ssl.key-store-password", "type": "java.lang.String", "description": "Password used to access the key store." },
+    { "name": "jodconverter.remote.ssl.key-store-type", "type": "java.lang.String", "description": "Type of the key store." },
+    { "name": "jodconverter.remote.ssl.key-store-provider", "type": "java.lang.String", "description": "Provider for the key store." },
+    { "name": "jodconverter.remote.ssl.trust-store", "type": "java.lang.String", "description": "Trust store that holds SSL certificates." },
+    { "name": "jodconverter.remote.ssl.trust-store-password", "type": "java.lang.String", "description": "Password used to access the trust store." },
+    { "name": "jodconverter.remote.ssl.trust-store-type", "type": "java.lang.String", "description": "Type of the trust store." },
+    { "name": "jodconverter.remote.ssl.trust-store-provider", "type": "java.lang.String", "description": "Provider for the trust store." },
+    { "name": "jodconverter.remote.ssl.protocol", "type": "java.lang.String", "description": "SSL protocol to use.", "defaultValue": "TLS" },
+    { "name": "jodconverter.remote.ssl.trust-all", "type": "java.lang.Boolean", "description": "Indicates if all certificates are trusted (certificate validation becomes disabled).", "defaultValue": false },
+    { "name": "jodconverter.remote.ssl.verify-hostname", "type": "java.lang.Boolean", "description": "Enable hostname verification during SSL handshake.", "defaultValue": true }
+  ]
+}
