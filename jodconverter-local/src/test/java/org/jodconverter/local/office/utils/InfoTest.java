@@ -101,6 +101,20 @@ class InfoTest {
     void withSecondLessThanSecond_ReturSecondLessThanFirst() {
       assertThat(Info.compareVersions("1.6.1", "1.5", 0)).isEqualTo(1);
     }
+
+    @Test
+    void withFirstLongerThanSecond_ShouldCompareTheMissingNumbersAsZero() {
+      assertThat(Info.compareVersions("6.1.0", "6.1", 2)).isEqualTo(0);
+      assertThat(Info.compareVersions("6.1.1", "6.1", 2)).isEqualTo(1);
+      assertThat(Info.compareVersions("24.2.7.2", "6.1", 2)).isEqualTo(1);
+    }
+
+    @Test
+    void withNonNumericParts_ShouldUseTheLeadingDigits() {
+      assertThat(Info.compareVersions("7.3.7-beta", "7.3.7", 3)).isEqualTo(0);
+      assertThat(Info.compareVersions("7.alpha", "7.0", 2)).isEqualTo(0);
+      assertThat(Info.compareVersions("7.4rc1", "7.3", 2)).isEqualTo(1);
+    }
   }
 
   @Nested

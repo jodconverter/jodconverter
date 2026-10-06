@@ -280,7 +280,8 @@ public final class Convert {
     assert connectionUrl != null;
     return RemoteOfficeManager.builder()
         .urlConnection(connectionUrl)
-        .sslConfig(context == null ? null : context.getBean(SslConfig.class))
+        .sslConfig(
+            context == null ? null : context.getBeanProvider(SslConfig.class).getIfAvailable())
         .build();
   }
 
@@ -298,7 +299,9 @@ public final class Convert {
 
   private static FilterChain getFilterChain(final ApplicationContext context) {
 
-    return Optional.ofNullable(context).map(ctx -> ctx.getBean(FilterChain.class)).orElse(null);
+    return Optional.ofNullable(context)
+        .map(ctx -> ctx.getBeanProvider(FilterChain.class).getIfAvailable())
+        .orElse(null);
   }
 
   private static DocumentFormatRegistry getRegistryOption(final CommandLine commandLine)

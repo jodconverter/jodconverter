@@ -118,12 +118,24 @@ class AutoConfigurationDefaultPropertiesITest {
         .extracting(
             "enabled",
             "url",
+            "connectTimeout",
+            "socketTimeout",
             "workingDir",
             "poolSize",
             "taskExecutionTimeout",
             "taskQueueCapacity",
             "taskQueueTimeout",
             "ssl")
-        .containsExactly(true, "https://localhost:8001", null, 1, 120_000L, 0, 30_000L, null);
+        .containsExactly(
+            true,
+            "https://localhost:8001",
+            RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT,
+            RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT,
+            null,
+            1,
+            120_000L,
+            0,
+            30_000L,
+            null);
   }
 }

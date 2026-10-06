@@ -806,8 +806,12 @@ class AbstractOfficeWorkerPoolTest {
       started(worker);
 
       pool.execute(NOOP);
-      assertThat(pool.getStatus().workers())
-          .containsExactly(new OfficeWorkerStatus(OfficeWorkerState.READY, 1, 0, 0));
+      // The worker is ready again once its thread is back at the queue.
+      await(
+          () ->
+              pool.getStatus()
+                  .workers()
+                  .equals(List.of(new OfficeWorkerStatus(OfficeWorkerState.READY, 1, 0, 0))));
 
       // The second task reaches the limit: the worker restarts before the third one.
       pool.execute(NOOP);

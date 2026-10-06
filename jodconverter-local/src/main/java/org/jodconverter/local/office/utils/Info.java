@@ -20,8 +20,8 @@
 
 package org.jodconverter.local.office.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.XComponent;
@@ -48,6 +48,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   // private static final String NODE_OFFICE = "/org.openoffice.Setup/Office";
 
   private static final String[] NODE_PATHS = {NODE_PRODUCT, NODE_L10N};
+  private static final Pattern DIGITS = Pattern.compile("\\d+");
 
   /**
    * Compares two versions of strings (ex. 1.6.1).
@@ -68,18 +69,12 @@ public final class Info { // NOPMD - Disable utility class name rule violation
       return 1;
     }
 
-    final var numbers1 = normalizeVersion(version1, length).split("\\.");
-    final var numbers2 = normalizeVersion(version2, length).split("\\.");
-
-    for (var i = 0; i < numbers1.length; i++) {
-      if (Integer.parseInt(numbers1[i]) < Integer.parseInt(numbers2[i])) {
-        return -1;
-      } else if (Integer.parseInt(numbers1[i]) > Integer.parseInt(numbers2[i])) {
-        return 1;
-      }
-    }
-
-    return 0;
+    final var numbers1 = parseVersion(version1);
+    final var numbers2 = parseVersion(version2);
+    // The missing numbers of the shorter version count as zeros.
+    final var size = Math.max(length, Math.max(numbers1.length, numbers2.length));
+    return Integer.signum(
+        Arrays.compare(Arrays.copyOf(numbers1, size), Arrays.copyOf(numbers2, size)));
   }
 
   /**
@@ -266,16 +261,18 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   }
 
   /**
-   * Normalizes a version string so that it has 'length' number of version numbers separated by '.'
+   * Parses a version string into its numbers: the leading digits of each dot-separated part, 0 for
+   * a part without any.
    */
-  private static @NonNull String normalizeVersion(final @NonNull String version, final int length) {
+  private static int[] parseVersion(final @NonNull String version) {
 
-    final var numbers = new ArrayList<>(Arrays.asList(version.split("\\.")));
-    while (numbers.size() < length) {
-      numbers.add("0");
+    final var parts = version.split("\\.");
+    final var numbers = new int[parts.length];
+    for (var i = 0; i < parts.length; i++) {
+      final var digits = DIGITS.matcher(parts[i]);
+      numbers[i] = digits.lookingAt() ? Integer.parseInt(digits.group()) : 0;
     }
-
-    return String.join(".", numbers);
+    return numbers;
   }
 
   /**
