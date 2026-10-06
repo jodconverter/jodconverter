@@ -43,7 +43,7 @@ public final class RemoteOfficeManager extends AbstractOfficeWorkerPool {
   // The maximum size of the pool.
   public static final int MAX_POOL_SIZE = 1000;
   // The default connect timeout
-  public static final long DEFAULT_CONNECT_TIMEOUT = 60_000L; // 2 minutes
+  public static final long DEFAULT_CONNECT_TIMEOUT = 60_000L; // 1 minute
   // The default socket timeout
   public static final long DEFAULT_SOCKET_TIMEOUT = 120_000L; // 2 minutes
 

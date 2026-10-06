@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 import com.sun.star.lang.XComponent;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -55,6 +56,17 @@ class AbstractFilterChainTest {
 
       assertThatExceptionOfType(UnsupportedOperationException.class)
           .isThrownBy(() -> chain.addFilter(new TestFilter()));
+    }
+
+    @Test
+    void withNullFilters_ShouldBeEmpty() {
+
+      final var chain = new TestFilterChain(false, (Filter[]) null);
+
+      assertThat(chain)
+          .extracting("filters")
+          .asInstanceOf(InstanceOfAssertFactories.LIST)
+          .isEmpty();
     }
 
     @Test
@@ -95,8 +107,27 @@ class AbstractFilterChainTest {
                             throw new OfficeException("Unsupported Filter");
                           })
                       .doFilter(mock(OfficeContext.class), mock(XComponent.class)))
-          .withCauseExactlyInstanceOf(OfficeException.class)
-          .satisfies(e -> assertThat(e.getCause()).hasMessage("Unsupported Filter"));
+          // The exception of the filter is not wrapped, however deep in the chain it was thrown.
+          .withMessage("Unsupported Filter")
+          .withNoCause();
+    }
+
+    @Test
+    void withNestedFilterThrowingOfficeException_ShouldThrowSameOfficeException() {
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(
+              () ->
+                  new TestFilterChain(
+                          false,
+                          (context, document, chain) -> chain.doFilter(context, document),
+                          (context, document, chain) -> chain.doFilter(context, document),
+                          (context, document, chain) -> {
+                            throw new OfficeException("Unsupported Filter");
+                          })
+                      .doFilter(mock(OfficeContext.class), mock(XComponent.class)))
+          .withMessage("Unsupported Filter")
+          .withNoCause();
     }
 
     @Test

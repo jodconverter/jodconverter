@@ -25,6 +25,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+import org.jodconverter.remote.office.RemoteOfficeManager;
 import org.jodconverter.remote.ssl.SslConfig;
 
 /** Configuration class for JODConverter Remote. */
@@ -49,7 +50,7 @@ public class JodConverterRemoteProperties {
    * interpreted as an infinite timeout. A negative value is interpreted as undefined (system
    * default).
    */
-  private long connectTimeout = 30_000L;
+  private long connectTimeout = RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT;
 
   /**
    * The socket timeout in milliseconds, which is the timeout for waiting for data or, put
@@ -57,7 +58,7 @@ public class JodConverterRemoteProperties {
    * of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined
    * (system default).
    */
-  private long socketTimeout = 60_000L;
+  private long socketTimeout = RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT;
 
   /** Pool size of the manager. */
   private int poolSize = 1;
@@ -214,7 +215,7 @@ public class JodConverterRemoteProperties {
     private String protocol = "TLS";
 
     /** Indicates if all certificates are trusted (certificate validation becomes disabled). */
-    private boolean trustAll = true;
+    private boolean trustAll;
 
     /** Enable hostname verification during SSL handshake. */
     private boolean verifyHostname = true;
@@ -370,6 +371,7 @@ public class JodConverterRemoteProperties {
       sslConfig.setTrustStoreType(getTrustStoreType());
       sslConfig.setTrustStoreProvider(getTrustStoreProvider());
       sslConfig.setProtocol(getProtocol());
+      sslConfig.setTrustAll(isTrustAll());
       sslConfig.setVerifyHostname(isVerifyHostname());
       return sslConfig;
     }

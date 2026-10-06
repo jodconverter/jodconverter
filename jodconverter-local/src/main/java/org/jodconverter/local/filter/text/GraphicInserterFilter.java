@@ -233,7 +233,7 @@ public class GraphicInserterFilter extends AbstractTextContentInserterFilter {
     final var propSet = Lo.qi(XPropertySet.class, graphicShape);
 
     if (Info.isLibreOffice(context)
-        && Info.compareVersions("6.1", Info.getOfficeVersionShort(context), 2) >= 0) {
+        && Info.compareVersions(Info.getOfficeVersionShort(context), "6.1", 2) >= 0) {
 
       // Create a GraphicProvider at the global service manager.
       final var graphicProvider =

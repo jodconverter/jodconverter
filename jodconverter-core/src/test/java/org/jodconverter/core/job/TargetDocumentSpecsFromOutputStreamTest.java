@@ -63,6 +63,30 @@ class TargetDocumentSpecsFromOutputStreamTest {
     }
 
     @Test
+    void whenCalledTwice_ShouldReturnTheSameFile(@TempDir final File testFolder)
+        throws IOException {
+
+      final var fileMaker = mock(TemporaryFileMaker.class);
+      given(fileMaker.makeTemporaryFile())
+          .willReturn(new File(testFolder, "temp1"), new File(testFolder, "temp2"));
+      final var specs =
+          new TargetDocumentSpecsFromOutputStream(new ByteArrayOutputStream(), fileMaker, false);
+
+      final var file = specs.getFile();
+
+      assertThat(specs.getFile()).isEqualTo(file);
+
+      // Once completed, or failed, the next conversion gets a file of its own.
+      assertThat(file.createNewFile()).isTrue();
+      specs.onComplete(file);
+      final var next = specs.getFile();
+      assertThat(next).isEqualTo(new File(testFolder, "temp2"));
+      given(fileMaker.makeTemporaryFile()).willReturn(new File(testFolder, "temp3"));
+      specs.onFailure(next, new IOException("failed"));
+      assertThat(specs.getFile()).isEqualTo(new File(testFolder, "temp3"));
+    }
+
+    @Test
     void withoutFormat_ShouldCreateTempFileWithoutExtension(@TempDir final File testFolder)
         throws IOException {
 

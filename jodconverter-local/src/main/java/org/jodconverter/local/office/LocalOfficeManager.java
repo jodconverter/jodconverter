@@ -24,6 +24,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -603,7 +604,7 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
       return StringUtils.isBlank(existingProcessAction)
           ? this
           : existingProcessAction(
-              ExistingProcessAction.valueOf(existingProcessAction.toUpperCase()));
+              ExistingProcessAction.valueOf(existingProcessAction.toUpperCase(Locale.ROOT)));
     }
 
     /**

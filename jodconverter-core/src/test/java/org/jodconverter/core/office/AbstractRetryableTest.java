@@ -71,6 +71,20 @@ class AbstractRetryableTest {
     }
 
     @Test
+    void whenTimedOut_ShouldKeepTheAttemptsAndTheLastFailure() {
+
+      // A temporary exception with a message only: it is the cause of the timeout.
+      final var retryable = new SimpleRetryable(Integer.MAX_VALUE);
+
+      assertThatExceptionOfType(RetryTimeoutException.class)
+          .isThrownBy(() -> retryable.execute(NO_SLEEP, 100L))
+          .withMessageStartingWith("Execution failed after ")
+          .withMessageContaining("(timeout: 100 ms)")
+          .withCauseExactlyInstanceOf(TemporaryException.class)
+          .satisfies(ex -> assertThat(ex.getCause()).hasMessage("attempt failed"));
+    }
+
+    @Test
     void withNoInterval_ShouldNotApplyIntervalDelay() {
 
       final var retryable = new SimpleRetryable(3, 100L);

@@ -157,6 +157,8 @@ final class OfficeWorkerRunner implements Runnable {
         restartRequired = false;
         startFailures = 0;
         tasksSinceStart = 0;
+        // Ready from now on, before anyone waiting for the first start is released.
+        state = OfficeWorkerState.READY;
         firstStart.complete(null);
         return true;
       } catch (OfficeException | RuntimeException ex) {

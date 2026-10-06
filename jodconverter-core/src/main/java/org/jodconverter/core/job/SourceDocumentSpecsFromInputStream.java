@@ -41,6 +41,9 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
   private final TemporaryFileMaker fileMaker;
   private final boolean closeStream;
 
+  // The file the stream was written to, for the duration of a conversion.
+  private File tempFile;
+
   /**
    * Creates specs from the specified stream.
    *
@@ -64,20 +67,21 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
   @Override
   public @NonNull File getFile() {
 
-    // Write the InputStream to the temp file.
-    final var tempFile =
-        Optional.ofNullable(getFormat())
-            .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
-            .orElse(fileMaker.makeTemporaryFile());
-    try (var outputStream = new FileOutputStream(tempFile);
-        var channel = outputStream.getChannel();
-        var ignored = channel.lock()) {
-      IOUtils.copy(inputStream, outputStream);
-      return tempFile;
-    } catch (IOException ex) {
-      throw new DocumentSpecsIOException(
-          String.format("Could not write stream to file '%s'", tempFile), ex);
+    // The stream can only be read once: the first call writes it to the temp file.
+    if (tempFile == null) {
+      final var file =
+          Optional.ofNullable(getFormat())
+              .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
+              .orElseGet(fileMaker::makeTemporaryFile);
+      try (var outputStream = new FileOutputStream(file)) {
+        IOUtils.copy(inputStream, outputStream);
+      } catch (IOException ex) {
+        throw new DocumentSpecsIOException(
+            String.format("Could not write stream to file '%s'", file), ex);
+      }
+      tempFile = file;
     }
+    return tempFile;
   }
 
   @Override
@@ -85,6 +89,7 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
 
     // The temporary file must be deleted
     FileUtils.deleteQuietly(tempFile);
+    this.tempFile = null;
 
     if (closeStream) {
       try {

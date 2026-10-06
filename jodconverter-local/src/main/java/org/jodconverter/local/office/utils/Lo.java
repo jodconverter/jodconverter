@@ -64,7 +64,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
   public static <T> @NonNull T qi(final @NonNull Class<T> type, final @NonNull Object object) {
 
     AssertUtils.notNull(type, "type must not be null");
-    AssertUtils.notNull(type, "object must not be null");
+    AssertUtils.notNull(object, "object must not be null");
 
     final var obj = UnoRuntime.getInstance().queryInterface(type, object);
 
