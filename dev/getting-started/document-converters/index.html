@@ -2658,11 +2658,31 @@ execution.</p>
 </ul>
 <h2 id="lifecycle-and-threading">Lifecycle and threading<a class="headerlink" href="#lifecycle-and-threading" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Requires an <code>OfficeManager</code>: A converter relies on a running <code>OfficeManager</code>. Start the manager before executing
-    conversions and stop it on shutdown.</li>
-<li>Thread-safe: Converters can be reused across threads; job execution is queued through the <code>OfficeManager</code>.</li>
-<li>Format registry: <code>getFormatRegistry()</code> returns the formats supported by the converter. <code>LocalConverter</code> typically uses
-    <code>DefaultDocumentFormatRegistry</code>.</li>
+<li>
+<p>Requires an <code>OfficeManager</code>: A converter relies on a running <code>OfficeManager</code>. Start the manager before executing
+    conversions and stop it on shutdown.</p>
+</li>
+<li>
+<p>Thread-safe: Converters can be reused across threads; job execution is queued through the <code>OfficeManager</code>.</p>
+</li>
+<li>
+<p>Asynchronous execution: <code>executeAsync()</code> submits the conversion and returns a <code>CompletableFuture&lt;Void&gt;</code> at once,
+    instead of blocking like <code>execute()</code>. The future completes when the conversion is done, or exceptionally with an
+    <code>OfficeException</code> when it fails; cancelling it abandons the conversion. Several conversions can thus run in
+    parallel, one per office process of the manager, and be joined later:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="kd">final</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="n">futures</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">sources</span><span class="p">.</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">source</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">converter</span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">source</span><span class="p">).</span><span class="na">to</span><span class="p">(</span><span class="n">targetOf</span><span class="p">(</span><span class="n">source</span><span class="p">)).</span><span class="na">executeAsync</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+<span class="n">CompletableFuture</span><span class="p">.</span><span class="na">allOf</span><span class="p">(</span><span class="n">futures</span><span class="p">.</span><span class="na">toArray</span><span class="p">(</span><span class="n">CompletableFuture</span><span class="o">[]</span><span class="p">::</span><span class="k">new</span><span class="p">)).</span><span class="na">join</span><span class="p">();</span>
+</code></pre></div>
+<p>The actions chained to the future (<code>thenRun</code>, <code>whenComplete</code>...) may run on a thread of the office manager, so
+they must not block. <code>OfficeManager.submit(task)</code> is the same for an <code>OfficeTask</code>.</p>
+</li>
+<li>
+<p>Format registry: <code>getFormatRegistry()</code> returns the formats supported by the converter. <code>LocalConverter</code> typically uses
+    <code>DefaultDocumentFormatRegistry</code>.</p>
+</li>
 </ul>
 <h2 id="best-practices">Best practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2676,7 +2696,7 @@ execution.</p>
 <ul>
 <li><code>DocumentConverter</code> (core): high-level conversion contract.</li>
 <li><code>DefaultDocumentFormatRegistry</code> (core): common formats and MIME mappings.</li>
-<li>Conversion job API (core.job): fluent pipeline (convert(...).to(...).execute()).</li>
+<li>Conversion job API (core.job): fluent pipeline (convert (...).to (...).execute ()).</li>
 <li><code>LocalConverter</code> (local): converter for local office processes.</li>
 <li><code>RemoteConverter</code> (remote): converter for LibreOffice Online / Collabora Online.</li>
 <li><code>InstalledOfficeManagerHolder</code> (core): global singleton used when no manager is provided explicitly.</li>

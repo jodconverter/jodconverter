@@ -3059,6 +3059,9 @@ columns wide.</p>
     <code>jodconverter.external.*</code> properties auto-configure an <code>ExternalOfficeManager</code> and its converter.</li>
 <li><a href="../../getting-started/supported-formats/">Markdown</a>: the default registry knows the Markdown format (<code>md</code>,
     <code>markdown</code>), supported by LibreOffice 26.2 and later.</li>
+<li><a href="../../getting-started/document-converters/#lifecycle-and-threading">Asynchronous conversions</a>:
+    <code>converter.convert(source).to(target).executeAsync()</code> returns a <code>CompletableFuture&lt;Void&gt;</code> instead of blocking, and
+    <code>OfficeManager.submit(task)</code> does the same for an <code>OfficeTask</code>.</li>
 <li><code>AbstractOfficeWorkerPool.getTempDir()</code>: the directory where an office manager creates the temporary files used by
     conversions.</li>
 </ul>
