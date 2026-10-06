@@ -2997,7 +2997,7 @@ record naming:</p>
 <h3 id="unmodifiable-collections">Unmodifiable collections<a class="headerlink" href="#unmodifiable-collections" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>LocalConverter.DEFAULT_LOAD_PROPERTIES</code> is still unmodifiable, but its iteration order is no longer fixed, and
-  looking up a <code>null</code> key throws a <code>NullPointerException</code>.</li>
+    looking up a <code>null</code> key throws a <code>NullPointerException</code>.</li>
 <li>The property maps of a <code>DocumentFormat</code> (load and store properties) reject <code>null</code> keys and values.</li>
 <li><code>LocalOfficeManager.Builder.runAsArgs(...)</code> no longer accepts <code>null</code> elements.</li>
 </ul>
@@ -3031,9 +3031,9 @@ set the <code>workingDir</code> of the office manager to that place instead.</p>
 <h3 id="lost-connections-and-timed-out-tasks">Lost connections and timed-out tasks<a class="headerlink" href="#lost-connections-and-timed-out-tasks" title="Permanent link">&para;</a></h3>
 <ul>
 <li>After an unexpected loss of connection, an office process that is still running gets at most 2 seconds to exit by
-  itself before it is killed and restarted, instead of the whole process timeout (2 minutes by default).</li>
+    itself before it is killed and restarted, instead of the whole process timeout (2 minutes by default).</li>
 <li>A task that exceeds the task execution timeout, or whose calling thread is interrupted, is now cancelled. Before,
-  it could keep the office process busy, and every following task waited behind it.</li>
+    it could keep the office process busy, and every following task waited behind it.</li>
 <li>An interrupted calling thread no longer makes the pool lose an office manager.</li>
 </ul>
 <h3 id="spring-boot-starter">Spring Boot starter<a class="headerlink" href="#spring-boot-starter" title="Permanent link">&para;</a></h3>
@@ -3046,21 +3046,21 @@ columns wide.</p>
 <h2 id="new-features">New features<a class="headerlink" href="#new-features" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../getting-started/pdf-options/"><code>PdfOptions</code></a>: typed options to convert to PDF (PDF/A, PDF/UA, images, page
-  range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
-  <code>with(...)</code> method: <code>converter.convert(source).to(target).with(PdfOptions.archive()).execute()</code>. The command line
-  tool takes them with its new <code>--pdf-preset</code> and <code>--pdf-option</code> arguments, a converter can apply them to all its
-  conversions with <code>defaultTargetOptions(...)</code>, and the Spring Boot starter sets them with the <code>jodconverter.pdf.*</code>
-  properties.</li>
+    range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
+    <code>with(...)</code> method: <code>converter.convert(source).to(target).with(PdfOptions.archive()).execute()</code>. The command line
+    tool takes them with its new <code>--pdf-preset</code> and <code>--pdf-option</code> arguments, a converter can apply them to all its
+    conversions with <code>defaultTargetOptions(...)</code>, and the Spring Boot starter sets them with the <code>jodconverter.pdf.*</code>
+    properties.</li>
 <li><a href="../../configuration/local-manager/"><code>poolSize</code></a>: start a number of office processes on free ports, without choosing
-  them (<code>jodconverter.local.pool-size</code> with Spring Boot).</li>
+    them (<code>jodconverter.local.pool-size</code> with Spring Boot).</li>
 <li><a href="../../configuration/local-manager/"><code>officeExecutable</code></a>: start the office processes through a launcher, such as a
-  snap or an AppImage (<code>jodconverter.local.office-executable</code> with Spring Boot).</li>
+    snap or an AppImage (<code>jodconverter.local.office-executable</code> with Spring Boot).</li>
 <li><a href="../../configuration/external-manager/#spring-boot">External office manager in the Spring Boot starter</a>: the
-  <code>jodconverter.external.*</code> properties auto-configure an <code>ExternalOfficeManager</code> and its converter.</li>
+    <code>jodconverter.external.*</code> properties auto-configure an <code>ExternalOfficeManager</code> and its converter.</li>
 <li><a href="../../getting-started/supported-formats/">Markdown</a>: the default registry knows the Markdown format (<code>md</code>,
-  <code>markdown</code>), supported by LibreOffice 26.2 and later.</li>
+    <code>markdown</code>), supported by LibreOffice 26.2 and later.</li>
 <li><code>AbstractOfficeManagerPool.getTempDir()</code>: the directory where an office manager creates the temporary files used by
-  conversions.</li>
+    conversions.</li>
 </ul>
 
 

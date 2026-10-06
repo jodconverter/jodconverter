@@ -2278,6 +2278,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#format-the-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Format the pages
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#versioned-docs" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2405,6 +2416,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#format-the-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Format the pages
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#versioned-docs" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2449,7 +2471,9 @@
 <p>The JODConverter documentation is built with <a href="https://zensical.org/">Zensical</a>, from the Markdown files in <code>docs/</code> and the <code>zensical.toml</code> configuration at the root of the repository. This section explains how to preview changes locally, plus conventions to keep the docs consistent. You can also open an issue to discuss the changes you want to make.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Python 3.10 or newer.</li>
+<li>
+<p>Python 3.10 or newer.</p>
+</li>
 <li>
 <p>Zensical, preferably in a virtual environment, at the version the site is built with:</p>
 <div class="language-bash highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-docs.txt
@@ -2461,6 +2485,12 @@
 <div class="language-bash highlight"><pre><span></span><code>zensical<span class="w"> </span>serve
 </code></pre></div>
 <p>Then open http://127.0.0.1:8000. Edits in <code>docs/</code> reload automatically. Before opening a pull request, check that <code>zensical build --strict</code> reports no issues: it also catches broken links and anchors.</p>
+<h2 id="format-the-pages">Format the pages<a class="headerlink" href="#format-the-pages" title="Permanent link">&para;</a></h2>
+<p>The pages are formatted with <a href="https://mdformat.readthedocs.io/">mdformat</a>, which is installed with the other packages of <code>requirements-docs.txt</code>. From the repository root, before opening a pull request:</p>
+<div class="language-bash highlight"><pre><span></span><code>mdformat<span class="w"> </span>--end-of-line<span class="w"> </span>keep<span class="w"> </span>--number<span class="w"> </span>docs
+</code></pre></div>
+<p>The <code>--end-of-line keep</code> option leaves the line endings of your checkout as they are, which matters on Windows where Git checks the files out with CRLF line endings.</p>
+<p>Do not use the Markdown formatter of an IDE: it does not know the content tabs, the admonitions and the snippets used by the pages, and it reformats the code blocks. Write code-like text such as <code>Map&lt;String, Object&gt;</code> between backticks, since the escapes added by the formatter would be displayed.</p>
 <h2 id="versioned-docs">Versioned docs<a class="headerlink" href="#versioned-docs" title="Permanent link">&para;</a></h2>
 <p>Each release has its own version of the site, selected from the version menu. Versions are deployed with <a href="https://github.com/squidfunk/mike">mike</a>, using the fork that works with Zensical until Zensical supports versioning natively.</p>
 <p>The <code>.github/workflows/deploy-docs.yml</code> workflow deploys the documentation: every push to <code>develop</code> publishes the <code>dev</code> version, and a release pushed to <code>master</code> publishes its version number with the <code>latest</code> alias. A maintainer can also run the workflow by hand to publish a given release version. You don't need mike to preview your changes.</p>

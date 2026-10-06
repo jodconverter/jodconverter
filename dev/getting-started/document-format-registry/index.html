@@ -2669,7 +2669,7 @@ drawing and image formats.</p>
 <li><code>DocumentFormat</code>: The immutable description of a format (<code>org.jodconverter.core.document.DocumentFormat</code>).</li>
 <li><code>DocumentFormatRegistry</code>: Interface to look up formats (<code>org.jodconverter.core.document.DocumentFormatRegistry</code>).</li>
 <li><code>DefaultDocumentFormatRegistry</code>: Static convenience access to the default registry and well-known constants (e.g.,
-  <code>DefaultDocumentFormatRegistry.PDF</code>).</li>
+    <code>DefaultDocumentFormatRegistry.PDF</code>).</li>
 <li><code>SimpleDocumentFormatRegistry</code>: A mutable in-memory registry you can build programmatically.</li>
 <li><code>JsonDocumentFormatRegistry</code>: A registry that can be loaded from JSON.</li>
 </ul>
@@ -2680,7 +2680,7 @@ top of the defaults (overrides existing formats or adds new ones).</p>
 <h4 id="typical-usage">Typical Usage<a class="headerlink" href="#typical-usage" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Let <strong>JODConverter</strong> pick formats automatically by file extension: If you pass File or stream with an explicit target
-  format, converters will use the registry to resolve the correct configuration.</li>
+    format, converters will use the registry to resolve the correct configuration.</li>
 <li>Query formats yourself: Access by extension or media type</li>
 </ul>
 <div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.document.DefaultDocumentFormatRegistry</span><span class="p">;</span>
@@ -2739,7 +2739,7 @@ top of the defaults (overrides existing formats or adds new ones).</p>
 <ol>
 <li>Input <code>DocumentFormat</code> load properties (from the registry), then</li>
 <li>Converter default load properties (<code>Hidden=true</code>, <code>ReadOnly=true</code>, <code>UpdateDocMode=NO_UPDATE</code> unless configured
-   otherwise), then</li>
+    otherwise), then</li>
 <li>Explicit per-converter loadProperty/loadProperties you set in the builder</li>
 </ol>
 <p>Store properties used when saving the output are determined as follows:</p>
@@ -2750,7 +2750,7 @@ top of the defaults (overrides existing formats or adds new ones).</p>
 <h3 id="where-to-put-custom-json">Where to put custom JSON<a class="headerlink" href="#where-to-put-custom-json" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Place <code>custom-document-formats.json</code> on your application’s runtime classpath (e.g., in <code>src/main/resources</code>) to have
-  it automatically merged with the defaults</li>
+    it automatically merged with the defaults</li>
 <li>Or load any JSON at runtime and pass a <code>JsonDocumentFormatRegistry</code> instance to your converter</li>
 </ul>
 <h3 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h3>

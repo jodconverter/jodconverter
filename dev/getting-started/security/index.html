@@ -2463,11 +2463,11 @@ images in a document can still be fetched while it is loaded. Isolation is what 
 <h2 id="isolate-the-office-process">Isolate the office process<a class="headerlink" href="#isolate-the-office-process" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Network:</strong> run the office processes where they can't reach internal services, cloud metadata endpoints or the
-  Internet. A container or a network policy without outbound access blocks SSRF whatever the document contains.</li>
+    Internet. A container or a network policy without outbound access blocks SSRF whatever the document contains.</li>
 <li><strong>File system:</strong> run them as a dedicated, unprivileged user that can only read the documents to convert and its own
-  working directory, so that a <code>file:///</code> reference has nothing sensitive to read.</li>
+    working directory, so that a <code>file:///</code> reference has nothing sensitive to read.</li>
 <li><strong>Dedicated installation:</strong> don't share the office installation and its user profile with people who use it
-  interactively.</li>
+    interactively.</li>
 <li><strong>Limits:</strong> keep a <code>taskExecutionTimeout</code>, and limit the size of the uploaded documents in your application.</li>
 <li><strong>Updates:</strong> keep LibreOffice up to date; security fixes in document filters are released regularly.</li>
 </ul>

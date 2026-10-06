@@ -2533,9 +2533,9 @@ resolution, and applying conversion options/filters.</p>
 <ul>
 <li>Simplified conversion API: Compose conversions with a readable, fluent builder.</li>
 <li>Format resolution: Uses a <code>DocumentFormatRegistry</code> to infer formats by extension/MIME type, and allows you to override
-  them explicitly.</li>
+    them explicitly.</li>
 <li>Options and filters: Provide document-family-specific options (e.g., PDF export options) and filter chains to adjust
-  content before saving.</li>
+    content before saving.</li>
 <li>Integration: Works with a provided <code>OfficeManager</code> or the globally installed manager.</li>
 </ul>
 <p>Without a Document Converter, you would have to craft and execute low-level OfficeTasks yourself.</p>
@@ -2543,9 +2543,9 @@ resolution, and applying conversion options/filters.</p>
 <p><strong>JODConverter</strong> provides different converter implementations depending on where/how the office backend is running:</p>
 <ul>
 <li><strong>LocalConverter</strong>: Uses a <strong>LocalOfficeManager</strong> to communicate with local OOo processes.
-  See <a href="../../configuration/local-converter/">LocalConverter</a> for all configuration options and examples.</li>
+    See <a href="../../configuration/local-converter/">LocalConverter</a> for all configuration options and examples.</li>
 <li><strong>RemoteConverter</strong>: Uses a <strong>RemoteOfficeManager</strong> to communicate with LibreOffice Online / Collabora Online.
-  See <a href="../../configuration/remote-converter/">RemoteConverter</a> for configuration and examples.</li>
+    See <a href="../../configuration/remote-converter/">RemoteConverter</a> for configuration and examples.</li>
 </ul>
 <p>Internally, concrete converters extend an abstract base that wires the format registry, job pipeline, and office task
 execution.</p>
@@ -2659,10 +2659,10 @@ execution.</p>
 <h2 id="lifecycle-and-threading">Lifecycle and threading<a class="headerlink" href="#lifecycle-and-threading" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Requires an <code>OfficeManager</code>: A converter relies on a running <code>OfficeManager</code>. Start the manager before executing
-  conversions and stop it on shutdown.</li>
+    conversions and stop it on shutdown.</li>
 <li>Thread-safe: Converters can be reused across threads; job execution is queued through the <code>OfficeManager</code>.</li>
 <li>Format registry: <code>getFormatRegistry()</code> returns the formats supported by the converter. <code>LocalConverter</code> typically uses
-  <code>DefaultDocumentFormatRegistry</code>.</li>
+    <code>DefaultDocumentFormatRegistry</code>.</li>
 </ul>
 <h2 id="best-practices">Best practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2670,7 +2670,7 @@ execution.</p>
 <li>Prefer File I/O for very large documents to minimize memory pressure; streams are convenient but may incur buffering.</li>
 <li>Specify formats explicitly when converting from streams without file extensions.</li>
 <li>Tune OfficeManager timeouts and process counts for your workload (see the Office Managers page and LocalOfficeManager
-  configuration).</li>
+    configuration).</li>
 </ul>
 <h2 id="related-apis">Related APIs<a class="headerlink" href="#related-apis" title="Permanent link">&para;</a></h2>
 <ul>

@@ -2622,8 +2622,7 @@ font that has different metrics. Install the fonts the documents use, or metric-
 <details class="question">
 <summary>Zombie processes (<code>&lt;defunct&gt;</code>) pile up in my container. Why?</summary>
 <p>The helper processes of LibreOffice are re-parented to process 1 of the container when an office process stops.
-If process 1 is your Java application, nobody reaps them. Run the container with an init process (<code>docker run
---init</code>, <code>init: true</code> in Docker Compose, or tini); see
+If process 1 is your Java application, nobody reaps them. Run the container with an init process (<code>docker run --init</code>, <code>init: true</code> in Docker Compose, or tini); see
 <a href="../getting-started/containers/#use-an-init-process">Use an init process</a>.</p>
 </details>
 <details class="question">

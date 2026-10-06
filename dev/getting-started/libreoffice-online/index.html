@@ -2679,7 +2679,9 @@ file.</p>
 <p>It is possible to use the Online converting functionality directly, without the JODConverter API:</p>
 <h3 id="libreoffice-online-api">LibreOffice Online API<a class="headerlink" href="#libreoffice-online-api" title="Permanent link">&para;</a></h3>
 <ul>
-<li>API: HTTP POST to /lool/convert-to/<format><ul>
+<li>
+<p>API: HTTP POST to <code>/lool/convert-to/&lt;format&gt;</code></p>
+<ul>
 <li>the format is e.g. "png", "pdf" or "txt"</li>
 <li>the file itself in the payload</li>
 </ul>
@@ -2687,31 +2689,41 @@ file.</p>
 <li>
 <p>example</p>
 <ul>
-<li><code>curl -F "data=@test.txt" https://localhost:9980/lool/convert-to/docx &gt; out.docx</code></li>
-<li>or in html:
-<div class="language-text highlight"><pre><span></span><code>&lt;form action="https://localhost:9980/lool/convert-to/docx" enctype="multipart/form-data" method="post"&gt;
-    File: &lt;input type="file" name="data"&gt;&lt;br/&gt;
-    &lt;input type="submit" value="Convert to DOCX"&gt;
-&lt;/form&gt;
-</code></pre></div></li>
+<li>
+<p><code>curl -F "data=@test.txt" https://localhost:9980/lool/convert-to/docx &gt; out.docx</code></p>
+</li>
+<li>
+<p>or in html:</p>
+<div class="language-html highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">"https://localhost:9980/lool/convert-to/docx"</span> <span class="na">enctype</span><span class="o">=</span><span class="s">"multipart/form-data"</span> <span class="na">method</span><span class="o">=</span><span class="s">"post"</span><span class="p">&gt;</span>
+    File: <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">"file"</span> <span class="na">name</span><span class="o">=</span><span class="s">"data"</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">"submit"</span> <span class="na">value</span><span class="o">=</span><span class="s">"Convert to DOCX"</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</code></pre></div>
+</li>
 </ul>
 </li>
 <li>
-<p>alternatively you can omit the <format>, and instead provide it as another
-  parameter</p>
+<p>alternatively you can omit the <code>&lt;format&gt;</code>, and instead provide it as another
+    parameter</p>
 </li>
-<li>example<ul>
-<li><code>curl -F "data=@test.odt" -F "format=pdf" https://localhost:9980/lool/convert-to &gt; out.pdf</code></li>
-<li>or in html:</li>
-</ul>
+<li>
+<p>example</p>
+<ul>
+<li>
+<p><code>curl -F "data=@test.odt" -F "format=pdf" https://localhost:9980/lool/convert-to &gt; out.pdf</code></p>
 </li>
-</ul>
-<div class="language-text highlight"><pre><span></span><code>     &lt;form action="https://localhost:9980/lool/convert-to" enctype="multipart/form-data" method="post"&gt;
-          File: &lt;input type="file" name="data"&gt;&lt;br/&gt;
-          Format: &lt;input type="text" name="format"&gt;&lt;br/&gt;
-          &lt;input type="submit" value="Convert"&gt;
-     &lt;/form&gt;
+<li>
+<p>or in html:</p>
+<div class="language-html highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">"https://localhost:9980/lool/convert-to"</span> <span class="na">enctype</span><span class="o">=</span><span class="s">"multipart/form-data"</span> <span class="na">method</span><span class="o">=</span><span class="s">"post"</span><span class="p">&gt;</span>
+    File: <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">"file"</span> <span class="na">name</span><span class="o">=</span><span class="s">"data"</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
+    Format: <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">"text"</span> <span class="na">name</span><span class="o">=</span><span class="s">"format"</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">"submit"</span> <span class="na">value</span><span class="o">=</span><span class="s">"Convert"</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
 </code></pre></div>
+</li>
+</ul>
+</li>
+</ul>
 <h2 id="create-your-own-online-server">Create your own Online server<a class="headerlink" href="#create-your-own-online-server" title="Permanent link">&para;</a></h2>
 <p>The easiest way is using the <a href="https://www.collaboraoffice.com/code/">Collabora Online Development Edition (CODE)
 Docker image</a>.</p>
