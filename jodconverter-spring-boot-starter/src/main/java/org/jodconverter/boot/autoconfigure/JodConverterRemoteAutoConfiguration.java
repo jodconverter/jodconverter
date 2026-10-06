@@ -70,6 +70,7 @@ public class JodConverterRemoteAutoConfiguration {
             .socketTimeout(properties.getSocketTimeout())
             .poolSize(properties.getPoolSize())
             .workingDir(properties.getWorkingDir())
+            .taskQueueCapacity(properties.getTaskQueueCapacity())
             .taskQueueTimeout(properties.getTaskQueueTimeout())
             .taskExecutionTimeout(properties.getTaskExecutionTimeout());
     if (properties.getSsl() != null) {

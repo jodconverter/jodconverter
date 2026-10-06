@@ -612,10 +612,11 @@ and to learn more about a use case where this properly is useful.
 #### ❎`startFailFast`
 
 This property controls whether the manager will "fail fast" if an office process cannot be started or the connection
-to the started process fails. If set to `true`, the start of a process will wait for the task to be completed, and will
-throw an exception if the office process is not started successfully or if the connection to the started process fails.
-If set to `false`, the task of starting the process and connecting to it will be submitted and will return immediately,
-meaning a faster starting process. Only error logs will be produced if anything goes wrong.
+to the started process fails. If set to `true`, `start()` waits for all the office processes to be started and
+connected, and throws an exception if one of them cannot be; the manager cannot be used after that. If set to `false`,
+`start()` returns immediately: the tasks wait in the queue for an office process to be ready (see `taskQueueTimeout`),
+and a process that cannot be started is retried, with a growing delay between the attempts (1, 2, 5, 10, then every 30
+seconds). Only logs are produced if anything goes wrong.
 
 &#160;***Default***: false.
 
@@ -680,10 +681,45 @@ is known to have memory leaks when converting documents.
 
     `maxTasksPerProcess` can't be set with the command line tool, it will always be 200.
 
+#### 🔢`taskQueueCapacity`
+
+This property sets the maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+full fails at once with an `OfficeException`, instead of waiting for the queue timeout; a web application can thus
+answer right away that it is overloaded. 0 means no limit.
+
+&#160;***Default***: 0 (no limit)
+
+=== "Java"
+
+    ```java hl_lines="4"
+    OfficeManager officeManager =
+        LocalOfficeManager
+            .builder()
+            .taskQueueCapacity(100)
+            .build();
+    ```
+
+=== "Spring Boot"
+
+    ```yml title="application.yml"
+    jodconverter:
+      local:
+        task-queue-capacity: 100
+    ```
+
+    ```conf title="application.properties"
+    jodconverter.local.task-queue-capacity = 100
+    ```
+
+=== "Command Line"
+
+    `taskQueueCapacity` can't be set with the command line tool, it will always be 0.
+
 #### ⌚`taskQueueTimeout`
 
-This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
-the queue if the waiting time is longer than this timeout and an `OfficeException` will be thrown.
+This property sets the maximum time a task waits in the conversion queue, from its submission until an office process
+takes it. Waiting for a process to start or restart is part of it. When it expires, the task is removed from the queue
+without having been executed and fails with an `OfficeException`.
 
 &#160;***Default***: 30000 (30 seconds)
 
@@ -715,8 +751,9 @@ the queue if the waiting time is longer than this timeout and an `OfficeExceptio
 
 #### ⌚`taskExecutionTimeout`
 
-This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
-timeout, this task will be aborted and the next task is processed.
+This property sets the maximum time allowed to execute a task, counted from the moment an office process starts it,
+not from its submission. When it expires, the task fails with an `OfficeException`, the office process is killed and
+restarted, and the next task is processed by another process in the meantime.
 
 &#160;***Default***: 120000 (2 minutes)
 

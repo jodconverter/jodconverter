@@ -61,6 +61,7 @@ class JodConverterBeanITest {
                                 .asInstanceOf(InstanceOfAssertFactories.FILE)
                                 .hasParent(OfficeUtils.getDefaultWorkingDir()));
                 assertThat(manager)
+                    .hasFieldOrPropertyWithValue("taskQueueCapacity", DEFAULT_TASK_QUEUE_CAPACITY)
                     .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
                     .hasFieldOrPropertyWithValue(
                         "taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
@@ -120,6 +121,7 @@ class JodConverterBeanITest {
     final var bean = new JodConverterBean();
     bean.setWorkingDir(workingDir.getPath());
     bean.setTaskExecutionTimeout(500L);
+    bean.setTaskQueueCapacity(5);
     bean.setTaskQueueTimeout(501L);
     bean.setHostName("localhost");
     bean.setPortNumbers("2006");
@@ -151,6 +153,7 @@ class JodConverterBeanITest {
                                 .asInstanceOf(InstanceOfAssertFactories.FILE)
                                 .hasParent(workingDir));
                 assertThat(manager)
+                    .hasFieldOrPropertyWithValue("taskQueueCapacity", 5)
                     .hasFieldOrPropertyWithValue("taskQueueTimeout", 501L)
                     .hasFieldOrPropertyWithValue("taskExecutionTimeout", 500L)
                     .hasFieldOrPropertyWithValue("startFailFast", true);
@@ -218,6 +221,7 @@ class JodConverterBeanITest {
                                 .asInstanceOf(InstanceOfAssertFactories.FILE)
                                 .hasParent(OfficeUtils.getDefaultWorkingDir()));
                 assertThat(manager)
+                    .hasFieldOrPropertyWithValue("taskQueueCapacity", DEFAULT_TASK_QUEUE_CAPACITY)
                     .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
                     .hasFieldOrPropertyWithValue(
                         "taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)

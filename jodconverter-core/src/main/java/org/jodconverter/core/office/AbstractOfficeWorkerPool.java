@@ -538,8 +538,8 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
     protected boolean install;
     protected File workingDir = OfficeUtils.getDefaultWorkingDir();
     protected long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
-    protected long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
     protected int taskQueueCapacity = DEFAULT_TASK_QUEUE_CAPACITY;
+    protected long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
 
     // Protected constructor so only subclasses can initialize an instance of this builder.
     protected AbstractOfficeWorkerPoolBuilder() {
@@ -620,27 +620,6 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
     }
 
     /**
-     * Specifies the maximum time a task waits in the queue, counted from the moment it is submitted
-     * until a worker takes it. Waiting for a worker to be ready is part of it. When it expires, the
-     * task fails without having been executed.
-     *
-     * <p>&nbsp; <b><i>Default</i></b>: 30000 (30 seconds)
-     *
-     * @param taskQueueTimeout The task queue timeout, in milliseconds.
-     * @return This builder instance.
-     */
-    public @NonNull B taskQueueTimeout(final @Nullable Long taskQueueTimeout) {
-
-      if (taskQueueTimeout != null) {
-        AssertUtils.isTrue(
-            taskQueueTimeout >= 0,
-            String.format("taskQueueTimeout %s must greater than or equal to 0", taskQueueTimeout));
-        this.taskQueueTimeout = taskQueueTimeout;
-      }
-      return (B) this;
-    }
-
-    /**
      * Specifies the maximum number of tasks waiting in the queue. A task submitted while the queue
      * is full fails at once.
      *
@@ -657,6 +636,27 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
             String.format(
                 "taskQueueCapacity %s must greater than or equal to 0", taskQueueCapacity));
         this.taskQueueCapacity = taskQueueCapacity;
+      }
+      return (B) this;
+    }
+
+    /**
+     * Specifies the maximum time a task waits in the queue, counted from the moment it is submitted
+     * until a worker takes it. Waiting for a worker to be ready is part of it. When it expires, the
+     * task fails without having been executed.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: 30000 (30 seconds)
+     *
+     * @param taskQueueTimeout The task queue timeout, in milliseconds.
+     * @return This builder instance.
+     */
+    public @NonNull B taskQueueTimeout(final @Nullable Long taskQueueTimeout) {
+
+      if (taskQueueTimeout != null) {
+        AssertUtils.isTrue(
+            taskQueueTimeout >= 0,
+            String.format("taskQueueTimeout %s must greater than or equal to 0", taskQueueTimeout));
+        this.taskQueueTimeout = taskQueueTimeout;
       }
       return (B) this;
     }

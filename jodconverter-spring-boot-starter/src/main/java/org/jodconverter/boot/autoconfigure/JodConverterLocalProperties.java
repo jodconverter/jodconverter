@@ -138,6 +138,12 @@ public class JodConverterLocalProperties {
   private boolean keepAliveOnShutdown = LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
 
   /**
+   * Maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+   * full fails at once. 0 means no limit.
+   */
+  private int taskQueueCapacity = AbstractOfficeWorkerPool.DEFAULT_TASK_QUEUE_CAPACITY;
+
+  /**
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
    * if the waiting time is longer than this timeout.
    */
@@ -303,6 +309,14 @@ public class JodConverterLocalProperties {
 
   public void setKeepAliveOnShutdown(final boolean keepAliveOnShutdown) {
     this.keepAliveOnShutdown = keepAliveOnShutdown;
+  }
+
+  public int getTaskQueueCapacity() {
+    return taskQueueCapacity;
+  }
+
+  public void setTaskQueueCapacity(final int taskQueueCapacity) {
+    this.taskQueueCapacity = taskQueueCapacity;
   }
 
   public long getTaskQueueTimeout() {

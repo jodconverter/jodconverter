@@ -69,6 +69,12 @@ public class JodConverterRemoteProperties {
   private String workingDir;
 
   /**
+   * Maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+   * full fails at once. 0 means no limit.
+   */
+  private int taskQueueCapacity;
+
+  /**
    * Maximum living time of a task in the conversion queue. The task will be removed from the queue
    * if the waiting time is longer than this timeout.
    */
@@ -128,6 +134,14 @@ public class JodConverterRemoteProperties {
 
   public void setWorkingDir(final @Nullable String workingDir) {
     this.workingDir = workingDir;
+  }
+
+  public int getTaskQueueCapacity() {
+    return taskQueueCapacity;
+  }
+
+  public void setTaskQueueCapacity(final int taskQueueCapacity) {
+    this.taskQueueCapacity = taskQueueCapacity;
   }
 
   public long getTaskQueueTimeout() {

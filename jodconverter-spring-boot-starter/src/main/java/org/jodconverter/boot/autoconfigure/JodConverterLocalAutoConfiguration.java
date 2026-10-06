@@ -92,6 +92,7 @@ public class JodConverterLocalAutoConfiguration {
             .afterStartProcessDelay(properties.getAfterStartProcessDelay())
             .startFailFast(properties.isStartFailFast())
             .keepAliveOnShutdown(properties.isKeepAliveOnShutdown())
+            .taskQueueCapacity(properties.getTaskQueueCapacity())
             .taskQueueTimeout(properties.getTaskQueueTimeout())
             .taskExecutionTimeout(properties.getTaskExecutionTimeout())
             .maxTasksPerProcess(properties.getMaxTasksPerProcess());
