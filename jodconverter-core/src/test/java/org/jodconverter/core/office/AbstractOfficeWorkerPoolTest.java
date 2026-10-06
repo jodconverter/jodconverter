@@ -289,7 +289,8 @@ class AbstractOfficeWorkerPoolTest {
 
       // The first attempt is a start, the following ones are restarts.
       assertThat(worker.calls).containsExactly("start", "restart", "restart", "restart", "execute");
-      assertThat(pool.getWorkerStates()).containsExactly(OfficeWorkerState.READY);
+      // The worker is ready again once its thread is back at the queue.
+      await(() -> pool.getWorkerStates().equals(List.of(OfficeWorkerState.READY)));
     }
 
     @Test

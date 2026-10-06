@@ -80,11 +80,6 @@ public abstract class AbstractRetryable<T extends Throwable> {
     }
 
     while (true) {
-      if (Thread.currentThread().isInterrupted()) {
-        // Nobody waits for the task anymore, whatever the interval between the attempts.
-        throw new RetryTimeoutException(
-            new InterruptedException("Interrupted while executing the task"));
-      }
       attempt++;
       try {
         logger.debug("Execution attempt #{}", attempt);
@@ -92,6 +87,12 @@ public abstract class AbstractRetryable<T extends Throwable> {
         logger.debug("Execution succeeded on attempt #{}", attempt);
         return;
       } catch (TemporaryException temporaryException) {
+        if (Thread.currentThread().isInterrupted()) {
+          // Nobody waits for the task anymore: no retry, whatever the interval between the
+          // attempts.
+          throw new RetryTimeoutException(
+              new InterruptedException("Interrupted while executing the task"));
+        }
         if (System.currentTimeMillis() - start < timeout) {
           if (interval > NO_SLEEP) {
             logger.debug(
