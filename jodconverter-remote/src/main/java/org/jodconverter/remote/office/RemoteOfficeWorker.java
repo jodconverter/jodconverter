@@ -35,33 +35,40 @@ import java.util.Objects;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.PrivateKeyDetails;
 import org.apache.http.ssl.PrivateKeyStrategy;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.jodconverter.core.office.AbstractOfficeManagerPoolEntry;
 import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeWorker;
 import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.remote.ssl.SslConfig;
 
 /**
- * A RemoteOfficeManagerPoolEntry is responsible to execute tasks submitted through a {@link
- * RemoteOfficeManager} that does not depend on an office installation. It will send conversion
- * request to a LibreOffice Online server and wait until the task is done or a configured task
- * execution timeout is reached.
+ * A RemoteOfficeWorker executes the tasks submitted through a {@link RemoteOfficeManager}, which
+ * does not depend on an office installation: it sends the conversion requests to a LibreOffice
+ * Online server. It is always ready, and has nothing to start or stop.
  *
  * @see RemoteOfficeManager
  */
-class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
+class RemoteOfficeWorker implements OfficeWorker {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(RemoteOfficeWorker.class);
 
   private final String connectionUrl;
   private final SslConfig sslConfig;
   private final long connectTimeout;
   private final long socketTimeout;
+
+  // The client of the request being executed, closed to abort the request.
+  private volatile CloseableHttpClient httpClient;
 
   /**
    * Strategy that selects a private key by its alias.
@@ -103,7 +110,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
     }
     if (cl == null) {
       // No thread context class loader -> use class loader of this class.
-      cl = RemoteOfficeManagerPoolEntry.class.getClassLoader();
+      cl = RemoteOfficeWorker.class.getClassLoader();
       if (cl == null) {
         // getClassLoader() returning null indicates the bootstrap ClassLoader
         try {
@@ -153,7 +160,7 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   /**
-   * Creates a new pool entry with the specified configuration.
+   * Creates a new worker with the specified configuration.
    *
    * @param connectionUrl The URL to the remote server.
    * @param sslConfig The SSL configuration used to secure communication with the remote server.
@@ -164,17 +171,12 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
    *     timeout for waiting for data or, put differently, a maximum period inactivity between two
    *     consecutive data packets. A timeout value of zero is interpreted as an infinite timeout. A
    *     negative value is interpreted as undefined (system default).
-   * @param taskExecutionTimeout The maximum time allowed to process a task. If the processing time
-   *     of a task is longer than this timeout, this task will be aborted and the next task is
-   *     processed.
    */
-  /* default */ RemoteOfficeManagerPoolEntry(
+  /* default */ RemoteOfficeWorker(
       final String connectionUrl,
       final SslConfig sslConfig,
       final long connectTimeout,
-      final long socketTimeout,
-      final long taskExecutionTimeout) {
-    super(taskExecutionTimeout);
+      final long socketTimeout) {
 
     this.connectionUrl = connectionUrl;
     this.sslConfig = sslConfig;
@@ -277,29 +279,54 @@ class RemoteOfficeManagerPoolEntry extends AbstractOfficeManagerPoolEntry {
   }
 
   @Override
-  protected void doExecute(final OfficeTask task) throws OfficeException {
+  public void start() {
+    // Nothing to start here.
+  }
+
+  @Override
+  public void restart() {
+    // Nothing to restart here.
+  }
+
+  @Override
+  public boolean isReady() {
+    return true;
+  }
+
+  @Override
+  public void execute(final OfficeTask task) throws OfficeException {
 
     final var sslFactory = configureSsl();
-    try (var httpClient = HttpClients.custom().setSSLSocketFactory(sslFactory).build()) {
+    try (var client = HttpClients.custom().setSSLSocketFactory(sslFactory).build()) {
+      httpClient = client;
 
-      // Use the task execution timeout as connection and socket timeout.
-      // TODO: Should the user be able to customize connection and socket timeout ?
       final var requestConfig =
           new RequestConfig(buildUrl(connectionUrl), connectTimeout, socketTimeout);
-      task.execute(new RemoteOfficeConnection(httpClient, requestConfig));
+      task.execute(new RemoteOfficeConnection(client, requestConfig));
 
     } catch (IOException ex) {
       throw new OfficeException("Could not create the HTTP client", ex);
+    } finally {
+      httpClient = null;
     }
   }
 
   @Override
-  protected void doStart() {
-    setAvailable(true);
+  public void abort() {
+
+    // Closing the client of the request being executed ends the request.
+    final var client = httpClient;
+    if (client != null) {
+      try {
+        client.close();
+      } catch (IOException ex) {
+        LOGGER.warn("Could not close the HTTP client of the aborted request", ex);
+      }
+    }
   }
 
   @Override
-  protected void doStop() {
+  public void stop() {
     // Nothing to stop here.
   }
 

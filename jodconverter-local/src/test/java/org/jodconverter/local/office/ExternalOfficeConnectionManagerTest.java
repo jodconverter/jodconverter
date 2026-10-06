@@ -22,8 +22,6 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.concurrent.RejectedExecutionException;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -32,16 +30,17 @@ import org.jodconverter.core.office.OfficeException;
 /** Contains tests for the {@link ExternalOfficeConnectionManager} class. */
 class ExternalOfficeConnectionManagerTest {
 
+  private static final OfficeUrl URL = new OfficeUrl(9999);
+
   @Nested
   class GetConnection {
 
     @Test
     void shouldReturnExpectedConnection() {
 
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, false);
+      final var connection = TestOfficeConnection.prepareTest(URL, false);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
 
       assertThat(manager.getConnection()).isEqualTo(connection);
     }
@@ -51,82 +50,41 @@ class ExternalOfficeConnectionManagerTest {
   class Connect {
 
     @Test
-    void whenConnectFailFastIsTrueAndCouldNotConnect_ShouldThrowOfficeException() {
+    void whenCouldNotConnect_ShouldThrowOfficeException() {
 
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareFailingConnectTest(url, false);
+      final var connection = TestOfficeConnection.prepareFailingConnectTest(URL, false);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
 
-      assertThatExceptionOfType(OfficeException.class).isThrownBy(manager::connect);
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(manager::connect)
+          .withMessage("Could not establish connection to external process.");
     }
 
     @Test
-    void whenConnectFailFastIsTrueAndCouldConnect_ShouldNotThrowAnyException() {
+    void whenCouldConnect_ShouldConnect() throws OfficeException {
 
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, false);
+      final var connection = TestOfficeConnection.prepareTest(URL, false);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
 
-      assertThatCode(manager::connect).doesNotThrowAnyException();
+      manager.connect();
+
+      assertThat(connection.isConnected()).isTrue();
+      assertThat(connection.connectCount).isEqualTo(1);
     }
 
     @Test
-    void whenConnectFailFastIsTrueAndAlreadyConnected_ShouldNotThrowAnyException() {
+    void whenAlreadyConnected_ShouldNotConnectAgain() throws OfficeException {
 
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareFailingConnectTest(url, true);
+      final var connection = TestOfficeConnection.prepareFailingConnectTest(URL, true);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
 
-      assertThatCode(manager::connect).doesNotThrowAnyException();
-    }
+      manager.connect();
 
-    @Test
-    void whenDisconnectedAndConnectFailFastIsTrue_ShouldThrowRejectedExecutionException() {
-
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, false);
-
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, true, connection);
-
-      assertThatCode(manager::disconnect).doesNotThrowAnyException();
-      assertThatExceptionOfType(RejectedExecutionException.class).isThrownBy(manager::connect);
-    }
-
-    @Test
-    void whenConnectFailFastIsFalseAndCouldNotConnect_ShouldNotThrowAnyException() {
-
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareFailingConnectTest(url, false);
-
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
-
-      assertThatCode(manager::connect).doesNotThrowAnyException();
-    }
-
-    @Test
-    void whenConnectFailFastIsFalseAndCouldConnect_ShouldNotThrowAnyException() {
-
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, false);
-
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
-
-      assertThatCode(manager::connect).doesNotThrowAnyException();
-    }
-
-    @Test
-    void whenDisconnectedAndConnectFailFastIsFalse_ShouldThrowRejectedExecutionException() {
-
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, false);
-
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
-
-      assertThatCode(manager::disconnect).doesNotThrowAnyException();
-      assertThatExceptionOfType(RejectedExecutionException.class).isThrownBy(manager::connect);
+      assertThat(connection.isConnected()).isTrue();
+      assertThat(connection.connectCount).isZero();
     }
   }
 
@@ -134,127 +92,67 @@ class ExternalOfficeConnectionManagerTest {
   class Disconnect {
 
     @Test
-    void whenNotConnected_ShouldNotThrowAnyException() {
+    void whenNotConnected_ShouldDoNothing() {
 
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, false);
+      final var connection = TestOfficeConnection.prepareTest(URL, false);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
 
       assertThatCode(manager::disconnect).doesNotThrowAnyException();
+      assertThat(connection.disconnectCount).isZero();
     }
 
     @Test
     void whenConnected_ShouldDisconnect() {
 
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, true);
+      final var connection = TestOfficeConnection.prepareTest(URL, true);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
 
-      assertThatCode(manager::disconnect).doesNotThrowAnyException();
+      manager.disconnect();
+
+      assertThat(connection.isConnected()).isFalse();
+      assertThat(connection.disconnectCount).isEqualTo(1);
     }
-
-    //    @Test
-    //    void whenTaskInterrupted_ShouldThrowOfficeException() {
-    //
-    //      final OfficeUrl url = new OfficeUrl(9999);
-    //      final TestOfficeConnection connection = TestOfficeConnection.prepareTest(url, true);
-    //      connection.setDisconnectSleep(1500L);
-    //
-    //      final ExternalOfficeConnectionManager manager =
-    //          new ExternalOfficeConnectionManager(1000L, 1000L, false, connection);
-    //
-    //      final AtomicReference<OfficeException> ex = new AtomicReference<>();
-    //
-    //      assertThatCode(
-    //              () -> {
-    //                final Thread thread =
-    //                    new Thread(
-    //                        () -> {
-    //                          try {
-    //                            manager.disconnect();
-    //                          } catch (OfficeException oe) {
-    //                            ex.set(oe);
-    //                          }
-    //                        });
-    //
-    //                // Start the thread.
-    //                thread.start();
-    //                // Interrupt the thread.
-    //                thread.interrupt();
-    //                //  Wait for thread to complete.
-    //                thread.join();
-    //              })
-    //          .doesNotThrowAnyException();
-    //
-    //      assertThat(ex.get())
-    //          .isExactlyInstanceOf(OfficeException.class)
-    //          .hasMessageStartingWith("Interruption while disconnecting from external office
-    // process.")
-    //          .hasCauseExactlyInstanceOf(InterruptedException.class);
-    //    }
   }
 
   @Nested
   class Reconnect {
 
     @Test
-    void whenCouldReconnect_ShouldNotThrowAnyException() {
+    void whenCouldReconnect_ShouldDisconnectThenConnect() throws OfficeException {
 
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, true);
+      final var connection = TestOfficeConnection.prepareTest(URL, true);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
 
-      assertThatCode(manager::reconnect).doesNotThrowAnyException();
+      manager.reconnect();
+
+      assertThat(connection.isConnected()).isTrue();
+      assertThat(connection.disconnectCount).isEqualTo(1);
+      assertThat(connection.connectCount).isEqualTo(1);
     }
 
     @Test
-    void whenCouldNotReconnect_ShouldNotThrowAnyException() {
+    void whenCouldNotReconnect_ShouldThrowOfficeException() {
 
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareFailingConnectTest(url, true);
+      final var connection = TestOfficeConnection.prepareFailingConnectTest(URL, true);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
+      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
 
-      assertThatCode(manager::reconnect).doesNotThrowAnyException();
+      assertThatExceptionOfType(OfficeException.class).isThrownBy(manager::reconnect);
+      assertThat(connection.isConnected()).isFalse();
     }
   }
 
-  @Nested
-  class EnsureConnected {
-
-    @Test
-    void whenNotConnected_ShouldConnect() throws OfficeException {
-
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, false);
-
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
-
-      manager.ensureConnected();
-      assertThat(connection.isConnected()).isTrue();
-    }
-
-    @Test
-    void whenAlreadyConnected_ShouldStayConnected() throws OfficeException {
-
-      final var url = new OfficeUrl(9999);
-      final var connection = TestOfficeConnection.prepareTest(url, true);
-
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, false, connection);
-
-      manager.ensureConnected();
-      assertThat(connection.isConnected()).isTrue();
-    }
-  }
-
+  /** A connection that does not connect to anything. */
   static class TestOfficeConnection extends OfficeConnection {
 
     private final OfficeUrl url;
     private boolean isConnected;
     private boolean throwConnectException;
+    /* default */ int connectCount;
+    /* default */ int disconnectCount;
 
     static TestOfficeConnection prepareTest(final OfficeUrl url, final boolean isConnected) {
 
@@ -285,6 +183,7 @@ class ExternalOfficeConnectionManagerTest {
 
     @Override
     public void connect() throws OfficeConnectionException {
+      connectCount++;
       if (throwConnectException) {
         throw new OfficeConnectionException("Could not connect.", url.getConnectString());
       }
@@ -293,6 +192,7 @@ class ExternalOfficeConnectionManagerTest {
 
     @Override
     public void disconnect() {
+      disconnectCount++;
       this.isConnected = false;
     }
   }

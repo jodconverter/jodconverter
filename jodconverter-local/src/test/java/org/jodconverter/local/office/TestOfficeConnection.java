@@ -30,6 +30,7 @@ public final class TestOfficeConnection extends OfficeConnection {
 
   private final AtomicBoolean connected = new AtomicBoolean();
   private final AtomicInteger connectCount = new AtomicInteger();
+  private final AtomicInteger disconnectCount = new AtomicInteger();
   private final List<OfficeConnectionEventListener> testConnectionEventListeners;
 
   static TestOfficeConnection prepareTest(final OfficeUrl url) {
@@ -45,6 +46,10 @@ public final class TestOfficeConnection extends OfficeConnection {
 
   public int getConnectCount() {
     return connectCount.get();
+  }
+
+  public int getDisconnectCount() {
+    return disconnectCount.get();
   }
 
   @Override
@@ -72,6 +77,7 @@ public final class TestOfficeConnection extends OfficeConnection {
 
   @Override
   public void disconnect() {
+    disconnectCount.incrementAndGet();
     if (connected.compareAndSet(true, false)) {
       final var event = new OfficeConnectionEvent(this);
       testConnectionEventListeners.forEach(listener -> listener.disconnected(event));

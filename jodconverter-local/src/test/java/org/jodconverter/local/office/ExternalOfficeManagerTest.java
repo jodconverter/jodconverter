@@ -54,31 +54,29 @@ class ExternalOfficeManagerTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
+          .hasFieldOrPropertyWithValue("startFailFast", DEFAULT_CONNECT_FAIL_FAST);
       assertThat(manager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
           .satisfies(
               o ->
                   assertThat(o)
-                      .isInstanceOf(ExternalOfficeManagerPoolEntry.class)
+                      .isInstanceOf(ExternalOfficeWorker.class)
                       .extracting(
-                          "taskExecutionTimeout",
                           "connectOnStart",
                           "maxTasksPerConnection",
                           "connectionManager.connectTimeout",
                           "connectionManager.connectRetryInterval",
-                          "connectionManager.connectFailFast",
                           "connectionManager.connection.officeUrl.connectString")
                       .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_CONNECT_ON_START,
                           DEFAULT_MAX_TASKS_PER_CONNECTION,
                           DEFAULT_CONNECT_TIMEOUT,
                           DEFAULT_CONNECT_RETRY_INTERVAL,
-                          DEFAULT_CONNECT_FAIL_FAST,
                           new OfficeUrl(DEFAULT_HOSTNAME, 2002).getConnectString()));
     }
   }
@@ -136,31 +134,29 @@ class ExternalOfficeManagerTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
+          .hasFieldOrPropertyWithValue("startFailFast", DEFAULT_CONNECT_FAIL_FAST);
       assertThat(manager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
           .satisfies(
               o ->
                   assertThat(o)
-                      .isInstanceOf(ExternalOfficeManagerPoolEntry.class)
+                      .isInstanceOf(ExternalOfficeWorker.class)
                       .extracting(
-                          "taskExecutionTimeout",
                           "connectOnStart",
                           "maxTasksPerConnection",
                           "connectionManager.connectTimeout",
                           "connectionManager.connectRetryInterval",
-                          "connectionManager.connectFailFast",
                           "connectionManager.connection.officeUrl.connectString")
                       .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_CONNECT_ON_START,
                           DEFAULT_MAX_TASKS_PER_CONNECTION,
                           DEFAULT_CONNECT_TIMEOUT,
                           DEFAULT_CONNECT_RETRY_INTERVAL,
-                          DEFAULT_CONNECT_FAIL_FAST,
                           new OfficeUrl(DEFAULT_HOSTNAME, 2002).getConnectString()));
     }
 
@@ -189,23 +185,24 @@ class ExternalOfficeManagerTest {
           .satisfies(
               o ->
                   assertThat(o).asInstanceOf(InstanceOfAssertFactories.FILE).hasParent(testFolder));
-      assertThat(manager).hasFieldOrPropertyWithValue("taskQueueTimeout", 12_000L);
       assertThat(manager)
-          .extracting("entries")
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", 12_000L)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", 11_000L)
+          .hasFieldOrPropertyWithValue("startFailFast", true);
+      assertThat(manager)
+          .extracting("workers")
           .asList()
           .hasSize(3)
           .allSatisfy(
               o ->
                   assertThat(o)
-                      .isInstanceOf(ExternalOfficeManagerPoolEntry.class)
+                      .isInstanceOf(ExternalOfficeWorker.class)
                       .extracting(
-                          "taskExecutionTimeout",
                           "connectOnStart",
                           "maxTasksPerConnection",
                           "connectionManager.connectTimeout",
-                          "connectionManager.connectRetryInterval",
-                          "connectionManager.connectFailFast")
-                      .containsExactly(11_000L, false, 99, 5_000L, 1_000L, true))
+                          "connectionManager.connectRetryInterval")
+                      .containsExactly(false, 99, 5_000L, 1_000L))
           .satisfies(
               o ->
                   assertThat(o.get(0))

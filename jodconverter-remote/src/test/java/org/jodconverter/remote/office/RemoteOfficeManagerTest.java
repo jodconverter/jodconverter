@@ -55,28 +55,20 @@ class RemoteOfficeManagerTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT);
       assertThat(manager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
           .satisfies(
               o ->
                   assertThat(o)
-                      .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
-                      .extracting(
-                          "taskExecutionTimeout",
-                          "connectionUrl",
-                          "sslConfig",
-                          "connectTimeout",
-                          "socketTimeout")
+                      .isInstanceOf(RemoteOfficeWorker.class)
+                      .extracting("connectionUrl", "sslConfig", "connectTimeout", "socketTimeout")
                       .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
-                          "localhost",
-                          null,
-                          DEFAULT_CONNECT_TIMEOUT,
-                          DEFAULT_SOCKET_TIMEOUT));
+                          "localhost", null, DEFAULT_CONNECT_TIMEOUT, DEFAULT_SOCKET_TIMEOUT));
     }
   }
 
@@ -124,28 +116,20 @@ class RemoteOfficeManagerTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT);
       assertThat(manager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
           .satisfies(
               o ->
                   assertThat(o)
-                      .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
-                      .extracting(
-                          "taskExecutionTimeout",
-                          "connectionUrl",
-                          "sslConfig",
-                          "connectTimeout",
-                          "socketTimeout")
+                      .isInstanceOf(RemoteOfficeWorker.class)
+                      .extracting("connectionUrl", "sslConfig", "connectTimeout", "socketTimeout")
                       .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
-                          "localhost",
-                          null,
-                          DEFAULT_CONNECT_TIMEOUT,
-                          DEFAULT_SOCKET_TIMEOUT));
+                          "localhost", null, DEFAULT_CONNECT_TIMEOUT, DEFAULT_SOCKET_TIMEOUT));
     }
 
     @Test
@@ -173,22 +157,19 @@ class RemoteOfficeManagerTest {
           .satisfies(
               o ->
                   assertThat(o).asInstanceOf(InstanceOfAssertFactories.FILE).hasParent(workingDir));
-      assertThat(manager).hasFieldOrPropertyWithValue("taskQueueTimeout", 501L);
       assertThat(manager)
-          .extracting("entries")
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", 501L)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", 500L);
+      assertThat(manager)
+          .extracting("workers")
           .asList()
           .hasSize(2)
           .allSatisfy(
               o ->
                   assertThat(o)
-                      .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
-                      .extracting(
-                          "taskExecutionTimeout",
-                          "connectionUrl",
-                          "sslConfig",
-                          "connectTimeout",
-                          "socketTimeout")
-                      .containsExactly(500L, "localhost", null, 502L, 503L));
+                      .isInstanceOf(RemoteOfficeWorker.class)
+                      .extracting("connectionUrl", "sslConfig", "connectTimeout", "socketTimeout")
+                      .containsExactly("localhost", null, 502L, 503L));
     }
 
     @Test

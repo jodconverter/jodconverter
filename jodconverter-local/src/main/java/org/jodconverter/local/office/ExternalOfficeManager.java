@@ -27,7 +27,7 @@ import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import org.jodconverter.core.office.AbstractOfficeManagerPool;
+import org.jodconverter.core.office.AbstractOfficeWorkerPool;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.OfficeTask;
@@ -52,8 +52,7 @@ import org.jodconverter.core.util.AssertUtils;
  * same behavior as JODConverter 2.x, including using <em>synchronized</em> blocks for serializing
  * office operations.
  */
-public final class ExternalOfficeManager
-    extends AbstractOfficeManagerPool<ExternalOfficeManagerPoolEntry> {
+public final class ExternalOfficeManager extends AbstractOfficeWorkerPool {
 
   // The default value for hostName.
   /* default */ static final String DEFAULT_HOSTNAME = "127.0.0.1";
@@ -110,22 +109,19 @@ public final class ExternalOfficeManager
       final boolean connectFailFast,
       final int maxTasksPerConnection,
       final long taskExecutionTimeout,
-      final long taskQueueTimeout) {
-    super(officeUrls.size(), workingDir, taskQueueTimeout);
+      final long taskQueueTimeout,
+      final int taskQueueCapacity) {
+    super(workingDir, taskQueueTimeout, taskExecutionTimeout, taskQueueCapacity, connectFailFast);
 
-    setEntries(
+    setWorkers(
         officeUrls.stream()
             .map(
                 officeUrl ->
-                    new ExternalOfficeManagerPoolEntry(
+                    new ExternalOfficeWorker(
                         connectOnStart,
                         maxTasksPerConnection,
-                        taskExecutionTimeout,
                         new ExternalOfficeConnectionManager(
-                            connectTimeout,
-                            connectRetryInterval,
-                            connectFailFast,
-                            new OfficeConnection(officeUrl))))
+                            connectTimeout, connectRetryInterval, new OfficeConnection(officeUrl))))
             .toList());
   }
 
@@ -134,7 +130,7 @@ public final class ExternalOfficeManager
    *
    * @see ExternalOfficeManager
    */
-  public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
+  public static final class Builder extends AbstractOfficeWorkerPoolBuilder<Builder> {
 
     // OfficeProcessManager
     private List<String> pipeNames;
@@ -169,7 +165,8 @@ public final class ExternalOfficeManager
               connectFailFast,
               maxTasksPerConnection,
               taskExecutionTimeout,
-              taskQueueTimeout);
+              taskQueueTimeout,
+              taskQueueCapacity);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }
@@ -291,11 +288,12 @@ public final class ExternalOfficeManager
 
     /**
      * Controls whether the manager will "fail fast" if the connection to the external process
-     * fails. If set to {@code true}, a connection attempt will wait for the task to be completed,
-     * and will throw an exception if the connection to the external process fails. If set to {@code
-     * false}, the task of connecting to the external process will be submitted and will return
-     * immediately, meaning a faster connecting process. Only error logs will be produced if
-     * anything goes wrong.
+     * fails. If set to {@code true}, the start of the manager waits for all the connections to be
+     * established, and throws an exception if one of them cannot be; the manager cannot be used
+     * after that. If set to {@code false}, the start of the manager returns immediately, meaning a
+     * faster start: the tasks wait for a connection to be established, and a connection that fails
+     * is retried, with a growing delay between the attempts. Only logs will be produced if anything
+     * goes wrong.
      *
      * <p>&nbsp; <b><i>Default</i></b>: false
      *
