@@ -1054,10 +1054,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fileutilsreadfiletostring" class="md-nav__link">
+  <a href="#office-managers-make-temporary-files" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        FileUtils.readFileToString
+        Office managers make temporary files
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#immutable-document-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Immutable document formats
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#builder-setters-take-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Builder setters take primitives
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Removed utilities
       </span>
     </span>
   </a>
@@ -2788,10 +2821,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fileutilsreadfiletostring" class="md-nav__link">
+  <a href="#office-managers-make-temporary-files" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        FileUtils.readFileToString
+        Office managers make temporary files
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#immutable-document-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Immutable document formats
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#builder-setters-take-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Builder setters take primitives
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Removed utilities
       </span>
     </span>
   </a>
@@ -3076,9 +3142,33 @@ JODConverter are built this way.</p>
 <h3 id="removed-deprecated-methods">Removed deprecated methods<a class="headerlink" href="#removed-deprecated-methods" title="Permanent link">&para;</a></h3>
 <p><code>Lo.createInstanceMSF(...)</code> and <code>Lo.createInstanceMCF(...)</code> (local module), deprecated since 4.4.4, are removed; use the
 <code>Lo.createInstance(...)</code> overloads, which take the same arguments.</p>
-<h3 id="fileutilsreadfiletostring">FileUtils.readFileToString<a class="headerlink" href="#fileutilsreadfiletostring" title="Permanent link">&para;</a></h3>
-<p><code>org.jodconverter.core.util.FileUtils.readFileToString</code> now throws a <code>MalformedInputException</code> when the file contains
-bytes that are not valid in the given charset, instead of replacing them.</p>
+<h3 id="office-managers-make-temporary-files">Office managers make temporary files<a class="headerlink" href="#office-managers-make-temporary-files" title="Permanent link">&para;</a></h3>
+<p><code>OfficeManager</code> now extends <code>TemporaryFileMaker</code>, which every office manager of JODConverter already implemented, so a
+converter no longer checks for it at runtime before converting a stream. A custom office manager must implement
+<code>makeTemporaryFile(String extension)</code> (the no-argument overload has a default implementation).</p>
+<p><code>AbstractOfficeWorkerPool.getWorkerStates()</code> and <code>getQueueSize()</code> are removed in favor of <code>getStatus()</code>, which gives
+the same values in one snapshot (<code>workers()</code> and <code>queueSize()</code>), and <code>getTempDir()</code> is no longer public.</p>
+<h3 id="immutable-document-formats">Immutable document formats<a class="headerlink" href="#immutable-document-formats" title="Permanent link">&para;</a></h3>
+<p><code>DocumentFormat</code> is always immutable: <code>DocumentFormat.copy(format)</code>, <code>unmodifiableCopy(format)</code> and
+<code>Builder.unmodifiable(boolean)</code> are gone; <code>DocumentFormat.builder(format)</code> gives a builder initialized from a format.
+<code>getLoadProperties()</code> and <code>getStoreProperties()</code> return empty maps instead of <code>null</code> when the format has no property,
+and <code>getStoreProperties(family)</code> still returns <code>null</code> for a family without properties. A format needs at least one
+extension, and <code>equals</code>/<code>hashCode</code> compare every field. <code>DefaultDocumentFormatRegistry</code> keeps only <code>getInstance()</code>:
+<code>getFormatByExtension</code>, <code>getFormatByMediaType</code> and <code>getOutputFormats</code> are called on that instance. A custom
+<code>document-formats.json</code> that drops one of the formats named by the <code>DefaultDocumentFormatRegistry</code> constants now fails
+when the class is loaded, instead of giving a silent placeholder format.</p>
+<h3 id="builder-setters-take-primitives">Builder setters take primitives<a class="headerlink" href="#builder-setters-take-primitives" title="Permanent link">&para;</a></h3>
+<p>The numeric and boolean setters of the office manager builders (<code>taskExecutionTimeout</code>, <code>taskQueueTimeout</code>,
+<code>taskQueueCapacity</code>, <code>poolSize</code>, <code>processTimeout</code>, <code>processRetryInterval</code>, <code>afterStartProcessDelay</code>, <code>startFailFast</code>,
+<code>keepAliveOnShutdown</code>, <code>maxTasksPerProcess</code>, <code>connectOnStart</code>, <code>connectTimeout</code>, <code>connectRetryInterval</code>,
+<code>connectFailFast</code>, <code>maxTasksPerConnection</code>, <code>socketTimeout</code>) take <code>long</code>, <code>int</code> or <code>boolean</code> instead of nullable
+wrappers that kept the default on <code>null</code>. A caller that passed a possibly null value keeps the default by not calling
+the setter.</p>
+<h3 id="removed-utilities">Removed utilities<a class="headerlink" href="#removed-utilities" title="Permanent link">&para;</a></h3>
+<p>In <code>org.jodconverter.core.util</code>, <code>IOUtils</code> is removed (<code>InputStream.transferTo</code> and <code>readAllBytes</code>),
+<code>FileUtils.copyFile</code>, <code>copyFileToDirectory</code> and <code>readFileToString</code> are removed (<code>Files.copy</code> and <code>Files.readString</code>),
+<code>StringUtils.isEmpty</code>, <code>isNotEmpty</code>, <code>appendIfMissing</code> and <code>endsWithAny</code> are removed, <code>AssertUtils.notNull</code> is removed
+(<code>Objects.requireNonNull</code>), and <code>OSUtils</code> keeps <code>IS_OS_FREE_BSD</code>, <code>IS_OS_MAC</code>, <code>IS_OS_UNIX</code> and <code>IS_OS_WINDOWS</code> only.</p>
 <h2 id="behavior-changes">Behavior changes<a class="headerlink" href="#behavior-changes" title="Permanent link">&para;</a></h2>
 <h3 id="numeric-properties-in-json-document-format-registries">Numeric properties in JSON document format registries<a class="headerlink" href="#numeric-properties-in-json-document-format-registries" title="Permanent link">&para;</a></h3>
 <p>Before 5.0, every number of a property map in a JSON document format registry was read as a <code>Double</code>, and
