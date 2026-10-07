@@ -1611,6 +1611,8 @@
       
         
       
+        
+      
     
     
     
@@ -1785,6 +1787,33 @@
     
   
   PDF Options
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/page-images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Slides to Images
 
     
   </span>
@@ -3454,6 +3483,10 @@ A filter chain that needed Spring to wire constructor arguments beyond these key
 columns wide.</p>
 <h2 id="new-features">New features<a class="headerlink" href="#new-features" title="Permanent link">&para;</a></h2>
 <ul>
+<li><a href="../../getting-started/page-images/">Slides to images</a>: <code>LocalConverter.exportPages(document).to(directory)</code>
+    exports each slide or draw page of a presentation or a drawing as its own image (PNG, JPEG, SVG, GIF, BMP, TIFF,
+    WebP), with the size, the quality, the pages and the hidden slides as options. It replaces, for LibreOffice 24.2
+    and later, the one-image-per-slide output of the removed HTML export wizard (#396, #504).</li>
 <li><a href="../../getting-started/pdf-options/"><code>PdfOptions</code></a>: typed options to convert to PDF (PDF/A, PDF/UA, images, page
     range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
     <code>with(...)</code> method: <code>converter.convert(source).to(target).with(PdfOptions.archive()).execute()</code>. The command line
