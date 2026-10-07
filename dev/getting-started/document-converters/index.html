@@ -2630,31 +2630,27 @@ execution.</p>
 <span class="w">    </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">version</span><span class="p">(</span><span class="n">PdfVersion</span><span class="p">.</span><span class="na">PDF_A_2B</span><span class="p">).</span><span class="na">tagged</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">())</span>
 <span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
-<p><strong>5)</strong> Applying save options and filters (<code>LocalConverter</code>).</p>
+<p><strong>5)</strong> Applying filters and PDF options (<code>LocalConverter</code>).</p>
 <div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.io.File</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.HashMap</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Map</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.document.DefaultDocumentFormatRegistry</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.core.pdf.PdfOptions</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.local.LocalConverter</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.local.filter.RefreshFilter</span><span class="p">;</span>
-
-<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pdfOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="n">pdfOptions</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"SelectPdfVersion"</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// PDF/A-1</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter</span><span class="p">;</span>
 
 <span class="n">LocalConverter</span>
 <span class="w">    </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">    </span><span class="p">.</span><span class="na">filterChain</span><span class="p">(</span><span class="n">RefreshFilter</span><span class="p">.</span><span class="na">CHAIN</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">storeProperty</span><span class="p">(</span><span class="s">"FilterData"</span><span class="p">,</span><span class="w"> </span><span class="n">pdfOptions</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">filterChain</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DocumentIndexesUpdaterFilter</span><span class="p">())</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"in.odt"</span><span class="p">))</span>
 <span class="w">    </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"out.pdf"</span><span class="p">))</span>
-<span class="w">    </span><span class="p">.</span><span class="na">as</span><span class="p">(</span><span class="n">DefaultDocumentFormatRegistry</span><span class="p">.</span><span class="na">PDF</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">archive</span><span class="p">())</span>
 <span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
 <p>Notes:</p>
 <ul>
-<li>OOo export filters define available options and their keys.</li>
-<li>Filters let you modify a document (e.g., refresh fields, remove pages, add text) before saving.</li>
+<li><a href="../using-filters/">Filters</a> modify the loaded document (update its indexes, remove pages, add text) before it is
+    stored; without a filter chain, the document is only refreshed.</li>
+<li><a href="../pdf-options/">PDF options</a> choose how the PDF is exported; any other store property of an office export filter
+    can be given with <code>storeProperty(name, value)</code>.</li>
 </ul>
 <h2 id="lifecycle-and-threading">Lifecycle and threading<a class="headerlink" href="#lifecycle-and-threading" title="Permanent link">&para;</a></h2>
 <ul>

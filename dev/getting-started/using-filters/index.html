@@ -1390,6 +1390,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#updating-the-indexes-of-a-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Updating the indexes of a document
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#available-filters" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2374,6 +2385,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#updating-the-indexes-of-a-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Updating the indexes of a document
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#available-filters" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2429,21 +2451,16 @@ is doing. The following example will convert only the second page of a given sou
 <span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
 <p>Note that you can use more than one filter per conversion. Also, such a filter (page selector) is only required when the
-target format is not PDF. Indeed, when converting to PDF, you are better off using custom store properties:</p>
+target format is not PDF. Indeed, when converting to PDF, you are better off using the
+<a href="../pdf-options/">PDF options</a>:</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">File</span><span class="w"> </span><span class="n">inputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"document.rtf"</span><span class="p">);</span>
 <span class="n">File</span><span class="w"> </span><span class="n">outputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"document.pdf"</span><span class="p">);</span>
 
-<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">filterData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"PageRange"</span><span class="p">,</span><span class="w"> </span><span class="s">"2"</span><span class="p">);</span>
-<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">customProperties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="n">customProperties</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"FilterData"</span><span class="p">,</span><span class="w"> </span><span class="n">filterData</span><span class="p">);</span>
-
 <span class="n">LocalConverter</span>
-<span class="w">  </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">  </span><span class="p">.</span><span class="na">storeProperties</span><span class="p">(</span><span class="n">customProperties</span><span class="p">)</span>
-<span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">make</span><span class="p">()</span>
 <span class="w">  </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">inputFile</span><span class="p">)</span>
 <span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">outputFile</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">pages</span><span class="p">(</span><span class="n">pages</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">pages</span><span class="p">.</span><span class="na">range</span><span class="p">(</span><span class="s">"2"</span><span class="p">)).</span><span class="na">build</span><span class="p">())</span>
 <span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="merging-documents">Merging documents<a class="headerlink" href="#merging-documents" title="Permanent link">&para;</a></h2>
@@ -2462,10 +2479,79 @@ documents into one:</p>
 <span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">outputFile</span><span class="p">)</span>
 <span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
+<h2 id="updating-the-indexes-of-a-document">Updating the indexes of a document<a class="headerlink" href="#updating-the-indexes-of-a-document" title="Permanent link">&para;</a></h2>
+<p>A text document is saved with its table of contents, alphabetical index, table of figures or bibliography as they were
+when they were last updated by someone. An export shows them that way: a heading added since is missing, and the page
+numbers are those of that time. The
+<a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentIndexesUpdaterFilter.java">DocumentIndexesUpdaterFilter</a>
+updates every index of the document before it is stored, in two passes: the first one rebuilds the indexes, which can
+change the pagination (a table of contents that grows by a page), and the second one fixes the page numbers for the new
+layout. It can also change the number of levels of the tables of contents.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span>
+<span class="w">  </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">filterChain</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DocumentIndexesUpdaterFilter</span><span class="p">())</span>
+<span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"report.docx"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"report.pdf"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p>The filter is not applied by default: rebuilding an index replaces its entries, so a document whose index was edited by
+hand, or that holds links to the entries of its index, is better exported as it is.</p>
 <h2 id="available-filters">Available filters<a class="headerlink" href="#available-filters" title="Permanent link">&para;</a></h2>
-<p><strong>JODConverter</strong> provides
-some <a href="https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter">filters</a>
-out of the box, but you can implement (and share obviously 😁) any filter you need. Your filter must implement
+<p><strong>JODConverter</strong> provides these filters out of the box, in the
+<a href="https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter">filter</a>
+package of the local module:</p>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RefreshFilter</code></td>
+<td>Refreshes the document (fields, layout). Applied by default when no filter chain is given to the converter.</td>
+</tr>
+<tr>
+<td><code>PagesSelectorFilter</code></td>
+<td>Keeps only the given pages (text documents), sheets (spreadsheets) or slides (presentations and drawings).</td>
+</tr>
+<tr>
+<td><code>PageCounterFilter</code></td>
+<td>Counts the pages, sheets or slides of the document, available after the conversion with <code>getPageCount()</code>.</td>
+</tr>
+<tr>
+<td><code>text.DocumentIndexesUpdaterFilter</code></td>
+<td>Updates the indexes of a text document, and optionally the number of levels of its tables of contents. Replaces <code>TableOfContentUpdaterFilter</code>.</td>
+</tr>
+<tr>
+<td><code>text.PageMarginsFilter</code></td>
+<td>Changes the page margins of a text document.</td>
+</tr>
+<tr>
+<td><code>text.TextInserterFilter</code></td>
+<td>Inserts a text, in a frame placed at the given position and size.</td>
+</tr>
+<tr>
+<td><code>text.TextReplacerFilter</code></td>
+<td>Replaces texts in a text document.</td>
+</tr>
+<tr>
+<td><code>text.GraphicInserterFilter</code></td>
+<td>Inserts an image, at the given position and size.</td>
+</tr>
+<tr>
+<td><code>text.DocumentInserterFilter</code></td>
+<td>Inserts another document at the end of the loaded one (see <a href="#merging-documents">Merging documents</a>).</td>
+</tr>
+<tr>
+<td><code>text.LinkedImagesEmbedderFilter</code></td>
+<td>Embeds the linked images of a text document, so that the output does not depend on them.</td>
+</tr>
+</tbody>
+</table>
+<p>You can implement (and share obviously 😁) any filter you need. Your filter must implement
 the <a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/Filter.java">Filter</a>
 interface and is responsible for calling the next filter in the filter chain.</p>
 <blockquote>

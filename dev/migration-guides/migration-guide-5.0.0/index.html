@@ -1120,6 +1120,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#document-indexes-updater-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Document indexes updater filter
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#internal-classes" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2931,6 +2942,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#document-indexes-updater-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Document indexes updater filter
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#internal-classes" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3290,6 +3312,12 @@ the setter.</p>
 (<code>Objects.requireNonNull</code>), and <code>OSUtils</code> keeps <code>IS_OS_FREE_BSD</code>, <code>IS_OS_MAC</code>, <code>IS_OS_UNIX</code> and <code>IS_OS_WINDOWS</code> only.</p>
 <p>In <code>org.jodconverter.local.office.utils</code>, the <code>Calc</code> and <code>Draw</code> classes, <code>Write.isWeb</code> and <code>Info.getConfigUpdateAccess</code>
 are removed: nothing in the project used them, and <code>LocalOfficeUtils.getDocumentFamily</code> tells the kind of a document.</p>
+<h3 id="document-indexes-updater-filter">Document indexes updater filter<a class="headerlink" href="#document-indexes-updater-filter" title="Permanent link">&para;</a></h3>
+<p><code>TableOfContentUpdaterFilter</code> is renamed <code>DocumentIndexesUpdaterFilter</code>, since it updates every index of a text document
+(table of contents, alphabetical index, table of figures, bibliography) and not only the table of contents. It now
+refreshes the document and updates the indexes twice, so that the page numbers are right after a table of contents
+grew. The old class remains as a deprecated subclass, to be removed in a later release, and the command line tool
+accepts both <code>document-indexes-updater</code> and <code>table-of-content-updater</code> as the filter type.</p>
 <h3 id="internal-classes">Internal classes<a class="headerlink" href="#internal-classes" title="Permanent link">&para;</a></h3>
 <p><code>NamedThreadFactory</code> (core), <code>CliConverter</code> (command line tool) and the <code>MIN_PROCESS_RETRY_INTERVAL</code> and
 <code>MIN_AFTER_START_PROCESS_DELAY</code> constants of <code>LocalOfficeManager</code> are no longer public, and the constructors of
