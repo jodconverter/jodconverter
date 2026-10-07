@@ -83,6 +83,49 @@ class LocalOfficeUtilsTest {
   }
 
   @Nested
+  class ListOfficeHomes {
+
+    @Test
+    void shouldListTheUnversionedThenTheMostRecentFirst(final @TempDir File testFolder)
+        throws IOException {
+
+      final var opt = new File(testFolder, "opt");
+      final var lib = new File(testFolder, "lib");
+      for (final var name :
+          List.of(
+              "opt/libreoffice7.6",
+              "opt/libreoffice24.2",
+              "opt/libreoffice25.8",
+              "opt/libreoffice",
+              "opt/LibreOffice 7",
+              "opt/openoffice4",
+              "lib/libreoffice",
+              "lib/other")) {
+        assertThat(new File(testFolder, name).mkdirs()).isTrue();
+      }
+      // A file is not an office home, whatever its name.
+      assertThat(new File(opt, "libreoffice26.2").createNewFile()).isTrue();
+
+      final var homes =
+          LocalOfficeUtils.listOfficeHomes(
+              "libreoffice",
+              opt.getPath(),
+              null,
+              lib.getPath(),
+              new File(testFolder, "none").getPath());
+
+      assertThat(homes)
+          .containsExactly(
+              new File(opt, "libreoffice").getPath(),
+              new File(opt, "libreoffice25.8").getPath(),
+              new File(opt, "libreoffice24.2").getPath(),
+              new File(opt, "libreoffice7.6").getPath(),
+              new File(opt, "LibreOffice 7").getPath(),
+              new File(lib, "libreoffice").getPath());
+    }
+  }
+
+  @Nested
   class FindFreePorts {
 
     @Test

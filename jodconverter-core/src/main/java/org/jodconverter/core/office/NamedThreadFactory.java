@@ -26,9 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /** A ThreadFactory that allows for custom thread names. */
-public class NamedThreadFactory implements ThreadFactory {
+final class NamedThreadFactory implements ThreadFactory {
 
-  private static final AtomicInteger THREAD_INDEX = new AtomicInteger(0);
+  private final AtomicInteger threadIndex = new AtomicInteger(0);
 
   private final String basename;
   private final boolean daemon;
@@ -38,7 +38,7 @@ public class NamedThreadFactory implements ThreadFactory {
    *
    * @param basename Basename of a new tread created by this factory.
    */
-  public NamedThreadFactory(final @NonNull String basename) {
+  /* default */ NamedThreadFactory(final @NonNull String basename) {
     this(basename, true);
   }
 
@@ -48,7 +48,7 @@ public class NamedThreadFactory implements ThreadFactory {
    * @param basename Basename of a new tread created by this factory.
    * @param daemon If true, marks the new thread as a daemon thread
    */
-  public NamedThreadFactory(final @NonNull String basename, final boolean daemon) {
+  /* default */ NamedThreadFactory(final @NonNull String basename, final boolean daemon) {
 
     this.basename = basename;
     this.daemon = daemon;
@@ -57,7 +57,7 @@ public class NamedThreadFactory implements ThreadFactory {
   @Override
   public @NonNull Thread newThread(final @NonNull Runnable runnable) {
 
-    final var thread = new Thread(runnable, basename + "-" + THREAD_INDEX.getAndIncrement());
+    final var thread = new Thread(runnable, basename + "-" + threadIndex.getAndIncrement());
     thread.setDaemon(daemon);
     return thread;
   }

@@ -125,7 +125,7 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
   @Override
   public void execute(final @NonNull OfficeContext context) throws OfficeException {
 
-    LOGGER.info("Executing remote conversion task...");
+    LOGGER.debug("Executing remote conversion task...");
     final var remoteContext = (RemoteOfficeContext) context;
 
     // Obtain a source file that can be loaded by office. If the source
@@ -160,7 +160,6 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
         target.onComplete(targetFile);
 
       } catch (Exception ex) {
-        LOGGER.error("Remote conversion failed.", ex);
         final var officeEx = new OfficeException("Remote conversion failed", ex);
         target.onFailure(targetFile, officeEx);
         throw officeEx;

@@ -31,7 +31,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public class UnoRuntime {
 
-  private static UnoRuntime instance = new UnoRuntime();
+  private static volatile UnoRuntime instance = new UnoRuntime();
 
   /**
    * Gets the default {@link UnoRuntime} instance.
@@ -49,9 +49,7 @@ public class UnoRuntime {
    */
   public static void setInstance(final @NonNull UnoRuntime unoRuntime) {
     Objects.requireNonNull(unoRuntime, "uno must not be null");
-    synchronized (UnoRuntime.class) {
-      instance = unoRuntime;
-    }
+    instance = unoRuntime;
   }
 
   /**

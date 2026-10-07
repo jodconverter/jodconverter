@@ -45,7 +45,6 @@ public final class Info { // NOPMD - Disable utility class name rule violation
 
   private static final String NODE_PRODUCT = "/org.openoffice.Setup/Product";
   private static final String NODE_L10N = "/org.openoffice.Setup/L10N";
-  // private static final String NODE_OFFICE = "/org.openoffice.Setup/Office";
 
   private static final String[] NODE_PATHS = {NODE_PRODUCT, NODE_L10N};
   private static final Pattern DIGITS = Pattern.compile("\\d+");
@@ -245,19 +244,6 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   public static @Nullable Object getConfigAccess(
       final @NonNull XComponentContext context, final @NonNull String nodePath) {
     return getConfigAccess(context, "com.sun.star.configuration.ConfigurationAccess", nodePath);
-  }
-
-  /**
-   * Gets the updatable configuration access for the specified path.
-   *
-   * @param context The main context.
-   * @param nodePath The path for which the configuration access is get.
-   * @return The updatable configuration access service, or null if not available.
-   */
-  public static @Nullable Object getConfigUpdateAccess(
-      final @NonNull XComponentContext context, final @NonNull String nodePath) {
-    return getConfigAccess(
-        context, "com.sun.star.configuration.ConfigurationUpdateAccess", nodePath);
   }
 
   /**

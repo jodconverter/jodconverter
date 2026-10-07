@@ -8,8 +8,6 @@ plugins {
     id("java-conventions")
 
     // Create an executable for the client module
-    // todo: include documentation with the distribution
-    // See https://docs.gradle.org/current/userguide/application_plugin.html
     application
 }
 

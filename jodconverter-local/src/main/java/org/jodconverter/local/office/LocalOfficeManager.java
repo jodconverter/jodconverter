@@ -71,12 +71,12 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
   public static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
   // The minimum value for the delay between each try when executing a process call
   // (start/terminate).
-  public static final long MIN_PROCESS_RETRY_INTERVAL = 0L; // No delay.
+  /* default */ static final long MIN_PROCESS_RETRY_INTERVAL = 0L; // No delay.
   // The maximum value for the delay between each try when executing a process call
   // (start/terminate).
   public static final long MAX_PROCESS_RETRY_INTERVAL = 10_000L; // 10 sec.
   // The minimum value for the delay after a start process attempt.
-  public static final long MIN_AFTER_START_PROCESS_DELAY = 0L; // No delay.
+  /* default */ static final long MIN_AFTER_START_PROCESS_DELAY = 0L; // No delay.
   // The maximum value for the delay after a start process attempt.
   public static final long MAX_AFTER_START_PROCESS_DELAY = 10_000L; // 10 sec.
 

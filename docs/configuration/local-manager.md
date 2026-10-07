@@ -25,7 +25,10 @@ Here are all the properties you can set through the builder:
 This property sets the office home directory of the office installation that will be used to perform document
 conversions.
 
-&#160;***Default***: Auto-detected, starting with LibreOffice (over OpenOffice) and the most recent version.
+&#160;***Default***: Auto-detected, starting with LibreOffice (over OpenOffice) and the most recent version. On
+Linux, the directories named `libreoffice*` under `/usr/lib64`, `/usr/lib`, `/usr/local/lib64`, `/usr/local/lib` and
+`/opt` are considered, so the packages of The Document Foundation (`/opt/libreoffice25.8`) are found whatever their
+version; on Windows, the `LibreOffice*` directories of the program files.
 
 === "Java"
 

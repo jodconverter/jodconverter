@@ -32,8 +32,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 public final class Props { // NOPMD - Disable utility class name rule violation
 
-  // private static final Logger LOGGER = LoggerFactory.getLogger(Props.class);
-
   /**
    * Gets a property value from the properties of the specified object.
    *

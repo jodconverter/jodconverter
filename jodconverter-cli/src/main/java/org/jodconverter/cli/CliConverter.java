@@ -45,7 +45,7 @@ import org.jodconverter.core.util.StringUtils;
  *
  * @see Convert
  */
-public final class CliConverter {
+final class CliConverter {
 
   private final PrintWriter out;
   private final DocumentConverter converter;

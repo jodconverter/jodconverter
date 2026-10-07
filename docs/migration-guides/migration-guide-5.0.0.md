@@ -212,6 +212,16 @@ In `org.jodconverter.core.util`, `IOUtils` is removed (`InputStream.transferTo` 
 `StringUtils.isEmpty`, `isNotEmpty`, `appendIfMissing` and `endsWithAny` are removed, `AssertUtils.notNull` is removed
 (`Objects.requireNonNull`), and `OSUtils` keeps `IS_OS_FREE_BSD`, `IS_OS_MAC`, `IS_OS_UNIX` and `IS_OS_WINDOWS` only.
 
+In `org.jodconverter.local.office.utils`, the `Calc` and `Draw` classes, `Write.isWeb` and `Info.getConfigUpdateAccess`
+are removed: nothing in the project used them, and `LocalOfficeUtils.getDocumentFamily` tells the kind of a document.
+
+### Internal classes
+
+`NamedThreadFactory` (core), `CliConverter` (command line tool) and the `MIN_PROCESS_RETRY_INTERVAL` and
+`MIN_AFTER_START_PROCESS_DELAY` constants of `LocalOfficeManager` are no longer public, and the constructors of
+`AbstractOfficeTask` and `AbstractRemoteOfficeTask` are protected: they were never meant to be used outside the
+project.
+
 ## Behavior changes
 
 ### Numeric properties in JSON document format registries

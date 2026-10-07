@@ -43,8 +43,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 record OfficeUrl(UnoUrl unoUrl) {
 
-  private static final String DEFAULT_HOST = "127.0.0.1";
-
   /**
    * Creates an UnoUrl for the specified pipe.
    *
@@ -84,7 +82,7 @@ record OfficeUrl(UnoUrl unoUrl) {
   /* default */
   static UnoUrl socket(final String host, final int port) {
 
-    final var h = host == null ? DEFAULT_HOST : host;
+    final var h = host == null ? LocalOfficeManager.DEFAULT_HOSTNAME : host;
     // Here we must use a try catch since OpenOffice and LibreOffice doesn't
     // have the same UnoUrl.parseUnoUrl signature
     try {
@@ -135,7 +133,7 @@ record OfficeUrl(UnoUrl unoUrl) {
    * @param port The port.
    */
   public OfficeUrl(final int port) {
-    this(DEFAULT_HOST, port);
+    this(LocalOfficeManager.DEFAULT_HOSTNAME, port);
   }
 
   /**
@@ -155,16 +153,6 @@ record OfficeUrl(UnoUrl unoUrl) {
    */
   OfficeUrl(final @NonNull UnoUrl unoUrl) {
     this.unoUrl = unoUrl;
-  }
-
-  /**
-   * Return the wrapped {@code UnoUrl}.
-   *
-   * @return The created {@code UnoUrl} for this wrapper.
-   */
-  @Override
-  public UnoUrl unoUrl() {
-    return unoUrl;
   }
 
   /**

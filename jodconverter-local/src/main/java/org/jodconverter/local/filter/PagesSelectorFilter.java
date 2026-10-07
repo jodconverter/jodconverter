@@ -20,8 +20,6 @@
 
 package org.jodconverter.local.filter;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,7 +83,8 @@ public class PagesSelectorFilter implements Filter {
 
     AssertUtils.notEmpty(pages, "pages must not be null nor empty");
 
-    this.pages = new ArrayList<>(pages);
+    // Sorted: the text pages are processed from the start to the end.
+    this.pages = pages.stream().sorted().toList();
   }
 
   @Override
@@ -101,24 +100,16 @@ public class PagesSelectorFilter implements Filter {
       switch (family) {
         case TEXT, WEB -> {
           LOGGER.debug("Applying the PagesSelectorFilter for a Text document");
-
-          // We must process from the start to the end.
-          Collections.sort(pages);
           selectTextPages(Lo.qi(XTextDocument.class, document));
         }
         case SPREADSHEET -> {
           LOGGER.debug("Applying the PagesSelectorFilter for a Calc document");
-
-          // We must process from the end to the start.
           selectSheets(Lo.qi(XSpreadsheetDocument.class, document));
         }
         case PRESENTATION, DRAWING -> {
           LOGGER.debug(
               "Applying the PagesSelectorFilter for a {} document",
               family == DocumentFamily.DRAWING ? "Draw" : "Impress");
-
-          // We must process from the end to the start.
-          pages.sort(Collections.reverseOrder());
           selectDrawPages(Lo.qi(XDrawPagesSupplier.class, document));
         }
       }
@@ -215,7 +206,6 @@ public class PagesSelectorFilter implements Filter {
     // Jump to the end of the last copied page and move the text cursor to
     // the beginning of this page, while selecting text in between.
     pc.jumpToPage((short) lastPage);
-    // tc.gotoRange(vc.getStart(), true);
     pc.jumpToEndOfPage();
     tc.gotoRange(vc.getEnd(), true);
     // Select the pages.
