@@ -2524,8 +2524,8 @@ credentials and the signing key, which live in the repository secrets; the rest 
 </code></pre></div>
    The task writes <code>version</code> in <code>gradle.properties</code> and, for a release version, replaces the previous released
    version in the pages of the documentation that show dependency coordinates.</li>
-<li><strong>Full build and integration tests, locally.</strong> The continuous integration runs the unit tests only; the
-   integration tests need a real office installation:
+<li><strong>Full build and integration tests, locally.</strong> The continuous integration runs them on Linux only; a release
+   deserves a run with the office installation of another platform:
    <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>clean<span class="w"> </span>build<span class="w"> </span>integrationTest
 </code></pre></div></li>
 <li><strong>Release commit.</strong> Commit on <code>develop</code> with the message <code>Release X.Y.Z</code>, push, open the pull request from
