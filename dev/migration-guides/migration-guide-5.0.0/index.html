@@ -1010,6 +1010,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#process-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Process management
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#records" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1141,6 +1152,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         Office temporary files
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-search-for-the-pid-of-a-started-office-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        No search for the pid of a started office process
       </span>
     </span>
   </a>
@@ -2777,6 +2799,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#process-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Process management
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#records" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2908,6 +2941,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         Office temporary files
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-search-for-the-pid-of-a-started-office-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        No search for the pid of a started office process
       </span>
     </span>
   </a>
@@ -3087,6 +3131,17 @@ and the converter as beans instead; the builders do the rest:</p>
 static <code>LocalOfficeManager.make()</code> and <code>LocalConverter.make(officeManager)</code> factory methods with <code>factory-method</code>,
 <code>init-method="start"</code> and <code>destroy-method="stop"</code>. Spring Boot applications are not affected: the starter never
 used this module.</p>
+<h3 id="process-management">Process management<a class="headerlink" href="#process-management" title="Permanent link">&para;</a></h3>
+<p>The office processes started by JODConverter are followed through their <code>ProcessHandle</code>: their pid is known as soon
+as they start, and they are killed, with their descendants, through the handle. A <code>ProcessManager</code> is only asked to
+find a process that JODConverter did not start (the <code>existingProcessAction</code> check), and its contract changes
+accordingly: <code>canFindPid()</code>, <code>findPid(ProcessQuery)</code> with the <code>PID_UNKNOWN</code> and <code>PID_NOT_FOUND</code> sentinels, and
+<code>kill(Process, long)</code> are replaced by <code>Optional&lt;ProcessHandle&gt; find(ProcessQuery)</code> and <code>kill(ProcessHandle)</code>, the
+latter with a default implementation. <code>MacProcessManager</code> and <code>FreeBSDProcessManager</code> are gone: <code>UnixProcessManager</code>
+reads the command lines through the JVM on every Unix system. <code>WindowsProcessManager</code> lists the processes with
+PowerShell only (<code>wmic</code> is no longer used), and <code>AbstractProcessManager</code> stays for the managers that run a command to
+list them. <code>UnixProcessManager.setRunAsArgs</code> (unused), <code>ExitCodeRetryable</code> and the four stream pumper classes of the
+<code>process</code> package are removed.</p>
 <h3 id="records">Records<a class="headerlink" href="#records" title="Permanent link">&para;</a></h3>
 <p><code>ProcessQuery</code> (local module) and <code>RequestConfig</code> (remote module) are now records, and their accessors follow the
 record naming:</p>
@@ -3187,6 +3242,11 @@ directory, so they are deleted with the profile even when a process is killed. J
 macOS) and <code>TMP</code>/<code>TEMP</code> (Windows) for that.</p>
 <p>An application that set these variables to move the office temporary files elsewhere (a tmpfs, for example) should
 set the <code>workingDir</code> of the office manager to that place instead.</p>
+<h3 id="no-search-for-the-pid-of-a-started-office-process">No search for the pid of a started office process<a class="headerlink" href="#no-search-for-the-pid-of-a-started-office-process" title="Permanent link">&para;</a></h3>
+<p>A started office process no longer needs to be found in the list of the running processes: the <code>ps</code>, <code>wmic</code> or
+PowerShell commands that ran after each start are gone, with the retries, the FreeBSD delay and the restart that
+followed a pid that could not be found. <code>afterStartProcessDelay</code> is still honored. On Windows, <code>soffice.bin</code> is
+found behind the <code>soffice.exe</code> launcher through the process tree, and killed with it.</p>
 <h3 id="office-port-used-by-another-program">Office port used by another program<a class="headerlink" href="#office-port-used-by-another-program" title="Permanent link">&para;</a></h3>
 <p>When the port of a local office process is already used by another program, <code>start()</code> now fails right away with a
 <code>Port X on host 'Y' is already used by another program</code> error, instead of hanging until the process timeout. With

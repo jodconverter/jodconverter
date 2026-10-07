@@ -3054,12 +3054,14 @@ configure distinct port numbers or pipe names instead.</p>
 </div>
 </div>
 <h4 id="processmanager">🔠<code>processManager</code><a class="headerlink" href="#processmanager" title="Permanent link">&para;</a></h4>
-<p>A process manager is used when <strong>JODConverter</strong> needs to deal with a started office process. When <strong>JODConverter</strong>
-starts an office process, it must retrieve the PID of the started process to be able to kill it later if required.</p>
+<p>A process manager finds an office process that already runs with the connection string <strong>JODConverter</strong> wants to
+use (see <a href="#existingprocessaction"><code>existingProcessAction</code></a>), and kills office processes. The processes that
+<strong>JODConverter</strong> starts itself are followed through their <code>ProcessHandle</code>, without the process manager.</p>
 <p>&#160;<strong><em>Default</em></strong>: By default, <strong>JODConverter</strong> will try to find the best process manager according to the OS on
-which <strong>JODConverter</strong> is running. But any process manager implementing the
+which <strong>JODConverter</strong> is running: on Linux, macOS and the other Unix systems, the running processes are read by the
+JVM; on Windows, they are listed with a PowerShell query. But any process manager implementing the
 <a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/process/ProcessManager.java"><code>ProcessManager</code></a>
-interface can be used if found on the classpath.</p>
+interface (<code>find(ProcessQuery)</code>, and optionally <code>kill(ProcessHandle)</code>) can be used if found on the classpath.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="8:3"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><input id="__tabbed_8_3" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Java</label><label for="__tabbed_8_2">Spring Boot</label><label for="__tabbed_8_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
