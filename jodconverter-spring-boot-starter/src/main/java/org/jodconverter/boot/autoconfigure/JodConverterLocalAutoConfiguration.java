@@ -72,27 +72,27 @@ public class JodConverterLocalAutoConfiguration {
 
     final var builder =
         LocalOfficeManager.builder()
-            .officeHome(properties.getOfficeHome())
-            .officeExecutable(properties.getOfficeExecutable())
-            .hostName(properties.getHostName())
-            .portNumbers(properties.getPortNumbers())
-            .pipeNames(properties.getPipeNames())
-            .templateProfileDir(properties.getTemplateProfileDir())
-            .existingProcessAction(properties.getExistingProcessAction())
-            .processTimeout(properties.getProcessTimeout().toMillis())
-            .processRetryInterval(properties.getProcessRetryInterval().toMillis())
-            .afterStartProcessDelay(properties.getAfterStartProcessDelay().toMillis())
-            .startFailFast(properties.isStartFailFast())
-            .keepAliveOnShutdown(properties.isKeepAliveOnShutdown())
-            .maxTasksPerProcess(properties.getMaxTasksPerProcess());
+            .officeHome(properties.officeHome())
+            .officeExecutable(properties.officeExecutable())
+            .hostName(properties.hostName())
+            .portNumbers(properties.portNumbers())
+            .pipeNames(properties.pipeNames())
+            .templateProfileDir(properties.templateProfileDir())
+            .existingProcessAction(properties.existingProcessAction())
+            .processTimeout(properties.processTimeout().toMillis())
+            .processRetryInterval(properties.processRetryInterval().toMillis())
+            .afterStartProcessDelay(properties.afterStartProcessDelay().toMillis())
+            .startFailFast(properties.startFailFast())
+            .keepAliveOnShutdown(properties.keepAliveOnShutdown())
+            .maxTasksPerProcess(properties.maxTasksPerProcess());
     properties.applyTo(builder);
-    if (properties.getPoolSize() != null) {
-      builder.poolSize(properties.getPoolSize());
+    if (properties.poolSize() != null) {
+      builder.poolSize(properties.poolSize());
     }
-    if (StringUtils.isBlank(properties.getProcessManagerClass())) {
+    if (StringUtils.isBlank(properties.processManagerClass())) {
       builder.processManager(processManager);
     } else {
-      builder.processManager(properties.getProcessManagerClass());
+      builder.processManager(properties.processManagerClass());
     }
 
     // Starts the manager
@@ -122,9 +122,9 @@ public class JodConverterLocalAutoConfiguration {
       final ObjectProvider<PdfOptions> pdfOptions) {
 
     final var loadProperties = new HashMap<String, Object>();
-    if (properties.isApplyDefaultLoadProperties()) {
+    if (properties.applyDefaultLoadProperties()) {
       loadProperties.putAll(LocalConverter.DEFAULT_LOAD_PROPERTIES);
-      if (properties.isUseUnsafeQuietUpdate()) {
+      if (properties.useUnsafeQuietUpdate()) {
         loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
       }
     }
@@ -133,7 +133,7 @@ public class JodConverterLocalAutoConfiguration {
         LocalConverter.builder()
             .officeManager(localOfficeManager)
             .formatRegistry(documentFormatRegistry)
-            .loadDocumentMode(properties.getLoadDocumentMode())
+            .loadDocumentMode(properties.loadDocumentMode())
             .loadProperties(loadProperties);
     // Apply the PDF options, from the jodconverter.pdf properties or from the application, to
     // all the conversions to PDF.

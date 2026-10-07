@@ -241,10 +241,12 @@ The timeouts and delays of the starter (`task-queue-timeout`, `task-execution-ti
 `process-retry-interval`, `after-start-process-delay`, `connect-timeout`, `connect-retry-interval`, `socket-timeout`)
 are bound as `Duration`: a plain number is still a number of milliseconds, and a duration such as `30s` or `2m` is
 accepted. `existing-process-action` and `load-document-mode` are bound to the `ExistingProcessAction` and
-`LoadDocumentMode` enums, in any case and with hyphens or underscores (`connect-or-kill`). An application that injects
-`JodConverterLocalProperties`, `JodConverterExternalProperties` or `JodConverterRemoteProperties` gets these types
-from the getters; the properties shared by the three (`working-dir`, `task-queue-capacity`, `task-queue-timeout`,
-`task-execution-timeout`) come from their new `JodConverterPoolProperties` base class. `ExternalOfficeManager`'s
+`LoadDocumentMode` enums, in any case and with hyphens or underscores (`connect-or-kill`).
+`JodConverterLocalProperties`, `JodConverterExternalProperties`, `JodConverterRemoteProperties` and the new
+`JodConverterDocumentFormatsProperties` are records, bound through their constructor: an application that injects
+one reads a value with the accessor of the component (`properties.processTimeout()`), not a getter, and the setters are
+gone. The properties shared by the three managers (`working-dir`, `task-queue-capacity`, `task-queue-timeout`,
+`task-execution-timeout`) are declared by the `JodConverterPoolProperties` interface. `ExternalOfficeManager`'s
 `DEFAULT_*` constants are public, like those of the other managers. The `jodconverter.remote.ssl.*` properties are bound
 directly to an `SslConfig`: `JodConverterRemoteProperties.getSsl()` returns one, and the `SslProperties` copy of its
 fields is gone (same property names, same defaults).
