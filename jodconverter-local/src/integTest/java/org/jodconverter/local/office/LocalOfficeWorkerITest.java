@@ -86,9 +86,10 @@ class LocalOfficeWorkerITest {
   }
 
   private long pid() {
-    final var pid = (Long) ReflectionTestUtils.getField(processManager, "pid");
-    assertThat(pid).isNotNull();
-    return pid;
+    final var handle =
+        (ProcessHandle) ReflectionTestUtils.getField(processManager, "processHandle");
+    assertThat(handle).isNotNull();
+    return handle.pid();
   }
 
   // Executes a task that lasts long enough to be still running when something happens to it.

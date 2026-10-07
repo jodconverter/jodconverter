@@ -40,7 +40,8 @@ jobs:
           # On the macOS runner, LibreOffice takes about 37 s to start (about 1 s on Linux), most of
           # it waiting for the answer to the first UNO request, which makes the job last about 25 min.
           # Disabled while the dependencies are upgraded; the cause is still to be investigated.
-          # - os: macos-latest
+          # Enabled on this branch only, to test the process management on macOS.
+          - os: macos-latest
 
     steps:
       - name: 🪟 Use CRLF line endings on Windows

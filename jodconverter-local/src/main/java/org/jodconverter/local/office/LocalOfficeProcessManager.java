@@ -20,9 +20,6 @@
 
 package org.jodconverter.local.office;
 
-import static org.jodconverter.local.process.ProcessManager.PID_NOT_FOUND;
-import static org.jodconverter.local.process.ProcessManager.PID_UNKNOWN;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -30,6 +27,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 import com.sun.star.lang.DisposedException;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -65,10 +67,14 @@ class LocalOfficeProcessManager {
 
   // How long to wait for a connection when checking whether a port is already used.
   private static final int PORT_CHECK_TIMEOUT = 1_000;
+  // How long a killed process gets to disappear.
+  private static final long KILL_TIMEOUT = 2_000L;
 
-  // Volatile: read by the thread that kills the process.
+  // The process started by this manager, if any. Volatile: read by the thread that kills it.
   private volatile VerboseProcess process;
-  private volatile long pid = PID_UNKNOWN;
+  // The office process this manager works with: the one it started, or an existing one it
+  // connected to. Volatile: read by the thread that kills it.
+  private volatile ProcessHandle processHandle;
   private OfficeDescriptor descriptor;
   private final OfficeConnection connection;
   private final File instanceProfileDir;
@@ -247,7 +253,7 @@ class LocalOfficeProcessManager {
     LOGGER.info("Restarting due to lost connection...");
 
     // When no office process was started, the port is checked as it is on the first start.
-    final var neverStarted = process == null && pid <= PID_UNKNOWN;
+    final var neverStarted = process == null && processHandle == null;
 
     // Since we have lost the connection unexpectedly, it could mean that
     // the office process has crashed. Thus, we want a clean instance profile
@@ -299,9 +305,9 @@ class LocalOfficeProcessManager {
   private void startProcessAndConnect(final boolean restart, final boolean checkPortAvailable)
       throws OfficeException {
 
-    // Reinitialize pid and process.
-    pid = PID_UNKNOWN;
+    // Reinitialize the process.
     process = null;
+    processHandle = null;
 
     // Detect the office version if required.
     if (descriptor == null) {
@@ -313,11 +319,11 @@ class LocalOfficeProcessManager {
 
     // Search for an existing process.
     final var processQuery = new ProcessQuery("soffice", acceptString);
-    pid = checkForExistingProcess(processQuery);
+    final var existingProcess = checkForExistingProcess(processQuery);
 
-    // If we already have a PID, it means that the process is already started and that
-    // the configuration didn't tell us to kill the process.
-    if (pid > PID_UNKNOWN) {
+    // An existing process means that the configuration told us to connect to it.
+    if (existingProcess.isPresent()) {
+      processHandle = existingProcess.get();
       return;
     }
 
@@ -334,13 +340,7 @@ class LocalOfficeProcessManager {
     }
 
     // Launch the office process and connect.
-    executeStartProcessAndConnect(acceptString, processQuery);
-
-    if (pid == PID_NOT_FOUND) {
-      throw new OfficeException(
-          String.format(
-              "A process with --accept '%s' started but its pid could not be found", acceptString));
-    }
+    executeStartProcessAndConnect(acceptString);
   }
 
   /**
@@ -351,31 +351,44 @@ class LocalOfficeProcessManager {
    */
   private void checkPortAvailable(final String acceptString) throws OfficeException {
 
+    if (isPortUsed()) {
+      @SuppressWarnings("unchecked")
+      final Map<String, String> parameters = officeUrl.unoUrl().getConnectionParameters();
+      throw new OfficeException(
+          String.format(
+              "Port %s on host '%s' is already used by another program; cannot start an office"
+                  + " process with --accept '%s'",
+              parameters.get("port"), parameters.get("host"), acceptString));
+    }
+  }
+
+  /**
+   * Checks whether something listens on the port of a socket connection.
+   *
+   * @return {@code true} if a program listens on the port; {@code false} if nothing does, or if the
+   *     connection is not a socket (pipes and websockets have no port).
+   */
+  private boolean isPortUsed() {
+
     final var unoUrl = officeUrl.unoUrl();
     if (!"socket".equalsIgnoreCase(unoUrl.getConnection())) {
-      return; // Pipes and websockets have no port
+      return false;
     }
     // The office API returns a raw map
     @SuppressWarnings("unchecked")
     final Map<String, String> parameters = unoUrl.getConnectionParameters();
     final var host = parameters.get("host");
     final var port = Integer.parseInt(parameters.get("port"));
-
     try (var socket = new Socket()) {
       socket.connect(new InetSocketAddress(host, port), PORT_CHECK_TIMEOUT);
+      return true;
     } catch (IOException ex) {
       // Nothing listens on the port: the office process can use it.
-      return;
+      return false;
     }
-    throw new OfficeException(
-        String.format(
-            "Port %d on host '%s' is already used by another program; cannot start an office"
-                + " process with --accept '%s'",
-            port, host, acceptString));
   }
 
-  private void executeStartProcessAndConnect(
-      final String acceptString, final ProcessQuery processQuery) throws OfficeException {
+  private void executeStartProcessAndConnect(final String acceptString) throws OfficeException {
 
     // Create the builder used to launch the office process
     final var processBuilder = prepareProcessBuilder(acceptString);
@@ -390,20 +403,17 @@ class LocalOfficeProcessManager {
     try {
       // Start the process.
       final var retryable =
-          new StartProcessAndConnectRetryable(
-              processManager, processBuilder, processQuery, afterStartProcessDelay, connection);
+          new StartProcessAndConnectRetryable(processBuilder, afterStartProcessDelay, connection);
       try {
         retryable.execute(processRetryInterval, processTimeout);
       } finally {
         // We must keep these even on connection failure to be able to kill the process if
         // required.
         process = retryable.getProcess();
-        pid = retryable.getProcessId();
+        processHandle = process == null ? null : process.getProcess().toHandle();
       }
 
-      LOGGER.info(
-          "Started process; pid: {}",
-          pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
+      LOGGER.info("Started process; pid: {}", processHandle.pid());
 
     } catch (Exception ex) {
       throw new OfficeException(
@@ -449,35 +459,70 @@ class LocalOfficeProcessManager {
     }
   }
 
-  private void killExistingProcess(final long pid, final ProcessQuery processQuery)
+  private void killExistingProcess(final ProcessHandle existingProcess, final String accept)
       throws IOException, OfficeException {
 
-    if (LOGGER.isWarnEnabled()) {
-      LOGGER.warn(
-          "A process with --accept '{}' is already running; pid {}; trying to kill it...",
-          processQuery.argument(),
-          pid);
-    }
-    processManager.kill(null, pid);
-    // Wait a sec...
-    try {
-      Thread.sleep(1000L);
-    } catch (InterruptedException ex) {
-      Thread.currentThread().interrupt();
-    }
-
-    // Throw an exception if it still lives.
-    if (processManager.findPid(processQuery) > PID_UNKNOWN) {
+    final var pid = existingProcess.pid();
+    LOGGER.warn(
+        "A process with --accept '{}' is already running; pid {}; trying to kill it...",
+        accept,
+        pid);
+    if (!killAndWait(existingProcess)) {
       throw new OfficeException(
           String.format(
               "A process with --accept '%s' is already running and could not be killed; pid %d",
-              processQuery.argument(), pid));
+              accept, pid));
+    }
+    // The killed process may need a moment to release its port.
+    waitForPortRelease();
+  }
+
+  /**
+   * Kills a process and its descendants, and waits for all of them to exit. The descendants are
+   * captured before the kill, since they cannot be listed once the process is gone, and the one
+   * that holds the port may be a descendant (soffice.bin behind the launcher on Windows).
+   *
+   * @param process The process to kill.
+   * @return {@code true} if the process and its descendants exited, {@code false} if one of them is
+   *     still alive after {@link #KILL_TIMEOUT}, or if the kill failed.
+   */
+  private boolean killAndWait(final ProcessHandle process) {
+
+    final var tree = Stream.concat(Stream.of(process), process.descendants()).toList();
+    try {
+      processManager.kill(process);
+    } catch (IOException ex) {
+      LOGGER.error("Could not forcibly terminate process", ex);
+      return false;
+    }
+    final var limit = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(KILL_TIMEOUT);
+    for (final var member : tree) {
+      final var remaining = TimeUnit.NANOSECONDS.toMillis(limit - System.nanoTime());
+      if (!waitForExit(member, Math.max(remaining, 1L))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /** Waits, for a short time, until nothing listens on the port of a socket connection. */
+  private void waitForPortRelease() {
+
+    final var limit = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(KILL_TIMEOUT);
+    while (isPortUsed() && System.nanoTime() < limit) {
+      try {
+        Thread.sleep(100L);
+      } catch (InterruptedException ex) {
+        Thread.currentThread().interrupt();
+        return;
+      }
     }
   }
 
-  private void connectToExistingProcess(final long pid, final String accept)
+  private void connectToExistingProcess(final ProcessHandle existingProcess, final String accept)
       throws OfficeException {
 
+    final var pid = existingProcess.pid();
     LOGGER.debug("Connecting to existing process with --accept '{}'; pid {}", accept, pid);
     try {
       new ConnectRetryable(connection).execute(processRetryInterval, processTimeout);
@@ -492,57 +537,51 @@ class LocalOfficeProcessManager {
 
   /**
    * Checks if there already is an office process that runs with the connection string we want to
-   * use. The process will be killed if the kill switch is on.
+   * use, and applies the existing process action to it.
    *
    * @param processQuery The query that connection string we want to use.
-   * @return The process id of the process if the process is already running with the same
-   *     connection string; {@link ProcessManager#PID_UNKNOWN} otherwise.
-   * @throws OfficeException If the verification fails.
+   * @return The existing process when the action was to connect to it; empty when there is no such
+   *     process, or when it was killed.
+   * @throws OfficeException If the verification fails, or if the action is to fail.
    */
-  private long checkForExistingProcess(final ProcessQuery processQuery) throws OfficeException {
+  private Optional<ProcessHandle> checkForExistingProcess(final ProcessQuery processQuery)
+      throws OfficeException {
 
     final var accept = processQuery.argument();
     try {
       // Search for an existing process that would prevent us to start a new
       // office process with the same connection string.
-      var pid = processManager.findPid(processQuery);
-
-      if (pid <= PID_UNKNOWN) {
-        // No process was found.
+      final var existingProcess = processManager.find(processQuery);
+      if (existingProcess.isEmpty()) {
         LOGGER.debug(
             "Checking existing process done; no process running with --accept '{}'", accept);
-        return pid;
+        return existingProcess;
       }
 
       // A process was found!
+      final var found = existingProcess.get();
       switch (existingProcessAction) {
         case FAIL ->
-            // Throw an exception if the kill switch is off.
             throw new OfficeException(
                 String.format(
-                    "A process with --accept '%s' is already running; pid %d", accept, pid));
+                    "A process with --accept '%s' is already running; pid %d",
+                    accept, found.pid()));
         case KILL -> {
-          // Kill any running process with the same connection string if the kill switch is on.
-          killExistingProcess(pid, processQuery);
-          pid = PID_UNKNOWN;
+          killExistingProcess(found, accept);
+          return Optional.empty();
         }
-        case CONNECT ->
-            // Connect to the existing office process.
-            connectToExistingProcess(pid, accept);
+        case CONNECT -> connectToExistingProcess(found, accept);
         case CONNECT_OR_KILL -> {
-          // Try to connect to the existing office process.
           try {
-            connectToExistingProcess(pid, accept);
+            connectToExistingProcess(found, accept);
           } catch (OfficeException ex) {
             // Could not establish connection. Kill the process.
-            killExistingProcess(pid, processQuery);
-            pid = PID_UNKNOWN;
+            killExistingProcess(found, accept);
+            return Optional.empty();
           }
         }
       }
-
-      // Return the pid.
-      return pid;
+      return existingProcess;
 
     } catch (IOException ioEx) {
       throw new OfficeException(
@@ -646,29 +685,45 @@ class LocalOfficeProcessManager {
         : officeExecutable;
   }
 
-  /** Kills the office process instance. */
+  /** Kills the office process, and its descendants, if there is one; does not wait. */
   private void forciblyTerminateProcess() {
 
     // The process may be replaced by the thread of this manager while another thread kills it.
-    final var process = this.process;
-    final var pid = this.pid;
-
-    // No need to terminate anything if we don't have anything to terminate.
-    if (process == null && pid <= PID_UNKNOWN) {
+    final var handle = this.processHandle;
+    if (handle == null) {
       return;
     }
 
-    if (LOGGER.isInfoEnabled()) {
-      LOGGER.info(
-          "Trying to forcibly terminate process: '{}'; pid: {}",
-          officeUrl.getAcceptString(),
-          pid == PID_NOT_FOUND ? "PID_NOT_FOUND" : pid == PID_UNKNOWN ? "PID_UNKNOWN" : pid);
-    }
-
+    LOGGER.info(
+        "Trying to forcibly terminate process: '{}'; pid: {}",
+        officeUrl.getAcceptString(),
+        handle.pid());
     try {
-      processManager.kill(process == null ? null : process.getProcess(), pid);
+      processManager.kill(handle);
     } catch (IOException ex) {
       LOGGER.error("Could not forcibly terminate process", ex);
+    }
+  }
+
+  /**
+   * Waits for a process to exit.
+   *
+   * @param handle The process.
+   * @param timeout The maximum time to wait, in milliseconds.
+   * @return {@code true} if the process exited, {@code false} if it is still alive after the
+   *     timeout, or if the current thread was interrupted.
+   */
+  private static boolean waitForExit(final ProcessHandle handle, final long timeout) {
+    try {
+      handle.onExit().get(timeout, TimeUnit.MILLISECONDS);
+      return true;
+    } catch (TimeoutException ex) {
+      return false;
+    } catch (ExecutionException ex) {
+      return !handle.isAlive();
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
+      return false;
     }
   }
 
@@ -695,20 +750,29 @@ class LocalOfficeProcessManager {
   private void ensureProcessExited(final boolean deleteInstanceProfileDir, final long exitTimeout) {
 
     try {
-      // If the process has never been started by us (process != null),
-      // just return a success exit code (0).
-      var exitCode = 0;
-      if (process != null) {
-        final var retryable = new ExitCodeRetryable(process);
-        retryable.execute(processRetryInterval, exitTimeout);
-        exitCode = retryable.getExitCode();
+      // Only a process started by us is waited for; an existing process we connected to is left
+      // to its owner.
+      final var process = this.process;
+      if (process == null) {
+        return;
       }
-      LOGGER.info("Process exited with code {}", exitCode);
-
-    } catch (RetryTimeoutException ex) {
+      if (process.waitFor(exitTimeout)) {
+        LOGGER.info("Process exited with code {}", process.getExitCode());
+        return;
+      }
       LOGGER.warn("Process did not exit within {} ms; forcibly terminating it", exitTimeout);
-      forciblyTerminateProcess();
-
+      final var handle = this.processHandle;
+      if (handle != null) {
+        LOGGER.info(
+            "Trying to forcibly terminate process: '{}'; pid: {}",
+            officeUrl.getAcceptString(),
+            handle.pid());
+        if (killAndWait(handle) && process.waitFor(KILL_TIMEOUT)) {
+          LOGGER.info("Process exited with code {}", process.getExitCode());
+        } else {
+          LOGGER.error("Process did not exit after being forcibly terminated");
+        }
+      }
     } finally {
       if (deleteInstanceProfileDir) {
         deleteInstanceProfileDir();

@@ -20,36 +20,33 @@
 
 package org.jodconverter.local.process;
 
+import java.util.Optional;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
- * {@link org.jodconverter.local.process.ProcessManager} implementation for Java.
- *
- * <p>This manager does not allow the retrieval of the process id.
+ * A process manager that never finds a running process: an office process that already runs with
+ * the connection string JODConverter wants to use is not detected. It kills the processes
+ * JODConverter started through their handles, like the other managers. Used on the platforms where
+ * the running processes cannot be listed.
  */
 public class PureJavaProcessManager implements ProcessManager {
 
-  /**
-   * This class is required in order to create the default PureJavaProcessManager only on demand, as
-   * explained by the <a
-   * href="https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom">Initialization-on-demand
-   * holder idiom</a>.
-   */
   private static class DefaultHolder { // NOPMD - Disable utility class name rule violation
     /* default */ static final PureJavaProcessManager INSTANCE = new PureJavaProcessManager();
   }
 
-  @Override
-  public boolean canFindPid() {
-    return false;
-  }
-
   /**
-   * Gets the default instance of {@code PureJavaProcessManager}.
+   * Gets the default instance of this manager.
    *
-   * @return The default {@code PureJavaProcessManager} instance.
+   * @return The default instance.
    */
   public static @NonNull PureJavaProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
+  }
+
+  @Override
+  public @NonNull Optional<ProcessHandle> find(final @NonNull ProcessQuery query) {
+    return Optional.empty();
   }
 }

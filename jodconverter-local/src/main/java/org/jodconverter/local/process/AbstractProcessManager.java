@@ -22,9 +22,8 @@ package org.jodconverter.local.process;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -33,8 +32,10 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.core.util.StringUtils;
 
 /**
- * Base class for all process manager implementations included in the standard JODConverter
- * distribution.
+ * Base class of the process managers that list the running processes with a command of the
+ * operating system, when the JVM cannot read their command lines. The output of the command is
+ * matched line by line against a pattern that captures the {@code Pid} and the {@code CommandLine}
+ * groups.
  */
 public abstract class AbstractProcessManager implements ProcessManager {
 
@@ -45,130 +46,94 @@ public abstract class AbstractProcessManager implements ProcessManager {
     super();
   }
 
-  private String buildOutput(final List<String> lines) {
-    Objects.requireNonNull(lines, "lines must not be null");
-
-    // Ignore empty lines
-    return lines.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("\n"));
-  }
-
   /**
-   * Executes the specified command and return the output.
+   * Executes the specified command and returns the lines of its output. The error output is logged
+   * at the trace level.
    *
-   * @param cmdarray An array containing the command to call and its arguments.
-   * @return The command execution output.
-   * @throws IOException If an I/O error occurs.
+   * @param command The command to execute.
+   * @return The lines of the standard output of the command.
+   * @throws IOException If an IO error occurs.
    */
-  protected @NonNull List<@NonNull String> execute(final @NonNull String... cmdarray)
+  protected @NonNull List<@NonNull String> execute(final @NonNull String... command)
       throws IOException {
 
-    final var process = Runtime.getRuntime().exec(cmdarray);
-
-    final var streamsHandler =
-        new LinesPumpStreamHandler(process.getInputStream(), process.getErrorStream());
-
-    streamsHandler.start();
+    final var process = new ProcessBuilder(command).start();
+    // The error output is drained on its own thread, so that neither stream fills its buffer
+    // while the other one is read.
+    final var errorReader =
+        new Thread(
+            () -> {
+              try (var reader = process.errorReader()) {
+                reader
+                    .lines()
+                    .filter(StringUtils::isNotBlank)
+                    .forEach(line -> LOGGER.trace("Command Error: {}", line));
+              } catch (IOException ex) {
+                LOGGER.trace("Could not read the error output of the command", ex);
+              }
+            },
+            "jodconverter-command-err");
+    errorReader.setDaemon(true);
+    errorReader.start();
+    final List<String> lines;
+    try (var reader = process.inputReader()) {
+      lines = reader.lines().toList();
+    }
     try {
       process.waitFor();
-      streamsHandler.stop();
+      errorReader.join();
     } catch (InterruptedException ex) {
-
-      // Log the interruption
-      LOGGER.warn(
-          "The current thread was interrupted while waiting for command execution output.", ex);
-      // Restore the interrupted status
+      LOGGER.warn("The current thread was interrupted while waiting for the command to end", ex);
       Thread.currentThread().interrupt();
     }
-
-    final var outLines = streamsHandler.getOutputPumper().getLines();
-
     if (LOGGER.isTraceEnabled()) {
-      final var out = buildOutput(outLines);
-      final var err = buildOutput(streamsHandler.getErrorPumper().getLines());
-
-      if (!StringUtils.isBlank(out)) {
-        LOGGER.trace("Command Output: {}", out);
-      }
-
-      if (!StringUtils.isBlank(err)) {
-        LOGGER.trace("Command Error: {}", err);
-      }
+      lines.stream()
+          .filter(StringUtils::isNotBlank)
+          .forEach(line -> LOGGER.trace("Command Output: {}", line));
     }
-
-    return outLines;
+    return lines;
   }
 
   @Override
-  public long findPid(final @NonNull ProcessQuery query) throws IOException {
-    if (!canFindPid()) {
-      return PID_UNKNOWN;
-    }
+  public @NonNull Optional<ProcessHandle> find(final @NonNull ProcessQuery query)
+      throws IOException {
 
-    final var commandPattern =
-        Pattern.compile(Pattern.quote(query.command()) + ".*" + Pattern.quote(query.argument()));
-    final var processLinePattern = getRunningProcessLinePattern();
-    final var currentProcessesCommand = getRunningProcessesCommand(query.command());
-
+    final var commandPattern = query.commandLinePattern();
+    final var linePattern = getRunningProcessLinePattern();
+    final var command = getRunningProcessesCommand(query.command());
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace(
-          """
-                            Finding PID using
-                            Command to get current running processes: {}
-                            Regex used to match current running process lines: {}
-                            Regex used to match running office process we are looking for: {}""",
-          currentProcessesCommand,
-          processLinePattern.pattern(),
-          commandPattern.pattern());
+          "Finding a process: command {}; line pattern {}; command line pattern {}",
+          List.of(command),
+          linePattern,
+          commandPattern);
     }
-
-    final var lines = execute(currentProcessesCommand);
-    for (final var line : lines) {
-      if (StringUtils.isBlank(line)) {
-        // Skip this one
-        continue;
-      }
-      LOGGER.trace(
-          "Checking if process line matches the process line regex\nProcess line: {}", line);
-      final var lineMatcher = processLinePattern.matcher(line);
-      if (lineMatcher.matches()) {
-        final var pid = lineMatcher.group("Pid");
-        final var commandLine = lineMatcher.group("CommandLine");
-        if (LOGGER.isTraceEnabled()) {
-          LOGGER.trace(
-              """
-                                    Line matches!
-                                    pid: {}; Command line: {}
-                                    Checking if this command line matches the office command line regex""",
-              pid,
-              commandLine);
-        }
-        final var commandMatcher = commandPattern.matcher(commandLine);
-        if (commandMatcher.find()) {
-          LOGGER.debug("Command line matches! Returning pid: {}", pid);
-          return Long.parseLong(pid);
-        }
+    for (final var line : execute(command)) {
+      final var lineMatcher = linePattern.matcher(line);
+      if (lineMatcher.matches()
+          && commandPattern.matcher(lineMatcher.group("CommandLine")).find()) {
+        final var pid = Long.parseLong(lineMatcher.group("Pid"));
+        LOGGER.debug("Found a process matching the query; pid {}", pid);
+        return ProcessHandle.of(pid);
       }
     }
-    LOGGER.debug("No matching command line found! Returning pid: NOT_FOUND");
-    return PID_NOT_FOUND;
+    LOGGER.debug("No process matches the query");
+    return Optional.empty();
   }
 
   /**
-   * Gets the command to be executed to get a snapshot of all the running processes identified by
-   * the specified argument (process).
+   * Gets the command that lists the running processes whose executable has the given name.
    *
-   * @param process The name of the process to query for.
-   * @return An array containing the command to call and its arguments.
+   * @param process The name of the executable.
+   * @return The command and its arguments.
    */
-  protected abstract @NonNull String[] getRunningProcessesCommand(String process);
+  protected abstract @NonNull String[] getRunningProcessesCommand(@NonNull String process);
 
   /**
-   * Gets the pattern to be used to match an output line containing the information about a running
-   * process. The output lines being tested against this pattern are the result of the execution of
-   * the command returned by the getRunningProcessesCommand function.
+   * Gets the pattern that matches a line of the output of the command, capturing the {@code Pid}
+   * and the {@code CommandLine} groups.
    *
    * @return The pattern.
-   * @see #getRunningProcessesCommand(String)
    */
   protected abstract @NonNull Pattern getRunningProcessLinePattern();
 }

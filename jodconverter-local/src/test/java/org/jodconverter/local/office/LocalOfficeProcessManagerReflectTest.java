@@ -22,6 +22,7 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.jodconverter.local.office.LocalOfficeManager.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -31,8 +32,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -54,17 +58,16 @@ class LocalOfficeProcessManagerReflectTest {
     final var manager =
         new LocalOfficeProcessManager(
             url,
-            LocalOfficeUtils.getDefaultOfficeHome(),
+            new File("src/test/resources/oohome"),
             OfficeUtils.getDefaultWorkingDir(),
             new ProcessManager() {
               @Override
-              public void kill(final Process process, final long pid) throws IOException {
+              public Optional<ProcessHandle> find(final ProcessQuery query) throws IOException {
                 throw new IOException();
               }
 
               @Override
-              @SuppressWarnings("NullableProblems")
-              public long findPid(final ProcessQuery query) throws IOException {
+              public void kill(final ProcessHandle process) throws IOException {
                 throw new IOException();
               }
             },
@@ -102,11 +105,16 @@ class LocalOfficeProcessManagerReflectTest {
     final var manager =
         new LocalOfficeProcessManager(
             url,
-            LocalOfficeUtils.getDefaultOfficeHome(),
+            new File("src/test/resources/oohome"),
             OfficeUtils.getDefaultWorkingDir(),
             new ProcessManager() {
               @Override
-              public void kill(final Process process, final long pid) throws IOException {
+              public Optional<ProcessHandle> find(final ProcessQuery query) {
+                return Optional.empty();
+              }
+
+              @Override
+              public void kill(final ProcessHandle process) throws IOException {
                 throw new IOException();
               }
             },
@@ -122,9 +130,7 @@ class LocalOfficeProcessManagerReflectTest {
     // TODO: Check that the error message if properly logged.
     assertThatCode(
             () -> {
-              final var verboseProcess = mock(VerboseProcess.class);
-              ReflectionTestUtils.setField(manager, "pid", 0L);
-              ReflectionTestUtils.setField(manager, "process", verboseProcess);
+              ReflectionTestUtils.setField(manager, "processHandle", ProcessHandle.current());
               ReflectionTestUtils.invokeMethod(manager, "forciblyTerminateProcess");
             })
         .doesNotThrowAnyException();
@@ -145,7 +151,12 @@ class LocalOfficeProcessManagerReflectTest {
             testFolder,
             new ProcessManager() {
               @Override
-              public void kill(final Process process, final long pid) {
+              public Optional<ProcessHandle> find(final ProcessQuery query) {
+                return Optional.empty();
+              }
+
+              @Override
+              public void kill(final ProcessHandle process) {
                 killed.countDown();
               }
             },
@@ -158,11 +169,16 @@ class LocalOfficeProcessManagerReflectTest {
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             connection);
 
-    // A process that never exits by itself (no exit code)
+    // A process that never exits by itself
     final var verboseProcess = mock(VerboseProcess.class);
     given(verboseProcess.getExitCode()).willReturn(null);
-    ReflectionTestUtils.setField(manager, "pid", 0L);
+    given(verboseProcess.waitFor(anyLong())).willReturn(false);
     ReflectionTestUtils.setField(manager, "process", verboseProcess);
+    // A handle that is killed at once, without descendants
+    final var handle = mock(ProcessHandle.class);
+    given(handle.descendants()).willReturn(Stream.empty());
+    given(handle.onExit()).willReturn(CompletableFuture.completedFuture(handle));
+    ReflectionTestUtils.setField(manager, "processHandle", handle);
 
     final var start = System.nanoTime();
     assertThatExceptionOfType(OfficeException.class)
@@ -318,7 +334,7 @@ class LocalOfficeProcessManagerReflectTest {
     final var manager =
         new LocalOfficeProcessManager(
             url,
-            LocalOfficeUtils.getDefaultOfficeHome(),
+            new File("src/test/resources/oohome"),
             OfficeUtils.getDefaultWorkingDir(),
             LocalOfficeUtils.findBestProcessManager(),
             new ArrayList<>(),
