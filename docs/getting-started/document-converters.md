@@ -138,34 +138,30 @@ converter
     .execute();
 ```
 
-**5)** Applying save options and filters (`LocalConverter`).
+**5)** Applying filters and PDF options (`LocalConverter`).
 
 ```java
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.filter.RefreshFilter;
-
-Map<String, Object> pdfOptions = new HashMap<>();
-pdfOptions.put("SelectPdfVersion", 1); // PDF/A-1
+import org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter;
 
 LocalConverter
     .builder()
-    .filterChain(RefreshFilter.CHAIN)
-    .storeProperty("FilterData", pdfOptions)
+    .filterChain(new DocumentIndexesUpdaterFilter())
     .build()
     .convert(new File("in.odt"))
     .to(new File("out.pdf"))
-    .as(DefaultDocumentFormatRegistry.PDF)
+    .with(PdfOptions.archive())
     .execute();
 ```
 
 Notes:
 
-- OOo export filters define available options and their keys.
-- Filters let you modify a document (e.g., refresh fields, remove pages, add text) before saving.
+- [Filters](using-filters.md) modify the loaded document (update its indexes, remove pages, add text) before it is
+    stored; without a filter chain, the document is only refreshed.
+- [PDF options](pdf-options.md) choose how the PDF is exported; any other store property of an office export filter
+    can be given with `storeProperty(name, value)`.
 
 ## Lifecycle and threading
 

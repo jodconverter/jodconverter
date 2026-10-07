@@ -30,23 +30,18 @@ LocalConverter
 ```
 
 Note that you can use more than one filter per conversion. Also, such a filter (page selector) is only required when the
-target format is not PDF. Indeed, when converting to PDF, you are better off using custom store properties:
+target format is not PDF. Indeed, when converting to PDF, you are better off using the
+[PDF options](pdf-options.md):
 
 ```java
 File inputFile = new File("document.rtf");
 File outputFile = new File("document.pdf");
 
-Map<String, Object> filterData = new HashMap<>();
-filterData.put("PageRange", "2");
-Map<String, Object> customProperties = new HashMap<>();
-customProperties.put("FilterData", filterData);
-
 LocalConverter
-  .builder()
-  .storeProperties(customProperties)
-  .build()
+  .make()
   .convert(inputFile)
   .to(outputFile)
+  .with(PdfOptions.builder().pages(pages -> pages.range("2")).build())
   .execute();
 ```
 
@@ -70,11 +65,49 @@ LocalConverter
   .execute();
 ```
 
+## Updating the indexes of a document
+
+A text document is saved with its table of contents, alphabetical index, table of figures or bibliography as they were
+when they were last updated by someone. An export shows them that way: a heading added since is missing, and the page
+numbers are those of that time. The
+[DocumentIndexesUpdaterFilter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentIndexesUpdaterFilter.java)
+updates every index of the document before it is stored, in two passes: the first one rebuilds the indexes, which can
+change the pagination (a table of contents that grows by a page), and the second one fixes the page numbers for the new
+layout. It can also change the number of levels of the tables of contents.
+
+```java
+LocalConverter
+  .builder()
+  .filterChain(new DocumentIndexesUpdaterFilter())
+  .build()
+  .convert(new File("report.docx"))
+  .to(new File("report.pdf"))
+  .execute();
+```
+
+The filter is not applied by default: rebuilding an index replaces its entries, so a document whose index was edited by
+hand, or that holds links to the entries of its index, is better exported as it is.
+
 ## Available filters
 
-**JODConverter** provides
-some [filters](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter)
-out of the box, but you can implement (and share obviously 😁) any filter you need. Your filter must implement
+**JODConverter** provides these filters out of the box, in the
+[filter](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter)
+package of the local module:
+
+| Filter                         | What it does                                                                                                                                |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RefreshFilter`                | Refreshes the document (fields, layout). Applied by default when no filter chain is given to the converter.                                 |
+| `PagesSelectorFilter`          | Keeps only the given pages (text documents), sheets (spreadsheets) or slides (presentations and drawings).                                  |
+| `PageCounterFilter`            | Counts the pages, sheets or slides of the document, available after the conversion with `getPageCount()`.                                   |
+| `text.DocumentIndexesUpdaterFilter` | Updates the indexes of a text document, and optionally the number of levels of its tables of contents. Replaces `TableOfContentUpdaterFilter`. |
+| `text.PageMarginsFilter`       | Changes the page margins of a text document.                                                                                                |
+| `text.TextInserterFilter`      | Inserts a text, in a frame placed at the given position and size.                                                                           |
+| `text.TextReplacerFilter`      | Replaces texts in a text document.                                                                                                          |
+| `text.GraphicInserterFilter`   | Inserts an image, at the given position and size.                                                                                           |
+| `text.DocumentInserterFilter`  | Inserts another document at the end of the loaded one (see [Merging documents](#merging-documents)).                                        |
+| `text.LinkedImagesEmbedderFilter` | Embeds the linked images of a text document, so that the output does not depend on them.                                                  |
+
+You can implement (and share obviously 😁) any filter you need. Your filter must implement
 the [Filter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/Filter.java)
 interface and is responsible for calling the next filter in the filter chain.
 

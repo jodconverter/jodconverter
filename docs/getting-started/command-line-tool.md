@@ -184,7 +184,7 @@ The built-in filters and their keys are (the positions and sizes are in millimet
 | `document-inserter` | `document`, the path of the document appended to the converted one. |
 | `text-replacer` | `replacements`, a map of the texts to search and their replacements. |
 | `page-margins` | `left`, `top`, `right`, `bottom`, each optional. |
-| `table-of-content-updater` | `level`, the number of levels of the table of content, optional. |
+| `document-indexes-updater` | `level`, the number of levels of the tables of contents, optional; the indexes of a text document (table of contents, alphabetical index, table of figures...) are updated before the document is stored. `table-of-content-updater` is its former name. |
 | `linked-images-embedder` | None; the linked images are embedded in the document. |
 | `refresh` | None; the document is refreshed. |
 
