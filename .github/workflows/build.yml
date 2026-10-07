@@ -85,8 +85,20 @@ jobs:
       - name: 🛠️ Build and test
         # bash on every OS, so the same wrapper script runs everywhere.
         # --continue: a failing module does not hide the results of the others.
+        if: runner.os != 'macOS'
         shell: bash
         run: ./gradlew build -x javadoc --continue --stacktrace
+
+      # Branch-only: on the macOS runner, the first UNO request of each office process takes about
+      # 37 s, which trips the 30 s task queue timeout of the conversion suites before the process
+      # suites run. The unit tests of every module and the integration suites that exercise the
+      # process management are run instead.
+      - name: 🛠️ Build and test the process management (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          ./gradlew build -x javadoc -x integrationTest --continue --stacktrace
+          ./gradlew :jodconverter-local:integrationTest --stacktrace             --tests '*LocalOfficeProcessManagerITest*'             --tests '*LocalOfficeWorkerITest*'             --tests '*LocalOfficeManagerITest*'
 
       - name: 📤 Upload test reports on failure
         if: failure()

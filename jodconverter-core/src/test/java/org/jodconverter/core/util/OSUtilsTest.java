@@ -20,6 +20,7 @@
 
 package org.jodconverter.core.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.assertj.core.api.AutoCloseableSoftAssertions;
@@ -65,10 +66,8 @@ class OSUtilsTest {
   void IS_OS_UNIX() {
     assumeTrue(OSUtils.IS_OS_UNIX);
 
-    try (var softly = new AutoCloseableSoftAssertions()) {
-      softly.assertThat(OSUtils.IS_OS_MAC).isFalse();
-      softly.assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
-    }
+    // macOS and FreeBSD are Unix systems too.
+    assertThat(OSUtils.IS_OS_WINDOWS).isFalse();
   }
 
   @Test
