@@ -1120,6 +1120,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#attached-office-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Attached office manager
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#document-indexes-updater-filter" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2942,6 +2953,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#attached-office-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Attached office manager
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#document-indexes-updater-filter" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3312,6 +3334,18 @@ the setter.</p>
 (<code>Objects.requireNonNull</code>), and <code>OSUtils</code> keeps <code>IS_OS_FREE_BSD</code>, <code>IS_OS_MAC</code>, <code>IS_OS_UNIX</code> and <code>IS_OS_WINDOWS</code> only.</p>
 <p>In <code>org.jodconverter.local.office.utils</code>, the <code>Calc</code> and <code>Draw</code> classes, <code>Write.isWeb</code> and <code>Info.getConfigUpdateAccess</code>
 are removed: nothing in the project used them, and <code>LocalOfficeUtils.getDocumentFamily</code> tells the kind of a document.</p>
+<h3 id="attached-office-manager">Attached office manager<a class="headerlink" href="#attached-office-manager" title="Permanent link">&para;</a></h3>
+<p><code>ExternalOfficeManager</code> is renamed <code>AttachedOfficeManager</code>: it attaches to office processes that JODConverter does not
+start, on the same machine or on another one, over UNO. The old name read like a variant of <code>RemoteOfficeManager</code>,
+which is about the protocol (HTTP, to a LibreOffice Online or Collabora Online server), while this manager is about who
+owns the process lifecycle. <code>ExternalOfficeManager</code> remains as a deprecated class whose <code>builder()</code>, <code>make()</code> and
+<code>install()</code> return an <code>AttachedOfficeManager</code>; only a variable or a field declared with the old type has to change.
+<code>ExternalOfficeWorker</code> and <code>ExternalOfficeConnectionManager</code>, internal, are renamed the same way.</p>
+<p>In the Spring Boot starter, the properties are <code>jodconverter.attached.*</code> and the beans <code>attachedOfficeManager</code> and
+<code>attachedDocumentConverter</code>; the <code>jodconverter.external.*</code> properties still enable the same auto-configuration,
+deprecated, and the beans keep <code>externalOfficeManager</code> and <code>externalDocumentConverter</code> as aliases.
+<code>JodConverterExternalProperties</code> and <code>JodConverterExternalAutoConfiguration</code> are replaced by
+<code>JodConverterAttachedProperties</code> and <code>JodConverterAttachedAutoConfiguration</code>.</p>
 <h3 id="document-indexes-updater-filter">Document indexes updater filter<a class="headerlink" href="#document-indexes-updater-filter" title="Permanent link">&para;</a></h3>
 <p><code>TableOfContentUpdaterFilter</code> is renamed <code>DocumentIndexesUpdaterFilter</code>, since it updates every index of a text document
 (table of contents, alphabetical index, table of figures, bibliography) and not only the table of contents. It now
@@ -3380,11 +3414,11 @@ port numbers, pipe names or pool size, the office process uses port 2002.</p>
 are bound as <code>Duration</code>: a plain number is still a number of milliseconds, and a duration such as <code>30s</code> or <code>2m</code> is
 accepted. <code>existing-process-action</code> and <code>load-document-mode</code> are bound to the <code>ExistingProcessAction</code> and
 <code>LoadDocumentMode</code> enums, in any case and with hyphens or underscores (<code>connect-or-kill</code>).
-<code>JodConverterLocalProperties</code>, <code>JodConverterExternalProperties</code>, <code>JodConverterRemoteProperties</code> and the new
+<code>JodConverterLocalProperties</code>, <code>JodConverterAttachedProperties</code>, <code>JodConverterRemoteProperties</code> and the new
 <code>JodConverterDocumentFormatsProperties</code> are records, bound through their constructor: an application that injects
 one reads a value with the accessor of the component (<code>properties.processTimeout()</code>), not a getter, and the setters are
 gone. The properties shared by the three managers (<code>working-dir</code>, <code>task-queue-capacity</code>, <code>task-queue-timeout</code>,
-<code>task-execution-timeout</code>) are declared by the <code>JodConverterPoolProperties</code> interface. <code>ExternalOfficeManager</code>'s
+<code>task-execution-timeout</code>) are declared by the <code>JodConverterPoolProperties</code> interface. <code>AttachedOfficeManager</code>'s
 <code>DEFAULT_*</code> constants are public, like those of the other managers. The <code>jodconverter.remote.ssl.*</code> properties are bound
 directly to an <code>SslConfig</code>: <code>JodConverterRemoteProperties.getSsl()</code> returns one, and the <code>SslProperties</code> copy of its
 fields is gone (same property names, same defaults).</p>
@@ -3392,7 +3426,7 @@ fields is gone (same property names, same defaults).</p>
 <code>jodconverter.document-formats</code>: <code>jodconverter.local.document-format-registry</code> becomes
 <code>jodconverter.document-formats.registry</code>, and <code>jodconverter.local.format-options</code> becomes
 <code>jodconverter.document-formats.options</code>. The <code>documentFormatRegistry</code> bean exists whether or not the local manager is
-enabled, and the external and remote converters use it too (the remote converter used to ignore it). An application
+enabled, and the attached and remote converters use it too (the remote converter used to ignore it). An application
 that declares its own <code>DocumentFormatRegistry</code> bean, of any name, replaces it.</p>
 <h3 id="command-line-tool_1">Command line tool<a class="headerlink" href="#command-line-tool_1" title="Permanent link">&para;</a></h3>
 <p>The <code>-a</code> / <code>--application-context</code> option, which loaded a Spring XML context for the filter chain and the SSL
@@ -3430,12 +3464,12 @@ columns wide.</p>
 <li><a href="../../configuration/local-manager/"><code>poolSize</code></a>: start a number of office processes on free ports, without choosing
     them (<code>jodconverter.local.pool-size</code> with Spring Boot).</li>
 <li><a href="../../configuration/local-manager/"><code>taskQueueCapacity</code></a>: bound the conversion queue, so that a task submitted while
-    the queue is full fails at once (<code>jodconverter.local.task-queue-capacity</code>, and the same for the external and
+    the queue is full fails at once (<code>jodconverter.local.task-queue-capacity</code>, and the same for the attached and
     remote managers, with Spring Boot).</li>
 <li><a href="../../configuration/local-manager/"><code>officeExecutable</code></a>: start the office processes through a launcher, such as a
     snap or an AppImage (<code>jodconverter.local.office-executable</code> with Spring Boot).</li>
-<li><a href="../../configuration/external-manager/#spring-boot">External office manager in the Spring Boot starter</a>: the
-    <code>jodconverter.external.*</code> properties auto-configure an <code>ExternalOfficeManager</code> and its converter.</li>
+<li><a href="../../configuration/attached-manager/#spring-boot">Attached office manager in the Spring Boot starter</a>: the
+    <code>jodconverter.attached.*</code> properties auto-configure an <code>AttachedOfficeManager</code> and its converter.</li>
 <li><a href="../../getting-started/supported-formats/">Markdown</a>: the default registry knows the Markdown format (<code>md</code>,
     <code>markdown</code>), supported by LibreOffice 26.2 and later.</li>
 <li><a href="../../getting-started/document-converters/#lifecycle-and-threading">Asynchronous conversions</a>:

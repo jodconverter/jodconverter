@@ -2537,9 +2537,10 @@ recovers from failures.</p>
 <li><strong>LocalOfficeManager</strong>: Starts and manages one or more local office processes on the same machine as your application.
     Best for typical server-side use when OOo is installed locally.
     See <a href="../../configuration/local-manager/">LocalOfficeManager</a> for all configuration options.</li>
-<li><strong>ExternalOfficeManager</strong>: Connects to an already running local office process you start externally (you manage the
-    process lifecycle). Useful when the process must be controlled outside the JVM.
-    See <a href="../../configuration/external-manager/">ExternalOfficeManager</a> for all configuration options.</li>
+<li><strong>AttachedOfficeManager</strong>: Attaches to office processes you start yourself, on the same machine or on another one
+    (you manage the process lifecycle; JODConverter connects over UNO and reconnects when a process is restarted).
+    Formerly <code>ExternalOfficeManager</code>.
+    See <a href="../../configuration/attached-manager/">AttachedOfficeManager</a> for all configuration options.</li>
 <li><strong>RemoteOfficeManager</strong>: Connects to a remote LibreOffice Online (LOOL/Collabora Online) server through
     HTTP/WebSocket.
     The office process lifecycle is remote; the manager controls the connection pool.
@@ -2612,9 +2613,9 @@ when a manager has no worker able to execute tasks (<code>management.health.jodc
 <span class="w">  </span><span class="n">OfficeUtils</span><span class="p">.</span><span class="na">stopQuietly</span><span class="p">(</span><span class="n">officeManager</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
-<p><strong>3)</strong> Connect to an existing local process (<code>ExternalOfficeManager</code>).</p>
-<p>If you start LibreOffice manually with a known accept string, use <code>ExternalOfficeManager</code>. See
-configuration/external-manager.md for details.</p>
+<p><strong>3)</strong> Attach to office processes you start yourself (<code>AttachedOfficeManager</code>).</p>
+<p>If you start LibreOffice yourself with a known accept string, use <code>AttachedOfficeManager</code>. See
+<a href="../../configuration/attached-manager/">AttachedOfficeManager</a> for details.</p>
 <p><strong>4)</strong> Use a remote LibreOffice Online server (<code>RemoteOfficeManager</code>).</p>
 <p>When targeting LO Online/Collabora Online, create a <code>RemoteOfficeManager</code> and pass it to a RemoteConverter.
 See <a href="../../configuration/remote-manager/">RemoteOfficeManager</a>.</p>
@@ -2651,7 +2652,7 @@ See <a href="../../configuration/remote-manager/">RemoteOfficeManager</a>.</p>
 <p>For in-depth configuration of each manager type, refer to:</p>
 <ul>
 <li><a href="../../configuration/local-manager/">LocalOfficeManager</a></li>
-<li><a href="../../configuration/external-manager/">ExternalOfficeManager</a></li>
+<li><a href="../../configuration/attached-manager/">AttachedOfficeManager</a></li>
 <li><a href="../../configuration/remote-manager/">RemoteOfficeManager</a></li>
 </ul>
 <blockquote>

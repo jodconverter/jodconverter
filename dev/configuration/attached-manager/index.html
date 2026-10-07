@@ -8,13 +8,9 @@
       
       
       
-        <link rel="canonical" href="https://jodconverter.github.io/jodconverter/latest/configuration/external-manager/">
+        <link rel="canonical" href="https://jodconverter.github.io/jodconverter/latest/configuration/attached-manager/">
       
       
-        <link rel="prev" href="../local-manager/">
-      
-      
-        <link rel="next" href="../remote-manager/">
       
       
         
@@ -25,7 +21,7 @@
     
     
       
-        <title>ExternalOfficeManager - JODConverter</title>
+        <title>AttachedOfficeManager Configuration - JODConverter</title>
       
     
     
@@ -83,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#externalofficemanager-configuration" class="md-skip">
+        <a href="#attachedofficemanager-configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ExternalOfficeManager
+              AttachedOfficeManager Configuration
             
           </span>
         </div>
@@ -278,8 +274,6 @@
   
   
   
-    
-  
   
     
       
@@ -296,7 +290,7 @@
     
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../" class="md-tabs__link">
           
   
@@ -1597,8 +1591,6 @@
       
   
   
-    
-  
   
   
     
@@ -1616,17 +1608,14 @@
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -1647,14 +1636,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
         
-          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
             <label class="md-nav__title" for="__nav_3">
               <span class="md-nav__icon md-icon"></span>
               
@@ -1670,10 +1659,8 @@
                   
   
   
-    
   
   
-  
     
     
       
@@ -1690,11 +1677,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
         
           
           <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
@@ -1715,7 +1702,7 @@
           </label>
         
         
-          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
+          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
             <label class="md-nav__title" for="__nav_3_2">
               <span class="md-nav__icon md-icon"></span>
               
@@ -1756,19 +1743,10 @@
                   
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-        
-      
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../external-manager/" class="md-nav__link">
         
   
   
@@ -1783,7 +1761,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2280,6 +2257,11 @@
                       
                     
                     
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
                   
                   <div class="md-sidebar__inner">
                     
@@ -2291,6 +2273,163 @@
   
     
   
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Spring Boot
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#builder-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Builder properties
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Builder properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workingdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📁<code>workingDir</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hostname" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔠<code>hostName</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#portnumbers-pipenames-websocketurls" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>portNumbers</code> / 🔠<code>pipeNames</code> / 🔠<code>websocketUrls</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connectonstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ❎<code>connectOnStart</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connecttimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⌚<code>connectTimeout</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connectretryinterval" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⌚<code>connectRetryInterval</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connectfailfast" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ❎<code>connectFailFast</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maxtasksperconnection" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>maxTasksPerConnection</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#taskqueuecapacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>taskQueueCapacity</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#taskqueuetimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⌚<code>taskQueueTimeout</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#taskexecutiontimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⌚<code>taskExecutionTimeout</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2309,11 +2448,178 @@
   
 
 
-<h1 id="externalofficemanager-configuration">ExternalOfficeManager Configuration<a class="headerlink" href="#externalofficemanager-configuration" title="Permanent link">&para;</a></h1>
-<p><code>ExternalOfficeManager</code> is named <a href="../attached-manager/">AttachedOfficeManager</a> since JODConverter 5.0: it attaches to
-office processes that JODConverter does not start, on the same machine or on another one. The old class and the
-<code>jodconverter.external.*</code> properties of the Spring Boot starter still work, deprecated. See the
-<a href="../../migration-guides/migration-guide-5.0.0/#attached-office-manager">migration guide</a>.</p>
+<h1 id="attachedofficemanager-configuration">AttachedOfficeManager Configuration<a class="headerlink" href="#attachedofficemanager-configuration" title="Permanent link">&para;</a></h1>
+<p>The <a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/office/AttachedOfficeManager.java">AttachedOfficeManager</a>
+is the manager to use to connect to office processes that <strong>JODConverter</strong> does not start: processes started and
+managed outside of it, on the same machine or on another one, that accept UNO connections (<code>soffice --accept=...</code>).
+It does not restart a process that exits, but reconnects when the process is started again. It was named
+<code>ExternalOfficeManager</code> before 5.0; the old name still works, deprecated.</p>
+<p>An <code>AttachedOfficeManager</code> is built using a builder:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AttachedOfficeManager</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h2 id="spring-boot">Spring Boot<a class="headerlink" href="#spring-boot" title="Permanent link">&para;</a></h2>
+<p>With the Spring Boot starter, set <code>jodconverter.attached.enabled</code> to <code>true</code> to get an <code>AttachedOfficeManager</code> bean
+named <code>attachedOfficeManager</code>, and a <code>DocumentConverter</code> bean named <code>attachedDocumentConverter</code> that converts through
+it. Each property below matches the builder property of the same name; the values shown are the defaults:</p>
+<div class="language-yml highlight"><span class="filename">application.yml</span><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">attached</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">host-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">127.0.0.1</span>
+<span class="w">    </span><span class="nt">port-numbers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2002</span><span class="w">              </span><span class="c1"># or pipe-names / websocket-urls</span>
+<span class="w">    </span><span class="nt">working-dir</span><span class="p">:</span><span class="w">                    </span><span class="c1"># defaults to java.io.tmpdir</span>
+<span class="w">    </span><span class="nt">connect-on-start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">connect-timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120000</span>
+<span class="w">    </span><span class="nt">connect-retry-interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250</span>
+<span class="w">    </span><span class="nt">connect-fail-fast</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">max-tasks-per-connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">    </span><span class="nt">task-queue-capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">          </span><span class="c1"># no limit</span>
+<span class="w">    </span><span class="nt">task-queue-timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30000</span>
+<span class="w">    </span><span class="nt">task-execution-timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120000</span>
+<span class="w">    </span><span class="nt">apply-default-load-properties</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">load-document-mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w">        </span><span class="c1"># remote: stream documents to an office process on another host</span>
+</code></pre></div>
+<p>When the office processes run in another container or on another host, set <code>load-document-mode</code> to <code>remote</code>: the
+documents are then sent through the connection instead of being read from (and written to) the local file system.
+The local and attached auto-configurations can be enabled together; inject the converter you need with
+<code>@Qualifier("attachedDocumentConverter")</code> or <code>@Qualifier("localDocumentConverter")</code>.</p>
+<h2 id="builder-properties">Builder properties<a class="headerlink" href="#builder-properties" title="Permanent link">&para;</a></h2>
+<p>Here are all the properties you can set through the builder:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>JODConverter</strong> uses milliseconds for all time values.</p>
+</div>
+<h4 id="workingdir">📁<code>workingDir</code><a class="headerlink" href="#workingdir" title="Permanent link">&para;</a></h4>
+<p>This property is used to create a temporary directory where files will be created when conversions are done
+using InputStream/OutputStream.</p>
+<p>&#160;<strong><em>Default</em></strong>: The system temporary directory as specified by the <code>java.io.tmpdir</code> system property.</p>
+<p><strong>NOTE</strong> that
+<a href="https://github.com/jodconverter/jodconverter/issues/220">some OS automatically clean up the <code>java.io.tmpdir</code> directory periodically</a>.
+It is recommended to check your OS to see if you have to set this property to a directory that won't be deleted.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">workingDir</span><span class="p">(</span><span class="s">"C:\\jodconverter\\tmp"</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="hostname">🔠<code>hostName</code><a class="headerlink" href="#hostname" title="Permanent link">&para;</a></h4>
+<p>This property sets the host name that will be used in the <code>--accept</code> argument when connecting to an
+office process.</p>
+<p>&#160;<strong><em>Default</em></strong>: 127.0.0.1</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">hostName</span><span class="p">(</span><span class="s">"localhost"</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="portnumbers-pipenames-websocketurls">🔢<code>portNumbers</code> / 🔠<code>pipeNames</code> / 🔠<code>websocketUrls</code><a class="headerlink" href="#portnumbers-pipenames-websocketurls" title="Permanent link">&para;</a></h4>
+<p>This property sets the port number(s), pipe name(s) and websocket urls that will be used in the <code>--accept</code> argument
+when connecting to an office process.</p>
+<p>If you want to know more about web socket, read the
+<a href="https://github.com/jodconverter/jodconverter/pull/355">Pull Request</a> where it has been introduced.</p>
+<p>&#160;<strong><em>Default</em></strong>: TCP socket, on port 2002.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Java</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
+</div>
+</div>
+<div class="language-java highlight"><pre><span></span><code><span class="c1">// This example will use 4 TCP ports and 4 pipes, which will</span>
+<span class="c1">// cause JODConverter to connect to 8 office processes (a bit excessive!)</span>
+<span class="c1">// when the OfficeManager will be started.</span>
+<span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">portNumbers</span><span class="p">(</span><span class="mi">2002</span><span class="p">,</span><span class="w"> </span><span class="mi">2003</span><span class="p">,</span><span class="w"> </span><span class="mi">2004</span><span class="p">,</span><span class="w"> </span><span class="mi">2005</span><span class="p">)</span>
+</span><span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">pipeNames</span><span class="p">(</span><span class="s">"Pipe1"</span><span class="p">,</span><span class="w"> </span><span class="s">"Pipe2"</span><span class="p">,</span><span class="w"> </span><span class="s">"Pipe3"</span><span class="p">,</span><span class="w"> </span><span class="s">"Pipe4"</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="connectonstart">❎<code>connectOnStart</code><a class="headerlink" href="#connectonstart" title="Permanent link">&para;</a></h4>
+<p>This property controls whether a connection must be attempted when the manager starts. If <code>false</code>, a connection will
+only be attempted the first time a conversion task is executed.</p>
+<p>&#160;<strong><em>Default</em></strong>: true.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">connectOnStart</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="connecttimeout">⌚<code>connectTimeout</code><a class="headerlink" href="#connecttimeout" title="Permanent link">&para;</a></h4>
+<p>This property sets the timeout, in milliseconds, after which a connection attempt will fail.</p>
+<p>&#160;<strong><em>Default</em></strong>: 120000 (2 minutes)</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">connectTimeout</span><span class="p">(</span><span class="mi">60000</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="connectretryinterval">⌚<code>connectRetryInterval</code><a class="headerlink" href="#connectretryinterval" title="Permanent link">&para;</a></h4>
+<p>This property sets the delay, in milliseconds, between each try when trying to connect to the office process.</p>
+<p>&#160;<strong><em>Default</em></strong>: 250 (0.25 seconds)</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">connectRetryInterval</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="connectfailfast">❎<code>connectFailFast</code><a class="headerlink" href="#connectfailfast" title="Permanent link">&para;</a></h4>
+<p>This property controls whether the manager will "fail fast" if the connection to the office process fails. If set to
+<code>true</code>, <code>start()</code> waits for all the connections to be established, and throws an exception if one of them cannot be;
+the manager cannot be used after that. If set to <code>false</code>, <code>start()</code> returns immediately: the tasks wait in the queue
+for a connection to be established (see <code>taskQueueTimeout</code>), and a connection that fails is retried, with a growing
+delay between the attempts (1, 2, 5, 10, then every 30 seconds). Only logs are produced if anything goes wrong.</p>
+<p>&#160;<strong><em>Default</em></strong>: false.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">connectFailFast</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="maxtasksperconnection">🔢<code>maxTasksPerConnection</code><a class="headerlink" href="#maxtasksperconnection" title="Permanent link">&para;</a></h4>
+<p>This property sets the maximum number of tasks an office process can execute before reconnecting to it. 0 means an
+infinite number of tasks (will never reconnect).</p>
+<p>&#160;<strong><em>Default</em></strong>: 1000</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">maxTasksPerConnection</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="taskqueuecapacity">🔢<code>taskQueueCapacity</code><a class="headerlink" href="#taskqueuecapacity" title="Permanent link">&para;</a></h4>
+<p>This property sets the maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+full fails at once with an <code>OfficeException</code>, instead of waiting for the queue timeout; a web application can thus
+answer right away that it is overloaded. 0 means no limit.</p>
+<p>&#160;<strong><em>Default</em></strong>: 0 (no limit)</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">taskQueueCapacity</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="taskqueuetimeout">⌚<code>taskQueueTimeout</code><a class="headerlink" href="#taskqueuetimeout" title="Permanent link">&para;</a></h4>
+<p>This property sets the maximum time a task waits in the conversion queue, from its submission until an office process
+takes it. Waiting for a process to start or restart is part of it. When it expires, the task is removed from the queue
+without having been executed and fails with an <code>OfficeException</code>.</p>
+<p>&#160;<strong><em>Default</em></strong>: 30000 (30 seconds)</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">taskQueueTimeout</span><span class="p">(</span><span class="mi">60000</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="taskexecutiontimeout">⌚<code>taskExecutionTimeout</code><a class="headerlink" href="#taskexecutiontimeout" title="Permanent link">&para;</a></h4>
+<p>This property sets the maximum time allowed to execute a task, counted from the moment a connection starts it, not
+from its submission. When it expires, the task fails with an <code>OfficeException</code>, the connection is closed and
+established again, and the next task is processed by another connection in the meantime.</p>
+<p>&#160;<strong><em>Default</em></strong>: 120000 (2 minutes)</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">taskExecutionTimeout</span><span class="p">(</span><span class="mi">60000</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<blockquote>
+<p>Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite
+derived from OOo such as <a href="https://www.openoffice.org">Apache OpenOffice</a> and <a href="https://www.libreoffice.org">LibreOffice</a>.</p>
+</blockquote>
 
 
 
@@ -2340,44 +2646,6 @@ office processes that JODConverter does not start, on the same machine or on ano
       
         <footer class="md-footer">
   
-    
-      
-      <nav class="md-footer__inner md-grid" aria-label="Footer" >
-        
-          
-          <a href="../local-manager/" class="md-footer__link md-footer__link--prev" aria-label="Previous: LocalOfficeManager">
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
-            </div>
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              <div class="md-ellipsis">
-                LocalOfficeManager
-              </div>
-            </div>
-          </a>
-        
-        
-          
-          <a href="../remote-manager/" class="md-footer__link md-footer__link--next" aria-label="Next: RemoteOfficeManager">
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              <div class="md-ellipsis">
-                RemoteOfficeManager
-              </div>
-            </div>
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
-          </a>
-        
-      </nav>
     
   
   <div class="md-footer-meta md-typeset">
