@@ -47,13 +47,29 @@ LocalConverter
 
 ## Merging documents
 
-The [DocumentInserterFilter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentInserterFilter.java)
-inserts another document at the end of the loaded text document. Chain one filter per document to merge several
-documents into one:
+Text documents are merged with `merge(...)`: the first document is loaded, the others are inserted at its end, each
+one starting on a new page, and the result is converted like any document, with the target format and the options of
+a conversion:
 
 ```java
-final File outputFile = new File("merged.pdf");
+LocalConverter
+  .make()
+  .merge(new File("chapter1.docx"), new File("chapter2.docx"), new File("chapter3.docx"))
+  .to(new File("book.pdf"))
+  .with(PdfOptions.archive())
+  .execute();
+```
 
+The page styles, headers and footers of the result are those of the first document. The filters of the converter are
+applied after the insertions, so a `DocumentIndexesUpdaterFilter` rebuilds the table of contents of the merged
+document.
+
+Underneath, `merge` chains a
+[DocumentInserterFilter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentInserterFilter.java)
+per document. Use the filter directly to insert a document without a page break (`new
+DocumentInserterFilter(file, false)`, the default of the filter), or at a chosen place in the chain:
+
+```java
 LocalConverter
   .builder()
   .filterChain(
@@ -61,7 +77,7 @@ LocalConverter
       new DocumentInserterFilter(new File("chapter3.docx")))
   .build()
   .convert(new File("chapter1.docx"))
-  .to(outputFile)
+  .to(new File("merged.pdf"))
   .execute();
 ```
 
@@ -104,7 +120,7 @@ package of the local module:
 | `text.TextInserterFilter`      | Inserts a text, in a frame placed at the given position and size.                                                                           |
 | `text.TextReplacerFilter`      | Replaces texts in a text document.                                                                                                          |
 | `text.GraphicInserterFilter`   | Inserts an image, at the given position and size.                                                                                           |
-| `text.DocumentInserterFilter`  | Inserts another document at the end of the loaded one (see [Merging documents](#merging-documents)).                                        |
+| `text.DocumentInserterFilter`  | Inserts another document at the end of the loaded one, on a new page or not (see [Merging documents](#merging-documents)).                 |
 | `text.LinkedImagesEmbedderFilter` | Embeds the linked images of a text document, so that the output does not depend on them.                                                  |
 
 You can implement (and share obviously 😁) any filter you need. Your filter must implement

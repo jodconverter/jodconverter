@@ -199,6 +199,9 @@ Notes:
 
 ## Related APIs
 
+- [Merging documents](using-filters.md#merging-documents): `LocalConverter.merge(...)`, several text documents into
+    one output.
+
 - [Slides to images](page-images.md): `LocalConverter.exportPages(...)`, one image per slide or draw page.
 
 - `DocumentConverter` (core): high-level conversion contract.

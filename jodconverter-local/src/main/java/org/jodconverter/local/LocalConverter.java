@@ -22,12 +22,14 @@ package org.jodconverter.local;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -45,6 +47,8 @@ import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
+import org.jodconverter.local.filter.RefreshFilter;
+import org.jodconverter.local.filter.text.DocumentInserterFilter;
 import org.jodconverter.local.office.AttachedOfficeManager;
 import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.local.task.LocalConversionTask;
@@ -229,26 +233,102 @@ public final class LocalConverter extends AbstractConverter {
   }
 
   /** Local implementation of a conversion job with source format unspecified. */
+  /**
+   * Merges text documents into one: the first document is loaded, the others are inserted at its
+   * end, each one starting on a new page, and the result is converted like any document.
+   *
+   * <pre>
+   * converter
+   *     .merge(new File("chapter1.docx"), new File("chapter2.docx"), new File("chapter3.docx"))
+   *     .to(new File("book.pdf"))
+   *     .execute();
+   * </pre>
+   *
+   * <p>The filters of the converter are applied after the insertions. To insert the documents
+   * without a page break, or at another place, use a {@link
+   * org.jodconverter.local.filter.text.DocumentInserterFilter} in the filter chain instead.
+   *
+   * @param first The first document; its page styles, headers and footers are those of the result.
+   * @param others The documents inserted after it, in order.
+   * @return The conversion job of the merged document.
+   * @throws IllegalArgumentException If a document to insert does not exist.
+   */
+  public @NonNull ConversionJobWithOptionalSourceFormatUnspecified merge(
+      final @NonNull File first, final @NonNull File... others) {
+    Objects.requireNonNull(others, "others must not be null");
+    return merge(Stream.concat(Stream.of(first), Stream.of(others)).toList());
+  }
+
+  /**
+   * Merges text documents into one: the first document is loaded, the others are inserted at its
+   * end, each one starting on a new page, and the result is converted like any document.
+   *
+   * @param documents The documents, in order; at least one.
+   * @return The conversion job of the merged document.
+   * @throws IllegalArgumentException If the list is empty, or if a document to insert does not
+   *     exist.
+   * @see #merge(File, File...)
+   */
+  public @NonNull ConversionJobWithOptionalSourceFormatUnspecified merge(
+      final @NonNull List<@NonNull File> documents) {
+    AssertUtils.notEmpty(documents, "documents must not be null nor empty");
+    final var inserters = new ArrayList<Filter>();
+    for (final var document : documents.subList(1, documents.size())) {
+      Objects.requireNonNull(document, "documents must not contain null");
+      AssertUtils.isTrue(document.isFile(), "File not found: " + document);
+      inserters.add(new DocumentInserterFilter(document, true));
+    }
+    return new LocalConversionJobWithSourceFormatUnspecified(
+        sourceSpecs(documents.get(0)), jobFilterChain(inserters));
+  }
+
+  // The filters of a job, followed by the filters of the converter.
+  private FilterChain jobFilterChain(final List<Filter> filters) {
+    final var converterChain = filterChain == null ? RefreshFilter.CHAIN : filterChain;
+    final var all = new ArrayList<>(filters);
+    all.add(
+        (context, document, chain) -> {
+          converterChain.copy().doFilter(context, document);
+          chain.doFilter(context, document);
+        });
+    return new DefaultFilterChain(false, all.toArray(new Filter[0]));
+  }
+
   private class LocalConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
 
+    // The filter chain of this job, or null for the filter chain of the converter.
+    private final @Nullable FilterChain jobFilterChain;
+
     private LocalConversionJobWithSourceFormatUnspecified(
         final AbstractSourceDocumentSpecs source) {
+      this(source, null);
+    }
+
+    private LocalConversionJobWithSourceFormatUnspecified(
+        final AbstractSourceDocumentSpecs source, final @Nullable FilterChain jobFilterChain) {
       super(source, LocalConverter.this.officeManager, LocalConverter.this.formatRegistry);
+      this.jobFilterChain = jobFilterChain;
+      setDefaultTargetOptions(LocalConverter.this.defaultTargetOptions);
     }
 
     @Override
     protected @NonNull AbstractConversionJob to(final @NonNull AbstractTargetDocumentSpecs target) {
-      return new LocalConversionJob(source, target);
+      return new LocalConversionJob(source, target, jobFilterChain);
     }
   }
 
   /** Local implementation of a conversion job. */
   private class LocalConversionJob extends AbstractConversionJob {
 
+    private final @Nullable FilterChain jobFilterChain;
+
     private LocalConversionJob(
-        final AbstractSourceDocumentSpecs source, final AbstractTargetDocumentSpecs target) {
+        final AbstractSourceDocumentSpecs source,
+        final AbstractTargetDocumentSpecs target,
+        final @Nullable FilterChain jobFilterChain) {
       super(source, target);
+      this.jobFilterChain = jobFilterChain;
     }
 
     @Override
@@ -260,7 +340,12 @@ public final class LocalConverter extends AbstractConverter {
     protected @NonNull OfficeTask createTask() {
 
       return new LocalConversionTask(
-          source, target, useStreamAdapters(), loadProperties, storeProperties, filterChain);
+          source,
+          target,
+          useStreamAdapters(),
+          loadProperties,
+          storeProperties,
+          jobFilterChain == null ? filterChain : jobFilterChain);
     }
   }
 

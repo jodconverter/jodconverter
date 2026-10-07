@@ -47,7 +47,8 @@ public abstract class AbstractConverter implements DocumentConverter {
 
   protected final DocumentFormatRegistry formatRegistry;
 
-  private final List<TargetOptions> defaultTargetOptions;
+  /** The options applied to the conversions that have no options of their own. */
+  protected final List<TargetOptions> defaultTargetOptions;
 
   protected AbstractConverter(
       final @NonNull OfficeManager officeManager,

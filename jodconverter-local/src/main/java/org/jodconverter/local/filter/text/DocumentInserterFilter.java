@@ -23,10 +23,14 @@ package org.jodconverter.local.filter.text;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 
 import java.io.File;
+import java.util.Objects;
 
 import com.sun.star.beans.PropertyValue;
+import com.sun.star.beans.XPropertySet;
 import com.sun.star.document.XDocumentInsertable;
 import com.sun.star.lang.XComponent;
+import com.sun.star.style.BreakType;
+import com.sun.star.text.ControlCharacter;
 import com.sun.star.text.XTextDocument;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -44,16 +48,30 @@ public class DocumentInserterFilter implements Filter {
   private static final Logger LOGGER = LoggerFactory.getLogger(DocumentInserterFilter.class);
 
   private final File documentToInsert;
+  private final boolean pageBreak;
+
+  /**
+   * Creates a new filter that will insert the specified document, right after the end of the
+   * current document.
+   *
+   * @param document The document to insert at the end of the current document.
+   */
+  public DocumentInserterFilter(final @NonNull File document) {
+    this(document, false);
+  }
 
   /**
    * Creates a new filter that will insert the specified document.
    *
    * @param document The document to insert at the end of the current document.
+   * @param pageBreak Whether the inserted document starts on a new page.
    */
-  public DocumentInserterFilter(final @NonNull File document) {
+  public DocumentInserterFilter(final @NonNull File document, final boolean pageBreak) {
     super();
 
+    Objects.requireNonNull(document, "document must not be null");
     this.documentToInsert = document;
+    this.pageBreak = pageBreak;
   }
 
   @Override
@@ -82,8 +100,15 @@ public class DocumentInserterFilter implements Filter {
     // Go to the end of the document
     textCursor.gotoEnd(false);
 
+    if (pageBreak) {
+      // A new paragraph that starts on a new page; the document is inserted into it.
+      document
+          .getText()
+          .insertControlCharacter(textCursor, ControlCharacter.PARAGRAPH_BREAK, false);
+      Lo.qi(XPropertySet.class, textCursor).setPropertyValue("BreakType", BreakType.PAGE_BEFORE);
+    }
+
     // Insert the document to merge at the end of the current document.
-    // TODO: Should we allow custom load properties ?
     final var insertable = Lo.qi(XDocumentInsertable.class, textCursor);
     insertable.insertDocumentFromURL(toUrl(documentToInsert), new PropertyValue[0]);
   }

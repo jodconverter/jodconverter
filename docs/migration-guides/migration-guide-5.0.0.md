@@ -367,6 +367,10 @@ columns wide.
 
 ## New features
 
+- [Merging documents](../getting-started/using-filters.md#merging-documents):
+    `LocalConverter.merge(first, others...).to(target)` converts several text documents into one output, each one
+    starting on a new page, instead of chaining a `DocumentInserterFilter` per document. The filter gains a
+    `pageBreak` argument.
 - [Slides to images](../getting-started/page-images.md): `LocalConverter.exportPages(document).to(directory)`
     exports each slide or draw page of a presentation or a drawing as its own image (PNG, JPEG, SVG, GIF, BMP, TIFF,
     WebP), with the size, the quality, the pages and the hidden slides as options. It replaces, for LibreOffice 24.2
