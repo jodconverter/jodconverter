@@ -18,3 +18,4 @@
         the [Intellij plugin](https://github.com/google/google-java-format#intellij).
     6. [Create a pull request](https://help.github.com/articles/creating-a-pull-request/), and wait until it gets
         merged and published.
+- Maintainers: see [Releasing](release.md) for the release process.
