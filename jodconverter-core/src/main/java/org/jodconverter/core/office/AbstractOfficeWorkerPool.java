@@ -155,6 +155,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
   @Override
   public final void start() throws OfficeException {
 
+    final List<OfficeWorkerRunner> newRunners;
     synchronized (this) {
       if (poolState.get() == POOL_SHUTDOWN) {
         throw new IllegalStateException("This office manager has been shutdown.");
@@ -171,24 +172,30 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
       watchdog.setRemoveOnCancelPolicy(true);
 
       // From here the tasks are accepted; they wait in the queue until a worker is ready.
-      final var newRunners = new ArrayList<OfficeWorkerRunner>();
+      newRunners = new ArrayList<>();
       for (final var worker : workers) {
         newRunners.add(new OfficeWorkerRunner(this, worker, startFailFast));
       }
       runners = newRunners;
       poolState.set(POOL_STARTED);
       newRunners.forEach(runner -> runner.start(threadFactory));
+    }
 
-      if (startFailFast) {
-        try {
-          for (final var runner : newRunners) {
-            awaitFirstStart(runner);
-          }
-        } catch (OfficeException ex) {
-          // A pool that could not be started cannot be used anymore.
-          shutdown();
-          throw ex;
+    if (startFailFast) {
+      // Outside the monitor: a stop() from another thread aborts the starts, instead of waiting
+      // for them, and this start then fails.
+      try {
+        for (final var runner : newRunners) {
+          awaitFirstStart(runner);
         }
+      } catch (OfficeException ex) {
+        // A pool that could not be started cannot be used anymore.
+        synchronized (this) {
+          if (poolState.get() != POOL_SHUTDOWN) {
+            shutdown();
+          }
+        }
+        throw ex;
       }
     }
   }

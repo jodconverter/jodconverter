@@ -618,7 +618,8 @@ to the started process fails. If set to `true`, `start()` waits for all the offi
 connected, and throws an exception if one of them cannot be; the manager cannot be used after that. If set to `false`,
 `start()` returns immediately: the tasks wait in the queue for an office process to be ready (see `taskQueueTimeout`),
 and a process that cannot be started is retried, with a growing delay between the attempts (1, 2, 5, 10, then every 30
-seconds). Only logs are produced if anything goes wrong.
+seconds). Only logs are produced if anything goes wrong. In both cases, a `stop()` from another thread while `start()`
+waits aborts the starts instead of waiting for them, and that `start()` then fails.
 
 &#160;***Default***: false.
 

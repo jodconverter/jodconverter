@@ -252,6 +252,46 @@ class AbstractOfficeWorkerPoolTest {
     }
 
     @Test
+    void withFailFastWhenStoppedMeanwhile_ShouldAbortTheStartsAndThrow() throws Exception {
+
+      // The start of the worker does not end until it is aborted.
+      final var worker = new FakeOfficeWorker();
+      worker.startGate = new CountDownLatch(1);
+      pool = builder(worker).build();
+
+      final var thrown = new AtomicReference<Throwable>();
+      final var starter =
+          new Thread(
+              () -> {
+                try {
+                  pool.start();
+                } catch (OfficeException | RuntimeException ex) {
+                  thrown.set(ex);
+                }
+              });
+      starter.start();
+      assertThat(worker.startBegun.await(10, TimeUnit.SECONDS)).isTrue();
+
+      // The stop must not wait for the start to end: it aborts it.
+      final var stopper =
+          new Thread(() -> assertThatCode(() -> pool.stop()).doesNotThrowAnyException());
+      stopper.start();
+      stopper.join(10_000);
+      assertThat(stopper.isAlive()).as("stop() must not wait for the start").isFalse();
+      starter.join(10_000);
+
+      assertThat(thrown.get())
+          .isInstanceOf(OfficeException.class)
+          .hasMessage("The office worker was stopped before it was ready");
+      assertThat(worker.calls).containsExactly("start", "abort", "stop");
+      assertThat(pool.isRunning()).isFalse();
+      assertThat(pool.getTempDir()).doesNotExist();
+      assertThatIllegalStateException()
+          .isThrownBy(() -> pool.start())
+          .withMessage("This office manager has been shutdown.");
+    }
+
+    @Test
     void withoutFailFast_ShouldReturnAtOnceAndExecuteTheTasksWhenReady() throws Exception {
 
       // The start of the worker takes longer than the execution timeout: the task must wait in
