@@ -27,7 +27,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,7 +42,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.TemporaryFileMaker;
 
 /** Contains tests for the {@link TargetDocumentSpecsFromOutputStream} class. */
-@SuppressWarnings({"PMD.AvoidFileStream", "PMD.CloseResource"})
+@SuppressWarnings("PMD.AvoidFileStream")
 class TargetDocumentSpecsFromOutputStreamTest {
 
   @Nested

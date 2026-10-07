@@ -20,17 +20,22 @@
 
 package org.jodconverter.core.util;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Nested;
@@ -224,17 +229,15 @@ class FileUtilsTest {
         final var file = new File(dir, "test.txt");
         file.createNewFile();
 
-        try (var channel = new RandomAccessFile(file, "rw").getChannel()) {
-          // Use the file channel to create a lock on the file.
-          // This method blocks until it can retrieve the lock.
-          final var lock = channel.lock();
+        // Use the file channel to create a lock on the file.
+        // This method blocks until it can retrieve the lock.
+        try (var channel = new RandomAccessFile(file, "rw").getChannel();
+            var lock = channel.lock()) {
+          assertThat(lock.isValid()).isTrue();
 
           // Call FileUtils.delete on the root directory. It should throw
           // an exception since we have a lock on the file.
           assertThatIOException().isThrownBy(() -> FileUtils.delete(dir));
-
-          // Release the lock
-          lock.release();
         }
       }
     }
@@ -304,8 +307,9 @@ class FileUtilsTest {
       final var file = new File(dir, "test.txt");
       file.createNewFile();
 
-      try (var outputStream = new FileOutputStream(file)) {
-        outputStream.getChannel().lock();
+      try (var channel = FileChannel.open(file.toPath(), StandardOpenOption.WRITE);
+          var lock = channel.lock()) {
+        assertThat(lock.isValid()).isTrue();
         assertThatCode(() -> FileUtils.deleteQuietly(dir)).doesNotThrowAnyException();
       }
     }

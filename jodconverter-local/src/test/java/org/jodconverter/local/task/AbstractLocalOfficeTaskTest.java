@@ -20,11 +20,17 @@
 
 package org.jodconverter.local.task;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.entry;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.util.HashMap;
@@ -270,11 +276,11 @@ class AbstractLocalOfficeTaskTest {
 
   private static class FooOfficeTask extends AbstractLocalOfficeTask {
 
-    public FooOfficeTask(final SourceDocumentSpecs source) {
+    FooOfficeTask(final SourceDocumentSpecs source) {
       super(source);
     }
 
-    public FooOfficeTask(
+    FooOfficeTask(
         final SourceDocumentSpecs source,
         final boolean useStreamAdapters,
         final Map<String, Object> loadProperties) {
@@ -289,7 +295,7 @@ class AbstractLocalOfficeTaskTest {
 
   private static class DocSourceSpecs extends AbstractSourceDocumentSpecs {
 
-    public DocSourceSpecs(final File source) {
+    DocSourceSpecs(final File source) {
       super(source);
     }
 
@@ -301,7 +307,7 @@ class AbstractLocalOfficeTaskTest {
 
   private static class TxtSourceSpecs extends AbstractSourceDocumentSpecs {
 
-    public TxtSourceSpecs(final File source) {
+    TxtSourceSpecs(final File source) {
       super(source);
     }
 
@@ -313,7 +319,7 @@ class AbstractLocalOfficeTaskTest {
 
   private static class NullSourceSpecs extends AbstractSourceDocumentSpecs {
 
-    public NullSourceSpecs(final File source) {
+    NullSourceSpecs(final File source) {
       super(source);
     }
 

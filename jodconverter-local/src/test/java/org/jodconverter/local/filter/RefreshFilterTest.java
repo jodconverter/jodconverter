@@ -21,7 +21,9 @@
 package org.jodconverter.local.filter;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.sun.star.lang.XComponent;
 import org.junit.jupiter.api.Nested;

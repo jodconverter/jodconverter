@@ -22,7 +22,9 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.jodconverter.local.office.AttachedOfficeManager.*;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_TIMEOUT;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 

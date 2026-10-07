@@ -22,7 +22,15 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.jodconverter.local.office.AttachedOfficeManager.*;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_FAIL_FAST;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_ON_START;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_TIMEOUT;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_HOSTNAME;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_TASK_QUEUE_TIMEOUT;
+import static org.jodconverter.local.office.AttachedOfficeManager.MAX_CONNECT_RETRY_INTERVAL;
 
 import java.io.File;
 
@@ -48,8 +56,7 @@ class AttachedOfficeManagerTest {
       assertThat(ExternalOfficeManager.make()).isInstanceOf(AttachedOfficeManager.class);
       assertThat(ExternalOfficeManager.builder().portNumbers(2003).build())
           .isInstanceOf(AttachedOfficeManager.class);
-      assertThat(ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT)
-          .isEqualTo(AttachedOfficeManager.DEFAULT_CONNECT_TIMEOUT);
+      assertThat(ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT).isEqualTo(DEFAULT_CONNECT_TIMEOUT);
       AssertUtil.assertUtilityClassWellDefined(ExternalOfficeManager.class);
     }
   }

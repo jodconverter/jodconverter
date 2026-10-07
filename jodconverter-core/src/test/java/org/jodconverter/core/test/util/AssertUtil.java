@@ -56,7 +56,7 @@ public final class AssertUtil {
     assertThat(constructor.isAccessible() || !Modifier.isPrivate(constructor.getModifiers()))
         .as("Check class constructor modifier")
         .isFalse();
-    constructor.setAccessible(true);
+    constructor.setAccessible(true); // NOPMD - the private constructor is called on purpose
 
     assertThatExceptionOfType(InvocationTargetException.class)
         .isThrownBy(constructor::newInstance)

@@ -49,7 +49,7 @@ class ProcessManagerTest {
         : new ProcessBuilder("/bin/sh", "-c", "sleep 30; exit 0").start();
   }
 
-  private static ProcessQuery queryOf(final Process process) {
+  private static ProcessQuery queryOfProcessTree() {
     return OSUtils.IS_OS_WINDOWS
         ? new ProcessQuery("cmd", "ping 127.0.0.1 -n 30")
         : new ProcessQuery("sh", "sleep 30; exit 0");
@@ -59,7 +59,7 @@ class ProcessManagerTest {
 
     final var process = startProcessTree();
     try {
-      final var query = queryOf(process);
+      final var query = queryOfProcessTree();
       assertThat(manager.find(query)).map(ProcessHandle::pid).hasValue(process.pid());
 
       // The child gets a moment to start, so the kill has a tree to deal with.

@@ -20,9 +20,16 @@
 
 package org.jodconverter.cli;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,7 +75,7 @@ class CliConverterTest {
 
   /** Set up the office manager once before each test. */
   @BeforeEach
-  public void setUp() {
+  void setUp() {
 
     officeManager = mock(OfficeManager.class);
     InstalledOfficeManagerHolder.setInstance(officeManager);
@@ -558,7 +565,7 @@ class CliConverterTest {
               try {
                 ReflectionTestUtils.invokeMethod(converter, "prepareOutputDir", dir);
               } catch (UndeclaredThrowableException e) {
-                throw e.getUndeclaredThrowable();
+                throw e.getUndeclaredThrowable(); // NOPMD - the exception under test
               }
             })
         .withMessageMatching("Invalid output directory.*that cannot be written to")

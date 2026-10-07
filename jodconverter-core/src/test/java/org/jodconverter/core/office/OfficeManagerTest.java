@@ -37,7 +37,7 @@ import org.jodconverter.core.task.SimpleOfficeTask;
 class OfficeManagerTest {
 
   /** A manager that only knows how to execute a task, as a custom implementation would. */
-  private static class BlockingOfficeManager implements OfficeManager {
+  private static final class BlockingOfficeManager implements OfficeManager {
 
     private final AtomicInteger executed = new AtomicInteger();
 
@@ -53,10 +53,14 @@ class OfficeManagerTest {
     }
 
     @Override
-    public void start() {}
+    public void start() {
+      // Nothing to do.
+    }
 
     @Override
-    public void stop() {}
+    public void stop() {
+      // Nothing to do.
+    }
 
     @Override
     public File makeTemporaryFile(final String extension) {

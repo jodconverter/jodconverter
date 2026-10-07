@@ -20,7 +20,8 @@
 
 package org.jodconverter.core.job;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import java.io.File;
 import java.io.IOException;

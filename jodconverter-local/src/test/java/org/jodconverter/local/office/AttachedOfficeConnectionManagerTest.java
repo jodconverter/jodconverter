@@ -20,7 +20,9 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -146,7 +148,7 @@ class AttachedOfficeConnectionManagerTest {
   }
 
   /** A connection that does not connect to anything. */
-  static class TestOfficeConnection extends OfficeConnection {
+  static final class TestOfficeConnection extends OfficeConnection {
 
     private final OfficeUrl url;
     private boolean isConnected;

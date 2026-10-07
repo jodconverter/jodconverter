@@ -20,7 +20,9 @@
 
 package org.jodconverter.local.office;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
 import static org.mockito.BDDMockito.given;
@@ -68,7 +70,7 @@ class LocalOfficeProcessManagerTest {
   }
 
   /** A process manager that finds no process, and records the processes it is asked to kill. */
-  private static class RecordingProcessManager implements ProcessManager {
+  private static final class RecordingProcessManager implements ProcessManager {
 
     /* default */ final List<Long> killedPids = new CopyOnWriteArrayList<>();
 

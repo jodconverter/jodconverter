@@ -22,7 +22,10 @@ package org.jodconverter.local.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.drawing.XDrawPages;

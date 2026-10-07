@@ -20,14 +20,24 @@
 
 package org.jodconverter.core.office;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
@@ -159,7 +169,7 @@ class AbstractOfficeWorkerPoolTest {
       started(new FakeOfficeWorker());
 
       assertThatIllegalStateException()
-          .isThrownBy(() -> pool.start())
+          .isThrownBy(pool::start)
           .withMessage("This office manager is already running.");
     }
 
@@ -170,7 +180,7 @@ class AbstractOfficeWorkerPoolTest {
       pool.stop();
 
       assertThatIllegalStateException()
-          .isThrownBy(() -> pool.start())
+          .isThrownBy(pool::start)
           .withMessage("This office manager has been shutdown.");
     }
 
@@ -180,7 +190,7 @@ class AbstractOfficeWorkerPoolTest {
       pool = FakeOfficeWorkerPool.builder().workingDir(workingDir).build();
 
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> pool.start())
+          .isThrownBy(pool::start)
           .withMessage("This office manager has no worker");
       assertThatIllegalArgumentException().isThrownBy(() -> builder().build());
     }
@@ -194,7 +204,7 @@ class AbstractOfficeWorkerPoolTest {
       pool = builder(good, bad).build();
 
       assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(() -> pool.start())
+          .isThrownBy(pool::start)
           .withMessage("The start failed");
 
       // The worker that started is stopped, and the pool cannot be used anymore.
@@ -203,7 +213,7 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(pool.isRunning()).isFalse();
       assertThat(pool.getTempDir()).doesNotExist();
       assertThat(states(pool)).containsOnly(OfficeWorkerState.STOPPED);
-      assertThatIllegalStateException().isThrownBy(() -> pool.start());
+      assertThatIllegalStateException().isThrownBy(pool::start);
       assertThatIllegalStateException().isThrownBy(() -> pool.submit(NOOP));
     }
 
@@ -216,7 +226,7 @@ class AbstractOfficeWorkerPoolTest {
       pool = builder(worker).build();
 
       assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(() -> pool.start())
+          .isThrownBy(pool::start)
           .withMessage("Could not start the office manager")
           .withCauseInstanceOf(IllegalStateException.class);
     }
@@ -273,8 +283,7 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(worker.startBegun.await(10, TimeUnit.SECONDS)).isTrue();
 
       // The stop must not wait for the start to end: it aborts it.
-      final var stopper =
-          new Thread(() -> assertThatCode(() -> pool.stop()).doesNotThrowAnyException());
+      final var stopper = new Thread(() -> assertThatCode(pool::stop).doesNotThrowAnyException());
       stopper.start();
       stopper.join(10_000);
       assertThat(stopper.isAlive()).as("stop() must not wait for the start").isFalse();
@@ -287,7 +296,7 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(pool.isRunning()).isFalse();
       assertThat(pool.getTempDir()).doesNotExist();
       assertThatIllegalStateException()
-          .isThrownBy(() -> pool.start())
+          .isThrownBy(pool::start)
           .withMessage("This office manager has been shutdown.");
     }
 
@@ -358,7 +367,7 @@ class AbstractOfficeWorkerPoolTest {
       pool = FakeOfficeWorkerPool.builder().workingDir(notADirectory).workers(worker).build();
 
       assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(() -> pool.start())
+          .isThrownBy(pool::start)
           .withMessageStartingWith("Cannot create temporary directory");
       assertThat(worker.calls).isEmpty();
     }
@@ -770,7 +779,7 @@ class AbstractOfficeWorkerPoolTest {
                 while (!release.get()) {
                   try {
                     Thread.sleep(5);
-                  } catch (InterruptedException ex) {
+                  } catch (InterruptedException ignored) {
                     // Ignored on purpose.
                   }
                 }
@@ -942,7 +951,7 @@ class AbstractOfficeWorkerPoolTest {
 
       assertThat(worker.calls).isEmpty();
       assertThatIllegalStateException()
-          .isThrownBy(() -> pool.start())
+          .isThrownBy(pool::start)
           .withMessage("This office manager has been shutdown.");
     }
 
@@ -1031,7 +1040,7 @@ class AbstractOfficeWorkerPoolTest {
       final var running = pool.submit(task);
       task.awaitStarted();
 
-      assertThatCode(() -> pool.stop()).doesNotThrowAnyException();
+      assertThatCode(pool::stop).doesNotThrowAnyException();
 
       assertThat(running).isCompletedExceptionally();
       assertThat(worker.calls).containsExactly("start", "execute", "abort", "stop");
@@ -1053,7 +1062,7 @@ class AbstractOfficeWorkerPoolTest {
                 while (!release.get()) {
                   try {
                     Thread.sleep(5);
-                  } catch (InterruptedException ex) {
+                  } catch (InterruptedException ignored) {
                     // Ignored on purpose.
                   }
                 }
