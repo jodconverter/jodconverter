@@ -39,10 +39,16 @@ public abstract class AbstractDocumentSpecs implements DocumentSpecs {
   private File file;
   private DocumentFormat documentFormat;
 
+  /** Creates specifications without a file yet. */
   protected AbstractDocumentSpecs() {
     super();
   }
 
+  /**
+   * Creates the specifications of a file.
+   *
+   * @param file The file.
+   */
   protected AbstractDocumentSpecs(final @NonNull File file) {
     super();
 

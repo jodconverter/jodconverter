@@ -527,7 +527,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
     protected int taskQueueCapacity = DEFAULT_TASK_QUEUE_CAPACITY;
     protected long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
 
-    // Protected constructor so only subclasses can initialize an instance of this builder.
+    /** Creates a builder; only the subclasses can. */
     protected AbstractOfficeWorkerPoolBuilder() {
       super();
     }

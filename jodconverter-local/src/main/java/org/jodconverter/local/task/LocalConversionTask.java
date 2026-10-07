@@ -218,8 +218,14 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     return storeProps;
   }
 
-  // Modifies the document after it has been loaded and before
-  // it gets saved in the new format.
+  /**
+   * Modifies the document after it has been loaded and before it is stored in the new format: the
+   * filter chain is applied to it.
+   *
+   * @param context The context of the office process.
+   * @param document The loaded document.
+   * @throws OfficeException If a filter fails.
+   */
   protected void modifyDocument(
       final @NonNull OfficeContext context, final @NonNull XComponent document)
       throws OfficeException {
@@ -227,7 +233,14 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     filterChain.doFilter(context, document);
   }
 
-  // Stores the converted document as the output file.
+  /**
+   * Stores the document as the target file, with the store properties of the target format and of
+   * the task.
+   *
+   * @param document The loaded document.
+   * @param targetFile The file to write.
+   * @throws OfficeException If the document cannot be stored.
+   */
   protected void storeDocument(final @NonNull XComponent document, final @NonNull File targetFile)
       throws OfficeException {
 

@@ -44,6 +44,12 @@ public abstract class AbstractConversionJob
 
   private List<TargetOptions> defaultTargetOptions = List.of();
 
+  /**
+   * Creates a job from a source document to a target document.
+   *
+   * @param source The source document.
+   * @param target The target document.
+   */
   protected AbstractConversionJob(
       final @NonNull AbstractSourceDocumentSpecs source,
       final @NonNull AbstractTargetDocumentSpecs target) {

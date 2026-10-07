@@ -118,11 +118,9 @@ public class PageMarginsFilter implements Filter {
     // Get the style of the current page from the PageStyles family
     final var xStyle = Lo.qi(XStyle.class, xFamily.getByName(pageStyleName));
 
-    //
     // We could also just bet that the Standard style is used. If this is what we want,
     // uncomment the following line, and remove the ones (used to get the pageStyleName)
     // that will no longer be required.
-    //
 
     // Get the "Standard" style from the PageStyles family
     // XStyle xStyle = Lo.qi(XStyle.class, xFamily.getByName("Standard"));

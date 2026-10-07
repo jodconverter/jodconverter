@@ -52,6 +52,11 @@ public class JodConverterDocumentFormatsAutoConfiguration {
 
   private final JodConverterDocumentFormatsProperties properties;
 
+  /**
+   * Creates the document formats autoconfiguration.
+   *
+   * @param properties The document formats properties.
+   */
   public JodConverterDocumentFormatsAutoConfiguration(
       final @NonNull JodConverterDocumentFormatsProperties properties) {
     this.properties = properties;
