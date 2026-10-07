@@ -37,11 +37,11 @@ log4j = "2.26.1"
 
 # Gson
 # Latest version -> https://mvnrepository.com/artifact/com.google.code.gson/gson
-gson = "2.9.1"
+gson = "2.14.0"
 
 # SnakeYAML Engine, used by jodconverter-cli for the YAML configuration files
 # Latest version -> https://mvnrepository.com/artifact/org.snakeyaml/snakeyaml-engine
-snakeyaml-engine = "2.9"
+snakeyaml-engine = "3.2"
 
 # LibreOffice
 # Latest version -> https://mvnrepository.com/artifact/org.libreoffice
@@ -57,14 +57,15 @@ oo = "4.1.2"
 
 # JUnit (BOM)
 # Latest version -> https://mvnrepository.com/artifact/org.junit/junit-bom
-# Same version as the Spring Boot version above (Spring 6 requires JUnit 5.9+)
-junit = "5.12.2"
+# At least the version managed by the Spring Boot version above (JUnit 6 requires Java 17)
+junit = "6.1.3"
 
 # Latest version -> https://mvnrepository.com/artifact/org.assertj/assertj-core
-assertj = "3.22.0"
+assertj = "3.27.7"
 
 # Latest version -> https://mvnrepository.com/artifact/org.mockito/mockito-core
-mockito = "4.5.1"
+# Mockito 5 mocks final classes by default: the mockito-inline artifact is no longer needed
+mockito = "5.24.0"
 
 # Used by the integration tests to inspect the PDF documents produced with PdfOptions
 # Latest version -> https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
@@ -162,7 +163,6 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
 pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
 

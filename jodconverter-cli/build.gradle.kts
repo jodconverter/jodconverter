@@ -22,7 +22,6 @@ dependencies {
 
     runtimeOnly(libs.bundles.log4j) // Runtime so it is included in the distribution
 
-    testImplementation(libs.mockito.inline)
     testImplementation(libs.spring.test)
     testImplementation(libs.wiremock)
 }

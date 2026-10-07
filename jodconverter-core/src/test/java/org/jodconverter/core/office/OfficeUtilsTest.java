@@ -26,6 +26,7 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.spi.FileSystemProvider;
 
@@ -169,7 +170,8 @@ class OfficeUtilsTest {
       final var mockFileSystemProvider = mock(FileSystemProvider.class);
       when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
       when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
-      when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
+      when(mockFileSystemProvider.readAttributes(
+              isA(Path.class), any(Class.class), any(LinkOption[].class)))
           .thenThrow(new IOException("So that Files.isDirectory(mockPath) return false"));
       doThrow(new IOException("You can't do that bud!"))
           .when(mockFileSystemProvider)
@@ -206,7 +208,8 @@ class OfficeUtilsTest {
       final var mockFileSystemProvider = mock(FileSystemProvider.class);
       when(mockPath.getFileSystem()).thenAnswer(invocation -> mockFileSystem);
       when(mockFileSystem.provider()).thenAnswer(invocation -> mockFileSystemProvider);
-      when(mockFileSystemProvider.readAttributes(isA(Path.class), any(Class.class), any()))
+      when(mockFileSystemProvider.readAttributes(
+              isA(Path.class), any(Class.class), any(LinkOption[].class)))
           .thenThrow(new IOException("So that Files.isDirectory(mockPath) return false"));
       doThrow(new IOException("You can't do that bud!"))
           .when(mockFileSystemProvider)
