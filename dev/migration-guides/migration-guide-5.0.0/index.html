@@ -1021,6 +1021,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#remote-module-without-apache-httpclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Remote module without Apache HttpClient
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#records" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2810,6 +2821,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#remote-module-without-apache-httpclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Remote module without Apache HttpClient
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#records" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3142,6 +3164,28 @@ reads the command lines through the JVM on every Unix system. <code>WindowsProce
 PowerShell only (<code>wmic</code> is no longer used), and <code>AbstractProcessManager</code> stays for the managers that run a command to
 list them. <code>UnixProcessManager.setRunAsArgs</code> (unused), <code>ExitCodeRetryable</code> and the four stream pumper classes of the
 <code>process</code> package are removed.</p>
+<h3 id="remote-module-without-apache-httpclient">Remote module without Apache HttpClient<a class="headerlink" href="#remote-module-without-apache-httpclient" title="Permanent link">&para;</a></h3>
+<p><code>jodconverter-remote</code> sends its requests with the HTTP client of the JDK (<code>java.net.http</code>) and no longer depends on
+Apache HttpClient: the <code>httpclient</code>, <code>httpcore</code>, <code>httpmime</code> and <code>fluent-hc</code> artifacts are gone from its POM. The
+client of a worker is built once, when the manager starts, with the SSL material loaded once; a task that times out
+is aborted by cancelling its request, not by closing a client.</p>
+<ul>
+<li><code>RemoteOfficeContext.getHttpClient()</code> returns a <code>java.net.http.HttpClient</code>, and the context has a <code>send(request,
+    handler)</code> method that a custom task uses to send its requests, so that they are cancelled when the task is
+    aborted. <code>RemoteOfficeConnection</code> takes that client and a <code>RequestConfig</code>.</li>
+<li><code>RemoteOfficeManager.Builder</code> validates <code>urlConnection</code> in <code>build()</code> (an <code>IllegalArgumentException</code> for an invalid
+    URL, instead of a failure at the first conversion), builds the URL of the <code>convert-to</code> service once, and
+    recognizes the <code>cool</code> directory of Collabora Online as well as <code>lool</code>; <code>poolSize</code> must be at least 1; the
+    <code>connectTimeout</code> and <code>socketTimeout</code> setters no longer document a system default for negative values, which they
+    reject. <code>socketTimeout</code> is the timeout for the response of the server once a request is sent.</li>
+<li>The new <code>sslContext(SSLContext)</code> setter takes an SSL context built by the application, which takes precedence over
+    <code>sslConfig(SslConfig)</code>. The <code>org.jodconverter.remote.ssl.SslContexts</code> utility builds an <code>SSLContext</code> and its
+    <code>SSLParameters</code> from an <code>SslConfig</code>; a <code>classpath:</code> key store or trust store is read as a class path resource, so
+    it can live inside a jar. The SSL material is loaded when the manager starts: a wrong key password or an unknown
+    protocol, cipher suite or enabled protocol fails <code>start()</code>, with the cause as the root cause of the
+    <code>OfficeException</code>, instead of failing every conversion. A host name mismatch is reported as an
+    <code>SSLHandshakeException</code>, like any other handshake failure.</li>
+</ul>
 <h3 id="records">Records<a class="headerlink" href="#records" title="Permanent link">&para;</a></h3>
 <p><code>ProcessQuery</code> (local module) and <code>RequestConfig</code> (remote module) are now records, and their accessors follow the
 record naming:</p>

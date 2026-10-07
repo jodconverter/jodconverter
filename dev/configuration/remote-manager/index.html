@@ -2659,8 +2659,8 @@ It is recommended to check your OS to see if you have to set this property to a 
 </div>
 </div>
 <h4 id="connecttimeout">⌚<code>connectTimeout</code><a class="headerlink" href="#connecttimeout" title="Permanent link">&para;</a></h4>
-<p>This property sets the timeout in milliseconds until a connection is established. A timeout value of zero is
-interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).</p>
+<p>This property sets the timeout in milliseconds until a connection to the server is established. A timeout value
+of zero means no timeout.</p>
 <p>&#160;<strong><em>Default</em></strong>: 60000 (1 minute)</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Java</label><label for="__tabbed_4_2">Spring Boot</label><label for="__tabbed_4_3">Command Line</label></div>
 <div class="tabbed-content">
@@ -2686,9 +2686,8 @@ interpreted as an infinite timeout. A negative value is interpreted as undefined
 </div>
 </div>
 <h4 id="sockettimeout">⌚<code>socketTimeout</code><a class="headerlink" href="#sockettimeout" title="Permanent link">&para;</a></h4>
-<p>This property sets the socket timeout <code>SO_TIMEOUT</code> in milliseconds, which is the timeout for waiting for data or,
-to put differently, a maximum period inactivity between two consecutive data packets. A timeout value of zero is
-interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).</p>
+<p>This property sets the timeout in milliseconds for the response of the server once a request is sent. A timeout
+value of zero means no timeout.</p>
 <p>&#160;<strong><em>Default</em></strong>: 120000 (2 minutes)</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Java</label><label for="__tabbed_5_2">Spring Boot</label><label for="__tabbed_5_3">Command Line</label></div>
 <div class="tabbed-content">
@@ -2729,6 +2728,10 @@ interpreted as an infinite timeout. A negative value is interpreted as undefined
 <span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">sslConfig</span><span class="p">(</span><span class="n">sslConfig</span><span class="p">)</span>
 </span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
+<p>The key store and the trust store are read once, when the manager starts, from the class path (<code>classpath:</code>), a
+URL (<code>file:</code>...) or a file path. An application that builds its own <code>SSLContext</code> (from a Spring Boot SSL bundle,
+for example) gives it to the builder with <code>sslContext(...)</code> instead; it takes precedence over the SSL
+configuration.</p>
 </div>
 <div class="tabbed-block">
 <div class="language-yml highlight"><span class="filename">application.yml</span><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
