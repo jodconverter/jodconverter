@@ -71,7 +71,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       new PasswordInteractionHandler();
 
   /** Handler used to detect password-protected file. */
-  private static class PasswordInteractionHandler implements XInteractionHandler {
+  private static final class PasswordInteractionHandler implements XInteractionHandler {
 
     private PasswordRequest passwordRequest;
     private String documentName;
@@ -82,7 +82,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
      * @return The password interaction request that has been made, ot null if no password
      *     interaction request was made.
      */
-    public PasswordRequest getPasswordRequest() {
+    /* default */ PasswordRequest getPasswordRequest() {
       return passwordRequest;
     }
 
@@ -91,7 +91,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
      *
      * @return {@code true} if a password interaction request was made, {@code false} otherwise.
      */
-    public boolean hasPasswordInteractionRequest() {
+    /* default */ boolean hasPasswordInteractionRequest() {
       return passwordRequest != null;
     }
 
@@ -103,7 +103,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
      *     interaction request was made, or "NA" if an interaction was made, but the document name
      *     is unknown.
      */
-    public String getDocumentName() {
+    /* default */ String getDocumentName() {
       return documentName;
     }
 
@@ -245,7 +245,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       final XComponentLoader loader, final File sourceFile, final Map<String, Object> loadProps)
       throws com.sun.star.uno.Exception, OfficeException {
 
-    XComponent document = null;
+    final XComponent document;
     try {
       if (useStreamAdapters) {
         try {

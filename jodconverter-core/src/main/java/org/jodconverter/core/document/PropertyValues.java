@@ -20,6 +20,8 @@
 
 package org.jodconverter.core.document;
 
+import java.util.Locale;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -42,16 +44,17 @@ public final class PropertyValues {
    */
   public static @NonNull Object parse(final @NonNull String value) {
 
-    if ("true".equalsIgnoreCase(value)) {
-      return Boolean.TRUE;
-    }
-    if ("false".equalsIgnoreCase(value)) {
-      return Boolean.FALSE;
-    }
-    try {
-      return Integer.parseInt(value);
-    } catch (NumberFormatException ex) {
-      return value;
+    switch (value.toLowerCase(Locale.ROOT)) {
+      case "true":
+        return Boolean.TRUE;
+      case "false":
+        return Boolean.FALSE;
+      default:
+        try {
+          return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+          return value;
+        }
     }
   }
 }

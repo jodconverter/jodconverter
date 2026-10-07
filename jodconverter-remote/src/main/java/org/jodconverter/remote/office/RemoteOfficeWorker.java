@@ -128,7 +128,7 @@ class RemoteOfficeWorker implements OfficeWorker {
   public void execute(final OfficeTask task) throws OfficeException {
 
     final var context = new RemoteOfficeConnection(httpClient(), requestConfig);
-    current = context;
+    current = context; // NOPMD - read by abort() from another thread
     try {
       task.execute(context);
     } finally {

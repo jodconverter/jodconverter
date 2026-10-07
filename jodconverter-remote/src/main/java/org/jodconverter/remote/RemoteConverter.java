@@ -95,7 +95,7 @@ public final class RemoteConverter extends AbstractConverter {
   }
 
   /** Remote implementation of a conversion job with source format unspecified. */
-  private class RemoteConversionJobWithSourceFormatUnspecified
+  private final class RemoteConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
 
     private RemoteConversionJobWithSourceFormatUnspecified(
@@ -111,7 +111,7 @@ public final class RemoteConverter extends AbstractConverter {
   }
 
   /** Remote implementation of a conversion job. */
-  private class RemoteConversionJob extends AbstractConversionJob {
+  private final class RemoteConversionJob extends AbstractConversionJob {
 
     private RemoteConversionJob(
         final AbstractSourceDocumentSpecs source, final AbstractTargetDocumentSpecs target) {

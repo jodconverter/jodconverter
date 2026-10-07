@@ -35,7 +35,7 @@ import org.jodconverter.core.job.ConversionJobWithOptionalSourceFormatUnspecifie
  * @see org.jodconverter.core.office.OfficeManager
  * @see org.jodconverter.core.office.InstalledOfficeManagerHolder
  */
-public final class JodConverter { // NOPMD - Disable utility class name rule violation
+public final class JodConverter {
 
   /**
    * Converts a source file stored on the local file system.

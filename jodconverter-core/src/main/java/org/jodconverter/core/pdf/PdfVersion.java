@@ -62,7 +62,7 @@ public enum PdfVersion {
   PDF_A_4(4, OfficeSupport.libreOffice(25, 2));
 
   private final int value;
-  private final OfficeSupport support;
+  private final OfficeSupport support; // NOPMD - the constants of an enum are serialized by name
 
   PdfVersion(final int value, final OfficeSupport support) {
     this.value = value;

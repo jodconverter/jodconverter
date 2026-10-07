@@ -123,7 +123,7 @@ record OfficeUrl(UnoUrl unoUrl) {
    *
    * @param pipeName The pipe name.
    */
-  public OfficeUrl(final @NonNull String pipeName) {
+  /* default */ OfficeUrl(final @NonNull String pipeName) {
     this(pipe(pipeName));
   }
 
@@ -132,7 +132,7 @@ record OfficeUrl(UnoUrl unoUrl) {
    *
    * @param port The port.
    */
-  public OfficeUrl(final int port) {
+  /* default */ OfficeUrl(final int port) {
     this(LocalOfficeManager.DEFAULT_HOSTNAME, port);
   }
 
@@ -142,7 +142,7 @@ record OfficeUrl(UnoUrl unoUrl) {
    * @param host The host, may be null.
    * @param port The port.
    */
-  public OfficeUrl(final @Nullable String host, final int port) {
+  /* default */ OfficeUrl(final @Nullable String host, final int port) {
     this(socket(host, port));
   }
 
@@ -151,7 +151,7 @@ record OfficeUrl(UnoUrl unoUrl) {
    *
    * @param unoUrl The UnoUrl
    */
-  OfficeUrl(final @NonNull UnoUrl unoUrl) {
+  /* default */ OfficeUrl(final @NonNull UnoUrl unoUrl) {
     this.unoUrl = unoUrl;
   }
 
@@ -160,6 +160,7 @@ record OfficeUrl(UnoUrl unoUrl) {
    *
    * @return The "accept" string.
    */
+  @SuppressWarnings("PMD.PublicMemberInNonPublicType") // Introspected by the tests
   public String getAcceptString() {
     return unoUrl.getConnectionAndParametersAsString()
         + ";"
@@ -174,6 +175,7 @@ record OfficeUrl(UnoUrl unoUrl) {
    *
    * @return The uninterpreted connection name and parameters as string.
    */
+  @SuppressWarnings("PMD.PublicMemberInNonPublicType") // Introspected by the tests
   public String getConnectString() {
     return unoUrl.getConnectionAndParametersAsString();
   }

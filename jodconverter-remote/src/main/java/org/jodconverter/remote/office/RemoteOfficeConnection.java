@@ -76,7 +76,7 @@ public class RemoteOfficeConnection implements RemoteOfficeContext {
       throw new IOException("The task was aborted");
     }
     final var future = httpClient.sendAsync(request, handler);
-    inFlight = future;
+    inFlight = future; // NOPMD - read by abort() from another thread
     try {
       return future.get();
     } catch (CancellationException ex) {
@@ -84,12 +84,12 @@ public class RemoteOfficeConnection implements RemoteOfficeContext {
     } catch (ExecutionException ex) {
       final var cause = ex.getCause();
       if (cause instanceof IOException ioEx) {
-        throw ioEx;
+        throw ioEx; // NOPMD - the cause of the execution exception is rethrown as it is
       }
       if (cause instanceof RuntimeException runtimeEx) {
-        throw runtimeEx;
+        throw runtimeEx; // NOPMD - the cause of the execution exception is rethrown as it is
       }
-      throw new IOException(cause);
+      throw new IOException(cause); // NOPMD - the cause of the execution exception is the cause
     } finally {
       inFlight = null;
     }

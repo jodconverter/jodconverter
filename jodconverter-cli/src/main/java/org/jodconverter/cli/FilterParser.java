@@ -73,6 +73,10 @@ final class FilterParser {
 
   private static final String TYPE = "type";
   private static final String CLASS = "class";
+  private static final String HORIZONTAL_POSITION = "horizontal-position";
+  private static final String VERTICAL_POSITION = "vertical-position";
+  private static final String WIDTH = "width";
+  private static final String HEIGHT = "height";
 
   private static final Map<String, Function<Section, Filter>> TYPES = initTypes();
 
@@ -86,7 +90,7 @@ final class FilterParser {
    *
    * @return The names accepted by the {@code type} key.
    */
-  static Set<String> getTypeNames() {
+  /* default */ static Set<String> getTypeNames() {
     return TYPES.keySet();
   }
 
@@ -97,7 +101,7 @@ final class FilterParser {
    * @return The filters, in the order of the list.
    * @throws IllegalArgumentException If an entry is not valid.
    */
-  static List<Filter> parse(final List<?> entries) {
+  /* default */ static List<Filter> parse(final List<?> entries) {
 
     final var filters = new ArrayList<Filter>();
     var index = 0;
@@ -141,25 +145,15 @@ final class FilterParser {
       if (instance instanceof Filter filter) {
         return filter;
       }
-      throw new IllegalArgumentException(
-          "The class '" + className + "' of " + section.name() + " is not a filter");
+      throw new IllegalArgumentException(classOf(className, section) + " is not a filter");
     } catch (ClassNotFoundException ex) {
-      throw new IllegalArgumentException(
-          "The class '" + className + "' of " + section.name() + " was not found", ex);
+      throw new IllegalArgumentException(classOf(className, section) + " was not found", ex);
     } catch (NoSuchMethodException ex) {
       throw new IllegalArgumentException(
-          "The class '"
-              + className
-              + "' of "
-              + section.name()
-              + " has no public no-argument constructor",
-          ex);
+          classOf(className, section) + " has no public no-argument constructor", ex);
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
       throw new IllegalArgumentException(
-          "The class '"
-              + className
-              + "' of "
-              + section.name()
+          classOf(className, section)
               + " could not be instantiated: "
               + (ex.getCause() == null ? ex : ex.getCause()).getMessage(),
           ex);
@@ -181,6 +175,11 @@ final class FilterParser {
     map.put("document-indexes-updater", FilterParser::documentIndexesUpdater);
     map.put("table-of-content-updater", FilterParser::documentIndexesUpdater);
     return map;
+  }
+
+  // The start of the messages about the class of a custom filter.
+  private static String classOf(final String className, final Section section) {
+    return "The class '" + className + "' of " + section.name();
   }
 
   private static Filter pagesSelector(final Section section) {
@@ -205,9 +204,8 @@ final class FilterParser {
             : new GraphicInserterFilter(image, size[0], size[1], shapeProperties);
       }
       final var horizontal =
-          Values.integer(section.required("horizontal-position"), "horizontal-position");
-      final var vertical =
-          Values.integer(section.required("vertical-position"), "vertical-position");
+          Values.integer(section.required(HORIZONTAL_POSITION), HORIZONTAL_POSITION);
+      final var vertical = Values.integer(section.required(VERTICAL_POSITION), VERTICAL_POSITION);
       return size == null
           ? new GraphicInserterFilter(image, horizontal, vertical)
           : new GraphicInserterFilter(image, size[0], size[1], horizontal, vertical);
@@ -219,8 +217,8 @@ final class FilterParser {
   private static Filter textInserter(final Section section) {
 
     final var text = Values.string(section.required("text"), "text");
-    final var width = Values.integer(section.required("width"), "width");
-    final var height = Values.integer(section.required("height"), "height");
+    final var width = Values.integer(section.required(WIDTH), WIDTH);
+    final var height = Values.integer(section.required(HEIGHT), HEIGHT);
     final var shapeProperties = section.map("shape-properties").orElse(null);
     if (shapeProperties != null) {
       return new TextInserterFilter(text, width, height, shapeProperties);
@@ -229,8 +227,8 @@ final class FilterParser {
         text,
         width,
         height,
-        Values.integer(section.required("horizontal-position"), "horizontal-position"),
-        Values.integer(section.required("vertical-position"), "vertical-position"));
+        Values.integer(section.required(HORIZONTAL_POSITION), HORIZONTAL_POSITION),
+        Values.integer(section.required(VERTICAL_POSITION), VERTICAL_POSITION));
   }
 
   private static Filter textReplacer(final Section section) {
@@ -267,9 +265,10 @@ final class FilterParser {
   }
 
   // The optional width and height, which must be given together.
+  @SuppressWarnings("PMD.ReturnEmptyCollectionRatherThanNull") // null means that no size was given
   private static int[] size(final Section section) {
-    final var width = section.optional("width").map(value -> Values.integer(value, "width"));
-    final var height = section.optional("height").map(value -> Values.integer(value, "height"));
+    final var width = section.optional(WIDTH).map(value -> Values.integer(value, WIDTH));
+    final var height = section.optional(HEIGHT).map(value -> Values.integer(value, HEIGHT));
     if (width.isPresent() != height.isPresent()) {
       throw new IllegalArgumentException("'width' and 'height' must be given together");
     }

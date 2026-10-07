@@ -49,7 +49,8 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeManager.class);
 
   // The default value for hostName.
-  public static final String DEFAULT_HOSTNAME = "127.0.0.1";
+  public static final String DEFAULT_HOSTNAME =
+      "127.0.0.1"; // NOPMD - the loopback address is the default host
   // The default timeout when executing a process call (start/terminate).
   public static final long DEFAULT_PROCESS_TIMEOUT = 120_000L; // 2 minutes
   // The default delay between each try when executing a process call (start/terminate).

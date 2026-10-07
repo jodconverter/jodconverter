@@ -212,7 +212,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    *
    * @param size A Rectangle that represents the size of the shape. Units are millimeters.
    */
-  protected void setRectSize(final @NonNull Dimension size) {
+  protected final void setRectSize(final @NonNull Dimension size) {
     this.rectSize = size;
   }
 

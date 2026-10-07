@@ -185,7 +185,8 @@ public class PagesSelectorFilter implements Filter {
     for (final var page : pages) {
       // Ignore invalid page
       if (page > 0 && page <= pageCount) {
-        copyPage(doc, page, nextTargetPage++);
+        copyPage(doc, page, nextTargetPage);
+        nextTargetPage++;
       }
     }
 

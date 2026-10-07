@@ -41,7 +41,7 @@ import org.jodconverter.remote.ssl.SslConfig;
 record CliConfig(@Nullable SslConfig ssl, List<Filter> filters) {
 
   /** A configuration without SSL options nor filters. */
-  static final CliConfig EMPTY = new CliConfig(null, List.of());
+  /* default */ static final CliConfig EMPTY = new CliConfig(null, List.of());
 
   CliConfig {
     filters = List.copyOf(filters);
@@ -52,7 +52,7 @@ record CliConfig(@Nullable SslConfig ssl, List<Filter> filters) {
    *
    * @return The filter chain, or null if there is no filter.
    */
-  @Nullable FilterChain filterChain() {
+  /* default */ @Nullable FilterChain filterChain() {
     return filters.isEmpty() ? null : new DefaultFilterChain(filters.toArray(new Filter[0]));
   }
 }

@@ -22,7 +22,6 @@ package org.jodconverter.core.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.CopyOption;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileVisitResult;
@@ -32,7 +31,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -107,20 +105,7 @@ public final class FileUtils {
     final var pathToDelete = file.toPath();
 
     if (Files.isDirectory(pathToDelete)) {
-      try {
-        Files.walk(pathToDelete)
-            .sorted(Comparator.reverseOrder())
-            .forEach(
-                path -> {
-                  try {
-                    Files.delete(path);
-                  } catch (IOException ex) {
-                    throw new UncheckedIOException(ex);
-                  }
-                });
-      } catch (UncheckedIOException ex) { // NOPMD - Only cause is relevant
-        throw ex.getCause();
-      }
+      Files.walkFileTree(pathToDelete, new DeleteDir());
     } else {
       Files.delete(pathToDelete);
     }
@@ -208,6 +193,27 @@ public final class FileUtils {
     throw new AssertionError("Utility class must not be instantiated");
   }
 
+  /** Deletes a directory tree, the files first and every directory once it is empty. */
+  private static final class DeleteDir extends SimpleFileVisitor<Path> {
+
+    @Override
+    public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes)
+        throws IOException {
+      Files.delete(file);
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult postVisitDirectory(final Path dir, final @Nullable IOException ex)
+        throws IOException {
+      if (ex != null) {
+        throw ex;
+      }
+      Files.delete(dir);
+      return FileVisitResult.CONTINUE;
+    }
+  }
+
   /** Visitor that helps copy a directory recursively. */
   private static class CopyDir extends SimpleFileVisitor<Path> {
     private final Path sourceDir;
@@ -219,7 +225,7 @@ public final class FileUtils {
 
       this.sourceDir = sourceDir;
       this.targetDir = targetDir;
-      this.options = options;
+      this.options = options.clone();
     }
 
     @Override

@@ -34,7 +34,7 @@ class OfficeConnectionEvent extends EventObject {
    *
    * @param source The connection on which the event initially occurred.
    */
-  public OfficeConnectionEvent(final @NonNull OfficeConnection source) {
+  /* default */ OfficeConnectionEvent(final @NonNull OfficeConnection source) {
     super(source);
   }
 }

@@ -33,8 +33,7 @@ import org.jodconverter.core.office.TemporaryFileMaker;
 import org.jodconverter.core.util.FileUtils;
 
 /** Target document specifications for from an input stream. */
-public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
-    implements TargetDocumentSpecs {
+public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs {
 
   private final OutputStream outputStream;
   private final boolean closeStream;

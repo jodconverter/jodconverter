@@ -66,7 +66,7 @@ import org.jodconverter.core.util.StringUtils;
  * <p>A worker that cannot be made ready is retried, with a growing delay between the attempts.
  */
 @SuppressWarnings("PMD.TooManyMethods")
-public abstract class AbstractOfficeWorkerPool implements OfficeManager, TemporaryFileMaker {
+public abstract class AbstractOfficeWorkerPool implements OfficeManager {
 
   /** The default maximum time a task waits in the queue for a worker. */
   public static final long DEFAULT_TASK_QUEUE_TIMEOUT = 30_000L; // 30 seconds
@@ -209,6 +209,8 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
     }
   }
 
+  // The exception of the start task is reported, not the execution exception around it.
+  @SuppressWarnings("PMD.PreserveStackTrace")
   private void awaitFirstStart(final OfficeWorkerRunner runner) throws OfficeException {
     try {
       runner.getFirstStart().get();
@@ -379,7 +381,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager, Tempora
           String.format("Task was interrupted while executing: %s", task), ex);
     } catch (ExecutionException ex) {
       // The tasks always fail with an OfficeException.
-      throw (OfficeException) ex.getCause();
+      throw (OfficeException) ex.getCause(); // NOPMD - the exception of the task is rethrown
     }
   }
 

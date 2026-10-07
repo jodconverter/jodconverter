@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
@@ -56,7 +57,7 @@ final class CliConverter {
    *
    * @param converter The converter responsible for the conversion.
    */
-  public CliConverter(final DocumentConverter converter) {
+  /* default */ CliConverter(final DocumentConverter converter) {
     this(converter, null);
   }
 
@@ -67,9 +68,9 @@ final class CliConverter {
    * @param targetOptions The options applied to the target documents whose format they support,
    *     such as {@link org.jodconverter.core.pdf.PdfOptions} for the PDF documents. May be null.
    */
-  public CliConverter(final DocumentConverter converter, final TargetOptions targetOptions) {
+  /* default */ CliConverter(final DocumentConverter converter, final TargetOptions targetOptions) {
 
-    this.out = new PrintWriter(System.out);
+    this.out = new PrintWriter(System.out, false, Charset.defaultCharset());
     this.converter = converter;
     this.targetOptions = targetOptions;
   }
@@ -85,7 +86,7 @@ final class CliConverter {
    * @throws org.jodconverter.core.office.OfficeException If an error occurs while converting the
    *     files.
    */
-  public void convert(
+  /* default */ void convert(
       final String[] filenames,
       final String outputFormat,
       final String outputDirPath,
@@ -141,7 +142,7 @@ final class CliConverter {
    * @throws org.jodconverter.core.office.OfficeException If an error occurs while converting the
    *     files.
    */
-  public void convert(
+  /* default */ void convert(
       final String[] inputFilenames,
       final String[] outputFilenames,
       final String outputDirPath,
@@ -202,21 +203,21 @@ final class CliConverter {
             : outputFile;
     try {
       final var job =
-          target == outputFile
+          target.equals(outputFile)
               ? converter.convert(inputFile).to(outputFile)
               : converter.convert(inputFile).to(target).as(format);
       if (format != null && targetOptions != null && targetOptions.supports(format)) {
         job.with(targetOptions);
       }
       job.execute();
-      if (target != outputFile) {
+      if (!target.equals(outputFile)) {
         Files.move(target.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
       }
     } catch (IOException ex) {
       throw new OfficeException(
           String.format("Could not replace the output file '%s'", outputFile), ex);
     } finally {
-      if (target != outputFile) {
+      if (!target.equals(outputFile)) {
         FileUtils.deleteQuietly(target);
       }
     }
@@ -281,26 +282,18 @@ final class CliConverter {
   private void prepareOutputDir(final File outputDir) throws OfficeException {
 
     if (outputDir != null) {
-      try {
-
-        if (outputDir.exists()) {
-          if (outputDir.isFile()) {
-            throw new IOException(
-                "Invalid output directory '" + outputDir + "' that exists but is a file");
-          }
-
-          if (!outputDir.canWrite()) {
-            throw new IOException(
-                "Invalid output directory '" + outputDir + "' that cannot be written to");
-          }
-
-        } else {
-          // Create the output directory
-          outputDir.mkdirs();
+      if (outputDir.exists()) {
+        if (outputDir.isFile()) {
+          throw new OfficeException(
+              "Invalid output directory '" + outputDir + "' that exists but is a file");
         }
-
-      } catch (IOException ex) {
-        throw new OfficeException("Could not prepare the output directory", ex);
+        if (!outputDir.canWrite()) {
+          throw new OfficeException(
+              "Invalid output directory '" + outputDir + "' that cannot be written to");
+        }
+      } else {
+        // Create the output directory
+        outputDir.mkdirs();
       }
     }
   }

@@ -138,9 +138,11 @@ public class JodConverterAttachedAutoConfiguration {
       super(ConfigurationPhase.PARSE_CONFIGURATION);
     }
 
+    /** The attached properties enable the auto-configuration. */
     @ConditionalOnProperty(prefix = "jodconverter.attached", name = "enabled", havingValue = "true")
     /* default */ static class Attached {}
 
+    /** The former external properties enable it too. */
     @ConditionalOnProperty(prefix = "jodconverter.external", name = "enabled", havingValue = "true")
     /* default */ static class External {}
   }

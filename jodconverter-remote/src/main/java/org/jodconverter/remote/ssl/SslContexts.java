@@ -134,7 +134,7 @@ public final class SslContexts {
             config.getKeyStoreType(),
             config.getKeyStoreProvider());
     if (keyStore == null) {
-      return null;
+      return null; // NOPMD - null means the defaults of the JVM for SSLContext.init
     }
     final var keyPassword =
         config.getKeyPassword() == null ? config.getKeyStorePassword() : config.getKeyPassword();
@@ -167,7 +167,8 @@ public final class SslContexts {
               config.getTrustStoreProvider());
       if (trustStore == null) {
         if (config.isVerifyHostname()) {
-          return null; // The default trust managers of the JVM
+          return null; // The default trust managers of the JVM // NOPMD - null means the defaults
+          // of the JVM for SSLContext.init
         }
         final var factory =
             TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -216,6 +217,7 @@ public final class SslContexts {
   }
 
   // Opens a store given as a class path resource, a URL or a file path.
+  @SuppressWarnings("PMD.UseProperClassLoader") // The class loader of the thread is tried first
   private static InputStream open(final String store) throws IOException {
 
     if (store.startsWith(CLASSPATH_PREFIX)) {

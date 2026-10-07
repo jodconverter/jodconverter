@@ -25,6 +25,8 @@ import java.util.Map;
 import org.jodconverter.core.util.AssertUtils;
 
 /** Base class of the groups of options of a {@link PdfOptions.Builder}. */
+@SuppressWarnings(
+    "PMD.AbstractClassWithoutAbstractMethod") // Only the groups of the package extend it
 abstract class AbstractPdfOptionGroup {
 
   private final Map<PdfOption, Object> values;

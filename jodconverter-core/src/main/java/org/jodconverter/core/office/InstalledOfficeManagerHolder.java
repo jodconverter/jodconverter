@@ -27,7 +27,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * used by created {@link org.jodconverter.core.DocumentConverter} when no office manager is given
  * to the converter builder.
  */
-@SuppressWarnings("PMD.ClassNamingConventions")
 public final class InstalledOfficeManagerHolder {
 
   private static OfficeManager instance;

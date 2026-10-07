@@ -169,7 +169,8 @@ final class OfficeWorkerRunner implements Runnable {
           firstStart.completeExceptionally(ex);
           return false;
         }
-        final var delay = pool.getRestartDelay(startFailures++);
+        final var delay = pool.getRestartDelay(startFailures);
+        startFailures++;
         LOGGER.warn("An office worker could not be made ready; retrying in {} ms", delay, ex);
         sleep(delay);
       }
@@ -186,7 +187,6 @@ final class OfficeWorkerRunner implements Runnable {
     }
   }
 
-  @SuppressWarnings("PMD.AvoidCatchingThrowable")
   private void execute(final OfficeJob job) {
 
     synchronized (jobLock) {
@@ -244,7 +244,7 @@ final class OfficeWorkerRunner implements Runnable {
    */
   /* default */ void abort(final OfficeJob job) {
     synchronized (jobLock) {
-      if (currentJob == job) {
+      if (currentJob == job) { // NOPMD - the same job object, not an equal one
         interruptWorker(true);
       }
     }
