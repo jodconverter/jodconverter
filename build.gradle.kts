@@ -108,7 +108,7 @@ gradle.projectsEvaluated {
         source(allSources)
         classpath = allClasspaths
 
-        setDestinationDir(layout.buildDirectory.dir("docs/javadoc").get().asFile)
+        destinationDir = layout.buildDirectory.dir("docs/javadoc").get().asFile
 
         val charset = "UTF-8"
         (options as StandardJavadocDocletOptions).apply {
