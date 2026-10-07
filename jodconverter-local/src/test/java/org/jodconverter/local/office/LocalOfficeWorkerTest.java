@@ -23,7 +23,10 @@ package org.jodconverter.local.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -52,7 +55,8 @@ class LocalOfficeWorkerTest {
   }
 
   /** A task that fails after a password interaction request, as LibreOffice 24+ makes it fail. */
-  private static class PasswordTask implements OfficeTask, PasswordProtectedExceptionSupportTask {
+  private static final class PasswordTask
+      implements OfficeTask, PasswordProtectedExceptionSupportTask {
 
     @Override
     public void execute(final OfficeContext context) throws OfficeException {

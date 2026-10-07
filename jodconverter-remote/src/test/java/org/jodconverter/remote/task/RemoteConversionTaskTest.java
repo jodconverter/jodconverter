@@ -31,7 +31,7 @@ import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.job.TargetDocumentSpecsFromFile;
 
 /** Contains tests for the {@link RemoteConversionTask} class. */
-public class RemoteConversionTaskTest {
+class RemoteConversionTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 

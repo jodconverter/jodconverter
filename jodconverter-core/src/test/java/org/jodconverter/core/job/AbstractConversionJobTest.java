@@ -20,7 +20,12 @@
 
 package org.jodconverter.core.job;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import java.io.File;
 import java.io.IOException;
@@ -186,7 +191,9 @@ class AbstractConversionJobTest {
       final ConversionJob job =
           new ConversionJob() {
             @Override
-            public void execute() {}
+            public void execute() {
+              // Nothing to do.
+            }
 
             @Override
             public CompletableFuture<Void> executeAsync() {
@@ -369,10 +376,14 @@ class AbstractConversionJobTest {
             }
 
             @Override
-            public void start() {}
+            public void start() {
+              // Nothing to do.
+            }
 
             @Override
-            public void stop() {}
+            public void stop() {
+              // Nothing to do.
+            }
 
             @Override
             public File makeTemporaryFile(final String extension) {

@@ -20,9 +20,15 @@
 
 package org.jodconverter.core.pdf;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -74,7 +80,7 @@ class PdfOptionsTest {
     @Test
     void withEveryVersion_ShouldSetTheSelectPdfVersionValue() {
 
-      final var expected = new HashMap<PdfVersion, Integer>();
+      final var expected = new EnumMap<PdfVersion, Integer>(PdfVersion.class);
       expected.put(PdfVersion.DEFAULT, 0);
       expected.put(PdfVersion.PDF_1_5, 15);
       expected.put(PdfVersion.PDF_1_6, 16);

@@ -244,6 +244,7 @@ class AbstractFilterChainTest {
 
   static class TestFilter implements Filter {
 
+    @SuppressWarnings("PMD.UnusedPrivateField") // Read by the assertions through reflection
     private int executeCount;
 
     @Override

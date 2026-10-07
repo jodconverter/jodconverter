@@ -20,7 +20,9 @@
 
 package org.jodconverter.remote;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
@@ -44,7 +46,7 @@ class RemoteConverterTest {
 
   /** Set up the office manager before each test. */
   @BeforeEach
-  public void setUp() {
+  void setUp() {
 
     officeManager = mock(OfficeManager.class);
   }
@@ -104,7 +106,4 @@ class RemoteConverterTest {
               });
     }
   }
-
-  @Nested
-  class Convert {}
 }

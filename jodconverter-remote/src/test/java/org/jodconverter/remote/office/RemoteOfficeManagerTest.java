@@ -20,8 +20,14 @@
 
 package org.jodconverter.remote.office;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.jodconverter.remote.office.RemoteOfficeManager.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT;
+import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT;
+import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_TASK_QUEUE_TIMEOUT;
+import static org.jodconverter.remote.office.RemoteOfficeManager.MAX_POOL_SIZE;
 
 import java.io.File;
 

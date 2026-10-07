@@ -75,21 +75,19 @@ public final class SimpleOfficeTask implements OfficeTask {
   public void execute(@SuppressWarnings("NullableProblems") final OfficeContext context)
       throws OfficeException {
 
-    try {
-      if (delayTime > NO_DELAY) {
+    if (delayTime > NO_DELAY) {
+      try {
         Thread.sleep(delayTime);
+      } catch (InterruptedException ex) {
+        Thread.currentThread().interrupt();
+        return;
       }
-
-      if (thrownException != null) {
-        throw thrownException;
-      }
-      completed = true;
-
-    } catch (InterruptedException ex) {
-      Thread.currentThread().interrupt();
-    } catch (Exception ex) {
-      throw new OfficeException("Failed to execute task", ex);
     }
+
+    if (thrownException != null) {
+      throw new OfficeException("Failed to execute task", thrownException);
+    }
+    completed = true;
   }
 
   /**

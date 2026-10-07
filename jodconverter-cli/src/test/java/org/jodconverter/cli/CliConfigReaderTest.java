@@ -48,6 +48,7 @@ import org.jodconverter.local.filter.text.TextInserterFilter;
 import org.jodconverter.local.filter.text.TextReplacerFilter;
 
 /** Contains tests for the {@link CliConfigReader} class. */
+@SuppressWarnings("PMD.PublicMemberInNonPublicType") // The filters are written as a user would
 class CliConfigReaderTest {
 
   private static final String IMAGE = "src/integTest/resources/images/sample-1.jpg";
@@ -326,7 +327,7 @@ class CliConfigReaderTest {
           .extracting("shapeProperties")
           .asInstanceOf(org.assertj.core.api.InstanceOfAssertFactories.MAP)
           .containsEntry("HoriOrientPosition", 5000)
-          .containsEntry("VertOrientPosition", 11100);
+          .containsEntry("VertOrientPosition", 11_100);
     }
 
     @Test
@@ -505,7 +506,7 @@ class CliConfigReaderTest {
           .extracting("shapeProperties")
           .asInstanceOf(org.assertj.core.api.InstanceOfAssertFactories.MAP)
           .containsEntry("HoriOrientPosition", 5000)
-          .containsEntry("VertOrientPosition", 10000);
+          .containsEntry("VertOrientPosition", 10_000);
       assertThat(filters.get(1))
           .extracting("shapeProperties")
           .asInstanceOf(org.assertj.core.api.InstanceOfAssertFactories.MAP)

@@ -30,7 +30,7 @@ import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.office.OfficeContext;
 
 /** Contains tests for the {@link AbstractRemoteOfficeTask} class. */
-public class AbstractRemoteOfficeTaskTest {
+class AbstractRemoteOfficeTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 

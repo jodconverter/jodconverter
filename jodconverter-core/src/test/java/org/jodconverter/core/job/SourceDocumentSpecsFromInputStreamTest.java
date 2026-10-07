@@ -26,7 +26,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -38,7 +43,7 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.TemporaryFileMaker;
 
 /** Contains tests for the {@link SourceDocumentSpecsFromInputStream} class. */
-@SuppressWarnings({"PMD.AvoidFileStream", "PMD.CloseResource"})
+@SuppressWarnings("PMD.AvoidFileStream")
 class SourceDocumentSpecsFromInputStreamTest {
 
   @Nested

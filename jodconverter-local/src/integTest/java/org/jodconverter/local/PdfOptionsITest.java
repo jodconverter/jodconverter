@@ -20,7 +20,9 @@
 
 package org.jodconverter.local;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 

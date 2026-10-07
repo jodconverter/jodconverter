@@ -20,8 +20,16 @@
 
 package org.jodconverter.core.office;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -181,7 +189,7 @@ class OfficeUtilsTest {
       final var arg = ArgumentCaptor.forClass(File.class);
       verify(mockDir, times(1)).renameTo(arg.capture());
       assertThat(arg.getValue()).exists();
-      assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
+      assertThat(arg.getValue().getName()).startsWith(tempDir.getName() + ".old.");
       assertThat(tempDir).exists();
       FileUtils.delete(tempDir);
       FileUtils.delete(arg.getValue());
@@ -219,7 +227,7 @@ class OfficeUtilsTest {
       final var arg = ArgumentCaptor.forClass(File.class);
       verify(mockDir, times(1)).renameTo(arg.capture());
       assertThat(arg.getValue()).doesNotExist();
-      assertThat(arg.getValue().getName().startsWith(tempDir.getName() + ".old."));
+      assertThat(arg.getValue().getName()).startsWith(tempDir.getName() + ".old.");
       assertThat(tempDir).exists();
       FileUtils.delete(tempDir);
     }

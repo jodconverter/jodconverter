@@ -20,7 +20,9 @@
 
 package org.jodconverter.local.task;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
@@ -262,7 +264,7 @@ class LocalConversionTaskTest {
 
   private static class FooSourceSpecs extends AbstractSourceDocumentSpecs {
 
-    public FooSourceSpecs(final File source) {
+    FooSourceSpecs(final File source) {
       super(source);
     }
 
@@ -274,7 +276,7 @@ class LocalConversionTaskTest {
 
   private static class FooTargetSpecs extends AbstractTargetDocumentSpecs {
 
-    public FooTargetSpecs(final File target) {
+    FooTargetSpecs(final File target) {
       super(target);
     }
 
@@ -286,7 +288,7 @@ class LocalConversionTaskTest {
 
   private static class FooTargetSpecsWithoutFilterFormat extends FooTargetSpecs {
 
-    public FooTargetSpecsWithoutFilterFormat(final File target) {
+    FooTargetSpecsWithoutFilterFormat(final File target) {
       super(target);
     }
 

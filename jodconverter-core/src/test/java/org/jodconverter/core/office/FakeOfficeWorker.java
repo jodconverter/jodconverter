@@ -95,7 +95,7 @@ public final class FakeOfficeWorker implements OfficeWorker {
 
   private void makeReady() throws OfficeException {
 
-    ready = false;
+    ready = false; // NOPMD - stays false when the start fails below
     startBegun.countDown();
     final var gate = startGate;
     if (gate != null) {
