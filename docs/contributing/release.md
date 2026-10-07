@@ -21,8 +21,8 @@ credentials and the signing key, which live in the repository secrets; the rest 
    ```
    The task writes `version` in `gradle.properties` and, for a release version, replaces the previous released
    version in the pages of the documentation that show dependency coordinates.
-5. **Full build and integration tests, locally.** The continuous integration runs the unit tests only; the
-   integration tests need a real office installation:
+5. **Full build and integration tests, locally.** The continuous integration runs them on Linux only; a release
+   deserves a run with the office installation of another platform:
    ```bash
    ./gradlew clean build integrationTest
    ```
