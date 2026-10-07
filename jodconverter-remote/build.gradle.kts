@@ -14,17 +14,6 @@ dependencies {
 
     implementation(libs.slf4j.api)
 
-    implementation(libs.httpcore)
-    implementation(libs.httpclient)
-    implementation(libs.httpmime)
-    implementation(libs.fluent.hc)
-
-    constraints {
-        implementation(libs.commons.codec) {
-            because("httpclient requests an older version")
-        }
-    }
-
     testRuntimeOnly(libs.bundles.log4j)
     testImplementation(libs.mockito.inline)
     testImplementation(libs.spring.test)

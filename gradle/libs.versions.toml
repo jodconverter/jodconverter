@@ -43,15 +43,6 @@ gson = "2.9.1"
 # Latest version -> https://mvnrepository.com/artifact/org.snakeyaml/snakeyaml-engine
 snakeyaml-engine = "2.9"
 
-# Apache HttpComponents
-# Latest version -> https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-httpclient = "4.5.14"
-# Latest version -> https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore
-httpcore = "4.4.16"
-# Used by httpclient, which requests an older version
-# Latest version -> https://mvnrepository.com/artifact/commons-codec/commons-codec
-commons-codec = "1.15"
-
 # LibreOffice
 # Latest version -> https://mvnrepository.com/artifact/org.libreoffice
 lo = "26.2.2"
@@ -150,11 +141,6 @@ spring-test = { module = "org.springframework:spring-test", version.ref = "sprin
 jakarta-annotations = { module = "jakarta.annotation:jakarta.annotation-api" }
 
 # HTTP Components
-httpcore = { module = "org.apache.httpcomponents:httpcore", version.ref = "httpcore" }
-httpclient = { module = "org.apache.httpcomponents:httpclient", version.ref = "httpclient" }
-httpmime = { module = "org.apache.httpcomponents:httpmime", version.ref = "httpclient" }
-fluent-hc = { module = "org.apache.httpcomponents:fluent-hc", version.ref = "httpclient" }
-commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 
 # Logging
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }

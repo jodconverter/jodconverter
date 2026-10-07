@@ -20,36 +20,39 @@
 
 package org.jodconverter.remote.office;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT;
 import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.http.HttpClient;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.SimpleOfficeTask;
+import org.jodconverter.remote.ssl.SslConfig;
 
 /** Contains tests for the {@link RemoteOfficeWorker} class. */
 class RemoteOfficeWorkerITest {
 
-  private static RemoteOfficeWorker newWorker(final String connectionUrl) {
+  private static RemoteOfficeWorker newWorker(final String serviceUrl) {
     return new RemoteOfficeWorker(
-        connectionUrl, null, DEFAULT_CONNECT_TIMEOUT, DEFAULT_SOCKET_TIMEOUT);
+        new RequestConfig(serviceUrl, DEFAULT_CONNECT_TIMEOUT, DEFAULT_SOCKET_TIMEOUT), null, null);
   }
 
   @Nested
   class Lifecycle {
 
     @Test
-    void shouldAlwaysBeReadyAndHaveNothingToStartOrStop() {
+    void shouldAlwaysBeReadyAndHaveNothingToStop() {
 
-      final var worker = newWorker("http://localhost/");
-
+      final var worker = newWorker("http://localhost/lool/convert-to/");
       assertThatCode(
               () -> {
                 worker.start();
@@ -60,50 +63,93 @@ class RemoteOfficeWorkerITest {
           .doesNotThrowAnyException();
       assertThat(worker.isReady()).isTrue();
     }
+
+    @Test
+    void start_ShouldBuildTheHttpClientOnce() throws OfficeException {
+
+      final var worker = newWorker("http://localhost/lool/convert-to/");
+      worker.start();
+      final var client = new HttpClient[2];
+      worker.execute(context -> client[0] = ((RemoteOfficeContext) context).getHttpClient());
+      worker.restart();
+      worker.execute(context -> client[1] = ((RemoteOfficeContext) context).getHttpClient());
+
+      assertThat(client[0]).isNotNull().isSameAs(client[1]);
+    }
+
+    @Test
+    void start_WithBadSslMaterial_ShouldThrowOfficeException() {
+
+      final var sslConfig = new SslConfig();
+      sslConfig.setProtocol("NoSuchProtocol");
+      final var worker =
+          new RemoteOfficeWorker(
+              new RequestConfig("https://localhost/lool/convert-to/", 0L, 0L), sslConfig, null);
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(worker::start)
+          .withMessage("Could not create the SSL context")
+          .withCauseExactlyInstanceOf(java.security.NoSuchAlgorithmException.class);
+    }
   }
 
   @Nested
   class Execute {
 
     @Test
-    void whenMalformedUrlExceptionCatch_ShouldThrowOfficeException() {
+    void whenIOExceptionCatch_ShouldThrowOfficeException() {
 
-      final var worker = newWorker("localhost");
-
-      assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(() -> worker.execute(new SimpleOfficeTask()))
-          .withCauseExactlyInstanceOf(MalformedURLException.class);
-    }
-
-    @Test
-    void whenIOExceptionExceptionCatch_ShouldThrowOfficeException() {
-
-      final var worker = newWorker("http://localhost/");
-
+      final var worker = newWorker("http://localhost/lool/convert-to/");
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> worker.execute(new SimpleOfficeTask(new IOException())))
           .withCauseExactlyInstanceOf(IOException.class);
     }
+
+    @Test
+    void shouldGiveTheRequestConfigToTheTask() throws OfficeException {
+
+      final var worker = newWorker("http://localhost/lool/convert-to/");
+      final var config = new RequestConfig[1];
+      worker.execute(context -> config[0] = ((RemoteOfficeContext) context).getRequestConfig());
+
+      assertThat(config[0])
+          .isEqualTo(
+              new RequestConfig(
+                  "http://localhost/lool/convert-to/",
+                  DEFAULT_CONNECT_TIMEOUT,
+                  DEFAULT_SOCKET_TIMEOUT));
+    }
   }
 
   @Nested
-  class BuildUrl {
+  class ServiceUrl {
 
     @Test
-    void withAllValidUrlOptions_ShoulReturnProperUrlWithLoolExtension() {
+    void withAnyFormOfTheServerUrl_ShouldReturnTheConvertToUrl() {
 
-      final var worker = newWorker("http://localhost/");
+      assertThat(RemoteOfficeManager.toServiceUrl("http://localhost/lool/convert-to"))
+          .isEqualTo("http://localhost/lool/convert-to/");
+      assertThat(RemoteOfficeManager.toServiceUrl("http://localhost/lool/convert-to/"))
+          .isEqualTo("http://localhost/lool/convert-to/");
+      assertThat(RemoteOfficeManager.toServiceUrl("http://localhost/lool"))
+          .isEqualTo("http://localhost/lool/convert-to/");
+      assertThat(RemoteOfficeManager.toServiceUrl("http://localhost/cool/"))
+          .isEqualTo("http://localhost/cool/convert-to/");
+      assertThat(RemoteOfficeManager.toServiceUrl("https://localhost:9980/cool/convert-to"))
+          .isEqualTo("https://localhost:9980/cool/convert-to/");
+      assertThat(RemoteOfficeManager.toServiceUrl("http://localhost"))
+          .isEqualTo("http://localhost/lool/convert-to/");
+      assertThat(RemoteOfficeManager.toServiceUrl("http://localhost/"))
+          .isEqualTo("http://localhost/lool/convert-to/");
+    }
 
-      String url =
-          ReflectionTestUtils.invokeMethod(worker, "buildUrl", "http://localhost/lool/convert-to");
-      assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-      url =
-          ReflectionTestUtils.invokeMethod(worker, "buildUrl", "http://localhost/lool/convert-to/");
-      assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-      url = ReflectionTestUtils.invokeMethod(worker, "buildUrl", "http://localhost");
-      assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
-      url = ReflectionTestUtils.invokeMethod(worker, "buildUrl", "http://localhost/");
-      assertThat(url).isEqualTo("http://localhost/lool/convert-to/");
+    @Test
+    void withAnInvalidUrl_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> RemoteOfficeManager.builder().urlConnection("localhost").build())
+          .withMessageContaining("is not a valid URL")
+          .withCauseExactlyInstanceOf(MalformedURLException.class);
     }
   }
 }

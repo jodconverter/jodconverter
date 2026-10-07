@@ -24,6 +24,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +40,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.core.task.SimpleOfficeTask;
 import org.jodconverter.remote.RemoteConverter;
 
 /** Contains tests for the {@link RemoteOfficeManager} class. */
@@ -51,16 +51,35 @@ class RemoteOfficeManagerITest {
   @Nested
   class Execute {
     @Test
-    void withBadUrl_ShouldThrowOfficeException() throws OfficeException {
+    void withBadUrl_ShouldThrowIllegalArgumentExceptionAtBuild() {
 
+      // The URL is validated once, when the manager is built, not at the first conversion.
+      assertThatIllegalArgumentException()
+          .isThrownBy(
+              () -> RemoteOfficeManager.builder().urlConnection("url_that_could_not_work").build())
+          .withMessageContaining("is not a valid URL");
+    }
+
+    @Test
+    void withUnreachableServer_ShouldThrowOfficeException(final @TempDir File testFolder)
+        throws OfficeException {
+
+      // Nothing listens on this port.
       final var manager =
-          RemoteOfficeManager.builder().urlConnection("url_that_could_not_work").build();
+          RemoteOfficeManager.builder()
+              .urlConnection("http://localhost:1/lool/convert-to/")
+              .connectTimeout(2_000L)
+              .build();
       try {
         manager.start();
+        final var inputFile = new File(SOURCE_FILE_PATH);
+        final var outputFile = new File(testFolder, "out.txt");
 
         assertThatExceptionOfType(OfficeException.class)
-            .isThrownBy(() -> manager.execute(new SimpleOfficeTask()));
-
+            .isThrownBy(
+                () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
+            .withMessage("Remote conversion failed")
+            .withCauseInstanceOf(IOException.class);
       } finally {
         manager.stop();
       }

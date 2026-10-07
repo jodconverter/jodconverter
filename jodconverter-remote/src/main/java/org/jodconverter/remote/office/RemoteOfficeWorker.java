@@ -20,271 +20,103 @@
 
 package org.jodconverter.remote.office;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.*;
-import java.nio.file.Files;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.net.http.HttpClient;
+import java.security.GeneralSecurityException;
+import java.time.Duration;
+import javax.net.ssl.SSLContext;
 
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.PrivateKeyDetails;
-import org.apache.http.ssl.PrivateKeyStrategy;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.ssl.SSLContexts;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeWorker;
 import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.remote.ssl.SslConfig;
+import org.jodconverter.remote.ssl.SslContexts;
 
 /**
  * A RemoteOfficeWorker executes the tasks submitted through a {@link RemoteOfficeManager}, which
  * does not depend on an office installation: it sends the conversion requests to a LibreOffice
- * Online server. It is always ready, and has nothing to start or stop.
+ * Online server. Its HTTP client, with the SSL material of the manager, is built once when the
+ * worker starts; the worker is then always ready.
  *
  * @see RemoteOfficeManager
  */
 class RemoteOfficeWorker implements OfficeWorker {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RemoteOfficeWorker.class);
-
-  private final String connectionUrl;
+  private final RequestConfig requestConfig;
   private final SslConfig sslConfig;
-  private final long connectTimeout;
-  private final long socketTimeout;
-
-  // The client of the request being executed, closed to abort the request.
-  private volatile CloseableHttpClient httpClient;
-
-  /**
-   * Strategy that selects a private key by its alias.
-   *
-   * @param keyAlias The alias of the private key to select.
-   */
-  private record SelectByAlias(String keyAlias) implements PrivateKeyStrategy {
-
-    @Override
-    public String chooseAlias(final Map<String, PrivateKeyDetails> aliases, final Socket socket) {
-
-      return aliases.keySet().stream()
-          .filter(key -> key.equalsIgnoreCase(keyAlias))
-          .findFirst()
-          .orElse(null);
-    }
-  }
-
-  /** Strategy that trust all certificates. */
-  private static final class TrustAllStrategy implements TrustStrategy {
-
-    private static final TrustAllStrategy INSTANCE = new TrustAllStrategy();
-
-    @Override
-    public boolean isTrusted(final X509Certificate[] chain, final String authType) {
-      return true;
-    }
-  }
-
-  // Taken from Spring org.springframework.util.ClassUtils class.
-  @SuppressWarnings("PMD")
-  private static ClassLoader getDefaultClassLoader() {
-
-    ClassLoader cl = null;
-    try {
-      cl = Thread.currentThread().getContextClassLoader();
-    } catch (Throwable ignored) {
-      // Cannot access thread context ClassLoader - falling back...
-    }
-    if (cl == null) {
-      // No thread context class loader -> use class loader of this class.
-      cl = RemoteOfficeWorker.class.getClassLoader();
-      if (cl == null) {
-        // getClassLoader() returning null indicates the bootstrap ClassLoader
-        try {
-          cl = ClassLoader.getSystemClassLoader();
-        } catch (Throwable ignored) {
-          // Cannot access system ClassLoader - oh well, maybe the caller can live with null...
-        }
-      }
-    }
-    return cl;
-  }
-
-  // Taken from spring org.springframework.util.ResourceUtils class
-  private static File getFile(final URL url) {
-
-    try {
-      return new File(new URI(url.toString().replace(" ", "%20")).getSchemeSpecificPart());
-    } catch (URISyntaxException ex) {
-      // Fallback for URLs that are not valid URIs (should hardly ever happen).
-      return new File(url.getFile());
-    }
-  }
-
-  // Taken from spring org.springframework.util.ResourceUtils class
-  private static File getFile(final String resourceLocation) throws FileNotFoundException {
-
-    Objects.requireNonNull(resourceLocation, "resourceLocation must not be null");
-    if (resourceLocation.startsWith("classpath:")) {
-      final var path = resourceLocation.substring("classpath:".length());
-      final var description = "class path resource [" + path + "]";
-      final var cl = getDefaultClassLoader();
-      final var url = cl == null ? ClassLoader.getSystemResource(path) : cl.getResource(path);
-      if (url == null) {
-        throw new FileNotFoundException(
-            description + " cannot be resolved to absolute file path because it does not exist");
-      }
-      return getFile(url.toString());
-    }
-
-    try {
-      // try URL
-      return getFile(new URL(resourceLocation));
-    } catch (MalformedURLException ex) {
-      // no URL -> treat as file path
-      return new File(resourceLocation);
-    }
-  }
+  private final SSLContext sslContext;
+  private HttpClient httpClient;
+  // The context of the task being executed, aborted to end its request.
+  private volatile RemoteOfficeConnection current;
 
   /**
    * Creates a new worker with the specified configuration.
    *
-   * @param connectionUrl The URL to the remote server.
-   * @param sslConfig The SSL configuration used to secure communication with the remote server.
-   * @param connectTimeout The timeout in milliseconds until a connection is established. A timeout
-   *     value of zero is interpreted as an infinite timeout. A negative value is interpreted as
-   *     undefined (system default).
-   * @param socketTimeout The socket timeout ({@code SO_TIMEOUT}) in milliseconds, which is the
-   *     timeout for waiting for data or, put differently, a maximum period inactivity between two
-   *     consecutive data packets. A timeout value of zero is interpreted as an infinite timeout. A
-   *     negative value is interpreted as undefined (system default).
+   * @param requestConfig The configuration of the requests: the URL of the conversion service and
+   *     the timeouts.
+   * @param sslConfig The SSL configuration used to secure the communication with the server, or
+   *     null for the defaults of the JVM; ignored when an SSL context is given.
+   * @param sslContext The SSL context used to secure the communication with the server, or null to
+   *     build it from the SSL configuration.
    */
   /* default */ RemoteOfficeWorker(
-      final String connectionUrl,
-      final SslConfig sslConfig,
-      final long connectTimeout,
-      final long socketTimeout) {
+      final RequestConfig requestConfig,
+      final @Nullable SslConfig sslConfig,
+      final @Nullable SSLContext sslContext) {
+    super();
 
-    this.connectionUrl = connectionUrl;
+    this.requestConfig = requestConfig;
     this.sslConfig = sslConfig;
-    this.connectTimeout = connectTimeout;
-    this.socketTimeout = socketTimeout;
+    this.sslContext = sslContext;
   }
 
-  private String buildUrl(final String connectionUrl) throws MalformedURLException {
+  /**
+   * Builds the HTTP client of this worker, with the SSL material loaded once.
+   *
+   * @return The client.
+   * @throws OfficeException If the SSL material cannot be used.
+   */
+  private HttpClient buildHttpClient() throws OfficeException {
 
-    // An example URL is like:
-    // http://localhost:9980/lool/convert-to/docx
-
-    final var url = new URL(connectionUrl);
-    final var path = url.toExternalForm().toLowerCase(Locale.ROOT);
-    final var base = connectionUrl.endsWith("/") ? connectionUrl : connectionUrl + "/";
-    if (path.endsWith("lool/convert-to") || path.endsWith("lool/convert-to/")) {
-      return base;
-    } else if (path.endsWith("lool") || path.endsWith("lool/")) {
-      return base + "convert-to/";
+    // HTTP/1.1, as the conversion services expect: a multipart body of unknown length over
+    // HTTP/2 gets its stream reset by some servers.
+    final var builder =
+        HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
+            .followRedirects(HttpClient.Redirect.NORMAL);
+    if (requestConfig.connectTimeout() > 0) {
+      builder.connectTimeout(Duration.ofMillis(requestConfig.connectTimeout()));
     }
-    return base + "lool/convert-to/";
-  }
-
-  private void configureKeyMaterial(final SSLContextBuilder sslBuilder)
-      throws UnrecoverableKeyException,
-          NoSuchAlgorithmException,
-          KeyStoreException,
-          CertificateException,
-          IOException,
-          NoSuchProviderException {
-
-    final var keystore =
-        loadStore(
-            sslConfig.getKeyStore(),
-            sslConfig.getKeyStorePassword(),
-            sslConfig.getKeyStoreType(),
-            sslConfig.getKeyStoreProvider());
-    if (keystore != null) {
-      sslBuilder.loadKeyMaterial(
-          keystore,
-          sslConfig.getKeyPassword() == null
-              ? Objects.requireNonNull(sslConfig.getKeyStorePassword()).toCharArray()
-              : sslConfig.getKeyPassword().toCharArray(),
-          sslConfig.getKeyAlias() == null ? null : new SelectByAlias(sslConfig.getKeyAlias()));
-    }
-  }
-
-  private SSLConnectionSocketFactory configureSsl() throws OfficeException {
-
-    if (sslConfig == null || !sslConfig.isEnabled()) {
-      return null;
-    }
-
     try {
-      final var sslBuilder = SSLContexts.custom();
-      sslBuilder.setProtocol(sslConfig.getProtocol());
-      configureKeyMaterial(sslBuilder);
-      configureTrustMaterial(sslBuilder);
-
-      final var sslcontext = sslBuilder.build();
-
-      return new SSLConnectionSocketFactory(
-          sslcontext,
-          sslConfig.getEnabledProtocols(),
-          sslConfig.getCiphers(),
-          sslConfig.isVerifyHostname()
-              ? SSLConnectionSocketFactory.getDefaultHostnameVerifier()
-              : NoopHostnameVerifier.INSTANCE);
-
-    } catch (IOException
-        | KeyManagementException
-        | NoSuchAlgorithmException
-        | KeyStoreException
-        | CertificateException
-        | UnrecoverableKeyException
-        | NoSuchProviderException ex) {
-      throw new OfficeException("Could not create SSL context.", ex);
-    }
-  }
-
-  private void configureTrustMaterial(final SSLContextBuilder sslBuilder)
-      throws NoSuchAlgorithmException,
-          KeyStoreException,
-          CertificateException,
-          IOException,
-          NoSuchProviderException {
-
-    if (sslConfig.isTrustAll()) {
-      sslBuilder.loadTrustMaterial(null, TrustAllStrategy.INSTANCE);
-    } else {
-      final var truststore =
-          loadStore(
-              sslConfig.getTrustStore(),
-              sslConfig.getTrustStorePassword(),
-              sslConfig.getTrustStoreType(),
-              sslConfig.getTrustStoreProvider());
-      if (truststore != null) {
-        sslBuilder.loadTrustMaterial(truststore, null);
+      if (sslContext != null) {
+        builder.sslContext(sslContext);
+      } else if (sslConfig != null && sslConfig.isEnabled()) {
+        final var context = SslContexts.create(sslConfig);
+        builder.sslContext(context).sslParameters(SslContexts.parameters(sslConfig, context));
       }
+    } catch (GeneralSecurityException | IOException | IllegalArgumentException ex) {
+      throw new OfficeException("Could not create the SSL context", ex);
     }
+    return builder.build();
+  }
+
+  private synchronized HttpClient httpClient() throws OfficeException {
+    if (httpClient == null) {
+      httpClient = buildHttpClient();
+    }
+    return httpClient;
   }
 
   @Override
-  public void start() {
-    // Nothing to start here.
+  public void start() throws OfficeException {
+    httpClient();
   }
 
   @Override
-  public void restart() {
-    // Nothing to restart here.
+  public void restart() throws OfficeException {
+    httpClient();
   }
 
   @Override
@@ -295,70 +127,25 @@ class RemoteOfficeWorker implements OfficeWorker {
   @Override
   public void execute(final OfficeTask task) throws OfficeException {
 
-    final var sslFactory = configureSsl();
-    try (var client = HttpClients.custom().setSSLSocketFactory(sslFactory).build()) {
-      httpClient = client;
-
-      final var requestConfig =
-          new RequestConfig(buildUrl(connectionUrl), connectTimeout, socketTimeout);
-      task.execute(new RemoteOfficeConnection(client, requestConfig));
-
-    } catch (IOException ex) {
-      throw new OfficeException("Could not create the HTTP client", ex);
+    final var context = new RemoteOfficeConnection(httpClient(), requestConfig);
+    current = context;
+    try {
+      task.execute(context);
     } finally {
-      httpClient = null;
+      current = null;
     }
   }
 
   @Override
   public void abort() {
-
-    // Closing the client of the request being executed ends the request.
-    final var client = httpClient;
-    if (client != null) {
-      try {
-        client.close();
-      } catch (IOException ex) {
-        LOGGER.warn("Could not close the HTTP client of the aborted request", ex);
-      }
+    final var context = current;
+    if (context != null) {
+      context.abort();
     }
   }
 
   @Override
   public void stop() {
-    // Nothing to stop here.
-  }
-
-  private KeyStore loadStore(
-      final String store,
-      final String storePassword,
-      final String storeType,
-      final String storeProvider)
-      throws NoSuchAlgorithmException,
-          CertificateException,
-          IOException,
-          KeyStoreException,
-          NoSuchProviderException {
-
-    if (store != null) {
-      Objects.requireNonNull(
-          storePassword, String.format("storePassword of store %s must not be null", store));
-
-      KeyStore keyStore;
-
-      final var type = storeType == null ? KeyStore.getDefaultType() : storeType;
-      if (storeProvider == null) {
-        keyStore = KeyStore.getInstance(type);
-      } else {
-        keyStore = KeyStore.getInstance(type, storeProvider);
-      }
-
-      try (var instream = Files.newInputStream(getFile(store).toPath())) {
-        keyStore.load(instream, storePassword.toCharArray());
-      }
-
-      return keyStore;
-    }
-    return null;
+    // The client has nothing to close: its connections are released by the JVM.
   }
 }
