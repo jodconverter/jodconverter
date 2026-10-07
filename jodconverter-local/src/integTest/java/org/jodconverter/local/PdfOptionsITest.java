@@ -306,6 +306,42 @@ class PdfOptionsITest {
   }
 
   @Nested
+  class NamedOptions {
+
+    @Test
+    void options_ShouldHaveTheSameEffectAsTheTypedMethods(
+        final @TempDir File testFolder,
+        final DocumentConverter converter,
+        final OfficeManager manager)
+        throws IOException, OfficeException {
+
+      assumeLibreOffice(manager, 7, 4);
+
+      // The options as the command line tool and the Spring Boot starter give them.
+      final var pdf =
+          writer(
+              converter,
+              testFolder,
+              b ->
+                  b.option("version", "1.5")
+                      .option("tagged", "true")
+                      .option("pages.range", "2")
+                      .option("watermark.text", "WMARKTEXT")
+                      .option("watermark.color", "#FF0000")
+                      .option("viewer.center-window", "true"));
+
+      assertThat(header(pdf)).isEqualTo("%PDF-1.5");
+      assertThat(isTagged(pdf)).isTrue();
+      assertThat(pageCount(pdf)).isEqualTo(1);
+      assertThat(text(pdf)).contains("Chapter Two").doesNotContain("Chapter One");
+      assertThat(text(pdf).replaceAll("\\s+", "")).contains("WMARKTEXT");
+      try (var doc = Loader.loadPDF(pdf)) {
+        assertThat(doc.getDocumentCatalog().getViewerPreferences().centerWindow()).isTrue();
+      }
+    }
+  }
+
+  @Nested
   class General {
 
     @Test
