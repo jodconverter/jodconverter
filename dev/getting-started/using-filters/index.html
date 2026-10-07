@@ -548,6 +548,8 @@
         
       
         
+      
+        
           
         
       
@@ -599,6 +601,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/release-notes-5.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.0.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -2539,8 +2568,7 @@ applied after the insertions, so a <code>DocumentIndexesUpdaterFilter</code> reb
 document.</p>
 <p>Underneath, <code>merge</code> chains a
 <a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentInserterFilter.java">DocumentInserterFilter</a>
-per document. Use the filter directly to insert a document without a page break (<code>new
-DocumentInserterFilter(file, false)</code>, the default of the filter), or at a chosen place in the chain:</p>
+per document. Use the filter directly to insert a document without a page break (<code>new DocumentInserterFilter(file, false)</code>, the default of the filter), or at a chosen place in the chain:</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span>
 <span class="w">  </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">  </span><span class="p">.</span><span class="na">filterChain</span><span class="p">(</span>

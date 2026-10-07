@@ -548,6 +548,8 @@
         
       
         
+      
+        
           
         
       
@@ -599,6 +601,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/release-notes-5.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.0.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -2511,40 +2540,40 @@ credentials and the signing key, which live in the repository secrets; the rest 
 <h2 id="before-the-release">Before the release<a class="headerlink" href="#before-the-release" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Labels.</strong> Every pull request merged and every issue closed since the last tag has a label (<code>enhancement</code>, <code>bug</code>,
-   <code>documentation</code>, <code>dependencies</code>): the release notes that GitHub generates are grouped by label
-   (<code>.github/release.yml</code>).</li>
+    <code>documentation</code>, <code>dependencies</code>): the release notes that GitHub generates are grouped by label
+    (<code>.github/release.yml</code>).</li>
 <li><strong>Release notes page.</strong> Write <code>docs/release-notes/release-notes-X.Y.Z.md</code> and link it from
-   <code>docs/release-notes/index.md</code> and the navigation in <code>zensical.toml</code>. For a major or minor version, the migration
-   guide <code>docs/migration-guides/migration-guide-X.Y.Z.md</code> exists and is linked the same way.</li>
+    <code>docs/release-notes/index.md</code> and the navigation in <code>zensical.toml</code>. For a major or minor version, the migration
+    guide <code>docs/migration-guides/migration-guide-X.Y.Z.md</code> exists and is linked the same way.</li>
 <li><strong>CHANGELOG.md.</strong> Add the <code>X.Y.Z</code> block, one line per pull request with its number, from:
-   <div class="language-bash highlight"><pre><span></span><code>gh<span class="w"> </span>pr<span class="w"> </span>list<span class="w"> </span>--state<span class="w"> </span>merged<span class="w"> </span>--base<span class="w"> </span>develop<span class="w"> </span>--search<span class="w"> </span><span class="s2">"merged:&gt;YYYY-MM-DD"</span><span class="w"> </span>--json<span class="w"> </span>number,title<span class="w"> </span>--jq<span class="w"> </span><span class="s1">'.[] | "- \(.title) (#\(.number))"'</span>
+    <div class="language-bash highlight"><pre><span></span><code>gh<span class="w"> </span>pr<span class="w"> </span>list<span class="w"> </span>--state<span class="w"> </span>merged<span class="w"> </span>--base<span class="w"> </span>develop<span class="w"> </span>--search<span class="w"> </span><span class="s2">"merged:&gt;YYYY-MM-DD"</span><span class="w"> </span>--json<span class="w"> </span>number,title<span class="w"> </span>--jq<span class="w"> </span><span class="s1">'.[] | "- \(.title) (#\(.number))"'</span>
 </code></pre></div></li>
 <li><strong>Version.</strong> Set the version everywhere at once:
-   <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>setVersion<span class="w"> </span>-PnewVersion<span class="o">=</span>X.Y.Z
+    <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>setVersion<span class="w"> </span>-PnewVersion<span class="o">=</span>X.Y.Z
 </code></pre></div>
-   The task writes <code>version</code> in <code>gradle.properties</code> and, for a release version, replaces the previous released
-   version in the pages of the documentation that show dependency coordinates.</li>
+    The task writes <code>version</code> in <code>gradle.properties</code> and, for a release version, replaces the previous released
+    version in the pages of the documentation that show dependency coordinates.</li>
 <li><strong>Full build and integration tests, locally.</strong> The continuous integration runs them on Linux only; a release
-   deserves a run with the office installation of another platform:
-   <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>clean<span class="w"> </span>build<span class="w"> </span>integrationTest
+    deserves a run with the office installation of another platform:
+    <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>clean<span class="w"> </span>build<span class="w"> </span>integrationTest
 </code></pre></div></li>
 <li><strong>Release commit.</strong> Commit on <code>develop</code> with the message <code>Release X.Y.Z</code>, push, open the pull request from
-   <code>develop</code> to <code>master</code>, let the checks pass, merge it with a merge commit.</li>
+    <code>develop</code> to <code>master</code>, let the checks pass, merge it with a merge commit.</li>
 </ol>
 <h2 id="the-release">The release<a class="headerlink" href="#the-release" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Tag.</strong> On <code>master</code>, after the merge:
-   <div class="language-bash highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>master<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>pull<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>vX.Y.Z<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Release X.Y.Z"</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>vX.Y.Z
+    <div class="language-bash highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>master<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>pull<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>vX.Y.Z<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Release X.Y.Z"</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>vX.Y.Z
 </code></pre></div>
-   The <code>release</code> workflow then builds the tag, publishes every module on Maven Central (signed, released
-   automatically once the portal validates them) and creates the GitHub release <code>vX.Y.Z</code> with the generated notes
-   and the command line tool archives. The <code>deploy-docs</code> workflow, run by the push to <code>master</code>, publishes the
-   documentation of the version with the <code>latest</code> alias.</li>
+    The <code>release</code> workflow then builds the tag, publishes every module on Maven Central (signed, released
+    automatically once the portal validates them) and creates the GitHub release <code>vX.Y.Z</code> with the generated notes
+    and the command line tool archives. The <code>deploy-docs</code> workflow, run by the push to <code>master</code>, publishes the
+    documentation of the version with the <code>latest</code> alias.</li>
 <li><strong>Check</strong> the <a href="https://github.com/jodconverter/jodconverter/releases">release</a>, the artifacts on
-   <a href="https://central.sonatype.com/search?q=g:org.jodconverter">Maven Central</a> (they appear within a few hours) and the
-   <a href="https://jodconverter.github.io/jodconverter/latest/">documentation</a>.</li>
+    <a href="https://central.sonatype.com/search?q=g:org.jodconverter">Maven Central</a> (they appear within a few hours) and the
+    <a href="https://jodconverter.github.io/jodconverter/latest/">documentation</a>.</li>
 <li><strong>Announce</strong> on Gitter:
-   <div class="language-text highlight"><pre><span></span><code>JODConverter X.Y.Z is out!
+    <div class="language-text highlight"><pre><span></span><code>JODConverter X.Y.Z is out!
 * Release Notes: https://jodconverter.github.io/jodconverter/latest/release-notes/release-notes-X.Y.Z/
 * Migration Guide: https://jodconverter.github.io/jodconverter/latest/migration-guides/migration-guide-X.Y.Z/
 </code></pre></div></li>

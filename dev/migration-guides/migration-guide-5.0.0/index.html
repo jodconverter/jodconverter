@@ -553,6 +553,8 @@
         
       
         
+      
+        
           
         
       
@@ -604,6 +606,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/release-notes-5.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.0.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -3298,8 +3327,7 @@ Apache HttpClient: the <code>httpclient</code>, <code>httpcore</code>, <code>htt
 client of a worker is built once, when the manager starts, with the SSL material loaded once; a task that times out
 is aborted by cancelling its request, not by closing a client.</p>
 <ul>
-<li><code>RemoteOfficeContext.getHttpClient()</code> returns a <code>java.net.http.HttpClient</code>, and the context has a <code>send(request,
-    handler)</code> method that a custom task uses to send its requests, so that they are cancelled when the task is
+<li><code>RemoteOfficeContext.getHttpClient()</code> returns a <code>java.net.http.HttpClient</code>, and the context has a <code>send(request,   handler)</code> method that a custom task uses to send its requests, so that they are cancelled when the task is
     aborted. <code>RemoteOfficeConnection</code> takes that client and a <code>RequestConfig</code>.</li>
 <li><code>RemoteOfficeManager.Builder</code> validates <code>urlConnection</code> in <code>build()</code> (an <code>IllegalArgumentException</code> for an invalid
     URL, instead of a failure at the first conversion), builds the URL of the <code>convert-to</code> service once, and
