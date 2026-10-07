@@ -1119,6 +1119,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#internal-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Internal classes
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2919,6 +2930,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#internal-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Internal classes
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3266,6 +3288,13 @@ the setter.</p>
 <code>FileUtils.copyFile</code>, <code>copyFileToDirectory</code> and <code>readFileToString</code> are removed (<code>Files.copy</code> and <code>Files.readString</code>),
 <code>StringUtils.isEmpty</code>, <code>isNotEmpty</code>, <code>appendIfMissing</code> and <code>endsWithAny</code> are removed, <code>AssertUtils.notNull</code> is removed
 (<code>Objects.requireNonNull</code>), and <code>OSUtils</code> keeps <code>IS_OS_FREE_BSD</code>, <code>IS_OS_MAC</code>, <code>IS_OS_UNIX</code> and <code>IS_OS_WINDOWS</code> only.</p>
+<p>In <code>org.jodconverter.local.office.utils</code>, the <code>Calc</code> and <code>Draw</code> classes, <code>Write.isWeb</code> and <code>Info.getConfigUpdateAccess</code>
+are removed: nothing in the project used them, and <code>LocalOfficeUtils.getDocumentFamily</code> tells the kind of a document.</p>
+<h3 id="internal-classes">Internal classes<a class="headerlink" href="#internal-classes" title="Permanent link">&para;</a></h3>
+<p><code>NamedThreadFactory</code> (core), <code>CliConverter</code> (command line tool) and the <code>MIN_PROCESS_RETRY_INTERVAL</code> and
+<code>MIN_AFTER_START_PROCESS_DELAY</code> constants of <code>LocalOfficeManager</code> are no longer public, and the constructors of
+<code>AbstractOfficeTask</code> and <code>AbstractRemoteOfficeTask</code> are protected: they were never meant to be used outside the
+project.</p>
 <h2 id="behavior-changes">Behavior changes<a class="headerlink" href="#behavior-changes" title="Permanent link">&para;</a></h2>
 <h3 id="numeric-properties-in-json-document-format-registries">Numeric properties in JSON document format registries<a class="headerlink" href="#numeric-properties-in-json-document-format-registries" title="Permanent link">&para;</a></h3>
 <p>Before 5.0, every number of a property map in a JSON document format registry was read as a <code>Double</code>, and

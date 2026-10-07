@@ -2795,7 +2795,10 @@ not necessarily the optimal ones.</p>
 <h4 id="officehome">📁<code>officeHome</code><a class="headerlink" href="#officehome" title="Permanent link">&para;</a></h4>
 <p>This property sets the office home directory of the office installation that will be used to perform document
 conversions.</p>
-<p>&#160;<strong><em>Default</em></strong>: Auto-detected, starting with LibreOffice (over OpenOffice) and the most recent version.</p>
+<p>&#160;<strong><em>Default</em></strong>: Auto-detected, starting with LibreOffice (over OpenOffice) and the most recent version. On
+Linux, the directories named <code>libreoffice*</code> under <code>/usr/lib64</code>, <code>/usr/lib</code>, <code>/usr/local/lib64</code>, <code>/usr/local/lib</code> and
+<code>/opt</code> are considered, so the packages of The Document Foundation (<code>/opt/libreoffice25.8</code>) are found whatever their
+version; on Windows, the <code>LibreOffice*</code> directories of the program files.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Java</label><label for="__tabbed_1_2">Spring Boot</label><label for="__tabbed_1_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
