@@ -31,37 +31,15 @@ import org.jodconverter.core.document.DocumentFormatProperties;
 /**
  * Configuration of the document formats shared by every converter of the starter, whether it uses a
  * local, external or remote office manager.
+ *
+ * @param registry Resource (classpath:, file:...) of the JSON registry of the document formats
+ *     supported by the converters. Defaults to the registry shipped with JODConverter. A
+ *     classpath:custom-document-formats.json resource, if present, is added to it.
+ * @param options Custom load (open) and store (save) properties, by document format extension,
+ *     applied on top of the registry. For example,
+ *     jodconverter.document-formats.options.txt.load.FilterOptions=utf16.
  */
 @ConfigurationProperties("jodconverter.document-formats")
-public class JodConverterDocumentFormatsProperties {
-
-  /**
-   * Resource (classpath:, file:...) of the JSON registry of the document formats supported by the
-   * converters. Defaults to the registry shipped with JODConverter. A
-   * classpath:custom-document-formats.json resource, if present, is added to it.
-   */
-  private String registry;
-
-  /**
-   * Custom load (open) and store (save) properties, by document format extension, applied on top of
-   * the registry. For example, jodconverter.document-formats.options.txt.load.FilterOptions=utf16.
-   */
-  private Map<String, DocumentFormatProperties> options;
-
-  public @Nullable String getRegistry() {
-    return registry;
-  }
-
-  public void setRegistry(final @Nullable String registry) {
-    this.registry = registry;
-  }
-
-  public @Nullable Map<@NonNull String, @NonNull DocumentFormatProperties> getOptions() {
-    return options;
-  }
-
-  public void setOptions(
-      final @Nullable Map<@NonNull String, @NonNull DocumentFormatProperties> options) {
-    this.options = options;
-  }
-}
+public record JodConverterDocumentFormatsProperties(
+    @Nullable String registry,
+    @Nullable Map<@NonNull String, @NonNull DocumentFormatProperties> options) {}

@@ -21,91 +21,56 @@
 package org.jodconverter.boot.autoconfigure;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.springframework.boot.convert.DurationUnit;
 
 import org.jodconverter.core.office.AbstractOfficeWorkerPool;
 
 /**
  * The properties shared by the office managers of the starter, which are all pools of office
- * workers: the local, external and remote properties extend this class.
+ * workers: the local, external and remote properties records implement this interface.
  */
-public abstract class JodConverterPoolProperties {
+public interface JodConverterPoolProperties {
 
   /**
-   * Directory where temporary files will be created. If not set, it defaults to the system
-   * temporary directory as specified by the java.io.tmpdir system property.
+   * Gets the directory where temporary files will be created.
+   *
+   * @return The directory, or null for the system temporary directory.
    */
-  private String workingDir;
+  @Nullable String workingDir();
 
   /**
-   * Maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
-   * full fails at once. 0 means no limit.
+   * Gets the maximum number of tasks waiting in the conversion queue.
+   *
+   * @return The capacity; 0 means no limit.
    */
-  private int taskQueueCapacity = AbstractOfficeWorkerPool.DEFAULT_TASK_QUEUE_CAPACITY;
+  int taskQueueCapacity();
 
   /**
-   * Maximum living time of a task in the conversion queue. The task will be removed from the queue
-   * if the waiting time is longer than this timeout. A plain number is in milliseconds.
+   * Gets the maximum living time of a task in the conversion queue.
+   *
+   * @return The timeout.
    */
-  @DurationUnit(ChronoUnit.MILLIS)
-  private Duration taskQueueTimeout =
-      Duration.ofMillis(AbstractOfficeWorkerPool.DEFAULT_TASK_QUEUE_TIMEOUT);
+  @NonNull Duration taskQueueTimeout();
 
   /**
-   * Maximum time allowed to process a task. If the processing time of a task is longer than this
-   * timeout, this task will be aborted and the next task is processed. A plain number is in
-   * milliseconds.
+   * Gets the maximum time allowed to process a task.
+   *
+   * @return The timeout.
    */
-  @DurationUnit(ChronoUnit.MILLIS)
-  private Duration taskExecutionTimeout =
-      Duration.ofMillis(AbstractOfficeWorkerPool.DEFAULT_TASK_EXECUTION_TIMEOUT);
+  @NonNull Duration taskExecutionTimeout();
 
   /**
    * Applies these properties to the given builder.
    *
    * @param builder The builder of an office manager.
    */
-  public void applyTo(final AbstractOfficeWorkerPool.AbstractOfficeWorkerPoolBuilder<?> builder) {
+  default void applyTo(final AbstractOfficeWorkerPool.AbstractOfficeWorkerPoolBuilder<?> builder) {
     builder
-        .workingDir(workingDir)
-        .taskQueueCapacity(taskQueueCapacity)
-        .taskQueueTimeout(taskQueueTimeout.toMillis())
-        .taskExecutionTimeout(taskExecutionTimeout.toMillis());
-  }
-
-  public @Nullable String getWorkingDir() {
-    return workingDir;
-  }
-
-  public void setWorkingDir(final @Nullable String workingDir) {
-    this.workingDir = workingDir;
-  }
-
-  public int getTaskQueueCapacity() {
-    return taskQueueCapacity;
-  }
-
-  public void setTaskQueueCapacity(final int taskQueueCapacity) {
-    this.taskQueueCapacity = taskQueueCapacity;
-  }
-
-  public @NonNull Duration getTaskQueueTimeout() {
-    return taskQueueTimeout;
-  }
-
-  public void setTaskQueueTimeout(final @NonNull Duration taskQueueTimeout) {
-    this.taskQueueTimeout = taskQueueTimeout;
-  }
-
-  public @NonNull Duration getTaskExecutionTimeout() {
-    return taskExecutionTimeout;
-  }
-
-  public void setTaskExecutionTimeout(final @NonNull Duration taskExecutionTimeout) {
-    this.taskExecutionTimeout = taskExecutionTimeout;
+        .workingDir(workingDir())
+        .taskQueueCapacity(taskQueueCapacity())
+        .taskQueueTimeout(taskQueueTimeout().toMillis())
+        .taskExecutionTimeout(taskExecutionTimeout().toMillis());
   }
 }

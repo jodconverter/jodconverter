@@ -64,17 +64,15 @@ public class JodConverterDocumentFormatsAutoConfiguration {
 
     // Load the json resource containing the document formats.
     final var registryResourceName =
-        StringUtils.isBlank(properties.getRegistry())
-            ? DEFAULT_FORMATS_PATH
-            : properties.getRegistry();
+        StringUtils.isBlank(properties.registry()) ? DEFAULT_FORMATS_PATH : properties.registry();
     LOGGER.debug("Loading document formats registry from resource [{}]", registryResourceName);
     try (var in = resourceLoader.getResource(registryResourceName).getInputStream()) {
 
       // Create the registry.
       final var registry =
-          properties.getOptions() == null
+          properties.options() == null
               ? JsonDocumentFormatRegistry.create(in)
-              : JsonDocumentFormatRegistry.create(in, properties.getOptions());
+              : JsonDocumentFormatRegistry.create(in, properties.options());
 
       // Load the custom formats, if any.
       final var resource = resourceLoader.getResource(CUSTOM_FORMATS_PATH);

@@ -62,17 +62,17 @@ public class JodConverterRemoteAutoConfiguration {
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager() {
 
-    Objects.requireNonNull(properties.getUrl(), "urlConnection is required");
+    Objects.requireNonNull(properties.url(), "urlConnection is required");
 
     final var builder =
         RemoteOfficeManager.builder()
-            .urlConnection(properties.getUrl())
-            .connectTimeout(properties.getConnectTimeout().toMillis())
-            .socketTimeout(properties.getSocketTimeout().toMillis())
-            .poolSize(properties.getPoolSize());
+            .urlConnection(properties.url())
+            .connectTimeout(properties.connectTimeout().toMillis())
+            .socketTimeout(properties.socketTimeout().toMillis())
+            .poolSize(properties.poolSize());
     properties.applyTo(builder);
-    if (properties.getSsl() != null) {
-      builder.sslConfig(properties.getSsl());
+    if (properties.ssl() != null) {
+      builder.sslConfig(properties.ssl());
     }
 
     // Starts the manager

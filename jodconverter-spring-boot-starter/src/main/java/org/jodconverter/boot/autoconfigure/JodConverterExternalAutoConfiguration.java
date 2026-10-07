@@ -72,15 +72,15 @@ public class JodConverterExternalAutoConfiguration {
 
     final var builder =
         ExternalOfficeManager.builder()
-            .hostName(properties.getHostName())
-            .portNumbers(properties.getPortNumbers())
-            .pipeNames(properties.getPipeNames())
-            .websocketUrls(properties.getWebsocketUrls())
-            .connectOnStart(properties.isConnectOnStart())
-            .connectTimeout(properties.getConnectTimeout().toMillis())
-            .connectRetryInterval(properties.getConnectRetryInterval().toMillis())
-            .connectFailFast(properties.isConnectFailFast())
-            .maxTasksPerConnection(properties.getMaxTasksPerConnection());
+            .hostName(properties.hostName())
+            .portNumbers(properties.portNumbers())
+            .pipeNames(properties.pipeNames())
+            .websocketUrls(properties.websocketUrls())
+            .connectOnStart(properties.connectOnStart())
+            .connectTimeout(properties.connectTimeout().toMillis())
+            .connectRetryInterval(properties.connectRetryInterval().toMillis())
+            .connectFailFast(properties.connectFailFast())
+            .maxTasksPerConnection(properties.maxTasksPerConnection());
     properties.applyTo(builder);
     return builder.build();
   }
@@ -98,9 +98,9 @@ public class JodConverterExternalAutoConfiguration {
         LocalConverter.builder()
             .officeManager(externalOfficeManager)
             .formatRegistry(documentFormatRegistry)
-            .loadDocumentMode(properties.getLoadDocumentMode())
+            .loadDocumentMode(properties.loadDocumentMode())
             .loadProperties(
-                properties.isApplyDefaultLoadProperties()
+                properties.applyDefaultLoadProperties()
                     ? LocalConverter.DEFAULT_LOAD_PROPERTIES
                     : Map.of());
     // Apply the PDF options, from the jodconverter.pdf properties or from the application, to

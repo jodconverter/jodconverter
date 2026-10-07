@@ -27,96 +27,48 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.convert.DurationUnit;
 
-import org.jodconverter.remote.office.RemoteOfficeManager;
 import org.jodconverter.remote.ssl.SslConfig;
 
-/** Configuration class for JODConverter Remote. */
+/**
+ * Configuration of JODConverter Remote: conversions sent to a LibreOffice Online server. The
+ * default values are those of {@link org.jodconverter.remote.office.RemoteOfficeManager}.
+ *
+ * @param enabled Enable JODConverter Remote.
+ * @param url The URL to the LibreOffice Online server.
+ * @param connectTimeout The timeout until a connection is established. A timeout value of zero is
+ *     interpreted as an infinite timeout. A negative value is interpreted as undefined (system
+ *     default). A plain number is in milliseconds.
+ * @param socketTimeout The socket timeout, which is the timeout for waiting for data or, put
+ *     differently, a maximum period inactivity between two consecutive data packets. A timeout
+ *     value of zero is interpreted as an infinite timeout. A negative value is interpreted as
+ *     undefined (system default). A plain number is in milliseconds.
+ * @param poolSize Pool size of the manager.
+ * @param workingDir Directory where temporary files will be created. If not set, it defaults to the
+ *     system temporary directory as specified by the java.io.tmpdir system property.
+ * @param taskQueueCapacity Maximum number of tasks waiting in the conversion queue. A task
+ *     submitted while the queue is full fails at once. 0 means no limit.
+ * @param taskQueueTimeout Maximum living time of a task in the conversion queue. The task will be
+ *     removed from the queue if the waiting time is longer than this timeout. A plain number is in
+ *     milliseconds.
+ * @param taskExecutionTimeout Maximum time allowed to process a task. If the processing time of a
+ *     task is longer than this timeout, this task will be aborted and the next task is processed. A
+ *     plain number is in milliseconds.
+ * @param ssl The SSL configuration of the connection to the LibreOffice Online server, if it uses
+ *     HTTPS.
+ */
 @ConfigurationProperties("jodconverter.remote")
-@SuppressWarnings({
-  "PMD.ArrayIsStoredDirectly",
-  "PMD.ExcessivePublicCount",
-  "PMD.MethodReturnsInternalArray",
-  "PMD.TooManyFields",
-  "PMD.UseVarargs"
-})
-public class JodConverterRemoteProperties extends JodConverterPoolProperties {
-
-  /** Enable JODConverter Remote. */
-  private boolean enabled;
-
-  /** The URL to the LibreOffice Online server. */
-  private String url;
-
-  /**
-   * The timeout until a connection is established. A timeout value of zero is interpreted as an
-   * infinite timeout. A negative value is interpreted as undefined (system default). A plain number
-   * is in milliseconds.
-   */
-  @DurationUnit(ChronoUnit.MILLIS)
-  private Duration connectTimeout = Duration.ofMillis(RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT);
-
-  /**
-   * The socket timeout, which is the timeout for waiting for data or, put differently, a maximum
-   * period inactivity between two consecutive data packets. A timeout value of zero is interpreted
-   * as an infinite timeout. A negative value is interpreted as undefined (system default). A plain
-   * number is in milliseconds.
-   */
-  @DurationUnit(ChronoUnit.MILLIS)
-  private Duration socketTimeout = Duration.ofMillis(RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT);
-
-  /** Pool size of the manager. */
-  private int poolSize = RemoteOfficeManager.DEFAULT_POOL_SIZE;
-
-  /** The SSL configuration of the connection to the LibreOffice Online server, if it uses HTTPS. */
-  @NestedConfigurationProperty private SslConfig ssl;
-
-  public boolean isEnabled() {
-    return enabled;
-  }
-
-  public void setEnabled(final boolean enabled) {
-    this.enabled = enabled;
-  }
-
-  public @Nullable String getUrl() {
-    return url;
-  }
-
-  public void setUrl(final @Nullable String url) {
-    this.url = url;
-  }
-
-  public @NonNull Duration getConnectTimeout() {
-    return connectTimeout;
-  }
-
-  public void setConnectTimeout(final @NonNull Duration connectTimeout) {
-    this.connectTimeout = connectTimeout;
-  }
-
-  public @NonNull Duration getSocketTimeout() {
-    return socketTimeout;
-  }
-
-  public void setSocketTimeout(final @NonNull Duration socketTimeout) {
-    this.socketTimeout = socketTimeout;
-  }
-
-  public int getPoolSize() {
-    return poolSize;
-  }
-
-  public void setPoolSize(final int poolSize) {
-    this.poolSize = poolSize;
-  }
-
-  public @Nullable SslConfig getSsl() {
-    return this.ssl;
-  }
-
-  public void setSsl(final @Nullable SslConfig ssl) {
-    this.ssl = ssl;
-  }
-}
+public record JodConverterRemoteProperties(
+    boolean enabled,
+    @Nullable String url,
+    @DefaultValue("60000") @DurationUnit(ChronoUnit.MILLIS) @NonNull Duration connectTimeout,
+    @DefaultValue("120000") @DurationUnit(ChronoUnit.MILLIS) @NonNull Duration socketTimeout,
+    @DefaultValue("1") int poolSize,
+    @Nullable String workingDir,
+    int taskQueueCapacity,
+    @DefaultValue("30000") @DurationUnit(ChronoUnit.MILLIS) @NonNull Duration taskQueueTimeout,
+    @DefaultValue("120000") @DurationUnit(ChronoUnit.MILLIS) @NonNull Duration taskExecutionTimeout,
+    @NestedConfigurationProperty @Nullable SslConfig ssl)
+    implements JodConverterPoolProperties {}
