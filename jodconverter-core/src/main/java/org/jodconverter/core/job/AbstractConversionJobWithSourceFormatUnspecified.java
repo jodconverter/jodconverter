@@ -122,7 +122,7 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
    *
    * @param defaultTargetOptions The default options.
    */
-  /* default */ void setDefaultTargetOptions(final List<TargetOptions> defaultTargetOptions) {
+  protected void setDefaultTargetOptions(final List<TargetOptions> defaultTargetOptions) {
     this.defaultTargetOptions = defaultTargetOptions;
   }
 }
