@@ -2588,6 +2588,8 @@ credentials and the signing key, which live in the repository secrets; the rest 
 </tr>
 </tbody>
 </table>
+<p>The <code>build</code> workflow uses one more secret, <code>COVERALLS_REPO_TOKEN</code>, the repository token shown on the Coveralls page of
+the project, to send the coverage of the Linux job.</p>
 <p>A release can still be done from a workstation with the same values in <code>~/.gradle/gradle.properties</code>
 (<code>mavenCentralUsername</code>, <code>mavenCentralPassword</code>, <code>signing.keyId</code>, <code>signing.password</code>, <code>signing.secretKeyRingFile</code>) and
 <code>./gradlew publishToMavenCentral</code>, then the GitHub release created by hand from the tag.</p>
