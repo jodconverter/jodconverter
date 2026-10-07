@@ -29,25 +29,25 @@ import org.jodconverter.core.office.OfficeWorker;
 import org.jodconverter.core.task.OfficeTask;
 
 /**
- * An {@link ExternalOfficeWorker} executes the tasks submitted through an {@link
- * ExternalOfficeManager} with its connection to an office process it does not own, which it drives
- * with its inner {@link ExternalOfficeConnectionManager}.
+ * An {@link AttachedOfficeWorker} executes the tasks submitted through an {@link
+ * AttachedOfficeManager} with its connection to an office process it does not own, which it drives
+ * with its inner {@link AttachedOfficeConnectionManager}.
  *
  * <p>It is ready when it is connected and its connection has not executed its maximum number of
  * tasks, or when it was asked not to connect on start and has not connected yet: it then connects
  * when it executes its first task. When it is not ready anymore, the pool reconnects it before
  * giving it another task.
  *
- * @see ExternalOfficeManager
- * @see ExternalOfficeConnectionManager
+ * @see AttachedOfficeManager
+ * @see AttachedOfficeConnectionManager
  */
-class ExternalOfficeWorker implements OfficeWorker {
+class AttachedOfficeWorker implements OfficeWorker {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExternalOfficeWorker.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AttachedOfficeWorker.class);
 
   private final boolean connectOnStart;
   private final int maxTasksPerConnection;
-  private final ExternalOfficeConnectionManager connectionManager;
+  private final AttachedOfficeConnectionManager connectionManager;
   private final RunningTask runningTask = new RunningTask(task -> true);
 
   // Only used by the thread of this worker.
@@ -63,10 +63,10 @@ class ExternalOfficeWorker implements OfficeWorker {
    *     reconnecting; 0 means no limit.
    * @param connectionManager The connection manager.
    */
-  /* default */ ExternalOfficeWorker(
+  /* default */ AttachedOfficeWorker(
       final boolean connectOnStart,
       final int maxTasksPerConnection,
-      final ExternalOfficeConnectionManager connectionManager) {
+      final AttachedOfficeConnectionManager connectionManager) {
 
     this.connectOnStart = connectOnStart;
     this.maxTasksPerConnection = maxTasksPerConnection;

@@ -27,8 +27,8 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.RetryTimeoutException;
 
 /**
- * An {@link ExternalOfficeConnectionManager} is responsible to manage an office connection (bridge)
- * to an office process in an {@link ExternalOfficeWorker}.
+ * An {@link AttachedOfficeConnectionManager} is responsible to manage an office connection (bridge)
+ * to an office process in an {@link AttachedOfficeWorker}.
  *
  * <p>All its functions block until they are done. They are called by the thread of the worker that
  * owns the manager, except {@link #disconnect()}, which may also be called by another thread to end
@@ -36,10 +36,10 @@ import org.jodconverter.core.office.RetryTimeoutException;
  *
  * @see OfficeConnection
  */
-class ExternalOfficeConnectionManager {
+class AttachedOfficeConnectionManager {
 
   private static final Logger LOGGER =
-      LoggerFactory.getLogger(ExternalOfficeConnectionManager.class);
+      LoggerFactory.getLogger(AttachedOfficeConnectionManager.class);
 
   private final OfficeConnection connection;
   private final long connectTimeout;
@@ -52,7 +52,7 @@ class ExternalOfficeConnectionManager {
    * @param connectRetryInterval Timeout between each try to connect.
    * @param connection The object that will manage the connection to the office process.
    */
-  /* default */ ExternalOfficeConnectionManager(
+  /* default */ AttachedOfficeConnectionManager(
       final long connectTimeout,
       final long connectRetryInterval,
       final OfficeConnection connection) {

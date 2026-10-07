@@ -38,23 +38,23 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.office.LocalOfficeManager;
 
-/** Checks that the deprecated jodconverter.external properties and bean names still work. */
+/** Contains tests for the attached office manager auto-configuration. */
 @SpringBootTest
-@TestPropertySource(locations = "classpath:config/application-external.properties")
-class ExternalConverterITest {
+@TestPropertySource(locations = "classpath:config/application-attached.properties")
+class AttachedConverterITest {
 
   private static final String SOURCE_FILE_PATH = "src/integTest/resources/documents/test1.doc";
 
-  // The office process the external manager connects to, started outside of the Spring context.
+  // The office process the attached manager connects to, started outside of the Spring context.
   private static OfficeManager runningOffice;
 
   @Autowired
-  @Qualifier("externalDocumentConverter")
+  @Qualifier("attachedDocumentConverter")
   private DocumentConverter converter;
 
   @BeforeAll
   static void startOfficeProcess() throws OfficeException {
-    runningOffice = LocalOfficeManager.builder().portNumbers(2012).build();
+    runningOffice = LocalOfficeManager.builder().portNumbers(2011).build();
     runningOffice.start();
   }
 
