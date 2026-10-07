@@ -25,11 +25,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.cli.help.TextHelpAppendable;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -166,7 +173,8 @@ public final class Convert {
           .argName("dir")
           .hasArg()
           .desc(
-              "directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir)")
+              "directory where temporary office profile directories will be created"
+                  + " (optional; defaults to java.io.tmpdir)")
           .get();
   private static final Option OPT_VERSION =
       Option.builder("v").longOpt("version").desc("displays version information and exit").get();

@@ -15,8 +15,8 @@
 
     Authors: Max Vetrenko, Mauryan Kansara, Ruslan Diachenko, Roman Ivanov.
 
-    JODConverter: copy of google_checks.xml shipped with Checkstyle 12.3.1, with one change marked
-    "JODConverter" below (the import order). Refresh it from
+    JODConverter: copy of google_checks.xml shipped with Checkstyle 12.3.1, with two changes marked
+    "JODConverter" below (the import order, the allowed acronyms). Refresh it from
     https://github.com/checkstyle/checkstyle/blob/checkstyle-<version>/src/main/resources/google_checks.xml
     when the Checkstyle version of gradle/libs.versions.toml changes, and re-apply that change.
  -->
@@ -336,6 +336,8 @@
     <module name="AbbreviationAsWordInName">
       <property name="ignoreFinal" value="false"/>
       <property name="allowedAbbreviationLength" value="0"/>
+      <!-- JODConverter: acronyms stay upper case, as in the JDK (URL, IOException, OS). -->
+      <property name="allowedAbbreviations" value="URL, IO, OS"/>
       <property name="tokens"
                value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, ANNOTATION_DEF, ANNOTATION_FIELD_DEF,
                     PARAMETER_DEF, VARIABLE_DEF, METHOD_DEF, PATTERN_VARIABLE_DEF, RECORD_DEF,

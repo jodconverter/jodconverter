@@ -29,8 +29,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * DefaultDocumentFormatRegistry} will use this holder to initialize all its {@link DocumentFormat}
  * constants.
  */
-public final
-class DefaultDocumentFormatRegistryInstanceHolder { // NOPMD - Disable class name rule violation
+@SuppressWarnings("PMD.ClassNamingConventions")
+public final class DefaultDocumentFormatRegistryInstanceHolder {
 
   private static DocumentFormatRegistry instance;
 

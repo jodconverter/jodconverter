@@ -20,13 +20,20 @@
 
 package org.jodconverter.local.filter.text;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import com.sun.star.awt.Size;
-import com.sun.star.text.*;
+import com.sun.star.text.RelOrientation;
+import com.sun.star.text.TextContentAnchorType;
+import com.sun.star.text.VertOrientation;
+import com.sun.star.text.WrapTextMode;
+import com.sun.star.text.XPageCursor;
+import com.sun.star.text.XTextCursor;
+import com.sun.star.text.XTextDocument;
+import com.sun.star.text.XTextViewCursorSupplier;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

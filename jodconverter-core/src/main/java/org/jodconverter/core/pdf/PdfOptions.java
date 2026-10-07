@@ -20,8 +20,15 @@
 
 package org.jodconverter.core.pdf;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -347,6 +354,7 @@ public final class PdfOptions implements TargetOptions {
      * @param use {@code true} to use reference XObjects.
      * @return This builder instance.
      */
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName") // XObject is a PDF term
     public @NonNull Builder referenceXObjects(final boolean use) {
       values.put(PdfOption.USE_REFERENCE_XOBJECT, use);
       return this;

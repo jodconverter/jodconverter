@@ -23,18 +23,18 @@ package org.jodconverter.core.document;
 /** Represents a document type supported by office. */
 public enum DocumentFamily {
 
-  /** Text documents (odt, doc, docx, rtf, etc.) */
+  /** Text documents (odt, doc, docx, rtf, etc.). */
   TEXT,
 
-  /** Web documents (html, etc.) */
+  /** Web documents (html, etc.). */
   WEB,
 
-  /** Spreadsheet documents (ods, xls, xlsx, csv, etc.) */
+  /** Spreadsheet documents (ods, xls, xlsx, csv, etc.). */
   SPREADSHEET,
 
-  /** Spreadsheet documents (odp, ppt, pptx, etc.) */
+  /** Presentation documents (odp, ppt, pptx, etc.). */
   PRESENTATION,
 
-  /** Drawing documents (odg, png, svg, etc.) */
+  /** Drawing documents (odg, png, svg, etc.). */
   DRAWING
 }

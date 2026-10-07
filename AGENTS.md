@@ -24,6 +24,7 @@ Checkstyle (`checkstyle.xml`) and PMD (`ruleset.xml`) run with the build; PMD do
 ## Conventions
 
 - Google Java Style through Spotless; the license header is added by Spotless. Use the Java syntax of the baseline: `var`, records, switch expressions, pattern matching, `List.of`.
+- Acronyms stay upper case in names, as in the JDK: `URL`, `IOException`, `OSUtils`, not `Url`; Checkstyle allows `URL`, `IO` and `OS`, other acronyms get a `@SuppressWarnings("checkstyle:AbbreviationAsWordInName")`.
 - Nullness annotations are `org.checkerframework.checker.nullness.qual.NonNull` / `Nullable` on the public API.
 - Public API is deliberate: builders with primitive setters, immutable results, `@Deprecated(forRemoval = true)` with a replacement for anything renamed in a major version, and a line in the migration guide of the version (`docs/migration-guides/`).
 - Logging through SLF4J; no `System.out`.

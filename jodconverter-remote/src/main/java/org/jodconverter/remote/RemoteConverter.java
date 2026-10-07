@@ -26,7 +26,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.job.*;
+import org.jodconverter.core.job.AbstractConversionJob;
+import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecified;
+import org.jodconverter.core.job.AbstractConverter;
+import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
+import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.task.OfficeTask;

@@ -60,8 +60,7 @@ public class UnoRuntime {
    * @param unoInterface A Java class representing a UNO interface type.
    * @param object A reference to any Java object representing (a facet of) a UNO object; may be
    *     <code>null</code>.
-   * @return A reference to the requested UNO interface type if available, otherwise <code>null
-   * </code>.
+   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
    * @see com.sun.star.uno.UnoRuntime#queryInterface(Class, Object)
    */
   public <T> T queryInterface(

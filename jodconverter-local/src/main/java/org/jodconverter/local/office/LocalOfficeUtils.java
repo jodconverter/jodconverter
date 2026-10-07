@@ -46,7 +46,10 @@ import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.office.utils.Info;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.Props;
-import org.jodconverter.local.process.*;
+import org.jodconverter.local.process.ProcessManager;
+import org.jodconverter.local.process.PureJavaProcessManager;
+import org.jodconverter.local.process.UnixProcessManager;
+import org.jodconverter.local.process.WindowsProcessManager;
 
 /** Provides helper functions for local office. */
 public final class LocalOfficeUtils {
@@ -60,8 +63,8 @@ public final class LocalOfficeUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeUtils.class);
 
   /**
-   * This class is required in order to create a default office home only on demand, as explained by
-   * the Initialization-on-demand holder idiom: <a
+   * Creates the default office home only on demand. This is the Initialization-on-demand holder
+   * idiom: <a
    * href="https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom">Initialization-on-demand
    * holder idiom</a>
    */
