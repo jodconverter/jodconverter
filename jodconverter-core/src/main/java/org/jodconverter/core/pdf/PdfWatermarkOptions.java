@@ -105,6 +105,23 @@ public final class PdfWatermarkOptions extends AbstractPdfOptionGroup {
   }
 
   /**
+   * Specifies the color of the watermark, written as {@code RRGGBB}, {@code #RRGGBB} or {@code
+   * 0xRRGGBB}.
+   *
+   * @param rgb The color, as hexadecimal text.
+   * @return This group.
+   * @throws IllegalArgumentException If the text is not an RGB value.
+   */
+  public @NonNull PdfWatermarkOptions color(final @NonNull String rgb) {
+    final var hex = rgb.trim().replaceFirst("^(#|0[xX])", "");
+    try {
+      return color(Integer.parseInt(hex, 16));
+    } catch (NumberFormatException ex) {
+      throw new IllegalArgumentException("expected a color such as FF0000", ex);
+    }
+  }
+
+  /**
    * Specifies the rotation of the watermark.
    *
    * <p>FilterData: {@code WatermarkRotateAngle}, in tenths of a degree. Requires LibreOffice 7.4 or

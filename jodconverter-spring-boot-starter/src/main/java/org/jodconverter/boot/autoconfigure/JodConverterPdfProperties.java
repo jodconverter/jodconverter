@@ -31,6 +31,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 
+import org.jodconverter.core.document.PropertyValues;
 import org.jodconverter.core.pdf.PdfFormOptions.SubmitFormat;
 import org.jodconverter.core.pdf.PdfInitialViewOptions.Magnification;
 import org.jodconverter.core.pdf.PdfInitialViewOptions.PageLayout;
@@ -172,7 +173,7 @@ public class JodConverterPdfProperties {
     signature.applyTo(builder);
     presentation.applyTo(builder);
     spreadsheet.applyTo(builder);
-    filterData.forEach((name, value) -> builder.filterData(name, toFilterDataValue(value)));
+    filterData.forEach((name, value) -> builder.filterData(name, PropertyValues.parse(value)));
 
     return builder.build();
   }
@@ -187,31 +188,6 @@ public class JodConverterPdfProperties {
       case ACCESSIBLE -> PdfOptions.accessible().toBuilder();
       case COMPACT -> PdfOptions.compact().toBuilder();
     };
-  }
-
-  // Same conversion as the command line tool: boolean, integer, or text.
-  private static Object toFilterDataValue(final String value) {
-    if ("true".equalsIgnoreCase(value)) {
-      return Boolean.TRUE;
-    }
-    if ("false".equalsIgnoreCase(value)) {
-      return Boolean.FALSE;
-    }
-    try {
-      return Integer.parseInt(value);
-    } catch (NumberFormatException ex) {
-      return value;
-    }
-  }
-
-  // An RGB color, written as RRGGBB, #RRGGBB or 0xRRGGBB.
-  private static int parseColor(final String value) {
-    try {
-      return Integer.parseInt(value.trim().replaceFirst("^(#|0[xX])", ""), 16);
-    } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException(
-          "Invalid watermark color '" + value + "'; expected an RGB value such as FF0000", ex);
-    }
   }
 
   private static String read(final Resource resource) {
@@ -944,7 +920,7 @@ public class JodConverterPdfProperties {
         builder.watermark(o -> o.tiledText(tiledText));
       }
       if (color != null) {
-        builder.watermark(o -> o.color(parseColor(color)));
+        builder.watermark(o -> o.color(color));
       }
       if (fontName != null) {
         builder.watermark(o -> o.fontName(fontName));

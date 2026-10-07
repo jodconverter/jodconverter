@@ -521,6 +521,210 @@ class PdfOptionsTest {
   }
 
   @Nested
+  class NamedOptions {
+
+    @Test
+    void optionNames_ShouldListEveryOptionInTheOrderOfTheGroups() {
+
+      final var names = PdfOptions.optionNames();
+
+      assertThat(names)
+          .startsWith("version", "pdf-ua", "tagged")
+          .contains("images.jpeg-quality", "signature.certificate", "signature.private-key")
+          .endsWith("spreadsheet.single-page-sheets", "spreadsheet.sheet-range");
+      assertThatThrownBy(() -> names.add("other"))
+          .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void withEveryOptionName_ShouldBuildOptions() {
+
+      // A valid value for each option: by name for the ones that are not booleans.
+      final var values = new HashMap<String, String>();
+      values.put("version", "1.7");
+      values.put("images.jpeg-quality", "90");
+      values.put("images.max-resolution", "300");
+      values.put("pages.range", "1");
+      values.put("bookmarks.open-levels", "2");
+      values.put("forms.submit-format", "xml");
+      values.put("links.cross-document-links", "browser");
+      values.put("initial-view.pane", "thumbnails");
+      values.put("initial-view.page", "2");
+      values.put("initial-view.magnification", "fit-page");
+      values.put("initial-view.zoom", "75");
+      values.put("initial-view.layout", "continuous-facing");
+      values.put("security.open-password", "open");
+      values.put("security.permission-password", "owner");
+      values.put("security.printing", "none");
+      values.put("security.changes", "forms-and-comments");
+      values.put("watermark.text", "a");
+      values.put("watermark.tiled-text", "b");
+      values.put("watermark.color", "FF0000");
+      values.put("watermark.font-name", "c");
+      values.put("watermark.font-height", "12");
+      values.put("watermark.rotation", "45");
+      values.put("signature.certificate-subject-name", "CN=Me");
+      values.put("signature.certificate", "CERT");
+      values.put("signature.private-key", "KEY");
+      values.put("signature.ca", "CA");
+      values.put("signature.password", "d");
+      values.put("signature.location", "e");
+      values.put("signature.reason", "f");
+      values.put("signature.contact-info", "g");
+      values.put("signature.timestamp-authority", "h");
+      values.put("spreadsheet.sheet-range", "1-2");
+
+      final var builder = PdfOptions.builder();
+      for (final var name : PdfOptions.optionNames()) {
+        builder.option(name, values.getOrDefault(name, "true"));
+      }
+      final var options = builder.build();
+
+      // Every PdfOption can be set by name.
+      final var allNames = new HashSet<String>();
+      Arrays.stream(PdfOption.values()).forEach(o -> allNames.add(o.getFilterDataName()));
+      assertThat(options.getFilterData().keySet()).containsExactlyInAnyOrderElementsOf(allNames);
+      assertThat(options.getFilterData())
+          .containsEntry("SignCertificateCertPem", "CERT")
+          .containsEntry("SignCertificateKeyPem", "KEY")
+          .containsEntry("SignCertificateCaPem", "CA")
+          .containsEntry("SignCertificateSubjectName", "CN=Me");
+    }
+
+    @Test
+    void withTypedValues_ShouldConvertThem() {
+
+      final var options =
+          PdfOptions.builder()
+              .option("tagged", "TRUE")
+              .option("images.lossless", "False")
+              .option("images.jpeg-quality", " 80 ")
+              .option("initial-view.magnification", "fit-width")
+              .option("security.permission-password", "a=b")
+              .option("security.printing", "low_resolution")
+              .option("watermark.text", "Top secret")
+              .option("watermark.color", "#FF0000")
+              .option("watermark.rotation", "45")
+              .build();
+
+      assertThat(options.getFilterData())
+          .containsEntry("UseTaggedPDF", true)
+          .containsEntry("UseLosslessCompression", false)
+          .containsEntry("Quality", 80)
+          .containsEntry("Magnification", 2)
+          .containsEntry("PermissionPassword", "a=b")
+          .containsEntry("Printing", 1)
+          .containsEntry("Watermark", "Top secret")
+          .containsEntry("WatermarkColor", 0xFF0000)
+          .containsEntry("WatermarkRotateAngle", 450);
+    }
+
+    @Test
+    void withVersion_ShouldAcceptTheShortAndTheFullNames() {
+
+      final var expected = new HashMap<String, PdfVersion>();
+      expected.put("1.7", PdfVersion.PDF_1_7);
+      expected.put("pdf-1-7", PdfVersion.PDF_1_7);
+      expected.put("PDF_1_7", PdfVersion.PDF_1_7);
+      expected.put("2.0", PdfVersion.PDF_2_0);
+      expected.put("a-2b", PdfVersion.PDF_A_2B);
+      expected.put("A_3B", PdfVersion.PDF_A_3B);
+      expected.put("pdf-a-1b", PdfVersion.PDF_A_1B);
+      expected.put("default", PdfVersion.DEFAULT);
+      expected.forEach(
+          (text, version) ->
+              assertThat(PdfOptions.builder().option("version", text).build().getFilterData())
+                  .as(text)
+                  .containsEntry("SelectPdfVersion", version.getValue()));
+    }
+
+    @Test
+    void withColorText_ShouldAcceptTheUsualForms() {
+
+      for (final var text :
+          new String[] {"00ff00", "#00FF00", "0x00ff00", "0X00FF00", " 00FF00 "}) {
+        assertThat(PdfOptions.builder().option("watermark.color", text).build().getFilterData())
+            .as(text)
+            .containsEntry("WatermarkColor", 0x00FF00);
+      }
+    }
+
+    @Test
+    void withInvalidNameOrValue_ShouldThrowIllegalArgumentException() {
+
+      assertThatNullPointerException()
+          .isThrownBy(() -> PdfOptions.builder().option(null, "1"))
+          .withMessage("name must not be null");
+      assertThatNullPointerException()
+          .isThrownBy(() -> PdfOptions.builder().option("tagged", null))
+          .withMessage("value must not be null");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("pages.rang", "1"))
+          .withMessageStartingWith("Unknown PDF option 'pages.rang'; expected one of: version, ")
+          .withMessageContaining("pages.range");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("tagged", "yes"))
+          .withMessage("Invalid value 'yes' for the PDF option 'tagged': expected true or false");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("images.jpeg-quality", "high"))
+          .withMessage(
+              "Invalid value 'high' for the PDF option 'images.jpeg-quality': expected a number");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("images.jpeg-quality", "0"))
+          .withMessageContaining("jpegQuality must be between 1 and 100");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("security.printing", "draft"))
+          .withMessage(
+              "Invalid value 'draft' for the PDF option 'security.printing':"
+                  + " expected one of: none, low-resolution, high-resolution");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("version", "3.0"))
+          .withMessageContaining("expected one of: default, pdf-1-5");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("watermark.color", "red"))
+          .withMessage(
+              "Invalid value 'red' for the PDF option 'watermark.color':"
+                  + " expected a color such as FF0000");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("watermark.color", "1000000"))
+          .withMessageContaining("color must be an RGB value");
+    }
+
+    @Test
+    void withCertificateWithoutPrivateKey_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("signature.certificate", "CERT").build())
+          .withMessage(
+              "The PDF options 'signature.certificate' and 'signature.private-key'"
+                  + " must be used together");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> PdfOptions.builder().option("signature.private-key", "KEY").build())
+          .withMessageContaining("must be used together");
+    }
+
+    @Test
+    void withCertificateAndPrivateKey_ShouldSignWithThem() {
+
+      final var options =
+          PdfOptions.builder()
+              .option("signature.private-key", "KEY")
+              .option("signature.reason", "because")
+              .option("signature.certificate", "CERT")
+              .build();
+
+      assertThat(options.getFilterData())
+          .containsEntry("SignPDF", true)
+          .containsEntry("SignCertificateCertPem", "CERT")
+          .containsEntry("SignCertificateKeyPem", "KEY")
+          .containsEntry("SignatureReason", "because");
+      // Building again from the options keeps the pair.
+      assertThat(options.toBuilder().build().getFilterData())
+          .containsEntry("SignCertificateCertPem", "CERT");
+    }
+  }
+
+  @Nested
   class Presets {
 
     @Test

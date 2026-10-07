@@ -184,14 +184,15 @@ PdfOptions.builder()
 
 ### Watermark: `watermark(...)`
 
-| Method              | FilterData                                        | Requires         |
-| ------------------- | ------------------------------------------------- | ---------------- |
-| `text(String)`      | `Watermark`                                       | all              |
-| `tiledText(String)` | `TiledWatermark`                                  | LibreOffice 6.3+ |
-| `color(int)`        | `WatermarkColor`, an RGB value such as `0xFF0000` | LibreOffice 7.4+ |
-| `fontName(String)`  | `WatermarkFontName`                               | LibreOffice 7.4+ |
-| `fontHeight(int)`   | `WatermarkFontHeight`, in points                  | LibreOffice 7.4+ |
-| `rotation(int)`     | `WatermarkRotateAngle`, given in degrees          | LibreOffice 7.4+ |
+| Method              | FilterData                                             | Requires         |
+| ------------------- | ------------------------------------------------------ | ---------------- |
+| `text(String)`      | `Watermark`                                            | all              |
+| `tiledText(String)` | `TiledWatermark`                                       | LibreOffice 6.3+ |
+| `color(int)`        | `WatermarkColor`, an RGB value such as `0xFF0000`      | LibreOffice 7.4+ |
+| `color(String)`     | `WatermarkColor`, as `FF0000`, `#FF0000` or `0xFF0000` | LibreOffice 7.4+ |
+| `fontName(String)`  | `WatermarkFontName`                                    | LibreOffice 7.4+ |
+| `fontHeight(int)`   | `WatermarkFontHeight`, in points                       | LibreOffice 7.4+ |
+| `rotation(int)`     | `WatermarkRotateAngle`, given in degrees               | LibreOffice 7.4+ |
 
 ### Digital signature: `signature(...)`
 
@@ -247,6 +248,23 @@ last and are not validated.
 
 ```java
 PdfOptions.builder().filterData("ExportNotesInMargin", true).build();
+```
+
+### Options by name
+
+`option(name, value)` applies an option given by its name and its text value, the way the
+[command line](#command-line) and the [Spring Boot](#spring-boot) properties do: `images.jpeg-quality=80`,
+`security.printing=low-resolution`, `version=a-2b`. It is the way to apply options read from a configuration file of
+your own. The names are those of the command line table below, except that the certificate, the private key and the
+certificate authorities of a signature are given as PEM text, with `signature.certificate`, `signature.private-key`
+(which must be used together) and `signature.ca`; `PdfOptions.optionNames()` lists them. An unknown name or a value
+that is not valid throws an `IllegalArgumentException`.
+
+```java
+PdfOptions.archive().toBuilder()
+    .option("pages.range", "1-3")
+    .option("watermark.color", "#FF0000")
+    .build();
 ```
 
 ## Default options of a converter
