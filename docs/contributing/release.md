@@ -6,48 +6,48 @@ credentials and the signing key, which live in the repository secrets; the rest 
 ## Before the release
 
 1. **Labels.** Every pull request merged and every issue closed since the last tag has a label (`enhancement`, `bug`,
-   `documentation`, `dependencies`): the release notes that GitHub generates are grouped by label
-   (`.github/release.yml`).
+    `documentation`, `dependencies`): the release notes that GitHub generates are grouped by label
+    (`.github/release.yml`).
 2. **Release notes page.** Write `docs/release-notes/release-notes-X.Y.Z.md` and link it from
-   `docs/release-notes/index.md` and the navigation in `zensical.toml`. For a major or minor version, the migration
-   guide `docs/migration-guides/migration-guide-X.Y.Z.md` exists and is linked the same way.
+    `docs/release-notes/index.md` and the navigation in `zensical.toml`. For a major or minor version, the migration
+    guide `docs/migration-guides/migration-guide-X.Y.Z.md` exists and is linked the same way.
 3. **CHANGELOG.md.** Add the `X.Y.Z` block, one line per pull request with its number, from:
-   ```bash
-   gh pr list --state merged --base develop --search "merged:>YYYY-MM-DD" --json number,title --jq '.[] | "- \(.title) (#\(.number))"'
-   ```
+    ```bash
+    gh pr list --state merged --base develop --search "merged:>YYYY-MM-DD" --json number,title --jq '.[] | "- \(.title) (#\(.number))"'
+    ```
 4. **Version.** Set the version everywhere at once:
-   ```bash
-   ./gradlew setVersion -PnewVersion=X.Y.Z
-   ```
-   The task writes `version` in `gradle.properties` and, for a release version, replaces the previous released
-   version in the pages of the documentation that show dependency coordinates.
+    ```bash
+    ./gradlew setVersion -PnewVersion=X.Y.Z
+    ```
+    The task writes `version` in `gradle.properties` and, for a release version, replaces the previous released
+    version in the pages of the documentation that show dependency coordinates.
 5. **Full build and integration tests, locally.** The continuous integration runs them on Linux only; a release
-   deserves a run with the office installation of another platform:
-   ```bash
-   ./gradlew clean build integrationTest
-   ```
+    deserves a run with the office installation of another platform:
+    ```bash
+    ./gradlew clean build integrationTest
+    ```
 6. **Release commit.** Commit on `develop` with the message `Release X.Y.Z`, push, open the pull request from
-   `develop` to `master`, let the checks pass, merge it with a merge commit.
+    `develop` to `master`, let the checks pass, merge it with a merge commit.
 
 ## The release
 
 7. **Tag.** On `master`, after the merge:
-   ```bash
-   git checkout master && git pull && git tag -a vX.Y.Z -m "Release X.Y.Z" && git push origin vX.Y.Z
-   ```
-   The `release` workflow then builds the tag, publishes every module on Maven Central (signed, released
-   automatically once the portal validates them) and creates the GitHub release `vX.Y.Z` with the generated notes
-   and the command line tool archives. The `deploy-docs` workflow, run by the push to `master`, publishes the
-   documentation of the version with the `latest` alias.
+    ```bash
+    git checkout master && git pull && git tag -a vX.Y.Z -m "Release X.Y.Z" && git push origin vX.Y.Z
+    ```
+    The `release` workflow then builds the tag, publishes every module on Maven Central (signed, released
+    automatically once the portal validates them) and creates the GitHub release `vX.Y.Z` with the generated notes
+    and the command line tool archives. The `deploy-docs` workflow, run by the push to `master`, publishes the
+    documentation of the version with the `latest` alias.
 8. **Check** the [release](https://github.com/jodconverter/jodconverter/releases), the artifacts on
-   [Maven Central](https://central.sonatype.com/search?q=g:org.jodconverter) (they appear within a few hours) and the
-   [documentation](https://jodconverter.github.io/jodconverter/latest/).
+    [Maven Central](https://central.sonatype.com/search?q=g:org.jodconverter) (they appear within a few hours) and the
+    [documentation](https://jodconverter.github.io/jodconverter/latest/).
 9. **Announce** on Gitter:
-   ```
-   JODConverter X.Y.Z is out!
-   * Release Notes: https://jodconverter.github.io/jodconverter/latest/release-notes/release-notes-X.Y.Z/
-   * Migration Guide: https://jodconverter.github.io/jodconverter/latest/migration-guides/migration-guide-X.Y.Z/
-   ```
+    ```
+    JODConverter X.Y.Z is out!
+    * Release Notes: https://jodconverter.github.io/jodconverter/latest/release-notes/release-notes-X.Y.Z/
+    * Migration Guide: https://jodconverter.github.io/jodconverter/latest/migration-guides/migration-guide-X.Y.Z/
+    ```
 
 ## After the release
 
@@ -60,13 +60,13 @@ credentials and the signing key, which live in the repository secrets; the rest 
 
 ## Secrets of the release workflow
 
-| Secret                  | Content                                                                  |
-| ----------------------- | ------------------------------------------------------------------------ |
-| `MAVEN_CENTRAL_USERNAME`| The user name of the Maven Central portal token.                         |
-| `MAVEN_CENTRAL_PASSWORD`| The password of the Maven Central portal token.                          |
-| `SIGNING_KEY`           | The armored private GPG key (`gpg --armor --export-secret-keys KEY_ID`). |
-| `SIGNING_KEY_ID`        | The last 8 characters of the key id.                                     |
-| `SIGNING_PASSWORD`      | The passphrase of the key.                                               |
+| Secret                   | Content                                                                  |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `MAVEN_CENTRAL_USERNAME` | The user name of the Maven Central portal token.                         |
+| `MAVEN_CENTRAL_PASSWORD` | The password of the Maven Central portal token.                          |
+| `SIGNING_KEY`            | The armored private GPG key (`gpg --armor --export-secret-keys KEY_ID`). |
+| `SIGNING_KEY_ID`         | The last 8 characters of the key id.                                     |
+| `SIGNING_PASSWORD`       | The passphrase of the key.                                               |
 
 The `build` workflow uses one more secret, `COVERALLS_REPO_TOKEN`, the repository token shown on the Coveralls page of
 the project, to send the coverage of the Linux job.

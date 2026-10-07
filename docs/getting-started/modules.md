@@ -97,8 +97,7 @@ public class JodConverterConfiguration {
 ```
 
 With XML configuration, `LocalOfficeManager.make()` and `LocalConverter.make(officeManager)` are static factory
-methods: `<bean id="officeManager" class="org.jodconverter.local.office.LocalOfficeManager" factory-method="make"
-init-method="start" destroy-method="stop"/>`.
+methods: `<bean id="officeManager" class="org.jodconverter.local.office.LocalOfficeManager" factory-method="make" init-method="start" destroy-method="stop"/>`.
 
 ## jodconverter-spring-boot-starter
 

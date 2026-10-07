@@ -205,10 +205,15 @@ Notes:
 - [Slides to images](page-images.md): `LocalConverter.exportPages(...)`, one image per slide or draw page.
 
 - `DocumentConverter` (core): high-level conversion contract.
+
 - `DefaultDocumentFormatRegistry` (core): common formats and MIME mappings.
+
 - Conversion job API (core.job): fluent pipeline (convert (...).to (...).execute ()).
+
 - `LocalConverter` (local): converter for local office processes.
+
 - `RemoteConverter` (remote): converter for LibreOffice Online / Collabora Online.
+
 - `InstalledOfficeManagerHolder` (core): global singleton used when no manager is provided explicitly.
 
 For detailed configuration of each converter type, refer to:

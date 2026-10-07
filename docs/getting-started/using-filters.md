@@ -66,8 +66,7 @@ document.
 
 Underneath, `merge` chains a
 [DocumentInserterFilter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentInserterFilter.java)
-per document. Use the filter directly to insert a document without a page break (`new
-DocumentInserterFilter(file, false)`, the default of the filter), or at a chosen place in the chain:
+per document. Use the filter directly to insert a document without a page break (`new DocumentInserterFilter(file, false)`, the default of the filter), or at a chosen place in the chain:
 
 ```java
 LocalConverter
@@ -110,18 +109,18 @@ hand, or that holds links to the entries of its index, is better exported as it 
 [filter](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter)
 package of the local module:
 
-| Filter                         | What it does                                                                                                                                |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `RefreshFilter`                | Refreshes the document (fields, layout). Applied by default when no filter chain is given to the converter.                                 |
-| `PagesSelectorFilter`          | Keeps only the given pages (text documents), sheets (spreadsheets) or slides (presentations and drawings).                                  |
-| `PageCounterFilter`            | Counts the pages, sheets or slides of the document, available after the conversion with `getPageCount()`.                                   |
+| Filter                              | What it does                                                                                                                                   |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RefreshFilter`                     | Refreshes the document (fields, layout). Applied by default when no filter chain is given to the converter.                                    |
+| `PagesSelectorFilter`               | Keeps only the given pages (text documents), sheets (spreadsheets) or slides (presentations and drawings).                                     |
+| `PageCounterFilter`                 | Counts the pages, sheets or slides of the document, available after the conversion with `getPageCount()`.                                      |
 | `text.DocumentIndexesUpdaterFilter` | Updates the indexes of a text document, and optionally the number of levels of its tables of contents. Replaces `TableOfContentUpdaterFilter`. |
-| `text.PageMarginsFilter`       | Changes the page margins of a text document.                                                                                                |
-| `text.TextInserterFilter`      | Inserts a text, in a frame placed at the given position and size.                                                                           |
-| `text.TextReplacerFilter`      | Replaces texts in a text document.                                                                                                          |
-| `text.GraphicInserterFilter`   | Inserts an image, at the given position and size.                                                                                           |
-| `text.DocumentInserterFilter`  | Inserts another document at the end of the loaded one, on a new page or not (see [Merging documents](#merging-documents)).                 |
-| `text.LinkedImagesEmbedderFilter` | Embeds the linked images of a text document, so that the output does not depend on them.                                                  |
+| `text.PageMarginsFilter`            | Changes the page margins of a text document.                                                                                                   |
+| `text.TextInserterFilter`           | Inserts a text, in a frame placed at the given position and size.                                                                              |
+| `text.TextReplacerFilter`           | Replaces texts in a text document.                                                                                                             |
+| `text.GraphicInserterFilter`        | Inserts an image, at the given position and size.                                                                                              |
+| `text.DocumentInserterFilter`       | Inserts another document at the end of the loaded one, on a new page or not (see [Merging documents](#merging-documents)).                     |
+| `text.LinkedImagesEmbedderFilter`   | Embeds the linked images of a text document, so that the output does not depend on them.                                                       |
 
 You can implement (and share obviously 😁) any filter you need. Your filter must implement
 the [Filter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/Filter.java)

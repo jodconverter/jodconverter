@@ -14,13 +14,13 @@ This page is a landing hub for configuring JODConverter components. Use it to qu
 
 ## Quick matrix
 
-| Component             | Where it runs             | Typical use case                              | Key page                                       |
-| --------------------- | ------------------------- | --------------------------------------------- | ---------------------------------------------- |
-| LocalOfficeManager    | Local machine (headless)  | Server/service with LibreOffice/AOO installed | [LocalOfficeManager](./local-manager.md)       |
+| Component             | Where it runs              | Typical use case                                                                                     | Key page                                       |
+| --------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| LocalOfficeManager    | Local machine (headless)   | Server/service with LibreOffice/AOO installed                                                        | [LocalOfficeManager](./local-manager.md)       |
 | AttachedOfficeManager | Wherever you start soffice | You control the soffice lifecycle; JODConverter connects over UNO (formerly `ExternalOfficeManager`) | [AttachedOfficeManager](./attached-manager.md) |
-| RemoteOfficeManager   | Remote (HTTP/WebSocket)   | Use LibreOffice Online/Collabora remotely     | [RemoteOfficeManager](./remote-manager.md)     |
-| LocalConverter        | Local UNO                 | In‑process conversions via local office       | [LocalConverter](./local-converter.md)         |
-| RemoteConverter       | Remote HTTP               | Call a remote conversion service              | [RemoteConverter](./remote-converter.md)       |
+| RemoteOfficeManager   | Remote (HTTP/WebSocket)    | Use LibreOffice Online/Collabora remotely                                                            | [RemoteOfficeManager](./remote-manager.md)     |
+| LocalConverter        | Local UNO                  | In‑process conversions via local office                                                              | [LocalConverter](./local-converter.md)         |
+| RemoteConverter       | Remote HTTP                | Call a remote conversion service                                                                     | [RemoteConverter](./remote-converter.md)       |
 
 ## Tips
 
