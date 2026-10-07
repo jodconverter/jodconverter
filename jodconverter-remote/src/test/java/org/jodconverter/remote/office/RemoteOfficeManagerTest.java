@@ -44,7 +44,7 @@ class RemoteOfficeManagerTest {
     @Test
     void shouldInitializedManagerWithDefaultValues() {
 
-      final var manager = RemoteOfficeManager.make("localhost");
+      final var manager = RemoteOfficeManager.make("http://localhost");
 
       assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
       assertThat(manager)
@@ -66,9 +66,16 @@ class RemoteOfficeManagerTest {
               o ->
                   assertThat(o)
                       .isInstanceOf(RemoteOfficeWorker.class)
-                      .extracting("connectionUrl", "sslConfig", "connectTimeout", "socketTimeout")
+                      .extracting(
+                          "requestConfig.url",
+                          "sslConfig",
+                          "requestConfig.connectTimeout",
+                          "requestConfig.socketTimeout")
                       .containsExactly(
-                          "localhost", null, DEFAULT_CONNECT_TIMEOUT, DEFAULT_SOCKET_TIMEOUT));
+                          "http://localhost/lool/convert-to/",
+                          null,
+                          DEFAULT_CONNECT_TIMEOUT,
+                          DEFAULT_SOCKET_TIMEOUT));
     }
   }
 
@@ -81,7 +88,7 @@ class RemoteOfficeManagerTest {
       // Ensure we do not replace the current installed manager
       final var installedManager = InstalledOfficeManagerHolder.getInstance();
       try {
-        final var manager = RemoteOfficeManager.install("localhost");
+        final var manager = RemoteOfficeManager.install("http://localhost");
         assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
       } finally {
         InstalledOfficeManagerHolder.setInstance(installedManager);
@@ -105,7 +112,7 @@ class RemoteOfficeManagerTest {
               .taskExecutionTimeout(500L)
               .taskQueueTimeout(501L)
               .poolSize(2)
-              .urlConnection("localhost")
+              .urlConnection("http://localhost")
               .sslConfig(null)
               .connectTimeout(502L)
               .socketTimeout(503L)
@@ -128,8 +135,12 @@ class RemoteOfficeManagerTest {
               o ->
                   assertThat(o)
                       .isInstanceOf(RemoteOfficeWorker.class)
-                      .extracting("connectionUrl", "sslConfig", "connectTimeout", "socketTimeout")
-                      .containsExactly("localhost", null, 502L, 503L));
+                      .extracting(
+                          "requestConfig.url",
+                          "sslConfig",
+                          "requestConfig.connectTimeout",
+                          "requestConfig.socketTimeout")
+                      .containsExactly("http://localhost/lool/convert-to/", null, 502L, 503L));
     }
 
     @Test

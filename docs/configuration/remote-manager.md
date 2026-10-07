@@ -133,8 +133,8 @@ This property sets the URL of the remote server.
 
 #### ⌚`connectTimeout`
 
-This property sets the timeout in milliseconds until a connection is established. A timeout value of zero is
-interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
+This property sets the timeout in milliseconds until a connection to the server is established. A timeout value
+of zero means no timeout.
 
 &#160;***Default***: 60000 (1 minute)
 
@@ -166,9 +166,8 @@ interpreted as an infinite timeout. A negative value is interpreted as undefined
 
 #### ⌚`socketTimeout`
 
-This property sets the socket timeout `SO_TIMEOUT` in milliseconds, which is the timeout for waiting for data or,
-to put differently, a maximum period inactivity between two consecutive data packets. A timeout value of zero is
-interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
+This property sets the timeout in milliseconds for the response of the server once a request is sent. A timeout
+value of zero means no timeout.
 
 &#160;***Default***: 120000 (2 minutes)
 
@@ -216,6 +215,11 @@ This property controls the SSL configuration to secure communication with the re
             .sslConfig(sslConfig)
             .build();
     ```
+
+    The key store and the trust store are read once, when the manager starts, from the class path (`classpath:`), a
+    URL (`file:`...) or a file path. An application that builds its own `SSLContext` (from a Spring Boot SSL bundle,
+    for example) gives it to the builder with `sslContext(...)` instead; it takes precedence over the SSL
+    configuration.
 
 === "Spring Boot"
 

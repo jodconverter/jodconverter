@@ -61,7 +61,7 @@ class AutoConfigurationDefaultPropertiesITest {
 
     @Bean
     /* default */ OfficeManager remoteOfficeManager() {
-      return RemoteOfficeManager.make("some url");
+      return RemoteOfficeManager.make("http://localhost:8001");
     }
   }
 

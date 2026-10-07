@@ -31,8 +31,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.SSLPeerUnverifiedException;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.Nested;
@@ -101,15 +101,10 @@ class RemoteOfficeManagerSslITest {
                 .sslConfig(sslConfig)
                 .build();
         try {
-          manager.start();
-          wireMockServer.stubFor(
-              post(urlPathEqualTo("/lool/convert-to/txt"))
-                  .willReturn(aResponse().withBody("Test Document")));
-
+          // The SSL material is loaded when the manager starts.
           assertThatExceptionOfType(OfficeException.class)
-              .isThrownBy(
-                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-              .withCauseExactlyInstanceOf(UnrecoverableKeyException.class);
+              .isThrownBy(manager::start)
+              .withRootCauseExactlyInstanceOf(UnrecoverableKeyException.class);
 
         } finally {
           OfficeUtils.stopQuietly(manager);
@@ -559,7 +554,8 @@ class RemoteOfficeManagerSslITest {
           assertThatExceptionOfType(OfficeException.class)
               .isThrownBy(
                   () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-              .withCauseExactlyInstanceOf(SSLPeerUnverifiedException.class);
+              // The JVM reports the host name mismatch as a handshake failure.
+              .withCauseInstanceOf(SSLException.class);
 
         } finally {
           OfficeUtils.stopQuietly(manager);
@@ -643,15 +639,10 @@ class RemoteOfficeManagerSslITest {
                 .sslConfig(sslConfig)
                 .build();
         try {
-          manager.start();
-          wireMockServer.stubFor(
-              post(urlPathEqualTo("/lool/convert-to/txt"))
-                  .willReturn(aResponse().withBody("Test Document")));
-
+          // The SSL material is loaded when the manager starts.
           assertThatExceptionOfType(OfficeException.class)
-              .isThrownBy(
-                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-              .withCauseExactlyInstanceOf(NoSuchAlgorithmException.class);
+              .isThrownBy(manager::start)
+              .withRootCauseExactlyInstanceOf(NoSuchAlgorithmException.class);
 
         } finally {
           OfficeUtils.stopQuietly(manager);
@@ -741,15 +732,10 @@ class RemoteOfficeManagerSslITest {
                 .sslConfig(sslConfig)
                 .build();
         try {
-          manager.start();
-          wireMockServer.stubFor(
-              post(urlPathEqualTo("/lool/convert-to/txt"))
-                  .willReturn(aResponse().withBody("Test Document")));
-
+          // The SSL material is loaded when the manager starts.
           assertThatExceptionOfType(OfficeException.class)
-              .isThrownBy(
-                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-              .withCauseExactlyInstanceOf(IllegalArgumentException.class);
+              .isThrownBy(manager::start)
+              .withRootCauseExactlyInstanceOf(IllegalArgumentException.class);
 
         } finally {
           OfficeUtils.stopQuietly(manager);
@@ -839,15 +825,10 @@ class RemoteOfficeManagerSslITest {
                 .sslConfig(sslConfig)
                 .build();
         try {
-          manager.start();
-          wireMockServer.stubFor(
-              post(urlPathEqualTo("/lool/convert-to/txt"))
-                  .willReturn(aResponse().withBody("Test Document")));
-
+          // The SSL material is loaded when the manager starts.
           assertThatExceptionOfType(OfficeException.class)
-              .isThrownBy(
-                  () -> RemoteConverter.make(manager).convert(inputFile).to(outputFile).execute())
-              .withCauseExactlyInstanceOf(IllegalArgumentException.class);
+              .isThrownBy(manager::start)
+              .withRootCauseExactlyInstanceOf(IllegalArgumentException.class);
 
         } finally {
           OfficeUtils.stopQuietly(manager);

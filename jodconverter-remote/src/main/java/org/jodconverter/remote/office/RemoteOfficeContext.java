@@ -20,25 +20,48 @@
 
 package org.jodconverter.remote.office;
 
-import org.apache.http.client.HttpClient;
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.OfficeContext;
 
-/** Represents an office context for remote conversions. */
+/**
+ * The context of a task executed by a {@link RemoteOfficeManager}: the HTTP client of the office
+ * worker and the configuration of the requests.
+ */
 public interface RemoteOfficeContext extends OfficeContext {
 
   /**
-   * Gets the HTTP client responsible for request execution to the office server.
+   * Gets the HTTP client of the worker, built once with the SSL configuration of the manager.
    *
-   * @return The client that will send the conversion request.
+   * @return The HTTP client.
    */
   @NonNull HttpClient getHttpClient();
 
   /**
-   * Gets the request configuration.
+   * Gets the configuration of the requests: the URL of the conversion service and the timeouts.
    *
    * @return The request configuration.
    */
   @NonNull RequestConfig getRequestConfig();
+
+  /**
+   * Sends a request with the HTTP client of the worker and waits for the response. A task sends its
+   * requests through this method rather than through the client, so that the request is cancelled
+   * when the task is aborted (on a task timeout, or when the manager stops).
+   *
+   * @param request The request to send.
+   * @param handler The handler of the response body.
+   * @param <T> The type of the response body.
+   * @return The response.
+   * @throws IOException If the request fails, or if it was aborted.
+   * @throws InterruptedException If the current thread is interrupted while waiting.
+   */
+  <T> @NonNull HttpResponse<T> send(
+      @NonNull HttpRequest request, HttpResponse.@NonNull BodyHandler<T> handler)
+      throws IOException, InterruptedException;
 }

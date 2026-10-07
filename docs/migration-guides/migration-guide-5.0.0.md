@@ -109,6 +109,29 @@ PowerShell only (`wmic` is no longer used), and `AbstractProcessManager` stays f
 list them. `UnixProcessManager.setRunAsArgs` (unused), `ExitCodeRetryable` and the four stream pumper classes of the
 `process` package are removed.
 
+### Remote module without Apache HttpClient
+
+`jodconverter-remote` sends its requests with the HTTP client of the JDK (`java.net.http`) and no longer depends on
+Apache HttpClient: the `httpclient`, `httpcore`, `httpmime` and `fluent-hc` artifacts are gone from its POM. The
+client of a worker is built once, when the manager starts, with the SSL material loaded once; a task that times out
+is aborted by cancelling its request, not by closing a client.
+
+- `RemoteOfficeContext.getHttpClient()` returns a `java.net.http.HttpClient`, and the context has a `send(request,
+    handler)` method that a custom task uses to send its requests, so that they are cancelled when the task is
+    aborted. `RemoteOfficeConnection` takes that client and a `RequestConfig`.
+- `RemoteOfficeManager.Builder` validates `urlConnection` in `build()` (an `IllegalArgumentException` for an invalid
+    URL, instead of a failure at the first conversion), builds the URL of the `convert-to` service once, and
+    recognizes the `cool` directory of Collabora Online as well as `lool`; `poolSize` must be at least 1; the
+    `connectTimeout` and `socketTimeout` setters no longer document a system default for negative values, which they
+    reject. `socketTimeout` is the timeout for the response of the server once a request is sent.
+- The new `sslContext(SSLContext)` setter takes an SSL context built by the application, which takes precedence over
+    `sslConfig(SslConfig)`. The `org.jodconverter.remote.ssl.SslContexts` utility builds an `SSLContext` and its
+    `SSLParameters` from an `SslConfig`; a `classpath:` key store or trust store is read as a class path resource, so
+    it can live inside a jar. The SSL material is loaded when the manager starts: a wrong key password or an unknown
+    protocol, cipher suite or enabled protocol fails `start()`, with the cause as the root cause of the
+    `OfficeException`, instead of failing every conversion. A host name mismatch is reported as an
+    `SSLHandshakeException`, like any other handshake failure.
+
 ### Records
 
 `ProcessQuery` (local module) and `RequestConfig` (remote module) are now records, and their accessors follow the
