@@ -215,6 +215,14 @@ In `org.jodconverter.core.util`, `IOUtils` is removed (`InputStream.transferTo` 
 In `org.jodconverter.local.office.utils`, the `Calc` and `Draw` classes, `Write.isWeb` and `Info.getConfigUpdateAccess`
 are removed: nothing in the project used them, and `LocalOfficeUtils.getDocumentFamily` tells the kind of a document.
 
+### Document indexes updater filter
+
+`TableOfContentUpdaterFilter` is renamed `DocumentIndexesUpdaterFilter`, since it updates every index of a text document
+(table of contents, alphabetical index, table of figures, bibliography) and not only the table of contents. It now
+refreshes the document and updates the indexes twice, so that the page numbers are right after a table of contents
+grew. The old class remains as a deprecated subclass, to be removed in a later release, and the command line tool
+accepts both `document-indexes-updater` and `table-of-content-updater` as the filter type.
+
 ### Internal classes
 
 `NamedThreadFactory` (core), `CliConverter` (command line tool) and the `MIN_PROCESS_RETRY_INTERVAL` and

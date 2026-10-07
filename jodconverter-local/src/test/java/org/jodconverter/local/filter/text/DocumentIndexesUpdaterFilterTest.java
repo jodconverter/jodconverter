@@ -20,6 +20,7 @@
 
 package org.jodconverter.local.filter.text;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -35,9 +36,9 @@ import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.office.utils.UnoRuntime;
 
-/** Contains tests for the {@link TableOfContentUpdaterFilter} class. */
+/** Contains tests for the {@link DocumentIndexesUpdaterFilter} class. */
 @ExtendWith(MockUnoRuntimeExtension.class)
-class TableOfContentUpdaterFilterTest {
+class DocumentIndexesUpdaterFilterTest {
 
   @Nested
   class DoFilter {
@@ -52,13 +53,26 @@ class TableOfContentUpdaterFilterTest {
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(anyString())).willReturn(false);
 
-      final var filter = new TableOfContentUpdaterFilter();
+      final var filter = new DocumentIndexesUpdaterFilter();
       final var next = mock(Filter.class);
 
       final var chain = new DefaultFilterChain(false, filter, next);
       chain.doFilter(context, document);
 
       verify(next, times(1)).doFilter(context, document, chain);
+    }
+  }
+
+  @Nested
+  class FormerName {
+
+    @Test
+    @SuppressWarnings("removal")
+    void tableOfContentUpdaterFilter_ShouldBeTheSameFilter() {
+      assertThat(new TableOfContentUpdaterFilter(2))
+          .isInstanceOf(DocumentIndexesUpdaterFilter.class)
+          .extracting("level")
+          .isEqualTo(2);
     }
   }
 }

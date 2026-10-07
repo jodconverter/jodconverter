@@ -39,11 +39,11 @@ import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.NoopFilter;
 import org.jodconverter.local.filter.PagesSelectorFilter;
 import org.jodconverter.local.filter.RefreshFilter;
+import org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter;
 import org.jodconverter.local.filter.text.DocumentInserterFilter;
 import org.jodconverter.local.filter.text.GraphicInserterFilter;
 import org.jodconverter.local.filter.text.LinkedImagesEmbedderFilter;
 import org.jodconverter.local.filter.text.PageMarginsFilter;
-import org.jodconverter.local.filter.text.TableOfContentUpdaterFilter;
 import org.jodconverter.local.filter.text.TextInserterFilter;
 import org.jodconverter.local.filter.text.TextReplacerFilter;
 
@@ -163,7 +163,7 @@ class CliConfigReaderTest {
       assertThat(config.filters()).hasSize(2);
       assertThat(config.filters().get(0)).extracting("pages").isEqualTo(List.of(2));
       assertThat(config.filters().get(1))
-          .isInstanceOf(TableOfContentUpdaterFilter.class)
+          .isInstanceOf(DocumentIndexesUpdaterFilter.class)
           .extracting("level")
           .isEqualTo(3);
     }
@@ -506,13 +506,23 @@ class CliConfigReaderTest {
     }
 
     @Test
-    void withTableOfContentUpdaterWithoutLevel_ShouldUseZero(final @TempDir File dir)
+    void withDocumentIndexesUpdaterWithoutLevel_ShouldUseZero(final @TempDir File dir)
         throws IOException {
 
+      final var filters = filters("filters:\n  - type: document-indexes-updater\n", dir);
+
+      assertThat(filters).hasSize(1).first().isInstanceOf(DocumentIndexesUpdaterFilter.class);
+      assertThat(filters.get(0)).extracting("level").isEqualTo(0);
+    }
+
+    @Test
+    void withTableOfContentUpdater_ShouldGiveTheDocumentIndexesUpdater(final @TempDir File dir)
+        throws IOException {
+
+      // The former name of the type is still accepted.
       final var filters = filters("filters:\n  - type: table-of-content-updater\n", dir);
 
-      assertThat(filters).hasSize(1).first().isInstanceOf(TableOfContentUpdaterFilter.class);
-      assertThat(filters.get(0)).extracting("level").isEqualTo(0);
+      assertThat(filters).hasSize(1).first().isInstanceOf(DocumentIndexesUpdaterFilter.class);
     }
 
     @Test

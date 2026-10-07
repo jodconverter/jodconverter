@@ -38,11 +38,11 @@ import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.NoopFilter;
 import org.jodconverter.local.filter.PagesSelectorFilter;
 import org.jodconverter.local.filter.RefreshFilter;
+import org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter;
 import org.jodconverter.local.filter.text.DocumentInserterFilter;
 import org.jodconverter.local.filter.text.GraphicInserterFilter;
 import org.jodconverter.local.filter.text.LinkedImagesEmbedderFilter;
 import org.jodconverter.local.filter.text.PageMarginsFilter;
-import org.jodconverter.local.filter.text.TableOfContentUpdaterFilter;
 import org.jodconverter.local.filter.text.TextInserterFilter;
 import org.jodconverter.local.filter.text.TextReplacerFilter;
 
@@ -65,7 +65,8 @@ import org.jodconverter.local.filter.text.TextReplacerFilter;
  *       replacements.
  *   <li>{@code page-margins}: {@code left}, {@code top}, {@code right} and {@code bottom} in
  *       millimeters, each optional.
- *   <li>{@code table-of-content-updater}: {@code level}, the number of levels, optional.
+ *   <li>{@code document-indexes-updater} (or its former name {@code table-of-content-updater}):
+ *       {@code level}, the number of levels of the tables of contents, optional.
  * </ul>
  */
 final class FilterParser {
@@ -177,7 +178,8 @@ final class FilterParser {
     map.put("text-inserter", FilterParser::textInserter);
     map.put("text-replacer", FilterParser::textReplacer);
     map.put("page-margins", FilterParser::pageMargins);
-    map.put("table-of-content-updater", FilterParser::tableOfContentUpdater);
+    map.put("document-indexes-updater", FilterParser::documentIndexesUpdater);
+    map.put("table-of-content-updater", FilterParser::documentIndexesUpdater);
     return map;
   }
 
@@ -259,8 +261,8 @@ final class FilterParser {
     return section.optional(key).map(value -> Values.integer(value, key)).orElse(null);
   }
 
-  private static Filter tableOfContentUpdater(final Section section) {
-    return new TableOfContentUpdaterFilter(
+  private static Filter documentIndexesUpdater(final Section section) {
+    return new DocumentIndexesUpdaterFilter(
         section.optional("level").map(value -> Values.integer(value, "level")).orElse(0));
   }
 

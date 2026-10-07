@@ -37,9 +37,9 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.LocalOfficeManagerExtension;
 
-/** Contains tests for the {@link TableOfContentUpdaterFilter} class. */
+/** Contains tests for the {@link DocumentIndexesUpdaterFilter} class. */
 @ExtendWith(LocalOfficeManagerExtension.class)
-class TableOfContentUpdaterFilterITest {
+class DocumentIndexesUpdaterFilterITest {
 
   private static final String SOURCE_FILENAME = "test_toc.odt";
   private static final File SOURCE_FILE = documentFile(SOURCE_FILENAME);
@@ -55,7 +55,7 @@ class TableOfContentUpdaterFilterITest {
             () ->
                 LocalConverter.builder()
                     .officeManager(manager)
-                    .filterChain(new TableOfContentUpdaterFilter())
+                    .filterChain(new DocumentIndexesUpdaterFilter())
                     .build()
                     .convert(SOURCE_FILE)
                     .to(targetFile)
@@ -105,7 +105,7 @@ class TableOfContentUpdaterFilterITest {
             () ->
                 LocalConverter.builder()
                     .officeManager(manager)
-                    .filterChain(new TableOfContentUpdaterFilter(1))
+                    .filterChain(new DocumentIndexesUpdaterFilter(1))
                     .build()
                     .convert(SOURCE_FILE)
                     .to(targetFile)
