@@ -20,6 +20,8 @@
 
 package org.jodconverter.local;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,7 @@ import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
@@ -45,6 +48,7 @@ import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.office.AttachedOfficeManager;
 import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.local.task.LocalConversionTask;
+import org.jodconverter.local.task.PageImagesTask;
 
 /**
  * Default implementation of a document converter. This implementation will use a provided office
@@ -145,6 +149,85 @@ public final class LocalConverter extends AbstractConverter {
     return new LocalConversionJobWithSourceFormatUnspecified(source);
   }
 
+  /**
+   * Exports each page of a presentation or a drawing as an image: one image per slide or draw page,
+   * written in the directory given to the job.
+   *
+   * <pre>
+   * List&lt;File&gt; images =
+   *     converter.exportPages(new File("deck.pptx")).to(new File("out")).execute();
+   * </pre>
+   *
+   * @param source The presentation or drawing.
+   * @return The export job: the directory, the format, the size and the pages are given to it, then
+   *     it is executed.
+   */
+  public @NonNull PageImagesJob exportPages(final @NonNull File source) {
+    Objects.requireNonNull(source, "source must not be null");
+    final var baseName = FileUtils.getBaseName(source.getName());
+    return new PageImagesJob(
+        sourceSpecs(source),
+        baseName == null || baseName.isBlank() ? "page" : baseName,
+        officeManager,
+        this::pageImagesTask);
+  }
+
+  /**
+   * Exports each page of a presentation or a drawing read from a stream as an image. The stream is
+   * closed once read. The images are named {@code page-01.png}, {@code page-02.png}... unless a
+   * base name is given to the job.
+   *
+   * @param source The presentation or drawing.
+   * @return The export job.
+   */
+  public @NonNull PageImagesJob exportPages(final @NonNull InputStream source) {
+    return exportPages(source, true);
+  }
+
+  /**
+   * Exports each page of a presentation or a drawing read from a stream as an image. The images are
+   * named {@code page-01.png}, {@code page-02.png}... unless a base name is given to the job.
+   *
+   * @param source The presentation or drawing.
+   * @param closeStream Whether the stream is closed once read.
+   * @return The export job.
+   */
+  public @NonNull PageImagesJob exportPages(
+      final @NonNull InputStream source, final boolean closeStream) {
+    Objects.requireNonNull(source, "source must not be null");
+    return new PageImagesJob(
+        new SourceDocumentSpecsFromInputStream(source, officeManager, closeStream),
+        "page",
+        officeManager,
+        this::pageImagesTask);
+  }
+
+  // Creates the task of a page images job, with the load properties and the filters of this
+  // converter.
+  private PageImagesTask pageImagesTask(final PageImagesJob job) {
+    return new PageImagesTask(
+        job.getSource(),
+        useStreamAdapters(),
+        loadProperties,
+        filterChain,
+        job.getDirectory(),
+        job.getBaseName(),
+        job.getFormat(),
+        job.getWidth(),
+        job.getHeight(),
+        job.getQuality(),
+        job.getPages(),
+        job.isHiddenSlides());
+  }
+
+  // Whether the documents go through streams rather than files: always with the remote mode, and
+  // with the auto mode when the office processes may run elsewhere.
+  private boolean useStreamAdapters() {
+    return loadDocumentMode == LoadDocumentMode.REMOTE
+        || (loadDocumentMode == LoadDocumentMode.AUTO
+            && officeManager instanceof AttachedOfficeManager);
+  }
+
   /** Local implementation of a conversion job with source format unspecified. */
   private class LocalConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
@@ -176,14 +259,8 @@ public final class LocalConverter extends AbstractConverter {
     @Override
     protected @NonNull OfficeTask createTask() {
 
-      // Determine whether we must use stream adapters.
-      final var useStreamAdapters =
-          loadDocumentMode == LoadDocumentMode.REMOTE
-              || (loadDocumentMode == LoadDocumentMode.AUTO
-                  && officeManager instanceof AttachedOfficeManager);
-
       return new LocalConversionTask(
-          source, target, useStreamAdapters, loadProperties, storeProperties, filterChain);
+          source, target, useStreamAdapters(), loadProperties, storeProperties, filterChain);
     }
   }
 

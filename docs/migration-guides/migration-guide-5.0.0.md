@@ -367,6 +367,10 @@ columns wide.
 
 ## New features
 
+- [Slides to images](../getting-started/page-images.md): `LocalConverter.exportPages(document).to(directory)`
+    exports each slide or draw page of a presentation or a drawing as its own image (PNG, JPEG, SVG, GIF, BMP, TIFF,
+    WebP), with the size, the quality, the pages and the hidden slides as options. It replaces, for LibreOffice 24.2
+    and later, the one-image-per-slide output of the removed HTML export wizard (#396, #504).
 - [`PdfOptions`](../getting-started/pdf-options.md): typed options to convert to PDF (PDF/A, PDF/UA, images, page
     range, passwords and permissions, watermark, digital signature...), given to a conversion with the new
     `with(...)` method: `converter.convert(source).to(target).with(PdfOptions.archive()).execute()`. The command line
