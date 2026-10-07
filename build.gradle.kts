@@ -44,6 +44,50 @@ val jacocoRootReport = tasks.register<JacocoReport>("jacocoRootReport") {
     description = "Generates an aggregate Jacoco coverage report"
 }
 
+tasks.register("setVersion") {
+    group = "Release"
+    description = "Sets the version (-PnewVersion=X.Y.Z or X.Y.Z-SNAPSHOT) in gradle.properties and, for a release, in the documentation."
+
+    val newVersion = providers.gradleProperty("newVersion")
+    val releasedVersion = providers.gradleProperty("releasedVersion")
+    val propertiesFile = layout.projectDirectory.file("gradle.properties")
+    // The pages that show the dependency coordinates of the released version.
+    val docsFiles = listOf(
+        "docs/getting-started/java-library/index.md",
+        "docs/getting-started/libreoffice-online.md",
+        "docs/getting-started/modules.md"
+    ).map { layout.projectDirectory.file(it) }
+
+    doLast {
+        val version = newVersion.orNull
+            ?: throw GradleException("Give the version: ./gradlew setVersion -PnewVersion=X.Y.Z")
+        require(Regex("""\d+\.\d+\.\d+(-SNAPSHOT)?""").matches(version)) {
+            "Invalid version '$version': expected X.Y.Z or X.Y.Z-SNAPSHOT"
+        }
+        val previous = releasedVersion.get()
+        val release = !version.endsWith("-SNAPSHOT")
+
+        var properties = propertiesFile.asFile.readText()
+        properties = properties.replace(Regex("""(?m)^version\s*=.*$"""), "version = $version")
+        if (release) {
+            properties = properties.replace(Regex("""(?m)^releasedVersion\s*=.*$"""), "releasedVersion = $version")
+        }
+        propertiesFile.asFile.writeText(properties)
+        println("gradle.properties: version = $version")
+
+        if (release && previous != version) {
+            docsFiles.forEach { file ->
+                val text = file.asFile.readText()
+                val count = Regex(Regex.escape(previous)).findAll(text).count()
+                if (count > 0) {
+                    file.asFile.writeText(text.replace(previous, version))
+                }
+                println("${file.asFile.toRelativeString(projectDir)}: $count occurrence(s) of $previous replaced")
+            }
+        }
+    }
+}
+
 tasks.register("printConfigurations") {
     group = "Help"
     doLast {

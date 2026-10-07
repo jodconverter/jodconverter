@@ -3,7 +3,8 @@ plugins {
 }
 
 mavenPublishing {
-    publishToMavenCentral()
+    // Released automatically once the portal has validated the deployment.
+    publishToMavenCentral(automaticRelease = true)
 
     signAllPublications()
 
