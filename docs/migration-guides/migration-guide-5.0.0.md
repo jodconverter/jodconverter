@@ -118,8 +118,7 @@ Apache HttpClient: the `httpclient`, `httpcore`, `httpmime` and `fluent-hc` arti
 client of a worker is built once, when the manager starts, with the SSL material loaded once; a task that times out
 is aborted by cancelling its request, not by closing a client.
 
-- `RemoteOfficeContext.getHttpClient()` returns a `java.net.http.HttpClient`, and the context has a `send(request,
-    handler)` method that a custom task uses to send its requests, so that they are cancelled when the task is
+- `RemoteOfficeContext.getHttpClient()` returns a `java.net.http.HttpClient`, and the context has a `send(request,   handler)` method that a custom task uses to send its requests, so that they are cancelled when the task is
     aborted. `RemoteOfficeConnection` takes that client and a `RequestConfig`.
 - `RemoteOfficeManager.Builder` validates `urlConnection` in `build()` (an `IllegalArgumentException` for an invalid
     URL, instead of a failure at the first conversion), builds the URL of the `convert-to` service once, and

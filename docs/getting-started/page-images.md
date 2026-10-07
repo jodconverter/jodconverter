@@ -26,14 +26,14 @@ is gone.
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `to(File)`            | The directory of the images, created if missing. Required.                                                                                 |
 | `as(ImageFormat)`     | `ImageFormat.PNG` (default), `JPEG`, `SVG`, `GIF`, `BMP`, `TIFF`, `WEBP` (LibreOffice 7.4+), or `ImageFormat.of("jpg")` from an extension. |
-| `size(width, height)` | The size of the images, in pixels. Without a size, the images have the size of the page at 96 dpi.                                        |
+| `size(width, height)` | The size of the images, in pixels. Without a size, the images have the size of the page at 96 dpi.                                         |
 | `width(int)`          | The width in pixels; the height follows the proportions of the page.                                                                       |
 | `height(int)`         | The height in pixels; the width follows the proportions of the page.                                                                       |
 | `quality(int)`        | The quality of a lossy format (JPEG, WebP), 1 to 100; 90 by default.                                                                       |
-| `pages(String)`       | The pages to export, such as `1-3,7`; all of them by default. A page beyond the last one fails the export.                                  |
+| `pages(String)`       | The pages to export, such as `1-3,7`; all of them by default. A page beyond the last one fails the export.                                 |
 | `hiddenSlides(bool)`  | Whether the hidden slides of a presentation are exported; they are skipped by default, and their numbers are missing from the sequence.    |
 | `baseName(String)`    | The start of the file names; the name of the source file by default, or `page` for a document given as a stream.                           |
-| `executeAsync()`      | Exports without waiting: a `CompletableFuture` of the list of files.                                                                        |
+| `executeAsync()`      | Exports without waiting: a `CompletableFuture` of the list of files.                                                                       |
 
 ```java
 List<File> thumbnails =

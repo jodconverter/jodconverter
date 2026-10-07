@@ -176,17 +176,17 @@ The same configuration in JSON:
 
 The built-in filters and their keys are (the positions and sizes are in millimeters):
 
-| `type` | Keys |
-|---|---|
-| `pages-selector` | `pages`: a page number, or a list of page numbers; only these pages are converted. |
-| `text-inserter` | `text`, `width`, `height`; `horizontal-position` and `vertical-position`, or `shape-properties`, a map of the properties of the created text shape. |
-| `graphic-inserter` | `image`, the path of the image; `horizontal-position` and `vertical-position`, or `shape-properties`; optionally `width` and `height`, which resize the image. |
-| `document-inserter` | `document`, the path of the document appended to the converted one. |
-| `text-replacer` | `replacements`, a map of the texts to search and their replacements. |
-| `page-margins` | `left`, `top`, `right`, `bottom`, each optional. |
+| `type`                     | Keys                                                                                                                                                                                                                                                     |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pages-selector`           | `pages`: a page number, or a list of page numbers; only these pages are converted.                                                                                                                                                                       |
+| `text-inserter`            | `text`, `width`, `height`; `horizontal-position` and `vertical-position`, or `shape-properties`, a map of the properties of the created text shape.                                                                                                      |
+| `graphic-inserter`         | `image`, the path of the image; `horizontal-position` and `vertical-position`, or `shape-properties`; optionally `width` and `height`, which resize the image.                                                                                           |
+| `document-inserter`        | `document`, the path of the document appended to the converted one.                                                                                                                                                                                      |
+| `text-replacer`            | `replacements`, a map of the texts to search and their replacements.                                                                                                                                                                                     |
+| `page-margins`             | `left`, `top`, `right`, `bottom`, each optional.                                                                                                                                                                                                         |
 | `document-indexes-updater` | `level`, the number of levels of the tables of contents, optional; the indexes of a text document (table of contents, alphabetical index, table of figures...) are updated before the document is stored. `table-of-content-updater` is its former name. |
-| `linked-images-embedder` | None; the linked images are embedded in the document. |
-| `refresh` | None; the document is refreshed. |
+| `linked-images-embedder`   | None; the linked images are embedded in the document.                                                                                                                                                                                                    |
+| `refresh`                  | None; the document is refreshed.                                                                                                                                                                                                                         |
 
 A custom filter is a class that implements the
 [Filter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/Filter.java)

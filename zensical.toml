@@ -11,6 +11,7 @@ nav = [
   { Home = [
     { Overview = "index.md" },
     { Releases = [
+      { "Release 5.0.0" = "release-notes/release-notes-5.0.0.md" },
       { "Release 4.4.11" = "release-notes/release-notes-4.4.11.md" },
       { "Release 4.4.10" = "release-notes/release-notes-4.4.10.md" },
       { "Release 4.4.9" = "release-notes/release-notes-4.4.9.md" },
