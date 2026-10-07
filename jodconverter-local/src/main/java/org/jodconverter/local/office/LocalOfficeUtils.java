@@ -26,10 +26,10 @@ import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.lang.XComponent;
@@ -43,6 +43,7 @@ import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.core.util.StringUtils;
+import org.jodconverter.local.office.utils.Info;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.Props;
 import org.jodconverter.local.process.*;
@@ -74,67 +75,48 @@ public final class LocalOfficeUtils {
 
       } else if (OSUtils.IS_OS_WINDOWS) {
 
-        // Try to find the most recent version of LibreOffice or OpenOffice,
-        // starting with the 64-bit version. %ProgramFiles(x86)% on 64-bit
-        // machines; %ProgramFiles% on 32-bit ones
+        // The most recent LibreOffice first, 64-bit before 32-bit (%ProgramFiles(x86)% on
+        // 64-bit machines; %ProgramFiles% on 32-bit ones), then OpenOffice.
         final var programFiles64 = System.getenv("ProgramFiles");
         final var programFiles32 = System.getenv("ProgramFiles(x86)");
 
-        INSTANCE =
-            findOfficeHome(
-                EXECUTABLE_WINDOWS,
-                programFiles64 + File.separator + "LibreOffice",
-                programFiles32 + File.separator + "LibreOffice",
-                programFiles64 + File.separator + "LibreOffice 5",
-                programFiles32 + File.separator + "LibreOffice 5",
-                programFiles64 + File.separator + "LibreOffice 4",
-                programFiles32 + File.separator + "LibreOffice 4",
-                programFiles32 + File.separator + "OpenOffice 4",
-                programFiles64 + File.separator + "LibreOffice 3",
-                programFiles32 + File.separator + "LibreOffice 3",
-                programFiles32 + File.separator + "OpenOffice.org 3");
+        final var homes = new ArrayList<String>();
+        homes.addAll(listOfficeHomes("LibreOffice", programFiles64, programFiles32));
+        homes.add(programFiles32 + File.separator + "OpenOffice 4");
+        homes.add(programFiles32 + File.separator + "OpenOffice.org 3");
+        INSTANCE = findOfficeHome(EXECUTABLE_WINDOWS, homes);
 
       } else if (OSUtils.IS_OS_MAC) {
 
-        var homeDir =
-            findOfficeHome(
-                EXECUTABLE_MAC_41,
+        final var homes =
+            List.of(
                 "/Applications/LibreOffice.app/Contents",
                 "/Applications/OpenOffice.app/Contents",
                 "/Applications/OpenOffice.org.app/Contents");
-
+        var homeDir = findOfficeHome(EXECUTABLE_MAC_41, homes);
         if (homeDir == null) {
-          homeDir =
-              findOfficeHome(
-                  EXECUTABLE_MAC,
-                  "/Applications/LibreOffice.app/Contents",
-                  "/Applications/OpenOffice.app/Contents",
-                  "/Applications/OpenOffice.org.app/Contents");
+          homeDir = findOfficeHome(EXECUTABLE_MAC, homes);
         }
-
         INSTANCE = homeDir;
 
       } else {
 
         // UNIX
 
-        // Linux or other *nix variants
-        INSTANCE =
-            findOfficeHome(
-                EXECUTABLE_DEFAULT,
-                // LibreOffice
-                "/usr/lib64/libreoffice",
-                "/usr/lib/libreoffice",
-                "/usr/local/lib64/libreoffice",
-                "/usr/local/lib/libreoffice",
-                "/opt/libreoffice",
-                // https://github.com/jodconverter/jodconverter/issues/386
-                "/opt/libreoffice24.2",
-                "/usr/lib64/libreoffice24.2",
-                "/usr/lib/libreoffice24.2",
-                "/usr/local/lib64/libreoffice24.2",
-                "/usr/local/lib/libreoffice24.2",
-                // OpenOffice
+        // Linux or other *nix variants: the LibreOffice of the distribution or of the
+        // packages of The Document Foundation (libreoffice24.2...), the most recent first
+        // (https://github.com/jodconverter/jodconverter/issues/386), then OpenOffice.
+        final var homes = new ArrayList<String>();
+        homes.addAll(
+            listOfficeHomes(
+                "libreoffice",
+                "/usr/lib64",
+                "/usr/lib",
+                "/usr/local/lib64",
+                "/usr/local/lib",
+                "/opt"));
+        homes.addAll(
+            List.of(
                 "/usr/lib64/openoffice",
                 "/usr/lib64/openoffice.org3",
                 "/usr/lib64/openoffice.org",
@@ -142,20 +124,65 @@ public final class LocalOfficeUtils {
                 "/usr/lib/openoffice.org3",
                 "/usr/lib/openoffice.org",
                 "/opt/openoffice4",
-                "/opt/openoffice.org3");
+                "/opt/openoffice.org3"));
+        INSTANCE = findOfficeHome(EXECUTABLE_DEFAULT, homes);
       }
 
       LOGGER.debug("Default office home set to {}", INSTANCE);
     }
 
-    private static File findOfficeHome(final String executablePath, final String... homePaths) {
+    private static File findOfficeHome(final String executablePath, final List<String> homePaths) {
 
-      return Stream.of(homePaths)
+      return homePaths.stream()
           .filter(homePath -> Files.isRegularFile(Path.of(homePath, executablePath)))
           .findFirst()
           .map(File::new)
           .orElse(null);
     }
+  }
+
+  /**
+   * Lists the directories of the given parents whose name starts with the given prefix, ignoring
+   * the case: {@code libreoffice}, {@code libreoffice24.2}, {@code LibreOffice 7}... The
+   * directories named with the prefix only come first (the installation of the distribution, or a
+   * link to the latest), then the versioned ones, the most recent first; the parents keep their
+   * order. A parent that is null, missing or not readable is skipped.
+   *
+   * @param prefix The start of the directory names.
+   * @param parents The directories to look into.
+   * @return The paths of the directories found.
+   */
+  /* default */
+  static List<String> listOfficeHomes(final String prefix, final String... parents) {
+
+    final Comparator<String> byVersion =
+        (name1, name2) -> {
+          final var version1 = name1.substring(prefix.length()).trim();
+          final var version2 = name2.substring(prefix.length()).trim();
+          if (version1.isEmpty() || version2.isEmpty()) {
+            return Boolean.compare(version2.isEmpty(), version1.isEmpty());
+          }
+          return Info.compareVersions(version2, version1, 2);
+        };
+
+    final var homes = new ArrayList<String>();
+    for (final var parent : parents) {
+      if (parent == null) {
+        continue;
+      }
+      try (var children = Files.list(Path.of(parent))) {
+        children
+            .filter(Files::isDirectory)
+            .map(child -> child.getFileName().toString())
+            .filter(name -> name.regionMatches(true, 0, prefix, 0, prefix.length()))
+            .sorted(byVersion)
+            .map(name -> parent + File.separator + name)
+            .forEach(homes::add);
+      } catch (IOException | RuntimeException ex) {
+        LOGGER.trace("Could not list the directory '{}'", parent, ex);
+      }
+    }
+    return homes;
   }
 
   /**
@@ -365,10 +392,10 @@ public final class LocalOfficeUtils {
     final var propertyValues = new ArrayList<PropertyValue>(properties.size());
     for (final var entry : properties.entrySet()) {
       var value = entry.getValue();
-      if (value instanceof Map) {
+      if (value instanceof Map<?, ?> subProperties) {
         @SuppressWarnings("unchecked")
-        final var subProperties = (Map<String, Object>) value;
-        value = toUnoProperties(subProperties);
+        final var typed = (Map<String, Object>) subProperties;
+        value = toUnoProperties(typed);
       }
       propertyValues.add(Props.makeProperty(entry.getKey(), value));
     }
@@ -404,7 +431,8 @@ public final class LocalOfficeUtils {
 
     if (!getOfficeExecutable(officeHome).isFile()) {
       throw new IllegalStateException(
-          "Invalid officeHome: it doesn't contain soffice.bin: " + officeHome);
+          "Invalid officeHome: it doesn't contain the office executable: "
+              + getOfficeExecutable(officeHome));
     }
   }
 

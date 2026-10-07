@@ -812,7 +812,6 @@ class LocalOfficeProcessManager {
 
   /** Deletes the profile directory of the office process. */
   private void deleteInstanceProfileDir() {
-    // TODO: Should the timeout be configurable?
     OfficeUtils.deleteOrRenameFile(instanceProfileDir, 250L, 1_000L);
   }
 }

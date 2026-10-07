@@ -22,23 +22,19 @@ package org.jodconverter.core.pdf;
 
 import java.util.regex.Pattern;
 
-/** Describes which office installations support a PDF option or a PDF version. */
-final class OfficeSupport {
+/**
+ * Describes which office installations support a PDF option or a PDF version.
+ *
+ * @param major The first LibreOffice major version that supports it.
+ * @param minor The first minor version of that major version.
+ * @param openOffice Whether Apache OpenOffice supports it.
+ */
+record OfficeSupport(int major, int minor, boolean openOffice) {
 
   /** Supported by all the versions of LibreOffice and by Apache OpenOffice. */
   /* default */ static final OfficeSupport ALL = new OfficeSupport(0, 0, true);
 
   private static final Pattern VERSION_PATTERN = Pattern.compile("^(\\d+)(?:\\.(\\d+))?");
-
-  private final int major;
-  private final int minor;
-  private final boolean openOffice;
-
-  private OfficeSupport(final int major, final int minor, final boolean openOffice) {
-    this.major = major;
-    this.minor = minor;
-    this.openOffice = openOffice;
-  }
 
   /**
    * Supported by LibreOffice only, since the given version.

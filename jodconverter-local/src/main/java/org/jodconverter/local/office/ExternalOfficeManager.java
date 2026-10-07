@@ -54,7 +54,7 @@ import org.jodconverter.core.util.AssertUtils;
 public final class ExternalOfficeManager extends AbstractOfficeWorkerPool {
 
   /** The default host name of the office processes. */
-  public static final String DEFAULT_HOSTNAME = "127.0.0.1";
+  public static final String DEFAULT_HOSTNAME = LocalOfficeManager.DEFAULT_HOSTNAME;
 
   /** The default value for connecting when the manager starts. */
   public static final boolean DEFAULT_CONNECT_ON_START = true;

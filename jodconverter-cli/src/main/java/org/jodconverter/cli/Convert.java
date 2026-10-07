@@ -317,27 +317,27 @@ public final class Convert {
   private static Options initOptions() {
 
     final var options = new Options();
-    options.addOption(OPT_CONNECTION_URL); // -c, --connection-url
-    options.addOption(OPT_OUTPUT_DIRECTORY); // -d, --output-directory
-    options.addOption(OPT_OUTPUT_FORMAT); // -f, --output-format
-    options.addOption(OPT_HELP); // -h, --help
-    options.addOption(OPT_OFFICE_HOME); // -i, --office-home
-    options.addOption(OPT_KEEP_ALIVE); // -o, --keep-alive
-    options.addOption(OPT_LOAD_PROPERTIES); // -l, --load-properties
-    options.addOption(OPT_PROCESS_MANAGER); // -m, --process-manager
-    options.addOption(OPT_HOSTNAME); // -n, --host-name
-    options.addOption(OPT_OVERWRITE); // -o, --overwrite
-    options.addOption(OPT_PORT); // -p, --port
-    options.addOption(OPT_REGISTRY); // -r, --registry
-    options.addOption(OPT_STORE_PROPERTIES); // -s, --store-properties
-    options.addOption(OPT_TIMEOUT); // -u, --timeout
-    options.addOption(OPT_USER_PROFILE); // -u, --user-profile
-    options.addOption(OPT_VERSION); // -v, --version
-    options.addOption(OPT_WORKING_DIR); // -i, --office-home
-    options.addOption(OPT_EXISTING_PROCESS_ACTION); // -x, --existing-process-action
-    options.addOption(OPT_CONFIG); // --config
-    options.addOption(OPT_PDF_PRESET); // --pdf-preset
-    options.addOption(OPT_PDF_OPTION); // --pdf-option
+    options.addOption(OPT_CONNECTION_URL);
+    options.addOption(OPT_OUTPUT_DIRECTORY);
+    options.addOption(OPT_OUTPUT_FORMAT);
+    options.addOption(OPT_HELP);
+    options.addOption(OPT_OFFICE_HOME);
+    options.addOption(OPT_KEEP_ALIVE);
+    options.addOption(OPT_LOAD_PROPERTIES);
+    options.addOption(OPT_PROCESS_MANAGER);
+    options.addOption(OPT_HOSTNAME);
+    options.addOption(OPT_OVERWRITE);
+    options.addOption(OPT_PORT);
+    options.addOption(OPT_REGISTRY);
+    options.addOption(OPT_STORE_PROPERTIES);
+    options.addOption(OPT_TIMEOUT);
+    options.addOption(OPT_USER_PROFILE);
+    options.addOption(OPT_VERSION);
+    options.addOption(OPT_WORKING_DIR);
+    options.addOption(OPT_EXISTING_PROCESS_ACTION);
+    options.addOption(OPT_CONFIG);
+    options.addOption(OPT_PDF_PRESET);
+    options.addOption(OPT_PDF_OPTION);
 
     return options;
   }

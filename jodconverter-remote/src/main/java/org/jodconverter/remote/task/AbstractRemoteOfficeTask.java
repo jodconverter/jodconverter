@@ -37,7 +37,7 @@ public abstract class AbstractRemoteOfficeTask extends AbstractOfficeTask {
    *
    * @param source The source specifications of the document.
    */
-  public AbstractRemoteOfficeTask(final @NonNull SourceDocumentSpecs source) {
+  protected AbstractRemoteOfficeTask(final @NonNull SourceDocumentSpecs source) {
     super(source);
   }
 }

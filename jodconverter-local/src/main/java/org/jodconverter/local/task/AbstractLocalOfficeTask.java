@@ -61,7 +61,9 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
   protected final Map<String, Object> loadProperties;
   protected final boolean useStreamAdapters;
-  private PasswordInteractionHandler passwordPasswordInteractionHandler;
+  // Registered when the load properties have no interaction handler of their own.
+  private final PasswordInteractionHandler passwordInteractionHandler =
+      new PasswordInteractionHandler();
 
   /** Handler used to detect password-protected file. */
   private static class PasswordInteractionHandler implements XInteractionHandler {
@@ -183,8 +185,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
     // Register a PasswordInteractionHandler handler for opening documents, but only
     // if no interaction handler has been put into the load properties.
     if (!loadProps.containsKey("InteractionHandler")) {
-      passwordPasswordInteractionHandler = new PasswordInteractionHandler();
-      loadProps.put("InteractionHandler", passwordPasswordInteractionHandler);
+      loadProps.put("InteractionHandler", passwordInteractionHandler);
     }
 
     return loadProps;
@@ -279,18 +280,16 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
 
   private void handlePasswordProtection() throws OfficeException {
 
-    if (passwordPasswordInteractionHandler != null
-        && passwordPasswordInteractionHandler.hasPasswordInteractionRequest()) {
+    if (passwordInteractionHandler.hasPasswordInteractionRequest()) {
       throw new PasswordProtectedException(
-          "Document password requested for " + passwordPasswordInteractionHandler.getDocumentName(),
-          passwordPasswordInteractionHandler.getPasswordRequest());
+          "Document password requested for " + passwordInteractionHandler.getDocumentName(),
+          passwordInteractionHandler.getPasswordRequest());
     }
   }
 
   @Override
   public boolean hasPasswordInteractionRequest() {
-    return passwordPasswordInteractionHandler != null
-        && passwordPasswordInteractionHandler.hasPasswordInteractionRequest();
+    return passwordInteractionHandler.hasPasswordInteractionRequest();
   }
 
   @Override

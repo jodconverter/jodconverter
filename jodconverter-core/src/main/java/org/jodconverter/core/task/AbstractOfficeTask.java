@@ -38,7 +38,7 @@ public abstract class AbstractOfficeTask implements OfficeTask {
    *
    * @param source The source specifications of the document.
    */
-  public AbstractOfficeTask(final @NonNull SourceDocumentSpecs source) {
+  protected AbstractOfficeTask(final @NonNull SourceDocumentSpecs source) {
     super();
 
     this.source = source;
