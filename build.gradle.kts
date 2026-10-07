@@ -11,6 +11,7 @@ plugins {
     jacoco
     distribution
     alias(libs.plugins.dependency.check)
+    alias(libs.plugins.coveralls.jacoco)
 }
 
 allprojects {
@@ -117,6 +118,25 @@ gradle.projectsEvaluated {
 
         archiveBaseName.set(project.name)
         from(allDistZips.map { it.archiveFile.map { f -> f.asFile } })
+    }
+
+    // Sends the aggregate report to Coveralls. The plugin looks each source file of the report up in
+    // these directories and sends its path relative to the repository root, which is what lets
+    // Coveralls show the sources of a multi-module build (the GitHub action sends the bare package
+    // paths of the JaCoCo report, which Coveralls cannot find).
+    coverallsJacoco {
+        reportPath = "build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+        reportSourceSets = javaProjects.map { it.layout.projectDirectory.dir("src/main/java").asFile }
+        // -PcoverallsDryRun writes the request to build/coveralls/request.json instead of sending it.
+        if (providers.gradleProperty("coverallsDryRun").isPresent) {
+            dryRun = true
+            coverallsRequest =
+                layout.buildDirectory.file("coveralls/request.json").get().asFile.also { it.parentFile.mkdirs() }
+        }
+    }
+    tasks.named("coverallsJacoco") {
+        // The plugin expects the standard jacocoTestReport; it gets the aggregate one.
+        dependsOn(jacocoRootReport)
     }
 
     javadocAll.configure {

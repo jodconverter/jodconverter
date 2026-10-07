@@ -24,6 +24,10 @@ jobs:
     name: test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
+    env:
+      # Read by the Coveralls step; a step cannot test its own env in its condition, so the job
+      # carries it.
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
     # A job allowed to fail still runs and reports, but does not fail the "build" check below.
     continue-on-error: ${{ matrix.allow-failure == true }}
     strategy:
@@ -87,19 +91,15 @@ jobs:
         shell: bash
         run: ./gradlew build -x javadoc --continue --stacktrace
 
-      - name: 📊 Aggregate the coverage
-        if: runner.os == 'Linux'
-        shell: bash
-        run: ./gradlew jacocoRootReport
-
       - name: 📤 Send the coverage to Coveralls
-        # Pull requests and pushes to develop and master; Coveralls lists the branches it receives.
-        if: runner.os == 'Linux'
-        uses: coverallsapp/github-action@v2
-        with:
-          format: jacoco
-          file: build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
-          base-path: .
+        # The coveralls-jacoco plugin aggregates the JaCoCo reports of the build above (no test
+        # runs again: they are excluded) and sends them with the source paths relative to the
+        # repository, so that Coveralls shows the sources of every module. Pull requests and pushes
+        # to develop and master; Coveralls lists the branches it receives. Skipped while the
+        # COVERALLS_REPO_TOKEN secret is not set.
+        if: runner.os == 'Linux' && env.COVERALLS_REPO_TOKEN != ''
+        shell: bash
+        run: ./gradlew coverallsJacoco -x test -x integrationTest
 
       - name: 📤 Upload test reports on failure
         if: failure()
