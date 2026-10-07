@@ -73,7 +73,17 @@ public abstract class AbstractConverter implements DocumentConverter {
   @Override
   public @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
       final @NonNull File source) {
+    return newJob(sourceSpecs(source));
+  }
 
+  /**
+   * Creates the specifications of a source file, with the format of its extension when the registry
+   * knows it.
+   *
+   * @param source The source file.
+   * @return The specifications.
+   */
+  protected @NonNull SourceDocumentSpecsFromFile sourceSpecs(final @NonNull File source) {
     final var specs = new SourceDocumentSpecsFromFile(source);
     final var format =
         formatRegistry.getFormatByExtension(
@@ -81,8 +91,7 @@ public abstract class AbstractConverter implements DocumentConverter {
     if (format != null) {
       specs.setDocumentFormat(format);
     }
-
-    return newJob(specs);
+    return specs;
   }
 
   @Override

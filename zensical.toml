@@ -39,6 +39,7 @@ nav = [
       { "Document Format Registry" = "getting-started/document-format-registry.md" },
       { "Using Filters" = "getting-started/using-filters.md" },
       { "PDF Options" = "getting-started/pdf-options.md" },
+      { "Slides to Images" = "getting-started/page-images.md" },
     ] },
     { "Command Line Tool" = "getting-started/command-line-tool.md" },
     { "LibreOffice Online" = "getting-started/libreoffice-online.md" },

@@ -199,6 +199,8 @@ Notes:
 
 ## Related APIs
 
+- [Slides to images](page-images.md): `LocalConverter.exportPages(...)`, one image per slide or draw page.
+
 - `DocumentConverter` (core): high-level conversion contract.
 - `DefaultDocumentFormatRegistry` (core): common formats and MIME mappings.
 - Conversion job API (core.job): fluent pipeline (convert (...).to (...).execute ()).
