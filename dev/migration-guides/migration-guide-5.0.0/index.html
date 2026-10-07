@@ -3514,6 +3514,10 @@ A filter chain that needed Spring to wire constructor arguments beyond these key
 columns wide.</p>
 <h2 id="new-features">New features<a class="headerlink" href="#new-features" title="Permanent link">&para;</a></h2>
 <ul>
+<li><a href="../../getting-started/using-filters/#merging-documents">Merging documents</a>:
+    <code>LocalConverter.merge(first, others...).to(target)</code> converts several text documents into one output, each one
+    starting on a new page, instead of chaining a <code>DocumentInserterFilter</code> per document. The filter gains a
+    <code>pageBreak</code> argument.</li>
 <li><a href="../../getting-started/page-images/">Slides to images</a>: <code>LocalConverter.exportPages(document).to(directory)</code>
     exports each slide or draw page of a presentation or a drawing as its own image (PNG, JPEG, SVG, GIF, BMP, TIFF,
     WebP), with the size, the quality, the pages and the hidden slides as options. It replaces, for LibreOffice 24.2

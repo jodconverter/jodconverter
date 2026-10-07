@@ -2524,19 +2524,31 @@ target format is not PDF. Indeed, when converting to PDF, you are better off usi
 <span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="merging-documents">Merging documents<a class="headerlink" href="#merging-documents" title="Permanent link">&para;</a></h2>
-<p>The <a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentInserterFilter.java">DocumentInserterFilter</a>
-inserts another document at the end of the loaded text document. Chain one filter per document to merge several
-documents into one:</p>
-<div class="language-java highlight"><pre><span></span><code><span class="kd">final</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="n">outputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"merged.pdf"</span><span class="p">);</span>
-
-<span class="n">LocalConverter</span>
+<p>Text documents are merged with <code>merge(...)</code>: the first document is loaded, the others are inserted at its end, each
+one starting on a new page, and the result is converted like any document, with the target format and the options of
+a conversion:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span>
+<span class="w">  </span><span class="p">.</span><span class="na">make</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">merge</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"chapter1.docx"</span><span class="p">),</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"chapter2.docx"</span><span class="p">),</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"chapter3.docx"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"book.pdf"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">archive</span><span class="p">())</span>
+<span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p>The page styles, headers and footers of the result are those of the first document. The filters of the converter are
+applied after the insertions, so a <code>DocumentIndexesUpdaterFilter</code> rebuilds the table of contents of the merged
+document.</p>
+<p>Underneath, <code>merge</code> chains a
+<a href="https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/filter/text/DocumentInserterFilter.java">DocumentInserterFilter</a>
+per document. Use the filter directly to insert a document without a page break (<code>new
+DocumentInserterFilter(file, false)</code>, the default of the filter), or at a chosen place in the chain:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span>
 <span class="w">  </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">  </span><span class="p">.</span><span class="na">filterChain</span><span class="p">(</span>
 <span class="w">      </span><span class="k">new</span><span class="w"> </span><span class="n">DocumentInserterFilter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"chapter2.docx"</span><span class="p">)),</span>
 <span class="w">      </span><span class="k">new</span><span class="w"> </span><span class="n">DocumentInserterFilter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"chapter3.docx"</span><span class="p">)))</span>
 <span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
 <span class="w">  </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"chapter1.docx"</span><span class="p">))</span>
-<span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">outputFile</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"merged.pdf"</span><span class="p">))</span>
 <span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="updating-the-indexes-of-a-document">Updating the indexes of a document<a class="headerlink" href="#updating-the-indexes-of-a-document" title="Permanent link">&para;</a></h2>
@@ -2603,7 +2615,7 @@ package of the local module:</p>
 </tr>
 <tr>
 <td><code>text.DocumentInserterFilter</code></td>
-<td>Inserts another document at the end of the loaded one (see <a href="#merging-documents">Merging documents</a>).</td>
+<td>Inserts another document at the end of the loaded one, on a new page or not (see <a href="#merging-documents">Merging documents</a>).</td>
 </tr>
 <tr>
 <td><code>text.LinkedImagesEmbedderFilter</code></td>
