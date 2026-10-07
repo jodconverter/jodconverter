@@ -41,7 +41,7 @@ import org.jodconverter.core.office.OfficeManager;
 @AutoConfiguration(
     after = {
       JodConverterLocalAutoConfiguration.class,
-      JodConverterExternalAutoConfiguration.class,
+      JodConverterAttachedAutoConfiguration.class,
       JodConverterRemoteAutoConfiguration.class
     })
 @ConditionalOnClass(HealthIndicator.class)

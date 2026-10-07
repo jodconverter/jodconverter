@@ -30,9 +30,10 @@ Without an Office Manager, there’s no running office backend to perform conver
 - **LocalOfficeManager**: Starts and manages one or more local office processes on the same machine as your application.
     Best for typical server-side use when OOo is installed locally.
     See [LocalOfficeManager](../configuration/local-manager.md) for all configuration options.
-- **ExternalOfficeManager**: Connects to an already running local office process you start externally (you manage the
-    process lifecycle). Useful when the process must be controlled outside the JVM.
-    See [ExternalOfficeManager](../configuration/external-manager.md) for all configuration options.
+- **AttachedOfficeManager**: Attaches to office processes you start yourself, on the same machine or on another one
+    (you manage the process lifecycle; JODConverter connects over UNO and reconnects when a process is restarted).
+    Formerly `ExternalOfficeManager`.
+    See [AttachedOfficeManager](../configuration/attached-manager.md) for all configuration options.
 - **RemoteOfficeManager**: Connects to a remote LibreOffice Online (LOOL/Collabora Online) server through
     HTTP/WebSocket.
     The office process lifecycle is remote; the manager controls the connection pool.
@@ -114,10 +115,10 @@ try {
 }
 ```
 
-**3)** Connect to an existing local process (`ExternalOfficeManager`).
+**3)** Attach to office processes you start yourself (`AttachedOfficeManager`).
 
-If you start LibreOffice manually with a known accept string, use `ExternalOfficeManager`. See
-configuration/external-manager.md for details.
+If you start LibreOffice yourself with a known accept string, use `AttachedOfficeManager`. See
+[AttachedOfficeManager](../configuration/attached-manager.md) for details.
 
 **4)** Use a remote LibreOffice Online server (`RemoteOfficeManager`).
 
@@ -157,7 +158,7 @@ See [RemoteOfficeManager](../configuration/remote-manager.md).
 For in-depth configuration of each manager type, refer to:
 
 - [LocalOfficeManager](../configuration/local-manager.md)
-- [ExternalOfficeManager](../configuration/external-manager.md)
+- [AttachedOfficeManager](../configuration/attached-manager.md)
 - [RemoteOfficeManager](../configuration/remote-manager.md)
 
 --8<-- "note.md"

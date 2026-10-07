@@ -215,6 +215,21 @@ In `org.jodconverter.core.util`, `IOUtils` is removed (`InputStream.transferTo` 
 In `org.jodconverter.local.office.utils`, the `Calc` and `Draw` classes, `Write.isWeb` and `Info.getConfigUpdateAccess`
 are removed: nothing in the project used them, and `LocalOfficeUtils.getDocumentFamily` tells the kind of a document.
 
+### Attached office manager
+
+`ExternalOfficeManager` is renamed `AttachedOfficeManager`: it attaches to office processes that JODConverter does not
+start, on the same machine or on another one, over UNO. The old name read like a variant of `RemoteOfficeManager`,
+which is about the protocol (HTTP, to a LibreOffice Online or Collabora Online server), while this manager is about who
+owns the process lifecycle. `ExternalOfficeManager` remains as a deprecated class whose `builder()`, `make()` and
+`install()` return an `AttachedOfficeManager`; only a variable or a field declared with the old type has to change.
+`ExternalOfficeWorker` and `ExternalOfficeConnectionManager`, internal, are renamed the same way.
+
+In the Spring Boot starter, the properties are `jodconverter.attached.*` and the beans `attachedOfficeManager` and
+`attachedDocumentConverter`; the `jodconverter.external.*` properties still enable the same auto-configuration,
+deprecated, and the beans keep `externalOfficeManager` and `externalDocumentConverter` as aliases.
+`JodConverterExternalProperties` and `JodConverterExternalAutoConfiguration` are replaced by
+`JodConverterAttachedProperties` and `JodConverterAttachedAutoConfiguration`.
+
 ### Document indexes updater filter
 
 `TableOfContentUpdaterFilter` is renamed `DocumentIndexesUpdaterFilter`, since it updates every index of a text document
@@ -303,11 +318,11 @@ The timeouts and delays of the starter (`task-queue-timeout`, `task-execution-ti
 are bound as `Duration`: a plain number is still a number of milliseconds, and a duration such as `30s` or `2m` is
 accepted. `existing-process-action` and `load-document-mode` are bound to the `ExistingProcessAction` and
 `LoadDocumentMode` enums, in any case and with hyphens or underscores (`connect-or-kill`).
-`JodConverterLocalProperties`, `JodConverterExternalProperties`, `JodConverterRemoteProperties` and the new
+`JodConverterLocalProperties`, `JodConverterAttachedProperties`, `JodConverterRemoteProperties` and the new
 `JodConverterDocumentFormatsProperties` are records, bound through their constructor: an application that injects
 one reads a value with the accessor of the component (`properties.processTimeout()`), not a getter, and the setters are
 gone. The properties shared by the three managers (`working-dir`, `task-queue-capacity`, `task-queue-timeout`,
-`task-execution-timeout`) are declared by the `JodConverterPoolProperties` interface. `ExternalOfficeManager`'s
+`task-execution-timeout`) are declared by the `JodConverterPoolProperties` interface. `AttachedOfficeManager`'s
 `DEFAULT_*` constants are public, like those of the other managers. The `jodconverter.remote.ssl.*` properties are bound
 directly to an `SslConfig`: `JodConverterRemoteProperties.getSsl()` returns one, and the `SslProperties` copy of its
 fields is gone (same property names, same defaults).
@@ -316,7 +331,7 @@ The document format registry is configured once for every converter of the start
 `jodconverter.document-formats`: `jodconverter.local.document-format-registry` becomes
 `jodconverter.document-formats.registry`, and `jodconverter.local.format-options` becomes
 `jodconverter.document-formats.options`. The `documentFormatRegistry` bean exists whether or not the local manager is
-enabled, and the external and remote converters use it too (the remote converter used to ignore it). An application
+enabled, and the attached and remote converters use it too (the remote converter used to ignore it). An application
 that declares its own `DocumentFormatRegistry` bean, of any name, replaces it.
 
 ### Command line tool
@@ -362,12 +377,12 @@ columns wide.
 - [`poolSize`](../configuration/local-manager.md): start a number of office processes on free ports, without choosing
     them (`jodconverter.local.pool-size` with Spring Boot).
 - [`taskQueueCapacity`](../configuration/local-manager.md): bound the conversion queue, so that a task submitted while
-    the queue is full fails at once (`jodconverter.local.task-queue-capacity`, and the same for the external and
+    the queue is full fails at once (`jodconverter.local.task-queue-capacity`, and the same for the attached and
     remote managers, with Spring Boot).
 - [`officeExecutable`](../configuration/local-manager.md): start the office processes through a launcher, such as a
     snap or an AppImage (`jodconverter.local.office-executable` with Spring Boot).
-- [External office manager in the Spring Boot starter](../configuration/external-manager.md#spring-boot): the
-    `jodconverter.external.*` properties auto-configure an `ExternalOfficeManager` and its converter.
+- [Attached office manager in the Spring Boot starter](../configuration/attached-manager.md#spring-boot): the
+    `jodconverter.attached.*` properties auto-configure an `AttachedOfficeManager` and its converter.
 - [Markdown](../getting-started/supported-formats.md): the default registry knows the Markdown format (`md`,
     `markdown`), supported by LibreOffice 26.2 and later.
 - [Asynchronous conversions](../getting-started/document-converters.md#lifecycle-and-threading):

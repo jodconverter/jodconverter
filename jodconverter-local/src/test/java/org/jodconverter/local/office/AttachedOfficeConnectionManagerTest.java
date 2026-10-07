@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import org.jodconverter.core.office.OfficeException;
 
-/** Contains tests for the {@link ExternalOfficeConnectionManager} class. */
-class ExternalOfficeConnectionManagerTest {
+/** Contains tests for the {@link AttachedOfficeConnectionManager} class. */
+class AttachedOfficeConnectionManagerTest {
 
   private static final OfficeUrl URL = new OfficeUrl(9999);
 
@@ -40,7 +40,7 @@ class ExternalOfficeConnectionManagerTest {
 
       final var connection = TestOfficeConnection.prepareTest(URL, false);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
+      final var manager = new AttachedOfficeConnectionManager(0L, 0L, connection);
 
       assertThat(manager.getConnection()).isEqualTo(connection);
     }
@@ -54,7 +54,7 @@ class ExternalOfficeConnectionManagerTest {
 
       final var connection = TestOfficeConnection.prepareFailingConnectTest(URL, false);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
+      final var manager = new AttachedOfficeConnectionManager(0L, 0L, connection);
 
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(manager::connect)
@@ -66,7 +66,7 @@ class ExternalOfficeConnectionManagerTest {
 
       final var connection = TestOfficeConnection.prepareTest(URL, false);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
+      final var manager = new AttachedOfficeConnectionManager(0L, 0L, connection);
 
       manager.connect();
 
@@ -79,7 +79,7 @@ class ExternalOfficeConnectionManagerTest {
 
       final var connection = TestOfficeConnection.prepareFailingConnectTest(URL, true);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
+      final var manager = new AttachedOfficeConnectionManager(0L, 0L, connection);
 
       manager.connect();
 
@@ -96,7 +96,7 @@ class ExternalOfficeConnectionManagerTest {
 
       final var connection = TestOfficeConnection.prepareTest(URL, false);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
+      final var manager = new AttachedOfficeConnectionManager(0L, 0L, connection);
 
       assertThatCode(manager::disconnect).doesNotThrowAnyException();
       assertThat(connection.disconnectCount).isZero();
@@ -107,7 +107,7 @@ class ExternalOfficeConnectionManagerTest {
 
       final var connection = TestOfficeConnection.prepareTest(URL, true);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
+      final var manager = new AttachedOfficeConnectionManager(0L, 0L, connection);
 
       manager.disconnect();
 
@@ -124,7 +124,7 @@ class ExternalOfficeConnectionManagerTest {
 
       final var connection = TestOfficeConnection.prepareTest(URL, true);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
+      final var manager = new AttachedOfficeConnectionManager(0L, 0L, connection);
 
       manager.reconnect();
 
@@ -138,7 +138,7 @@ class ExternalOfficeConnectionManagerTest {
 
       final var connection = TestOfficeConnection.prepareFailingConnectTest(URL, true);
 
-      final var manager = new ExternalOfficeConnectionManager(0L, 0L, connection);
+      final var manager = new AttachedOfficeConnectionManager(0L, 0L, connection);
 
       assertThatExceptionOfType(OfficeException.class).isThrownBy(manager::reconnect);
       assertThat(connection.isConnected()).isFalse();

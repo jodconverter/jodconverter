@@ -23,55 +23,78 @@ package org.jodconverter.boot.autoconfigure;
 import java.util.Map;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.office.ExternalOfficeManager;
+import org.jodconverter.local.office.AttachedOfficeManager;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for JodConverter connecting to external office
- * processes, which are started and managed outside of the application.
+ * {@link EnableAutoConfiguration Auto-configuration} for JodConverter attaching to office processes
+ * that are started and managed outside of the application, with the {@code jodconverter.attached}
+ * properties. The former {@code jodconverter.external} properties still enable it, deprecated, and
+ * the beans keep their former names as aliases.
  */
 @AutoConfiguration(
     after = {
       JodConverterDocumentFormatsAutoConfiguration.class,
       JodConverterLocalAutoConfiguration.class
     })
-@ConditionalOnClass(ExternalOfficeManager.class)
-@ConditionalOnProperty(prefix = "jodconverter.external", name = "enabled", havingValue = "true")
-@EnableConfigurationProperties(JodConverterExternalProperties.class)
-public class JodConverterExternalAutoConfiguration {
+@ConditionalOnClass(AttachedOfficeManager.class)
+@Conditional(JodConverterAttachedAutoConfiguration.Enabled.class)
+@EnableConfigurationProperties({
+  JodConverterAttachedProperties.class,
+  JodConverterExternalProperties.class
+})
+@SuppressWarnings("removal")
+public class JodConverterAttachedAutoConfiguration {
 
-  private final JodConverterExternalProperties properties;
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(JodConverterAttachedAutoConfiguration.class);
+
+  private final JodConverterAttachedProperties properties;
 
   /**
-   * Creates the external autoconfiguration.
+   * Creates the attached autoconfiguration, from the attached properties or, when they are not
+   * enabled, from the former external properties.
    *
-   * @param properties The external properties.
+   * @param attached The attached properties.
+   * @param external The former external properties.
    */
-  public JodConverterExternalAutoConfiguration(
-      final @NonNull JodConverterExternalProperties properties) {
-    this.properties = properties;
+  public JodConverterAttachedAutoConfiguration(
+      final @NonNull JodConverterAttachedProperties attached,
+      final @NonNull JodConverterExternalProperties external) {
+    if (attached.enabled()) {
+      this.properties = attached;
+    } else {
+      LOGGER.warn("The jodconverter.external properties are deprecated: use jodconverter.attached");
+      this.properties = external.toAttached();
+    }
   }
 
-  @Bean(name = "externalOfficeManager", initMethod = "start", destroyMethod = "stop")
-  @ConditionalOnMissingBean(name = "externalOfficeManager")
-  /* default */ OfficeManager externalOfficeManager() {
-
+  @Bean(
+      name = {"attachedOfficeManager", "externalOfficeManager"},
+      initMethod = "start",
+      destroyMethod = "stop")
+  @ConditionalOnMissingBean(name = {"attachedOfficeManager", "externalOfficeManager"})
+  /* default */ OfficeManager attachedOfficeManager() {
     final var builder =
-        ExternalOfficeManager.builder()
+        AttachedOfficeManager.builder()
             .hostName(properties.hostName())
             .portNumbers(properties.portNumbers())
             .pipeNames(properties.pipeNames())
@@ -85,18 +108,17 @@ public class JodConverterExternalAutoConfiguration {
     return builder.build();
   }
 
-  @Bean
-  @ConditionalOnMissingBean(name = "externalDocumentConverter")
+  @Bean(name = {"attachedDocumentConverter", "externalDocumentConverter"})
+  @ConditionalOnMissingBean(name = {"attachedDocumentConverter", "externalDocumentConverter"})
   // The qualifier is required when the local or remote office manager also exists: since Spring
   // 6.1, a parameter name is no longer used to choose between beans of the same type.
-  /* default */ DocumentConverter externalDocumentConverter(
-      final @Qualifier("externalOfficeManager") OfficeManager externalOfficeManager,
+  /* default */ DocumentConverter attachedDocumentConverter(
+      final @Qualifier("attachedOfficeManager") OfficeManager attachedOfficeManager,
       final DocumentFormatRegistry documentFormatRegistry,
       final ObjectProvider<PdfOptions> pdfOptions) {
-
     final var builder =
         LocalConverter.builder()
-            .officeManager(externalOfficeManager)
+            .officeManager(attachedOfficeManager)
             .formatRegistry(documentFormatRegistry)
             .loadDocumentMode(properties.loadDocumentMode())
             .loadProperties(
@@ -107,5 +129,19 @@ public class JodConverterExternalAutoConfiguration {
     // all the conversions to PDF.
     pdfOptions.ifUnique(builder::defaultTargetOptions);
     return builder.build();
+  }
+
+  /** Enabled by the attached properties, or by the former external ones. */
+  /* default */ static class Enabled extends AnyNestedCondition {
+
+    /* default */ Enabled() {
+      super(ConfigurationPhase.PARSE_CONFIGURATION);
+    }
+
+    @ConditionalOnProperty(prefix = "jodconverter.attached", name = "enabled", havingValue = "true")
+    /* default */ static class Attached {}
+
+    @ConditionalOnProperty(prefix = "jodconverter.external", name = "enabled", havingValue = "true")
+    /* default */ static class External {}
   }
 }

@@ -46,7 +46,7 @@ import org.jodconverter.core.pdf.PdfOptions;
 @AutoConfiguration(
     before = {
       JodConverterLocalAutoConfiguration.class,
-      JodConverterExternalAutoConfiguration.class,
+      JodConverterAttachedAutoConfiguration.class,
       JodConverterRemoteAutoConfiguration.class
     })
 @EnableConfigurationProperties(JodConverterPdfProperties.class)

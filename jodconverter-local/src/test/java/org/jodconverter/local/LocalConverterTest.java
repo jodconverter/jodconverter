@@ -51,7 +51,7 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
-import org.jodconverter.local.office.ExternalOfficeManager;
+import org.jodconverter.local.office.AttachedOfficeManager;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.UnoRuntime;
 import org.jodconverter.local.task.LoadDocumentMode;
@@ -472,7 +472,7 @@ class LocalConverterTest {
 
     @Test
     void
-        withLoadDocumentModeAutoAndNotExternalOfficeManager_ShouldCreateTaskWithUseStreamAdaptersFalse(
+        withLoadDocumentModeAutoAndNotAttachedOfficeManager_ShouldCreateTaskWithUseStreamAdaptersFalse(
             final @TempDir File testFolder) throws OfficeException {
 
       final var targetFile = new File(testFolder, "test.pdf");
@@ -495,11 +495,11 @@ class LocalConverterTest {
     }
 
     @Test
-    void withLoadDocumentModeAutoAndExternalOfficeManager_ShouldCreateTaskWithUseStreamAdaptersTrue(
+    void withLoadDocumentModeAutoAndAttachedOfficeManager_ShouldCreateTaskWithUseStreamAdaptersTrue(
         final @TempDir File testFolder) throws OfficeException {
 
       final var targetFile = new File(testFolder, "test.pdf");
-      final var externalOfficeManager = mock(ExternalOfficeManager.class);
+      final var externalOfficeManager = mock(AttachedOfficeManager.class);
       assertThatCode(
               () ->
                   LocalConverter.builder()

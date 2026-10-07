@@ -37,8 +37,8 @@ import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.task.SimpleOfficeTask;
 import org.jodconverter.core.test.util.TestUtil;
 
-/** Contains tests for the {@link ExternalOfficeManager} class. */
-class ExternalOfficeManagerITest {
+/** Contains tests for the {@link AttachedOfficeManager} class. */
+class AttachedOfficeManagerITest {
 
   private static final OfficeUrl CONNECT_URL = new OfficeUrl(2002);
   private static final long START_WAIT_TIMEOUT = 15_000L; // 30 Seconds.
@@ -97,7 +97,7 @@ class ExternalOfficeManagerITest {
   void execute_WhenProcessDoesNotExist_ShouldFailed() {
 
     final var manager =
-        ExternalOfficeManager.builder()
+        AttachedOfficeManager.builder()
             .portNumbers(65_530)
             .connectTimeout(3_000L)
             .connectRetryInterval(1_000L)
@@ -113,7 +113,7 @@ class ExternalOfficeManagerITest {
   @ValueSource(strings = {"localhost", "127.0.0.1"})
   void execute_WhenProcessExists_ShouldSucceed(final String host) {
     final var manager =
-        ExternalOfficeManager.builder()
+        AttachedOfficeManager.builder()
             .hostName(host)
             .portNumbers(2002)
             .connectFailFast(true)

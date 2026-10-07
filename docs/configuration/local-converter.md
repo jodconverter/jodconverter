@@ -11,7 +11,7 @@
 It must be used with an `OfficeManager` that manages local office processes, typically:
 
 - `LocalOfficeManager` (starts and manages local processes), or
-- `ExternalOfficeManager` (connects to an already running local process that you started).
+- `AttachedOfficeManager` (connects to office processes that you started, formerly `ExternalOfficeManager`).
 
 See class:
 [org.jodconverter.local.LocalConverter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/LocalConverter.java).

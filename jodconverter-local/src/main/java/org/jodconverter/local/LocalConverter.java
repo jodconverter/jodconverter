@@ -42,7 +42,7 @@ import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
-import org.jodconverter.local.office.ExternalOfficeManager;
+import org.jodconverter.local.office.AttachedOfficeManager;
 import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.local.task.LocalConversionTask;
 
@@ -180,7 +180,7 @@ public final class LocalConverter extends AbstractConverter {
       final var useStreamAdapters =
           loadDocumentMode == LoadDocumentMode.REMOTE
               || (loadDocumentMode == LoadDocumentMode.AUTO
-                  && officeManager instanceof ExternalOfficeManager);
+                  && officeManager instanceof AttachedOfficeManager);
 
       return new LocalConversionTask(
           source, target, useStreamAdapters, loadProperties, storeProperties, filterChain);

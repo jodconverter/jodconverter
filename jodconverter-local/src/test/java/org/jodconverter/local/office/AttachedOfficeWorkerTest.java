@@ -22,7 +22,7 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.jodconverter.local.office.ExternalOfficeManager.*;
+import static org.jodconverter.local.office.AttachedOfficeManager.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -33,8 +33,8 @@ import org.junit.jupiter.api.Test;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.OfficeTask;
 
-/** Contains tests for the {@link ExternalOfficeWorker} class. */
-class ExternalOfficeWorkerTest {
+/** Contains tests for the {@link AttachedOfficeWorker} class. */
+class AttachedOfficeWorkerTest {
 
   private TestOfficeConnection connection;
 
@@ -43,16 +43,16 @@ class ExternalOfficeWorkerTest {
     connection = TestOfficeConnection.prepareTest(new OfficeUrl(2002));
   }
 
-  private ExternalOfficeWorker newWorker(
+  private AttachedOfficeWorker newWorker(
       final boolean connectOnStart, final int maxTasksPerConnection) {
-    return new ExternalOfficeWorker(
+    return new AttachedOfficeWorker(
         connectOnStart,
         maxTasksPerConnection,
-        new ExternalOfficeConnectionManager(
+        new AttachedOfficeConnectionManager(
             DEFAULT_CONNECT_TIMEOUT, DEFAULT_CONNECT_RETRY_INTERVAL, connection));
   }
 
-  private ExternalOfficeWorker newWorker(final boolean connectOnStart) {
+  private AttachedOfficeWorker newWorker(final boolean connectOnStart) {
     return newWorker(connectOnStart, DEFAULT_MAX_TASKS_PER_CONNECTION);
   }
 
@@ -92,10 +92,10 @@ class ExternalOfficeWorkerTest {
             }
           };
       final var worker =
-          new ExternalOfficeWorker(
+          new AttachedOfficeWorker(
               true,
               DEFAULT_MAX_TASKS_PER_CONNECTION,
-              new ExternalOfficeConnectionManager(0L, 0L, failing));
+              new AttachedOfficeConnectionManager(0L, 0L, failing));
 
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(worker::start)

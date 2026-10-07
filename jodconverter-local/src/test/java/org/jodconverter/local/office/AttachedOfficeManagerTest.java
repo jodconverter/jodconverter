@@ -22,7 +22,7 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.jodconverter.local.office.ExternalOfficeManager.*;
+import static org.jodconverter.local.office.AttachedOfficeManager.*;
 
 import java.io.File;
 
@@ -33,9 +33,26 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.test.util.AssertUtil;
 
-/** Contains tests for the {@link ExternalOfficeManager} class. */
-class ExternalOfficeManagerTest {
+/** Contains tests for the {@link AttachedOfficeManager} class. */
+class AttachedOfficeManagerTest {
+
+  @Nested
+  @SuppressWarnings("removal")
+  class FormerName {
+
+    @Test
+    void externalOfficeManager_ShouldGiveAnAttachedOfficeManager() {
+
+      assertThat(ExternalOfficeManager.make()).isInstanceOf(AttachedOfficeManager.class);
+      assertThat(ExternalOfficeManager.builder().portNumbers(2003).build())
+          .isInstanceOf(AttachedOfficeManager.class);
+      assertThat(ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT)
+          .isEqualTo(AttachedOfficeManager.DEFAULT_CONNECT_TIMEOUT);
+      AssertUtil.assertUtilityClassWellDefined(ExternalOfficeManager.class);
+    }
+  }
 
   @Nested
   class Make {
@@ -43,9 +60,9 @@ class ExternalOfficeManagerTest {
     @Test
     void shouldInitializedManagerWithDefaultValues() {
 
-      final var manager = ExternalOfficeManager.make();
+      final var manager = AttachedOfficeManager.make();
 
-      assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
+      assertThat(manager).isInstanceOf(AttachedOfficeManager.class);
       assertThat(manager)
           .extracting("tempDir")
           .satisfies(
@@ -65,7 +82,7 @@ class ExternalOfficeManagerTest {
           .satisfies(
               o ->
                   assertThat(o)
-                      .isInstanceOf(ExternalOfficeWorker.class)
+                      .isInstanceOf(AttachedOfficeWorker.class)
                       .extracting(
                           "connectOnStart",
                           "maxTasksPerConnection",
@@ -90,7 +107,7 @@ class ExternalOfficeManagerTest {
       // Ensure we do not replace the current installed manager
       final var installedManager = InstalledOfficeManagerHolder.getInstance();
       try {
-        final var manager = ExternalOfficeManager.install();
+        final var manager = AttachedOfficeManager.install();
         assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
       } finally {
         InstalledOfficeManagerHolder.setInstance(installedManager);
@@ -105,7 +122,7 @@ class ExternalOfficeManagerTest {
     void withCustomValues_ShouldInitializedManagerWithCustomValues(final @TempDir File testFolder) {
 
       final var manager =
-          ExternalOfficeManager.builder()
+          AttachedOfficeManager.builder()
               .workingDir(testFolder.getPath())
               .taskExecutionTimeout(11_000L)
               .taskQueueTimeout(12_000L)
@@ -120,7 +137,7 @@ class ExternalOfficeManagerTest {
               .maxTasksPerConnection(99)
               .build();
 
-      assertThat(manager).isInstanceOf(ExternalOfficeManager.class);
+      assertThat(manager).isInstanceOf(AttachedOfficeManager.class);
       assertThat(manager)
           .extracting("tempDir")
           .satisfies(
@@ -137,7 +154,7 @@ class ExternalOfficeManagerTest {
           .allSatisfy(
               o ->
                   assertThat(o)
-                      .isInstanceOf(ExternalOfficeWorker.class)
+                      .isInstanceOf(AttachedOfficeWorker.class)
                       .extracting(
                           "connectOnStart",
                           "maxTasksPerConnection",
@@ -168,18 +185,18 @@ class ExternalOfficeManagerTest {
     void whenInvalidConnectTimeout_ShouldThrowIllegalArgumentException() {
 
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> ExternalOfficeManager.builder().connectTimeout(-1L).build());
+          .isThrownBy(() -> AttachedOfficeManager.builder().connectTimeout(-1L).build());
     }
 
     @Test
     void whenInvalidConnectRetryInterval_ShouldThrowIllegalArgumentException() {
 
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> ExternalOfficeManager.builder().connectRetryInterval(-1L).build());
+          .isThrownBy(() -> AttachedOfficeManager.builder().connectRetryInterval(-1L).build());
       assertThatIllegalArgumentException()
           .isThrownBy(
               () ->
-                  ExternalOfficeManager.builder()
+                  AttachedOfficeManager.builder()
                       .connectRetryInterval(MAX_CONNECT_RETRY_INTERVAL + 1)
                       .build());
     }
@@ -188,7 +205,7 @@ class ExternalOfficeManagerTest {
     void whenInvalidMaxTasksPerConnection_ShouldThrowIllegalArgumentException() {
 
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> ExternalOfficeManager.builder().maxTasksPerConnection(-1).build());
+          .isThrownBy(() -> AttachedOfficeManager.builder().maxTasksPerConnection(-1).build());
     }
   }
 }

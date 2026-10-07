@@ -40,7 +40,7 @@ public enum LoadDocumentMode {
   /**
    * When using this mode, JODConverter will auto-detect which mode should be used to open a
    * document. When the task is executed using an {@link
-   * org.jodconverter.local.office.ExternalOfficeManager}, the {@link #REMOTE} mode is used.
+   * org.jodconverter.local.office.AttachedOfficeManager}, the {@link #REMOTE} mode is used.
    * Otherwise, the {@link #LOCAL} mode is used.
    */
   AUTO

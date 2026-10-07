@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 
 import org.jodconverter.core.office.AbstractOfficeWorkerPool;
 import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.office.ExternalOfficeManager;
+import org.jodconverter.local.office.AttachedOfficeManager;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 import org.jodconverter.remote.ssl.SslConfig;
@@ -43,7 +43,12 @@ import org.jodconverter.remote.ssl.SslConfig;
 class JodConverterPropertiesTest {
 
   private static <T> T bind(final String prefix, final Class<T> type) {
-    return new Binder(new MapConfigurationPropertySource(Map.of()))
+    return bind(prefix, type, Map.of());
+  }
+
+  private static <T> T bind(
+      final String prefix, final Class<T> type, final Map<String, String> values) {
+    return new Binder(new MapConfigurationPropertySource(values))
         .bindOrCreate(prefix, Bindable.of(type));
   }
 
@@ -106,22 +111,50 @@ class JodConverterPropertiesTest {
   }
 
   @Test
-  void externalDefaults_ShouldMatchTheManagerAndTheConverter() {
+  @SuppressWarnings("removal")
+  void externalProperties_ShouldGiveTheSameAttachedProperties() {
 
-    final var properties = bind("jodconverter.external", JodConverterExternalProperties.class);
+    final var external =
+        bind(
+            "jodconverter.external",
+            JodConverterExternalProperties.class,
+            Map.of(
+                "jodconverter.external.enabled",
+                "true",
+                "jodconverter.external.port-numbers",
+                "2003"));
+
+    // The port numbers are an array, which a record compares by reference.
+    assertThat(external.toAttached())
+        .usingRecursiveComparison()
+        .isEqualTo(
+            bind(
+                "jodconverter.attached",
+                JodConverterAttachedProperties.class,
+                Map.of(
+                    "jodconverter.attached.enabled",
+                    "true",
+                    "jodconverter.attached.port-numbers",
+                    "2003")));
+  }
+
+  @Test
+  void attachedDefaults_ShouldMatchTheManagerAndTheConverter() {
+
+    final var properties = bind("jodconverter.attached", JodConverterAttachedProperties.class);
 
     assertThat(properties.enabled()).isFalse();
-    assertThat(properties.hostName()).isEqualTo(ExternalOfficeManager.DEFAULT_HOSTNAME);
+    assertThat(properties.hostName()).isEqualTo(AttachedOfficeManager.DEFAULT_HOSTNAME);
     assertThat(properties.connectOnStart())
-        .isEqualTo(ExternalOfficeManager.DEFAULT_CONNECT_ON_START);
+        .isEqualTo(AttachedOfficeManager.DEFAULT_CONNECT_ON_START);
     assertThat(properties.connectTimeout().toMillis())
-        .isEqualTo(ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT);
+        .isEqualTo(AttachedOfficeManager.DEFAULT_CONNECT_TIMEOUT);
     assertThat(properties.connectRetryInterval().toMillis())
-        .isEqualTo(ExternalOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL);
+        .isEqualTo(AttachedOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL);
     assertThat(properties.connectFailFast())
-        .isEqualTo(ExternalOfficeManager.DEFAULT_CONNECT_FAIL_FAST);
+        .isEqualTo(AttachedOfficeManager.DEFAULT_CONNECT_FAIL_FAST);
     assertThat(properties.maxTasksPerConnection())
-        .isEqualTo(ExternalOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION);
+        .isEqualTo(AttachedOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION);
     assertThat(properties.taskQueueTimeout().toMillis())
         .isEqualTo(AbstractOfficeWorkerPool.DEFAULT_TASK_QUEUE_TIMEOUT);
     assertThat(properties.taskExecutionTimeout().toMillis())

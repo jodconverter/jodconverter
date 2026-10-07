@@ -32,45 +32,31 @@ import org.springframework.boot.convert.DurationUnit;
 import org.jodconverter.local.task.LoadDocumentMode;
 
 /**
- * Configuration of JODConverter External: connects to office processes that are started and managed
- * outside of the application (another container, a service manager...). The default values are
- * those of {@link org.jodconverter.local.office.ExternalOfficeManager} and {@link
- * org.jodconverter.local.LocalConverter}.
+ * The former {@code jodconverter.external} properties, read when {@code
+ * jodconverter.attached.enabled} is not set: they configure the same {@link
+ * org.jodconverter.local.office.AttachedOfficeManager} as {@link JodConverterAttachedProperties}.
  *
- * @param enabled Enable JODConverter External, which connects to already running office processes.
- * @param hostName Host name of the office processes to connect to, used with the port numbers.
- * @param portNumbers List of ports, separated by commas, of the office processes to connect to. One
- *     connection is made for each port number/pipe name/websocket URL. When none of them is set,
- *     the port 2002 is used.
- * @param pipeNames List of pipe names, separated by commas, of the office processes to connect to.
- * @param websocketUrls List of websocket URLs, separated by commas, of the office processes to
- *     connect to.
- * @param workingDir Directory where temporary files will be created. If not set, it defaults to the
- *     system temporary directory as specified by the java.io.tmpdir system property.
- * @param taskQueueCapacity Maximum number of tasks waiting in the conversion queue. A task
- *     submitted while the queue is full fails at once. 0 means no limit.
- * @param taskQueueTimeout Maximum living time of a task in the conversion queue. The task will be
- *     removed from the queue if the waiting time is longer than this timeout. A plain number is in
- *     milliseconds.
- * @param taskExecutionTimeout Maximum time allowed to process a task. If the processing time of a
- *     task is longer than this timeout, this task will be aborted and the next task is processed. A
- *     plain number is in milliseconds.
- * @param connectOnStart Whether the connections are made when the manager starts, or on the first
- *     conversion.
- * @param connectTimeout Timeout after which a connection attempt is considered failed. A plain
- *     number is in milliseconds.
- * @param connectRetryInterval Delay between each connection attempt. A plain number is in
- *     milliseconds.
- * @param connectFailFast Whether the manager start fails when a connection cannot be made, instead
- *     of retrying in the background.
- * @param maxTasksPerConnection Maximum number of tasks executed through a connection before
- *     reconnecting. 0 means an infinite number of tasks (never reconnects).
- * @param applyDefaultLoadProperties Whether the default load properties (Hidden, ReadOnly and
- *     UpdateDocMode NO_UPDATE) are applied when loading a document.
- * @param loadDocumentMode How documents are loaded and stored: local (the office process reads and
- *     writes the files directly), remote (documents are streamed, for an office process running on
- *     another host or container) or auto.
+ * @param enabled Enable the attached office manager through the former properties.
+ * @param hostName The host name of the office processes.
+ * @param portNumbers The port numbers of the office processes.
+ * @param pipeNames The pipe names of the office processes.
+ * @param websocketUrls The websocket URLs of the office processes.
+ * @param workingDir The directory where temporary files are created.
+ * @param taskQueueCapacity The maximum number of tasks waiting in the queue; 0 means no limit.
+ * @param taskQueueTimeout The maximum time a task waits in the queue.
+ * @param taskExecutionTimeout The maximum time allowed to execute a task.
+ * @param connectOnStart Whether the manager connects to the office processes when it starts.
+ * @param connectTimeout The maximum time to connect to an office process.
+ * @param connectRetryInterval The delay between two connection attempts.
+ * @param connectFailFast Whether the start fails at once when a connection cannot be made.
+ * @param maxTasksPerConnection The maximum number of tasks a connection executes before
+ *     reconnecting.
+ * @param applyDefaultLoadProperties Whether the default load properties are applied.
+ * @param loadDocumentMode How the documents are loaded.
+ * @deprecated Use the {@code jodconverter.attached} properties, {@link
+ *     JodConverterAttachedProperties}.
  */
+@Deprecated(since = "5.0", forRemoval = true)
 @ConfigurationProperties("jodconverter.external")
 public record JodConverterExternalProperties(
     boolean enabled,
@@ -88,5 +74,30 @@ public record JodConverterExternalProperties(
     boolean connectFailFast,
     @DefaultValue("1000") int maxTasksPerConnection,
     @DefaultValue("true") boolean applyDefaultLoadProperties,
-    @DefaultValue("auto") @NonNull LoadDocumentMode loadDocumentMode)
-    implements JodConverterPoolProperties {}
+    @DefaultValue("auto") @NonNull LoadDocumentMode loadDocumentMode) {
+
+  /**
+   * Gives these properties as attached properties.
+   *
+   * @return The same values, as {@link JodConverterAttachedProperties}.
+   */
+  public @NonNull JodConverterAttachedProperties toAttached() {
+    return new JodConverterAttachedProperties(
+        enabled,
+        hostName,
+        portNumbers,
+        pipeNames,
+        websocketUrls,
+        workingDir,
+        taskQueueCapacity,
+        taskQueueTimeout,
+        taskExecutionTimeout,
+        connectOnStart,
+        connectTimeout,
+        connectRetryInterval,
+        connectFailFast,
+        maxTasksPerConnection,
+        applyDefaultLoadProperties,
+        loadDocumentMode);
+  }
+}
