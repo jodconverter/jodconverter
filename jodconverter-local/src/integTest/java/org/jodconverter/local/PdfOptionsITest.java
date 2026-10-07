@@ -177,6 +177,23 @@ class PdfOptionsITest {
     }
   }
 
+  // The names of the fonts of the document that are not embedded.
+  private static List<String> fontsNotEmbedded(final File file) throws IOException {
+    final var names = new ArrayList<String>();
+    try (var doc = Loader.loadPDF(file)) {
+      for (final var page : doc.getPages()) {
+        final var resources = page.getResources();
+        for (final var name : resources.getFontNames()) {
+          final var font = resources.getFont(name);
+          if (!font.isEmbedded()) {
+            names.add(font.getName());
+          }
+        }
+      }
+    }
+    return names;
+  }
+
   private static boolean isTagged(final File file) throws IOException {
     try (var doc = Loader.loadPDF(file)) {
       return doc.getDocumentCatalog().getStructureTreeRoot() != null;
@@ -1346,6 +1363,9 @@ class PdfOptionsITest {
       assertThat(xmp(pdf)).containsPattern("<pdfaid:part>\\s*2\\s*</pdfaid:part>");
       assertThat(isTagged(pdf)).isTrue();
       assertThat(catalogHas(pdf, "Outlines")).isTrue();
+      // PDF/A requires every font to be embedded; LibreOffice does it without the
+      // EmbedStandardFonts option, which it keeps for compatibility only.
+      assertThat(fontsNotEmbedded(pdf)).isEmpty();
       try (var doc = Loader.loadPDF(pdf)) {
         assertThat(image(doc).getSuffix()).isEqualTo("png");
       }
