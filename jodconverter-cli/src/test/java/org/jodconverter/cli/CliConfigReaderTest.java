@@ -62,6 +62,9 @@ class CliConfigReaderTest {
     }
   }
 
+  /** A filter that cannot be instantiated at all: abstract. */
+  public abstract static class AbstractFilter extends NoopFilter {}
+
   /** A filter whose constructor fails. */
   public static class FailingFilter extends NoopFilter {
     public FailingFilter() {
@@ -324,6 +327,64 @@ class CliConfigReaderTest {
           .asInstanceOf(org.assertj.core.api.InstanceOfAssertFactories.MAP)
           .containsEntry("HoriOrientPosition", 5000)
           .containsEntry("VertOrientPosition", 11100);
+    }
+
+    @Test
+    void withAbstractFilterClass_ShouldThrowIllegalArgumentException(final @TempDir File dir) {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(
+              () -> filters("filters:\n  - class: " + AbstractFilter.class.getName() + "\n", dir))
+          .withMessageContaining("could not be instantiated");
+    }
+
+    @Test
+    void withGraphicInserterSizeAndShapeProperties_ShouldCreateIt(final @TempDir File dir)
+        throws IOException {
+
+      final var filters =
+          filters(
+              """
+              filters:
+                - type: graphic-inserter
+                  image: %s
+                  width: 20
+                  height: 10
+                  shape-properties:
+                    AnchorType: 1
+              """
+                  .formatted(IMAGE),
+              dir);
+
+      assertThat(filters).hasSize(1).first().isInstanceOf(GraphicInserterFilter.class);
+      assertThat(filters.get(0)).extracting("rectSize").isEqualTo(new java.awt.Dimension(20, 10));
+      assertThat(filters.get(0))
+          .extracting("shapeProperties")
+          .asInstanceOf(org.assertj.core.api.InstanceOfAssertFactories.MAP)
+          .containsEntry("AnchorType", 1);
+    }
+
+    @Test
+    void withGraphicInserterAndUnreadableImage_ShouldThrowIllegalArgumentException(
+        final @TempDir File dir) throws IOException {
+
+      // A text file is not an image: its size cannot be detected.
+      final var notAnImage = write(dir, "image.png", "not an image");
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(
+              () ->
+                  filters(
+                      """
+                      filters:
+                        - type: graphic-inserter
+                          image: %s
+                          horizontal-position: 50
+                          vertical-position: 111
+                      """
+                          .formatted(notAnImage.getPath().replace("\\", "/")),
+                      dir))
+          .withMessageContaining("Could not detect the image size");
     }
 
     @Test
