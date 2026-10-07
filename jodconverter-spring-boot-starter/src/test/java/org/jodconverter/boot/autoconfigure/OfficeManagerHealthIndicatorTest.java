@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.health.contributor.Status;
 
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.remote.office.RemoteOfficeManager;

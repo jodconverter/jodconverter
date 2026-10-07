@@ -20,12 +20,12 @@ commons-io = "2.22.0"
 # Spring Boot
 # Its BOM is only used by jodconverter-spring-boot-starter
 # Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-spring-boot = "3.5.16"
+spring-boot = "4.1.1"
 
 # Spring Framework, only spring-test is used, by the tests of the modules
-# Stay on the version line used by the Spring Boot version above
+# Stay on the version managed by the Spring Boot version above
 # Latest version -> https://mvnrepository.com/artifact/org.springframework/spring-core
-spring = "6.2.19"
+spring = "7.0.9"
 
 # SLF4J
 # Latest version -> https://mvnrepository.com/artifact/org.slf4j/slf4j-api
@@ -124,6 +124,8 @@ spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" 
 spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+# The health contributors (HealthIndicator...), in their own module since Spring Boot 4
+spring-boot-health = { module = "org.springframework.boot:spring-boot-health" }
 
 # LibreOffice
 libreoffice = { module = "org.libreoffice:libreoffice", version.ref = "lo" }

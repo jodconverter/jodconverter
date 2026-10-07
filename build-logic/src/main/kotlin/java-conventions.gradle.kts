@@ -155,7 +155,7 @@ val defaultJvmArgs = mutableListOf<String>()
 tasks.named<Test>("test") {
     jvmArgs = defaultJvmArgs
     useJUnitPlatform {
-        includeEngines("junit-jupiter", "junit-vintage")
+        includeEngines("junit-jupiter")
     }
     failFast = true
     testLogging.showStandardStreams = true
@@ -189,7 +189,7 @@ tasks.named("check") {
 integrationTest.configure {
     jvmArgs = defaultJvmArgs
     useJUnitPlatform {
-        includeEngines("junit-jupiter", "junit-vintage")
+        includeEngines("junit-jupiter")
     }
     failFast = true
     testLogging.showStandardStreams = true

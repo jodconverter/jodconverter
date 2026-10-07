@@ -16,8 +16,9 @@ dependencies {
     annotationProcessor(libs.spring.boot.configuration.processor)
 
     implementation(libs.spring.boot.starter)
-    // The health indicator is only configured when the application has the actuator.
-    compileOnly(libs.spring.boot.starter.actuator)
+    // The health indicator is only configured when the application has the health module, which
+    // the actuator brings.
+    compileOnly(libs.spring.boot.health)
 
     testImplementation(project(":jodconverter-local"))
     testImplementation(project(":jodconverter-remote"))
