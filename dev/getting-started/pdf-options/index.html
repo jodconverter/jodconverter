@@ -1604,6 +1604,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#options-by-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Options by name
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2798,6 +2809,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#options-by-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Options by name
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3365,6 +3387,11 @@ According to the source code of the filter, the comments are then exported as PD
 <td>LibreOffice 7.4+</td>
 </tr>
 <tr>
+<td><code>color(String)</code></td>
+<td><code>WatermarkColor</code>, as <code>FF0000</code>, <code>#FF0000</code> or <code>0xFF0000</code></td>
+<td>LibreOffice 7.4+</td>
+</tr>
+<tr>
 <td><code>fontName(String)</code></td>
 <td><code>WatermarkFontName</code></td>
 <td>LibreOffice 7.4+</td>
@@ -3508,6 +3535,19 @@ property; set it with <code>filterData("SignatureCertificate", certificate)</cod
 <p><code>filterData(name, value)</code> sets any <code>FilterData</code> property that has no dedicated method. These properties are applied
 last and are not validated.</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">filterData</span><span class="p">(</span><span class="s">"ExportNotesInMargin"</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="options-by-name">Options by name<a class="headerlink" href="#options-by-name" title="Permanent link">&para;</a></h3>
+<p><code>option(name, value)</code> applies an option given by its name and its text value, the way the
+<a href="#command-line">command line</a> and the <a href="#spring-boot">Spring Boot</a> properties do: <code>images.jpeg-quality=80</code>,
+<code>security.printing=low-resolution</code>, <code>version=a-2b</code>. It is the way to apply options read from a configuration file of
+your own. The names are those of the command line table below, except that the certificate, the private key and the
+certificate authorities of a signature are given as PEM text, with <code>signature.certificate</code>, <code>signature.private-key</code>
+(which must be used together) and <code>signature.ca</code>; <code>PdfOptions.optionNames()</code> lists them. An unknown name or a value
+that is not valid throws an <code>IllegalArgumentException</code>.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">PdfOptions</span><span class="p">.</span><span class="na">archive</span><span class="p">().</span><span class="na">toBuilder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">option</span><span class="p">(</span><span class="s">"pages.range"</span><span class="p">,</span><span class="w"> </span><span class="s">"1-3"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">option</span><span class="p">(</span><span class="s">"watermark.color"</span><span class="p">,</span><span class="w"> </span><span class="s">"#FF0000"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="default-options-of-a-converter">Default options of a converter<a class="headerlink" href="#default-options-of-a-converter" title="Permanent link">&para;</a></h2>
 <p>A converter can apply the same options to all its conversions to PDF:</p>
