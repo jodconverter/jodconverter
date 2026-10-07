@@ -49,6 +49,13 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
 
   private List<TargetOptions> defaultTargetOptions = List.of();
 
+  /**
+   * Creates a job for a source document, whose target is not yet known.
+   *
+   * @param source The source document.
+   * @param officeManager The office manager that executes the conversion.
+   * @param formatRegistry The registry of the document formats.
+   */
   protected AbstractConversionJobWithSourceFormatUnspecified(
       final @NonNull AbstractSourceDocumentSpecs source,
       final @NonNull OfficeManager officeManager,

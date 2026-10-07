@@ -123,6 +123,12 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
     }
   }
 
+  /**
+   * Adds properties to a map of properties, when there are some.
+   *
+   * @param properties The map that receives the properties.
+   * @param toAddProperties The properties to add, or null.
+   */
   protected static void appendProperties(
       final @NonNull Map<@NonNull String, @NonNull Object> properties,
       final @Nullable Map<@NonNull String, @NonNull Object> toAddProperties) {
@@ -171,7 +177,12 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
     this.loadProperties = loadProperties;
   }
 
-  // Gets the office properties to apply when the input file will be loaded.
+  /**
+   * Gets the office properties to apply when the source document is loaded: those of its format,
+   * then those of the task, with a password interaction handler unless the properties give one.
+   *
+   * @return The load properties.
+   */
   protected @NonNull Map<@NonNull String, @NonNull Object> getLoadProperties() {
 
     final var loadProps = new HashMap<String, Object>();
@@ -191,7 +202,14 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
     return loadProps;
   }
 
-  // Loads the document from the specified source file.
+  /**
+   * Loads the document from the source file.
+   *
+   * @param context The context of the office process.
+   * @param sourceFile The file to load.
+   * @return The loaded document.
+   * @throws OfficeException If the document cannot be loaded.
+   */
   protected @NonNull XComponent loadDocument(
       final @NonNull LocalOfficeContext context, final @NonNull File sourceFile)
       throws OfficeException {
@@ -253,7 +271,11 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
     return document;
   }
 
-  // Closes the specified document.
+  /**
+   * Closes a document, or disposes it when it cannot be closed.
+   *
+   * @param document The document, or null.
+   */
   protected void closeDocument(final @Nullable XComponent document) {
 
     if (document != null) {

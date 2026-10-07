@@ -36,10 +36,16 @@ public abstract class AbstractTargetDocumentSpecs extends AbstractDocumentSpecs
 
   private TargetOptions options;
 
+  /** Creates specifications without a file yet. */
   protected AbstractTargetDocumentSpecs() {
     super();
   }
 
+  /**
+   * Creates the specifications of a target file.
+   *
+   * @param file The file.
+   */
   protected AbstractTargetDocumentSpecs(final @NonNull File file) {
     super(file);
   }

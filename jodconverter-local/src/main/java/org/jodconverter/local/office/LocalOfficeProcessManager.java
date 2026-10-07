@@ -606,7 +606,6 @@ class LocalOfficeProcessManager {
     // LibreOffice:
     // https://help.libreoffice.org/Common/Starting_the_Software_With_Parameters
     // https://help.libreoffice.org/7.4/en-US/text/shared/guide/start_parameters.html
-    //
     // Apache OpenOffice:
     // https://wiki.openoffice.org/wiki/Framework/Article/Command_Line_Arguments
 

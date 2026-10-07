@@ -50,12 +50,26 @@ public abstract class AbstractConverter implements DocumentConverter {
   /** The options applied to the conversions that have no options of their own. */
   protected final List<TargetOptions> defaultTargetOptions;
 
+  /**
+   * Creates a converter without default target options.
+   *
+   * @param officeManager The office manager that executes the conversions.
+   * @param formatRegistry The registry of the document formats.
+   */
   protected AbstractConverter(
       final @NonNull OfficeManager officeManager,
       final @NonNull DocumentFormatRegistry formatRegistry) {
     this(officeManager, formatRegistry, null);
   }
 
+  /**
+   * Creates a converter.
+   *
+   * @param officeManager The office manager that executes the conversions.
+   * @param formatRegistry The registry of the document formats.
+   * @param defaultTargetOptions The options applied to the conversions that have none of their own,
+   *     or null.
+   */
   protected AbstractConverter(
       final @NonNull OfficeManager officeManager,
       final @NonNull DocumentFormatRegistry formatRegistry,
@@ -144,7 +158,7 @@ public abstract class AbstractConverter implements DocumentConverter {
     protected DocumentFormatRegistry formatRegistry;
     protected final List<TargetOptions> defaultTargetOptions = new ArrayList<>();
 
-    // Protected constructor so only subclasses can initialize an instance of this builder.
+    /** Creates a builder; only the subclasses can. */
     protected AbstractConverterBuilder() {
       super();
     }
