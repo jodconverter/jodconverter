@@ -36,6 +36,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
+import org.jodconverter.core.document.PropertyValues;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.pdf.PdfOptions;
@@ -468,22 +469,6 @@ public final class Convert {
     return new DefaultParser().parse(OPTIONS, normalized.toArray(new String[0]));
   }
 
-  // Converts the value of a property: a boolean, an integer, or a text.
-  private static Object toPropertyValue(final String value) {
-
-    if ("true".equalsIgnoreCase(value)) {
-      return Boolean.TRUE;
-    }
-    if ("false".equalsIgnoreCase(value)) {
-      return Boolean.FALSE;
-    }
-    try {
-      return Integer.parseInt(value);
-    } catch (NumberFormatException nfe) {
-      return value;
-    }
-  }
-
   // Builds the properties given as "name=value" arguments. The properties whose name starts
   // with FD are properties of the FilterData.
   private static Map<String, Object> buildProperties(final String kind, final String... args) {
@@ -502,7 +487,7 @@ public final class Convert {
             "Invalid " + kind + " property '" + arg + "'; expected name=value");
       }
       final var key = arg.substring(0, separator);
-      final var value = toPropertyValue(arg.substring(separator + 1));
+      final var value = PropertyValues.parse(arg.substring(separator + 1));
       if (key.length() > 2 && key.startsWith("FD")) {
         filterDataProperties.put(key.substring("FD".length()), value);
       } else {

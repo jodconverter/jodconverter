@@ -339,7 +339,8 @@ columns wide.
     `with(...)` method: `converter.convert(source).to(target).with(PdfOptions.archive()).execute()`. The command line
     tool takes them with its new `--pdf-preset` and `--pdf-option` arguments, a converter can apply them to all its
     conversions with `defaultTargetOptions(...)`, and the Spring Boot starter sets them with the `jodconverter.pdf.*`
-    properties.
+    properties. The builder also takes an option by its name and its text value, as written on the command line
+    (`option("images.jpeg-quality", "80")`), to apply options read from a configuration file of your own.
 - [`poolSize`](../configuration/local-manager.md): start a number of office processes on free ports, without choosing
     them (`jodconverter.local.pool-size` with Spring Boot).
 - [`taskQueueCapacity`](../configuration/local-manager.md): bound the conversion queue, so that a task submitted while

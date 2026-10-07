@@ -129,6 +129,17 @@ public final class PdfOptions implements TargetOptions {
   }
 
   /**
+   * Gets the names of the options accepted by {@link Builder#option(String, String)}: {@code
+   * version}, {@code images.jpeg-quality}, {@code security.printing}... as written on the command
+   * line and in the configuration files.
+   *
+   * @return The option names, in the order of their groups.
+   */
+  public static @NonNull Set<@NonNull String> optionNames() {
+    return Collections.unmodifiableSet(PdfOptionNames.options().keySet());
+  }
+
+  /**
    * Creates a builder initialized with these options, to derive other options from them.
    *
    * @return A new builder instance.
@@ -261,6 +272,9 @@ public final class PdfOptions implements TargetOptions {
 
     private final Map<PdfOption, Object> values = new EnumMap<>(PdfOption.class);
     private final Map<String, Object> extraFilterData = new LinkedHashMap<>();
+    // The certificate and its private key given as named options, set together when building.
+    private String pendingCertificatePem;
+    private String pendingPrivateKeyPem;
 
     // Private constructor so only PdfOptions can initialize an instance of this builder.
     private Builder() {
@@ -508,6 +522,35 @@ public final class PdfOptions implements TargetOptions {
     }
 
     /**
+     * Applies an option given by its name and its text value, as written on the command line
+     * ({@code --pdf-option images.jpeg-quality=80}) or in a configuration file. The names are those
+     * of {@link PdfOptions#optionNames()}; the values are converted like the command line tool
+     * does: booleans as {@code true}/{@code false}, enums in any case with hyphens or underscores,
+     * versions as {@code 1.7} or {@code a-2b}, colors as {@code FF0000}. The {@code
+     * signature.certificate} and {@code signature.private-key} options take the PEM text and must
+     * be given together.
+     *
+     * @param name The name of the option.
+     * @param value The value of the option, as text.
+     * @return This builder instance.
+     * @throws IllegalArgumentException If the name is unknown, or if the value is not valid.
+     */
+    public @NonNull Builder option(final @NonNull String name, final @NonNull String value) {
+      Objects.requireNonNull(name, "name must not be null");
+      Objects.requireNonNull(value, "value must not be null");
+      PdfOptionNames.apply(this, name, value);
+      return this;
+    }
+
+    /* default */ void pendingCertificatePem(final String pem) {
+      pendingCertificatePem = pem;
+    }
+
+    /* default */ void pendingPrivateKeyPem(final String pem) {
+      pendingPrivateKeyPem = pem;
+    }
+
+    /**
      * Creates the options that are specified by this builder.
      *
      * @return The options that are specified by this builder.
@@ -517,6 +560,16 @@ public final class PdfOptions implements TargetOptions {
      */
     public @NonNull PdfOptions build() {
 
+      if (pendingCertificatePem != null || pendingPrivateKeyPem != null) {
+        AssertUtils.isTrue(
+            pendingCertificatePem != null && pendingPrivateKeyPem != null,
+            "The PDF options '"
+                + PdfOptionNames.CERTIFICATE
+                + "' and '"
+                + PdfOptionNames.PRIVATE_KEY
+                + "' must be used together");
+        signature(o -> o.certificatePem(pendingCertificatePem, pendingPrivateKeyPem));
+      }
       validateEncryption();
       validatePermissions();
       AssertUtils.isTrue(
