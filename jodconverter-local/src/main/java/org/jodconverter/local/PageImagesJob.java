@@ -37,7 +37,7 @@ import org.jodconverter.local.task.PageImagesTask;
 
 /**
  * The export of the pages of a presentation or a drawing as images, one image per slide or draw
- * page, created by {@link LocalConverter#exportPages(File)}:
+ * page, created by {@link LocalConverter#exportPages(File)}.
  *
  * <pre>
  * List&lt;File&gt; images =

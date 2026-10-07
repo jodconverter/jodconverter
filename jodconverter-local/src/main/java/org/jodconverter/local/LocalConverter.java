@@ -37,7 +37,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.job.*;
+import org.jodconverter.core.job.AbstractConversionJob;
+import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecified;
+import org.jodconverter.core.job.AbstractConverter;
+import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
+import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.job.ConversionJobWithOptionalSourceFormatUnspecified;
+import org.jodconverter.core.job.SourceDocumentSpecsFromInputStream;
+import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.task.OfficeTask;
@@ -232,7 +239,6 @@ public final class LocalConverter extends AbstractConverter {
             && officeManager instanceof AttachedOfficeManager);
   }
 
-  /** Local implementation of a conversion job with source format unspecified. */
   /**
    * Merges text documents into one: the first document is loaded, the others are inserted at its
    * end, each one starting on a new page, and the result is converted like any document.
@@ -294,6 +300,7 @@ public final class LocalConverter extends AbstractConverter {
     return new DefaultFilterChain(false, all.toArray(new Filter[0]));
   }
 
+  /** Local implementation of a conversion job with source format unspecified. */
   private class LocalConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
 

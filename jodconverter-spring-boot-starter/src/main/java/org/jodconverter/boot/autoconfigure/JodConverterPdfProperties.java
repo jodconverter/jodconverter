@@ -87,6 +87,7 @@ public class JodConverterPdfProperties {
   /**
    * Whether the PDF images are exported as reference XObjects. Requires LibreOffice 5.4 or later.
    */
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName") // XObject is a PDF term
   private Boolean referenceXObjects;
 
   /** Options for the images. */
@@ -238,10 +239,12 @@ public class JodConverterPdfProperties {
     this.embedSourceDocument = embedSourceDocument;
   }
 
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName") // XObject is a PDF term
   public @Nullable Boolean getReferenceXObjects() {
     return referenceXObjects;
   }
 
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName") // XObject is a PDF term
   public void setReferenceXObjects(final @Nullable Boolean referenceXObjects) {
     this.referenceXObjects = referenceXObjects;
   }

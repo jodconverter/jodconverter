@@ -112,6 +112,7 @@ public class PagesSelectorFilter implements Filter {
               family == DocumentFamily.DRAWING ? "Draw" : "Impress");
           selectDrawPages(Lo.qi(XDrawPagesSupplier.class, document));
         }
+        default -> LOGGER.debug("No page to select in a {} document", family);
       }
     }
 

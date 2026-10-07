@@ -21,8 +21,15 @@
 package org.jodconverter.core.document;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonDeserializationContext;
@@ -76,7 +83,7 @@ public final class DocumentFormat {
     }
   }
 
-  /** Instance creator used to avoid a runtime exception with java17 (see #408) */
+  /** Instance creator used to avoid a runtime exception with Java 17 (see #408). */
   /* default */ static class DocumentFormatInstanceCreator
       implements InstanceCreator<DocumentFormat> {
     @Override

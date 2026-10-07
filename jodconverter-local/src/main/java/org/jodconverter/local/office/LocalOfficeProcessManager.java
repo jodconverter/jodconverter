@@ -580,6 +580,7 @@ class LocalOfficeProcessManager {
             return Optional.empty();
           }
         }
+        default -> throw new IllegalStateException("Unknown action: " + existingProcessAction);
       }
       return existingProcess;
 

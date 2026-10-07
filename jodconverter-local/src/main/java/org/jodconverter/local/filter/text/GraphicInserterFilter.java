@@ -20,7 +20,7 @@
 
 package org.jodconverter.local.filter.text;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
