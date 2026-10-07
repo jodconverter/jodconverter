@@ -24,8 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
 
 import org.jodconverter.core.office.AbstractOfficeWorkerPool;
 import org.jodconverter.core.office.OfficeManager;

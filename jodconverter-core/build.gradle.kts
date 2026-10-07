@@ -12,7 +12,6 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.slf4j.api)
 
-    testImplementation(libs.mockito.inline)
     testImplementation(libs.spring.test)
 
     testRuntimeOnly(libs.bundles.log4j)

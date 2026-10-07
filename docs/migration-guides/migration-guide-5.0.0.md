@@ -7,7 +7,7 @@ This guide discusses migration from JODConverter version 4.4.11 to version 5.0.0
 
 ## Background
 
-JODConverter 5.0 is a major version: it moves to Java 17, Spring Boot 3 and SLF4J 2, and it is the occasion to fix
+JODConverter 5.0 is a major version: it moves to Java 17, Spring Boot 4 and SLF4J 2, and it is the occasion to fix
 a few long-standing issues whose fix changes a behavior. Most applications only have to update their Java, Spring
 Boot and logging setup; the API changes only affect code that extends JODConverter.
 
@@ -18,16 +18,18 @@ Boot and logging setup; the API changes only affect code that extends JODConvert
 JODConverter 5.0 requires Java 17 or later, at build time and at runtime. Applications that must stay on Java 8 or
 11 must stay on JODConverter 4.4.
 
-### Spring Boot 3
+### Spring Boot 4
 
-`jodconverter-spring-boot-starter` requires Spring Boot 3. It is built and tested with Spring Boot 3.5. Spring Boot 2
-applications must stay on JODConverter 4.4. The migration of the application itself (`javax.*` to `jakarta.*`, and so
-on) is covered by the
-[Spring Boot 3.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide).
+`jodconverter-spring-boot-starter` requires Spring Boot 4 (Spring Framework 7). It is built and tested with Spring
+Boot 4.1. The open-source support of Spring Boot 3.5 ended in June 2026, and a starter is compiled against one line
+of Spring Boot: applications that stay on Spring Boot 3 (or 2) must stay on JODConverter 4.4. The migration of the
+application itself is covered by the
+[Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide).
 
-The auto-configurations of the starter are registered in
+The health indicator of the office managers is configured when the application has the `spring-boot-health` module,
+which the actuator starter brings. The auto-configurations of the starter are registered in
 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`; the `META-INF/spring.factories`
-file, which Spring Boot 3 ignores, is gone.
+file, which Spring Boot 3 and 4 ignore, is gone.
 
 ## Logging
 
