@@ -923,10 +923,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#spring-boot-3" class="md-nav__link">
+  <a href="#spring-boot-4" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Spring Boot 3
+        Spring Boot 4
       </span>
     </span>
   </a>
@@ -2814,10 +2814,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#spring-boot-3" class="md-nav__link">
+  <a href="#spring-boot-4" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Spring Boot 3
+        Spring Boot 4
       </span>
     </span>
   </a>
@@ -3194,21 +3194,23 @@
 changes are merged.</p>
 </div>
 <h2 id="background">Background<a class="headerlink" href="#background" title="Permanent link">&para;</a></h2>
-<p>JODConverter 5.0 is a major version: it moves to Java 17, Spring Boot 3 and SLF4J 2, and it is the occasion to fix
+<p>JODConverter 5.0 is a major version: it moves to Java 17, Spring Boot 4 and SLF4J 2, and it is the occasion to fix
 a few long-standing issues whose fix changes a behavior. Most applications only have to update their Java, Spring
 Boot and logging setup; the API changes only affect code that extends JODConverter.</p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <h3 id="java-17">Java 17<a class="headerlink" href="#java-17" title="Permanent link">&para;</a></h3>
 <p>JODConverter 5.0 requires Java 17 or later, at build time and at runtime. Applications that must stay on Java 8 or
 11 must stay on JODConverter 4.4.</p>
-<h3 id="spring-boot-3">Spring Boot 3<a class="headerlink" href="#spring-boot-3" title="Permanent link">&para;</a></h3>
-<p><code>jodconverter-spring-boot-starter</code> requires Spring Boot 3. It is built and tested with Spring Boot 3.5. Spring Boot 2
-applications must stay on JODConverter 4.4. The migration of the application itself (<code>javax.*</code> to <code>jakarta.*</code>, and so
-on) is covered by the
-<a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide">Spring Boot 3.0 Migration Guide</a>.</p>
-<p>The auto-configurations of the starter are registered in
+<h3 id="spring-boot-4">Spring Boot 4<a class="headerlink" href="#spring-boot-4" title="Permanent link">&para;</a></h3>
+<p><code>jodconverter-spring-boot-starter</code> requires Spring Boot 4 (Spring Framework 7). It is built and tested with Spring
+Boot 4.1. The open-source support of Spring Boot 3.5 ended in June 2026, and a starter is compiled against one line
+of Spring Boot: applications that stay on Spring Boot 3 (or 2) must stay on JODConverter 4.4. The migration of the
+application itself is covered by the
+<a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide">Spring Boot 4.0 Migration Guide</a>.</p>
+<p>The health indicator of the office managers is configured when the application has the <code>spring-boot-health</code> module,
+which the actuator starter brings. The auto-configurations of the starter are registered in
 <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code>; the <code>META-INF/spring.factories</code>
-file, which Spring Boot 3 ignores, is gone.</p>
+file, which Spring Boot 3 and 4 ignore, is gone.</p>
 <h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
 <h3 id="slf4j-2">SLF4J 2<a class="headerlink" href="#slf4j-2" title="Permanent link">&para;</a></h3>
 <p>JODConverter logs through SLF4J 2 (<code>slf4j-api</code> 2.0) instead of SLF4J 1.7. An application that logs through an SLF4J
