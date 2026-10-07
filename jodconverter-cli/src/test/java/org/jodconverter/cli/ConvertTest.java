@@ -151,6 +151,32 @@ class ConvertTest {
   class CreateOfficeManager {
 
     @Test
+    void withUnknownExistingProcessAction_ShouldUseTheDefault() throws Exception {
+
+      final OfficeManager manager =
+          ReflectionTestUtils.invokeMethod(
+              Convert.class,
+              "createOfficeManager",
+              Convert.parse("-x", "whatever", "in", "out"),
+              null);
+
+      assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    }
+
+    @Test
+    void withConnectionUrl_ShouldCreateARemoteOfficeManager() throws Exception {
+
+      final OfficeManager manager =
+          ReflectionTestUtils.invokeMethod(
+              Convert.class,
+              "createOfficeManager",
+              Convert.parse("-c", "http://localhost:9980/lool", "in", "out"),
+              null);
+
+      assertThat(manager).isInstanceOf(org.jodconverter.remote.office.RemoteOfficeManager.class);
+    }
+
+    @Test
     void withDefaultProperties_ShouldCreateManagerWithDefaultProperties() throws Exception {
 
       final var commandLine = Convert.parse("output1.pdf", "input2.txt");
