@@ -24,8 +24,8 @@ import static org.jodconverter.local.office.LocalOfficeUtils.toUnoProperties;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -265,7 +265,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       throws com.sun.star.uno.Exception, OfficeException {
 
     if (useStreamAdapters) {
-      try (var outputStream = new FileOutputStream(targetFile)) {
+      try (var outputStream = Files.newOutputStream(targetFile.toPath())) {
         storeProps.put("OutputStream", new OutputStreamToXOutputStreamAdapter(outputStream));
         storable.storeToURL("private:stream", toUnoProperties(storeProps));
       } catch (IOException exception) {

@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -90,7 +91,7 @@ final class CliConfigReader {
    * @return The configuration.
    * @throws IllegalArgumentException If the file cannot be read, or if its content is not valid.
    */
-  static CliConfig read(final File file) {
+  /* default */ static CliConfig read(final File file) {
 
     final Object root;
     try (var reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
@@ -203,28 +204,30 @@ final class CliConfigReader {
   }
 
   /** Converts the scalars of a configuration file, which are typed in YAML and strings in JSON. */
-  static final class Values {
+  /* default */ static final class Values {
 
     private Values() {
       throw new AssertionError("Utility class must not be instantiated");
     }
 
-    static boolean bool(final Object value, final String name) {
+    /* default */ static boolean bool(final Object value, final String name) {
       if (value instanceof Boolean bool) {
         return bool;
       }
       if (value instanceof String string) {
-        if ("true".equalsIgnoreCase(string)) {
-          return true;
-        }
-        if ("false".equalsIgnoreCase(string)) {
-          return false;
+        switch (string.toLowerCase(Locale.ROOT)) {
+          case "true":
+            return true;
+          case "false":
+            return false;
+          default:
+            break;
         }
       }
       throw new IllegalArgumentException("'" + name + "' expects true or false");
     }
 
-    static int integer(final Object value, final String name) {
+    /* default */ static int integer(final Object value, final String name) {
       if (value instanceof Number number
           && number.longValue() == number.doubleValue()
           && number.longValue() == (int) number.longValue()) {
@@ -240,7 +243,7 @@ final class CliConfigReader {
       throw new IllegalArgumentException("'" + name + "' expects an integer");
     }
 
-    static String string(final Object value, final String name) {
+    /* default */ static String string(final Object value, final String name) {
       if (value instanceof String || value instanceof Number || value instanceof Boolean) {
         return value.toString();
       }
@@ -248,7 +251,7 @@ final class CliConfigReader {
     }
 
     // A list of texts, or a comma-separated text.
-    static String[] strings(final Object value, final String name) {
+    /* default */ static String[] strings(final Object value, final String name) {
       if (value instanceof List<?> list) {
         return list.stream().map(item -> string(item, name)).toArray(String[]::new);
       }
@@ -256,7 +259,7 @@ final class CliConfigReader {
     }
 
     // A list of integers, or a single integer.
-    static int[] integers(final Object value, final String name) {
+    /* default */ static int[] integers(final Object value, final String name) {
       if (value instanceof List<?> list) {
         return list.stream().mapToInt(item -> integer(item, name)).toArray();
       }
@@ -265,13 +268,13 @@ final class CliConfigReader {
   }
 
   /** A map of a configuration file, which reports the keys it does not expect. */
-  static final class Section {
+  /* default */ static final class Section {
 
     private final String name;
     private final Map<String, Object> values;
     private final Set<String> used = new HashSet<>();
 
-    Section(final String name, final Object value) {
+    /* default */ Section(final String name, final Object value) {
       if (!(value instanceof Map<?, ?> map)) {
         throw new IllegalArgumentException(name + " must be a map of keys and values");
       }
@@ -280,38 +283,38 @@ final class CliConfigReader {
       map.forEach((key, val) -> values.put(String.valueOf(key), val));
     }
 
-    String name() {
+    /* default */ String name() {
       return name;
     }
 
-    Set<String> keys() {
+    /* default */ Set<String> keys() {
       used.addAll(values.keySet());
       return values.keySet();
     }
 
-    boolean has(final String key) {
+    /* default */ boolean has(final String key) {
       return values.get(key) != null;
     }
 
-    @Nullable Object value(final String key) {
+    /* default */ @Nullable Object value(final String key) {
       used.add(key);
       return values.get(key);
     }
 
-    Optional<Object> optional(final String key) {
+    /* default */ Optional<Object> optional(final String key) {
       return Optional.ofNullable(value(key));
     }
 
-    Object required(final String key) {
+    /* default */ Object required(final String key) {
       return optional(key)
           .orElseThrow(() -> new IllegalArgumentException("'" + key + "' is required in " + name));
     }
 
-    Optional<Section> section(final String key) {
+    /* default */ Optional<Section> section(final String key) {
       return optional(key).map(value -> new Section("'" + key + "' of " + name, value));
     }
 
-    Optional<List<?>> list(final String key) {
+    /* default */ Optional<List<?>> list(final String key) {
       return optional(key)
           .map(
               value -> {
@@ -323,7 +326,7 @@ final class CliConfigReader {
     }
 
     // A map of texts, in the order of the file.
-    Optional<Map<String, String>> strings(final String key) {
+    /* default */ Optional<Map<String, String>> strings(final String key) {
       return section(key)
           .map(
               section -> {
@@ -335,7 +338,7 @@ final class CliConfigReader {
               });
     }
 
-    Optional<Map<String, Object>> map(final String key) {
+    /* default */ Optional<Map<String, Object>> map(final String key) {
       return section(key)
           .map(
               section -> {
@@ -347,7 +350,7 @@ final class CliConfigReader {
               });
     }
 
-    void ensureNoUnknownKeys() {
+    /* default */ void ensureNoUnknownKeys() {
       final var unknown = new ArrayList<>(values.keySet());
       unknown.removeAll(used);
       if (!unknown.isEmpty()) {

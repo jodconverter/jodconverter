@@ -138,6 +138,8 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
       // output target is an output stream).
       final var targetFile = target.getFile();
 
+      // The answer of the server when it is not a document.
+      final OfficeException serverError;
       try {
         final var requestConfig = remoteContext.getRequestConfig();
         final var request =
@@ -148,21 +150,28 @@ public class RemoteConversionTask extends AbstractRemoteOfficeTask {
                 .build();
         final var response = remoteContext.send(request, saveOrReadError(targetFile));
         if (response.body().isPresent()) {
-          throw new IOException(
-              String.format(
-                  "The server answered with the status %d: %s",
-                  response.statusCode(), response.body().get()));
-        }
+          serverError =
+              new OfficeException(
+                  String.format(
+                      "The server answered with the status %d: %s",
+                      response.statusCode(), response.body().get()));
+        } else {
+          serverError = null;
 
-        // onComplete on target will copy the temp file to
-        // the OutputStream and then delete the temp file
-        // if the output is an OutputStream
-        target.onComplete(targetFile);
+          // onComplete on target will copy the temp file to
+          // the OutputStream and then delete the temp file
+          // if the output is an OutputStream
+          target.onComplete(targetFile);
+        }
 
       } catch (Exception ex) {
         final var officeEx = new OfficeException("Remote conversion failed", ex);
         target.onFailure(targetFile, officeEx);
         throw officeEx;
+      }
+      if (serverError != null) {
+        target.onFailure(targetFile, serverError);
+        throw serverError;
       }
 
     } finally {

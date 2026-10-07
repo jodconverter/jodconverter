@@ -301,7 +301,7 @@ public final class LocalConverter extends AbstractConverter {
   }
 
   /** Local implementation of a conversion job with source format unspecified. */
-  private class LocalConversionJobWithSourceFormatUnspecified
+  private final class LocalConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
 
     // The filter chain of this job, or null for the filter chain of the converter.
@@ -326,7 +326,7 @@ public final class LocalConverter extends AbstractConverter {
   }
 
   /** Local implementation of a conversion job. */
-  private class LocalConversionJob extends AbstractConversionJob {
+  private final class LocalConversionJob extends AbstractConversionJob {
 
     private final @Nullable FilterChain jobFilterChain;
 

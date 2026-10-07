@@ -140,7 +140,7 @@ final class PdfOptionsParser {
         builder.option(name, value);
       } catch (IllegalArgumentException ex) {
         if (ex.getMessage() != null && ex.getMessage().startsWith("Unknown PDF option")) {
-          throw unknownOption(name);
+          throw unknownOption(name); // NOPMD - the message about the option says it all
         }
         throw ex;
       }

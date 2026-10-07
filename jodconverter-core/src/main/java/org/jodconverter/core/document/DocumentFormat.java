@@ -69,7 +69,7 @@ public final class DocumentFormat {
    * Special adapter used to support backward compatibility when loading a document format JSON
    * file. The former JSON file doesn't support multiple document format extensions.
    */
-  private static class ExtensionsAdapter implements JsonDeserializer<List<String>> {
+  private static final class ExtensionsAdapter implements JsonDeserializer<List<String>> {
 
     @Override
     public List<String> deserialize(

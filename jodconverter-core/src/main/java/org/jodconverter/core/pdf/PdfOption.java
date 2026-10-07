@@ -124,7 +124,7 @@ enum PdfOption {
   SHEET_RANGE("SheetRange", 24, 8);
 
   private final String filterDataName;
-  private final OfficeSupport support;
+  private final OfficeSupport support; // NOPMD - the constants of an enum are serialized by name
   private final boolean secret;
 
   // An option read by all the versions of LibreOffice and by Apache OpenOffice.

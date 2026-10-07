@@ -69,6 +69,8 @@ public abstract class AbstractRetryable<T extends Throwable> {
    * @throws RetryTimeoutException If this Retryable fails to complete its task in the given time.
    * @throws T For all other error conditions.
    */
+  // The timeout exception carries the interruption, or the cause of the temporary exception.
+  @SuppressWarnings("PMD.PreserveStackTrace")
   public void execute(final long delay, final long interval, final long timeout)
       throws RetryTimeoutException, T {
 

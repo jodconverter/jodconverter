@@ -68,7 +68,7 @@ public final class LocalOfficeUtils {
    * href="https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom">Initialization-on-demand
    * holder idiom</a>
    */
-  private static class DefaultOfficeHomeHolder {
+  private static final class DefaultOfficeHomeHolder {
 
     /* default */ static final File INSTANCE;
 
@@ -222,10 +222,10 @@ public final class LocalOfficeUtils {
    * @return The free port numbers.
    * @throws IllegalStateException If the free ports cannot be found.
    */
-  /* default */
-  static @NonNull List<@NonNull Integer> findFreePorts(final int count) {
-
-    // All the sockets are kept open until every port is found, so the ports are distinct.
+  // The sockets are all kept open until every port is found, so that the ports are distinct,
+  // and closed together in the finally block.
+  @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
+  /* default */ static @NonNull List<@NonNull Integer> findFreePorts(final int count) {
     final var sockets = new ArrayList<ServerSocket>(count);
     try {
       for (var i = 0; i < count; i++) {
@@ -253,7 +253,7 @@ public final class LocalOfficeUtils {
    * @return an list of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
+  /* default */ static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames) {
     return buildOfficeUrls(null, portNumbers, pipeNames, null);

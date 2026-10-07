@@ -31,6 +31,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @Deprecated(since = "5.0", forRemoval = true)
 public final class ExternalOfficeManager {
 
+  private static final String SINCE = "5.0";
+
   /** The default host name of the office processes. */
   public static final String DEFAULT_HOSTNAME = AttachedOfficeManager.DEFAULT_HOSTNAME;
 
@@ -64,7 +66,7 @@ public final class ExternalOfficeManager {
    * @return A new builder instance.
    * @deprecated Use {@link AttachedOfficeManager#builder()}.
    */
-  @Deprecated(since = "5.0", forRemoval = true)
+  @Deprecated(since = SINCE, forRemoval = true)
   public static AttachedOfficeManager.@NonNull Builder builder() {
     return AttachedOfficeManager.builder();
   }
@@ -75,7 +77,7 @@ public final class ExternalOfficeManager {
    * @return An {@link AttachedOfficeManager} with default configuration.
    * @deprecated Use {@link AttachedOfficeManager#make()}.
    */
-  @Deprecated(since = "5.0", forRemoval = true)
+  @Deprecated(since = SINCE, forRemoval = true)
   public static @NonNull AttachedOfficeManager make() {
     return AttachedOfficeManager.make();
   }
@@ -87,7 +89,7 @@ public final class ExternalOfficeManager {
    * @return An {@link AttachedOfficeManager} with default configuration.
    * @deprecated Use {@link AttachedOfficeManager#install()}.
    */
-  @Deprecated(since = "5.0", forRemoval = true)
+  @Deprecated(since = SINCE, forRemoval = true)
   public static @NonNull AttachedOfficeManager install() {
     return AttachedOfficeManager.install();
   }

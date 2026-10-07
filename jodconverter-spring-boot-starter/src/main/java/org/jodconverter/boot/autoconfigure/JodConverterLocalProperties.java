@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.convert.DurationUnit;
 
 import org.jodconverter.local.office.ExistingProcessAction;
+import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.task.LoadDocumentMode;
 
 /**
@@ -106,7 +107,7 @@ public record JodConverterLocalProperties(
     boolean enabled,
     @Nullable String officeHome,
     @Nullable String officeExecutable,
-    @DefaultValue("127.0.0.1") @NonNull String hostName,
+    @DefaultValue(LocalOfficeManager.DEFAULT_HOSTNAME) @NonNull String hostName,
     int @Nullable [] portNumbers,
     @Nullable Integer poolSize,
     @DefaultValue @NonNull String[] pipeNames,

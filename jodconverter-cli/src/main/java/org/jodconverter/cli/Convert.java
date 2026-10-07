@@ -56,6 +56,8 @@ import org.jodconverter.remote.office.RemoteOfficeManager;
 /** Command line interface executable. */
 public final class Convert {
 
+  private static final String ARG_DIR = "dir";
+
   /** Status returned when the program runs without errors. */
   public static final int STATUS_OK = 0;
 
@@ -87,7 +89,7 @@ public final class Convert {
   private static final Option OPT_OUTPUT_DIRECTORY =
       Option.builder("d")
           .longOpt("output-directory")
-          .argName("dir")
+          .argName(ARG_DIR)
           .hasArg()
           .desc("output directory (optional; defaults to input directory)")
           .get();
@@ -98,7 +100,7 @@ public final class Convert {
   private static final Option OPT_OFFICE_HOME =
       Option.builder("i")
           .longOpt("office-home")
-          .argName("dir")
+          .argName(ARG_DIR)
           .hasArg()
           .desc("office home directory (optional; defaults to auto-detect)")
           .get();
@@ -163,14 +165,14 @@ public final class Convert {
   private static final Option OPT_USER_PROFILE =
       Option.builder("u")
           .longOpt("user-profile")
-          .argName("dir")
+          .argName(ARG_DIR)
           .hasArg()
           .desc("use settings from the given user installation dir (optional)")
           .get();
   private static final Option OPT_WORKING_DIR =
       Option.builder("w")
           .longOpt("working-dir")
-          .argName("dir")
+          .argName(ARG_DIR)
           .hasArg()
           .desc(
               "directory where temporary office profile directories will be created"
@@ -550,7 +552,7 @@ public final class Convert {
    * @param pdfOptions The PDF options, from the {@code --pdf-preset} and {@code --pdf-option}
    *     arguments, or null if there is none.
    */
-  record ConversionOptions(
+  /* default */ record ConversionOptions(
       Map<String, Object> loadProperties,
       Map<String, Object> storeProperties,
       @Nullable PdfOptions pdfOptions) {
@@ -562,7 +564,7 @@ public final class Convert {
      * @return The options.
      * @throws IllegalArgumentException If an option is not valid.
      */
-    static ConversionOptions parse(final CommandLine commandLine) {
+    /* default */ static ConversionOptions parse(final CommandLine commandLine) {
       return new ConversionOptions(
           buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt())),
           buildProperties("store", commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt())),

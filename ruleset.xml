@@ -11,19 +11,19 @@
     <rule ref="category/java/bestpractices.xml">
         <exclude name="AccessorClassGeneration"/>
         <exclude name="AccessorMethodGeneration"/>
+        <!-- The code logs through SLF4J with parameters: a guard is only worth it when an argument is
+             expensive to compute, and the code adds one there by hand -->
+        <exclude name="GuardLogStatement"/>
+        <!-- Checkstyle (Google style) requires a default in every switch, including the exhaustive ones -->
+        <exclude name="ExhaustiveSwitchHasDefault"/>
+        <!-- An interface with one method is not always meant for lambdas -->
+        <exclude name="ImplicitFunctionalInterface"/>
         <exclude name="UnitTestAssertionsShouldIncludeMessage"/>
         <exclude name="UnitTestShouldIncludeAssert"/>
     </rule>
     <rule ref="category/java/bestpractices.xml/UnitTestContainsTooManyAsserts">
         <properties>
             <property name="maximumAsserts" value="10"/>
-        </properties>
-    </rule>
-    <rule ref="category/java/bestpractices.xml/GuardLogStatement">
-        <properties>
-            <!-- Ignore the rule for test classes -->
-            <property name="violationSuppressXPath"
-                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
 
@@ -39,6 +39,14 @@
         <!-- The code uses var when the initializer makes the type obvious -->
         <exclude name="UseExplicitTypes"/>
     </rule>
+    <rule ref="category/java/codestyle.xml/BooleanGetMethodName">
+        <properties>
+            <!-- The Spring Boot properties classes are JavaBeans whose Boolean properties need a getter
+                 named getX for the binder -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Properties')]"/>
+        </properties>
+    </rule>
     <rule ref="category/java/codestyle.xml/CommentDefaultAccessModifier">
         <properties>
             <!-- Ignore the rule for test classes -->
@@ -48,7 +56,7 @@
     </rule>
     <rule ref="category/java/codestyle.xml/LongVariable">
         <properties>
-            <property name="minimum" value="35"/>
+            <property name="minimum" value="45"/>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
                       value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
@@ -145,6 +153,11 @@
 
     <!-- Use the 'multithreading' category -->
     <rule ref="category/java/multithreading.xml">
+        <!-- The office manager pool and its workers synchronize on monitors and publish their state
+             through volatile fields on purpose; the rules that ask for locks instead are not followed -->
+        <exclude name="AvoidSynchronizedAtMethodLevel"/>
+        <exclude name="AvoidSynchronizedStatement"/>
+        <exclude name="AvoidUsingVolatile"/>
         <exclude name="DoNotUseThreads"/>
         <exclude name="UseConcurrentHashMap"/>
     </rule>

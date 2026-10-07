@@ -53,6 +53,7 @@ public class TextReplacerFilter implements Filter {
    * @param searchList The Strings to search for, no-op if null.
    * @param replacementList The Strings to replace them with, no-op if null.
    */
+  @SuppressWarnings("PMD.UseVarargs") // Two arrays of the same length, not a list of values
   public TextReplacerFilter(
       final @NonNull String[] searchList, final @NonNull String[] replacementList) {
     super();

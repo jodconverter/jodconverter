@@ -30,7 +30,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public final class Props { // NOPMD - Disable utility class name rule violation
+public final class Props {
 
   /**
    * Gets a property value from the properties of the specified object.
@@ -122,6 +122,7 @@ public final class Props { // NOPMD - Disable utility class name rule violation
    * @param values The property values.
    * @return An array of properties.
    */
+  @SuppressWarnings("PMD.UseVarargs") // Two arrays of the same length, not a list of values
   public static @NonNull PropertyValue[] makeProperties(
       final @NonNull String[] names, final @NonNull Object[] values) {
 

@@ -540,11 +540,8 @@ class CliConverterTest {
             () ->
                 converter.convert(
                     new String[] {SOURCE_FILE_1.getPath()}, "pdf", SOURCE_FILE_2.getPath(), false))
-        .withCauseInstanceOf(IOException.class)
-        .satisfies(
-            e ->
-                assertThat(e.getCause())
-                    .hasMessageMatching("Invalid output directory.*that exists but is a file"));
+        .withMessageMatching("Invalid output directory.*that exists but is a file")
+        .withNoCause();
   }
 
   @Test
@@ -564,11 +561,8 @@ class CliConverterTest {
                 throw e.getUndeclaredThrowable();
               }
             })
-        .withCauseExactlyInstanceOf(IOException.class)
-        .satisfies(
-            e ->
-                assertThat(e.getCause())
-                    .hasMessageMatching("Invalid output directory.*that cannot be written to"));
+        .withMessageMatching("Invalid output directory.*that cannot be written to")
+        .withNoCause();
   }
 
   @Test

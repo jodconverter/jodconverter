@@ -141,7 +141,7 @@ public final class OfficeUtils {
   }
 
   /** Delete a file or directory (retryable). */
-  private static class DeleteFileRetryable extends AbstractRetryable<RuntimeException> {
+  private static final class DeleteFileRetryable extends AbstractRetryable<RuntimeException> {
     private final File file;
 
     /**

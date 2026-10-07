@@ -29,7 +29,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * DefaultDocumentFormatRegistry} will use this holder to initialize all its {@link DocumentFormat}
  * constants.
  */
-@SuppressWarnings("PMD.ClassNamingConventions")
 public final class DefaultDocumentFormatRegistryInstanceHolder {
 
   private static DocumentFormatRegistry instance;
@@ -66,7 +65,7 @@ public final class DefaultDocumentFormatRegistryInstanceHolder {
    *
    * @param registry The default {@link DocumentFormatRegistry}.
    */
-  public static void setInstance(DocumentFormatRegistry registry) {
+  public static void setInstance(final DocumentFormatRegistry registry) {
     synchronized (DocumentFormatRegistry.class) {
       instance = registry;
     }

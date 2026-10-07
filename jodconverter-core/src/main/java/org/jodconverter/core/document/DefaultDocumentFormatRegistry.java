@@ -40,7 +40,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * href="https://svn.apache.org/repos/asf/openoffice/trunk/main/filter/source/config/fragments/filters">OpenOffice
  * Filters</a>.
  */
-public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name rule violation
+public final class DefaultDocumentFormatRegistry {
 
   // Another sources
   // https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_SO_8

@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.convert.DurationUnit;
 
+import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.task.LoadDocumentMode;
 
 /**
@@ -60,7 +61,7 @@ import org.jodconverter.local.task.LoadDocumentMode;
 @ConfigurationProperties("jodconverter.external")
 public record JodConverterExternalProperties(
     boolean enabled,
-    @DefaultValue("127.0.0.1") @NonNull String hostName,
+    @DefaultValue(LocalOfficeManager.DEFAULT_HOSTNAME) @NonNull String hostName,
     int @Nullable [] portNumbers,
     @Nullable String[] pipeNames,
     @Nullable String[] websocketUrls,

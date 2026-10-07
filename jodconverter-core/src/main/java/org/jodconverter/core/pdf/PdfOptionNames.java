@@ -90,13 +90,11 @@ final class PdfOptionNames {
   }
 
   /* default */ static boolean bool(final String value) {
-    if ("true".equalsIgnoreCase(value)) {
-      return true;
-    }
-    if ("false".equalsIgnoreCase(value)) {
-      return false;
-    }
-    throw new IllegalArgumentException("expected true or false");
+    return switch (value.toLowerCase(Locale.ROOT)) {
+      case "true" -> true;
+      case "false" -> false;
+      default -> throw new IllegalArgumentException("expected true or false");
+    };
   }
 
   /* default */ static int integer(final String value) {
@@ -132,7 +130,6 @@ final class PdfOptionNames {
             : "PDF_" + normalized);
   }
 
-  @SuppressWarnings("PMD.NcssCount")
   private static Map<String, BiConsumer<PdfOptions.Builder, String>> initOptions() {
 
     final var map = new LinkedHashMap<String, BiConsumer<PdfOptions.Builder, String>>();

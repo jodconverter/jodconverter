@@ -91,7 +91,7 @@ class StartProcessAndConnectRetryable extends AbstractRetryable<Exception> {
    *
    * @return The started process, or null if no process was started.
    */
-  public @Nullable VerboseProcess getProcess() {
+  /* default */ @Nullable VerboseProcess getProcess() {
     return process;
   }
 
