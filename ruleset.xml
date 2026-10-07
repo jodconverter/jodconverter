@@ -19,11 +19,21 @@
         <!-- An interface with one method is not always meant for lambdas -->
         <exclude name="ImplicitFunctionalInterface"/>
         <exclude name="UnitTestAssertionsShouldIncludeMessage"/>
+        <!-- A test that binds or parses every option asserts every option -->
+        <exclude name="UnitTestContainsTooManyAsserts"/>
         <exclude name="UnitTestShouldIncludeAssert"/>
     </rule>
-    <rule ref="category/java/bestpractices.xml/UnitTestContainsTooManyAsserts">
+    <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP">
         <properties>
-            <property name="maximumAsserts" value="10"/>
+            <!-- The tests use the loopback address, and office version numbers look like IP addresses -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/errorprone.xml/TestClassWithoutTestCases">
+        <properties>
+            <!-- Only a Test suffix names a test class; the Test prefix names a test double -->
+            <property name="testClassPattern" value="^(?:.*[\$.])?.*Tests?$|^(?:.*[\$.])?.*TestCase$"/>
         </properties>
     </rule>
 
@@ -95,9 +105,9 @@
     <rule ref="category/java/design.xml/ExcessiveImports">
         <properties>
             <property name="minimum" value="50"/>
-            <!-- Ignore the rule for test classes -->
+            <!-- Ignore the rule for test classes (the violation is on the imports, not in the class) -->
             <property name="violationSuppressXPath"
-                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
+                      value="//ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
 	<rule ref="category/java/design.xml/TooManyFields">
