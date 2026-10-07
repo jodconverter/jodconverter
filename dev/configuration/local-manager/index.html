@@ -3277,7 +3277,8 @@ to the started process fails. If set to <code>true</code>, <code>start()</code> 
 connected, and throws an exception if one of them cannot be; the manager cannot be used after that. If set to <code>false</code>,
 <code>start()</code> returns immediately: the tasks wait in the queue for an office process to be ready (see <code>taskQueueTimeout</code>),
 and a process that cannot be started is retried, with a growing delay between the attempts (1, 2, 5, 10, then every 30
-seconds). Only logs are produced if anything goes wrong.</p>
+seconds). Only logs are produced if anything goes wrong. In both cases, a <code>stop()</code> from another thread while <code>start()</code>
+waits aborts the starts instead of waiting for them, and that <code>start()</code> then fails.</p>
 <p>&#160;<strong><em>Default</em></strong>: false.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="15:3"><input checked="checked" id="__tabbed_15_1" name="__tabbed_15" type="radio" /><input id="__tabbed_15_2" name="__tabbed_15" type="radio" /><input id="__tabbed_15_3" name="__tabbed_15" type="radio" /><div class="tabbed-labels"><label for="__tabbed_15_1">Java</label><label for="__tabbed_15_2">Spring Boot</label><label for="__tabbed_15_3">Command Line</label></div>
 <div class="tabbed-content">
