@@ -27,41 +27,28 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * {@link org.jodconverter.local.process.ProcessManager} implementation for Windows.
- *
- * <p>Requires taskkill.exe, and either wmic.exe or powershell.exe to query the running processes.
- * wmic.exe is used when it is available. It has been removed from recent versions of Windows
- * (Windows 11 24H2, Windows Server 2025), where powershell.exe is used instead.
+ * The process manager of Windows, where the JVM does not read the command lines of the other
+ * processes: the running processes are listed with a PowerShell query.
  */
 public class WindowsProcessManager extends AbstractProcessManager {
 
   private static final Pattern PROCESS_GET_LINE =
       Pattern.compile("^\\s*(?<CommandLine>.*?)\\s+(?<Pid>\\d+)\\s*$");
 
-  // Whether wmic.exe is available. null means that it has not been checked yet.
-  private final AtomicReference<Boolean> wmicAvailable = new AtomicReference<>();
-
   // Whether the running processes can be queried through powershell.exe. null means that it has
   // not been checked yet.
   private final AtomicReference<Boolean> powershellQueryWorking = new AtomicReference<>();
 
-  /**
-   * This class is required in order to create the default WindowsProcessManager only on demand, as
-   * explained by the <a
-   * href="https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom">Initialization-on-demand
-   * holder idiom</a>.
-   */
   private static class DefaultHolder { // NOPMD - Disable utility class name rule violation
     /* default */ static final WindowsProcessManager INSTANCE = new WindowsProcessManager();
   }
 
   /**
-   * Gets the default instance of {@code WindowsProcessManager}.
+   * Gets the default instance of this manager.
    *
-   * @return The default {@code WindowsProcessManager} instance.
+   * @return The default instance.
    */
   public static @NonNull WindowsProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
@@ -70,20 +57,13 @@ public class WindowsProcessManager extends AbstractProcessManager {
   @Override
   protected @NonNull String[] getRunningProcessesCommand(final @NonNull String process) {
 
-    if (isWmicAvailable()) {
-      return new String[] {
-        "cmd", "/c", "wmic process where(name like '" + process + "%') get commandline,processid"
-      };
-    }
-
-    // Each line of the output is the command line of a process followed by its pid, as wmic does.
-    // The progress records are disabled since powershell writes them to the error stream.
+    // Each line of the output is the command line of a process followed by its pid. The progress
+    // records are disabled since powershell writes them to the error stream.
     final var script =
         "$ProgressPreference = 'SilentlyContinue'; "
             + "Get-CimInstance Win32_Process -Filter \"Name like '"
             + process.replace("'", "''")
             + "%'\" | ForEach-Object { \"$($_.CommandLine) $($_.ProcessId)\" }";
-
     // The script is encoded since the quotes it contains would not survive the way the arguments
     // of a command are quoted on Windows.
     return new String[] {
@@ -97,29 +77,15 @@ public class WindowsProcessManager extends AbstractProcessManager {
 
   @Override
   protected @NonNull Pattern getRunningProcessLinePattern() {
-
     return PROCESS_GET_LINE;
   }
 
   /**
-   * Gets whether the commands we need are available for a Windows OS.
+   * Gets whether this manager can list the running processes on the current machine.
    *
-   * @return {@code true} If the required commands are available, {@code false} otherwise.
+   * @return {@code true} if the PowerShell query works, {@code false} otherwise.
    */
   public boolean isUsable() {
-
-    try {
-      if (!isWmicAvailable() && !isPowershellQueryWorking()) {
-        return false;
-      }
-      execute("taskkill", "/?");
-      return true;
-    } catch (IOException ioEx) {
-      return false;
-    }
-  }
-
-  private boolean isPowershellQueryWorking() {
 
     var working = powershellQueryWorking.get();
     if (working == null) {
@@ -136,29 +102,5 @@ public class WindowsProcessManager extends AbstractProcessManager {
       powershellQueryWorking.set(working);
     }
     return working;
-  }
-
-  private boolean isWmicAvailable() {
-
-    var available = wmicAvailable.get();
-    if (available == null) {
-      try {
-        execute("wmic", "quit");
-        available = true;
-      } catch (IOException ioEx) {
-        available = false;
-      }
-      wmicAvailable.set(available);
-    }
-    return available;
-  }
-
-  @Override
-  public void kill(final @Nullable Process process, final long pid) throws IOException {
-    if (pid > PID_UNKNOWN) {
-      execute("taskkill", "/t", "/f", "/pid", String.valueOf(pid));
-    } else {
-      super.kill(process, pid);
-    }
   }
 }

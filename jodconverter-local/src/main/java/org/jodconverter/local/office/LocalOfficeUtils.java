@@ -166,11 +166,8 @@ public final class LocalOfficeUtils {
    */
   public static @NonNull ProcessManager findBestProcessManager() {
 
-    if (OSUtils.IS_OS_MAC) {
-      return MacProcessManager.getDefault();
-    } else if (OSUtils.IS_OS_FREE_BSD) {
-      return FreeBSDProcessManager.getDefault();
-    } else if (OSUtils.IS_OS_UNIX) {
+    if (OSUtils.IS_OS_UNIX) {
+      // Linux, macOS, FreeBSD...: the JVM reads the command lines of the processes.
       return UnixProcessManager.getDefault();
     } else if (OSUtils.IS_OS_WINDOWS) {
       final var windowsProcessManager = WindowsProcessManager.getDefault();
@@ -178,12 +175,10 @@ public final class LocalOfficeUtils {
         return windowsProcessManager;
       }
       LOGGER.warn(
-          "The commands required to manage processes on Windows are not available;"
+          "The running processes cannot be listed with PowerShell;"
               + " an office process that is already running will not be detected.");
       return PureJavaProcessManager.getDefault();
     } else {
-      // NOTE: UnixProcessManager can't be trusted to work on Solaris
-      // because of the 80-char limit on ps output there
       return PureJavaProcessManager.getDefault();
     }
   }

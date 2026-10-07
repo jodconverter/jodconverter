@@ -96,6 +96,19 @@ static `LocalOfficeManager.make()` and `LocalConverter.make(officeManager)` fact
 `init-method="start"` and `destroy-method="stop"`. Spring Boot applications are not affected: the starter never
 used this module.
 
+### Process management
+
+The office processes started by JODConverter are followed through their `ProcessHandle`: their pid is known as soon
+as they start, and they are killed, with their descendants, through the handle. A `ProcessManager` is only asked to
+find a process that JODConverter did not start (the `existingProcessAction` check), and its contract changes
+accordingly: `canFindPid()`, `findPid(ProcessQuery)` with the `PID_UNKNOWN` and `PID_NOT_FOUND` sentinels, and
+`kill(Process, long)` are replaced by `Optional<ProcessHandle> find(ProcessQuery)` and `kill(ProcessHandle)`, the
+latter with a default implementation. `MacProcessManager` and `FreeBSDProcessManager` are gone: `UnixProcessManager`
+reads the command lines through the JVM on every Unix system. `WindowsProcessManager` lists the processes with
+PowerShell only (`wmic` is no longer used), and `AbstractProcessManager` stays for the managers that run a command to
+list them. `UnixProcessManager.setRunAsArgs` (unused), `ExitCodeRetryable` and the four stream pumper classes of the
+`process` package are removed.
+
 ### Records
 
 `ProcessQuery` (local module) and `RequestConfig` (remote module) are now records, and their accessors follow the
@@ -204,6 +217,13 @@ macOS) and `TMP`/`TEMP` (Windows) for that.
 
 An application that set these variables to move the office temporary files elsewhere (a tmpfs, for example) should
 set the `workingDir` of the office manager to that place instead.
+
+### No search for the pid of a started office process
+
+A started office process no longer needs to be found in the list of the running processes: the `ps`, `wmic` or
+PowerShell commands that ran after each start are gone, with the retries, the FreeBSD delay and the restart that
+followed a pid that could not be found. `afterStartProcessDelay` is still honored. On Windows, `soffice.bin` is
+found behind the `soffice.exe` launcher through the process tree, and killed with it.
 
 ### Office port used by another program
 

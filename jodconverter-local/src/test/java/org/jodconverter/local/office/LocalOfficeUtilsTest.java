@@ -50,8 +50,6 @@ import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.MockUnoRuntimeExtension;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.UnoRuntime;
-import org.jodconverter.local.process.FreeBSDProcessManager;
-import org.jodconverter.local.process.MacProcessManager;
 import org.jodconverter.local.process.UnixProcessManager;
 import org.jodconverter.local.process.WindowsProcessManager;
 
@@ -68,24 +66,8 @@ class LocalOfficeUtilsTest {
   class FindBestProcessManager {
 
     @Test
-    void onMac_ShouldReturnMacProcessManager() {
-      assumeTrue(OSUtils.IS_OS_MAC);
-
-      assertThat(LocalOfficeUtils.findBestProcessManager())
-          .isEqualTo(MacProcessManager.getDefault());
-    }
-
-    @Test
-    void onFreeBSD_ShouldReturnFreeBSDProcessManager() {
-      assumeTrue(OSUtils.IS_OS_FREE_BSD);
-
-      assertThat(LocalOfficeUtils.findBestProcessManager())
-          .isEqualTo(FreeBSDProcessManager.getDefault());
-    }
-
-    @Test
     void onUnix_ShouldReturnUnixProcessManager() {
-      assumeTrue(OSUtils.IS_OS_UNIX && !OSUtils.IS_OS_MAC && !OSUtils.IS_OS_FREE_BSD);
+      assumeTrue(OSUtils.IS_OS_UNIX);
 
       assertThat(LocalOfficeUtils.findBestProcessManager())
           .isEqualTo(UnixProcessManager.getDefault());

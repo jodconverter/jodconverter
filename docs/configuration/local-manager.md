@@ -344,13 +344,15 @@ configure distinct port numbers or pipe names instead.
 
 #### 🔠`processManager`
 
-A process manager is used when **JODConverter** needs to deal with a started office process. When **JODConverter**
-starts an office process, it must retrieve the PID of the started process to be able to kill it later if required.
+A process manager finds an office process that already runs with the connection string **JODConverter** wants to
+use (see [`existingProcessAction`](#existingprocessaction)), and kills office processes. The processes that
+**JODConverter** starts itself are followed through their `ProcessHandle`, without the process manager.
 
 &#160;***Default***: By default, **JODConverter** will try to find the best process manager according to the OS on
-which **JODConverter** is running. But any process manager implementing the
+which **JODConverter** is running: on Linux, macOS and the other Unix systems, the running processes are read by the
+JVM; on Windows, they are listed with a PowerShell query. But any process manager implementing the
 [`ProcessManager`](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/process/ProcessManager.java)
-interface can be used if found on the classpath.
+interface (`find(ProcessQuery)`, and optionally `kill(ProcessHandle)`) can be used if found on the classpath.
 
 === "Java"
 

@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.sun.star.frame.XDesktop;
@@ -72,13 +73,13 @@ class LocalOfficeProcessManagerTest {
     /* default */ final List<Long> killedPids = new CopyOnWriteArrayList<>();
 
     @Override
-    public void kill(final Process process, final long pid) {
-      killedPids.add(pid);
+    public Optional<ProcessHandle> find(final ProcessQuery query) {
+      return Optional.empty();
     }
 
     @Override
-    public long findPid(final ProcessQuery query) {
-      return PID_NOT_FOUND;
+    public void kill(final ProcessHandle process) {
+      killedPids.add(process.pid());
     }
   }
 
@@ -91,7 +92,7 @@ class LocalOfficeProcessManagerTest {
 
     return new LocalOfficeProcessManager(
         url,
-        LocalOfficeUtils.getDefaultOfficeHome(),
+        new File("src/test/resources/oohome"),
         workingDir,
         processManager,
         new ArrayList<>(),
@@ -111,6 +112,13 @@ class LocalOfficeProcessManagerTest {
   private LocalOfficeProcessManager newManager(
       final OfficeUrl url, final ProcessManager processManager) {
     return newManager(url, TestOfficeConnection.prepareTest(url), processManager, false);
+  }
+
+  // A handle standing for an office process, which only has to report its pid.
+  private static ProcessHandle handleWithPid(final long pid) {
+    final var handle = mock(ProcessHandle.class);
+    given(handle.pid()).willReturn(pid);
+    return handle;
   }
 
   private static File instanceProfileDirOf(final LocalOfficeProcessManager manager) {
@@ -238,7 +246,7 @@ class LocalOfficeProcessManagerTest {
       try (ServerSocket otherProgram = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
         final var manager =
             newManager(new OfficeUrl(otherProgram.getLocalPort()), new RecordingProcessManager());
-        ReflectionTestUtils.setField(manager, "pid", 1234L);
+        ReflectionTestUtils.setField(manager, "processHandle", handleWithPid(1234L));
 
         assertThatExceptionOfType(OfficeException.class)
             .isThrownBy(manager::restartDueToLostConnection)
@@ -266,7 +274,7 @@ class LocalOfficeProcessManagerTest {
 
       final var processManager = new RecordingProcessManager();
       final var manager = newManager(processManager);
-      ReflectionTestUtils.setField(manager, "pid", 1234L);
+      ReflectionTestUtils.setField(manager, "processHandle", handleWithPid(1234L));
 
       manager.kill();
 
@@ -293,7 +301,7 @@ class LocalOfficeProcessManagerTest {
 
       final var processManager = new RecordingProcessManager();
       final var manager = newManager(processManager);
-      ReflectionTestUtils.setField(manager, "pid", 1234L);
+      ReflectionTestUtils.setField(manager, "processHandle", handleWithPid(1234L));
       final var instanceProfileDir = instanceProfileDirOf(manager);
       assertThat(instanceProfileDir.mkdirs()).isTrue();
 
@@ -360,7 +368,7 @@ class LocalOfficeProcessManagerTest {
       final var url = new OfficeUrl(9999);
       final var connection = TestOfficeConnection.prepareTest(url);
       final var manager = newManager(url, connection, processManager, true);
-      ReflectionTestUtils.setField(manager, "pid", 1234L);
+      ReflectionTestUtils.setField(manager, "processHandle", handleWithPid(1234L));
       connection.connect();
 
       manager.stop();

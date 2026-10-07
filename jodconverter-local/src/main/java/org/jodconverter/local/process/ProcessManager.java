@@ -21,47 +21,39 @@
 package org.jodconverter.local.process;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.Optional;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Provides services required to manage a running process. */
+/**
+ * Finds and kills office processes that were not started by JODConverter. The processes that
+ * JODConverter starts itself are handled through their {@link ProcessHandle}; a process manager is
+ * only asked to find a process that already runs with the connection string JODConverter wants to
+ * use, and to kill a process, which it does by default through its handle.
+ */
 public interface ProcessManager {
 
-  long PID_NOT_FOUND = -2L;
-  long PID_UNKNOWN = -1L;
-
   /**
-   * Indicates whether the pid of the process can be found using a command line.
+   * Finds a running process whose command line contains the command and the argument of the given
+   * query, in this order.
    *
-   * @return {@code true} if the pid can be found using a command line, {@code false} otherwise.
+   * @param query The command and the argument to look for.
+   * @return The process, or empty if no running process matches the query, or if this manager is
+   *     not able to list the running processes.
+   * @throws IOException If the running processes cannot be listed.
    */
-  default boolean canFindPid() {
-    return true;
-  }
+  @NonNull Optional<ProcessHandle> find(@NonNull ProcessQuery query) throws IOException;
 
   /**
-   * Finds a PID of a running process that has the specified command line.
-   *
-   * @param query A query used to find the process with the pid we are looking for.
-   * @return The pid if found, {@link #PID_NOT_FOUND} if not, or {@link #PID_UNKNOWN} if this
-   *     implementation is unable to find out
-   * @throws IOException If an IO error occurs.
-   */
-  default long findPid(final @NonNull ProcessQuery query) throws IOException {
-    return PID_UNKNOWN;
-  }
-
-  /**
-   * Kills the specified process.
+   * Kills a process and its descendants. The default implementation forcibly destroys them through
+   * their handles, which works for the processes of the current user on every platform; a manager
+   * that runs the office processes as another user must override it.
    *
    * @param process The process to kill.
-   * @param pid The id of the process to kill.
-   * @throws IOException If an IO error occurs.
+   * @throws IOException If the process cannot be killed.
    */
-  default void kill(final @Nullable Process process, final long pid) throws IOException {
-    Objects.requireNonNull(process, "process must not be null");
-    process.destroy();
+  default void kill(final @NonNull ProcessHandle process) throws IOException {
+    process.descendants().forEach(ProcessHandle::destroyForcibly);
+    process.destroyForcibly();
   }
 }
