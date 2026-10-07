@@ -87,6 +87,20 @@ jobs:
         shell: bash
         run: ./gradlew build -x javadoc --continue --stacktrace
 
+      - name: 📊 Aggregate the coverage
+        if: runner.os == 'Linux'
+        shell: bash
+        run: ./gradlew jacocoRootReport
+
+      - name: 📤 Send the coverage to Coveralls
+        # Pull requests and pushes to develop and master; Coveralls lists the branches it receives.
+        if: runner.os == 'Linux'
+        uses: coverallsapp/github-action@v2
+        with:
+          format: jacoco
+          file: build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
+          base-path: .
+
       - name: 📤 Upload test reports on failure
         if: failure()
         uses: actions/upload-artifact@v7

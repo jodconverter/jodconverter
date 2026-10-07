@@ -10,7 +10,6 @@ version = project.property("version") as String
 plugins {
     jacoco
     distribution
-    alias(libs.plugins.coveralls)
     alias(libs.plugins.dependency.check)
 }
 
@@ -118,19 +117,6 @@ gradle.projectsEvaluated {
 
         archiveBaseName.set(project.name)
         from(allDistZips.map { it.archiveFile.map { f -> f.asFile } })
-    }
-
-    coveralls {
-        sourceDirs = libraryProjects.flatMap {
-            it.extensions.getByType<JavaPluginExtension>()
-                .sourceSets.getByName("main")
-                .allSource.srcDirs
-        }.map { it.absolutePath }
-        jacocoReportPath = layout.buildDirectory
-            .file("reports/jacoco/jacocoRootReport/jacocoRootReport.xml")
-            .get()
-            .asFile
-            .absolutePath
     }
 
     javadocAll.configure {

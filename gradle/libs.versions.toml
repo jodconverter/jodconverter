@@ -89,10 +89,6 @@ checkstyle = "12.3.1"
 # Stay aligned with codacy version (log in into codacy and go to the "code patterns" menu)
 pmd = "7.28.0"
 
-# Coveralls plugin
-# Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
-coveralls = "2.12.2"
-
 # Spotless plugin
 # Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
 spotless = "8.10.3"
@@ -177,5 +173,4 @@ log4j = ["log4j-slf4j", "log4j-core"]
 [plugins]
 # Use in settings.gradle.kts or plugins {} blocks
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-coveralls = { id = "com.github.kt3k.coveralls", version.ref = "coveralls" }
 dependency-check = { id = "org.owasp.dependencycheck", version.ref = "dependency-check" }
