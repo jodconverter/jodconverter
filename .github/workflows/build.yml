@@ -38,13 +38,16 @@ jobs:
           - os: ubuntu-latest
           # On the GitHub Windows runners, LibreOffice 26.2 crashes now and then when it closes a
           # presentation or a drawing it has just stored or exported, a different test on each run
-          # (seen on 2026-10-08, and with an unpacked 26.2 on a workstation); the install step
-          # below takes the fresh version for that reason. It reports but does not block a merge.
+          # (seen on 2026-10-08, and with an unpacked 26.2 on a workstation; the still and fresh
+          # packages of Chocolatey are both 26.2.6). It reports but does not block a merge.
           - os: windows-latest
             allow-failure: true
-          # On the macOS runner, every office start took 35 s longer than elsewhere: see the
-          # host name step below, which removes the wait. It reports but does not block a merge.
-          - os: macos-latest
+          # macOS 14 on purpose. On the macOS 15 and 26 images (macos-latest), the first reverse
+          # lookup of 127.0.0.1 in a process takes 35 s (seven resolver scopes of 5 s each, measured
+          # on 2026-10-08 with getnameinfo, on arm64 and Intel), and LibreOffice does that lookup
+          # when it accepts a UNO connection: every office start waited 35 s for the answer to its
+          # first request. The macOS 14 image answers at once. It reports but does not block a merge.
+          - os: macos-14
             allow-failure: true
 
     steps:
@@ -79,18 +82,7 @@ jobs:
       - name: 📥 Install LibreOffice (Windows)
         if: runner.os == 'Windows'
         timeout-minutes: 10
-        run: choco install libreoffice-fresh -y --no-progress
-
-      - name: 🏷️ Give the macOS runner a host name that resolves at once
-        # The host name of the runner ends with .local, which macOS resolves through multicast DNS:
-        # the lookup of its own name takes 35 s, whatever /etc/hosts says (measured on 2026-10-08).
-        # LibreOffice looks its host name up when it accepts a UNO connection, so every office
-        # start waited that long for the answer to its first request.
-        if: runner.os == 'macOS'
-        run: |
-          sudo scutil --set HostName ci-runner
-          echo "127.0.0.1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
-          echo "::1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
+        run: choco install libreoffice-still -y --no-progress
 
       - name: 📥 Install LibreOffice (macOS)
         if: runner.os == 'macOS'
