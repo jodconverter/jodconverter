@@ -52,11 +52,12 @@ credentials and the signing key, which live in the repository secrets; the rest 
 
 ## After the release
 
-10. **Next snapshot.** On `develop`, merge `master` if the release pull request was not a fast-forward, then:
+10. **Next snapshot.** On a branch from `develop`:
     ```bash
     ./gradlew setVersion -PnewVersion=X.Y.Z+1-SNAPSHOT
     ```
-    Commit `Post release X.Y.Z` and push.
+    Commit `Post release X.Y.Z` and open its pull request to `develop`. The merge commit of the release leaves
+    `master` one commit ahead of `develop`, with no change in it: no need to merge it back.
 11. **Milestone.** Close the milestone of the release and create the next one.
 
 ## Secrets of the release workflow

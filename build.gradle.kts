@@ -64,7 +64,6 @@ tasks.register("setVersion") {
         require(Regex("""\d+\.\d+\.\d+(-SNAPSHOT)?""").matches(version)) {
             "Invalid version '$version': expected X.Y.Z or X.Y.Z-SNAPSHOT"
         }
-        val previous = releasedVersion.get()
         val release = !version.endsWith("-SNAPSHOT")
 
         var properties = propertiesFile.asFile.readText()
@@ -75,14 +74,29 @@ tasks.register("setVersion") {
         propertiesFile.asFile.writeText(properties)
         println("gradle.properties: version = $version")
 
-        if (release && previous != version) {
+        if (release) {
+            // Every coordinate of a JODConverter artifact, whatever version it shows: a wrong version in a
+            // snippet is corrected, not kept.
+            val coordinates = listOf(
+                Regex("""(org\.jodconverter:jodconverter-[\w-]+:)\d+\.\d+\.\d+"""),
+                Regex("""(<artifactId>jodconverter-[\w-]+</artifactId>\s*<version>)\d+\.\d+\.\d+"""),
+                Regex("""(central\.sonatype\.com/artifact/org\.jodconverter/jodconverter-[\w-]+/)\d+\.\d+\.\d+""")
+            )
             docsFiles.forEach { file ->
-                val text = file.asFile.readText()
-                val count = Regex(Regex.escape(previous)).findAll(text).count()
-                if (count > 0) {
-                    file.asFile.writeText(text.replace(previous, version))
+                var text = file.asFile.readText()
+                var count = 0
+                coordinates.forEach { regex ->
+                    text = regex.replace(text) { match ->
+                        if (match.value.endsWith(version)) match.value else {
+                            count++
+                            match.groupValues[1] + version
+                        }
+                    }
                 }
-                println("${file.asFile.toRelativeString(projectDir)}: $count occurrence(s) of $previous replaced")
+                if (count > 0) {
+                    file.asFile.writeText(text)
+                }
+                println("${file.asFile.toRelativeString(projectDir)}: $count coordinate(s) set to $version")
             }
         }
     }
