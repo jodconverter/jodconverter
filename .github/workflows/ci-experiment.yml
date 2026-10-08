@@ -35,13 +35,14 @@ jobs:
         shell: pwsh
         run: |
           $lo = 'C:\Program Files\LibreOffice\program\soffice.exe'
+          $here = $PWD.Path.Replace('', '/')
           $docs = @('test_custom_formats.odp;html', 'test.odt;pdf', 'test.docx;pdf', 'test.xlsx;pdf', 'test.pptx;pdf')
           New-Item -ItemType Directory out | Out-Null
           for ($i = 1; $i -le 20; $i++) {
             $parts = $docs[($i - 1) % $docs.Count].Split(';')
             $src = "jodconverter-local/src/integTest/resources/documents/$($parts[0])"
             $sw = [Diagnostics.Stopwatch]::StartNew()
-            $p = Start-Process -FilePath $lo -ArgumentList @('--headless', '--invisible', '--nocrashreport', '--nodefault', '--nofirststartwizard', '--nolockcheck', '--nologo', '--norestore', "-env:UserInstallation=file:///$PWD/profile-$i", '--convert-to', $parts[1], '--outdir', 'out', $src) -PassThru -NoNewWindow -RedirectStandardError "err-$i.txt" -RedirectStandardOutput "out-$i.txt"
+            $p = Start-Process -FilePath $lo -ArgumentList @('--headless', '--invisible', '--nocrashreport', '--nodefault', '--nofirststartwizard', '--nolockcheck', '--nologo', '--norestore', "-env:UserInstallation=file:///$here/profile-$i", '--convert-to', $parts[1], '--outdir', 'out', $src) -PassThru -NoNewWindow -RedirectStandardError "err-$i.txt" -RedirectStandardOutput "out-$i.txt"
             $done = $p.WaitForExit(90000)
             if (-not $done) { $p.Kill(); "run $i ($($parts[0]) -> $($parts[1])): HUNG after 90 s"; } else { "run $i ($($parts[0]) -> $($parts[1])): exit $($p.ExitCode) in $([int]$sw.Elapsed.TotalMilliseconds) ms" }
             $err = Get-Content "err-$i.txt" -ErrorAction SilentlyContinue
@@ -53,7 +54,8 @@ jobs:
         shell: pwsh
         run: |
           $lo = 'C:\Program Files\LibreOffice\program\soffice.exe'
-          $p = Start-Process -FilePath $lo -ArgumentList @('--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager', '--headless', '--invisible', '--nocrashreport', '--nodefault', '--nofirststartwizard', '--nolockcheck', '--nologo', '--norestore', "-env:UserInstallation=file:///$PWD/profile-accept") -PassThru -NoNewWindow -RedirectStandardError 'err-accept.txt' -RedirectStandardOutput 'out-accept.txt'
+          $here = $PWD.Path.Replace('', '/')
+          $p = Start-Process -FilePath $lo -ArgumentList @('--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager', '--headless', '--invisible', '--nocrashreport', '--nodefault', '--nofirststartwizard', '--nolockcheck', '--nologo', '--norestore', "-env:UserInstallation=file:///$here/profile-accept") -PassThru -NoNewWindow -RedirectStandardError 'err-accept.txt' -RedirectStandardOutput 'out-accept.txt'
           $sw = [Diagnostics.Stopwatch]::StartNew()
           while (-not (Test-NetConnection 127.0.0.1 -Port 2002 -InformationLevel Quiet -WarningAction SilentlyContinue) -and $sw.Elapsed.TotalSeconds -lt 90) { Start-Sleep -Milliseconds 500 }
           "listening after $([int]$sw.Elapsed.TotalMilliseconds) ms; exited: $($p.HasExited)"
@@ -61,43 +63,3 @@ jobs:
           "alive after 5 s more: $(-not $p.HasExited)"
           Get-Content err-accept.txt -ErrorAction SilentlyContinue
           if (-not $p.HasExited) { $p.Kill() }
-
-  macos:
-    runs-on: macos-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Install LibreOffice
-        timeout-minutes: 10
-        run: brew install --cask libreoffice
-
-      - name: Time until the office listens, in the mode of the office manager
-        run: |
-          LO=/Applications/LibreOffice.app/Contents/MacOS/soffice
-          "$LO" --version
-          run() {
-            label="$1"; shift
-            start=$(python3 -c 'import time; print(time.time())')
-            "$LO" "$@" --headless --invisible --nocrashreport --nodefault --nofirststartwizard --nolockcheck --nologo --norestore 2> "err-$label.txt" &
-            pid=$!
-            until nc -z 127.0.0.1 2002 2>/dev/null; do sleep 0.25; if ! kill -0 $pid 2>/dev/null; then echo "$label: process exited"; break; fi; done
-            end=$(python3 -c 'import time; print(time.time())')
-            echo "$label: listening after $(python3 -c "print(round($end - $start, 1))") s"
-            kill $pid 2>/dev/null; wait $pid 2>/dev/null || true
-            sed 's/^/   stderr: /' "err-$label.txt" | head -5
-          }
-          rm -rf "$PWD/p1"; run "fresh profile, host=127.0.0.1" "--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager" "-env:UserInstallation=file://$PWD/p1"
-          run "same profile again" "--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager" "-env:UserInstallation=file://$PWD/p1"
-          rm -rf "$PWD/p2"; run "fresh profile, host=localhost" "--accept=socket,host=localhost,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager" "-env:UserInstallation=file://$PWD/p2"
-          rm -rf "$PWD/p3"; run "fresh profile, no tcpNoDelay" "--accept=socket,host=127.0.0.1,port=2002;urp;StarOffice.ServiceManager" "-env:UserInstallation=file://$PWD/p3"
-
-      - name: What the process does while it starts (sample at 5 s)
-        run: |
-          LO=/Applications/LibreOffice.app/Contents/MacOS/soffice
-          rm -rf "$PWD/p4"
-          "$LO" "--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager" --headless --invisible --nocrashreport --nodefault --nofirststartwizard --nolockcheck --nologo --norestore "-env:UserInstallation=file://$PWD/p4" &
-          pid=$!
-          sleep 5
-          if nc -z 127.0.0.1 2002 2>/dev/null; then echo "already listening at 5 s, nothing to sample"; else sample $pid 3 -mayDie -file sample.txt || true; grep -n "Call graph" -A60 sample.txt | head -80; fi
-          kill $pid 2>/dev/null; wait $pid 2>/dev/null || true
