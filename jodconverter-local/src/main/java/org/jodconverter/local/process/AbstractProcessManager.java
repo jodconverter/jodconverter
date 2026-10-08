@@ -43,9 +43,12 @@ public abstract class AbstractProcessManager implements ProcessManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessManager.class);
 
   /** The number of times the command that lists the processes is tried before giving up. */
-  public static final int ATTEMPTS = 3;
+  public static final int ATTEMPTS = 5;
 
-  /** The delay between two attempts, in milliseconds. */
+  /**
+   * The delay before the second attempt, in milliseconds. It doubles before each following attempt
+   * (250, 500, 1000 and 2000 ms): a listing that fails may keep failing for a few seconds.
+   */
   public static final long RETRY_DELAY = 250L;
 
   /** Initializes a new instance of the class. */
@@ -124,6 +127,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
    * @param command The command to execute.
    * @return The lines of the standard output of the command.
    * @throws IOException If the command fails {@link #ATTEMPTS} times in a row.
+   * @see #getRetryDelay(int)
    */
   protected @NonNull List<@NonNull String> executeWithRetries(final @NonNull String... command)
       throws IOException {
@@ -139,7 +143,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
         LOGGER.debug("The command listing the processes failed on attempt #{}; retrying", attempt);
         attempt++;
         try {
-          Thread.sleep(RETRY_DELAY);
+          Thread.sleep(getRetryDelay(attempt - 1));
         } catch (InterruptedException interrupted) {
           Thread.currentThread().interrupt();
           ex.addSuppressed(interrupted);
@@ -147,6 +151,17 @@ public abstract class AbstractProcessManager implements ProcessManager {
         }
       }
     }
+  }
+
+  /**
+   * Gets the delay before a new attempt to list the processes.
+   *
+   * @param failures The number of attempts that failed so far, at least 1.
+   * @return The delay, in milliseconds: {@link #RETRY_DELAY}, doubled for each failure after the
+   *     first one.
+   */
+  protected long getRetryDelay(final int failures) {
+    return RETRY_DELAY << Math.max(0, failures - 1);
   }
 
   @Override
