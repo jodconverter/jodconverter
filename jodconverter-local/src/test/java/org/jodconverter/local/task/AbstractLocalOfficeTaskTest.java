@@ -23,6 +23,7 @@ package org.jodconverter.local.task;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.mockito.BDDMockito.given;
@@ -266,6 +267,37 @@ class AbstractLocalOfficeTaskTest {
 
       final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThatCode(() -> task.closeDocument(document)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void whenTheCallIsInterruptedWhileClosing_ShouldNotThrowAnyException(
+        final UnoRuntime unoRuntime) throws CloseVetoException {
+
+      // What the UNO bridge throws when the worker interrupts the thread waiting for the answer.
+      final var document = mock(XComponent.class);
+      final var closeable = mock(XCloseable.class);
+      given(unoRuntime.queryInterface(XCloseable.class, document)).willReturn(closeable);
+      willThrow(new com.sun.star.uno.RuntimeException("removeJob - unexpected"))
+          .given(closeable)
+          .close(isA(Boolean.class));
+
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      assertThatCode(() -> task.closeDocument(document)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void whenAnotherRuntimeExceptionIsThrownWhileClosing_ShouldThrowIt(final UnoRuntime unoRuntime)
+        throws CloseVetoException {
+
+      final var document = mock(XComponent.class);
+      final var closeable = mock(XCloseable.class);
+      given(unoRuntime.queryInterface(XCloseable.class, document)).willReturn(closeable);
+      willThrow(new IllegalStateException("Not from the office"))
+          .given(closeable)
+          .close(isA(Boolean.class));
+
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      assertThatIllegalStateException().isThrownBy(() -> task.closeDocument(document));
     }
 
     @Test
