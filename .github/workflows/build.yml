@@ -36,11 +36,12 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-          # On the GitHub Windows runners (windows-2022 and windows-latest), LibreOffice exits or
-          # hangs in the middle of conversions, a different conversion on each run, with both
-          # 25.8.7 and 26.2.6. Disabled until this is understood.
-          # - os: windows-latest
-          #   allow-failure: true
+          # On the GitHub Windows runners, LibreOffice exited or hung in the middle of conversions
+          # with the pool of 4.4, a different conversion on each run. Twenty conversions in a row
+          # and the listening mode work on the runner (checked on 2026-10-08 with 26.2.6), so the
+          # entry is back with the pool of 5.0. It reports but does not block a merge.
+          - os: windows-latest
+            allow-failure: true
           # On the macOS runner, LibreOffice 26.2 took about 37 s to listen after each start, which
           # made the job last about 25 min; LibreOffice 26.8 listens after 1 to 2 s (checked on
           # 2026-10-08), so the entry is back. It reports but does not block a merge.
