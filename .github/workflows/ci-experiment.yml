@@ -13,67 +13,30 @@ permissions:
 jobs:
   macos:
     runs-on: macos-latest
-    timeout-minutes: 40
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-java@v6
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - uses: gradle/actions/setup-gradle@v6
-
-      - name: Install LibreOffice
-        timeout-minutes: 10
-        run: brew install --cask libreoffice
-
-      - name: How long the runner takes to resolve its own host name
+      - name: Remedies for the slow resolution of the host name
         run: |
-          echo "hostname: $(hostname); HostName: $(scutil --get HostName 2>/dev/null || echo none); LocalHostName: $(scutil --get LocalHostName)"
-          grep -v '^#' /etc/hosts
-          for i in 1 2 3; do
-            start=$(python3 -c 'import time; print(time.time())')
-            python3 -c 'import socket; print("  getaddrinfo:", socket.getaddrinfo(socket.gethostname(), None)[0][4][0])' || echo "  getaddrinfo failed"
-            python3 -c "import time; print('  took', round(time.time() - $start, 1), 's')"
-            start=$(python3 -c 'import time; print(time.time())')
-            python3 -c 'import socket; print("  getfqdn:", socket.getfqdn())' || true
-            python3 -c "import time; print('  took', round(time.time() - $start, 1), 's')"
-            sleep 20
-          done
-
-      - name: The CLI integration tests as they are (eight office starts)
-        run: |
-          start=$(date +%s)
-          ./gradlew :jodconverter-cli:integrationTest --no-daemon -q 2>&1 | grep -v "^$" | tail -3 || true
-          echo "took $(( $(date +%s) - start )) s"
-          python3 - <<'EOF'
-          import glob, re
-          for f in glob.glob('jodconverter-cli/build/test-results/integrationTest/*.xml'):
-              s = open(f, encoding='utf-8').read()
-              starts = [(m.group(1), m.group(2)) for m in re.finditer(r'(\d\d:\d\d:\d\d,\d\d\d) INFO .*(Starting process with|Connected: \'socket)', s)]
-              print(f.split('TEST-')[-1], [t for t, _ in starts])
-          EOF
-
-      - name: Resolve the host name again after the tests
-        run: |
-          start=$(python3 -c 'import time; print(time.time())')
-          python3 -c 'import socket; print("getaddrinfo:", socket.getaddrinfo(socket.gethostname(), None)[0][4][0])' || echo "getaddrinfo failed"
-          python3 -c "import time; print('took', round(time.time() - $start, 1), 's')"
-
-      - name: Add the host name to /etc/hosts, then the same tests again
-        run: |
-          echo "127.0.0.1 $(hostname)" | sudo tee -a /etc/hosts
-          start=$(python3 -c 'import time; print(time.time())')
-          python3 -c 'import socket; print("getaddrinfo:", socket.getaddrinfo(socket.gethostname(), None)[0][4][0])'
-          python3 -c "import time; print('took', round(time.time() - $start, 1), 's')"
-          start=$(date +%s)
-          ./gradlew :jodconverter-cli:integrationTest --no-daemon -q --rerun-tasks 2>&1 | grep -v "^$" | tail -3 || true
-          echo "took $(( $(date +%s) - start )) s"
-          python3 - <<'EOF'
-          import glob, re
-          for f in glob.glob('jodconverter-cli/build/test-results/integrationTest/*.xml'):
-              s = open(f, encoding='utf-8').read()
-              starts = [(m.group(1), m.group(2)) for m in re.finditer(r'(\d\d:\d\d:\d\d,\d\d\d) INFO .*(Starting process with|Connected: \'socket)', s)]
-              print(f.split('TEST-')[-1], [t for t, _ in starts])
-          EOF
+          measure() {
+            python3 - "$1" <<'PY'
+          import socket, sys, time
+          start = time.time()
+          try:
+              infos = sorted({i[4][0] for i in socket.getaddrinfo(socket.gethostname(), None)})
+          except Exception as ex:
+              infos = repr(ex)
+          print(f"{sys.argv[1]}: {round(time.time() - start, 1)} s -> {infos}")
+          PY
+          }
+          name=$(hostname)
+          echo "host name: $name"
+          measure "as the runner comes"
+          echo "::1 $name" | sudo tee -a /etc/hosts > /dev/null
+          measure "with an IPv6 line in /etc/hosts"
+          sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder || true
+          measure "after flushing the caches"
+          sudo scutil --set HostName ci-runner
+          echo "127.0.0.1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
+          echo "::1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
+          echo "host name now: $(hostname)"
+          measure "with a host name outside .local"
