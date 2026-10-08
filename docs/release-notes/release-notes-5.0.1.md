@@ -23,7 +23,8 @@ A patch release with three bug fixes in the local module. Nothing changes in the
     the running processes fails now and then with a cancelled WMI call. The failure was not seen: the office manager
     took the empty answer for the absence of an existing office process, and a failure during the first check marked
     the process manager unusable for the life of the JVM. A query that fails now reports its failure, and the listing
-    is tried three times ([#546](https://github.com/jodconverter/jodconverter/pull/546)).
+    is tried up to five times, with a delay that doubles from 250 ms to 2 s, since such a failure may last a few
+    seconds ([#546](https://github.com/jodconverter/jodconverter/pull/546)).
 
 ### **Documentation**
 
