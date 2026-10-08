@@ -1,13 +1,8 @@
 # Changelog
 
-## [v5.0.0](https://github.com/jodconverter/jodconverter/tree/v5.0.0) (not released yet)
+## [v5.0.0](https://github.com/jodconverter/jodconverter/tree/v5.0.0) (2026-10-08)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.11...v5.0.0)
-
-!!! note
-
-    JODConverter 5.0.0 is not released yet. This page follows the `develop` branch and is completed as the changes
-    are merged.
 
 JODConverter 5.0 is the first major version since 4.0: it moves to **Java 17**, **Spring Boot 4** and **SLF4J 2**,
 rewrites the pool of office processes, and adds typed PDF options, asynchronous conversions, a pool size, document
