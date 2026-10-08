@@ -40,6 +40,7 @@ import com.sun.star.beans.PropertyValue;
 import com.sun.star.document.UpdateDocMode;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
+import com.sun.star.lang.DisposedException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.util.CloseVetoException;
@@ -248,6 +249,33 @@ class AbstractLocalOfficeTaskTest {
       final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThatCode(() -> task.closeDocument(document)).doesNotThrowAnyException();
       verify(closeable, times(1)).close(isA(Boolean.class));
+    }
+  }
+
+  @Nested
+  class CloseLostDocument {
+
+    @Test
+    void whenTheOfficeIsLostWhileClosing_ShouldNotThrowAnyException(final UnoRuntime unoRuntime)
+        throws CloseVetoException {
+
+      final var document = mock(XComponent.class);
+      final var closeable = mock(XCloseable.class);
+      given(unoRuntime.queryInterface(XCloseable.class, document)).willReturn(closeable);
+      willThrow(DisposedException.class).given(closeable).close(isA(Boolean.class));
+
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      assertThatCode(() -> task.closeDocument(document)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void whenTheOfficeIsLostWhileDisposing_ShouldNotThrowAnyException() {
+
+      final var document = mock(XComponent.class);
+      willThrow(DisposedException.class).given(document).dispose();
+
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      assertThatCode(() -> task.closeDocument(document)).doesNotThrowAnyException();
     }
   }
 

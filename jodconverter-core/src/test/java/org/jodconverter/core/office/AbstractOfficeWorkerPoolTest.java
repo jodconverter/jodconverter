@@ -27,6 +27,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.fail;
+import static org.jodconverter.core.office.AbstractOfficeWorkerPool.DEFAULT_TASK_RETRIES;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 
@@ -481,6 +485,224 @@ class AbstractOfficeWorkerPoolTest {
       await(task.interrupted::get);
       await(() -> worker.count("restart") == 1);
       pool.execute(NOOP);
+    }
+  }
+
+  /** A task that can be executed again, and counts its executions. */
+  private static final class RetryableTask implements OfficeTask {
+
+    private final AtomicInteger executions = new AtomicInteger();
+    private final OfficeException failure;
+
+    private RetryableTask() {
+      this(null);
+    }
+
+    private RetryableTask(final OfficeException failure) {
+      this.failure = failure;
+    }
+
+    @Override
+    public void execute(final OfficeContext context) throws OfficeException {
+      executions.incrementAndGet();
+      if (failure != null) {
+        throw failure;
+      }
+    }
+
+    @Override
+    public boolean isRetryable() {
+      return true;
+    }
+  }
+
+  @Nested
+  class Retries {
+
+    @Test
+    void whenTheWorkerIsLost_ShouldExecuteTheTaskAgainOnceItIsRestarted() throws OfficeException {
+
+      final var worker = new FakeOfficeWorker();
+      pool = builder(worker).taskRetries(1).build();
+      pool.start();
+      worker.losingTasks.set(1);
+      final var task = new RetryableTask();
+
+      pool.execute(task);
+
+      assertThat(task.executions).hasValue(1);
+      assertThat(worker.calls).containsExactly("start", "execute", "restart", "execute");
+      assertThat(pool.getStatus().workers().get(0).restarts()).isEqualTo(1);
+    }
+
+    @Test
+    void whenAnotherWorkerIsReady_ShouldExecuteTheTaskAgainOnIt() throws Exception {
+
+      // The first worker takes the task, is lost, and cannot be restarted for now.
+      final var lost = new FakeOfficeWorker();
+      pool = builder(lost).taskRetries(1).build();
+      pool.start();
+      lost.losingTasks.set(1);
+      lost.failingStarts.set(Integer.MAX_VALUE);
+      final var task = new RetryableTask();
+
+      final var future = pool.submit(task);
+      await(() -> lost.calls.contains("restart"));
+
+      // The task waits in the queue again, with a queue timeout of its own.
+      assertThat(future).isNotDone();
+      assertThat(pool.getStatus().queueSize()).isEqualTo(1);
+
+      // Once it can be restarted, the worker takes the task again.
+      lost.failingStarts.set(0);
+      future.get(10, TimeUnit.SECONDS);
+      assertThat(task.executions).hasValue(1);
+    }
+
+    @Test
+    void withoutRetries_ShouldFailTheTask() throws OfficeException {
+
+      final var worker = new FakeOfficeWorker();
+      started(worker);
+      worker.losingTasks.set(1);
+      final var task = new RetryableTask();
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> pool.execute(task))
+          .withMessage("The office process was lost");
+      assertThat(task.executions).hasValue(0);
+
+      // The worker is restarted for the next task.
+      pool.execute(task);
+      assertThat(task.executions).hasValue(1);
+    }
+
+    @Test
+    void whenTheTaskIsNotRetryable_ShouldFailIt() throws OfficeException {
+
+      final var worker = new FakeOfficeWorker();
+      pool = builder(worker).taskRetries(3).build();
+      pool.start();
+      worker.losingTasks.set(1);
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> pool.execute(NOOP))
+          .withMessage("The office process was lost");
+      // Executed once; the worker restarts itself right after.
+      assertThat(worker.calls).filteredOn("execute"::equals).hasSize(1);
+    }
+
+    @Test
+    void whenNoRetryIsLeft_ShouldFailTheTaskWithItsLastFailure() throws OfficeException {
+
+      final var worker = new FakeOfficeWorker();
+      pool = builder(worker).taskRetries(2).build();
+      pool.start();
+      worker.losingTasks.set(3);
+      final var task = new RetryableTask();
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> pool.execute(task))
+          .withMessage("The office process was lost");
+
+      // One execution and two retries, each one after a restart.
+      assertThat(worker.calls)
+          .startsWith("start", "execute", "restart", "execute", "restart", "execute");
+      assertThat(worker.calls).filteredOn("execute"::equals).hasSize(3);
+      assertThat(task.executions).hasValue(0);
+    }
+
+    @Test
+    void whenTheTaskFailsByItself_ShouldNotExecuteItAgain() throws OfficeException {
+
+      final var worker = new FakeOfficeWorker();
+      pool = builder(worker).taskRetries(3).build();
+      pool.start();
+      final var failure = new OfficeException("The task failed");
+      final var task = new RetryableTask(failure);
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(() -> pool.execute(task))
+          .isSameAs(failure);
+      assertThat(task.executions).hasValue(1);
+    }
+
+    @Test
+    void whenTheWorkerCannotTell_ShouldFailTheTask() throws OfficeException {
+
+      final var worker =
+          new OfficeWorker() {
+            @Override
+            public void start() {
+              // Ready at once.
+            }
+
+            @Override
+            public void restart() {
+              // Ready at once.
+            }
+
+            @Override
+            public boolean isReady() {
+              return true;
+            }
+
+            @Override
+            public void execute(final OfficeTask task) throws OfficeException {
+              throw new OfficeException("The task failed");
+            }
+
+            @Override
+            public boolean isLost() {
+              throw new IllegalStateException("Cannot tell");
+            }
+
+            @Override
+            public void abort() {
+              // Nothing to abort.
+            }
+
+            @Override
+            public void stop() {
+              // Nothing to stop.
+            }
+          };
+      final var custom = new AbstractOfficeWorkerPool(workingDir, 1_000L, 1_000L, 0, true) {};
+      custom.setWorkers(List.of(worker));
+      custom.setTaskRetries(1);
+      custom.start();
+      try {
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(() -> custom.execute(new RetryableTask()))
+            .withMessage("The task failed");
+      } finally {
+        custom.stop();
+      }
+    }
+
+    @Test
+    void whenStoppedWhileTheTaskWaitsAgain_ShouldFailTheTask() throws Exception {
+
+      final var worker = new FakeOfficeWorker();
+      pool = builder(worker).taskRetries(1).build();
+      pool.start();
+      worker.losingTasks.set(1);
+      worker.failingStarts.set(Integer.MAX_VALUE);
+
+      final var future = pool.submit(new RetryableTask());
+      await(() -> worker.calls.contains("restart"));
+      pool.stop();
+
+      assertThat(failureOf(future)).hasMessageContaining("stopped");
+    }
+
+    @Test
+    void defaults_ShouldNotBeRetryableNorLost() {
+
+      assertThat(NOOP.isRetryable()).isFalse();
+      assertThat(DEFAULT_TASK_RETRIES).isZero();
+      final OfficeWorker worker = mock(OfficeWorker.class, CALLS_REAL_METHODS);
+      assertThat(worker.isLost()).isFalse();
     }
   }
 
@@ -1207,6 +1429,13 @@ class AbstractOfficeWorkerPoolTest {
       assertThatIllegalArgumentException()
           .isThrownBy(() -> FakeOfficeWorkerPool.builder().taskQueueCapacity(-1))
           .withMessage("taskQueueCapacity -1 must be greater than or equal to 0");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> FakeOfficeWorkerPool.builder().taskRetries(-1))
+          .withMessage("taskRetries -1 must be greater than or equal to 0");
+      assertThatIllegalArgumentException()
+          .isThrownBy(
+              () -> new AbstractOfficeWorkerPool(workingDir, 0L, 0L, 0, true) {}.setTaskRetries(-1))
+          .withMessage("taskRetries -1 must be greater than or equal to 0");
     }
 
     @Test

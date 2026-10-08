@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeWorker;
 import org.jodconverter.core.task.OfficeTask;
+import org.jodconverter.local.task.PasswordProtectedExceptionSupportTask;
 
 /**
  * An {@link AttachedOfficeWorker} executes the tasks submitted through an {@link
@@ -53,6 +54,7 @@ class AttachedOfficeWorker implements OfficeWorker {
   // Only used by the thread of this worker.
   private int taskCount;
   private boolean connectOnFirstTask;
+  private boolean passwordInteraction;
 
   /**
    * Creates a new worker for the specified connection with the specified configuration.
@@ -131,6 +133,10 @@ class AttachedOfficeWorker implements OfficeWorker {
       task.execute(connectionManager.getConnection());
     } finally {
       runningTask.end();
+      // A password request makes a recent office drop the connection: the task is the reason.
+      passwordInteraction =
+          task instanceof PasswordProtectedExceptionSupportTask supportTask
+              && supportTask.hasPasswordInteractionRequest();
     }
 
     LOGGER.debug("Task executed successfully: {}", task);
@@ -142,6 +148,11 @@ class AttachedOfficeWorker implements OfficeWorker {
           "Reached limit of {} maximum tasks per connection; reconnecting...",
           maxTasksPerConnection);
     }
+  }
+
+  @Override
+  public boolean isLost() {
+    return !passwordInteraction && !connectionManager.getConnection().isConnected();
   }
 
   @Override

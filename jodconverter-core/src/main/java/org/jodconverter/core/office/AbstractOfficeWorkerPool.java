@@ -64,6 +64,11 @@ import org.jodconverter.core.util.StringUtils;
  * </ul>
  *
  * <p>A worker that cannot be made ready is retried, with a growing delay between the attempts.
+ *
+ * <p>With <em>task retries</em>, a task whose worker was lost while executing it (see {@link
+ * OfficeWorker#isLost()}) goes back to the head of the queue instead of failing, if the task can be
+ * executed again (see {@link OfficeTask#isRetryable()}). Both timeouts start again for the new
+ * attempt.
  */
 @SuppressWarnings("PMD.TooManyMethods")
 public abstract class AbstractOfficeWorkerPool implements OfficeManager {
@@ -76,6 +81,9 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
 
   /** The default maximum number of tasks waiting in the queue; 0 means no limit. */
   public static final int DEFAULT_TASK_QUEUE_CAPACITY = 0;
+
+  /** The default number of times a task is executed again after its worker was lost. */
+  public static final int DEFAULT_TASK_RETRIES = 0;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOfficeWorkerPool.class);
 
@@ -101,6 +109,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
   private final long taskExecutionTimeout;
   private final int taskQueueCapacity;
   private final boolean startFailFast;
+  private int taskRetries = DEFAULT_TASK_RETRIES;
   private final BlockingDeque<OfficeJob> queue = new LinkedBlockingDeque<>();
   private final ThreadFactory threadFactory = new NamedThreadFactory("jodconverter-worker");
 
@@ -149,6 +158,19 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
   protected void setWorkers(final @NonNull List<? extends @NonNull OfficeWorker> workers) {
     AssertUtils.notEmpty(workers, "workers must not be null or empty");
     this.workers = List.copyOf(workers);
+  }
+
+  /**
+   * Sets the number of times a task is executed again after its worker was lost while executing it.
+   * It must be called before the pool is started.
+   *
+   * @param taskRetries The number of retries; 0 means that such a task fails.
+   */
+  protected void setTaskRetries(final int taskRetries) {
+    AssertUtils.isTrue(
+        taskRetries >= 0,
+        String.format("taskRetries %s must be greater than or equal to 0", taskRetries));
+    this.taskRetries = taskRetries;
   }
 
   // For the tests: shorter delays than the default ones.
@@ -463,6 +485,33 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
   }
 
   /**
+   * Gives a job whose worker was lost another attempt, if it has one left: the job goes back to the
+   * head of the queue, with a new queue timeout.
+   *
+   * @param job The job, which is running.
+   * @return {@code true} if the job will be executed again, {@code false} if the caller must fail
+   *     it (no retry left, or a task that cannot be executed again), or leave it alone (it timed
+   *     out or was cancelled meanwhile).
+   */
+  /* default */ boolean retryJob(final OfficeJob job) {
+
+    if (job.getRetries() >= taskRetries || !job.getTask().isRetryable() || !job.tryRetry()) {
+      return false;
+    }
+
+    // The execution timeout of the lost attempt is replaced before any worker can take the job.
+    job.setTimeout(schedule(() -> onQueueTimeout(job), taskQueueTimeout));
+    queue.addFirst(job);
+
+    // Same as for a new job: the manager may have been stopped meanwhile.
+    if (poolState.get() != POOL_STARTED) {
+      queue.remove(job);
+      failStopped(job);
+    }
+    return true;
+  }
+
+  /**
    * Gets the delay before a new attempt to make a worker ready.
    *
    * @param failures The number of attempts that failed so far, starting at 0.
@@ -537,6 +586,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
     protected long taskExecutionTimeout = DEFAULT_TASK_EXECUTION_TIMEOUT;
     protected int taskQueueCapacity = DEFAULT_TASK_QUEUE_CAPACITY;
     protected long taskQueueTimeout = DEFAULT_TASK_QUEUE_TIMEOUT;
+    protected int taskRetries = DEFAULT_TASK_RETRIES;
 
     /** Creates a builder; only the subclasses can. */
     protected AbstractOfficeWorkerPoolBuilder() {
@@ -648,6 +698,40 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
               "taskQueueTimeout %s must be greater than or equal to 0", taskQueueTimeout));
       this.taskQueueTimeout = taskQueueTimeout;
       return (B) this;
+    }
+
+    /**
+     * Specifies how many times a task is executed again when the office process (or the connection)
+     * executing it is lost: the task goes back to the head of the queue instead of failing. Only
+     * the tasks that can be executed again are retried, which excludes a conversion from or to a
+     * stream; a task that exceeds the execution timeout is not retried either.
+     *
+     * <p>A document that makes the office crash is converted, and makes it crash, that many more
+     * times before its conversion fails.
+     *
+     * <p>&nbsp; <b><i>Default</i></b>: 0 (a task whose office process is lost fails)
+     *
+     * @param taskRetries The number of retries.
+     * @return This builder instance.
+     */
+    public @NonNull B taskRetries(final int taskRetries) {
+      AssertUtils.isTrue(
+          taskRetries >= 0,
+          String.format("taskRetries %s must be greater than or equal to 0", taskRetries));
+      this.taskRetries = taskRetries;
+      return (B) this;
+    }
+
+    /**
+     * Applies to a manager that was just built the options that its constructor does not take.
+     *
+     * @param manager The manager.
+     * @param <M> The type of the manager.
+     * @return The manager.
+     */
+    protected <M extends AbstractOfficeWorkerPool> @NonNull M configured(final @NonNull M manager) {
+      manager.setTaskRetries(taskRetries);
+      return installed(manager);
     }
 
     /**

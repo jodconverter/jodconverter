@@ -252,7 +252,7 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
               taskExecutionTimeout,
               taskQueueTimeout,
               taskQueueCapacity);
-      return installed(manager);
+      return configured(manager);
     }
 
     /**

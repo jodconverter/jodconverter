@@ -219,6 +219,18 @@ final class OfficeWorkerRunner implements Runnable {
     // An aborted job interrupts this thread; the next job must not inherit that.
     final var interrupted = Thread.interrupted();
 
+    if (failure != null && isWorkerLost() && pool.retryJob(job)) {
+      // The task did not fail by itself: it goes back to the queue, for this worker once it is
+      // restarted, or for another one.
+      LOGGER.warn(
+          "The office worker was lost while executing a task; retrying it (retry #{}): {}",
+          job.getRetries(),
+          job.getTask(),
+          failure);
+      restartRequired = true;
+      return;
+    }
+
     if (job.tryEndRunning()) {
       if (failure == null) {
         job.getFuture().complete(null);
@@ -233,6 +245,16 @@ final class OfficeWorkerRunner implements Runnable {
           interrupted,
           job.getTask());
       restartRequired = true;
+    }
+  }
+
+  // Asks the worker whether it was lost while executing the task that just failed.
+  private boolean isWorkerLost() {
+    try {
+      return worker.isLost();
+    } catch (RuntimeException ex) {
+      LOGGER.debug("Could not tell whether the office worker was lost", ex);
+      return false;
     }
   }
 

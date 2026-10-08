@@ -301,22 +301,29 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
 
     if (document != null) {
 
-      // Closing the converted document. Use XCloseable.close if the
-      // interface is supported, otherwise use XComponent.dispose
-      final var closeable = Lo.qiOptional(XCloseable.class, document).orElse(null);
-      if (closeable == null) {
-        // If close is not supported by this model - try to dispose it.
-        document.dispose();
-      } else {
-        try {
-          // The boolean parameter deliverOwnership tells objects vetoing the
-          // close process that they may assume ownership if they object the closure
-          // by throwing a CloseVetoException. Here we give up ownership. To be on
-          // the safe side, catch possible veto exception anyway.
-          closeable.close(true);
-        } catch (CloseVetoException ignored) {
-          // whoever raised the veto should close the document
+      try {
+        // Closing the converted document. Use XCloseable.close if the
+        // interface is supported, otherwise use XComponent.dispose
+        final var closeable = Lo.qiOptional(XCloseable.class, document).orElse(null);
+        if (closeable == null) {
+          // If close is not supported by this model - try to dispose it.
+          document.dispose();
+        } else {
+          try {
+            // The boolean parameter deliverOwnership tells objects vetoing the
+            // close process that they may assume ownership if they object the closure
+            // by throwing a CloseVetoException. Here we give up ownership. To be on
+            // the safe side, catch possible veto exception anyway.
+            closeable.close(true);
+          } catch (CloseVetoException ignored) {
+            // whoever raised the veto should close the document
+          }
         }
+      } catch (com.sun.star.lang.DisposedException ex) {
+        // The office process was lost while closing the document (LibreOffice 25.8.3 to 26.2
+        // crashes that way on Windows, tdf#172335). The document is gone with the process, and
+        // what the task did before is done: the outcome of the task must not change.
+        LOGGER.warn("The office process was lost while closing the document", ex);
       }
     }
   }

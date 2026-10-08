@@ -48,6 +48,8 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
 import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
+import org.jodconverter.core.job.TargetDocumentSpecsFromFile;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.local.MockUnoRuntimeExtension;
 import org.jodconverter.local.office.LocalOfficeContext;
@@ -259,6 +261,44 @@ class LocalConversionTaskTest {
                   + ", useStreamAdapters="
                   + true
                   + '}');
+    }
+  }
+
+  @Nested
+  class IsRetryable {
+
+    @Test
+    void withFiles_ShouldBeRetryable(final @TempDir File testFolder) {
+
+      final var task =
+          new LocalConversionTask(
+              new SourceDocumentSpecsFromFile(SOURCE_FILE),
+              new TargetDocumentSpecsFromFile(new File(testFolder, TARGET_FILENAME)),
+              false,
+              null,
+              null,
+              null);
+
+      assertThat(task.isRetryable()).isTrue();
+    }
+
+    @Test
+    void withAStream_ShouldNotBeRetryable(final @TempDir File testFolder) {
+
+      // The specs of the tests do not say that they are repeatable, as a stream would not.
+      final var fileSource = new SourceDocumentSpecsFromFile(SOURCE_FILE);
+      final var fileTarget = new TargetDocumentSpecsFromFile(new File(testFolder, TARGET_FILENAME));
+      final var otherSource = new FooSourceSpecs(SOURCE_FILE);
+      final var otherTarget = new FooTargetSpecs(new File(testFolder, TARGET_FILENAME));
+
+      assertThat(
+              new LocalConversionTask(otherSource, fileTarget, false, null, null, null)
+                  .isRetryable())
+          .isFalse();
+      assertThat(
+              new LocalConversionTask(fileSource, otherTarget, false, null, null, null)
+                  .isRetryable())
+          .isFalse();
     }
   }
 

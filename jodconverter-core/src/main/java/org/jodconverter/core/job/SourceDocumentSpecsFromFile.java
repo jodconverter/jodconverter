@@ -39,4 +39,10 @@ public class SourceDocumentSpecsFromFile extends AbstractSourceDocumentSpecs {
 
     AssertUtils.isTrue(file.exists(), String.format("File not found: %s", file));
   }
+
+  @Override
+  public boolean isRepeatable() {
+    // A file can be read, or written, again.
+    return true;
+  }
 }

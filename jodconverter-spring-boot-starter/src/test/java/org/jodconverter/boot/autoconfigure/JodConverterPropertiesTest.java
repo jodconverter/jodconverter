@@ -101,6 +101,7 @@ class JodConverterPropertiesTest {
         .isEqualTo(AbstractOfficeWorkerPool.DEFAULT_TASK_QUEUE_TIMEOUT);
     assertThat(properties.taskExecutionTimeout().toMillis())
         .isEqualTo(AbstractOfficeWorkerPool.DEFAULT_TASK_EXECUTION_TIMEOUT);
+    assertThat(properties.taskRetries()).isEqualTo(AbstractOfficeWorkerPool.DEFAULT_TASK_RETRIES);
     assertThat(properties.maxTasksPerProcess())
         .isEqualTo(LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS);
     assertThat(properties.applyDefaultLoadProperties())
@@ -153,6 +154,7 @@ class JodConverterPropertiesTest {
         .isEqualTo(AttachedOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL);
     assertThat(properties.connectFailFast())
         .isEqualTo(AttachedOfficeManager.DEFAULT_CONNECT_FAIL_FAST);
+    assertThat(properties.taskRetries()).isEqualTo(AbstractOfficeWorkerPool.DEFAULT_TASK_RETRIES);
     assertThat(properties.maxTasksPerConnection())
         .isEqualTo(AttachedOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION);
     assertThat(properties.taskQueueTimeout().toMillis())

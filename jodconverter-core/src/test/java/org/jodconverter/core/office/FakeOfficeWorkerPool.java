@@ -48,6 +48,7 @@ public final class FakeOfficeWorkerPool extends AbstractOfficeWorkerPool {
     }
     setRestartDelays(RESTART_DELAYS);
     setIdleCheckInterval(IDLE_CHECK_INTERVAL);
+    setTaskRetries(builder.taskRetries);
   }
 
   /**

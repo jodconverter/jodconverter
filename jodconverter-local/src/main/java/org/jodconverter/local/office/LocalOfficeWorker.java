@@ -168,6 +168,14 @@ class LocalOfficeWorker implements OfficeWorker {
   }
 
   @Override
+  public boolean isLost() {
+
+    // A password request makes the office drop the connection too, and an aborted task ends with
+    // a killed process: in both cases the task is the reason, and must not be executed again.
+    return !aborted && !passwordInteraction && !officeProcessManager.getConnection().isConnected();
+  }
+
+  @Override
   public void abort() {
 
     // Killing the office process ends whatever this worker is blocked in. What is left of the

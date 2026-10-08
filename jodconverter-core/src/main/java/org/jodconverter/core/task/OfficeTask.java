@@ -39,4 +39,16 @@ public interface OfficeTask {
    * @throws OfficeException If an error occurs.
    */
   void execute(@NonNull OfficeContext context) throws OfficeException;
+
+  /**
+   * Gets whether this task can be executed again, from the start, after an execution that did not
+   * end because the office process was lost. A task that consumes something that cannot be read
+   * twice, or that may already have written to something that cannot be written twice (a stream),
+   * is not retryable.
+   *
+   * @return {@code true} if the task can be executed again, {@code false} otherwise (the default).
+   */
+  default boolean isRetryable() {
+    return false;
+  }
 }
