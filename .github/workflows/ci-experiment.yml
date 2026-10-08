@@ -13,30 +13,28 @@ permissions:
 jobs:
   macos:
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
-      - name: Remedies for the slow resolution of the host name
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: The lookups of the Java UNO connection, before and after each remedy
         run: |
-          measure() {
-            python3 - "$1" <<'PY'
-          import socket, sys, time
-          start = time.time()
-          try:
-              infos = sorted({i[4][0] for i in socket.getaddrinfo(socket.gethostname(), None)})
-          except Exception as ex:
-              infos = repr(ex)
-          print(f"{sys.argv[1]}: {round(time.time() - start, 1)} s -> {infos}")
-          PY
-          }
-          name=$(hostname)
-          echo "host name: $name"
-          measure "as the runner comes"
-          echo "::1 $name" | sudo tee -a /etc/hosts > /dev/null
-          measure "with an IPv6 line in /etc/hosts"
-          sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder || true
-          measure "after flushing the caches"
+          python3 -m http.server 8765 >/dev/null 2>&1 &
+          sleep 1
+          cat /etc/hosts | grep -v '^#'
+          java .github/experiments/Lookups.java "as the runner comes ($(hostname))" 8765
+          java .github/experiments/Lookups.java "again, same JVM settings" 8765
           sudo scutil --set HostName ci-runner
           echo "127.0.0.1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
           echo "::1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
-          echo "host name now: $(hostname)"
-          measure "with a host name outside .local"
+          java .github/experiments/Lookups.java "with the host name ci-runner in /etc/hosts ($(hostname))" 8765
+          java -Djava.net.preferIPv4Stack=true .github/experiments/Lookups.java "the same, with preferIPv4Stack" 8765
+          sudo sed -i '' '/ci-runner/d' /etc/hosts
+          java .github/experiments/Lookups.java "host name ci-runner, not in /etc/hosts" 8765
+          sudo scutil --set HostName localhost
+          java .github/experiments/Lookups.java "with the host name localhost ($(hostname))" 8765
