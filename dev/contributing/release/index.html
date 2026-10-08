@@ -2591,8 +2591,9 @@ credentials and the signing key, which live in the repository secrets; the rest 
     deserves a run with the office installation of another platform:
     <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>clean<span class="w"> </span>build<span class="w"> </span>integrationTest
 </code></pre></div></li>
-<li><strong>Release commit.</strong> Commit on <code>develop</code> with the message <code>Release X.Y.Z</code>, push, open the pull request from
-    <code>develop</code> to <code>master</code>, let the checks pass, merge it with a merge commit.</li>
+<li><strong>Release commit.</strong> On a <code>release/X.Y.Z</code> branch, commit with the message <code>Release X.Y.Z</code> and open its pull
+    request to <code>develop</code>, which only takes pull requests. Once it is merged, open the pull request from <code>develop</code> to
+    <code>master</code>, let the checks pass, merge it with a merge commit.</li>
 </ol>
 <h2 id="the-release">The release<a class="headerlink" href="#the-release" title="Permanent link">&para;</a></h2>
 <ol>
