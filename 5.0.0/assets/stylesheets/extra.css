@@ -1,0 +1,257 @@
+/*
+ * JODConverter theme, built from the logo colors:
+ * the navy body, the sky-blue arrows and outline, and the red, green and orange tiles.
+ */
+
+:root {
+  --jod-navy: #032030;
+  --jod-navy-light: #0a3550;
+  --jod-sky: #00b5fd;
+  --jod-red: #e90842;
+  --jod-green: #40b400;
+  --jod-orange: #f08400;
+
+  /* The four tiles of the logo, as a bar */
+  --jod-stripe: linear-gradient(
+    90deg,
+    var(--jod-red) 0 25%,
+    var(--jod-green) 25% 50%,
+    var(--jod-orange) 50% 75%,
+    var(--jod-sky) 75% 100%
+  );
+}
+
+/* Light scheme */
+:root,
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: var(--jod-navy);
+  --md-primary-fg-color--light: var(--jod-navy-light);
+  --md-primary-fg-color--dark: #021622;
+  --md-primary-bg-color: #fff;
+  --md-primary-bg-color--light: #ffffffb3;
+
+  /* Darker than the logo sky blue so that text stays readable on white */
+  --md-accent-fg-color: #0089c4;
+  --md-accent-fg-color--transparent: #00b5fd1a;
+  --md-accent-bg-color: #fff;
+  --md-typeset-a-color: #0077b3;
+  --md-code-bg-color: #f2f7fa;
+  --md-code-hl-color: #00b5fd26;
+  --md-typeset-mark-color: #f0840033;
+  --jod-surface: #f5f9fc;
+  --jod-border: #d9e6ee;
+  --jod-heading: var(--jod-navy);
+  --jod-th-bg: #e8f1f7;
+}
+
+/* Dark scheme: the navy of the logo instead of the theme's neutral gray */
+[data-md-color-scheme="slate"] {
+  --md-hue: 203;
+  --md-primary-fg-color: var(--jod-navy);
+  --md-primary-fg-color--light: var(--jod-navy-light);
+  --md-primary-fg-color--dark: #021622;
+  --md-primary-bg-color: #fff;
+  --md-primary-bg-color--light: #ffffffb3;
+  --md-default-bg-color: #061722;
+  --md-default-bg-color--light: #061722b3;
+  --md-default-bg-color--lighter: #0617224d;
+  --md-default-bg-color--lightest: #0617221f;
+  --md-accent-fg-color: var(--jod-sky);
+  --md-accent-fg-color--transparent: #00b5fd1f;
+  --md-accent-bg-color: #061722;
+  --md-typeset-a-color: #45c9ff;
+  --md-code-bg-color: #0b2433;
+  --md-code-hl-color: #00b5fd33;
+  --md-typeset-mark-color: #f0840040;
+  --md-footer-bg-color: #041219;
+  --md-footer-bg-color--dark: #030d13;
+  --jod-surface: #0a1f2d;
+  --jod-border: #16364a;
+  --jod-heading: #f2f8fb;
+  --jod-th-bg: #0d2a3c;
+}
+
+/* Header and tabs: the navy of the logo, with the tiles as a bar on top */
+.md-header,
+.md-tabs {
+  /* Light text and icons on the navy background */
+  --md-default-fg-color: #ffffffeb;
+  --md-default-fg-color--light: #ffffffb8;
+  --md-default-fg-color--lighter: #fff6;
+  --md-default-fg-color--lightest: #ffffff24;
+  --md-accent-fg-color: var(--jod-sky);
+  --md-typeset-a-color: var(--jod-sky);
+
+  color: var(--md-default-fg-color);
+  background-color: var(--jod-navy);
+}
+
+.md-header {
+  border-top: 0.2rem solid transparent;
+  border-image: var(--jod-stripe) 1;
+  background-image: linear-gradient(90deg, var(--jod-navy) 0%, var(--jod-navy-light) 100%);
+}
+
+.md-header--shadow {
+  box-shadow: 0 0.2rem 0.6rem #0000002e;
+}
+
+.md-tabs {
+  background-image: linear-gradient(90deg, var(--jod-navy) 0%, var(--jod-navy-light) 100%);
+  box-shadow: none;
+}
+
+.md-tabs__link {
+  opacity: 0.8;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.md-tabs__link:hover,
+.md-tabs__item--active .md-tabs__link {
+  opacity: 1;
+  color: #fff;
+}
+
+.md-tabs__item--active .md-tabs__link {
+  box-shadow: inset 0 -0.15rem 0 var(--jod-sky);
+}
+
+/* Headings */
+.md-typeset h1 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--jod-heading);
+}
+
+.md-typeset h1::after {
+  content: "";
+  display: block;
+  width: 3.2rem;
+  height: 0.2rem;
+  margin-top: 0.45em;
+  border-radius: 0.1rem;
+  background: var(--jod-stripe);
+}
+
+.md-typeset h2 {
+  padding-bottom: 0.3em;
+  border-bottom: 0.05rem solid var(--jod-border);
+  color: var(--jod-heading);
+}
+
+.md-typeset h3,
+.md-typeset h4 {
+  color: var(--jod-heading);
+}
+
+/* Links */
+.md-typeset a {
+  text-underline-offset: 0.2em;
+}
+
+.md-typeset a:hover {
+  text-decoration: underline;
+}
+
+/* Navigation: active page marked with a sky-blue bar */
+.md-nav--primary a.md-nav__link--active {
+  box-shadow: inset 0.15rem 0 0 var(--md-accent-fg-color);
+}
+
+/* Code */
+.md-typeset pre > code {
+  border: 0.05rem solid var(--jod-border);
+  border-radius: 0.4rem;
+}
+
+.md-typeset :not(pre) > code {
+  border-radius: 0.2rem;
+}
+
+/* Content tabs (Gradle / Maven...) */
+.md-typeset .tabbed-set {
+  border: 0.05rem solid var(--jod-border);
+  border-radius: 0.4rem;
+  background-color: var(--jod-surface);
+}
+
+.md-typeset .tabbed-set > .tabbed-content {
+  padding: 0 0.6rem;
+}
+
+.md-typeset .tabbed-set pre > code {
+  border: none;
+}
+
+/* Tables */
+.md-typeset table:not([class]) {
+  border: 0.05rem solid var(--jod-border);
+  border-radius: 0.4rem;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--jod-th-bg);
+  color: var(--jod-heading);
+}
+
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: var(--jod-surface);
+}
+
+/* Admonitions: one logo color per kind */
+.md-typeset .admonition,
+.md-typeset details {
+  --jod-adm: var(--jod-sky);
+
+  border: 0.05rem solid color-mix(in srgb, var(--jod-adm) 35%, transparent);
+  border-left: 0.2rem solid var(--jod-adm);
+  border-radius: 0.4rem;
+  background-color: color-mix(in srgb, var(--jod-adm) 6%, transparent);
+  box-shadow: none;
+}
+
+.md-typeset :is(.admonition, details):is(.tip, .hint, .success, .check, .done) {
+  --jod-adm: var(--jod-green);
+}
+
+.md-typeset :is(.admonition, details):is(.warning, .caution, .attention, .question, .help, .faq) {
+  --jod-adm: var(--jod-orange);
+}
+
+.md-typeset :is(.admonition, details):is(.danger, .error, .failure, .fail, .missing, .bug) {
+  --jod-adm: var(--jod-red);
+}
+
+.md-typeset :is(.admonition, details) > :is(.admonition-title, summary) {
+  background-color: color-mix(in srgb, var(--jod-adm) 12%, transparent);
+}
+
+.md-typeset :is(.admonition, details) > :is(.admonition-title, summary)::before {
+  background-color: var(--jod-adm);
+}
+
+/* Home page logo */
+.md-typeset img[alt="Logo"] {
+  filter: drop-shadow(0 0.4rem 1.4rem #00b5fd59);
+}
+
+/* Footer: navy, with the tiles as a bar on top */
+.md-footer {
+  border-top: 0.2rem solid transparent;
+  border-image: var(--jod-stripe) 1;
+}
+
+.md-footer-meta {
+  --md-default-fg-color: #ffffffeb;
+  --md-default-fg-color--light: #ffffffa6;
+  --md-default-fg-color--lighter: #fff6;
+  --md-footer-fg-color--lighter: #fff6;
+
+  color: var(--md-default-fg-color--light);
+  background-color: var(--jod-navy);
+}
+
+::selection {
+  background-color: #00b5fd40;
+}
