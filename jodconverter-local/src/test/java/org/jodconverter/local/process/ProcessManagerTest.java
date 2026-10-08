@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -121,6 +122,10 @@ class ProcessManagerTest {
           }
         };
 
+    // Runs a command after another one: "&" would put the first one in the background on Unix,
+    // where the shell could then exit before the command has written anything.
+    private static final String THEN = OSUtils.IS_OS_WINDOWS ? " & " : "; ";
+
     private String[] shell(final String script) {
       return OSUtils.IS_OS_WINDOWS
           ? new String[] {"cmd", "/c", script}
@@ -137,7 +142,7 @@ class ProcessManagerTest {
     void whenTheCommandFails_ShouldThrowIOExceptionWithItsErrorOutput() {
 
       assertThatIOException()
-          .isThrownBy(() -> manager.execute(shell("echo oops 1>&2 & exit 3")))
+          .isThrownBy(() -> manager.execute(shell("echo oops 1>&2" + THEN + "exit 3")))
           .withMessageContaining("exited with the status 3")
           .withMessageContaining("oops");
     }
@@ -163,6 +168,18 @@ class ProcessManagerTest {
     }
 
     @Test
+    void getRetryDelay_ShouldDoubleAtEachFailure() {
+
+      assertThat(AbstractProcessManager.ATTEMPTS).isEqualTo(5);
+      assertThat(
+              IntStream.range(1, AbstractProcessManager.ATTEMPTS)
+                  .mapToLong(manager::getRetryDelay)
+                  .toArray())
+          .containsExactly(250L, 500L, 1_000L, 2_000L);
+      assertThat(manager.getRetryDelay(0)).isEqualTo(250L);
+    }
+
+    @Test
     void withRetries_WhenTheCommandKeepsFailing_ShouldThrowTheLastIOException() {
 
       final var attempts = new AtomicInteger();
@@ -171,6 +188,11 @@ class ProcessManagerTest {
             @Override
             protected List<String> execute(final String... command) throws IOException {
               throw new IOException("Call cancelled #" + attempts.incrementAndGet());
+            }
+
+            @Override
+            protected long getRetryDelay(final int failures) {
+              return 0L;
             }
           };
 
@@ -207,6 +229,11 @@ class ProcessManagerTest {
             @Override
             protected List<String> execute(final String... command) throws IOException {
               throw new IOException();
+            }
+
+            @Override
+            protected long getRetryDelay(final int failures) {
+              return 0L;
             }
           };
       assertThat(manager.isUsable()).isFalse();
