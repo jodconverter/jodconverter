@@ -50,10 +50,3 @@ jobs:
 
           sudo scutil --set HostName ci-runner
           measure "with the host name ci-runner"
-
-          sudo networksetup -listallnetworkservices
-          for service in $(sudo networksetup -listallnetworkservices | tail -n +2 | tr ' ' '_'); do
-            sudo networksetup -setdnsservers "$(echo "$service" | tr '_' ' ')" 127.0.0.1 2>&1 | head -1 || true
-          done
-          sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder || true; sleep 2
-          measure "with 127.0.0.1 as the only DNS server (nothing listens)"
