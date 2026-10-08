@@ -70,6 +70,19 @@ public interface OfficeWorker {
   void execute(@NonNull OfficeTask task) throws OfficeException;
 
   /**
+   * Gets whether the task that {@link #execute(OfficeTask)} just failed to execute failed because
+   * this worker was lost (its office process died, its connection dropped) rather than because of
+   * the task itself. It is only called right after a failed execution, on the thread of the worker.
+   * A pool with task retries executes again, once, a retryable task that failed that way.
+   *
+   * @return {@code true} if the worker was lost while executing the task, {@code false} otherwise
+   *     (the default).
+   */
+  default boolean isLost() {
+    return false;
+  }
+
+  /**
    * Makes the method this worker is blocked in ({@link #execute(OfficeTask)}, {@link #start()} or
    * {@link #restart()}) end as soon as possible, by killing the office process for example. It is
    * called from another thread, when a task exceeds its execution timeout or is cancelled, and when

@@ -22,7 +22,11 @@ package org.jodconverter.core.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -31,9 +35,33 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.office.TemporaryFileMaker;
 
 /** Contains tests for the {@link AbstractDocumentSpecs} class. */
 class AbstractDocumentSpecsTest {
+
+  @Test
+  void isRepeatable_ShouldBeTrueForFilesAndFalseForStreamsAndByDefault(
+      final @TempDir File testFolder) throws IOException {
+
+    final var file = new File(testFolder, "test.txt");
+    assertThat(file.createNewFile()).isTrue();
+    final TemporaryFileMaker fileMaker = extension -> new File(testFolder, "temp." + extension);
+
+    assertThat(new SourceDocumentSpecsFromFile(file).isRepeatable()).isTrue();
+    assertThat(new TargetDocumentSpecsFromFile(file).isRepeatable()).isTrue();
+    assertThat(
+            new SourceDocumentSpecsFromInputStream(
+                    new ByteArrayInputStream(new byte[0]), fileMaker, true)
+                .isRepeatable())
+        .isFalse();
+    assertThat(
+            new TargetDocumentSpecsFromOutputStream(new ByteArrayOutputStream(), fileMaker, true)
+                .isRepeatable())
+        .isFalse();
+    final DocumentSpecs custom = mock(DocumentSpecs.class, CALLS_REAL_METHODS);
+    assertThat(custom.isRepeatable()).isFalse();
+  }
 
   static class TestSpecs extends AbstractDocumentSpecs {
     TestSpecs(final File file) {

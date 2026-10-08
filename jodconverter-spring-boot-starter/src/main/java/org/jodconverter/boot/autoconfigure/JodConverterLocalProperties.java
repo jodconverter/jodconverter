@@ -93,6 +93,9 @@ import org.jodconverter.local.task.LoadDocumentMode;
  *     plain number is in milliseconds.
  * @param maxTasksPerProcess Maximum number of tasks an office process can execute before
  *     restarting.
+ * @param taskRetries Number of times a conversion is executed again when the office process (or the
+ *     connection) executing it is lost. Only the conversions from a file to a file are executed
+ *     again. 0 means that such a conversion fails.
  * @param applyDefaultLoadProperties Specifies this converter will apply the default load properties
  *     when loading a source document.
  * @param useUnsafeQuietUpdate Specifies whether this converter will use the unsafe {@code
@@ -124,6 +127,7 @@ public record JodConverterLocalProperties(
     @DefaultValue("30000") @DurationUnit(ChronoUnit.MILLIS) @NonNull Duration taskQueueTimeout,
     @DefaultValue("120000") @DurationUnit(ChronoUnit.MILLIS) @NonNull Duration taskExecutionTimeout,
     @DefaultValue("200") int maxTasksPerProcess,
+    int taskRetries,
     @DefaultValue("true") boolean applyDefaultLoadProperties,
     boolean useUnsafeQuietUpdate,
     @DefaultValue("auto") @NonNull LoadDocumentMode loadDocumentMode)

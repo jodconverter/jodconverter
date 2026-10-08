@@ -31,6 +31,7 @@ jodconverter:
     connect-fail-fast: false
     max-tasks-per-connection: 1000
     task-queue-capacity: 0          # no limit
+    task-retries: 0                 # a task whose connection is lost fails
     task-queue-timeout: 30000
     task-execution-timeout: 120000
     apply-default-load-properties: true
@@ -197,6 +198,23 @@ OfficeManager officeManager =
     AttachedOfficeManager
         .builder()
         .taskQueueCapacity(100)
+        .build();
+```
+
+#### 🔢`taskRetries`
+
+This property sets how many times a task is executed again when the connection executing it is lost. Instead of
+failing, the task goes back to the head of the queue and is executed once the manager is connected again, or through
+another connection. Only a conversion from a file to a file, and an export of page images from a file, are executed
+again; see the [same property of the local manager](local-manager.md#taskretries) for the details.
+
+&#160;***Default***: 0 (a task whose connection is lost fails)
+
+```java hl_lines="4"
+OfficeManager officeManager =
+    AttachedOfficeManager
+        .builder()
+        .taskRetries(1)
         .build();
 ```
 

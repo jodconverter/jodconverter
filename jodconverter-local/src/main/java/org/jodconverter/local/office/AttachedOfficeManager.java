@@ -112,8 +112,15 @@ public final class AttachedOfficeManager extends AbstractOfficeWorkerPool {
       final int maxTasksPerConnection,
       final long taskExecutionTimeout,
       final long taskQueueTimeout,
-      final int taskQueueCapacity) {
-    super(workingDir, taskQueueTimeout, taskExecutionTimeout, taskQueueCapacity, connectFailFast);
+      final int taskQueueCapacity,
+      final int taskRetries) {
+    super(
+        workingDir,
+        taskQueueTimeout,
+        taskExecutionTimeout,
+        taskQueueCapacity,
+        connectFailFast,
+        taskRetries);
 
     setWorkers(
         officeUrls.stream()
@@ -168,7 +175,8 @@ public final class AttachedOfficeManager extends AbstractOfficeWorkerPool {
               maxTasksPerConnection,
               taskExecutionTimeout,
               taskQueueTimeout,
-              taskQueueCapacity);
+              taskQueueCapacity,
+              taskRetries);
       return installed(manager);
     }
 

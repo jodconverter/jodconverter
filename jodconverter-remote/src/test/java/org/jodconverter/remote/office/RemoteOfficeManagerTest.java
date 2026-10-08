@@ -106,6 +106,19 @@ class RemoteOfficeManagerTest {
   class Build {
 
     @Test
+    void withTaskRetries_ShouldIgnoreThem() {
+
+      // A remote worker is never lost: there is nothing to execute again.
+      assertThat(
+              RemoteOfficeManager.builder()
+                  .urlConnection("http://localhost")
+                  .taskRetries(2)
+                  .build())
+          .extracting("taskRetries")
+          .isEqualTo(0);
+    }
+
+    @Test
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void withCustomValues_ShouldInitializedManagerWithCustomValues() {
 

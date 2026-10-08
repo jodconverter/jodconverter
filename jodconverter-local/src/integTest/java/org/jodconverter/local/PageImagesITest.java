@@ -173,15 +173,19 @@ class PageImagesITest {
 
     // ... and the filters of the converter before the export: the selector keeps the third slide,
     // which is then the only one left.
-    final var filtered =
+    final var filtering =
         LocalConverter.builder()
             .officeManager(manager)
             .filterChain(new PagesSelectorFilter(3))
-            .build()
-            .exportPages(IMPRESS_FILE)
-            .to(new File(testFolder, "filtered"))
-            .execute();
+            .build();
+    final var filtered =
+        filtering.exportPages(IMPRESS_FILE).to(new File(testFolder, "filtered")).execute();
     assertThat(filtered).extracting(File::getName).containsExactly("impress-1.png");
+
+    // The filters are applied at every export of the converter, not only at the first one.
+    final var filteredAgain =
+        filtering.exportPages(IMPRESS_FILE).to(new File(testFolder, "again")).execute();
+    assertThat(filteredAgain).extracting(File::getName).containsExactly("impress-1.png");
   }
 
   @Test

@@ -182,7 +182,9 @@ public class PageImagesTask extends AbstractLocalOfficeTask {
       XComponent document = null;
       try {
         document = loadDocument(localContext, sourceFile);
-        filterChain.doFilter(context, document);
+        // A chain keeps its position, and this one is the chain of the converter: each execution
+        // goes through a copy, so that every export, and every retry, applies the filters.
+        filterChain.copy().doFilter(context, document);
         exportPages(localContext, document);
       } catch (OfficeException officeEx) {
         throw officeEx;
@@ -287,6 +289,12 @@ public class PageImagesTask extends AbstractLocalOfficeTask {
     final var properties = Lo.qi(XPropertySet.class, page);
     return properties.getPropertySetInfo().hasPropertyByName("Visible")
         && Boolean.FALSE.equals(properties.getPropertyValue("Visible"));
+  }
+
+  @Override
+  public boolean isRetryable() {
+    // The images are files, written again by a new execution.
+    return source.isRepeatable();
   }
 
   @Override
