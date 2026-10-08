@@ -71,6 +71,28 @@ credentials and the signing key, which live in the repository secrets; the rest 
 The `build` workflow uses one more secret, `COVERALLS_REPO_TOKEN`, the repository token shown on the Coveralls page of
 the project, to send the coverage of the Linux job.
 
+The secrets are checked without a release by running the `release` workflow by hand from the Actions tab (the
+"Run workflow" button, on any branch): it builds, signs the publications with the key of the secrets and checks the
+Maven Central credentials against the portal, without publishing anything.
+
+### The signing key
+
+The key must not be expired when the portal validates the signatures. `gpg --list-secret-keys --keyid-format long`
+shows the expiry; `gpg --edit-key KEY_ID` with the `expire` command (then `save`) extends it, for the primary key and,
+after `key 1`, for the subkey. The public key must be known by the key servers the portal queries, with the current
+expiry:
+
+```bash
+gpg --keyserver keyserver.ubuntu.com --send-keys KEY_ID
+gpg --keyserver keys.openpgp.org --send-keys KEY_ID
+```
+
+The `SIGNING_KEY` secret is set without pasting the key anywhere:
+
+```bash
+gpg --armor --export-secret-keys KEY_ID | gh secret set SIGNING_KEY --repo jodconverter/jodconverter
+```
+
 A release can still be done from a workstation with the same values in `~/.gradle/gradle.properties`
 (`mavenCentralUsername`, `mavenCentralPassword`, `signing.keyId`, `signing.password`, `signing.secretKeyRingFile`) and
 `./gradlew publishToMavenCentral`, then the GitHub release created by hand from the tag.
