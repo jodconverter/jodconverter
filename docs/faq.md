@@ -232,7 +232,45 @@ These are LibreOffice behaviors that **JODConverter** can't change, with the wor
 ??? question "Converting a presentation to HTML no longer creates one image per slide"
 
     The HTML export of presentations changed in LibreOffice 24.2 and no longer produces the image-per-slide output of
-    earlier versions ([#396](https://github.com/jodconverter/jodconverter/issues/396)). Use another output format, or
-    an earlier LibreOffice version if you depend on that output.
+    earlier versions ([#396](https://github.com/jodconverter/jodconverter/issues/396)). Since **JODConverter** 5.0,
+    `LocalConverter.exportPages(...)` exports each slide as its own image; see
+    [Slides to Images](getting-started/page-images.md).
+
+??? question "On Windows, the office process crashes when a document is closed (LibreOffice 25.8.3 to 26.2)"
+
+    On Windows, LibreOffice 25.8.3 to 26.2.x may crash when a document is closed through UNO, after a conversion that
+    was otherwise complete. The logs show `Connection lost unexpectedly`, sometimes a `DisposedException`, and the
+    Windows event log names `soffice.bin` with the exception code `0xc0000409`. It does not happen at every
+    conversion, and it happens with text documents as well as with presentations and drawings.
+
+    This is a regression of LibreOffice, reported as
+    [tdf#172335](https://bugs.documentfoundation.org/show_bug.cgi?id=172335) (also seen by the users of
+    [unoserver](https://github.com/unoconv/unoserver/issues/212)). It is not reproduced on Linux nor on macOS. The
+    last version without it is 25.8.2, and it is reported fixed in 26.8.0.
+
+    **JODConverter** restarts the office process, so the following conversions work; the conversion during which the
+    crash happens may fail even though its output file is complete. On Windows, prefer LibreOffice 26.8 or later, or
+    25.8.2 or earlier.
+
+??? question "On macOS, every office process takes about 35 seconds to accept its first connection"
+
+    When LibreOffice accepts a connection, it looks up the host name of the address `127.0.0.1`. On some macOS
+    installations, the first such lookup of a process takes 35 seconds, and an office process is a new process each
+    time it starts: every start, and every restart, then waits that long before its first conversion. Nothing fails,
+    but a `processTimeout` or a `taskQueueTimeout` shorter than that delay can be exceeded.
+
+    We measured it on the macOS 15 and macOS 26 images of the GitHub Actions runners (Apple silicon and Intel), and
+    not on their macOS 14 image; we do not know how common it is on other machines. To check a machine, time the
+    lookup in a new process:
+
+    ```bash
+    time python3 -c 'import socket; print(socket.getnameinfo(("127.0.0.1", 0), 0)[0])'
+    ```
+
+    It prints `localhost`; on an affected machine, it takes 35 seconds to do so. The delay is in the name resolution
+    of macOS, before LibreOffice or **JODConverter** can do anything about it: the host name of the machine, the
+    content of `/etc/hosts` and the accept string of the office process make no difference. Where it happens, keep
+    the office processes alive (a high `maxTasksPerProcess`, no restart between conversions) so that the delay is
+    paid once.
 
 --8<-- "note.md"
