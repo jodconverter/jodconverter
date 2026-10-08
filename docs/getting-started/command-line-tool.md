@@ -59,7 +59,12 @@ See [Configuration](../../configuration/local-configuration#keepaliveonshutdown)
 
 #### -l, --load-properties
 
-Load properties (optional; eg. -lPassword=myPassword).
+Load properties (optional; eg. -lHidden=true).
+
+#### --password `<password>`
+
+Password of the input documents, when they are protected (optional). Without it, or with a wrong one, the
+conversion of a protected document fails with a message that says which of the two.
 
 #### -m, --process-manager `<classname>`
 

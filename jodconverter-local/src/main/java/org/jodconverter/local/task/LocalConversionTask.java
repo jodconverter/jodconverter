@@ -283,7 +283,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
         + "source="
         + source
         + ", loadProperties="
-        + loadProperties
+        + describeLoadProperties()
         + ", target="
         + target
         + ", storeProperties="

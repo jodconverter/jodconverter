@@ -34,6 +34,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -86,6 +87,32 @@ class PageImagesJobTest {
                   + ", pages=[1, 2], hiddenSlides=true}");
       // Nothing was exported by the mocked manager.
       assertThat(images).isEmpty();
+    }
+
+    @Test
+    void withPassword_ShouldGiveTheTaskThePasswordProperty(final @TempDir File testFolder)
+        throws OfficeException {
+
+      final var manager = mock(OfficeManager.class);
+      final var captor = ArgumentCaptor.forClass(OfficeTask.class);
+
+      converter(manager).exportPages(SOURCE).to(testFolder).password("secret").execute();
+
+      verify(manager).execute(captor.capture());
+      assertThat(captor.getValue())
+          .extracting("loadProperties")
+          .asInstanceOf(InstanceOfAssertFactories.MAP)
+          .containsEntry("Password", "secret")
+          .containsAllEntriesOf(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      assertThat(captor.getValue().toString()).doesNotContain("secret");
+    }
+
+    @Test
+    void withNullPassword_ShouldThrowNullPointerException(final @TempDir File testFolder) {
+
+      final var job = converter(mock(OfficeManager.class)).exportPages(SOURCE).to(testFolder);
+
+      assertThatNullPointerException().isThrownBy(() -> job.password(null));
     }
 
     @Test

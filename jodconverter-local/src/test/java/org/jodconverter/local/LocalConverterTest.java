@@ -39,6 +39,7 @@ import java.util.Map;
 import com.sun.star.document.UpdateDocMode;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XServiceInfo;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -302,6 +303,51 @@ class LocalConverterTest {
       final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
       verify(officeManager, times(1)).execute(arg.capture());
       assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
+    }
+
+    @Test
+    void withPassword_ShouldGiveTheTaskThePasswordProperty(final @TempDir File testFolder)
+        throws OfficeException {
+
+      final var expectedProperties = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      expectedProperties.put("Password", "secret");
+
+      final var targetFile = new File(testFolder, "test.pdf");
+
+      LocalConverter.make(officeManager)
+          .convert(SOURCE_FILE)
+          .to(targetFile)
+          .password("secret")
+          .execute();
+
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue()).extracting("loadProperties").isEqualTo(expectedProperties);
+      // The password is not written where the task is logged.
+      assertThat(arg.getValue().toString()).doesNotContain("secret").contains("Password=***");
+    }
+
+    @Test
+    void withPasswordAndPasswordProperty_ShouldUseThePasswordOfTheConversion(
+        final @TempDir File testFolder) throws OfficeException {
+
+      final var targetFile = new File(testFolder, "test.pdf");
+
+      LocalConverter.builder()
+          .officeManager(officeManager)
+          .loadProperty("Password", "ofTheConverter")
+          .build()
+          .convert(SOURCE_FILE)
+          .to(targetFile)
+          .password("ofTheConversion")
+          .execute();
+
+      final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
+      verify(officeManager, times(1)).execute(arg.capture());
+      assertThat(arg.getValue())
+          .extracting("loadProperties")
+          .asInstanceOf(InstanceOfAssertFactories.MAP)
+          .containsEntry("Password", "ofTheConversion");
     }
 
     @Test

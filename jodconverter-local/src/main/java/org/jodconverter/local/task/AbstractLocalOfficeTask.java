@@ -37,6 +37,7 @@ import com.sun.star.task.DocumentMSPasswordRequest;
 import com.sun.star.task.DocumentPasswordRequest;
 import com.sun.star.task.ErrorCodeIOException;
 import com.sun.star.task.PasswordRequest;
+import com.sun.star.task.PasswordRequestMode;
 import com.sun.star.task.XInteractionHandler;
 import com.sun.star.task.XInteractionRequest;
 import com.sun.star.util.CloseVetoException;
@@ -64,11 +65,18 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLocalOfficeTask.class);
   private static final String ERROR_MESSAGE_LOAD = "Could not open document: ";
+
+  /** The load property that gives the password of a protected document. */
+  public static final String PASSWORD_PROPERTY = "Password";
+
   protected final Map<String, Object> loadProperties;
   protected final boolean useStreamAdapters;
   // Registered when the load properties have no interaction handler of their own.
   private final PasswordInteractionHandler passwordInteractionHandler =
       new PasswordInteractionHandler();
+  // Set when the office dropped the connection while loading with a password: LibreOffice 24+
+  // asks nothing and disconnects when the password given is wrong.
+  private boolean wrongPassword;
 
   /** Handler used to detect password-protected file. */
   private static final class PasswordInteractionHandler implements XInteractionHandler {
@@ -233,10 +241,13 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       return document;
 
     } catch (ErrorCodeIOException exception) {
+      handlePasswordProtection(sourceFile);
       throw new OfficeException(
           ERROR_MESSAGE_LOAD + sourceFile.getName() + "; errorCode: " + exception.ErrCode,
           exception);
     } catch (com.sun.star.uno.Exception exception) {
+      // A wrong password on a Microsoft document aborts the type detection after the request.
+      handlePasswordProtection(sourceFile);
       throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
     }
   }
@@ -265,13 +276,18 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       }
     } catch (com.sun.star.lang.DisposedException exception) {
       // LibreOffice 24+ will throw this exception for password protection.
-      handlePasswordProtection();
+      handlePasswordProtection(sourceFile);
+      if (loadProps.containsKey(PASSWORD_PROPERTY)) {
+        wrongPassword = true;
+        throw new PasswordProtectedException(
+            "Wrong password for " + sourceFile.getName(), exception);
+      }
       throw exception;
     }
 
     // Handle password protection request to throw a meaningful exception, if required.
     if (document == null) {
-      handlePasswordProtection();
+      handlePasswordProtection(sourceFile);
     }
     return document;
   }
@@ -305,18 +321,39 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
     }
   }
 
-  private void handlePasswordProtection() throws OfficeException {
+  // Throws the password exception when the office asked for a password while loading the file.
+  private void handlePasswordProtection(final File sourceFile) throws OfficeException {
 
     if (passwordInteractionHandler.hasPasswordInteractionRequest()) {
-      throw new PasswordProtectedException(
-          "Document password requested for " + passwordInteractionHandler.getDocumentName(),
-          passwordInteractionHandler.getPasswordRequest());
+      final var request = passwordInteractionHandler.getPasswordRequest();
+      LOGGER.debug("Password requested for {}", passwordInteractionHandler.getDocumentName());
+      // The office asks for the password again when the one given is wrong.
+      final var message =
+          request.Mode == PasswordRequestMode.PASSWORD_REENTER
+                  || loadProperties != null && loadProperties.containsKey(PASSWORD_PROPERTY)
+              ? "Wrong password for " + sourceFile.getName()
+              : "Document password requested for " + sourceFile.getName();
+      throw new PasswordProtectedException(message, request);
     }
+  }
+
+  /**
+   * Describes the load properties for a log or a {@code toString}, with the password hidden.
+   *
+   * @return The load properties as text.
+   */
+  protected @NonNull String describeLoadProperties() {
+    if (loadProperties == null || !loadProperties.containsKey(PASSWORD_PROPERTY)) {
+      return String.valueOf(loadProperties);
+    }
+    final var masked = new HashMap<>(loadProperties);
+    masked.put(PASSWORD_PROPERTY, "***");
+    return masked.toString();
   }
 
   @Override
   public boolean hasPasswordInteractionRequest() {
-    return passwordInteractionHandler.hasPasswordInteractionRequest();
+    return wrongPassword || passwordInteractionHandler.hasPasswordInteractionRequest();
   }
 
   @Override
@@ -326,7 +363,7 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
         + "source="
         + source
         + ", loadProperties="
-        + loadProperties
+        + describeLoadProperties()
         + ", useStreamAdapters="
         + useStreamAdapters
         + '}';
