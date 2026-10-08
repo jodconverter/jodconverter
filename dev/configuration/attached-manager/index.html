@@ -2492,6 +2492,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#taskretries" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>taskRetries</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#taskqueuetimeout" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2562,6 +2573,7 @@ it. Each property below matches the builder property of the same name; the value
 <span class="w">    </span><span class="nt">connect-fail-fast</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">    </span><span class="nt">max-tasks-per-connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
 <span class="w">    </span><span class="nt">task-queue-capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">          </span><span class="c1"># no limit</span>
+<span class="w">    </span><span class="nt">task-retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">                 </span><span class="c1"># a task whose connection is lost fails</span>
 <span class="w">    </span><span class="nt">task-queue-timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30000</span>
 <span class="w">    </span><span class="nt">task-execution-timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120000</span>
 <span class="w">    </span><span class="nt">apply-default-load-properties</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -2681,6 +2693,18 @@ answer right away that it is overloaded. 0 means no limit.</p>
 <span class="w">    </span><span class="n">AttachedOfficeManager</span>
 <span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">taskQueueCapacity</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="taskretries">🔢<code>taskRetries</code><a class="headerlink" href="#taskretries" title="Permanent link">&para;</a></h4>
+<p>This property sets how many times a task is executed again when the connection executing it is lost. Instead of
+failing, the task goes back to the head of the queue and is executed once the manager is connected again, or through
+another connection. Only a conversion from a file to a file, and an export of page images from a file, are executed
+again; see the <a href="../local-manager/#taskretries">same property of the local manager</a> for the details.</p>
+<p>&#160;<strong><em>Default</em></strong>: 0 (a task whose connection is lost fails)</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">AttachedOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">taskRetries</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
 <h4 id="taskqueuetimeout">⌚<code>taskQueueTimeout</code><a class="headerlink" href="#taskqueuetimeout" title="Permanent link">&para;</a></h4>

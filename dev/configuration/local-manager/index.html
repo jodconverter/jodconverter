@@ -2038,6 +2038,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#taskretries" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>taskRetries</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#taskqueuetimeout" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2826,6 +2837,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#taskretries" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔢<code>taskRetries</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#taskqueuetimeout" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3452,12 +3474,47 @@ answer right away that it is overloaded. 0 means no limit.</p>
 </div>
 </div>
 </div>
+<h4 id="taskretries">🔢<code>taskRetries</code><a class="headerlink" href="#taskretries" title="Permanent link">&para;</a></h4>
+<p>This property sets how many times a task is executed again when the office process executing it is lost (it
+crashed, it was killed, its connection dropped). Instead of failing, the task goes back to the head of the queue and
+is executed by the process once it is restarted, or by another one; the queue timeout and the execution timeout
+start again for the new attempt.</p>
+<p>Only the tasks that can be executed again from the start are retried: a conversion from a file to a file, and an
+export of <a href="../../getting-started/page-images/">page images</a> from a file. A conversion from or to a stream is not,
+since a stream is read, or written, only once. A task that exceeds the execution timeout, and the conversion of a
+password-protected document without its password, are not retried either: the task itself is the reason.</p>
+<p>A document that makes the office crash is converted, and makes it crash, that many more times before its
+conversion fails; keep the number low.</p>
+<p>&#160;<strong><em>Default</em></strong>: 0 (a task whose office process is lost fails)</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="18:3"><input checked="checked" id="__tabbed_18_1" name="__tabbed_18" type="radio" /><input id="__tabbed_18_2" name="__tabbed_18" type="radio" /><input id="__tabbed_18_3" name="__tabbed_18" type="radio" /><div class="tabbed-labels"><label for="__tabbed_18_1">Java</label><label for="__tabbed_18_2">Spring Boot</label><label for="__tabbed_18_3">Command Line</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">LocalOfficeManager</span>
+<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="hll"><span class="w">        </span><span class="p">.</span><span class="na">taskRetries</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-yml highlight"><span class="filename">application.yml</span><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">local</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">task-retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</code></pre></div>
+<div class="language-text highlight"><span class="filename">application.properties</span><pre><span></span><code>jodconverter.local.task-retries = 1
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p><code>taskRetries</code> can't be set with the command line tool, it will always be 0.</p>
+</div>
+</div>
+</div>
 <h4 id="taskqueuetimeout">⌚<code>taskQueueTimeout</code><a class="headerlink" href="#taskqueuetimeout" title="Permanent link">&para;</a></h4>
 <p>This property sets the maximum time a task waits in the conversion queue, from its submission until an office process
 takes it. Waiting for a process to start or restart is part of it. When it expires, the task is removed from the queue
 without having been executed and fails with an <code>OfficeException</code>.</p>
 <p>&#160;<strong><em>Default</em></strong>: 30000 (30 seconds)</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="18:3"><input checked="checked" id="__tabbed_18_1" name="__tabbed_18" type="radio" /><input id="__tabbed_18_2" name="__tabbed_18" type="radio" /><input id="__tabbed_18_3" name="__tabbed_18" type="radio" /><div class="tabbed-labels"><label for="__tabbed_18_1">Java</label><label for="__tabbed_18_2">Spring Boot</label><label for="__tabbed_18_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="19:3"><input checked="checked" id="__tabbed_19_1" name="__tabbed_19" type="radio" /><input id="__tabbed_19_2" name="__tabbed_19" type="radio" /><input id="__tabbed_19_3" name="__tabbed_19" type="radio" /><div class="tabbed-labels"><label for="__tabbed_19_1">Java</label><label for="__tabbed_19_2">Spring Boot</label><label for="__tabbed_19_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
@@ -3485,7 +3542,7 @@ without having been executed and fails with an <code>OfficeException</code>.</p>
 not from its submission. When it expires, the task fails with an <code>OfficeException</code>, the office process is killed and
 restarted, and the next task is processed by another process in the meantime.</p>
 <p>&#160;<strong><em>Default</em></strong>: 120000 (2 minutes)</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="19:3"><input checked="checked" id="__tabbed_19_1" name="__tabbed_19" type="radio" /><input id="__tabbed_19_2" name="__tabbed_19" type="radio" /><input id="__tabbed_19_3" name="__tabbed_19" type="radio" /><div class="tabbed-labels"><label for="__tabbed_19_1">Java</label><label for="__tabbed_19_2">Spring Boot</label><label for="__tabbed_19_3">Command Line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="20:3"><input checked="checked" id="__tabbed_20_1" name="__tabbed_20" type="radio" /><input id="__tabbed_20_2" name="__tabbed_20" type="radio" /><input id="__tabbed_20_3" name="__tabbed_20" type="radio" /><div class="tabbed-labels"><label for="__tabbed_20_1">Java</label><label for="__tabbed_20_2">Spring Boot</label><label for="__tabbed_20_3">Command Line</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
