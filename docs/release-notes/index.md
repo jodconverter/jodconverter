@@ -4,6 +4,7 @@ This page lists all JODConverter release notes. Use it to browse historical chan
 
 Latest releases:
 
+- [Release 5.0.1](./release-notes-5.0.1.md)
 - [Release 5.0.0](./release-notes-5.0.0.md)
 - [Release 4.4.11](./release-notes-4.4.11.md)
 - [Release 4.4.10](./release-notes-4.4.10.md)
@@ -13,6 +14,7 @@ Latest releases:
 
 Full list:
 
+- [Release 5.0.1](./release-notes-5.0.1.md)
 - [Release 5.0.0](./release-notes-5.0.0.md)
 - [Release 4.4.11](./release-notes-4.4.11.md)
 - [Release 4.4.10](./release-notes-4.4.10.md)

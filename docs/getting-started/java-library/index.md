@@ -11,11 +11,11 @@ you want to use **JODConverter** with the LibreOffice libraries or the OpenOffic
 === "Gradle"
 
     ```groovy title="Groovy"
-    implementation 'org.jodconverter:jodconverter-local-lo:5.0.0'
+    implementation 'org.jodconverter:jodconverter-local-lo:5.0.1'
     ```
 
     ```kotlin title="Kotlin"
-    implementation("org.jodconverter:jodconverter-local-lo:5.0.0")
+    implementation("org.jodconverter:jodconverter-local-lo:5.0.1")
     ```
 
 === "Maven"
@@ -25,7 +25,7 @@ you want to use **JODConverter** with the LibreOffice libraries or the OpenOffic
     <dependency>
         <groupId>org.jodconverter</groupId>
         <artifactId>jodconverter-local-lo</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
     ```
 
@@ -34,11 +34,11 @@ you want to use **JODConverter** with the LibreOffice libraries or the OpenOffic
 === "Gradle"
 
     ```groovy title="Groovy"
-    implementation 'org.jodconverter:jodconverter-local:5.0.0'
+    implementation 'org.jodconverter:jodconverter-local:5.0.1'
     ```
 
     ```kotlin title="Kotlin"
-    implementation("org.jodconverter:jodconverter-local:5.0.0")
+    implementation("org.jodconverter:jodconverter-local:5.0.1")
     ```
 
 === "Maven"
@@ -47,7 +47,7 @@ you want to use **JODConverter** with the LibreOffice libraries or the OpenOffic
     <dependency>
         <groupId>org.jodconverter</groupId>
         <artifactId>jodconverter-local</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
     ```
 
@@ -56,11 +56,11 @@ or
 === "Gradle"
 
     ```groovy title="Groovy"
-    implementation 'org.jodconverter:jodconverter-local-oo:5.0.0'
+    implementation 'org.jodconverter:jodconverter-local-oo:5.0.1'
     ```
 
     ```kotlin title="Kotlin"
-    implementation("org.jodconverter:jodconverter-local-oo:5.0.0")
+    implementation("org.jodconverter:jodconverter-local-oo:5.0.1")
     ```
 
 === "Maven"
@@ -69,7 +69,7 @@ or
     <dependency>
         <groupId>org.jodconverter</groupId>
         <artifactId>jodconverter-local-oo</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
     ```
 

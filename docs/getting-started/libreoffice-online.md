@@ -18,7 +18,7 @@ avoid the LibreOffice installation on your server.
     <dependency>
         <groupId>org.jodconverter</groupId>
         <artifactId>jodconverter-remote</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 </dependencies>
 ```
@@ -28,13 +28,13 @@ avoid the LibreOffice installation on your server.
 === "Groovy"
 
     ```groovy
-    implementation "org.jodconverter:jodconverter-remote:5.0.0"
+    implementation "org.jodconverter:jodconverter-remote:5.0.1"
     ```
 
 === "Kotlin"
 
     ```kotlin
-    implementation("org.jodconverter:jodconverter-remote:5.0.0")
+    implementation("org.jodconverter:jodconverter-remote:5.0.1")
     ```
 
 ## Using the module
