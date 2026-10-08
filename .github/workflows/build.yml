@@ -89,9 +89,8 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           sudo scutil --set HostName ci-runner
-          printf '127.0.0.1 ci-runner
-::1 ci-runner
-' | sudo tee -a /etc/hosts > /dev/null
+          echo "127.0.0.1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
+          echo "::1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
 
       - name: 📥 Install LibreOffice (macOS)
         if: runner.os == 'macOS'
