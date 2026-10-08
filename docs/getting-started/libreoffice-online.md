@@ -18,7 +18,7 @@ avoid the LibreOffice installation on your server.
     <dependency>
         <groupId>org.jodconverter</groupId>
         <artifactId>jodconverter-remote</artifactId>
-        <version>4.9.0</version>
+        <version>5.0.0</version>
     </dependency>
 </dependencies>
 ```
