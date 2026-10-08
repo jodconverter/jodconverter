@@ -21,6 +21,7 @@
 package org.jodconverter.local.process;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -29,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -100,6 +103,83 @@ class ProcessManagerTest {
   }
 
   @Nested
+  class Execute {
+
+    // A manager that only runs commands.
+    private final AbstractProcessManager manager =
+        new AbstractProcessManager() {
+          @Override
+          protected String[] getRunningProcessesCommand(final String process) {
+            return new String[0];
+          }
+
+          @Override
+          protected Pattern getRunningProcessLinePattern() {
+            return Pattern.compile(".*");
+          }
+        };
+
+    private String[] shell(final String script) {
+      return OSUtils.IS_OS_WINDOWS
+          ? new String[] {"cmd", "/c", script}
+          : new String[] {"/bin/sh", "-c", script};
+    }
+
+    @Test
+    void whenTheCommandSucceeds_ShouldReturnItsOutput() throws IOException {
+
+      assertThat(manager.execute(shell("echo hello"))).containsExactly("hello");
+    }
+
+    @Test
+    void whenTheCommandFails_ShouldThrowIOExceptionWithItsErrorOutput() {
+
+      assertThatIOException()
+          .isThrownBy(() -> manager.execute(shell("echo oops 1>&2 & exit 3")))
+          .withMessageContaining("exited with the status 3")
+          .withMessageContaining("oops");
+    }
+
+    @Test
+    void withRetries_WhenTheCommandFailsOnce_ShouldReturnTheOutputOfTheNextAttempt()
+        throws IOException {
+
+      final var attempts = new AtomicInteger();
+      final var manager =
+          new WindowsProcessManager() {
+            @Override
+            protected List<String> execute(final String... command) throws IOException {
+              if (attempts.incrementAndGet() == 1) {
+                throw new IOException("Call cancelled");
+              }
+              return List.of("some process 42");
+            }
+          };
+
+      assertThat(manager.executeWithRetries("whatever")).containsExactly("some process 42");
+      assertThat(attempts).hasValue(2);
+    }
+
+    @Test
+    void withRetries_WhenTheCommandKeepsFailing_ShouldThrowTheLastIOException() {
+
+      final var attempts = new AtomicInteger();
+      final var manager =
+          new WindowsProcessManager() {
+            @Override
+            protected List<String> execute(final String... command) throws IOException {
+              throw new IOException("Call cancelled #" + attempts.incrementAndGet());
+            }
+          };
+
+      assertThatIOException()
+          .isThrownBy(() -> manager.find(new ProcessQuery("soffice", "port=2002")))
+          .withMessage("Call cancelled #" + AbstractProcessManager.ATTEMPTS);
+      assertThat(attempts).hasValue(AbstractProcessManager.ATTEMPTS);
+    }
+  }
+
+  @Nested
   class Windows {
 
     @Test
@@ -128,6 +208,24 @@ class ProcessManagerTest {
             }
           };
       assertThat(manager.isUsable()).isFalse();
+    }
+
+    @Test
+    void isUsable_WhenThePowershellQueryFailsOnce_ShouldReturnTrue() {
+
+      final var attempts = new AtomicInteger();
+      final var manager =
+          new WindowsProcessManager() {
+            @Override
+            protected List<String> execute(final String... command) throws IOException {
+              if (attempts.incrementAndGet() == 1) {
+                throw new IOException("Call cancelled");
+              }
+              return List.of("powershell -NoProfile -NonInteractive 1234");
+            }
+          };
+      assertThat(manager.isUsable()).isTrue();
+      assertThat(attempts).hasValue(2);
     }
 
     @Test
