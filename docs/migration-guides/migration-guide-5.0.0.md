@@ -1,10 +1,5 @@
 This guide discusses migration from JODConverter version 4.4.11 to version 5.0.0
 
-!!! note
-
-    JODConverter 5.0.0 is not released yet. This guide follows the `develop` branch and is completed as the
-    changes are merged.
-
 ## Background
 
 JODConverter 5.0 is a major version: it moves to Java 17, Spring Boot 4 and SLF4J 2, and it is the occasion to fix
