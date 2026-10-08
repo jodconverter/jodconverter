@@ -1,0 +1,122 @@
+name: ci-experiment
+
+# Temporary: experiments on the Windows and macOS runners, to understand why the build matrix
+# entries of these systems are disabled (see build.yml). Runs on every push of its branch.
+on:
+  push:
+    branches:
+      - ci/experiments
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Python variables of the runner
+        shell: pwsh
+        run: |
+          Get-ChildItem Env: | Where-Object { $_.Name -match 'PYTHON|^PATH$|pythonLocation|Python' } | Format-Table -AutoSize -Wrap
+          Get-Command python -ErrorAction SilentlyContinue | Format-Table -AutoSize
+
+      - name: Install LibreOffice
+        timeout-minutes: 10
+        run: choco install libreoffice-still -y --no-progress
+
+      - name: LibreOffice Python layout
+        shell: pwsh
+        run: |
+          $lo = Get-ChildItem 'C:\Program Files\LibreOffice*\program\soffice.exe' | Select-Object -First 1
+          "soffice: $($lo.FullName)"
+          Get-ChildItem $lo.DirectoryName -Directory | Where-Object { $_.Name -match 'python' } | Format-Table Name
+          Get-Content "$($lo.DirectoryName)\pythonloader.unorc" -ErrorAction SilentlyContinue
+          Get-Content "$($lo.DirectoryName)\python-core-*\python*._pth" -ErrorAction SilentlyContinue | Select-Object -First 20
+
+      - name: Convert with the runner environment
+        shell: pwsh
+        run: |
+          $lo = (Get-ChildItem 'C:\Program Files\LibreOffice*\program\soffice.exe' | Select-Object -First 1).FullName
+          New-Item -ItemType Directory out1 | Out-Null
+          Copy-Item jodconverter-local/src/integTest/resources/documents/test_custom_formats.odp in.odp
+          $sw = [Diagnostics.Stopwatch]::StartNew()
+          & $lo --headless --norestore --nologo "-env:UserInstallation=file:///$PWD/profile1" --convert-to html --outdir out1 in.odp 2>&1 | Tee-Object err1.txt
+          "exit: $LASTEXITCODE in $($sw.Elapsed.TotalSeconds) s"
+          Get-ChildItem out1
+
+      - name: Convert without PYTHONHOME and PYTHONPATH
+        shell: pwsh
+        run: |
+          Remove-Item Env:PYTHONHOME -ErrorAction SilentlyContinue
+          Remove-Item Env:PYTHONPATH -ErrorAction SilentlyContinue
+          $lo = (Get-ChildItem 'C:\Program Files\LibreOffice*\program\soffice.exe' | Select-Object -First 1).FullName
+          New-Item -ItemType Directory out2 | Out-Null
+          $sw = [Diagnostics.Stopwatch]::StartNew()
+          & $lo --headless --norestore --nologo "-env:UserInstallation=file:///$PWD/profile2" --convert-to html --outdir out2 in.odp 2>&1 | Tee-Object err2.txt
+          "exit: $LASTEXITCODE in $($sw.Elapsed.TotalSeconds) s"
+          Get-ChildItem out2
+
+      - name: Run a Python macro to see whether the bundled Python works
+        shell: pwsh
+        run: |
+          $lo = (Get-ChildItem 'C:\Program Files\LibreOffice*\program\soffice.exe' | Select-Object -First 1).FullName
+          & $lo --headless --norestore --nologo "-env:UserInstallation=file:///$PWD/profile3" "vnd.sun.star.script:HelloWorld.py`$HelloWorldPython?language=Python&location=share" 2>&1 | Tee-Object err3.txt
+          "exit: $LASTEXITCODE"
+          Remove-Item Env:PYTHONHOME -ErrorAction SilentlyContinue
+          Remove-Item Env:PYTHONPATH -ErrorAction SilentlyContinue
+          & $lo --headless --norestore --nologo "-env:UserInstallation=file:///$PWD/profile4" "vnd.sun.star.script:HelloWorld.py`$HelloWorldPython?language=Python&location=share" 2>&1 | Tee-Object err4.txt
+          "exit: $LASTEXITCODE"
+
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install LibreOffice
+        timeout-minutes: 10
+        run: brew install --cask libreoffice
+
+      - name: Time three starts with a fresh profile each, then one reusing the last profile
+        run: |
+          LO=/Applications/LibreOffice.app/Contents/MacOS/soffice
+          "$LO" --version
+          for i in 1 2 3; do
+            rm -rf "$PWD/profile$i"
+            start=$(date +%s)
+            "$LO" --headless --norestore --nologo "-env:UserInstallation=file://$PWD/profile$i" --convert-to pdf --outdir "out$i" jodconverter-local/src/integTest/resources/documents/test.odt
+            echo "fresh profile $i: $(( $(date +%s) - start )) s"
+          done
+          start=$(date +%s)
+          "$LO" --headless --norestore --nologo "-env:UserInstallation=file://$PWD/profile3" --convert-to pdf --outdir out4 jodconverter-local/src/integTest/resources/documents/test.odt
+          echo "reused profile: $(( $(date +%s) - start )) s"
+          start=$(date +%s)
+          "$LO" --headless --norestore --nologo --convert-to pdf --outdir out5 jodconverter-local/src/integTest/resources/documents/test.odt
+          echo "default profile, first use: $(( $(date +%s) - start )) s"
+          start=$(date +%s)
+          "$LO" --headless --norestore --nologo --convert-to pdf --outdir out6 jodconverter-local/src/integTest/resources/documents/test.odt
+          echo "default profile, second use: $(( $(date +%s) - start )) s"
+
+      - name: Where the time goes (SAL_LOG with timestamps)
+        run: |
+          LO=/Applications/LibreOffice.app/Contents/MacOS/soffice
+          rm -rf "$PWD/profile9"
+          SAL_LOG="+TIMESTAMP+INFO" "$LO" --headless --norestore --nologo "-env:UserInstallation=file://$PWD/profile9" --terminate_after_init 2> sal.log || true
+          wc -l sal.log
+          echo "--- first lines"; head -5 sal.log
+          echo "--- last lines"; tail -5 sal.log
+          echo "--- gaps of more than 2 seconds between consecutive lines"
+          awk '{ split($1, t, /[:.]/); s = t[1]*3600 + t[2]*60 + t[3]; if (NR > 1 && s - prev > 2) { print "gap " (s - prev) " s before: " $0; print "  after: " prevline } prev = s; prevline = $0 }' sal.log | head -40
+
+      - name: What the process does while it starts (sample)
+        run: |
+          LO=/Applications/LibreOffice.app/Contents/MacOS/soffice
+          rm -rf "$PWD/profile10"
+          "$LO" --headless --norestore --nologo "-env:UserInstallation=file://$PWD/profile10" --terminate_after_init &
+          sleep 8
+          pid=$(pgrep -n soffice || true)
+          echo "pid $pid"
+          sample "$pid" 5 -file sample.txt || true
+          head -80 sample.txt || true
+          wait || true
