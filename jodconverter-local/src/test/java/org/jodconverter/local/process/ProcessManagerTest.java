@@ -122,6 +122,10 @@ class ProcessManagerTest {
           }
         };
 
+    // Runs a command after another one: "&" would put the first one in the background on Unix,
+    // where the shell could then exit before the command has written anything.
+    private static final String THEN = OSUtils.IS_OS_WINDOWS ? " & " : "; ";
+
     private String[] shell(final String script) {
       return OSUtils.IS_OS_WINDOWS
           ? new String[] {"cmd", "/c", script}
@@ -138,7 +142,7 @@ class ProcessManagerTest {
     void whenTheCommandFails_ShouldThrowIOExceptionWithItsErrorOutput() {
 
       assertThatIOException()
-          .isThrownBy(() -> manager.execute(shell("echo oops 1>&2 & exit 3")))
+          .isThrownBy(() -> manager.execute(shell("echo oops 1>&2" + THEN + "exit 3")))
           .withMessageContaining("exited with the status 3")
           .withMessageContaining("oops");
     }
