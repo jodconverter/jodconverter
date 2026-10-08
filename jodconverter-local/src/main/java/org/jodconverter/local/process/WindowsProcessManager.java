@@ -58,12 +58,15 @@ public class WindowsProcessManager extends AbstractProcessManager {
   protected @NonNull String[] getRunningProcessesCommand(final @NonNull String process) {
 
     // Each line of the output is the command line of a process followed by its pid. The progress
-    // records are disabled since powershell writes them to the error stream.
+    // records are disabled since powershell writes them to the error stream. A failure of the
+    // query, such as a cancelled WMI call, exits with the status 1 so that it is told from an
+    // empty list.
     final var script =
         "$ProgressPreference = 'SilentlyContinue'; "
-            + "Get-CimInstance Win32_Process -Filter \"Name like '"
+            + "try { Get-CimInstance Win32_Process -ErrorAction Stop -Filter \"Name like '"
             + process.replace("'", "''")
-            + "%'\" | ForEach-Object { \"$($_.CommandLine) $($_.ProcessId)\" }";
+            + "%'\" | ForEach-Object { \"$($_.CommandLine) $($_.ProcessId)\" } }"
+            + " catch { Write-Error $_; exit 1 }";
     // The script is encoded since the quotes it contains would not survive the way the arguments
     // of a command are quoted on Windows.
     return new String[] {
@@ -94,7 +97,7 @@ public class WindowsProcessManager extends AbstractProcessManager {
         // from working. So we execute the query for real: the powershell process executing it must
         // be found in its own output.
         working =
-            execute(getRunningProcessesCommand("powershell")).stream()
+            executeWithRetries(getRunningProcessesCommand("powershell")).stream()
                 .anyMatch(line -> PROCESS_GET_LINE.matcher(line).matches());
       } catch (IOException ioEx) {
         working = false;
