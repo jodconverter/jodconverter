@@ -2598,20 +2598,25 @@
 <li>
 <p><strong>A complete conversion failed when the office process was lost while closing the document.</strong> LibreOffice 25.8.3 to
     26.2 may crash on Windows when a document is closed
-    (<a href="https://bugs.documentfoundation.org/show_bug.cgi?id=172335">tdf#172335</a>); the conversion then failed with a
-    <code>DisposedException</code> although its output was complete. The loss is now logged, the conversion succeeds, and the
-    office process is restarted before the next conversion, as usual.</p>
+    (<a href="https://bugs.documentfoundation.org/show_bug.cgi?id=172335">tdf#172335</a>); the conversion then failed, with a
+    <code>DisposedException</code> or an <code>OfficeException</code> wrapping a UNO <code>RuntimeException</code>, although its output was complete.
+    The loss is now logged, the conversion succeeds, and the office process is restarted before the next
+    conversion, as usual.</p>
 </li>
 <li>
 <p><strong>A failed listing of the processes was read as "no process found" on Windows.</strong> The PowerShell query that lists
     the running processes fails now and then with a cancelled WMI call. The failure was not seen: the office manager
     took the empty answer for the absence of an existing office process, and a failure during the first check marked
     the process manager unusable for the life of the JVM. A query that fails now reports its failure, and the listing
-    is tried three times (<a href="https://github.com/jodconverter/jodconverter/pull/546">#546</a>).</p>
+    is tried up to five times, with a delay that doubles from 250 ms to 2 s, since such a failure may last a few
+    seconds (<a href="https://github.com/jodconverter/jodconverter/pull/546">#546</a>).</p>
 </li>
 </ul>
 <h3 id="documentation"><strong>Documentation</strong><a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
 <ul>
+<li>Two entries are added to the <a href="../../faq/#known-libreoffice-issues">known LibreOffice issues</a>: the crash on document
+    close on Windows with LibreOffice 25.8.3 to 26.2, and the 35 seconds that an office process may take to accept
+    its first connection on macOS 15 and later.</li>
 <li>The Maven snippet of the <a href="../../getting-started/libreoffice-online/">LibreOffice Online</a> page showed a version that
     never existed (<a href="https://github.com/jodconverter/jodconverter/pull/544">#544</a>).</li>
 </ul>

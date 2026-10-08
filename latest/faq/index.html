@@ -2802,8 +2802,40 @@ and a <a href="https://github.com/jodconverter/jodconverter/issues/400">workarou
 <details class="question">
 <summary>Converting a presentation to HTML no longer creates one image per slide</summary>
 <p>The HTML export of presentations changed in LibreOffice 24.2 and no longer produces the image-per-slide output of
-earlier versions (<a href="https://github.com/jodconverter/jodconverter/issues/396">#396</a>). Use another output format, or
-an earlier LibreOffice version if you depend on that output.</p>
+earlier versions (<a href="https://github.com/jodconverter/jodconverter/issues/396">#396</a>). Since <strong>JODConverter</strong> 5.0,
+<code>LocalConverter.exportPages(...)</code> exports each slide as its own image; see
+<a href="../getting-started/page-images/">Slides to Images</a>.</p>
+</details>
+<details class="question">
+<summary>On Windows, the office process crashes when a document is closed (LibreOffice 25.8.3 to 26.2)</summary>
+<p>On Windows, LibreOffice 25.8.3 to 26.2.x may crash when a document is closed through UNO, after a conversion that
+was otherwise complete. The logs show <code>Connection lost unexpectedly</code>, sometimes a <code>DisposedException</code>, and the
+Windows event log names <code>soffice.bin</code> with the exception code <code>0xc0000409</code>. It does not happen at every
+conversion, and it happens with text documents as well as with presentations and drawings.</p>
+<p>This is a regression of LibreOffice, reported as
+<a href="https://bugs.documentfoundation.org/show_bug.cgi?id=172335">tdf#172335</a> (also seen by the users of
+<a href="https://github.com/unoconv/unoserver/issues/212">unoserver</a>). It is not reproduced on Linux nor on macOS. The
+last version without it is 25.8.2, and it is reported fixed in 26.8.0.</p>
+<p><strong>JODConverter</strong> restarts the office process, so the following conversions work. Since version 5.0.1, a crash
+while the document is closed no longer fails the conversion, whose output is complete at that point; a crash
+earlier in a conversion still fails it. On Windows, prefer LibreOffice 26.8 or later, or 25.8.2 or earlier.</p>
+</details>
+<details class="question">
+<summary>On macOS, every office process takes about 35 seconds to accept its first connection</summary>
+<p>When LibreOffice accepts a connection, it looks up the host name of the address <code>127.0.0.1</code>. On some macOS
+installations, the first such lookup of a process takes 35 seconds, and an office process is a new process each
+time it starts: every start, and every restart, then waits that long before its first conversion. Nothing fails,
+but a <code>processTimeout</code> or a <code>taskQueueTimeout</code> shorter than that delay can be exceeded.</p>
+<p>We measured it on the macOS 15 and macOS 26 images of the GitHub Actions runners (Apple silicon and Intel), and
+not on their macOS 14 image; we do not know how common it is on other machines. To check a machine, time the
+lookup in a new process:</p>
+<div class="language-bash highlight"><pre><span></span><code><span class="nb">time</span><span class="w"> </span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s1">'import socket; print(socket.getnameinfo(("127.0.0.1", 0), 0)[0])'</span>
+</code></pre></div>
+<p>It prints <code>localhost</code>; on an affected machine, it takes 35 seconds to do so. The delay is in the name resolution
+of macOS, before LibreOffice or <strong>JODConverter</strong> can do anything about it: the host name of the machine, the
+content of <code>/etc/hosts</code> and the accept string of the office process make no difference. Where it happens, keep
+the office processes alive (a high <code>maxTasksPerProcess</code>, no restart between conversions) so that the delay is
+paid once.</p>
 </details>
 <blockquote>
 <p>Whenever OpenOffice.org (OOo for short) is mentioned, this can generally be interpreted to include any office suite
