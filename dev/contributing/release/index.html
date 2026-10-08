@@ -2615,10 +2615,11 @@ credentials and the signing key, which live in the repository secrets; the rest 
 </ol>
 <h2 id="after-the-release">After the release<a class="headerlink" href="#after-the-release" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Next snapshot.</strong> On <code>develop</code>, merge <code>master</code> if the release pull request was not a fast-forward, then:
+<li><strong>Next snapshot.</strong> On a branch from <code>develop</code>:
     <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>setVersion<span class="w"> </span>-PnewVersion<span class="o">=</span>X.Y.Z+1-SNAPSHOT
 </code></pre></div>
-    Commit <code>Post release X.Y.Z</code> and push.</li>
+    Commit <code>Post release X.Y.Z</code> and open its pull request to <code>develop</code>. The merge commit of the release leaves
+    <code>master</code> one commit ahead of <code>develop</code>, with no change in it: no need to merge it back.</li>
 <li><strong>Milestone.</strong> Close the milestone of the release and create the next one.</li>
 </ol>
 <h2 id="secrets-of-the-release-workflow">Secrets of the release workflow<a class="headerlink" href="#secrets-of-the-release-workflow" title="Permanent link">&para;</a></h2>
