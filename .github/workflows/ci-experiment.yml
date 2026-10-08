@@ -12,41 +12,20 @@ permissions:
 
 jobs:
   macos:
-    runs-on: macos-latest
-    timeout-minutes: 20
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, macos-15, macos-15-intel, macos-26, macos-latest]
     steps:
-      - name: Remedies for the slow reverse lookup of 127.0.0.1
+      - name: Reverse lookup of 127.0.0.1 on this image
         run: |
-          measure() {
-            python3 - "$1" <<'PY'
-          import socket, sys, time
-          out = []
-          for addr in ("127.0.0.1", "::1"):
+          sw_vers | tr '\n' ' '; echo; uname -m
+          python3 - <<'PY'
+          import socket, time
+          for i in range(2):
               start = time.time()
-              try:
-                  name = socket.getnameinfo((addr, 0), 0)[0]
-              except Exception as ex:
-                  name = repr(ex)
-              out.append(f"{addr} -> {name} in {round(time.time() - start, 1)} s")
-          print(f"{sys.argv[1]}: " + "; ".join(out), flush=True)
+              name = socket.getnameinfo(("127.0.0.1", 0), 0)[0]
+              print(f"127.0.0.1 -> {name} in {round(time.time() - start, 1)} s", flush=True)
           PY
-          }
-          echo "host: $(hostname)"
-          grep -v '^#' /etc/hosts
-          scutil --dns | grep -E "resolver #|nameserver|domain|timeout|flags" | head -30
-          ( time dig -x 127.0.0.1 +time=5 +tries=1 +short ) 2>&1 | grep -E "real|localhost|timed out|no servers" || true
-          measure "as the runner comes"
-          measure "again"
-
-          sudo mkdir -p /etc/resolver
-          printf 'nameserver 127.0.0.1\nport 5999\ntimeout 1\n' | sudo tee /etc/resolver/127.in-addr.arpa > /dev/null
-          sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder || true; sleep 2
-          measure "with a dead resolver for 127.in-addr.arpa, timeout 1"
-
-          sudo rm /etc/resolver/127.in-addr.arpa
-          sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder || true; sleep 2
-          sudo sed -i '' 's/^127\.0\.0\.1[[:space:]]*localhost$/127.0.0.1 localhost localhost.localdomain/' /etc/hosts
-          measure "with two names on the 127.0.0.1 line of /etc/hosts"
-
-          sudo scutil --set HostName ci-runner
-          measure "with the host name ci-runner"
