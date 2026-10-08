@@ -13,13 +13,9 @@ permissions:
 jobs:
   windows:
     runs-on: windows-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
-      - name: Python variables of the runner
-        shell: pwsh
-        run: |
-          Get-ChildItem Env: | Where-Object { $_.Name -match 'PYTHON|^PATH$|pythonLocation|Python' } | Format-Table -AutoSize -Wrap
-          Get-Command python -ErrorAction SilentlyContinue | Format-Table -AutoSize
+      - uses: actions/checkout@v7
 
       - name: Install LibreOffice
         timeout-minutes: 10
@@ -28,45 +24,43 @@ jobs:
       - name: LibreOffice Python layout
         shell: pwsh
         run: |
-          $lo = Get-ChildItem 'C:\Program Files\LibreOffice*\program\soffice.exe' | Select-Object -First 1
-          "soffice: $($lo.FullName)"
-          Get-ChildItem $lo.DirectoryName -Directory | Where-Object { $_.Name -match 'python' } | Format-Table Name
-          Get-Content "$($lo.DirectoryName)\pythonloader.unorc" -ErrorAction SilentlyContinue
-          Get-Content "$($lo.DirectoryName)\python-core-*\python*._pth" -ErrorAction SilentlyContinue | Select-Object -First 20
+          $dir = 'C:\Program Files\LibreOffice\program'
+          Get-ChildItem $dir | Where-Object { $_.Name -match 'python' } | Format-Table Name, Length
+          Get-ChildItem $dir -Filter 'python*.ini' | ForEach-Object { "--- $($_.Name)"; Get-Content $_.FullName }
+          Get-ChildItem "$dir\python-core-*" -Recurse -Filter '*._pth' | ForEach-Object { "--- $($_.FullName)"; Get-Content $_.FullName }
+          Get-ChildItem "$dir\python-core-*" -Directory | Format-Table FullName
+          Get-ChildItem "$dir\python-core-*\lib" -Directory -ErrorAction SilentlyContinue | Select-Object -First 5 | Format-Table FullName
 
-      - name: Convert with the runner environment
+      - name: Twenty conversions in a row, each in its own process, with the runner environment
         shell: pwsh
         run: |
-          $lo = (Get-ChildItem 'C:\Program Files\LibreOffice*\program\soffice.exe' | Select-Object -First 1).FullName
-          New-Item -ItemType Directory out1 | Out-Null
-          Copy-Item jodconverter-local/src/integTest/resources/documents/test_custom_formats.odp in.odp
+          $lo = 'C:\Program Files\LibreOffice\program\soffice.exe'
+          $docs = @('test_custom_formats.odp;html', 'test.odt;pdf', 'test.docx;pdf', 'test.xlsx;pdf', 'test.pptx;pdf')
+          New-Item -ItemType Directory out | Out-Null
+          for ($i = 1; $i -le 20; $i++) {
+            $parts = $docs[($i - 1) % $docs.Count].Split(';')
+            $src = "jodconverter-local/src/integTest/resources/documents/$($parts[0])"
+            $sw = [Diagnostics.Stopwatch]::StartNew()
+            $p = Start-Process -FilePath $lo -ArgumentList @('--headless', '--invisible', '--nocrashreport', '--nodefault', '--nofirststartwizard', '--nolockcheck', '--nologo', '--norestore', "-env:UserInstallation=file:///$PWD/profile-$i", '--convert-to', $parts[1], '--outdir', 'out', $src) -PassThru -NoNewWindow -RedirectStandardError "err-$i.txt" -RedirectStandardOutput "out-$i.txt"
+            $done = $p.WaitForExit(90000)
+            if (-not $done) { $p.Kill(); "run $i ($($parts[0]) -> $($parts[1])): HUNG after 90 s"; } else { "run $i ($($parts[0]) -> $($parts[1])): exit $($p.ExitCode) in $([int]$sw.Elapsed.TotalMilliseconds) ms" }
+            $err = Get-Content "err-$i.txt" -ErrorAction SilentlyContinue
+            if ($err) { "   stderr: $($err -join ' | ')" }
+          }
+          Get-ChildItem out | Format-Table Name, Length
+
+      - name: Same twenty conversions, one process in listening mode
+        shell: pwsh
+        run: |
+          $lo = 'C:\Program Files\LibreOffice\program\soffice.exe'
+          $p = Start-Process -FilePath $lo -ArgumentList @('--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager', '--headless', '--invisible', '--nocrashreport', '--nodefault', '--nofirststartwizard', '--nolockcheck', '--nologo', '--norestore', "-env:UserInstallation=file:///$PWD/profile-accept") -PassThru -NoNewWindow -RedirectStandardError 'err-accept.txt' -RedirectStandardOutput 'out-accept.txt'
           $sw = [Diagnostics.Stopwatch]::StartNew()
-          & $lo --headless --norestore --nologo "-env:UserInstallation=file:///$PWD/profile1" --convert-to html --outdir out1 in.odp 2>&1 | Tee-Object err1.txt
-          "exit: $LASTEXITCODE in $($sw.Elapsed.TotalSeconds) s"
-          Get-ChildItem out1
-
-      - name: Convert without PYTHONHOME and PYTHONPATH
-        shell: pwsh
-        run: |
-          Remove-Item Env:PYTHONHOME -ErrorAction SilentlyContinue
-          Remove-Item Env:PYTHONPATH -ErrorAction SilentlyContinue
-          $lo = (Get-ChildItem 'C:\Program Files\LibreOffice*\program\soffice.exe' | Select-Object -First 1).FullName
-          New-Item -ItemType Directory out2 | Out-Null
-          $sw = [Diagnostics.Stopwatch]::StartNew()
-          & $lo --headless --norestore --nologo "-env:UserInstallation=file:///$PWD/profile2" --convert-to html --outdir out2 in.odp 2>&1 | Tee-Object err2.txt
-          "exit: $LASTEXITCODE in $($sw.Elapsed.TotalSeconds) s"
-          Get-ChildItem out2
-
-      - name: Run a Python macro to see whether the bundled Python works
-        shell: pwsh
-        run: |
-          $lo = (Get-ChildItem 'C:\Program Files\LibreOffice*\program\soffice.exe' | Select-Object -First 1).FullName
-          & $lo --headless --norestore --nologo "-env:UserInstallation=file:///$PWD/profile3" "vnd.sun.star.script:HelloWorld.py`$HelloWorldPython?language=Python&location=share" 2>&1 | Tee-Object err3.txt
-          "exit: $LASTEXITCODE"
-          Remove-Item Env:PYTHONHOME -ErrorAction SilentlyContinue
-          Remove-Item Env:PYTHONPATH -ErrorAction SilentlyContinue
-          & $lo --headless --norestore --nologo "-env:UserInstallation=file:///$PWD/profile4" "vnd.sun.star.script:HelloWorld.py`$HelloWorldPython?language=Python&location=share" 2>&1 | Tee-Object err4.txt
-          "exit: $LASTEXITCODE"
+          while (-not (Test-NetConnection 127.0.0.1 -Port 2002 -InformationLevel Quiet -WarningAction SilentlyContinue) -and $sw.Elapsed.TotalSeconds -lt 90) { Start-Sleep -Milliseconds 500 }
+          "listening after $([int]$sw.Elapsed.TotalMilliseconds) ms; exited: $($p.HasExited)"
+          Start-Sleep -Seconds 5
+          "alive after 5 s more: $(-not $p.HasExited)"
+          Get-Content err-accept.txt -ErrorAction SilentlyContinue
+          if (-not $p.HasExited) { $p.Kill() }
 
   macos:
     runs-on: macos-latest
@@ -78,45 +72,32 @@ jobs:
         timeout-minutes: 10
         run: brew install --cask libreoffice
 
-      - name: Time three starts with a fresh profile each, then one reusing the last profile
+      - name: Time until the office listens, in the mode of the office manager
         run: |
           LO=/Applications/LibreOffice.app/Contents/MacOS/soffice
           "$LO" --version
-          for i in 1 2 3; do
-            rm -rf "$PWD/profile$i"
-            start=$(date +%s)
-            "$LO" --headless --norestore --nologo "-env:UserInstallation=file://$PWD/profile$i" --convert-to pdf --outdir "out$i" jodconverter-local/src/integTest/resources/documents/test.odt
-            echo "fresh profile $i: $(( $(date +%s) - start )) s"
-          done
-          start=$(date +%s)
-          "$LO" --headless --norestore --nologo "-env:UserInstallation=file://$PWD/profile3" --convert-to pdf --outdir out4 jodconverter-local/src/integTest/resources/documents/test.odt
-          echo "reused profile: $(( $(date +%s) - start )) s"
-          start=$(date +%s)
-          "$LO" --headless --norestore --nologo --convert-to pdf --outdir out5 jodconverter-local/src/integTest/resources/documents/test.odt
-          echo "default profile, first use: $(( $(date +%s) - start )) s"
-          start=$(date +%s)
-          "$LO" --headless --norestore --nologo --convert-to pdf --outdir out6 jodconverter-local/src/integTest/resources/documents/test.odt
-          echo "default profile, second use: $(( $(date +%s) - start )) s"
+          run() {
+            label="$1"; shift
+            start=$(python3 -c 'import time; print(time.time())')
+            "$LO" "$@" --headless --invisible --nocrashreport --nodefault --nofirststartwizard --nolockcheck --nologo --norestore 2> "err-$label.txt" &
+            pid=$!
+            until nc -z 127.0.0.1 2002 2>/dev/null; do sleep 0.25; if ! kill -0 $pid 2>/dev/null; then echo "$label: process exited"; break; fi; done
+            end=$(python3 -c 'import time; print(time.time())')
+            echo "$label: listening after $(python3 -c "print(round($end - $start, 1))") s"
+            kill $pid 2>/dev/null; wait $pid 2>/dev/null || true
+            sed 's/^/   stderr: /' "err-$label.txt" | head -5
+          }
+          rm -rf "$PWD/p1"; run "fresh profile, host=127.0.0.1" "--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager" "-env:UserInstallation=file://$PWD/p1"
+          run "same profile again" "--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager" "-env:UserInstallation=file://$PWD/p1"
+          rm -rf "$PWD/p2"; run "fresh profile, host=localhost" "--accept=socket,host=localhost,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager" "-env:UserInstallation=file://$PWD/p2"
+          rm -rf "$PWD/p3"; run "fresh profile, no tcpNoDelay" "--accept=socket,host=127.0.0.1,port=2002;urp;StarOffice.ServiceManager" "-env:UserInstallation=file://$PWD/p3"
 
-      - name: Where the time goes (SAL_LOG with timestamps)
+      - name: What the process does while it starts (sample at 5 s)
         run: |
           LO=/Applications/LibreOffice.app/Contents/MacOS/soffice
-          rm -rf "$PWD/profile9"
-          SAL_LOG="+TIMESTAMP+INFO" "$LO" --headless --norestore --nologo "-env:UserInstallation=file://$PWD/profile9" --terminate_after_init 2> sal.log || true
-          wc -l sal.log
-          echo "--- first lines"; head -5 sal.log
-          echo "--- last lines"; tail -5 sal.log
-          echo "--- gaps of more than 2 seconds between consecutive lines"
-          awk '{ split($1, t, /[:.]/); s = t[1]*3600 + t[2]*60 + t[3]; if (NR > 1 && s - prev > 2) { print "gap " (s - prev) " s before: " $0; print "  after: " prevline } prev = s; prevline = $0 }' sal.log | head -40
-
-      - name: What the process does while it starts (sample)
-        run: |
-          LO=/Applications/LibreOffice.app/Contents/MacOS/soffice
-          rm -rf "$PWD/profile10"
-          "$LO" --headless --norestore --nologo "-env:UserInstallation=file://$PWD/profile10" --terminate_after_init &
-          sleep 8
-          pid=$(pgrep -n soffice || true)
-          echo "pid $pid"
-          sample "$pid" 5 -file sample.txt || true
-          head -80 sample.txt || true
-          wait || true
+          rm -rf "$PWD/p4"
+          "$LO" "--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager" --headless --invisible --nocrashreport --nodefault --nofirststartwizard --nolockcheck --nologo --norestore "-env:UserInstallation=file://$PWD/p4" &
+          pid=$!
+          sleep 5
+          if nc -z 127.0.0.1 2002 2>/dev/null; then echo "already listening at 5 s, nothing to sample"; else sample $pid 3 -mayDie -file sample.txt || true; grep -n "Call graph" -A60 sample.txt | head -80; fi
+          kill $pid 2>/dev/null; wait $pid 2>/dev/null || true
