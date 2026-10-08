@@ -13,28 +13,58 @@ permissions:
 jobs:
   macos:
     runs-on: macos-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v7
+      - name: Install LibreOffice
+        timeout-minutes: 10
+        run: brew install --cask libreoffice
 
-      - uses: actions/setup-java@v6
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: The lookups of the Java UNO connection, before and after each remedy
+      - name: Firewall and loopback
         run: |
-          python3 -m http.server 8765 >/dev/null 2>&1 &
-          sleep 1
-          cat /etc/hosts | grep -v '^#'
-          java .github/experiments/Lookups.java "as the runner comes ($(hostname))" 8765
-          java .github/experiments/Lookups.java "again, same JVM settings" 8765
-          sudo scutil --set HostName ci-runner
-          echo "127.0.0.1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
-          echo "::1 ci-runner" | sudo tee -a /etc/hosts > /dev/null
-          java .github/experiments/Lookups.java "with the host name ci-runner in /etc/hosts ($(hostname))" 8765
-          java -Djava.net.preferIPv4Stack=true .github/experiments/Lookups.java "the same, with preferIPv4Stack" 8765
-          sudo sed -i '' '/ci-runner/d' /etc/hosts
-          java .github/experiments/Lookups.java "host name ci-runner, not in /etc/hosts" 8765
-          sudo scutil --set HostName localhost
-          java .github/experiments/Lookups.java "with the host name localhost ($(hostname))" 8765
+          echo "host: $(hostname)"
+          /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate || true
+          /usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode || true
+          python3 -m http.server 8765 --bind 127.0.0.1 >/dev/null 2>&1 &
+          sleep 2
+          python3 - <<'PY'
+          import socket, time
+          for host in ("127.0.0.1", "localhost"):
+              start = time.time()
+              try:
+                  socket.create_connection((host, 8765), timeout=60).close()
+                  print(f"connect to {host}:8765 in {round(time.time() - start, 2)} s")
+              except Exception as ex:
+                  print(f"connect to {host}:8765 failed after {round(time.time() - start, 2)} s: {ex!r}")
+          PY
+
+      - name: What the office does when a client connects, three starts
+        run: |
+          LO=/Applications/LibreOffice.app/Contents/MacOS/soffice
+          for i in 1 2 3; do
+            rm -rf "$PWD/p$i"
+            "$LO" "--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager" --headless --invisible --nocrashreport --nodefault --nofirststartwizard --nolockcheck --nologo --norestore "-env:UserInstallation=file://$PWD/p$i" 2>/dev/null &
+            until nc -z 127.0.0.1 2002 2>/dev/null; do sleep 0.25; done
+            pid=$(pgrep -f "soffice.*port=2002" | head -1)
+            echo "--- start $i: listening, pid $pid"
+            # A UNO client: the first message of the URP protocol asks for the properties of the
+            # bridge; here we only connect and wait for the office to say something or to close.
+            python3 - <<'PY' &
+          import socket, time
+          start = time.time()
+          s = socket.create_connection(("127.0.0.1", 2002), timeout=90)
+          print(f"client connected in {round(time.time() - start, 2)} s", flush=True)
+          s.settimeout(60)
+          try:
+              data = s.recv(64)
+              print(f"first bytes from the office after {round(time.time() - start, 2)} s: {len(data)} byte(s)", flush=True)
+          except Exception as ex:
+              print(f"nothing from the office after {round(time.time() - start, 2)} s: {ex!r}", flush=True)
+          PY
+            client=$!
+            sleep 4
+            sample "$pid" 3 -mayDie -file "sample$i.txt" >/dev/null 2>&1 || true
+            echo "threads that are not idle in the run loop:"
+            grep -E "getaddrinfo|getnameinfo|gethostby|mDNS|DNSService|dns_|si_|mach_msg|accept|osl_getLocalHostname|osl_.*Host|SocketAcceptor|OAcceptor|bridge|Bridge" "sample$i.txt" | sed 's/^ *//' | cut -c1-150 | sort | uniq -c | sort -rn | head -25
+            wait $client || true
+            kill "$pid" 2>/dev/null; sleep 2
+          done
