@@ -57,8 +57,8 @@ The SVG of a slide is its vector drawing, with the text as text (1 to 30 KB for 
 the SVG produced by a conversion of the whole presentation (`converter.convert(deck).to(deck.svg)`), which embeds the
 fonts and is many times larger.
 
-## A note on LibreOffice 26.2 on Windows
+## A note on LibreOffice 25.8.3 to 26.2 on Windows
 
-With an unpacked (not installed) LibreOffice 26.2 on Windows, the office process was seen to crash when the document
-is closed after such an export; the office manager restarts it, and the images are complete. The crash was not
-reproduced on Linux, nor with LibreOffice 25.2 on Windows.
+On Windows, these versions of LibreOffice may crash when the document is closed after such an export; the office
+manager restarts the process, and the images are complete. It is a LibreOffice regression that is not specific to
+this export: see [Known LibreOffice issues](../faq.md#known-libreoffice-issues).
