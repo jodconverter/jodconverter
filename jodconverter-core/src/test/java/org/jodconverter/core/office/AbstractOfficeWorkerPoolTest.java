@@ -1097,14 +1097,18 @@ class AbstractOfficeWorkerPoolTest {
     @Test
     void whenAWorkerCannotBeMadeReady_ShouldCountTheFailedAttempts() throws Exception {
 
+      // The worker keeps failing until the test has seen the count: a worker that fails twice then
+      // starts may be ready, and its count forgotten, before the test gets to look.
       final var worker = new FakeOfficeWorker();
-      worker.failingStarts.set(2);
+      worker.failingStarts.set(Integer.MAX_VALUE);
       pool = builder(worker).startFailFast(false).build();
 
       pool.start();
 
       // The attempts that fail are counted while the worker is not ready...
-      await(() -> pool.getStatus().workers().get(0).startFailures() > 0);
+      await(() -> pool.getStatus().workers().get(0).startFailures() > 1);
+      assertThat(states(pool).get(0)).isEqualTo(OfficeWorkerState.STARTING);
+      worker.failingStarts.set(0);
       await(() -> states(pool).get(0) == OfficeWorkerState.READY);
       // ...and forgotten once it is ready. The attempts of the start are not restarts.
       assertThat(pool.getStatus().workers())
