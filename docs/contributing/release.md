@@ -26,8 +26,9 @@ credentials and the signing key, which live in the repository secrets; the rest 
     ```bash
     ./gradlew clean build integrationTest
     ```
-6. **Release commit.** Commit on `develop` with the message `Release X.Y.Z`, push, open the pull request from
-    `develop` to `master`, let the checks pass, merge it with a merge commit.
+6. **Release commit.** On a `release/X.Y.Z` branch, commit with the message `Release X.Y.Z` and open its pull
+    request to `develop`, which only takes pull requests. Once it is merged, open the pull request from `develop` to
+    `master`, let the checks pass, merge it with a merge commit.
 
 ## The release
 
