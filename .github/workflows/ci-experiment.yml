@@ -11,55 +11,69 @@ permissions:
   contents: read
 
 jobs:
-  windows:
-    runs-on: windows-latest
+  macos:
+    runs-on: macos-latest
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v7
 
+      - uses: actions/setup-java@v6
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - uses: gradle/actions/setup-gradle@v6
+
       - name: Install LibreOffice
         timeout-minutes: 10
-        run: choco install libreoffice-still -y --no-progress
+        run: brew install --cask libreoffice
 
-      - name: LibreOffice Python layout
-        shell: pwsh
+      - name: How long the runner takes to resolve its own host name
         run: |
-          $dir = 'C:\Program Files\LibreOffice\program'
-          Get-ChildItem $dir | Where-Object { $_.Name -match 'python' } | Format-Table Name, Length
-          Get-ChildItem $dir -Filter 'python*.ini' | ForEach-Object { "--- $($_.Name)"; Get-Content $_.FullName }
-          Get-ChildItem "$dir\python-core-*" -Recurse -Filter '*._pth' | ForEach-Object { "--- $($_.FullName)"; Get-Content $_.FullName }
-          Get-ChildItem "$dir\python-core-*" -Directory | Format-Table FullName
-          Get-ChildItem "$dir\python-core-*\lib" -Directory -ErrorAction SilentlyContinue | Select-Object -First 5 | Format-Table FullName
+          echo "hostname: $(hostname); HostName: $(scutil --get HostName 2>/dev/null || echo none); LocalHostName: $(scutil --get LocalHostName)"
+          grep -v '^#' /etc/hosts
+          for i in 1 2 3; do
+            start=$(python3 -c 'import time; print(time.time())')
+            python3 -c 'import socket; print("  getaddrinfo:", socket.getaddrinfo(socket.gethostname(), None)[0][4][0])' || echo "  getaddrinfo failed"
+            python3 -c "import time; print('  took', round(time.time() - $start, 1), 's')"
+            start=$(python3 -c 'import time; print(time.time())')
+            python3 -c 'import socket; print("  getfqdn:", socket.getfqdn())' || true
+            python3 -c "import time; print('  took', round(time.time() - $start, 1), 's')"
+            sleep 20
+          done
 
-      - name: Twenty conversions in a row, each in its own process, with the runner environment
-        shell: pwsh
+      - name: The CLI integration tests as they are (eight office starts)
         run: |
-          $lo = 'C:\Program Files\LibreOffice\program\soffice.exe'
-          $here = $PWD.Path.Replace('\', '/')
-          $docs = @('test_custom_formats.odp;html', 'test.odt;pdf', 'test.docx;pdf', 'test.xlsx;pdf', 'test.pptx;pdf')
-          New-Item -ItemType Directory out | Out-Null
-          for ($i = 1; $i -le 20; $i++) {
-            $parts = $docs[($i - 1) % $docs.Count].Split(';')
-            $src = "jodconverter-local/src/integTest/resources/documents/$($parts[0])"
-            $sw = [Diagnostics.Stopwatch]::StartNew()
-            $p = Start-Process -FilePath $lo -ArgumentList @('--headless', '--invisible', '--nocrashreport', '--nodefault', '--nofirststartwizard', '--nolockcheck', '--nologo', '--norestore', "-env:UserInstallation=file:///$here/profile-$i", '--convert-to', $parts[1], '--outdir', 'out', $src) -PassThru -NoNewWindow -RedirectStandardError "err-$i.txt" -RedirectStandardOutput "out-$i.txt"
-            $done = $p.WaitForExit(90000)
-            if (-not $done) { $p.Kill(); "run $i ($($parts[0]) -> $($parts[1])): HUNG after 90 s"; } else { "run $i ($($parts[0]) -> $($parts[1])): exit $($p.ExitCode) in $([int]$sw.Elapsed.TotalMilliseconds) ms" }
-            $err = Get-Content "err-$i.txt" -ErrorAction SilentlyContinue
-            if ($err) { "   stderr: $($err -join ' | ')" }
-          }
-          Get-ChildItem out | Format-Table Name, Length
+          start=$(date +%s)
+          ./gradlew :jodconverter-cli:integrationTest --no-daemon -q 2>&1 | grep -v "^$" | tail -3 || true
+          echo "took $(( $(date +%s) - start )) s"
+          python3 - <<'EOF'
+          import glob, re
+          for f in glob.glob('jodconverter-cli/build/test-results/integrationTest/*.xml'):
+              s = open(f, encoding='utf-8').read()
+              starts = [(m.group(1), m.group(2)) for m in re.finditer(r'(\d\d:\d\d:\d\d,\d\d\d) INFO .*(Starting process with|Connected: \'socket)', s)]
+              print(f.split('TEST-')[-1], [t for t, _ in starts])
+          EOF
 
-      - name: Same twenty conversions, one process in listening mode
-        shell: pwsh
+      - name: Resolve the host name again after the tests
         run: |
-          $lo = 'C:\Program Files\LibreOffice\program\soffice.exe'
-          $here = $PWD.Path.Replace('\', '/')
-          $p = Start-Process -FilePath $lo -ArgumentList @('--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager', '--headless', '--invisible', '--nocrashreport', '--nodefault', '--nofirststartwizard', '--nolockcheck', '--nologo', '--norestore', "-env:UserInstallation=file:///$here/profile-accept") -PassThru -NoNewWindow -RedirectStandardError 'err-accept.txt' -RedirectStandardOutput 'out-accept.txt'
-          $sw = [Diagnostics.Stopwatch]::StartNew()
-          while (-not (Test-NetConnection 127.0.0.1 -Port 2002 -InformationLevel Quiet -WarningAction SilentlyContinue) -and $sw.Elapsed.TotalSeconds -lt 90) { Start-Sleep -Milliseconds 500 }
-          "listening after $([int]$sw.Elapsed.TotalMilliseconds) ms; exited: $($p.HasExited)"
-          Start-Sleep -Seconds 5
-          "alive after 5 s more: $(-not $p.HasExited)"
-          Get-Content err-accept.txt -ErrorAction SilentlyContinue
-          if (-not $p.HasExited) { $p.Kill() }
+          start=$(python3 -c 'import time; print(time.time())')
+          python3 -c 'import socket; print("getaddrinfo:", socket.getaddrinfo(socket.gethostname(), None)[0][4][0])' || echo "getaddrinfo failed"
+          python3 -c "import time; print('took', round(time.time() - $start, 1), 's')"
+
+      - name: Add the host name to /etc/hosts, then the same tests again
+        run: |
+          echo "127.0.0.1 $(hostname)" | sudo tee -a /etc/hosts
+          start=$(python3 -c 'import time; print(time.time())')
+          python3 -c 'import socket; print("getaddrinfo:", socket.getaddrinfo(socket.gethostname(), None)[0][4][0])'
+          python3 -c "import time; print('took', round(time.time() - $start, 1), 's')"
+          start=$(date +%s)
+          ./gradlew :jodconverter-cli:integrationTest --no-daemon -q --rerun-tasks 2>&1 | grep -v "^$" | tail -3 || true
+          echo "took $(( $(date +%s) - start )) s"
+          python3 - <<'EOF'
+          import glob, re
+          for f in glob.glob('jodconverter-cli/build/test-results/integrationTest/*.xml'):
+              s = open(f, encoding='utf-8').read()
+              starts = [(m.group(1), m.group(2)) for m in re.finditer(r'(\d\d:\d\d:\d\d,\d\d\d) INFO .*(Starting process with|Connected: \'socket)', s)]
+              print(f.split('TEST-')[-1], [t for t, _ in starts])
+          EOF
