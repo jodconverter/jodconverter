@@ -31,7 +31,10 @@ import java.nio.file.Files;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -39,8 +42,15 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.office.PasswordProtectedException;
 
-/** Contains tests for the conversion of password-protected documents, with a real office. */
+/**
+ * Contains tests for the conversion of password-protected documents, with a real office.
+ *
+ * <p>The protected documents are all made before the tests, and the tests with a wrong password run
+ * last: LibreOffice 26.2 on Windows was seen crashing when it encrypted a document after it had
+ * refused a wrong password.
+ */
 @ExtendWith(LocalOfficeManagerExtension.class)
+@TestMethodOrder(OrderAnnotation.class)
 class PasswordITest {
 
   private static final String PASSWORD = "s3cret";
@@ -49,6 +59,7 @@ class PasswordITest {
 
   private static File protectedOdt;
   private static File protectedDocx;
+  private static File protectedOdp;
 
   // The protected documents are made by the office itself: the Password store property encrypts
   // the output.
@@ -61,6 +72,8 @@ class PasswordITest {
     converter.convert(documentFile("test.txt")).to(protectedOdt).execute();
     protectedDocx = new File(folder, "protected.docx");
     converter.convert(documentFile("test.txt")).to(protectedDocx).execute();
+    protectedOdp = new File(folder, "protected.odp");
+    converter.convert(documentFile("test.odp")).to(protectedOdp).execute();
   }
 
   private static String text(final File file) throws IOException {
@@ -68,6 +81,7 @@ class PasswordITest {
   }
 
   @Test
+  @Order(1)
   void withTheRightPassword_ShouldConvert(
       final @TempDir File testFolder, final OfficeManager manager)
       throws OfficeException, IOException {
@@ -83,6 +97,7 @@ class PasswordITest {
   }
 
   @Test
+  @Order(3)
   void withoutPassword_ShouldThrowPasswordProtectedException(
       final @TempDir File testFolder, final OfficeManager manager) {
 
@@ -94,6 +109,7 @@ class PasswordITest {
   }
 
   @Test
+  @Order(4)
   void withAWrongPassword_ShouldThrowPasswordProtectedException(
       final @TempDir File testFolder, final OfficeManager manager) {
 
@@ -113,13 +129,9 @@ class PasswordITest {
   }
 
   @Test
+  @Order(2)
   void exportPages_WithThePassword_ShouldExport(
       final @TempDir File testFolder, final OfficeManager manager) throws OfficeException {
-
-    final var converter =
-        LocalConverter.builder().officeManager(manager).storeProperty("Password", PASSWORD).build();
-    final var protectedOdp = new File(folder, "protected.odp");
-    converter.convert(documentFile("test.odp")).to(protectedOdp).execute();
 
     final var images =
         LocalConverter.make(manager)
