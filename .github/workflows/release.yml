@@ -57,8 +57,8 @@ jobs:
 
       - name: 🔨 Build
         # The unit tests ran on the pull request to master; the integration tests run on the release
-        # machine, with a real office installation, before the tag is pushed.
-        run: ./gradlew build -x test --no-daemon
+        # machine, with a real office installation, before the tag is pushed. The runner has no office.
+        run: ./gradlew build -x test -x integrationTest --no-daemon
 
       - name: 🔏 Sign the publications (dry run)
         if: github.event_name == 'workflow_dispatch'
