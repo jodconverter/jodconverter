@@ -18,7 +18,7 @@ See the dedicated page: [Command Line Tool](command-line-tool.md)
 
 ## jodconverter-core
 
-[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-core/5.0.0/dependencies)
+[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-core/5.0.1/dependencies)
 
 The `jodconverter-core` module provides the core abstractions, used by JODConverter module implementations,
 such as `jodconverter-local` or `jodconverter-remote`. It abstracts the complexity of working with office managers,
@@ -26,7 +26,7 @@ document formats, and conversion pipelines.
 
 ## jodconverter-local
 
-[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local/5.0.0/dependencies)
+[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local/5.0.1/dependencies)
 
 The `jodconverter-local` module builds on top of the `jodconverter-core` module and provides a ready-to-use
 implementation that connects to a locally installed instance of LibreOffice or Apache OpenOffice to perform document
@@ -40,7 +40,7 @@ See also: [Java Library](java-library/index.md)
 
 ## jodconverter-local-oo
 
-[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local-oo/5.0.0/dependencies)
+[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local-oo/5.0.1/dependencies)
 
 The `jodconverter-local-oo` module provides a variant of `jodconverter-local` that is packaged with dependencies
 targeting Apache OpenOffice. It contains no additional code, but includes the OpenOffice UNO libraries instead of
@@ -55,7 +55,7 @@ OpenOffice libraries. See https://github.com/jodconverter/jodconverter/issues/11
 
 ## jodconverter-local-lo
 
-[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local-lo/5.0.0/dependencies)
+[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local-lo/5.0.1/dependencies)
 
 The `jodconverter-local-lo` module is a variant of `jodconverter-local` that packages the project with LibreOffice UNO
 libraries instead of the default Apache OpenOffice ones. Like `jodconverter-local-oo`, it contains no additional Java
@@ -66,7 +66,7 @@ active development and broader format support.
 
 ## jodconverter-remote
 
-[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-remote/5.0.0/dependencies)
+[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-remote/5.0.1/dependencies)
 
 The `jodconverter-remote` module is a Java client library designed to perform document conversions by connecting to a
 remote document conversion REST API, such as those exposed by LibreOffice Online or Collabora Online.
@@ -101,7 +101,7 @@ methods: `<bean id="officeManager" class="org.jodconverter.local.office.LocalOff
 
 ## jodconverter-spring-boot-starter
 
-[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-spring-boot-starter/5.0.0/dependencies)
+[Dependencies](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-spring-boot-starter/5.0.1/dependencies)
 
 The `jodconverter-spring-boot-starter` module provides a convenient Spring Boot starter that simplifies integrating
 JODConverter’s document conversion capabilities into Spring Boot applications.

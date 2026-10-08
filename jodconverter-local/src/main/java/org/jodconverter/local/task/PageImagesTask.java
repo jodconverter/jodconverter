@@ -182,7 +182,9 @@ public class PageImagesTask extends AbstractLocalOfficeTask {
       XComponent document = null;
       try {
         document = loadDocument(localContext, sourceFile);
-        filterChain.doFilter(context, document);
+        // A chain keeps its position, and this one is the chain of the converter: each export goes
+        // through a copy, so that the filters are applied at every export, not only the first.
+        filterChain.copy().doFilter(context, document);
         exportPages(localContext, document);
       } catch (OfficeException officeEx) {
         throw officeEx;

@@ -21,6 +21,7 @@
 package org.jodconverter.local.process;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -41,6 +42,12 @@ public abstract class AbstractProcessManager implements ProcessManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessManager.class);
 
+  /** The number of times the command that lists the processes is tried before giving up. */
+  public static final int ATTEMPTS = 3;
+
+  /** The delay between two attempts, in milliseconds. */
+  public static final long RETRY_DELAY = 250L;
+
   /** Initializes a new instance of the class. */
   protected AbstractProcessManager() {
     super();
@@ -48,11 +55,12 @@ public abstract class AbstractProcessManager implements ProcessManager {
 
   /**
    * Executes the specified command and returns the lines of its output. The error output is logged
-   * at the trace level.
+   * at the trace level, and reported when the command fails.
    *
    * @param command The command to execute.
    * @return The lines of the standard output of the command.
-   * @throws IOException If an IO error occurs.
+   * @throws IOException If the command cannot be started, or if it exits with a status other than
+   *     0; the message then has the error output of the command.
    */
   protected @NonNull List<@NonNull String> execute(final @NonNull String... command)
       throws IOException {
@@ -60,6 +68,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
     final var process = new ProcessBuilder(command).start();
     // The error output is drained on its own thread, so that neither stream fills its buffer
     // while the other one is read.
+    final var errorLines = new ArrayList<String>();
     final var errorReader =
         new Thread(
             () -> {
@@ -67,7 +76,11 @@ public abstract class AbstractProcessManager implements ProcessManager {
                 reader
                     .lines()
                     .filter(StringUtils::isNotBlank)
-                    .forEach(line -> LOGGER.trace("Command Error: {}", line));
+                    .forEach(
+                        line -> {
+                          LOGGER.trace("Command Error: {}", line);
+                          errorLines.add(line);
+                        });
               } catch (IOException ex) {
                 LOGGER.trace("Could not read the error output of the command", ex);
               }
@@ -79,19 +92,60 @@ public abstract class AbstractProcessManager implements ProcessManager {
     try (var reader = process.inputReader()) {
       lines = reader.lines().toList();
     }
+    final int status;
     try {
-      process.waitFor();
+      status = process.waitFor();
       errorReader.join();
     } catch (InterruptedException ex) {
-      LOGGER.warn("The current thread was interrupted while waiting for the command to end", ex);
       Thread.currentThread().interrupt();
+      throw new IOException("Interrupted while waiting for the command to end", ex);
     }
     if (LOGGER.isTraceEnabled()) {
       lines.stream()
           .filter(StringUtils::isNotBlank)
           .forEach(line -> LOGGER.trace("Command Output: {}", line));
     }
+    if (status != 0) {
+      throw new IOException(
+          "The command "
+              + command[0]
+              + " exited with the status "
+              + status
+              + (errorLines.isEmpty() ? "" : ": " + String.join(" ", errorLines)));
+    }
     return lines;
+  }
+
+  /**
+   * Executes the specified command, trying again after a short delay when it fails: the process
+   * listing of an operating system can fail now and then (a cancelled WMI call on Windows, for
+   * example), and the failure has nothing to do with the processes looked for.
+   *
+   * @param command The command to execute.
+   * @return The lines of the standard output of the command.
+   * @throws IOException If the command fails {@link #ATTEMPTS} times in a row.
+   */
+  protected @NonNull List<@NonNull String> executeWithRetries(final @NonNull String... command)
+      throws IOException {
+
+    var attempt = 1;
+    while (true) {
+      try {
+        return execute(command);
+      } catch (IOException ex) {
+        if (attempt >= ATTEMPTS) {
+          throw ex;
+        }
+        LOGGER.debug("The command listing the processes failed on attempt #{}; retrying", attempt);
+        attempt++;
+        try {
+          Thread.sleep(RETRY_DELAY);
+        } catch (InterruptedException interrupted) {
+          Thread.currentThread().interrupt();
+          throw ex;
+        }
+      }
+    }
   }
 
   @Override
@@ -108,7 +162,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
           linePattern,
           commandPattern);
     }
-    for (final var line : execute(command)) {
+    for (final var line : executeWithRetries(command)) {
       final var lineMatcher = linePattern.matcher(line);
       if (lineMatcher.matches()
           && commandPattern.matcher(lineMatcher.group("CommandLine")).find()) {

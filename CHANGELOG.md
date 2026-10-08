@@ -1,5 +1,19 @@
 # Changelog
 
+## [v5.0.1](https://github.com/jodconverter/jodconverter/tree/v5.0.1) (2026-10-08)
+
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v5.0.0...v5.0.1)
+
+**Fixed bugs:**
+
+- The filters of a converter were only applied at its first export of page images
+- A complete conversion failed when the office process was lost while closing the document (LibreOffice 25.8.3 to 26.2 on Windows, tdf#172335)
+
+**Merged pull requests:**
+
+- Try the process listing again when it fails, and tell a failed listing from an empty one [#546](https://github.com/jodconverter/jodconverter/pull/546)
+- Fix the 4.9.0 of the remote module snippet and make setVersion correct every coordinate, whatever version it shows [#544](https://github.com/jodconverter/jodconverter/pull/544)
+
 ## [v5.0.0](https://github.com/jodconverter/jodconverter/tree/v5.0.0) (2026-10-08)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v4.4.11...v5.0.0)
