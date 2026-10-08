@@ -319,10 +319,12 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
             // whoever raised the veto should close the document
           }
         }
-      } catch (com.sun.star.lang.DisposedException ex) {
+      } catch (com.sun.star.uno.RuntimeException ex) {
         // The office process was lost while closing the document (LibreOffice 25.8.3 to 26.2
-        // crashes that way on Windows, tdf#172335). The document is gone with the process, and
-        // what the task did before is done: the outcome of the task must not change.
+        // crashes that way on Windows, tdf#172335). The call then fails with a DisposedException,
+        // or with its parent class when the worker interrupted this thread first, on noticing the
+        // lost connection. The document is gone with the process, and what the task did before
+        // is done: the outcome of the task must not change.
         LOGGER.warn("The office process was lost while closing the document", ex);
       }
     }
