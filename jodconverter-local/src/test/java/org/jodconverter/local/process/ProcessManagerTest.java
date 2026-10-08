@@ -43,6 +43,8 @@ import org.jodconverter.local.office.LocalOfficeUtils;
 /** Contains tests for the {@link ProcessManager} implementations. */
 class ProcessManagerTest {
 
+  private static final int FIRST_ATTEMPT = 1;
+
   // A process that lives a few seconds and starts a child process: a shell running a sleep on
   // Unix (two commands, so that the shell does not exec the sleep in its place), cmd running a
   // ping on Windows.
@@ -149,7 +151,7 @@ class ProcessManagerTest {
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... command) throws IOException {
-              if (attempts.incrementAndGet() == 1) {
+              if (attempts.incrementAndGet() == FIRST_ATTEMPT) {
                 throw new IOException("Call cancelled");
               }
               return List.of("some process 42");
@@ -218,7 +220,7 @@ class ProcessManagerTest {
           new WindowsProcessManager() {
             @Override
             protected List<String> execute(final String... command) throws IOException {
-              if (attempts.incrementAndGet() == 1) {
+              if (attempts.incrementAndGet() == FIRST_ATTEMPT) {
                 throw new IOException("Call cancelled");
               }
               return List.of("powershell -NoProfile -NonInteractive 1234");
