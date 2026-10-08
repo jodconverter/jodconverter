@@ -2386,6 +2386,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Secrets of the release workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-signing-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        The signing key
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -2513,6 +2530,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Secrets of the release workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-signing-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        The signing key
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -2619,6 +2653,20 @@ credentials and the signing key, which live in the repository secrets; the rest 
 </table>
 <p>The <code>build</code> workflow uses one more secret, <code>COVERALLS_REPO_TOKEN</code>, the repository token shown on the Coveralls page of
 the project, to send the coverage of the Linux job.</p>
+<p>The secrets are checked without a release by running the <code>release</code> workflow by hand from the Actions tab (the
+"Run workflow" button, on any branch): it builds, signs the publications with the key of the secrets and checks the
+Maven Central credentials against the portal, without publishing anything.</p>
+<h3 id="the-signing-key">The signing key<a class="headerlink" href="#the-signing-key" title="Permanent link">&para;</a></h3>
+<p>The key must not be expired when the portal validates the signatures. <code>gpg --list-secret-keys --keyid-format long</code>
+shows the expiry; <code>gpg --edit-key KEY_ID</code> with the <code>expire</code> command (then <code>save</code>) extends it, for the primary key and,
+after <code>key 1</code>, for the subkey. The public key must be known by the key servers the portal queries, with the current
+expiry:</p>
+<div class="language-bash highlight"><pre><span></span><code>gpg<span class="w"> </span>--keyserver<span class="w"> </span>keyserver.ubuntu.com<span class="w"> </span>--send-keys<span class="w"> </span>KEY_ID
+gpg<span class="w"> </span>--keyserver<span class="w"> </span>keys.openpgp.org<span class="w"> </span>--send-keys<span class="w"> </span>KEY_ID
+</code></pre></div>
+<p>The <code>SIGNING_KEY</code> secret is set without pasting the key anywhere:</p>
+<div class="language-bash highlight"><pre><span></span><code>gpg<span class="w"> </span>--armor<span class="w"> </span>--export-secret-keys<span class="w"> </span>KEY_ID<span class="w"> </span><span class="p">|</span><span class="w"> </span>gh<span class="w"> </span>secret<span class="w"> </span><span class="nb">set</span><span class="w"> </span>SIGNING_KEY<span class="w"> </span>--repo<span class="w"> </span>jodconverter/jodconverter
+</code></pre></div>
 <p>A release can still be done from a workstation with the same values in <code>~/.gradle/gradle.properties</code>
 (<code>mavenCentralUsername</code>, <code>mavenCentralPassword</code>, <code>signing.keyId</code>, <code>signing.password</code>, <code>signing.secretKeyRingFile</code>) and
 <code>./gradlew publishToMavenCentral</code>, then the GitHub release created by hand from the tag.</p>
