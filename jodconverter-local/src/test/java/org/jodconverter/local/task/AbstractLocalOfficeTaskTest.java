@@ -255,6 +255,20 @@ class AbstractLocalOfficeTaskTest {
   class ToString {
 
     @Test
+    void withPassword_ShouldHideIt() {
+
+      final var customProps = new HashMap<String, Object>();
+      customProps.put("Key", "Val");
+      customProps.put("Password", "secret");
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), true, customProps);
+
+      assertThat(task.toString())
+          .doesNotContain("secret")
+          .contains("Password=***")
+          .contains("Key=Val");
+    }
+
+    @Test
     void shouldReturnExpectedValue() {
 
       final var sourceSpecs = new TxtSourceSpecs(SOURCE_FILE);

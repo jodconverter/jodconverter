@@ -50,6 +50,7 @@ import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.task.AbstractLocalOfficeTask;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
@@ -114,7 +115,7 @@ public final class Convert {
           .longOpt("load-properties")
           .argName("name=value")
           .hasArg()
-          .desc("load property; can be repeated (optional; eg. -lPassword=myPassword)")
+          .desc("load property; can be repeated (optional; eg. -lHidden=true)")
           .get();
   private static final Option OPT_PROCESS_MANAGER =
       Option.builder("m")
@@ -199,6 +200,13 @@ public final class Convert {
           .argName("name")
           .hasArg()
           .desc("PDF options to start from: archive, accessible or compact (optional)")
+          .get();
+  private static final Option OPT_PASSWORD =
+      Option.builder()
+          .longOpt("password")
+          .argName("password")
+          .hasArg()
+          .desc("password of the input documents, when they are protected (optional)")
           .get();
   private static final Option OPT_PDF_OPTION =
       Option.builder()
@@ -348,6 +356,7 @@ public final class Convert {
     options.addOption(OPT_CONFIG);
     options.addOption(OPT_PDF_PRESET);
     options.addOption(OPT_PDF_OPTION);
+    options.addOption(OPT_PASSWORD);
 
     return options;
   }
@@ -547,7 +556,8 @@ public final class Convert {
    * The options of the conversions given on the command line, parsed before the office manager is
    * started since they may be invalid.
    *
-   * @param loadProperties The load properties, from the {@code -l} arguments.
+   * @param loadProperties The load properties, from the {@code -l} arguments, with the {@code
+   *     --password} argument as the {@code Password} property.
    * @param storeProperties The store properties, from the {@code -s} arguments.
    * @param pdfOptions The PDF options, from the {@code --pdf-preset} and {@code --pdf-option}
    *     arguments, or null if there is none.
@@ -565,8 +575,14 @@ public final class Convert {
      * @throws IllegalArgumentException If an option is not valid.
      */
     /* default */ static ConversionOptions parse(final CommandLine commandLine) {
+      final var loadProperties =
+          buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
+      final var password = commandLine.getOptionValue(OPT_PASSWORD.getLongOpt());
+      if (password != null) {
+        loadProperties.put(AbstractLocalOfficeTask.PASSWORD_PROPERTY, password);
+      }
       return new ConversionOptions(
-          buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt())),
+          loadProperties,
           buildProperties("store", commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt())),
           PdfOptionsParser.parse(
               commandLine.getOptionValue(OPT_PDF_PRESET.getLongOpt()),

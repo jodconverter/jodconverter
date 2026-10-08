@@ -206,6 +206,58 @@ class AbstractConversionJobTest {
   }
 
   @Nested
+  class Password {
+
+    private AbstractConversionJob newJob(final File testFolder) throws IOException {
+
+      final var sourceFile = new File(testFolder, "source.txt");
+      assertThat(sourceFile.createNewFile()).isTrue();
+      final var target = new TargetDocumentSpecsFromFile(new File(testFolder, "target.pdf"));
+      target.setDocumentFormat(DefaultDocumentFormatRegistry.PDF);
+      return new SimpleConverter.SimpleConversionJob(
+          SimpleOfficeManager.make(), new SourceDocumentSpecsFromFile(sourceFile), target);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
+        throws IOException {
+
+      final var job = newJob(testFolder);
+      assertThatNullPointerException().isThrownBy(() -> job.password(null));
+    }
+
+    @Test
+    void whenNotNull_ShouldKeepIt(@TempDir final File testFolder) throws IOException {
+
+      final var job = newJob(testFolder);
+
+      assertThat(job.getPassword()).isNull();
+      assertThat(job.password("secret")).isSameAs(job);
+      assertThat(job.getPassword()).isEqualTo("secret");
+    }
+
+    @Test
+    void whenJobDoesNotSupportIt_ShouldThrowUnsupportedOperationException() {
+
+      final ConversionJob job =
+          new ConversionJob() {
+            @Override
+            public void execute() {
+              // Nothing to do.
+            }
+
+            @Override
+            public CompletableFuture<Void> executeAsync() {
+              return CompletableFuture.completedFuture(null);
+            }
+          };
+      assertThatExceptionOfType(UnsupportedOperationException.class)
+          .isThrownBy(() -> job.password("secret"));
+    }
+  }
+
+  @Nested
   class DefaultTargetOptions {
 
     // Executes a conversion to the given target with the given converter options, and returns

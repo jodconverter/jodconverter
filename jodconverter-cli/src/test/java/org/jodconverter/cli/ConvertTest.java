@@ -429,6 +429,33 @@ class ConvertTest {
     }
 
     @Test
+    void withPassword_ShouldCreateConverterWithThePasswordProperty() throws Exception {
+
+      final var commandLine = Convert.parse("--password", "secret", "output1.pdf", "input2.txt");
+
+      final OfficeManager officeManager =
+          ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
+      Assertions.assertNotNull(officeManager);
+      final CliConverter cliConverter =
+          ReflectionTestUtils.invokeMethod(
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
+      Assertions.assertNotNull(cliConverter);
+      final var localConverter =
+          (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
+      Assertions.assertNotNull(localConverter);
+
+      final var expectedLoadProperties = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      expectedLoadProperties.put("Password", "secret");
+      assertThat(localConverter).extracting("loadProperties").isEqualTo(expectedLoadProperties);
+    }
+
+    @Test
     void withFilterDataProperties_ShouldCreateConverterWithExpectedProperties() throws Exception {
 
       final var commandLine = Convert.parse("-sFDPageRange=2-2", "output1.pdf", "input2.txt");

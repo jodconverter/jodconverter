@@ -126,34 +126,27 @@ class: hide-toc
 
 ??? question "How could I specify the password of a password-protected file (input file) to convert?"
 
-    If you want to be able to convert a password-protected file, you must set the `Password` load property.
-
-    Here's how this could be done:
+    Give it to the conversion:
 
     ```java
-    final File in = new File("path_to_password_protected_file");
-    final File out = new File("path_to_output_file");
+    LocalConverter.make(manager)
+        .convert(new File("path_to_password_protected_file"))
+        .to(new File("path_to_output_file"))
+        .password("myPassword")
+        .execute();
+    ```
 
-    final OfficeManager manager = LocalOfficeManager.builder().startFailFast(true).build();
-    try{
-        manager.start();
-        Map<String, Object> loadProperties = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
-        loadProperties.put("Password","myPassword");
+    Without the password, or with a wrong one, the conversion fails with a `PasswordProtectedException`, whose
+    message says which of the two. The command line tool takes the password with `--password`.
 
-        LocalConverter
-            .builder()
-            .officeManager(manager)
-            .loadProperties(loadProperties)
-            .build()
-            .convert(in)
-            .to(out)
-            .execute();
+    When every document of a converter has the same password, the `Password` load property of the converter does
+    the same for all of them:
 
-    } catch(Exception e) {
-        e.printStackTrace();
-    } finally {
-        OfficeUtils.stopQuietly(manager);
-    }
+    ```java
+    LocalConverter.builder()
+        .officeManager(manager)
+        .loadProperty("Password", "myPassword")
+        .build();
     ```
 
 ??? question "Can I merge several documents into one?"

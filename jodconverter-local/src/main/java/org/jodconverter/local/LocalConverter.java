@@ -57,6 +57,7 @@ import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.filter.RefreshFilter;
 import org.jodconverter.local.filter.text.DocumentInserterFilter;
 import org.jodconverter.local.office.AttachedOfficeManager;
+import org.jodconverter.local.task.AbstractLocalOfficeTask;
 import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.local.task.LocalConversionTask;
 import org.jodconverter.local.task.PageImagesTask;
@@ -219,7 +220,7 @@ public final class LocalConverter extends AbstractConverter {
     return new PageImagesTask(
         job.getSource(),
         useStreamAdapters(),
-        loadProperties,
+        loadProperties(job.getPassword()),
         filterChain,
         job.getDirectory(),
         job.getBaseName(),
@@ -229,6 +230,17 @@ public final class LocalConverter extends AbstractConverter {
         job.getQuality(),
         job.getPages(),
         job.isHiddenSlides());
+  }
+
+  // The load properties of a task: those of the converter, with the password of the job when it
+  // has one.
+  private Map<String, Object> loadProperties(final @Nullable String password) {
+    if (password == null) {
+      return loadProperties;
+    }
+    final var properties = new HashMap<>(loadProperties);
+    properties.put(AbstractLocalOfficeTask.PASSWORD_PROPERTY, password);
+    return Collections.unmodifiableMap(properties);
   }
 
   // Whether the documents go through streams rather than files: always with the remote mode, and
@@ -350,7 +362,7 @@ public final class LocalConverter extends AbstractConverter {
           source,
           target,
           useStreamAdapters(),
-          loadProperties,
+          loadProperties(getPassword()),
           storeProperties,
           jobFilterChain == null ? filterChain : jobFilterChain);
     }
