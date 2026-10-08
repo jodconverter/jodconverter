@@ -2637,31 +2637,21 @@ Note that the more office process you start, the more RAM will be consumed by Li
 </details>
 <details class="question">
 <summary>How could I specify the password of a password-protected file (input file) to convert?</summary>
-<p>If you want to be able to convert a password-protected file, you must set the <code>Password</code> load property.</p>
-<p>Here's how this could be done:</p>
-<div class="language-java highlight"><pre><span></span><code><span class="kd">final</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"path_to_password_protected_file"</span><span class="p">);</span>
-<span class="kd">final</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"path_to_output_file"</span><span class="p">);</span>
-
-<span class="kd">final</span><span class="w"> </span><span class="n">OfficeManager</span><span class="w"> </span><span class="n">manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LocalOfficeManager</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">startFailFast</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
-<span class="k">try</span><span class="p">{</span>
-<span class="w">    </span><span class="n">manager</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>
-<span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">loadProperties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">LocalConverter</span><span class="p">.</span><span class="na">DEFAULT_LOAD_PROPERTIES</span><span class="p">);</span>
-<span class="w">    </span><span class="n">loadProperties</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"Password"</span><span class="p">,</span><span class="s">"myPassword"</span><span class="p">);</span>
-
-<span class="w">    </span><span class="n">LocalConverter</span>
-<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">        </span><span class="p">.</span><span class="na">officeManager</span><span class="p">(</span><span class="n">manager</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="na">loadProperties</span><span class="p">(</span><span class="n">loadProperties</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
-<span class="w">        </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">in</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
-
-<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
-<span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">OfficeUtils</span><span class="p">.</span><span class="na">stopQuietly</span><span class="p">(</span><span class="n">manager</span><span class="p">);</span>
-<span class="p">}</span>
+<p>Give it to the conversion:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span><span class="p">.</span><span class="na">make</span><span class="p">(</span><span class="n">manager</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"path_to_password_protected_file"</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"path_to_output_file"</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"myPassword"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p>Without the password, or with a wrong one, the conversion fails with a <code>PasswordProtectedException</code>, whose
+message says which of the two. The command line tool takes the password with <code>--password</code>.</p>
+<p>When every document of a converter has the same password, the <code>Password</code> load property of the converter does
+the same for all of them:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">officeManager</span><span class="p">(</span><span class="n">manager</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">loadProperty</span><span class="p">(</span><span class="s">"Password"</span><span class="p">,</span><span class="w"> </span><span class="s">"myPassword"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
 </details>
 <details class="question">

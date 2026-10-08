@@ -2734,6 +2734,19 @@ execution.</p>
 <span class="w">    </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">archive</span><span class="p">())</span>
 <span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
+<p><strong>6)</strong> Converting a password-protected document.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.io.File</span><span class="p">;</span>
+
+<span class="n">converter</span>
+<span class="w">    </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"protected.docx"</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"out.pdf"</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"secret"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p>Without the password, or with a wrong one, the conversion fails with a <code>PasswordProtectedException</code>, whose message
+says which of the two. The password of a conversion wins over a <code>Password</code> load property of the converter, which
+applies to every conversion. The remote converter cannot open protected documents: its <code>password(...)</code> throws an
+<code>UnsupportedOperationException</code>.</p>
 <p>Notes:</p>
 <ul>
 <li><a href="../using-filters/">Filters</a> modify the loaded document (update its indexes, remove pages, add text) before it is
