@@ -49,7 +49,6 @@ tasks.register("setVersion") {
     description = "Sets the version (-PnewVersion=X.Y.Z or X.Y.Z-SNAPSHOT) in gradle.properties and, for a release, in the documentation."
 
     val newVersion = providers.gradleProperty("newVersion")
-    val releasedVersion = providers.gradleProperty("releasedVersion")
     val propertiesFile = layout.projectDirectory.file("gradle.properties")
     // The pages that show the dependency coordinates of the released version.
     val docsFiles = listOf(
