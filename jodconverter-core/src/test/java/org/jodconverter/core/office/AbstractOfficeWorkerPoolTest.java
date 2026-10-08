@@ -667,9 +667,8 @@ class AbstractOfficeWorkerPoolTest {
               // Nothing to stop.
             }
           };
-      final var custom = new AbstractOfficeWorkerPool(workingDir, 1_000L, 1_000L, 0, true) {};
+      final var custom = new AbstractOfficeWorkerPool(workingDir, 1_000L, 1_000L, 0, true, 1) {};
       custom.setWorkers(List.of(worker));
-      custom.setTaskRetries(1);
       custom.start();
       try {
         assertThatExceptionOfType(OfficeException.class)
@@ -1433,8 +1432,7 @@ class AbstractOfficeWorkerPoolTest {
           .isThrownBy(() -> FakeOfficeWorkerPool.builder().taskRetries(-1))
           .withMessage("taskRetries -1 must be greater than or equal to 0");
       assertThatIllegalArgumentException()
-          .isThrownBy(
-              () -> new AbstractOfficeWorkerPool(workingDir, 0L, 0L, 0, true) {}.setTaskRetries(-1))
+          .isThrownBy(() -> new AbstractOfficeWorkerPool(workingDir, 0L, 0L, 0, true, -1) {})
           .withMessage("taskRetries -1 must be greater than or equal to 0");
     }
 

@@ -177,7 +177,7 @@ public final class RemoteOfficeManager extends AbstractOfficeWorkerPool {
               taskExecutionTimeout,
               taskQueueTimeout,
               taskQueueCapacity);
-      return configured(manager);
+      return installed(manager);
     }
 
     /**

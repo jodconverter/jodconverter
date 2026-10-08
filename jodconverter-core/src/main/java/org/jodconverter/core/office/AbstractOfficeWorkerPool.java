@@ -109,7 +109,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
   private final long taskExecutionTimeout;
   private final int taskQueueCapacity;
   private final boolean startFailFast;
-  private int taskRetries = DEFAULT_TASK_RETRIES;
+  private final int taskRetries;
   private final BlockingDeque<OfficeJob> queue = new LinkedBlockingDeque<>();
   private final ThreadFactory threadFactory = new NamedThreadFactory("jodconverter-worker");
 
@@ -139,14 +139,48 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
       final long taskExecutionTimeout,
       final int taskQueueCapacity,
       final boolean startFailFast) {
+    this(
+        workingDir,
+        taskQueueTimeout,
+        taskExecutionTimeout,
+        taskQueueCapacity,
+        startFailFast,
+        DEFAULT_TASK_RETRIES);
+  }
+
+  /**
+   * Creates a pool that executes again the tasks whose worker was lost. The workers are given by
+   * the subclass with {@link #setWorkers(List)}, before the pool is started.
+   *
+   * @param workingDir The directory where the temporary directory of the pool is created.
+   * @param taskQueueTimeout The maximum time a task waits in the queue, in milliseconds.
+   * @param taskExecutionTimeout The maximum time allowed to execute a task, in milliseconds.
+   * @param taskQueueCapacity The maximum number of tasks waiting in the queue; 0 means no limit.
+   * @param startFailFast Whether {@link #start()} waits for all the workers to be ready, and fails
+   *     if one cannot be. Otherwise {@code start()} returns at once, and a worker that cannot be
+   *     made ready is retried.
+   * @param taskRetries The number of times a task is executed again after its worker was lost while
+   *     executing it (see {@link OfficeWorker#isLost()}); 0 means that such a task fails.
+   */
+  protected AbstractOfficeWorkerPool(
+      final @NonNull File workingDir,
+      final long taskQueueTimeout,
+      final long taskExecutionTimeout,
+      final int taskQueueCapacity,
+      final boolean startFailFast,
+      final int taskRetries) {
     super();
 
     Objects.requireNonNull(workingDir, "workingDir must not be null");
+    AssertUtils.isTrue(
+        taskRetries >= 0,
+        String.format("taskRetries %s must be greater than or equal to 0", taskRetries));
 
     this.taskQueueTimeout = taskQueueTimeout;
     this.taskExecutionTimeout = taskExecutionTimeout;
     this.taskQueueCapacity = taskQueueCapacity;
     this.startFailFast = startFailFast;
+    this.taskRetries = taskRetries;
     this.tempDir = new File(workingDir, ".jodconverter_" + UUID.randomUUID());
   }
 
@@ -158,19 +192,6 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
   protected void setWorkers(final @NonNull List<? extends @NonNull OfficeWorker> workers) {
     AssertUtils.notEmpty(workers, "workers must not be null or empty");
     this.workers = List.copyOf(workers);
-  }
-
-  /**
-   * Sets the number of times a task is executed again after its worker was lost while executing it.
-   * It must be called before the pool is started.
-   *
-   * @param taskRetries The number of retries; 0 means that such a task fails.
-   */
-  protected void setTaskRetries(final int taskRetries) {
-    AssertUtils.isTrue(
-        taskRetries >= 0,
-        String.format("taskRetries %s must be greater than or equal to 0", taskRetries));
-    this.taskRetries = taskRetries;
   }
 
   // For the tests: shorter delays than the default ones.
@@ -709,6 +730,9 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
      * <p>A document that makes the office crash is converted, and makes it crash, that many more
      * times before its conversion fails.
      *
+     * <p>The option has no effect on a manager whose workers are never lost, such as the manager of
+     * the remote module.
+     *
      * <p>&nbsp; <b><i>Default</i></b>: 0 (a task whose office process is lost fails)
      *
      * @param taskRetries The number of retries.
@@ -720,18 +744,6 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
           String.format("taskRetries %s must be greater than or equal to 0", taskRetries));
       this.taskRetries = taskRetries;
       return (B) this;
-    }
-
-    /**
-     * Applies to a manager that was just built the options that its constructor does not take.
-     *
-     * @param manager The manager.
-     * @param <M> The type of the manager.
-     * @return The manager.
-     */
-    protected <M extends AbstractOfficeWorkerPool> @NonNull M configured(final @NonNull M manager) {
-      manager.setTaskRetries(taskRetries);
-      return installed(manager);
     }
 
     /**
