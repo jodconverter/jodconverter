@@ -35,7 +35,7 @@ jobs:
         shell: pwsh
         run: |
           $lo = 'C:\Program Files\LibreOffice\program\soffice.exe'
-          $here = $PWD.Path.Replace('', '/')
+          $here = $PWD.Path.Replace('\', '/')
           $docs = @('test_custom_formats.odp;html', 'test.odt;pdf', 'test.docx;pdf', 'test.xlsx;pdf', 'test.pptx;pdf')
           New-Item -ItemType Directory out | Out-Null
           for ($i = 1; $i -le 20; $i++) {
@@ -54,7 +54,7 @@ jobs:
         shell: pwsh
         run: |
           $lo = 'C:\Program Files\LibreOffice\program\soffice.exe'
-          $here = $PWD.Path.Replace('', '/')
+          $here = $PWD.Path.Replace('\', '/')
           $p = Start-Process -FilePath $lo -ArgumentList @('--accept=socket,host=127.0.0.1,port=2002,tcpNoDelay=1;urp;StarOffice.ServiceManager', '--headless', '--invisible', '--nocrashreport', '--nodefault', '--nofirststartwizard', '--nolockcheck', '--nologo', '--norestore', "-env:UserInstallation=file:///$here/profile-accept") -PassThru -NoNewWindow -RedirectStandardError 'err-accept.txt' -RedirectStandardOutput 'out-accept.txt'
           $sw = [Diagnostics.Stopwatch]::StartNew()
           while (-not (Test-NetConnection 127.0.0.1 -Port 2002 -InformationLevel Quiet -WarningAction SilentlyContinue) -and $sw.Elapsed.TotalSeconds -lt 90) { Start-Sleep -Milliseconds 500 }
