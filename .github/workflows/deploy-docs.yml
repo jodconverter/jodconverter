@@ -14,8 +14,9 @@ on:
         required: false
         default: ''
 
+# Read-only by default; the job that pushes to gh-pages asks for the write access itself.
 permissions:
-  contents: write
+  contents: read
 
 # mike pushes to gh-pages: one deployment at a time, none cancelled halfway
 concurrency:
@@ -26,10 +27,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write # mike commits the site to the gh-pages branch
 
     steps:
       - name: 📦 Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0  # Needed for mike history
 
@@ -39,7 +42,7 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
       - name: 🐍 Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.x'
 
