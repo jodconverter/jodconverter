@@ -248,9 +248,11 @@ These are LibreOffice behaviors that **JODConverter** can't change, with the wor
     [unoserver](https://github.com/unoconv/unoserver/issues/212)). It is not reproduced on Linux nor on macOS. The
     last version without it is 25.8.2, and it is reported fixed in 26.8.0.
 
-    **JODConverter** restarts the office process, so the following conversions work; the conversion during which the
-    crash happens may fail even though its output file is complete. On Windows, prefer LibreOffice 26.8 or later, or
-    25.8.2 or earlier.
+    **JODConverter** restarts the office process, so the following conversions work. Since version 5.0.1, a crash
+    while the document is closed no longer fails the conversion, whose output is complete at that point. A crash
+    earlier in a conversion still fails it, unless the manager has
+    [task retries](configuration/local-manager.md#taskretries) (since 5.1). On Windows, prefer LibreOffice 26.8 or
+    later, or 25.8.2 or earlier.
 
 ??? question "On macOS, every office process takes about 35 seconds to accept its first connection"
 
