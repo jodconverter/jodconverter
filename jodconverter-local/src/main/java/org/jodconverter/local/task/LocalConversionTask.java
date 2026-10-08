@@ -24,17 +24,17 @@ import static org.jodconverter.local.office.LocalOfficeUtils.toUnoProperties;
 import static org.jodconverter.local.office.LocalOfficeUtils.toUrl;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.sun.star.frame.XStorable;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lib.uno.adapter.OutputStreamToXOutputStreamAdapter;
 import com.sun.star.task.ErrorCodeIOException;
-import com.sun.star.uno.XComponentContext;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -96,21 +96,21 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   @Override
   public void execute(final @NonNull OfficeContext context) throws OfficeException {
 
-    final LocalOfficeContext localContext = (LocalOfficeContext) context;
+    final var localContext = (LocalOfficeContext) context;
 
     if (LOGGER.isInfoEnabled()) {
-      final String sourceExt =
+      final var sourceExt =
           Optional.of(source)
               .map(DocumentSpecs::getFormat)
               .map(DocumentFormat::getExtension)
               .orElse("?");
-      final String targetExt =
+      final var targetExt =
           Optional.of(target)
               .map(DocumentSpecs::getFormat)
               .map(DocumentFormat::getExtension)
               .orElse("?");
       if (LOGGER.isDebugEnabled() && localContext.getComponentContext() != null) {
-        final XComponentContext compContext = localContext.getComponentContext();
+        final var compContext = localContext.getComponentContext();
         LOGGER.debug(
             "Executing local conversion task using {} {} [{} -> {}]...",
             Info.getOfficeName(compContext),
@@ -122,10 +122,12 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       }
     }
 
+    warnUnsupportedOptions(localContext);
+
     // Get a source file that the office process can load. If the source
     // is an input stream, then a temporary file will be created from the
     // stream. The temporary file will be deleted once the task is done.
-    final File sourceFile = source.getFile();
+    final var sourceFile = source.getFile();
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("Local conversion source file: {}", sourceFile.getAbsolutePath());
     }
@@ -133,7 +135,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
 
       // Get the target file (which is a temporary file if the
       // output target is an output stream).
-      final File targetFile = target.getFile();
+      final var targetFile = target.getFile();
       if (LOGGER.isTraceEnabled()) {
         LOGGER.trace("Local conversion target file: {}", targetFile.getAbsolutePath());
       }
@@ -155,7 +157,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
         throw officeEx;
       } catch (Exception ex) {
         LOGGER.error("Local conversion failed.", ex);
-        final OfficeException officeEx = new OfficeException("Local conversion failed", ex);
+        final var officeEx = new OfficeException("Local conversion failed", ex);
         target.onFailure(targetFile, officeEx);
         throw officeEx;
       } finally {
@@ -170,22 +172,60 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     }
   }
 
+  // Logs a warning for each target option the office installation does not
+  // support, since it would silently ignore them.
+  private void warnUnsupportedOptions(final LocalOfficeContext context) {
+
+    final var options = target.getOptions();
+    final var compContext = context.getComponentContext();
+    if (options == null || compContext == null || !LOGGER.isWarnEnabled()) {
+      return;
+    }
+
+    final var libreOffice = Info.isLibreOffice(compContext);
+    final var version = Info.getOfficeVersionShort(compContext);
+    if (version == null || !libreOffice && !Info.isOpenOffice(compContext)) {
+      return;
+    }
+
+    for (final var unsupported : options.getUnsupportedOptions(libreOffice, version)) {
+      LOGGER.warn(
+          "The option {}; {} {} will ignore it",
+          unsupported,
+          Info.getOfficeName(compContext),
+          version);
+    }
+  }
+
   // Gets the office properties to apply when the converted
   // document will be saved as the output file.
   private Map<String, Object> getStoreProperties(final XComponent document) throws OfficeException {
-    AssertUtils.notNull(target.getFormat(), "Target format must not be null");
+    Objects.requireNonNull(target.getFormat(), "Target format must not be null");
 
-    final Map<String, Object> storeProps = new HashMap<>();
+    final var storeProps = new HashMap<String, Object>();
     appendProperties(
         storeProps,
         target.getFormat().getStoreProperties(LocalOfficeUtils.getDocumentFamily(document)));
     appendProperties(storeProps, storeProperties);
 
+    // The options of this conversion take precedence over the properties
+    // of the target format and of the converter.
+    final var options = target.getOptions();
+    if (options != null) {
+      options.applyTo(storeProps);
+    }
+
     return storeProps;
   }
 
-  // Modifies the document after it has been loaded and before
-  // it gets saved in the new format.
+  /**
+   * Modifies the document after it has been loaded and before it is stored in the new format: the
+   * filter chain is applied to it.
+   *
+   * @param context The context of the office process.
+   * @param document The loaded document.
+   * @throws OfficeException If a filter fails.
+   */
   protected void modifyDocument(
       final @NonNull OfficeContext context, final @NonNull XComponent document)
       throws OfficeException {
@@ -193,11 +233,18 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
     filterChain.doFilter(context, document);
   }
 
-  // Stores the converted document as the output file.
+  /**
+   * Stores the document as the target file, with the store properties of the target format and of
+   * the task.
+   *
+   * @param document The loaded document.
+   * @param targetFile The file to write.
+   * @throws OfficeException If the document cannot be stored.
+   */
   protected void storeDocument(final @NonNull XComponent document, final @NonNull File targetFile)
       throws OfficeException {
 
-    final Map<String, Object> storeProps = getStoreProperties(document);
+    final var storeProps = getStoreProperties(document);
 
     // FilterName must be specified.
     AssertUtils.isTrue(storeProps.containsKey("FilterName"), "Unsupported conversion");
@@ -218,7 +265,7 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       throws com.sun.star.uno.Exception, OfficeException {
 
     if (useStreamAdapters) {
-      try (FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+      try (var outputStream = Files.newOutputStream(targetFile.toPath())) {
         storeProps.put("OutputStream", new OutputStreamToXOutputStreamAdapter(outputStream));
         storable.storeToURL("private:stream", toUnoProperties(storeProps));
       } catch (IOException exception) {

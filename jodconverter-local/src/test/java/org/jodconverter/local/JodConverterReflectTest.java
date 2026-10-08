@@ -34,7 +34,6 @@ import java.nio.file.Files;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockedStatic;
 
 import org.jodconverter.core.test.util.AssertUtil;
 
@@ -51,15 +50,15 @@ class JodConverterReflectTest {
   @Test
   void convert_FromFile_CallForwardToLocalConverter() {
 
-    try (MockedStatic<LocalConverter> staticMock = mockStatic(LocalConverter.class)) {
-      final LocalConverter localConverter = mock(LocalConverter.class);
+    try (var staticMock = mockStatic(LocalConverter.class)) {
+      final var localConverter = mock(LocalConverter.class);
       staticMock.when(LocalConverter::make).thenReturn(localConverter);
 
       JodConverter.convert(SOURCE_FILE);
 
-      final ArgumentCaptor<File> arg = ArgumentCaptor.forClass(File.class);
+      final var arg = ArgumentCaptor.forClass(File.class);
       verify(localConverter, times(1)).convert(arg.capture());
-      final File file = arg.getValue();
+      final var file = arg.getValue();
       assertThat(file).isEqualTo(SOURCE_FILE);
     }
   }
@@ -67,14 +66,14 @@ class JodConverterReflectTest {
   @Test
   void convert_FromStream_CallForwardToLocalConverter() throws IOException {
 
-    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
-      try (MockedStatic<LocalConverter> staticMock = mockStatic(LocalConverter.class)) {
-        final LocalConverter localConverter = mock(LocalConverter.class);
+    try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+      try (var staticMock = mockStatic(LocalConverter.class)) {
+        final var localConverter = mock(LocalConverter.class);
         staticMock.when(LocalConverter::make).thenReturn(localConverter);
 
         JodConverter.convert(stream);
 
-        final ArgumentCaptor<InputStream> arg = ArgumentCaptor.forClass(InputStream.class);
+        final var arg = ArgumentCaptor.forClass(InputStream.class);
         verify(localConverter, times(1)).convert(arg.capture());
         assertThat(arg.getValue()).isEqualTo(stream);
       }
@@ -84,16 +83,16 @@ class JodConverterReflectTest {
   @Test
   void convert_FromStreamWithCloseArgument_CallForwardToLocalConverter() throws IOException {
 
-    try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
+    try (var stream = Files.newInputStream(SOURCE_FILE.toPath())) {
 
-      try (MockedStatic<LocalConverter> staticMock = mockStatic(LocalConverter.class)) {
-        final LocalConverter localConverter = mock(LocalConverter.class);
+      try (var staticMock = mockStatic(LocalConverter.class)) {
+        final var localConverter = mock(LocalConverter.class);
         staticMock.when(LocalConverter::make).thenReturn(localConverter);
 
         JodConverter.convert(stream, false);
 
-        final ArgumentCaptor<InputStream> arg = ArgumentCaptor.forClass(InputStream.class);
-        final ArgumentCaptor<Boolean> boolArg = ArgumentCaptor.forClass(Boolean.class);
+        final var arg = ArgumentCaptor.forClass(InputStream.class);
+        final var boolArg = ArgumentCaptor.forClass(Boolean.class);
         verify(localConverter, times(1)).convert(arg.capture(), boolArg.capture());
         assertThat(arg.getValue()).isEqualTo(stream);
       }

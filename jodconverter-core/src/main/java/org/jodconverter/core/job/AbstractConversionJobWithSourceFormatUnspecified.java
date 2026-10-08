@@ -22,6 +22,7 @@ package org.jodconverter.core.job;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -29,8 +30,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.office.TemporaryFileMaker;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.FileUtils;
 
 /**
@@ -48,6 +47,15 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   protected final OfficeManager officeManager;
   protected final DocumentFormatRegistry formatRegistry;
 
+  private List<TargetOptions> defaultTargetOptions = List.of();
+
+  /**
+   * Creates a job for a source document, whose target is not yet known.
+   *
+   * @param source The source document.
+   * @param officeManager The office manager that executes the conversion.
+   * @param formatRegistry The registry of the document formats.
+   */
   protected AbstractConversionJobWithSourceFormatUnspecified(
       final @NonNull AbstractSourceDocumentSpecs source,
       final @NonNull OfficeManager officeManager,
@@ -55,9 +63,9 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
     super();
 
     // All arguments are required.
-    AssertUtils.notNull(source, "source must not be null");
-    AssertUtils.notNull(officeManager, "officeManager must not be null");
-    AssertUtils.notNull(formatRegistry, "formatRegistry must not be null");
+    Objects.requireNonNull(source, "source must not be null");
+    Objects.requireNonNull(officeManager, "officeManager must not be null");
+    Objects.requireNonNull(formatRegistry, "formatRegistry must not be null");
     this.source = source;
     this.officeManager = officeManager;
     this.formatRegistry = formatRegistry;
@@ -74,8 +82,8 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   @Override
   public @NonNull AbstractConversionJob to(final @NonNull File target) {
 
-    final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(target);
-    final DocumentFormat format =
+    final var specs = new TargetDocumentSpecsFromFile(target);
+    final var format =
         formatRegistry.getFormatByExtension(
             Objects.requireNonNull(FileUtils.getExtension(target.getName())));
     if (format != null) {
@@ -95,14 +103,7 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
   public @NonNull AbstractConversionJob to(
       final @NonNull OutputStream target, final boolean closeStream) {
 
-    if (officeManager instanceof TemporaryFileMaker) {
-      return toInternal(
-          new TargetDocumentSpecsFromOutputStream(
-              target, (TemporaryFileMaker) officeManager, closeStream));
-    }
-    throw new IllegalStateException(
-        "An office manager must implements the TemporaryFileMaker "
-            + "interface in order to be able to convert to OutputStream");
+    return toInternal(new TargetDocumentSpecsFromOutputStream(target, officeManager, closeStream));
   }
 
   /**
@@ -118,6 +119,17 @@ public abstract class AbstractConversionJobWithSourceFormatUnspecified
     // No need to validate that the source format is provided. We will let
     // OOo deal with the detection of the source file format.
 
-    return to(target);
+    final var job = to(target);
+    job.setDefaultTargetOptions(defaultTargetOptions);
+    return job;
+  }
+
+  /**
+   * Sets the options of the converter to apply when the conversion has no options of its own.
+   *
+   * @param defaultTargetOptions The default options.
+   */
+  protected void setDefaultTargetOptions(final List<TargetOptions> defaultTargetOptions) {
+    this.defaultTargetOptions = defaultTargetOptions;
   }
 }

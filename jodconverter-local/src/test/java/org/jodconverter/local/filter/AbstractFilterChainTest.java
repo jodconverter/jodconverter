@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 import com.sun.star.lang.XComponent;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -40,9 +41,9 @@ class AbstractFilterChainTest {
     @Test
     void whenReadOnlyIsFalse_ShouldBeEditable() {
 
-      final TestFilterChain chain = new TestFilterChain(false);
+      final var chain = new TestFilterChain(false);
 
-      final Filter filter = new TestFilter();
+      final var filter = new TestFilter();
       chain.addFilter(filter);
 
       assertThat(chain).extracting("filters").asList().hasSize(1).containsExactly(filter);
@@ -51,16 +52,27 @@ class AbstractFilterChainTest {
     @Test
     void whenReadOnlyIsTrue_ShouldBeReadOnly() {
 
-      final TestFilterChain chain = new TestFilterChain(true);
+      final var chain = new TestFilterChain(true);
 
       assertThatExceptionOfType(UnsupportedOperationException.class)
           .isThrownBy(() -> chain.addFilter(new TestFilter()));
     }
 
     @Test
+    void withNullFilters_ShouldBeEmpty() {
+
+      final var chain = new TestFilterChain(false, (Filter[]) null);
+
+      assertThat(chain)
+          .extracting("filters")
+          .asInstanceOf(InstanceOfAssertFactories.LIST)
+          .isEmpty();
+    }
+
+    @Test
     void withoutFilters_ShouldBeEmpty() {
 
-      final TestFilterChain chain = new TestFilterChain(false);
+      final var chain = new TestFilterChain(false);
       assertThat(chain).extracting("filters").asList().hasSize(0);
     }
   }
@@ -95,17 +107,33 @@ class AbstractFilterChainTest {
                             throw new OfficeException("Unsupported Filter");
                           })
                       .doFilter(mock(OfficeContext.class), mock(XComponent.class)))
-          .withCauseExactlyInstanceOf(OfficeException.class)
-          .satisfies(
-              e -> {
-                assertThat(e.getCause()).hasMessage("Unsupported Filter");
-              });
+          // The exception of the filter is not wrapped, however deep in the chain it was thrown.
+          .withMessage("Unsupported Filter")
+          .withNoCause();
+    }
+
+    @Test
+    void withNestedFilterThrowingOfficeException_ShouldThrowSameOfficeException() {
+
+      assertThatExceptionOfType(OfficeException.class)
+          .isThrownBy(
+              () ->
+                  new TestFilterChain(
+                          false,
+                          (context, document, chain) -> chain.doFilter(context, document),
+                          (context, document, chain) -> chain.doFilter(context, document),
+                          (context, document, chain) -> {
+                            throw new OfficeException("Unsupported Filter");
+                          })
+                      .doFilter(mock(OfficeContext.class), mock(XComponent.class)))
+          .withMessage("Unsupported Filter")
+          .withNoCause();
     }
 
     @Test
     void withFilters_ShouldExecuteAllFilters() throws OfficeException {
 
-      final TestFilterChain chain =
+      final var chain =
           new TestFilterChain(
               false,
               new TestFilter(),
@@ -149,7 +177,7 @@ class AbstractFilterChainTest {
     @Test
     void withFilters_ShouldExecuteAllAgainAfterReset() throws OfficeException {
 
-      final TestFilterChain chain =
+      final var chain =
           new TestFilterChain(
               false,
               new TestFilter(),
@@ -216,6 +244,7 @@ class AbstractFilterChainTest {
 
   static class TestFilter implements Filter {
 
+    @SuppressWarnings("PMD.UnusedPrivateField") // Read by the assertions through reflection
     private int executeCount;
 
     @Override

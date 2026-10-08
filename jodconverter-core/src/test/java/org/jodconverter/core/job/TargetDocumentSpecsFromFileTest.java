@@ -46,8 +46,8 @@ class TargetDocumentSpecsFromFileTest {
     @Test
     void whenFileIsNotNull_ShouldCreateSpecsWithExpectedValues(@TempDir final File testFolder) {
 
-      final File file = new File(testFolder, "test.txt");
-      final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(file);
+      final var file = new File(testFolder, "test.txt");
+      final var specs = new TargetDocumentSpecsFromFile(file);
 
       assertThat(specs.getFile()).isEqualTo(file);
     }
@@ -59,9 +59,9 @@ class TargetDocumentSpecsFromFileTest {
     @Test
     void whenFileExists_ShouldNotDeleteFile(@TempDir final File testFolder) throws IOException {
 
-      final File file = new File(testFolder, "test.txt");
+      final var file = new File(testFolder, "test.txt");
       assertThat(file.createNewFile()).isTrue();
-      final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(file);
+      final var specs = new TargetDocumentSpecsFromFile(file);
 
       specs.onComplete(file);
 
@@ -75,10 +75,10 @@ class TargetDocumentSpecsFromFileTest {
     @Test
     void whenFileExists_ShouldDeleteFile(@TempDir final File testFolder) throws IOException {
 
-      final File targetFile = new File(testFolder, "target.txt");
+      final var targetFile = new File(testFolder, "target.txt");
       assertThat(targetFile.createNewFile()).isTrue();
 
-      final TargetDocumentSpecsFromFile specs = new TargetDocumentSpecsFromFile(targetFile);
+      final var specs = new TargetDocumentSpecsFromFile(targetFile);
 
       specs.onFailure(targetFile, new IOException());
 

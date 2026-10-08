@@ -20,11 +20,10 @@
 
 package org.jodconverter.local.filter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.sun.star.lang.XComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -65,8 +64,7 @@ public abstract class AbstractFilterChain implements FilterChain {
 
     this.readOnly = readOnly;
     this.pos = 0;
-    this.filters =
-        Arrays.stream(Optional.of(filters).orElse(new Filter[0])).collect(Collectors.toList());
+    this.filters = filters == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(filters));
 
     if (readOnly) {
       this.filters = Collections.unmodifiableList(this.filters);
@@ -88,7 +86,8 @@ public abstract class AbstractFilterChain implements FilterChain {
 
     // Call the next filter if there is one
     if (pos < filters.size()) {
-      final Filter filter = filters.get(pos++);
+      final var filter = filters.get(pos);
+      pos++;
       doFilter(filter, context, document);
     }
   }
@@ -109,6 +108,9 @@ public abstract class AbstractFilterChain implements FilterChain {
 
     try {
       filter.doFilter(context, document, this);
+    } catch (OfficeException ex) {
+      // Already reported by the filter, or by the next filter of the chain: do not wrap it again.
+      throw ex;
     } catch (Exception ex) {
       throw new OfficeException("Could not apply filter " + filter.getClass().getName() + ".", ex);
     }

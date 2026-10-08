@@ -44,7 +44,7 @@ class LocalConverterPureJavaITest {
   void testProcessManagerProperty() {
 
     assertThat(manager)
-        .extracting("entries")
+        .extracting("workers")
         .asList()
         .hasSize(1)
         .element(0)

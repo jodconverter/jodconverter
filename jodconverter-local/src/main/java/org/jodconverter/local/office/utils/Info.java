@@ -20,9 +20,8 @@
 
 package org.jodconverter.local.office.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.regex.Pattern;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.XComponent;
@@ -40,15 +39,15 @@ import org.slf4j.LoggerFactory;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public final class Info { // NOPMD - Disable utility class name rule violation
+public final class Info {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Info.class);
 
   private static final String NODE_PRODUCT = "/org.openoffice.Setup/Product";
   private static final String NODE_L10N = "/org.openoffice.Setup/L10N";
-  // private static final String NODE_OFFICE = "/org.openoffice.Setup/Office";
 
   private static final String[] NODE_PATHS = {NODE_PRODUCT, NODE_L10N};
+  private static final Pattern DIGITS = Pattern.compile("\\d+");
 
   /**
    * Compares two versions of strings (ex. 1.6.1).
@@ -69,18 +68,12 @@ public final class Info { // NOPMD - Disable utility class name rule violation
       return 1;
     }
 
-    final String[] numbers1 = normalizeVersion(version1, length).split("\\.");
-    final String[] numbers2 = normalizeVersion(version2, length).split("\\.");
-
-    for (int i = 0; i < numbers1.length; i++) {
-      if (Integer.parseInt(numbers1[i]) < Integer.parseInt(numbers2[i])) {
-        return -1;
-      } else if (Integer.parseInt(numbers1[i]) > Integer.parseInt(numbers2[i])) {
-        return 1;
-      }
-    }
-
-    return 0;
+    final var numbers1 = parseVersion(version1);
+    final var numbers2 = parseVersion(version2);
+    // The missing numbers of the shorter version count as zeros.
+    final var size = Math.max(length, Math.max(numbers1.length, numbers2.length));
+    return Integer.signum(
+        Arrays.compare(Arrays.copyOf(numbers1, size), Arrays.copyOf(numbers2, size)));
   }
 
   /**
@@ -169,8 +162,8 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   public static @Nullable String getConfig(
       final @NonNull XComponentContext context, final @NonNull String propName) {
 
-    for (final String nodePath : NODE_PATHS) {
-      final Object info = getConfig(context, nodePath, propName);
+    for (final var nodePath : NODE_PATHS) {
+      final var info = getConfig(context, nodePath, propName);
       if (info != null) {
         return (String) info;
       }
@@ -192,7 +185,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
       final @NonNull XComponentContext context,
       final @NonNull String nodePath,
       final @NonNull String propName) {
-    final XPropertySet set = getConfigProperties(context, nodePath);
+    final var set = getConfigProperties(context, nodePath);
     if (set == null) {
       return null;
     }
@@ -210,7 +203,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   public static @Nullable XPropertySet getConfigProperties(
       final @NonNull XComponentContext context, final @NonNull String nodePath) {
 
-    final Object configAccess = getConfigAccess(context, nodePath);
+    final var configAccess = getConfigAccess(context, nodePath);
     if (configAccess == null) {
       LOGGER.debug("Could not create configuration access service");
       return null;
@@ -222,7 +215,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   private static Object getConfigAccess(
       final XComponentContext context, final String serviceSpecifier, final String nodePath) {
 
-    final XMultiServiceFactory provider = getConfigProvider(context);
+    final var provider = getConfigProvider(context);
     if (provider == null) {
       LOGGER.debug("Could not create configuration provider");
       return null;
@@ -234,7 +227,7 @@ public final class Info { // NOPMD - Disable utility class name rule violation
           serviceSpecifier, Props.makeProperties("nodepath", nodePath));
     } catch (com.sun.star.uno.Exception ex) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Could not access config for: " + nodePath, ex);
+        LOGGER.debug("Could not access config for: {}", nodePath, ex);
       }
     }
 
@@ -254,29 +247,18 @@ public final class Info { // NOPMD - Disable utility class name rule violation
   }
 
   /**
-   * Gets the updatable configuration access for the specified path.
-   *
-   * @param context The main context.
-   * @param nodePath The path for which the configuration access is get.
-   * @return The updatable configuration access service, or null if not available.
+   * Parses a version string into its numbers: the leading digits of each dot-separated part, 0 for
+   * a part without any.
    */
-  public static @Nullable Object getConfigUpdateAccess(
-      final @NonNull XComponentContext context, final @NonNull String nodePath) {
-    return getConfigAccess(
-        context, "com.sun.star.configuration.ConfigurationUpdateAccess", nodePath);
-  }
+  private static int[] parseVersion(final @NonNull String version) {
 
-  /**
-   * Normalizes a version string so that it has 'length' number of version numbers separated by '.'
-   */
-  private static @NonNull String normalizeVersion(final @NonNull String version, final int length) {
-
-    final List<String> numbers = new ArrayList<>(Arrays.asList(version.split("\\.")));
-    while (numbers.size() < length) {
-      numbers.add("0");
+    final var parts = version.split("\\.");
+    final var numbers = new int[parts.length];
+    for (var i = 0; i < parts.length; i++) {
+      final var digits = DIGITS.matcher(parts[i]);
+      numbers[i] = digits.lookingAt() ? Integer.parseInt(digits.group()) : 0;
     }
-
-    return String.join(".", numbers);
+    return numbers;
   }
 
   /**

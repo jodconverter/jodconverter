@@ -20,6 +20,10 @@
 
 package org.jodconverter.core.job;
 
+import java.util.concurrent.CompletableFuture;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import org.jodconverter.core.office.OfficeException;
 
 /** A fully specified conversion that is not yet applied to the converter. */
@@ -31,4 +35,31 @@ public interface ConversionJob {
    * @throws OfficeException If the conversion failed.
    */
   void execute() throws OfficeException;
+
+  /**
+   * Submits a conversion to the office manager and returns at once. The returned future completes
+   * when the conversion is done, and completes exceptionally with an {@link OfficeException} when
+   * the conversion fails. Cancelling the future abandons the conversion.
+   *
+   * <p>The actions chained to the future may run on a thread of the office manager: they must not
+   * block.
+   *
+   * @return The future of the conversion.
+   * @throws IllegalStateException If the office manager is not running.
+   */
+  @NonNull CompletableFuture<Void> executeAsync();
+
+  /**
+   * Specifies options that apply to the target document of this conversion only, such as {@link
+   * org.jodconverter.core.pdf.PdfOptions} for a PDF document. The options must support the target
+   * format, or the conversion will fail.
+   *
+   * @param options The options to apply to the target document.
+   * @return The current conversion specification.
+   * @throws UnsupportedOperationException If this conversion job does not support target options.
+   */
+  default @NonNull ConversionJob with(final @NonNull TargetOptions options) {
+    throw new UnsupportedOperationException(
+        getClass().getName() + " does not support target options");
+  }
 }

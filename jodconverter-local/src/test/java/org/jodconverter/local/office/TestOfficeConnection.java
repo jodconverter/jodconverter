@@ -28,14 +28,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** {@link OfficeConnection} implementation for testing purposes. */
 public final class TestOfficeConnection extends OfficeConnection {
 
-  private static final long NO_SLEEP = 0L;
-
   private final AtomicBoolean connected = new AtomicBoolean();
   private final AtomicInteger connectCount = new AtomicInteger();
   private final AtomicInteger disconnectCount = new AtomicInteger();
   private final List<OfficeConnectionEventListener> testConnectionEventListeners;
-  private long connectSleep;
-  private long disconnectSleep;
 
   static TestOfficeConnection prepareTest(final OfficeUrl url) {
 
@@ -46,14 +42,6 @@ public final class TestOfficeConnection extends OfficeConnection {
     super(url);
 
     this.testConnectionEventListeners = new ArrayList<>();
-  }
-
-  public void setConnectSleep(final long sleep) {
-    this.connectSleep = sleep;
-  }
-
-  public void setDisconnectSleep(final long sleep) {
-    this.disconnectSleep = sleep;
   }
 
   public int getConnectCount() {
@@ -81,34 +69,17 @@ public final class TestOfficeConnection extends OfficeConnection {
   public void connect() {
     connectCount.incrementAndGet();
 
-    if (connectSleep > NO_SLEEP) {
-      try {
-        Thread.sleep(connectSleep);
-      } catch (InterruptedException ignore) {
-        // ignore
-      }
-    }
-
     this.connected.set(true);
 
-    final OfficeConnectionEvent event = new OfficeConnectionEvent(this);
+    final var event = new OfficeConnectionEvent(this);
     testConnectionEventListeners.forEach(listener -> listener.connected(event));
   }
 
   @Override
   public void disconnect() {
     disconnectCount.incrementAndGet();
-
-    if (disconnectSleep > NO_SLEEP) {
-      try {
-        Thread.sleep(disconnectSleep);
-      } catch (InterruptedException ignore) {
-        // ignore
-      }
-    }
-
     if (connected.compareAndSet(true, false)) {
-      final OfficeConnectionEvent event = new OfficeConnectionEvent(this);
+      final var event = new OfficeConnectionEvent(this);
       testConnectionEventListeners.forEach(listener -> listener.disconnected(event));
     }
   }

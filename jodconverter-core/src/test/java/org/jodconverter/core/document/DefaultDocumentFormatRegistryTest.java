@@ -34,6 +34,7 @@ import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.FODT;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.GIF;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.HTML;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.JPEG;
+import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.MARKDOWN;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODG;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODP;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.ODS;
@@ -65,12 +66,9 @@ import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLSM;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLSX;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLTM;
 import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.XLTX;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.getFormatByExtension;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.getFormatByMediaType;
-import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.getOutputFormats;
+import static org.jodconverter.core.document.DefaultDocumentFormatRegistry.getInstance;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.assertj.core.api.AutoCloseableSoftAssertions;
@@ -98,11 +96,11 @@ class DefaultDocumentFormatRegistryTest {
   @Test
   void getInstance_AllOutputFormatsLoadedSuccessfully() {
 
-    try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
+    try (var ass = new AutoCloseableSoftAssertions()) {
       // TEXT output format
       assertExpectedExtensions(
           ass,
-          getOutputFormats(DocumentFamily.TEXT),
+          getInstance().getOutputFormats(DocumentFamily.TEXT),
           "odt",
           "ott",
           "fodt",
@@ -113,6 +111,7 @@ class DefaultDocumentFormatRegistryTest {
           "xhtml",
           "rtf",
           "txt",
+          "md",
           "sxw",
           "pdf",
           "jpg",
@@ -122,7 +121,7 @@ class DefaultDocumentFormatRegistryTest {
       // SPREADSHEET output format
       assertExpectedExtensions(
           ass,
-          getOutputFormats(DocumentFamily.SPREADSHEET),
+          getInstance().getOutputFormats(DocumentFamily.SPREADSHEET),
           "html",
           "xhtml",
           "ods",
@@ -143,7 +142,7 @@ class DefaultDocumentFormatRegistryTest {
       // PRESENTATION output format
       assertExpectedExtensions(
           ass,
-          getOutputFormats(DocumentFamily.PRESENTATION),
+          getInstance().getOutputFormats(DocumentFamily.PRESENTATION),
           "html",
           "xhtml",
           "odp",
@@ -165,7 +164,7 @@ class DefaultDocumentFormatRegistryTest {
       // DRAWING output format
       assertExpectedExtensions(
           ass,
-          getOutputFormats(DocumentFamily.DRAWING),
+          getInstance().getOutputFormats(DocumentFamily.DRAWING),
           "odg",
           "otg",
           "fodg",
@@ -182,19 +181,26 @@ class DefaultDocumentFormatRegistryTest {
 
       // WEB output format
       assertExpectedExtensions(
-          ass, getOutputFormats(DocumentFamily.WEB), "odt", "ott", "pdf", "jpg", "png", "svg");
+          ass,
+          getInstance().getOutputFormats(DocumentFamily.WEB),
+          "odt",
+          "ott",
+          "pdf",
+          "jpg",
+          "png",
+          "svg");
     }
   }
 
   private void assertByExt(
       final SoftAssertions soft, final String ext, final DocumentFormat expected) {
-    soft.assertThat(getFormatByExtension(ext)).isEqualTo(expected);
+    soft.assertThat(getInstance().getFormatByExtension(ext)).isEqualTo(expected);
   }
 
   @Test
   void getFormatByExtension_AllFormatsLoadedSuccessfully() {
 
-    try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
+    try (var ass = new AutoCloseableSoftAssertions()) {
       assertByExt(ass, "pdf", PDF);
       assertByExt(ass, "swf", SWF);
       assertByExt(ass, "html", HTML);
@@ -209,6 +215,8 @@ class DefaultDocumentFormatRegistryTest {
       assertByExt(ass, "rtf", RTF);
       assertByExt(ass, "wpd", WPD);
       assertByExt(ass, "txt", TXT);
+      assertByExt(ass, "md", MARKDOWN);
+      assertByExt(ass, "markdown", MARKDOWN);
       assertByExt(ass, "ods", ODS);
       assertByExt(ass, "ots", OTS);
       assertByExt(ass, "fods", FODS);
@@ -244,13 +252,13 @@ class DefaultDocumentFormatRegistryTest {
 
   private void assertByType(
       final SoftAssertions soft, final String mediaType, final DocumentFormat expected) {
-    soft.assertThat(getFormatByMediaType(mediaType)).isEqualTo(expected);
+    soft.assertThat(getInstance().getFormatByMediaType(mediaType)).isEqualTo(expected);
   }
 
   @Test
   void getFormatByMediaType_AllFormatsLoadedSuccessfully() {
 
-    try (AutoCloseableSoftAssertions ass = new AutoCloseableSoftAssertions()) {
+    try (var ass = new AutoCloseableSoftAssertions()) {
       assertByType(ass, "application/pdf", PDF);
       assertByType(ass, "application/x-shockwave-flash", SWF);
       assertByType(ass, "text/html", HTML);
@@ -267,6 +275,7 @@ class DefaultDocumentFormatRegistryTest {
       assertByType(ass, "text/rtf", RTF);
       assertByType(ass, "application/wordperfect", WPD);
       assertByType(ass, "text/plain", TXT);
+      assertByType(ass, "text/markdown", MARKDOWN);
       assertByType(ass, "application/vnd.oasis.opendocument.spreadsheet", ODS);
       assertByType(ass, "application/vnd.oasis.opendocument.spreadsheet-template", OTS);
       assertByType(ass, "application/vnd.oasis.opendocument.spreadsheet-flat-xml", FODS);
@@ -304,7 +313,7 @@ class DefaultDocumentFormatRegistryTest {
   @Test
   void getFormatX_ReturnReadOnlyFormat() {
 
-    final DocumentFormat format = CSV;
+    final var format = CSV;
 
     assertThat(format.getLoadProperties()).isNotNull();
     assertThat(format.getStoreProperties()).isNotNull();
@@ -315,7 +324,7 @@ class DefaultDocumentFormatRegistryTest {
     assertThatExceptionOfType(UnsupportedOperationException.class)
         .isThrownBy(() -> format.getStoreProperties().put(DocumentFamily.DRAWING, new HashMap<>()));
 
-    final Map<String, Object> map = format.getStoreProperties(DocumentFamily.SPREADSHEET);
+    final var map = format.getStoreProperties(DocumentFamily.SPREADSHEET);
     assertThat(map).isNotNull();
 
     assertThatExceptionOfType(UnsupportedOperationException.class)

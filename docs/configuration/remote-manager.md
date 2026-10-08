@@ -16,11 +16,11 @@ Here are all the properties you can set through the builder:
 
     **JODConverter** uses milliseconds for all time values.
 
-#### &#8986;`poolSize`
+#### ⌚`poolSize`
 
-This property sets the size of the pool. Setting this property controls how many conversions can be done concurrently. 
+This property sets the size of the pool. Setting this property controls how many conversions can be done concurrently.
 
-&nbsp;***Default***: 1
+&#160;***Default***: 1
 
 === "Java"
 
@@ -39,7 +39,7 @@ This property sets the size of the pool. Setting this property controls how many
       remote:
         pool-size: 1
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.pool-size = 1
     ```
@@ -48,13 +48,12 @@ This property sets the size of the pool. Setting this property controls how many
 
     `poolSize` can't be set with the command line tool, it will always be 1.
 
-
-#### &#128193;`workingDir`
+#### 📁`workingDir`
 
 This property is used to create a temporary directory where files will be created when conversions are done
 using InputStream/OutputStream.
 
-&nbsp;***Default***: The system temporary directory as specified by the `java.io.tmpdir` system property.
+&#160;***Default***: The system temporary directory as specified by the `java.io.tmpdir` system property.
 
 **NOTE** that
 [some OS automatically clean up the `java.io.tmpdir` directory periodically](https://github.com/jodconverter/jodconverter/issues/220).
@@ -77,7 +76,7 @@ It is recommended to check your OS to see if you have to set this property to a 
       remote:
         working-dir: "C:/jodconverter/tmp"
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.working-dir = "C:/jodconverter/tmp"
     ```
@@ -87,12 +86,14 @@ It is recommended to check your OS to see if you have to set this property to a 
     ```shell title="short option"
     jodconverter-cli -c "https://localhost:8001" -w "C:/jodconverter/tmp" timeout infile outfile
     ```
+
     or
+
     ```shell title="long option"
     jodconverter-cli --connection-url "https://localhost:8001" --wirking-dir "C:/jodconverter/tmp" timeout infile outfile
     ```
 
-#### &#128193;`urlConnection`
+#### 📁`urlConnection`
 
 This property sets the URL of the remote server.
 
@@ -113,7 +114,7 @@ This property sets the URL of the remote server.
       remote:
         url: "https://localhost:8001"
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.url = "https://localhost:8001"
     ```
@@ -123,17 +124,19 @@ This property sets the URL of the remote server.
     ```shell title="short option"
     jodconverter-cli -c "https://localhost:8001" infile outfile
     ```
+
     or
+
     ```shell title="long option"
     jodconverter-cli --connection-url "https://localhost:8001" infile outfile
     ```
 
-#### &#8986;`connectTimeout`
+#### ⌚`connectTimeout`
 
-This property sets the timeout in milliseconds until a connection is established. A timeout value of zero is
-interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
+This property sets the timeout in milliseconds until a connection to the server is established. A timeout value
+of zero means no timeout.
 
-&nbsp;***Default***: 60000 (1 minute)
+&#160;***Default***: 60000 (1 minute)
 
 === "Java"
 
@@ -152,7 +155,7 @@ interpreted as an infinite timeout. A negative value is interpreted as undefined
       remote:
         connect-timeout: 120000
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.connect-timeout = 120000
     ```
@@ -161,13 +164,12 @@ interpreted as an infinite timeout. A negative value is interpreted as undefined
 
     `connectTimeout` can't be set with the command line tool, it will always be 60000.
 
-#### &#8986;`socketTimeout`
+#### ⌚`socketTimeout`
 
-This property sets the socket timeout `SO_TIMEOUT` in milliseconds, which is the timeout for waiting for data or,
-to put differently, a maximum period inactivity between two consecutive data packets. A timeout value of zero is
-interpreted as an infinite timeout. A negative value is interpreted as undefined (system default).
+This property sets the timeout in milliseconds for the response of the server once a request is sent. A timeout
+value of zero means no timeout.
 
-&nbsp;***Default***: 120000 (2 minutes)
+&#160;***Default***: 120000 (2 minutes)
 
 === "Java"
 
@@ -195,7 +197,7 @@ interpreted as an infinite timeout. A negative value is interpreted as undefined
 
     `socketTimeout` can't be set with the command line tool, it will always be 120000.
 
-#### &#128274;`sslConfig`
+#### 🔒`sslConfig`
 
 This property controls the SSL configuration to secure communication with the remote server
 
@@ -206,13 +208,18 @@ This property controls the SSL configuration to secure communication with the re
     sslConfig.setEnabled(true);
     sslConfig.setTrustStore("Path to the TrustStore");
     sslConfig.setTrustStorePassword("Password of the TrustStore");
-    
+
     OfficeManager officeManager =
         RemoteOfficeManager
             .builder()
             .sslConfig(sslConfig)
             .build();
     ```
+
+    The key store and the trust store are read once, when the manager starts, from the class path (`classpath:`), a
+    URL (`file:`...) or a file path. An application that builds its own `SSLContext` (from a Spring Boot SSL bundle,
+    for example) gives it to the builder with `sslContext(...)` instead; it takes precedence over the SSL
+    configuration.
 
 === "Spring Boot"
 
@@ -236,7 +243,7 @@ This property controls the SSL configuration to secure communication with the re
           protocol: TLS
           verify-hostname: true
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.ssl.enabled = true
     jodconverter.remote.ssl.ciphers = TLS_RSA_WITH_AES_128_CBC_SHA
@@ -257,68 +264,65 @@ This property controls the SSL configuration to secure communication with the re
 
 === "Command Line"
 
-    When JODConverter remote is used as a Command Line Tool, you must provide the SSL configuration through an
-    application context configuration file, which is the **`-a`** or **`--application-context`**. Here's an example of
-    an SSL configuration file.
-    
-    ```xml title="ssl.xml"
-    <?xml version="1.0" encoding="UTF-8"?>
-    <beans xmlns="http://www.springframework.org/schema/beans"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-    
-        <!-- Configure the SSL to secure communication with a Libre Office Online server. -->
-        <bean class="org.jodconverter.ssl.SslConfig">
-            <!-- Indicates whether SSL support is enabled or not. -->
-            <property name="enabled" value="true"/>
-            <!-- Comma separated values of the supported SSL ciphers. Defaults to the JVM default values. -->
-            <property name="ciphers" value="ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"/>
-            <!-- Comma separated values of the enabled SSL protocols. Defaults to the JVM default values. -->
-            <property name="enabledProtocols" value="enabledProtocols"/>
-            <!-- The alias that identifies the key in the key store. -->
-            <property name="keyAlias" value="keyalias"/>
-            <!-- The password used to access the key in the key store. -->
-            <property name="keyPassword" value="keypassword"/>
-            <!-- The path to the key store. -->
-            <property name="keyStore" value="/path/to/the/keystore.jks"/>
-            <!-- The password used to load the key store. -->
-            <property name="keyStorePassword" value="keystorepassword"/>
-            <!-- The type of key store. -->
-            <property name="keyStoreType" value="JKS"/>
-            <!-- The provider for the key store. -->
-            <property name="keyStoreProvider" value="BC"/>
-            <!-- The path to the trust store. -->
-            <property name="trustStore" value="/path/to/the/truststore.p12"/>
-            <!-- The password used to load the trust store . -->
-            <property name="trustStorePassword" value="truststorepassword"/>
-            <!-- The type of trust store. -->
-            <property name="trustStoreType" value="PKCS12"/>
-            <!-- The provider for the trust store. -->
-            <property name="trustStoreProvider" value="SUN"/>
-            <!-- The SSL protocol to use. Default to TLS. -->
-            <property name="protocol" value="TLS"/>
-            <!-- Indicates whether hostname should be verify during SSL handshake. Defaults to true. -->
-            <property name="verifyHostname" value="true"/>
-        </bean>
-    </beans>
+    When JODConverter remote is used as a Command Line Tool, you provide the SSL configuration through the
+    configuration file of the **`--config`** option, JSON or YAML, in its `ssl` section. Here is an example of an SSL
+    configuration file.
+
+    ```yaml title="ssl.yml"
+    ssl:
+      # Whether SSL support is enabled. Defaults to false.
+      enabled: true
+      # The supported SSL ciphers; a list, or comma-separated. Defaults to the JVM default values.
+      ciphers: [ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA]
+      # The enabled SSL protocols; a list, or comma-separated. Defaults to the JVM default values.
+      enabled-protocols: [TLSv1.2, TLSv1.3]
+      # The alias that identifies the key in the key store.
+      key-alias: keyalias
+      # The password used to access the key in the key store.
+      key-password: keypassword
+      # The path to the key store.
+      key-store: /path/to/the/keystore.jks
+      # The password used to load the key store.
+      key-store-password: keystorepassword
+      # The type of key store.
+      key-store-type: JKS
+      # The provider for the key store.
+      key-store-provider: BC
+      # The path to the trust store.
+      trust-store: /path/to/the/truststore.p12
+      # The password used to load the trust store.
+      trust-store-password: truststorepassword
+      # The type of trust store.
+      trust-store-type: PKCS12
+      # The provider for the trust store.
+      trust-store-provider: SUN
+      # The SSL protocol to use. Defaults to TLS.
+      protocol: TLS
+      # Whether every certificate is trusted, without a trust store. Defaults to false.
+      trust-all: false
+      # Whether the host name is verified during the SSL handshake. Defaults to true.
+      verify-hostname: true
     ```
 
     then
 
     ```shell title="short option"
-    jodconverter-cli -c "https://localhost:8001" -a ssl.xml timeout infile outfile
+    jodconverter-cli -c "https://localhost:8001" --config ssl.yml infile outfile
     ```
+
     or
+
     ```shell title="long option"
-    jodconverter-cli --connection-url "https://localhost:8001" --application-context ssl.xml timeout infile outfile
+    jodconverter-cli --connection-url "https://localhost:8001" --config ssl.yml infile outfile
     ```
 
-#### &#128290;`maxTasksPerConnection`
+#### 🔢`taskQueueCapacity`
 
-This property sets the maximum number of tasks an office process can execute before reconnecting to it. 0 means an
-infinite number of tasks (will never reconnect).
+This property sets the maximum number of tasks waiting in the conversion queue. A task submitted while the queue is
+full fails at once with an `OfficeException`, instead of waiting for the queue timeout; a web application can thus
+answer right away that it is overloaded. 0 means no limit.
 
-&nbsp;***Default***: 1000
+&#160;***Default***: 0 (no limit)
 
 === "Java"
 
@@ -326,7 +330,7 @@ infinite number of tasks (will never reconnect).
     OfficeManager officeManager =
         RemoteOfficeManager
             .builder()
-            .maxTasksPerConnection(500)
+            .taskQueueCapacity(100)
             .build();
     ```
 
@@ -335,23 +339,24 @@ infinite number of tasks (will never reconnect).
     ```yml title="application.yml"
     jodconverter:
       remote:
-        max-tasks-per-connection: 500
+        task-queue-capacity: 100
     ```
-    
+
     ```conf title="application.properties"
-    jodconverter.remote.max-tasks-per-connection = 500
+    jodconverter.remote.task-queue-capacity = 100
     ```
 
 === "Command Line"
 
-    `maxTasksPerConnection` can't be set with the command line tool, it will always be 200.
+    `taskQueueCapacity` can't be set with the command line tool, it will always be 0.
 
-#### &#8986;`taskQueueTimeout`
+#### ⌚`taskQueueTimeout`
 
-This property is used to set the maximum living time of a task in the conversion queue. The task will be removed from
-the queue if the waiting time is longer than this timeout and an `OfficeException` will be thrown.
+This property sets the maximum time a task waits in the conversion queue, from its submission until a worker of the
+pool takes it. When it expires, the task is removed from the queue without having been executed and fails with an
+`OfficeException`.
 
-&nbsp;***Default***: 30000 (30 seconds)
+&#160;***Default***: 30000 (30 seconds)
 
 === "Java"
 
@@ -370,7 +375,7 @@ the queue if the waiting time is longer than this timeout and an `OfficeExceptio
       remote:
         task-queue-timeout: 60000
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.task-queue-timeout = 60000
     ```
@@ -379,12 +384,12 @@ the queue if the waiting time is longer than this timeout and an `OfficeExceptio
 
     `taskQueueTimeout` can't be set with the command line tool, it will always be 30000.
 
-#### &#8986;`taskExecutionTimeout`
+#### ⌚`taskExecutionTimeout`
 
-This property sets the maximum time allowed to process a task. If the processing time of a task is longer than this
-timeout, this task will be aborted and the next task is processed.
+This property sets the maximum time allowed to execute a task, counted from the moment a worker of the pool starts it.
+When it expires, the task fails with an `OfficeException` and its request to the server is aborted.
 
-&nbsp;***Default***: 120000 (2 minutes)
+&#160;***Default***: 120000 (2 minutes)
 
 === "Java"
 
@@ -403,7 +408,7 @@ timeout, this task will be aborted and the next task is processed.
       remote:
         task-execution-timeout: 60000
     ```
-    
+
     ```conf title="application.properties"
     jodconverter.remote.task-execution-timeout = 60000
     ```
@@ -413,7 +418,9 @@ timeout, this task will be aborted and the next task is processed.
     ```shell title="short option"
     jodconverter-cli -c "https://localhost:8001" -t 60000 infile outfile
     ```
+
     or
+
     ```shell title="long option"
     jodconverter-cli --connection-url "https://localhost:8001" --timeout 60000 infile outfile
     ```

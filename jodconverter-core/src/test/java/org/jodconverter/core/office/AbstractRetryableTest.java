@@ -24,6 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -38,14 +42,14 @@ class AbstractRetryableTest {
     @Test
     void whenExecuteOnTime_ShouldNotThrowAnyException() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(1);
+      final var retryable = new SimpleRetryable(1);
       assertThatCode(() -> retryable.execute(250L, 500L)).doesNotThrowAnyException();
     }
 
     @Test
     void withInitialDelay_ShouldApplyInitialDelayAndThrowRetryTimeoutException() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(2, 250L);
+      final var retryable = new SimpleRetryable(2, 250L);
       assertThatExceptionOfType(RetryTimeoutException.class)
           .isThrownBy(() -> retryable.execute(250L, NO_SLEEP, 300L));
       assertThat(retryable.getAttempts()).isEqualTo(1);
@@ -54,7 +58,7 @@ class AbstractRetryableTest {
     @Test
     void withoutInitialDelay_ShouldNotApplyInitialDelay() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(2, 100L);
+      final var retryable = new SimpleRetryable(2, 100L);
       assertThatCode(() -> retryable.execute(NO_SLEEP, 300L)).doesNotThrowAnyException();
       assertThat(retryable.getAttempts()).isEqualTo(2);
     }
@@ -62,56 +66,118 @@ class AbstractRetryableTest {
     @Test
     void withInterval_ShouldApplyIntervalDelayAndThrowRetryTimeoutException() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(3, 250L);
+      final var retryable = new SimpleRetryable(3, 250L);
       assertThatExceptionOfType(RetryTimeoutException.class)
           .isThrownBy(() -> retryable.execute(250L, 500L));
       assertThat(retryable.getAttempts()).isEqualTo(2);
     }
 
     @Test
+    void whenTimedOut_ShouldKeepTheAttemptsAndTheLastFailure() {
+
+      // A temporary exception with a message only: it is the cause of the timeout.
+      final var retryable = new SimpleRetryable(Integer.MAX_VALUE);
+
+      assertThatExceptionOfType(RetryTimeoutException.class)
+          .isThrownBy(() -> retryable.execute(NO_SLEEP, 100L))
+          .withMessageStartingWith("Execution failed after ")
+          .withMessageContaining("(timeout: 100 ms)")
+          .withCauseExactlyInstanceOf(TemporaryException.class)
+          .satisfies(ex -> assertThat(ex.getCause()).hasMessage("attempt failed"));
+    }
+
+    @Test
     void withNoInterval_ShouldNotApplyIntervalDelay() {
 
-      final SimpleRetryable retryable = new SimpleRetryable(3, 100L);
+      final var retryable = new SimpleRetryable(3, 100L);
       assertThatCode(() -> retryable.execute(NO_SLEEP, 750L)).doesNotThrowAnyException();
       assertThat(retryable.getAttempts()).isEqualTo(3);
+    }
+
+    @Test
+    void whenInterruptedWithNoInterval_ShouldThrowRetryTimeoutException() {
+
+      final var retryable = new SimpleRetryable(Integer.MAX_VALUE);
+
+      Thread.currentThread().interrupt();
+      try {
+        assertThatExceptionOfType(RetryTimeoutException.class)
+            .isThrownBy(() -> retryable.execute(NO_SLEEP, 60_000L))
+            .withCauseExactlyInstanceOf(InterruptedException.class);
+      } finally {
+        // Clear the interrupted status of the test thread.
+        assertThat(Thread.interrupted()).isTrue();
+      }
+      // The first attempt is made: only the retries are given up.
+      assertThat(retryable.getAttempts()).isEqualTo(1);
     }
   }
 
   @Nested
   class Sleep {
 
-    //    @Test
-    //    void whenInterrupted_ShouldNotApplyIntervalDelay() {
-    //
-    //      final SimpleRetryable retryable = new SimpleRetryable(2);
-    //      final AtomicReference<Exception> exep = new AtomicReference<>();
-    //      assertThatCode(
-    //              () -> {
-    //                final Thread thread =
-    //                    new Thread(
-    //                        () -> {
-    //                          try {
-    //                            retryable.execute(1_000L, 2_000L);
-    //                          } catch (Exception ex) {
-    //                            exep.set(ex);
-    //                          }
-    //                        });
-    //
-    //                // Start the thread.
-    //                thread.start();
-    //                // Let the execution begin.
-    //                Thread.sleep(250L);
-    //                // Interrupt the thread.
-    //                thread.interrupt();
-    //                //  Wait for thread to complete.
-    //                thread.join();
-    //              })
-    //          .doesNotThrowAnyException();
-    //
-    //      assertThat(retryable.getAttempts()).isEqualTo(1);
-    //      assertThat(exep.get())
-    //          .isExactlyInstanceOf(RetryTimeoutException.class)
-    //          .hasCauseExactlyInstanceOf(InterruptedException.class);
-    //    }
+    @Test
+    void whenInterruptedWhileSleeping_ShouldThrowRetryTimeoutException() throws Exception {
+
+      // The first attempt fails, and the thread is interrupted while it waits for the next one.
+      final var attempted = new CountDownLatch(1);
+      final AbstractRetryable<RuntimeException> retryable =
+          new AbstractRetryable<>() {
+            @Override
+            protected void attempt() throws TemporaryException {
+              attempted.countDown();
+              throw new TemporaryException("attempt failed");
+            }
+          };
+      final var thrown = new AtomicReference<Throwable>();
+      final var thread =
+          new Thread(
+              () -> {
+                try {
+                  retryable.execute(60_000L, 120_000L);
+                } catch (Exception ex) {
+                  thrown.set(ex);
+                }
+              });
+
+      thread.start();
+      assertThat(attempted.await(10, TimeUnit.SECONDS)).isTrue();
+      // Interrupt the thread once it sleeps, not before it checks its interrupted status.
+      final var deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+      while (thread.getState() != Thread.State.TIMED_WAITING) {
+        assertThat(System.nanoTime()).isLessThan(deadline);
+        Thread.onSpinWait();
+      }
+      thread.interrupt();
+      thread.join(10_000L);
+
+      assertThat(thread.isAlive()).isFalse();
+      assertThat(thrown.get())
+          .isExactlyInstanceOf(RetryTimeoutException.class)
+          .hasCauseExactlyInstanceOf(InterruptedException.class);
+    }
+
+    @Test
+    void whenInterruptedWhileWaitingForTheNextAttempt_ShouldThrowRetryTimeoutException() {
+
+      // The thread is interrupted during the first attempt, which fails.
+      final AbstractRetryable<RuntimeException> retryable =
+          new AbstractRetryable<>() {
+            @Override
+            protected void attempt() throws TemporaryException {
+              Thread.currentThread().interrupt();
+              throw new TemporaryException("attempt failed");
+            }
+          };
+
+      try {
+        assertThatExceptionOfType(RetryTimeoutException.class)
+            .isThrownBy(() -> retryable.execute(60_000L, 120_000L))
+            .withCauseExactlyInstanceOf(InterruptedException.class);
+      } finally {
+        // The interrupted status is kept for the caller; clear it for the next tests.
+        assertThat(Thread.interrupted()).isTrue();
+      }
+    }
   }
 }

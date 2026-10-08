@@ -20,11 +20,7 @@
 
 package org.jodconverter.core.document;
 
-import java.util.Optional;
-import java.util.Set;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Default {@code DocumentFormat} registry. It contains the list of {@code DocumentFormat} that
@@ -44,7 +40,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * href="https://svn.apache.org/repos/asf/openoffice/trunk/main/filter/source/config/fragments/filters">OpenOffice
  * Filters</a>.
  */
-public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name rule violation
+public final class DefaultDocumentFormatRegistry {
 
   // Another sources
   // https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_SO_8
@@ -189,6 +185,16 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    * </ul>
    */
   public static final @NonNull DocumentFormat TXT = byExtension("txt");
+
+  /**
+   * Markdown, supported by LibreOffice 26.2 and later.
+   *
+   * <ul>
+   *   <li>Extension: md, markdown
+   *   <li>Media Type: text/markdown
+   * </ul>
+   */
+  public static final @NonNull DocumentFormat MARKDOWN = byExtension("md");
 
   /**
    * OpenDocument Spreadsheet.
@@ -480,15 +486,6 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
    */
   public static final @NonNull DocumentFormat BMP = byExtension("bmp");
 
-  // NOOP format that is used to ensure that all the static formats will have
-  // a non-null value even when using a custom document-formats.json file.
-  private static final DocumentFormat NOOP =
-      DocumentFormat.builder()
-          .name("NOOP")
-          .extension("noop")
-          .mediaType("jodconverter/noop")
-          .build();
-
   /**
    * Gets the default instance of the class.
    *
@@ -498,41 +495,17 @@ public final class DefaultDocumentFormatRegistry { // NOPMD - Disable class name
     return DefaultDocumentFormatRegistryInstanceHolder.getInstance();
   }
 
+  // The constants are captured when this class is initialized, from the default registry: a
+  // custom document-formats.json that drops one of them is a configuration error.
   private static DocumentFormat byExtension(final String extension) {
-    return Optional.ofNullable(getInstance().getFormatByExtension(extension)).orElse(NOOP);
-  }
-
-  /**
-   * Gets a document format for the specified extension.
-   *
-   * @param extension The extension whose document format will be returned.
-   * @return The found document format, or {@code null} if no document format exists for the
-   *     specified extension.
-   */
-  public static @Nullable DocumentFormat getFormatByExtension(@NonNull final String extension) {
-    return getInstance().getFormatByExtension(extension);
-  }
-
-  /**
-   * Gets a document format for the specified media type.
-   *
-   * @param mediaType The media type whose document format will be returned.
-   * @return The found document format, or {@code null} if no document format exists for the
-   *     specified media type.
-   */
-  public static @Nullable DocumentFormat getFormatByMediaType(@NonNull final String mediaType) {
-    return getInstance().getFormatByMediaType(mediaType);
-  }
-
-  /**
-   * Gets all the {@link DocumentFormat}s of a given family.
-   *
-   * @param family The family whose document formats will be returned.
-   * @return A set with all the document formats for the specified family.
-   */
-  public static @NonNull Set<@NonNull DocumentFormat> getOutputFormats(
-      final @NonNull DocumentFamily family) {
-    return getInstance().getOutputFormats(family);
+    final var format = getInstance().getFormatByExtension(extension);
+    if (format == null) {
+      throw new DocumentFormatRegistryException(
+          "The default document format registry has no format for the extension '"
+              + extension
+              + "'");
+    }
+    return format;
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

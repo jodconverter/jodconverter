@@ -23,10 +23,10 @@ package org.jodconverter.remote.office;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
 import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT;
 import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT;
+import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.remote.office.RemoteOfficeManager.DEFAULT_TASK_QUEUE_TIMEOUT;
 import static org.jodconverter.remote.office.RemoteOfficeManager.MAX_POOL_SIZE;
 
 import java.io.File;
@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 
 /** Contains tests for the {@link RemoteOfficeManager} class. */
@@ -51,7 +50,7 @@ class RemoteOfficeManagerTest {
     @Test
     void shouldInitializedManagerWithDefaultValues() {
 
-      final OfficeManager manager = RemoteOfficeManager.make("localhost");
+      final var manager = RemoteOfficeManager.make("http://localhost");
 
       assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
       assertThat(manager)
@@ -62,25 +61,24 @@ class RemoteOfficeManagerTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT);
       assertThat(manager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
           .satisfies(
               o ->
                   assertThat(o)
-                      .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
+                      .isInstanceOf(RemoteOfficeWorker.class)
                       .extracting(
-                          "taskExecutionTimeout",
-                          "connectionUrl",
+                          "requestConfig.url",
                           "sslConfig",
-                          "connectTimeout",
-                          "socketTimeout")
+                          "requestConfig.connectTimeout",
+                          "requestConfig.socketTimeout")
                       .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
-                          "localhost",
+                          "http://localhost/lool/convert-to/",
                           null,
                           DEFAULT_CONNECT_TIMEOUT,
                           DEFAULT_SOCKET_TIMEOUT));
@@ -94,9 +92,9 @@ class RemoteOfficeManagerTest {
     void shouldSetInstalledOfficeManagerHolder() {
 
       // Ensure we do not replace the current installed manager
-      final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
+      final var installedManager = InstalledOfficeManagerHolder.getInstance();
       try {
-        final OfficeManager manager = RemoteOfficeManager.install("localhost");
+        final var manager = RemoteOfficeManager.install("http://localhost");
         assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
       } finally {
         InstalledOfficeManagerHolder.setInstance(installedManager);
@@ -108,67 +106,19 @@ class RemoteOfficeManagerTest {
   class Build {
 
     @Test
-    void withNullValues_ShouldInitializedManagerWithDefaultValues() {
-
-      final OfficeManager manager =
-          RemoteOfficeManager.builder()
-              .workingDir((String) null)
-              .workingDir((File) null)
-              .poolSize(null)
-              .taskExecutionTimeout(null)
-              .taskQueueTimeout(null)
-              .urlConnection("localhost")
-              .connectTimeout(null)
-              .socketTimeout(null)
-              .build();
-
-      assertThat(manager).isInstanceOf(RemoteOfficeManager.class);
-      assertThat(manager)
-          .extracting("tempDir")
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .asInstanceOf(InstanceOfAssertFactories.FILE)
-                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
-      assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
-      assertThat(manager)
-          .extracting("entries")
-          .asList()
-          .hasSize(1)
-          .element(0)
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
-                      .extracting(
-                          "taskExecutionTimeout",
-                          "connectionUrl",
-                          "sslConfig",
-                          "connectTimeout",
-                          "socketTimeout")
-                      .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
-                          "localhost",
-                          null,
-                          DEFAULT_CONNECT_TIMEOUT,
-                          DEFAULT_SOCKET_TIMEOUT));
-    }
-
-    @Test
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void withCustomValues_ShouldInitializedManagerWithCustomValues() {
 
-      final File workingDir = new File(testFolder, "temp");
+      final var workingDir = new File(testFolder, "temp");
       workingDir.mkdirs();
 
-      final OfficeManager manager =
+      final var manager =
           RemoteOfficeManager.builder()
               .workingDir(workingDir.getPath())
               .taskExecutionTimeout(500L)
               .taskQueueTimeout(501L)
               .poolSize(2)
-              .urlConnection("localhost")
+              .urlConnection("http://localhost")
               .sslConfig(null)
               .connectTimeout(502L)
               .socketTimeout(503L)
@@ -180,22 +130,23 @@ class RemoteOfficeManagerTest {
           .satisfies(
               o ->
                   assertThat(o).asInstanceOf(InstanceOfAssertFactories.FILE).hasParent(workingDir));
-      assertThat(manager).hasFieldOrPropertyWithValue("taskQueueTimeout", 501L);
       assertThat(manager)
-          .extracting("entries")
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", 501L)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", 500L);
+      assertThat(manager)
+          .extracting("workers")
           .asList()
           .hasSize(2)
           .allSatisfy(
               o ->
                   assertThat(o)
-                      .isInstanceOf(RemoteOfficeManagerPoolEntry.class)
+                      .isInstanceOf(RemoteOfficeWorker.class)
                       .extracting(
-                          "taskExecutionTimeout",
-                          "connectionUrl",
+                          "requestConfig.url",
                           "sslConfig",
-                          "connectTimeout",
-                          "socketTimeout")
-                      .containsExactly(500L, "localhost", null, 502L, 503L));
+                          "requestConfig.connectTimeout",
+                          "requestConfig.socketTimeout")
+                      .containsExactly("http://localhost/lool/convert-to/", null, 502L, 503L));
     }
 
     @Test

@@ -25,7 +25,6 @@ import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.jodconverter.local.ResourceUtil.imageFile;
 
 import java.io.File;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,10 +47,10 @@ class GraphicInserterFilterITest {
   @Test
   void withCustomizedProperties(final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
+    final var targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".pdf");
 
     // Create the properties of the filter
-    final Map<String, Object> props =
+    final var props =
         GraphicInserterFilter.createDefaultShapeProperties(
             50, // Horizontal Position, 5 CM
             100 // Vertical Position, 10 CM
@@ -63,8 +62,7 @@ class GraphicInserterFilterITest {
     assertThatCode(
             () -> {
               // Create the GraphicInserterFilter to test.
-              final GraphicInserterFilter filter =
-                  new GraphicInserterFilter(IMAGE_FILE.getPath(), props);
+              final var filter = new GraphicInserterFilter(IMAGE_FILE.getPath(), props);
               // Convert to PDF
               LocalConverter.builder()
                   .officeManager(manager)
@@ -80,12 +78,12 @@ class GraphicInserterFilterITest {
   @Test
   void withDefaultProperties(final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".originalsize.pdf");
+    final var targetFile = new File(testFolder, SOURCE_FILENAME + ".originalsize.pdf");
 
     assertThatCode(
             () -> {
               // Create the GraphicInserterFilter to test.
-              final GraphicInserterFilter filter =
+              final var filter =
                   new GraphicInserterFilter(
                       IMAGE_FILE.getPath(),
                       50, // Horizontal Position // 5 CM
@@ -107,12 +105,12 @@ class GraphicInserterFilterITest {
   void withDefaultPropertiesAndSmallerSize(
       final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".smallersize.pdf");
+    final var targetFile = new File(testFolder, SOURCE_FILENAME + ".smallersize.pdf");
 
     assertThatCode(
             () -> {
               // Create the GraphicInserterFilter to test.
-              final GraphicInserterFilter filter =
+              final var filter =
                   new GraphicInserterFilter(
                       IMAGE_FILE.getPath(),
                       74, // Image Width // 7.4 CM (half the original size)
@@ -136,10 +134,10 @@ class GraphicInserterFilterITest {
   void withCustomizedPropertiesAndSmallerSize(
       final @TempDir File testFolder, final OfficeManager manager) {
 
-    final File targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".smallersize.pdf");
+    final var targetFile = new File(testFolder, MULTI_PAGE_FILENAME + ".smallersize.pdf");
 
     // Create the properties of the filter
-    final Map<String, Object> props =
+    final var props =
         GraphicInserterFilter.createDefaultShapeProperties(
             50, // Horizontal Position, 5 CM
             100 // Vertical Position, 10 CM
@@ -151,7 +149,7 @@ class GraphicInserterFilterITest {
     assertThatCode(
             () -> {
               // Create the GraphicInserterFilter to test.
-              final GraphicInserterFilter filter =
+              final var filter =
                   new GraphicInserterFilter(
                       IMAGE_FILE.getPath(),
                       74, // Image Width // 7.4 CM (half the original size)

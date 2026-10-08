@@ -8,16 +8,23 @@ plugins {
 }
 
 dependencies {
+    // The Spring Boot BOM manages the versions of the Spring Boot dependencies of the starter.
+    implementation(platform(libs.spring.boot.dependencies))
+
     compileOnly(project(":jodconverter-local"))
     compileOnly(project(":jodconverter-remote"))
     annotationProcessor(libs.spring.boot.configuration.processor)
 
     implementation(libs.spring.boot.starter)
+    // The health indicator is only configured when the application has the health module, which
+    // the actuator brings.
+    compileOnly(libs.spring.boot.health)
 
     testImplementation(project(":jodconverter-local"))
     testImplementation(project(":jodconverter-remote"))
 
     testImplementation(libs.wiremock)
     testImplementation(libs.spring.boot.starter.test)
-    testImplementation(libs.javax.annotations)
+    testImplementation(libs.spring.boot.starter.actuator)
+    testImplementation(libs.jakarta.annotations)
 }

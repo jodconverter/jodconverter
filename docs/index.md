@@ -12,14 +12,14 @@
   }
 </style>
 
-[![Build Status](https://api.cirrus-ci.com/github/jodconverter/jodconverter.svg)](https://cirrus-ci.com/github/jodconverter/jodconverter)
+[![Build Status](https://github.com/jodconverter/jodconverter/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/jodconverter/jodconverter/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/jodconverter/jodconverter/badge.svg?branch=master)](https://coveralls.io/github/jodconverter/jodconverter?branch=master)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/90c9707226c6406abbea2353274ac773)](https://www.codacy.com/gh/jodconverter/jodconverter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jodconverter/jodconverter&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/90c9707226c6406abbea2353274ac773)](https://www.codacy.com/gh/jodconverter/jodconverter/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jodconverter/jodconverter&utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central Version](https://img.shields.io/maven-central/v/org.jodconverter/jodconverter-local)](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local)
 [![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-local.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-local)
 [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Sponsor](https://img.shields.io/badge/Sponsor-❤-pink.svg)](https://github.com/sponsors/jodconverter)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink.svg)](https://github.com/sponsors/jodconverter)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/sbraconnier)
 
@@ -27,7 +27,7 @@
   <img src="assets/logo-with-text.png" alt="Logo" style="max-width: 100%; width: 500px; height: auto;" />
 </div>
 
-### Overview    
+### Overview
 
 **JODConverter**, the Java OpenDocument Converter, converts documents between different office formats.
 It leverages [LibreOffice](https://www.libreoffice.org) or [Apache OpenOffice](https://www.openoffice.org), which
@@ -37,7 +37,7 @@ provide arguably the best free import/export filters for OpenDocument and Micros
 **(but not limited to. All conversions supported by your OOo installation is supported by JODConverter)**:
 
 | Document Type | Input Format                         | Output Format                                                  |
-|---------------|--------------------------------------|----------------------------------------------------------------|
+| ------------- | ------------------------------------ | -------------------------------------------------------------- |
 | Text          | DOC, DOCX, ODT, OTT, RTF, TEXT, etc. | DOC, DOCX, HTML, JPG, ODT, OTT, FODT, PDF, PNG, RTF, TXT, etc. |
 | Spreadsheet   | CSV, ODS, OTS, TSV, XLS, XLSX, etc.  | CSV, HTML, JPG, ODS, OTS, FODS, PDF, PNG, TSV, XLS, XLSX, etc. |
 | Presentation  | ODP, OTP, PPT, PPTX, etc.            | GIF, HTML, JPG, ODP, OTP, FODP, PDF, PNG, PPT, PPTX, BMP, etc. |
@@ -46,25 +46,25 @@ provide arguably the best free import/export filters for OpenDocument and Micros
 
 **JODConverter** can be used in different ways:
 
-- As a [Java library](getting-started/java-library.md), embedded in your own Java application (Web or not).
+- As a [Java library](getting-started/java-library/index.md), embedded in your own Java application (Web or not).
 - As a [command line tool](getting-started/command-line-tool.md), possibly invoked from your own scripts.
 
----
+______________________________________________________________________
 
 ### Modules
 
 Looking for the list of JODConverter modules? See Getting Started: [Modules](getting-started/modules.md) for a concise
 overview of all modules and when to use each one.
 
----
+______________________________________________________________________
 
-### Support <sup>&#128172;</sup>
+### Support <sup>💬</sup>
 
 **JODConverter** Gitter
 Community [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge),
 growing [FAQ](faq.md).
 
----
+______________________________________________________________________
 
 ### Original **JODConverter**
 
@@ -73,11 +73,11 @@ growing [FAQ](faq.md).
 The previous home for this project is at [Google Code](http://code.google.com/p/jodconverter/),
 including some [wiki pages](https://code.google.com/archive/p/jodconverter/wikis).
 
----
+______________________________________________________________________
 
 ### Donations
 
-If this project helps you, please consider a cup of &#9749;. Thanks!! &#128150;
+If this project helps you, please consider a cup of ☕. Thanks!! 💖
 
 <iframe src="https://github.com/sponsors/jodconverter/button" title="Sponsor JODConverter" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
 

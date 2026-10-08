@@ -20,11 +20,13 @@
 
 package org.jodconverter.core.job;
 
+import java.util.List;
+
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.SimpleOfficeManager;
+import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.task.SimpleOfficeTask;
 
 /** Converter for testing purposes. */
@@ -44,8 +46,10 @@ public final class SimpleConverter extends AbstractConverter {
   }
 
   private SimpleConverter(
-      final OfficeManager officeManager, final DocumentFormatRegistry formatRegistry) {
-    super(officeManager, formatRegistry);
+      final OfficeManager officeManager,
+      final DocumentFormatRegistry formatRegistry,
+      final List<TargetOptions> defaultTargetOptions) {
+    super(officeManager, formatRegistry, defaultTargetOptions);
   }
 
   @Override
@@ -89,11 +93,13 @@ public final class SimpleConverter extends AbstractConverter {
     }
 
     @Override
-    public void doExecute() throws OfficeException {
+    protected OfficeManager getOfficeManager() {
+      return officeManager;
+    }
 
-      // Create a default conversion task and execute it
-      final SimpleOfficeTask task = new SimpleOfficeTask();
-      officeManager.execute(task);
+    @Override
+    protected OfficeTask createTask() {
+      return new SimpleOfficeTask();
     }
   }
 
@@ -106,7 +112,7 @@ public final class SimpleConverter extends AbstractConverter {
 
     @Override
     public SimpleConverter build() {
-      return new SimpleConverter(officeManager, formatRegistry);
+      return new SimpleConverter(officeManager, formatRegistry, defaultTargetOptions);
     }
   }
 }

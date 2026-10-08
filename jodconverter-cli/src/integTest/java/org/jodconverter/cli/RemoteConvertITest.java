@@ -21,15 +21,15 @@
 package org.jodconverter.cli;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.options;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.Nested;
@@ -38,20 +38,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
-import org.jodconverter.cli.util.ExitException;
-import org.jodconverter.cli.util.NoExitExtension;
-import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
-import org.jodconverter.core.util.FileUtils;
 
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
  */
-@ExtendWith({
-  ConsoleStreamsListenerExtension.class,
-  NoExitExtension.class,
-  ResetExitExceptionExtension.class
-})
+@ExtendWith(ConsoleStreamsListenerExtension.class)
 class RemoteConvertITest {
 
   private static final String RESOURCES_PATH = "src/integTest/resources/";
@@ -66,86 +58,66 @@ class RemoteConvertITest {
     @Test
     void withCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf(final @TempDir File testFolder) {
 
-      final File inputFile = new File(SOURCE_FILE_DOC);
-      final File outputFile = new File(testFolder, "out.doc");
-      final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
+      final var inputFile = new File(SOURCE_FILE_DOC);
+      final var outputFile = new File(testFolder, "out.doc");
+      final var registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
 
-      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      final var wireMockServer = new WireMockServer(options().port(8000));
       wireMockServer.start();
       try {
         SystemLogHandler.startCapture();
-        assertThatExceptionOfType(ExitException.class)
-            .isThrownBy(
-                () ->
-                    Convert.main(
-                        new String[] {
-                          "-c",
-                          "http://localhost:8000/lool/convert-to/",
-                          "-r",
-                          registryFile.getPath(),
-                          inputFile.getPath(),
-                          outputFile.getPath()
-                        }))
-            .satisfies(
-                e -> {
-                  final String capturedlog = SystemLogHandler.stopCapture();
-                  assertThat(e).hasFieldOrPropertyWithValue("status", 2);
-                  assertThat(capturedlog).contains("The target format is missing or not supported");
-                });
+        final var status =
+            Convert.run(
+                "-c",
+                "http://localhost:8000/lool/convert-to/",
+                "-r",
+                registryFile.getPath(),
+                inputFile.getPath(),
+                outputFile.getPath());
+        final var capturedlog = SystemLogHandler.stopCapture();
+        assertThat(status).isEqualTo(2);
+        assertThat(capturedlog).contains("The target format is missing or not supported");
       } finally {
         wireMockServer.stop();
       }
     }
 
     @Test
-    void withConnectionOption_ShouldSucceed(final @TempDir File testFolder) {
+    void withConnectionOption_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
-      final File inputFile = new File(SOURCE_FILE_DOC);
-      final File outputFile = new File(testFolder, "out.txt");
+      final var inputFile = new File(SOURCE_FILE_DOC);
+      final var outputFile = new File(testFolder, "out.txt");
 
-      final WireMockServer wireMockServer = new WireMockServer(options().port(8000));
+      final var wireMockServer = new WireMockServer(options().port(8000));
       wireMockServer.start();
       try {
-        assertThatExceptionOfType(ExitException.class)
-            .isThrownBy(
-                () -> {
-                  wireMockServer.stubFor(
-                      post(urlPathEqualTo("/lool/convert-to/txt"))
-                          .willReturn(aResponse().withBody("Test Document")));
+        wireMockServer.stubFor(
+            post(urlPathEqualTo("/lool/convert-to/txt"))
+                .willReturn(aResponse().withBody("Test Document")));
 
-                  Convert.main(
-                      new String[] {
-                        "-c",
-                        "http://localhost:8000/lool/convert-to/",
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      });
-                })
-            .satisfies(
-                e -> {
-                  assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-
-                  try {
-                    final String content =
-                        FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-                    assertThat(content).as("Check content: %s", content).contains("Test Document");
-                  } catch (IOException ex) {
-                    assertThat(ex).isNull();
-                  }
-                });
+        final var status =
+            Convert.run(
+                "-c",
+                "http://localhost:8000/lool/convert-to/",
+                inputFile.getPath(),
+                outputFile.getPath());
+        assertThat(status).isEqualTo(0);
+        final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         wireMockServer.stop();
       }
     }
 
     @Test
-    void withConnectionOptionAndSslConfig_ShouldSucceed(final @TempDir File testFolder) {
+    void withConnectionOptionAndSslConfig_ShouldSucceed(final @TempDir File testFolder)
+        throws Exception {
 
-      final File inputFile = new File(SOURCE_FILE_DOC);
-      final File outputFile = new File(testFolder, "out.txt");
-      final File contextFile = new File(CONFIG_DIR + "applicationContext_sslConfig.xml");
+      final var inputFile = new File(SOURCE_FILE_DOC);
+      final var outputFile = new File(testFolder, "out.txt");
+      final var configFile = new File(CONFIG_DIR + "ssl.yml");
 
-      final WireMockServer wireMockServer =
+      final var wireMockServer =
           new WireMockServer(
               options()
                   .port(8000)
@@ -155,35 +127,21 @@ class RemoteConvertITest {
                   .keyManagerPassword(SERVER_KEYSTORE_PWD));
       wireMockServer.start();
       try {
-        assertThatExceptionOfType(ExitException.class)
-            .isThrownBy(
-                () -> {
-                  wireMockServer.stubFor(
-                      post(urlPathEqualTo("/lool/convert-to/txt"))
-                          .willReturn(aResponse().withBody("Test Document")));
+        wireMockServer.stubFor(
+            post(urlPathEqualTo("/lool/convert-to/txt"))
+                .willReturn(aResponse().withBody("Test Document")));
 
-                  Convert.main(
-                      new String[] {
-                        "-c",
-                        "https://localhost:8001/lool/convert-to/",
-                        "-a",
-                        contextFile.getPath(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      });
-                })
-            .satisfies(
-                e -> {
-                  assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-
-                  try {
-                    final String content =
-                        FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-                    assertThat(content).as("Check content: %s", content).contains("Test Document");
-                  } catch (IOException ex) {
-                    assertThat(ex).isNull();
-                  }
-                });
+        final var status =
+            Convert.run(
+                "-c",
+                "https://localhost:8001/lool/convert-to/",
+                "--config",
+                configFile.getPath(),
+                inputFile.getPath(),
+                outputFile.getPath());
+        assertThat(status).isEqualTo(0);
+        final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
+        assertThat(content).as("Check content: %s", content).contains("Test Document");
       } finally {
         wireMockServer.stop();
       }

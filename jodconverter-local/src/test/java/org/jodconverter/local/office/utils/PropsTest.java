@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-import com.sun.star.beans.PropertyValue;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.WrappedTargetException;
@@ -56,8 +55,8 @@ class PropsTest {
 
       assertThatCode(
               () -> {
-                final Object object = mock(Object.class);
-                final XPropertySet props = mock(XPropertySet.class);
+                final var object = mock(Object.class);
+                final var props = mock(XPropertySet.class);
                 given(props.getPropertyValue("propTestName")).willReturn("propTestValue");
                 given(unoRuntime.queryInterface(XPropertySet.class, object)).willReturn(props);
 
@@ -72,8 +71,8 @@ class PropsTest {
 
       assertThatCode(
               () -> {
-                final Object object = mock(Object.class);
-                final XPropertySet props = mock(XPropertySet.class);
+                final var object = mock(Object.class);
+                final var props = mock(XPropertySet.class);
                 given(props.getPropertyValue("propTestName")).willReturn(null);
                 given(unoRuntime.queryInterface(XPropertySet.class, object)).willReturn(props);
 
@@ -86,7 +85,7 @@ class PropsTest {
     void withUnknownPropertyException_ShouldThrowWrappedUnoException()
         throws WrappedTargetException, UnknownPropertyException {
 
-      final XPropertySet props = mock(XPropertySet.class);
+      final var props = mock(XPropertySet.class);
       given(props.getPropertyValue(isA(String.class))).willThrow(UnknownPropertyException.class);
 
       assertThatExceptionOfType(WrappedUnoException.class)
@@ -98,7 +97,7 @@ class PropsTest {
     void wrappedTargetException_ShouldThrowWrappedUnoException()
         throws WrappedTargetException, UnknownPropertyException {
 
-      final XPropertySet props = mock(XPropertySet.class);
+      final var props = mock(XPropertySet.class);
       given(props.getPropertyValue(isA(String.class))).willThrow(WrappedTargetException.class);
 
       assertThatExceptionOfType(WrappedUnoException.class)
@@ -113,8 +112,8 @@ class PropsTest {
     @Test
     void shouldReturnExpectedValues() {
 
-      final String name = "name";
-      final Object value = 100;
+      final var name = "name";
+      final var value = 100;
 
       assertThat(Props.makeProperty(name, value))
           .extracting("Name", "Value")
@@ -128,10 +127,10 @@ class PropsTest {
     @Test
     void withOneValue_ShouldReturnArrayWithExpectedValues() {
 
-      final String name = "name";
-      final Object value = 100;
+      final var name = "name";
+      final var value = 100;
 
-      final PropertyValue[] props = Props.makeProperties(name, value);
+      final var props = Props.makeProperties(name, value);
       assertThat(props).hasSize(1);
       assertThat(props[0]).extracting("Name", "Value").containsExactly(name, value);
     }
@@ -139,12 +138,12 @@ class PropsTest {
     @Test
     void withTwoValue_ShouldReturnArrayWithExpectedValues() {
 
-      final String name1 = "name1";
-      final Object value1 = 100;
-      final String name2 = "name2";
-      final Object value2 = 200;
+      final var name1 = "name1";
+      final var value1 = 100;
+      final var name2 = "name2";
+      final var value2 = 200;
 
-      final PropertyValue[] props = Props.makeProperties(name1, value1, name2, value2);
+      final var props = Props.makeProperties(name1, value1, name2, value2);
       assertThat(props).hasSize(2);
       assertThat(props[0]).extracting("Name", "Value").containsExactly(name1, value1);
       assertThat(props[1]).extracting("Name", "Value").containsExactly(name2, value2);
@@ -164,7 +163,7 @@ class PropsTest {
       final String[] names = {"name1", "name2", "name3", "name4"};
       final Object[] values = {100, 200, 300, 400};
 
-      final PropertyValue[] props = Props.makeProperties(names, values);
+      final var props = Props.makeProperties(names, values);
       assertThat(props).hasSize(4);
       assertThat(props[0]).extracting("Name", "Value").containsExactly("name1", 100);
       assertThat(props[1]).extracting("Name", "Value").containsExactly("name2", 200);

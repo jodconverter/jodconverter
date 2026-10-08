@@ -1,0 +1,45 @@
+name: Bug report
+description: Something does not work as expected.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: The smallest code or command that shows the problem. Attach a sample document if the problem depends on it.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or stack trace
+      description: Relevant log output, with JODConverter logging at DEBUG level if possible.
+      render: text
+  - type: input
+    id: jodconverter-version
+    attributes:
+      label: JODConverter version
+      placeholder: e.g. 4.4.11
+    validations:
+      required: true
+  - type: input
+    id: office-version
+    attributes:
+      label: LibreOffice or Apache OpenOffice version
+      placeholder: e.g. LibreOffice 25.8.7
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS and Java version
+      placeholder: e.g. Windows 11, Java 17
+    validations:
+      required: true

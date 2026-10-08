@@ -47,7 +47,7 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
   public boolean supportsParameter(
       final ParameterContext parameterContext, final ExtensionContext extensionContext) {
 
-    final Class<?> type = parameterContext.getParameter().getType();
+    final var type = parameterContext.getParameter().getType();
     return OfficeManager.class.isAssignableFrom(type)
         || DocumentConverter.class.isAssignableFrom(type);
   }
@@ -56,7 +56,7 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
   public Object resolveParameter(
       final ParameterContext parameterContext, final ExtensionContext extensionContext) {
 
-    final Class<?> type = parameterContext.getParameter().getType();
+    final var type = parameterContext.getParameter().getType();
     if (OfficeManager.class.isAssignableFrom(type)) {
       return getOfficeManager(extensionContext);
     }
@@ -82,8 +82,8 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
     /* default */ LocalOfficeManagerResource() {
       // Create the office manager. Don't use the default port number here
       // in order to be able to use it in other tests.
-      final String property = System.getProperty("org.jodconverter.test.local.portNumbers");
-      final int[] portNumbers =
+      final var property = System.getProperty("org.jodconverter.test.local.portNumbers");
+      final var portNumbers =
           StringUtils.isBlank(property)
               ? new int[] {2099}
               : Stream.of(property.split("\\s*,\\s*"))
@@ -97,7 +97,7 @@ public class LocalOfficeManagerExtension implements ParameterResolver {
                       })
                   .toArray();
       // TODO: Add support for custom configuration.
-      final LocalOfficeManager mng =
+      final var mng =
           LocalOfficeManager.builder()
               .portNumbers(portNumbers)
               .startFailFast(true)

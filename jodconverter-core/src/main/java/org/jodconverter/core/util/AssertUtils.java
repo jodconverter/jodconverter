@@ -58,7 +58,7 @@ public final class AssertUtils {
     if (str.isEmpty()) {
       throw new IllegalArgumentException(message);
     }
-    for (int i = 0; i < str.length(); i++) {
+    for (var i = 0; i < str.length(); i++) {
       if (!Character.isWhitespace(str.charAt(i))) {
         return;
       }
@@ -117,19 +117,6 @@ public final class AssertUtils {
     }
     if (str.isEmpty()) {
       throw new IllegalArgumentException(message);
-    }
-  }
-
-  /**
-   * Validates that the specified argument is not {@code null}.
-   *
-   * @param object The object to validate.
-   * @param message The exception message to use if the assertion fails.
-   * @throws NullPointerException If the object is {@code null}.
-   */
-  public static void notNull(final @Nullable Object object, final @NonNull String message) {
-    if (object == null) {
-      throw new NullPointerException(message);
     }
   }
 

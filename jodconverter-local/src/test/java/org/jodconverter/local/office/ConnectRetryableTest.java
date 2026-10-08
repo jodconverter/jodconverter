@@ -37,11 +37,11 @@ class ConnectRetryableTest {
   @Test
   void whenAbleToConnect_ShouldNotThrowAnyException() throws OfficeConnectionException {
 
-    final OfficeConnection connection = mock(OfficeConnection.class);
+    final var connection = mock(OfficeConnection.class);
 
     assertThatCode(
             () -> {
-              final ConnectRetryable retryable = new ConnectRetryable(connection);
+              final var retryable = new ConnectRetryable(connection);
               retryable.execute(0L, 0L);
             })
         .doesNotThrowAnyException();
@@ -52,13 +52,13 @@ class ConnectRetryableTest {
   @Test
   void whenUnableToConnect_ShouldThrowTemporaryException() throws OfficeConnectionException {
 
-    final OfficeConnection connection = mock(OfficeConnection.class);
+    final var connection = mock(OfficeConnection.class);
     willThrow(OfficeConnectionException.class).given(connection).connect();
 
     assertThatExceptionOfType(RetryTimeoutException.class)
         .isThrownBy(
             () -> {
-              final ConnectRetryable retryable = new ConnectRetryable(connection);
+              final var retryable = new ConnectRetryable(connection);
               retryable.execute(150L, 100L);
             });
 

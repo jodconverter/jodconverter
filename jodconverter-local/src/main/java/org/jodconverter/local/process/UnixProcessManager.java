@@ -20,90 +20,47 @@
 
 package org.jodconverter.local.process;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * {@link org.jodconverter.local.process.ProcessManager} implementation for *nix systems. Uses the
- * {@code ps} and {@code kill} commands.
- *
- * <p>Works for Linux. Works for Solaris too, except that the command line string returned by {@code
- * ps} there is limited to 80 characters and this affects {@link #findPid(ProcessQuery)}.
+ * The process manager of Linux, macOS, FreeBSD and the other Unix systems: it finds a running
+ * process by the command line that the JVM reads for the processes of the current user, without
+ * running any command.
  */
-public class UnixProcessManager extends AbstractProcessManager {
+public class UnixProcessManager implements ProcessManager {
 
-  private static final Pattern PS_OUTPUT_LINE =
-      Pattern.compile("^\\s*(?<Pid>\\d+)\\s+(?<CommandLine>.*)$");
+  private static final Logger LOGGER = LoggerFactory.getLogger(UnixProcessManager.class);
 
-  private String[] runAsArgs;
-
-  /**
-   * This class is required in order to create the default UnixProcessManager only on demand, as
-   * explained by the Initialization-on-demand holder idiom:
-   * https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom
-   */
   private static class DefaultHolder { // NOPMD - Disable utility class name rule violation
     /* default */ static final UnixProcessManager INSTANCE = new UnixProcessManager();
   }
 
   /**
-   * Gets the default instance of {@code UnixProcessManager}.
+   * Gets the default instance of this manager.
    *
-   * @return The default {@code UnixProcessManager} instance.
+   * @return The default instance.
    */
   public static @NonNull UnixProcessManager getDefault() {
     return DefaultHolder.INSTANCE;
   }
 
   @Override
-  protected @NonNull List<@NonNull String> execute(final @NonNull String... cmdarray)
-      throws IOException {
+  public @NonNull Optional<ProcessHandle> find(final @NonNull ProcessQuery query) {
 
-    if (runAsArgs == null) {
-      return super.execute(cmdarray);
-    }
-
-    final String[] newarray = new String[runAsArgs.length + cmdarray.length];
-    System.arraycopy(runAsArgs, 0, newarray, 0, runAsArgs.length);
-    System.arraycopy(cmdarray, 0, newarray, runAsArgs.length, cmdarray.length);
-
-    return super.execute(newarray);
-  }
-
-  @Override
-  protected @NonNull String[] getRunningProcessesCommand(final @NonNull String process) {
-
-    return new String[] {
-      "/bin/sh", "-c", "/bin/ps -e -o pid,args | /bin/grep " + process + " | /bin/grep -v grep"
-    };
-  }
-
-  @Override
-  protected @NonNull Pattern getRunningProcessLinePattern() {
-
-    return PS_OUTPUT_LINE;
-  }
-
-  @Override
-  public void kill(final @Nullable Process process, final long pid) throws IOException {
-    if (pid > PID_UNKNOWN) {
-      execute(new String[] {"/bin/kill", "-KILL", String.valueOf(pid)});
-    } else {
-      super.kill(process, pid);
-    }
-  }
-
-  /**
-   * Sets The sudo command arguments.
-   *
-   * @param runAsArgs The sudo command arguments.
-   */
-  public void setRunAsArgs(final @NonNull String... runAsArgs) {
-    this.runAsArgs = Arrays.copyOf(runAsArgs, runAsArgs.length);
+    final var pattern = query.commandLinePattern();
+    LOGGER.trace("Finding a process whose command line matches {}", pattern);
+    return ProcessHandle.allProcesses()
+        .filter(
+            process ->
+                process
+                    .info()
+                    .commandLine()
+                    .filter(commandLine -> pattern.matcher(commandLine).find())
+                    .isPresent())
+        .findFirst();
   }
 }

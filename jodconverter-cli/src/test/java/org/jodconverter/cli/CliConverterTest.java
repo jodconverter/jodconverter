@@ -23,8 +23,9 @@ package org.jodconverter.cli;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.List;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,24 +44,18 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
-import org.jodconverter.cli.util.NoExitExtension;
-import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.task.LocalConversionTask;
 
 /** Contains tests for the {@link CliConverter} class. */
-@ExtendWith({
-  ConsoleStreamsListenerExtension.class,
-  NoExitExtension.class,
-  ResetExitExceptionExtension.class
-})
+@ExtendWith(ConsoleStreamsListenerExtension.class)
 class CliConverterTest {
 
   private static final String TEST_OUTPUT_DIR = "build/test-results/";
@@ -80,11 +75,11 @@ class CliConverterTest {
 
   /** Set up the office manager once before each test. */
   @BeforeEach
-  public void setUp() {
+  void setUp() {
 
     officeManager = mock(OfficeManager.class);
     InstalledOfficeManagerHolder.setInstance(officeManager);
-    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+    final var registry = DefaultDocumentFormatRegistry.getInstance();
 
     converter = new CliConverter(LocalConverter.builder().formatRegistry(registry).build());
   }
@@ -93,8 +88,8 @@ class CliConverterTest {
   void main_WithWrongInputOutputFilenamesLengthMismatch_ThrowsIllegalArgumentException(
       final @TempDir File testFolder) {
 
-    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
+    final var targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final var targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     assertThatIllegalArgumentException()
         .isThrownBy(
@@ -114,10 +109,9 @@ class CliConverterTest {
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()}, "pdf", null, false);
 
-    final ArgumentCaptor<LocalConversionTask> arg =
-        ArgumentCaptor.forClass(LocalConversionTask.class);
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(2)).execute(arg.capture());
-    final List<LocalConversionTask> tasks = arg.getAllValues();
+    final var tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -149,8 +143,8 @@ class CliConverterTest {
   @Test
   void convert_FilenamesToFilenames_TasksExecuted(final @TempDir File testFolder) throws Exception {
 
-    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
+    final var targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final var targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
@@ -158,10 +152,9 @@ class CliConverterTest {
         null,
         false);
 
-    final ArgumentCaptor<LocalConversionTask> arg =
-        ArgumentCaptor.forClass(LocalConversionTask.class);
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(2)).execute(arg.capture());
-    final List<LocalConversionTask> tasks = arg.getAllValues();
+    final var tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -176,8 +169,8 @@ class CliConverterTest {
   void convert_FilenamesToFilenamesAllowingOverwrite_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
-    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
+    final var targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final var targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
@@ -185,10 +178,9 @@ class CliConverterTest {
         testFolder.getPath(),
         true);
 
-    final ArgumentCaptor<LocalConversionTask> arg =
-        ArgumentCaptor.forClass(LocalConversionTask.class);
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(2)).execute(arg.capture());
-    final List<LocalConversionTask> tasks = arg.getAllValues();
+    final var tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -204,8 +196,8 @@ class CliConverterTest {
   void convert_FilenamesToFilenamesWithoutOverwrite_NoTaskExecuted(final @TempDir File testFolder)
       throws Exception {
 
-    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
+    final var targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final var targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     targetFile1.createNewFile();
     targetFile2.createNewFile();
@@ -223,8 +215,8 @@ class CliConverterTest {
   void convert_FilenamesToFilenamesWithOutputDir_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
-    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
+    final var targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final var targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
@@ -232,10 +224,9 @@ class CliConverterTest {
         testFolder.getPath(),
         false);
 
-    final ArgumentCaptor<LocalConversionTask> arg =
-        ArgumentCaptor.forClass(LocalConversionTask.class);
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(2)).execute(arg.capture());
-    final List<LocalConversionTask> tasks = arg.getAllValues();
+    final var tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -255,10 +246,9 @@ class CliConverterTest {
         null,
         false);
 
-    final ArgumentCaptor<LocalConversionTask> arg =
-        ArgumentCaptor.forClass(LocalConversionTask.class);
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(2)).execute(arg.capture());
-    final List<LocalConversionTask> tasks = arg.getAllValues();
+    final var tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -273,8 +263,8 @@ class CliConverterTest {
   void convert_FilenamesToFormatWithOutputDir_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
-    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
+    final var targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final var targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
@@ -282,10 +272,9 @@ class CliConverterTest {
         testFolder.getPath(),
         false);
 
-    final ArgumentCaptor<LocalConversionTask> arg =
-        ArgumentCaptor.forClass(LocalConversionTask.class);
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(2)).execute(arg.capture());
-    final List<LocalConversionTask> tasks = arg.getAllValues();
+    final var tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file", "target.file")
@@ -301,11 +290,23 @@ class CliConverterTest {
   void convert_FilenamesToTargetAllowingOverwrite_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
-    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
+    final var targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final var targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     targetFile1.createNewFile();
     targetFile2.createNewFile();
+    // The office writes the new output where the task tells it to: a temporary file, since the
+    // output files exist.
+    doAnswer(
+            invocation -> {
+              final var task = invocation.getArgument(0, LocalConversionTask.class);
+              final var target = ReflectionTestUtils.getField(task, "target");
+              final var file = (File) ReflectionTestUtils.getField(target, "file");
+              Files.writeString(file.toPath(), "new output");
+              return null;
+            })
+        .when(officeManager)
+        .execute(isA(LocalConversionTask.class));
 
     converter.convert(
         new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_2.getPath()},
@@ -313,18 +314,14 @@ class CliConverterTest {
         testFolder.getPath(),
         true);
 
-    final ArgumentCaptor<LocalConversionTask> arg =
-        ArgumentCaptor.forClass(LocalConversionTask.class);
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(2)).execute(arg.capture());
-    final List<LocalConversionTask> tasks = arg.getAllValues();
-    assertThat(tasks)
-        .element(0)
-        .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_1, targetFile1);
-    assertThat(tasks)
-        .element(1)
-        .extracting("source.file", "target.file")
-        .containsExactly(SOURCE_FILE_2, targetFile2);
+    assertThat(arg.getAllValues())
+        .extracting("source.file")
+        .containsExactly(SOURCE_FILE_1, SOURCE_FILE_2);
+    assertThat(targetFile1).hasContent("new output");
+    assertThat(targetFile2).hasContent("new output");
+    assertThat(testFolder.listFiles()).containsExactlyInAnyOrder(targetFile1, targetFile2);
   }
 
   @Test
@@ -332,8 +329,8 @@ class CliConverterTest {
   void convert_FilenamesToTargetWithoutOverwrite_NoTaskExecuted(final @TempDir File testFolder)
       throws Exception {
 
-    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
+    final var targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final var targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
     targetFile1.createNewFile();
     targetFile2.createNewFile();
@@ -352,10 +349,9 @@ class CliConverterTest {
 
     converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", null, false);
 
-    final ArgumentCaptor<LocalConversionTask> arg =
-        ArgumentCaptor.forClass(LocalConversionTask.class);
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(2)).execute(arg.capture());
-    final List<LocalConversionTask> tasks = arg.getAllValues();
+    final var tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file.name", "target.file.name")
@@ -375,18 +371,143 @@ class CliConverterTest {
   }
 
   @Test
+  void convert_WildcardWithExtension_ShouldOnlyMatchTheExtension(final @TempDir File testFolder)
+      throws Exception {
+
+    // The wildcard applies to the whole file name: the extension is not dropped from it.
+    converter.convert(new String[] {SOURCE_DIR + "*.doc"}, "pdf", testFolder.getPath(), false);
+    verify(officeManager, times(2)).execute(isA(LocalConversionTask.class));
+
+    converter.convert(new String[] {SOURCE_DIR + "*.txt"}, "pdf", testFolder.getPath(), false);
+    verify(officeManager, times(2)).execute(isA(LocalConversionTask.class));
+  }
+
+  @Test
+  void convert_WildcardWithoutDirectory_ShouldUseTheCurrentDirectory(final @TempDir File testFolder)
+      throws Exception {
+
+    // Nothing matches in the working directory of the tests, and nothing fails.
+    converter.convert(new String[] {"*.unknown"}, "pdf", testFolder.getPath(), false);
+
+    verify(officeManager, times(0)).execute(isA(LocalConversionTask.class));
+  }
+
+  @Test
+  void convert_WhenOverwritingAndTheConversionFails_ShouldKeepTheExistingOutputFile(
+      final @TempDir File testFolder) throws Exception {
+
+    final var targetFile = new File(testFolder, TARGET_FILENAME_1);
+    Files.writeString(targetFile.toPath(), "previous output");
+    doThrow(new OfficeException("The conversion failed"))
+        .when(officeManager)
+        .execute(isA(LocalConversionTask.class));
+
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(
+            () ->
+                converter.convert(
+                    new String[] {SOURCE_FILE_1.getPath()},
+                    new String[] {TARGET_FILENAME_1},
+                    testFolder.getPath(),
+                    true));
+
+    assertThat(targetFile).hasContent("previous output");
+    assertThat(testFolder.listFiles()).containsExactly(targetFile);
+  }
+
+  @Test
+  void convert_WhenOverwritingAndTheConversionSucceeds_ShouldReplaceTheExistingOutputFile(
+      final @TempDir File testFolder) throws Exception {
+
+    final var targetFile = new File(testFolder, TARGET_FILENAME_1);
+    Files.writeString(targetFile.toPath(), "previous output");
+    // The office writes the new output where the task tells it to.
+    doAnswer(
+            invocation -> {
+              final var task = invocation.getArgument(0, LocalConversionTask.class);
+              final var target = ReflectionTestUtils.getField(task, "target");
+              final var file = (File) ReflectionTestUtils.getField(target, "file");
+              Files.writeString(file.toPath(), "new output");
+              return null;
+            })
+        .when(officeManager)
+        .execute(isA(LocalConversionTask.class));
+
+    converter.convert(
+        new String[] {SOURCE_FILE_1.getPath()},
+        new String[] {TARGET_FILENAME_1},
+        testFolder.getPath(),
+        true);
+
+    assertThat(targetFile).hasContent("new output");
+    assertThat(testFolder.listFiles()).containsExactly(targetFile);
+  }
+
+  @Test
+  void convert_WhenOverwritingAndTheOutputCannotBeReplaced_ShouldThrowOfficeException(
+      final @TempDir File testFolder) throws Exception {
+
+    final var targetFile = new File(testFolder, TARGET_FILENAME_1);
+    Files.writeString(targetFile.toPath(), "previous output");
+    // The office leaves no temporary file behind: nothing can replace the output.
+    doAnswer(
+            invocation -> {
+              final var task = invocation.getArgument(0, LocalConversionTask.class);
+              final var target = ReflectionTestUtils.getField(task, "target");
+              final var file = (File) ReflectionTestUtils.getField(target, "file");
+              assertThat(file).doesNotExist();
+              return null;
+            })
+        .when(officeManager)
+        .execute(isA(LocalConversionTask.class));
+
+    assertThatExceptionOfType(OfficeException.class)
+        .isThrownBy(
+            () ->
+                converter.convert(
+                    new String[] {SOURCE_FILE_1.getPath()},
+                    new String[] {TARGET_FILENAME_1},
+                    testFolder.getPath(),
+                    true))
+        .withMessageStartingWith("Could not replace the output file")
+        .withCauseInstanceOf(IOException.class);
+
+    assertThat(targetFile).hasContent("previous output");
+  }
+
+  @Test
+  void convert_WithTargetOptions_ShouldApplyThemToTheOutputsTheySupport(
+      final @TempDir File testFolder) throws Exception {
+
+    final var registry = DefaultDocumentFormatRegistry.getInstance();
+    final var converterWithOptions =
+        new CliConverter(
+            LocalConverter.builder().formatRegistry(registry).build(), PdfOptions.archive());
+
+    converterWithOptions.convert(
+        new String[] {SOURCE_FILE_1.getPath(), SOURCE_FILE_1.getPath()},
+        new String[] {"test1.pdf", "test1.txt"},
+        testFolder.getPath(),
+        false);
+
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
+    verify(officeManager, times(2)).execute(arg.capture());
+    assertThat(arg.getAllValues().get(0)).extracting("target.options").isNotNull();
+    assertThat(arg.getAllValues().get(1)).extracting("target.options").isNull();
+  }
+
+  @Test
   void convert_DirWithWildcardAndOutputDir_TasksExecuted(final @TempDir File testFolder)
       throws Exception {
 
     converter.convert(new String[] {SOURCE_DIR + "*"}, "pdf", testFolder.getPath(), false);
 
-    final File targetFile1 = new File(testFolder, TARGET_FILENAME_1);
-    final File targetFile2 = new File(testFolder, TARGET_FILENAME_2);
+    final var targetFile1 = new File(testFolder, TARGET_FILENAME_1);
+    final var targetFile2 = new File(testFolder, TARGET_FILENAME_2);
 
-    final ArgumentCaptor<LocalConversionTask> arg =
-        ArgumentCaptor.forClass(LocalConversionTask.class);
+    final var arg = ArgumentCaptor.forClass(LocalConversionTask.class);
     verify(officeManager, times(2)).execute(arg.capture());
-    final List<LocalConversionTask> tasks = arg.getAllValues();
+    final var tasks = arg.getAllValues();
     assertThat(tasks)
         .element(0)
         .extracting("source.file.name", "target.file.name")
@@ -412,7 +533,7 @@ class CliConverterTest {
       SystemLogHandler.startCapture();
       converter.convert(new String[] {SOURCE_DIR + "unexisting_dir/*"}, "pdf", null, false);
     } catch (Exception ex) {
-      final String capturedlog = SystemLogHandler.stopCapture();
+      final var capturedlog = SystemLogHandler.stopCapture();
       assertThat(capturedlog)
           .containsPattern("Skipping filename '.*' since it doesn't match an existing file.*");
     }
@@ -426,17 +547,14 @@ class CliConverterTest {
             () ->
                 converter.convert(
                     new String[] {SOURCE_FILE_1.getPath()}, "pdf", SOURCE_FILE_2.getPath(), false))
-        .withCauseInstanceOf(IOException.class)
-        .satisfies(
-            e ->
-                assertThat(e.getCause())
-                    .hasMessageMatching("Invalid output directory.*that exists but is a file"));
+        .withMessageMatching("Invalid output directory.*that exists but is a file")
+        .withNoCause();
   }
 
   @Test
   void prepareOutputDir_WithOutputDirThatCannotBeWrittenTo_ThrowsOfficeException() {
 
-    final File dir = mock(File.class);
+    final var dir = mock(File.class);
     given(dir.exists()).willReturn(true);
     given(dir.isFile()).willReturn(false);
     given(dir.canWrite()).willReturn(false);
@@ -447,20 +565,17 @@ class CliConverterTest {
               try {
                 ReflectionTestUtils.invokeMethod(converter, "prepareOutputDir", dir);
               } catch (UndeclaredThrowableException e) {
-                throw e.getUndeclaredThrowable();
+                throw e.getUndeclaredThrowable(); // NOPMD - the exception under test
               }
             })
-        .withCauseExactlyInstanceOf(IOException.class)
-        .satisfies(
-            e ->
-                assertThat(e.getCause())
-                    .hasMessageMatching("Invalid output directory.*that cannot be written to"));
+        .withMessageMatching("Invalid output directory.*that cannot be written to")
+        .withNoCause();
   }
 
   @Test
   void prepareOutputDir_WithUnexistingOutputDir_OutputDirCreated() {
 
-    final File dir =
+    final var dir =
         new File(TEST_OUTPUT_DIR, CliConverterTest.class.getSimpleName() + "_prepareTest");
     assertThat(dir).doesNotExist();
 
@@ -475,17 +590,17 @@ class CliConverterTest {
   @Test
   void validateInputFile_WithInputFileThatDoesNotExists_ReturnsFalse() {
 
-    final File file = mock(File.class);
+    final var file = mock(File.class);
     given(file.exists()).willReturn(false);
 
     try {
       SystemLogHandler.startCapture();
-      final boolean valid =
+      final var valid =
           Boolean.TRUE.equals(
               ReflectionTestUtils.invokeMethod(converter, "validateInputFile", file));
       assertThat(valid).isFalse();
     } finally {
-      final String capturedlog = SystemLogHandler.stopCapture();
+      final var capturedlog = SystemLogHandler.stopCapture();
       assertThat(capturedlog).containsPattern("Skipping file.*that does not exist");
     }
   }
@@ -493,18 +608,18 @@ class CliConverterTest {
   @Test
   void validateInputFile_WithInputFileThatExistsAsDirectory_ReturnsFalse() {
 
-    final File file = mock(File.class);
+    final var file = mock(File.class);
     given(file.exists()).willReturn(true);
     given(file.isDirectory()).willReturn(true);
 
     try {
       SystemLogHandler.startCapture();
-      final boolean valid =
+      final var valid =
           Boolean.TRUE.equals(
               ReflectionTestUtils.invokeMethod(converter, "validateInputFile", file));
       assertThat(valid).isFalse();
     } finally {
-      final String capturedlog = SystemLogHandler.stopCapture();
+      final var capturedlog = SystemLogHandler.stopCapture();
       assertThat(capturedlog).containsPattern("Skipping file.*that exists but is a directory");
     }
   }
@@ -512,19 +627,19 @@ class CliConverterTest {
   @Test
   void validateInputFile_WithInputFileThatCannotBeReadFrom_ReturnsFalse() {
 
-    final File file = mock(File.class);
+    final var file = mock(File.class);
     given(file.exists()).willReturn(true);
     given(file.isDirectory()).willReturn(false);
     given(file.canRead()).willReturn(false);
 
     try {
       SystemLogHandler.startCapture();
-      final boolean valid =
+      final var valid =
           Boolean.TRUE.equals(
               ReflectionTestUtils.invokeMethod(converter, "validateInputFile", file));
       assertThat(valid).isFalse();
     } finally {
-      final String capturedlog = SystemLogHandler.stopCapture();
+      final var capturedlog = SystemLogHandler.stopCapture();
       assertThat(capturedlog).containsPattern("Skipping file.*that cannot be read");
     }
   }
@@ -532,11 +647,11 @@ class CliConverterTest {
   @Test
   void validateOutputFile_WithOutputFileThatDoesNotExists_ReturnsTrue() {
 
-    final File inputFile = mock(File.class);
-    final File outputFile = mock(File.class);
+    final var inputFile = mock(File.class);
+    final var outputFile = mock(File.class);
     given(outputFile.exists()).willReturn(false);
 
-    final boolean valid =
+    final var valid =
         Boolean.TRUE.equals(
             ReflectionTestUtils.invokeMethod(
                 converter, "validateOutputFile", inputFile, outputFile, false));
@@ -546,20 +661,20 @@ class CliConverterTest {
   @Test
   void validateOutputFile_WithOutputFileThatExistsAsDirectory_ReturnsFalse() {
 
-    final File inputFile = mock(File.class);
-    final File outputFile = mock(File.class);
+    final var inputFile = mock(File.class);
+    final var outputFile = mock(File.class);
     given(outputFile.exists()).willReturn(true);
     given(outputFile.isDirectory()).willReturn(true);
 
     try {
       SystemLogHandler.startCapture();
-      final boolean valid =
+      final var valid =
           Boolean.TRUE.equals(
               ReflectionTestUtils.invokeMethod(
                   converter, "validateOutputFile", inputFile, outputFile, false));
       assertThat(valid).isFalse();
     } finally {
-      final String capturedlog = SystemLogHandler.stopCapture();
+      final var capturedlog = SystemLogHandler.stopCapture();
       assertThat(capturedlog)
           .containsPattern(
               "Skipping file.*because the output file.*already exists and is a directory");
@@ -569,20 +684,20 @@ class CliConverterTest {
   @Test
   void validateOutputFile_WithOutputFileThatExistsAndOverwriteOff_ReturnsFalse() {
 
-    final File inputFile = mock(File.class);
-    final File outputFile = mock(File.class);
+    final var inputFile = mock(File.class);
+    final var outputFile = mock(File.class);
     given(outputFile.exists()).willReturn(true);
     given(outputFile.isDirectory()).willReturn(false);
 
     try {
       SystemLogHandler.startCapture();
-      final boolean valid =
+      final var valid =
           Boolean.TRUE.equals(
               ReflectionTestUtils.invokeMethod(
                   converter, "validateOutputFile", inputFile, outputFile, false));
       assertThat(valid).isFalse();
     } finally {
-      final String capturedlog = SystemLogHandler.stopCapture();
+      final var capturedlog = SystemLogHandler.stopCapture();
       assertThat(capturedlog)
           .containsPattern(
               "Skipping file.*because the output file.*already "
@@ -593,40 +708,16 @@ class CliConverterTest {
   @Test
   void validateOutputFile_WithOutputFileThatExistsAndOverwriteOn_ReturnsTrue() {
 
-    final File inputFile = mock(File.class);
-    final File outputFile = mock(File.class);
+    final var inputFile = mock(File.class);
+    final var outputFile = mock(File.class);
     given(outputFile.exists()).willReturn(true);
     given(outputFile.isDirectory()).willReturn(false);
     given(outputFile.delete()).willReturn(true);
 
-    final boolean valid =
+    final var valid =
         Boolean.TRUE.equals(
             ReflectionTestUtils.invokeMethod(
                 converter, "validateOutputFile", inputFile, outputFile, true));
     assertThat(valid).isTrue();
-  }
-
-  @Test
-  void validateOutputFile_WithOutputFileThatExistsButCannotBeDeletedAndOverwriteOn_ReturnsFalse() {
-
-    final File inputFile = mock(File.class);
-    final File outputFile = mock(File.class);
-    given(outputFile.exists()).willReturn(true);
-    given(outputFile.isDirectory()).willReturn(false);
-    given(outputFile.delete()).willReturn(false);
-
-    try {
-      SystemLogHandler.startCapture();
-      final boolean valid =
-          Boolean.TRUE.equals(
-              ReflectionTestUtils.invokeMethod(
-                  converter, "validateOutputFile", inputFile, outputFile, true));
-      assertThat(valid).isFalse();
-    } finally {
-      final String capturedlog = SystemLogHandler.stopCapture();
-      assertThat(capturedlog)
-          .containsPattern(
-              "Skipping file.*because the output file.*already exists and cannot be deleted");
-    }
   }
 }

@@ -21,45 +21,34 @@
 package org.jodconverter.local.process;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.jodconverter.local.office.LocalOfficeUtils;
 
-/**
- * {@link org.jodconverter.local.process.ProcessManager} implementation for testing custom
- * ProcessManager. It will auto-detect the best process manager and use it as delegate.
- */
+/** A process manager that delegates to the best one of the OS, used to test a custom manager. */
 public class TestProcessManager implements ProcessManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TestProcessManager.class);
 
   private final ProcessManager delegate;
 
-  /** Creates a new TestProcessManager. */
   public TestProcessManager() {
     super();
-
     delegate = LocalOfficeUtils.findBestProcessManager();
   }
 
   @Override
-  public boolean canFindPid() {
-    LOGGER.debug("Checking PID findable from {}", getClass().getName());
-    return delegate.canFindPid();
+  public Optional<ProcessHandle> find(final ProcessQuery query) throws IOException {
+    LOGGER.debug("Finding a process from {}", getClass().getName());
+    return delegate.find(query);
   }
 
   @Override
-  public long findPid(@SuppressWarnings("NullableProblems") final ProcessQuery query)
-      throws IOException {
-    LOGGER.debug("Finding PID from {}", getClass().getName());
-    return delegate.findPid(query);
-  }
-
-  @Override
-  public void kill(final Process process, final long pid) throws IOException {
-    LOGGER.debug("Kill PID {} from {}", pid, getClass().getName());
-    delegate.kill(process, pid);
+  public void kill(final ProcessHandle process) throws IOException {
+    LOGGER.debug("Killing pid {} from {}", process.pid(), getClass().getName());
+    delegate.kill(process);
   }
 }

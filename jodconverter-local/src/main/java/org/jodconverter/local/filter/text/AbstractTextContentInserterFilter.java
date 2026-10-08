@@ -23,9 +23,9 @@ package org.jodconverter.local.filter.text;
 import java.awt.Dimension;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.sun.star.awt.Size;
-import com.sun.star.frame.XController;
 import com.sun.star.text.RelOrientation;
 import com.sun.star.text.TextContentAnchorType;
 import com.sun.star.text.VertOrientation;
@@ -33,13 +33,11 @@ import com.sun.star.text.WrapTextMode;
 import com.sun.star.text.XPageCursor;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
-import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.office.utils.Lo;
 
@@ -65,7 +63,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
   public static @NonNull Map<@NonNull String, @NonNull Object> createDefaultShapeProperties(
       final int horizontalPosition, final int verticalPosition) {
 
-    final Map<String, Object> props = new LinkedHashMap<>();
+    final var props = new LinkedHashMap<String, Object>();
 
     // For all the available properties, see
     // https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1Shape.html
@@ -130,7 +128,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
       final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super();
 
-    AssertUtils.notNull(shapeProperties, "shapeProperties must not be null");
+    Objects.requireNonNull(shapeProperties, "shapeProperties must not be null");
 
     this.shapeProperties = new LinkedHashMap<>(shapeProperties);
   }
@@ -149,7 +147,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
       final @NonNull Dimension size, final int horizontalPosition, final int verticalPosition) {
     super();
 
-    AssertUtils.notNull(size, "size must not be null");
+    Objects.requireNonNull(size, "size must not be null");
 
     this.rectSize = new Dimension(size.width, size.height);
     this.shapeProperties = createDefaultShapeProperties(horizontalPosition, verticalPosition);
@@ -170,8 +168,8 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
       final @NonNull Map<@NonNull String, @NonNull Object> shapeProperties) {
     super();
 
-    AssertUtils.notNull(size, "size must not be null");
-    AssertUtils.notNull(shapeProperties, "shapeProperties must not be null");
+    Objects.requireNonNull(size, "size must not be null");
+    Objects.requireNonNull(shapeProperties, "shapeProperties must not be null");
 
     this.rectSize = new Dimension(size.width, size.height);
     this.shapeProperties = new LinkedHashMap<>(shapeProperties);
@@ -189,13 +187,12 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
 
     // The following bloc seems to be required for some output format
     // (doc, docx, rtf) instead of the "AnchorPageNo" property.
-    final Object anchorPageNo = shapeProperties.get("AnchorPageNo");
+    final var anchorPageNo = shapeProperties.get("AnchorPageNo");
     if (anchorPageNo != null) {
       LOGGER.debug("Applying AnchorPageNo fix");
-      final XController controller = docText.getCurrentController();
-      final XTextViewCursor viewCursor =
-          Lo.qi(XTextViewCursorSupplier.class, controller).getViewCursor();
-      final XPageCursor pageCursor = Lo.qi(XPageCursor.class, viewCursor);
+      final var controller = docText.getCurrentController();
+      final var viewCursor = Lo.qi(XTextViewCursorSupplier.class, controller).getViewCursor();
+      final var pageCursor = Lo.qi(XPageCursor.class, viewCursor);
       pageCursor.jumpToPage(Short.parseShort(anchorPageNo.toString()));
       textCursor.gotoRange(viewCursor, false);
     }
@@ -215,7 +212,7 @@ public abstract class AbstractTextContentInserterFilter implements Filter {
    *
    * @param size A Rectangle that represents the size of the shape. Units are millimeters.
    */
-  protected void setRectSize(final @NonNull Dimension size) {
+  protected final void setRectSize(final @NonNull Dimension size) {
     this.rectSize = size;
   }
 

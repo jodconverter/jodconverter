@@ -23,9 +23,9 @@ resolution, and applying conversion options/filters.
 
 - Simplified conversion API: Compose conversions with a readable, fluent builder.
 - Format resolution: Uses a `DocumentFormatRegistry` to infer formats by extension/MIME type, and allows you to override
-  them explicitly.
+    them explicitly.
 - Options and filters: Provide document-family-specific options (e.g., PDF export options) and filter chains to adjust
-  content before saving.
+    content before saving.
 - Integration: Works with a provided `OfficeManager` or the globally installed manager.
 
 Without a Document Converter, you would have to craft and execute low-level OfficeTasks yourself.
@@ -35,9 +35,9 @@ Without a Document Converter, you would have to craft and execute low-level Offi
 **JODConverter** provides different converter implementations depending on where/how the office backend is running:
 
 - **LocalConverter**: Uses a **LocalOfficeManager** to communicate with local OOo processes.
-  See [LocalConverter](../configuration/local-converter.md) for all configuration options and examples.
+    See [LocalConverter](../configuration/local-converter.md) for all configuration options and examples.
 - **RemoteConverter**: Uses a **RemoteOfficeManager** to communicate with LibreOffice Online / Collabora Online.
-  See [RemoteConverter](../configuration/remote-converter.md) for configuration and examples.
+    See [RemoteConverter](../configuration/remote-converter.md) for configuration and examples.
 
 Internally, concrete converters extend an abstract base that wires the format registry, job pipeline, and office task
 execution.
@@ -59,7 +59,7 @@ import org.jodconverter.local.office.LocalOfficeManager;
 public class Example {
   public static void main(String[] args) throws OfficeException {
     // Install a LocalOfficeManager as the global default
-    LocalOfficeManager officeManager = LocalOfficeManager.builder().install();
+    LocalOfficeManager officeManager = LocalOfficeManager.install();
     try {
       officeManager.start();
 
@@ -124,44 +124,70 @@ try (FileInputStream in = new FileInputStream("in.html");
 }
 ```
 
-**4)** Applying save options and filters (`LocalConverter`).
+**4)** Converting to PDF with [PDF options](pdf-options.md).
 
 ```java
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.filter.RefreshFilter;
+import org.jodconverter.core.pdf.PdfOptions;
+import org.jodconverter.core.pdf.PdfVersion;
 
-Map<String, Object> pdfOptions = new HashMap<>();
-// Example of a well-known option key for LO: embed standard fonts, etc.
-pdfOptions.put("SelectPdfVersion", 1); // PDF/A-1 (value may differ by LO version)
-pdfOptions.put("EmbedStandardFonts", true);
+converter
+    .convert(new File("in.odt"))
+    .to(new File("out.pdf"))
+    .with(PdfOptions.builder().version(PdfVersion.PDF_A_2B).tagged(true).build())
+    .execute();
+```
+
+**5)** Applying filters and PDF options (`LocalConverter`).
+
+```java
+import java.io.File;
+import org.jodconverter.core.pdf.PdfOptions;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter;
 
 LocalConverter
     .builder()
-    .filterChain(RefreshFilter.CHAIN)
-    .storeProperty("FilterData", pdfOptions)
+    .filterChain(new DocumentIndexesUpdaterFilter())
     .build()
     .convert(new File("in.odt"))
     .to(new File("out.pdf"))
-    .as(DefaultDocumentFormatRegistry.PDF)
+    .with(PdfOptions.archive())
     .execute();
 ```
 
 Notes:
 
-- OOo export filters define available options and their keys.
-- Filters let you modify a document (e.g., refresh fields, remove pages, add text) before saving.
+- [Filters](using-filters.md) modify the loaded document (update its indexes, remove pages, add text) before it is
+    stored; without a filter chain, the document is only refreshed.
+- [PDF options](pdf-options.md) choose how the PDF is exported; any other store property of an office export filter
+    can be given with `storeProperty(name, value)`.
 
 ## Lifecycle and threading
 
 - Requires an `OfficeManager`: A converter relies on a running `OfficeManager`. Start the manager before executing
-  conversions and stop it on shutdown.
+    conversions and stop it on shutdown.
+
 - Thread-safe: Converters can be reused across threads; job execution is queued through the `OfficeManager`.
+
+- Asynchronous execution: `executeAsync()` submits the conversion and returns a `CompletableFuture<Void>` at once,
+    instead of blocking like `execute()`. The future completes when the conversion is done, or exceptionally with an
+    `OfficeException` when it fails; cancelling it abandons the conversion. Several conversions can thus run in
+    parallel, one per office process of the manager, and be joined later:
+
+    ```java
+    final var futures =
+        sources.stream()
+            .map(source -> converter.convert(source).to(targetOf(source)).executeAsync())
+            .toList();
+    CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+    ```
+
+    The actions chained to the future (`thenRun`, `whenComplete`...) may run on a thread of the office manager, so
+    they must not block. `OfficeManager.submit(task)` is the same for an `OfficeTask`.
+
 - Format registry: `getFormatRegistry()` returns the formats supported by the converter. `LocalConverter` typically uses
-  `DefaultDocumentFormatRegistry`.
+    `DefaultDocumentFormatRegistry`.
 
 ## Best practices
 
@@ -169,15 +195,25 @@ Notes:
 - Prefer File I/O for very large documents to minimize memory pressure; streams are convenient but may incur buffering.
 - Specify formats explicitly when converting from streams without file extensions.
 - Tune OfficeManager timeouts and process counts for your workload (see the Office Managers page and LocalOfficeManager
-  configuration).
+    configuration).
 
 ## Related APIs
 
+- [Merging documents](using-filters.md#merging-documents): `LocalConverter.merge(...)`, several text documents into
+    one output.
+
+- [Slides to images](page-images.md): `LocalConverter.exportPages(...)`, one image per slide or draw page.
+
 - `DocumentConverter` (core): high-level conversion contract.
+
 - `DefaultDocumentFormatRegistry` (core): common formats and MIME mappings.
-- Conversion job API (core.job): fluent pipeline (convert(...).to(...).execute()).
+
+- Conversion job API (core.job): fluent pipeline (convert (...).to (...).execute ()).
+
 - `LocalConverter` (local): converter for local office processes.
+
 - `RemoteConverter` (remote): converter for LibreOffice Online / Collabora Online.
+
 - `InstalledOfficeManagerHolder` (core): global singleton used when no manager is provided explicitly.
 
 For detailed configuration of each converter type, refer to:

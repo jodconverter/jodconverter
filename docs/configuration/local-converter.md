@@ -11,7 +11,7 @@
 It must be used with an `OfficeManager` that manages local office processes, typically:
 
 - `LocalOfficeManager` (starts and manages local processes), or
-- `ExternalOfficeManager` (connects to an already running local process that you started).
+- `AttachedOfficeManager` (connects to office processes that you started, formerly `ExternalOfficeManager`).
 
 See class:
 [org.jodconverter.local.LocalConverter](https://github.com/jodconverter/jodconverter/blob/master/jodconverter-local/src/main/java/org/jodconverter/local/LocalConverter.java).
@@ -38,7 +38,7 @@ converter.
 This property specifies that this converter will apply the default load properties when loading a source
 document.
 
-&nbsp;***Default***: true.
+&#160;***Default***: true.
 
 Default load properties are:
 
@@ -47,7 +47,7 @@ Default load properties are:
 - **UpdateDocMode**: UpdateDocMode.NO_UPDATE
 
 When building the load properties map that will be used to load a source document, the load properties of the input [
-`DocumentFormat`](../getting-started/document-format-registry.md//#what-is-a-document-format), if any, are put in the
+`DocumentFormat`](../getting-started/document-format-registry.md#what-is-a-document-format), if any, are put in the
 map first. Then, the default load properties, if required, are added to the map. Finally, any properties specified in
 the `loadProperty(String, Object)` or `loadProperties(Map)` are put in the map.
 
@@ -65,22 +65,22 @@ Spreadsheet File Conversions</a>
 This property specifies how a document is loaded/stored when converting a document, whether it is loaded assuming the
 office process has access to the file on disk or not. If not, the conversion process will use stream adapters
 
-&nbsp;***Default***: LoadDocumentMode.AUTO
+&#160;***Default***: LoadDocumentMode.AUTO
 
-#### loadProperty(String, Object) / loadProperties(Map<String, Object>)
+#### `loadProperty(String, Object)` / `loadProperties(Map<String, Object>)`
 
 This property specifies a property, for this converter, that will be applied when a document is loaded during a
 conversion task, regardless of the input format of the document.
 
 When building the load properties map that will be used to load a source document, the load properties of the input [
-`DocumentFormat`](../getting-started/document-format-registry.md//#what-is-a-document-format), if any, are put in the
+`DocumentFormat`](../getting-started/document-format-registry.md#what-is-a-document-format), if any, are put in the
 map first. Then, the default load properties, if required, are added to the map. Finally, any properties specified in
 the `loadProperty(String, Object)` or `loadProperties(Map)` are put in the map.
 
 Any property set here will override the property with the same name from the input document format or the default load
 properties.
 
-#### storeProperty(String, Object) / storeProperties(Map<String, Object>)
+#### `storeProperty(String, Object)` / `storeProperties(Map<String, Object>)`
 
 This property specifies a property, for this converter, that will be applied when a document is stored during a
 conversion task, regardless of the output format of the document.
@@ -96,7 +96,7 @@ before the conversion (after it has been loaded). Filters are applied in the sam
 Notes:
 
 - Load and store property keys/values are UNO properties understood by LibreOffice. Valid keys and values vary by format
-  and LO version.
+    and LO version.
 - For PDF export, common options are provided via the PDF export filter (e.g., SelectPdfVersion, ExportBookmarks, etc.).
 
 --8<-- "note.md"

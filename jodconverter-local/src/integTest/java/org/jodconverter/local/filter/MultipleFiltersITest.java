@@ -48,7 +48,7 @@ class MultipleFiltersITest {
   void shouldApplyMultipleFilters(final @TempDir File testFolder, final OfficeManager manager) {
 
     // Create the TextReplacerFilter to test.
-    final TextReplacerFilter replacerFilter =
+    final var replacerFilter =
         new TextReplacerFilter(
             new String[] {"SEARCH_WORD", "that", "have", "new common language will be more simple"},
             new String[] {
@@ -58,11 +58,11 @@ class MultipleFiltersITest {
               "most recent common language will be more basic"
             });
 
-    final File targetFile = new File(testFolder, SOURCE_FILENAME + ".pdf");
+    final var targetFile = new File(testFolder, SOURCE_FILENAME + ".pdf");
     assertThatCode(
             () -> {
               // Create the GraphicInserterFilter to test.
-              final GraphicInserterFilter graphicfilter =
+              final var graphicfilter =
                   new GraphicInserterFilter(
                       IMAGE_FILE.getPath(),
                       74, // Image Width // 7.4 CM (half the original size)

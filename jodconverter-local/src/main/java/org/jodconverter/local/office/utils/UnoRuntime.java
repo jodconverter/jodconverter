@@ -20,10 +20,10 @@
 
 package org.jodconverter.local.office.utils;
 
+import java.util.Objects;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * The purpose of this class is to provide a single access point to the {@link
@@ -31,7 +31,7 @@ import org.jodconverter.core.util.AssertUtils;
  */
 public class UnoRuntime {
 
-  private static UnoRuntime instance = new UnoRuntime();
+  private static volatile UnoRuntime instance = new UnoRuntime();
 
   /**
    * Gets the default {@link UnoRuntime} instance.
@@ -48,10 +48,8 @@ public class UnoRuntime {
    * @param unoRuntime The default {@link UnoRuntime}.
    */
   public static void setInstance(final @NonNull UnoRuntime unoRuntime) {
-    AssertUtils.notNull(unoRuntime, "uno must not be null");
-    synchronized (UnoRuntime.class) {
-      instance = unoRuntime;
-    }
+    Objects.requireNonNull(unoRuntime, "uno must not be null");
+    instance = unoRuntime;
   }
 
   /**
@@ -62,8 +60,7 @@ public class UnoRuntime {
    * @param unoInterface A Java class representing a UNO interface type.
    * @param object A reference to any Java object representing (a facet of) a UNO object; may be
    *     <code>null</code>.
-   * @return A reference to the requested UNO interface type if available, otherwise <code>null
-   *     </code>.
+   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
    * @see com.sun.star.uno.UnoRuntime#queryInterface(Class, Object)
    */
   public <T> T queryInterface(

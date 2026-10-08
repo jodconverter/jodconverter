@@ -24,14 +24,21 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.StringUtils;
 
 /**
@@ -39,20 +46,33 @@ import org.jodconverter.core.util.StringUtils;
  *
  * @see Convert
  */
-public final class CliConverter {
+final class CliConverter {
 
   private final PrintWriter out;
   private final DocumentConverter converter;
+  private final TargetOptions targetOptions;
 
   /**
    * Creates a new instance of the class that will use the specified manager.
    *
    * @param converter The converter responsible for the conversion.
    */
-  public CliConverter(final DocumentConverter converter) {
+  /* default */ CliConverter(final DocumentConverter converter) {
+    this(converter, null);
+  }
 
-    this.out = new PrintWriter(System.out);
+  /**
+   * Creates a new instance of the class that will use the specified manager.
+   *
+   * @param converter The converter responsible for the conversion.
+   * @param targetOptions The options applied to the target documents whose format they support,
+   *     such as {@link org.jodconverter.core.pdf.PdfOptions} for the PDF documents. May be null.
+   */
+  /* default */ CliConverter(final DocumentConverter converter, final TargetOptions targetOptions) {
+
+    this.out = new PrintWriter(System.out, false, Charset.defaultCharset());
     this.converter = converter;
+    this.targetOptions = targetOptions;
   }
 
   /**
@@ -66,7 +86,7 @@ public final class CliConverter {
    * @throws org.jodconverter.core.office.OfficeException If an error occurs while converting the
    *     files.
    */
-  public void convert(
+  /* default */ void convert(
       final String[] filenames,
       final String outputFormat,
       final String outputDirPath,
@@ -77,14 +97,14 @@ public final class CliConverter {
     AssertUtils.notEmpty(outputFormat, "outputFormat must not be null nor empty");
 
     // Prepare the output directory.
-    final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
+    final var outputDir = outputDirPath == null ? null : new File(outputDirPath);
     prepareOutputDir(outputDir);
 
     // For all the filenames... Note that a filename may contain wildcards.
-    for (final String filename : filenames) {
+    for (final var filename : filenames) {
 
       // Create a file instance with the argument and also get the parent directory.
-      final File inputFile = new File(filename);
+      final var inputFile = new File(filename);
 
       // If the filename is a file, we will have only 1 file to convert for this loop iteration.
       if (inputFile.isFile()) {
@@ -99,9 +119,10 @@ public final class CliConverter {
       } else {
 
         // If the filename is not a file, check if it has wildcards to match multiple files.
-        final File inputFileParent = inputFile.getParentFile();
+        // Without a directory, the wildcards apply to the current directory.
+        final var inputFileParent = inputFile.getAbsoluteFile().getParentFile();
         if (inputFileParent.isDirectory()) {
-          convertFiles(inputFileParent, filename, outputDir, outputFormat, overwrite);
+          convertFiles(inputFileParent, inputFile.getName(), outputDir, outputFormat, overwrite);
         } else {
           printInfo("Skipping filename '%s' since it doesn't match an existing file...", inputFile);
         }
@@ -121,7 +142,7 @@ public final class CliConverter {
    * @throws org.jodconverter.core.office.OfficeException If an error occurs while converting the
    *     files.
    */
-  public void convert(
+  /* default */ void convert(
       final String[] inputFilenames,
       final String[] outputFilenames,
       final String outputDirPath,
@@ -131,8 +152,8 @@ public final class CliConverter {
     AssertUtils.notEmpty(inputFilenames, "inputFilenames must not be null nor empty");
     AssertUtils.notEmpty(outputFilenames, "outputFilenames must not be null nor empty");
 
-    final int inputLength = inputFilenames.length;
-    final int outputLength = outputFilenames.length;
+    final var inputLength = inputFilenames.length;
+    final var outputLength = outputFilenames.length;
 
     // Make sure lengths are ok, these need to be equal
     AssertUtils.isTrue(
@@ -142,18 +163,18 @@ public final class CliConverter {
             inputLength, outputLength));
 
     // Prepare the output directory
-    final File outputDir = outputDirPath == null ? null : new File(outputDirPath);
+    final var outputDir = outputDirPath == null ? null : new File(outputDirPath);
     prepareOutputDir(outputDir);
 
     // For all the input/output filename pairs...
-    for (int i = 0; i < inputFilenames.length; i++) {
+    for (var i = 0; i < inputFilenames.length; i++) {
 
       // Get the input and output files
-      final String inputFilename = inputFilenames[i];
-      final String inputFullPath = FilenameUtils.getFullPath(inputFilename);
-      final String outputFilename = outputFilenames[i];
-      final String outputFullPath = FilenameUtils.getFullPath(outputFilename);
-      final File outputDirectory =
+      final var inputFilename = inputFilenames[i];
+      final var inputFullPath = FilenameUtils.getFullPath(inputFilename);
+      final var outputFilename = outputFilenames[i];
+      final var outputFullPath = FilenameUtils.getFullPath(outputFilename);
+      final var outputDirectory =
           StringUtils.isBlank(outputFullPath)
               ? outputDir == null
                   ? StringUtils.isBlank(inputFullPath) ? new File(".") : new File(inputFullPath)
@@ -172,7 +193,40 @@ public final class CliConverter {
   private void convert(final File inputFile, final File outputFile) throws OfficeException {
 
     printInfo("Converting '%s' to '%s'", inputFile, outputFile);
-    converter.convert(inputFile).to(outputFile).execute();
+
+    // An existing output file is only replaced once the conversion succeeded: the conversion
+    // goes to a temporary file next to it, with its format.
+    final var format = formatOf(outputFile);
+    final var target =
+        outputFile.exists() && format != null
+            ? new File(outputFile.getParentFile(), "." + outputFile.getName() + ".converting")
+            : outputFile;
+    try {
+      final var job =
+          target.equals(outputFile)
+              ? converter.convert(inputFile).to(outputFile)
+              : converter.convert(inputFile).to(target).as(format);
+      if (format != null && targetOptions != null && targetOptions.supports(format)) {
+        job.with(targetOptions);
+      }
+      job.execute();
+      if (!target.equals(outputFile)) {
+        Files.move(target.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      }
+    } catch (IOException ex) {
+      throw new OfficeException(
+          String.format("Could not replace the output file '%s'", outputFile), ex);
+    } finally {
+      if (!target.equals(outputFile)) {
+        FileUtils.deleteQuietly(target);
+      }
+    }
+  }
+
+  private @Nullable DocumentFormat formatOf(final File outputFile) {
+
+    final var extension = FileUtils.getExtension(outputFile.getName());
+    return extension == null ? null : converter.getFormatRegistry().getFormatByExtension(extension);
   }
 
   private void convertFile(
@@ -186,7 +240,7 @@ public final class CliConverter {
     if (validateInputFile(inputFile)) {
 
       // Create output file instance and validate that it is a valid target
-      final File outputFile = new File(outputDir, outputFilename);
+      final var outputFile = new File(outputDir, outputFilename);
       if (validateOutputFile(inputFile, outputFile, overwrite)) {
 
         // We can now convert the document
@@ -203,16 +257,16 @@ public final class CliConverter {
       final boolean overwrite)
       throws OfficeException {
 
-    final String wildcard = FilenameUtils.getBaseName(filename);
-    final File[] files =
+    // The wildcards apply to the whole file name, extension included.
+    final var files =
         inputDir.listFiles(
             (FileFilter)
                 WildcardFileFilter.builder()
-                    .setWildcards(wildcard)
+                    .setWildcards(filename)
                     .setIoCase(IOCase.INSENSITIVE)
                     .get());
     if (files != null) {
-      for (final File file : files) {
+      for (final var file : files) {
 
         // Convert the file
         convertFile(
@@ -228,26 +282,18 @@ public final class CliConverter {
   private void prepareOutputDir(final File outputDir) throws OfficeException {
 
     if (outputDir != null) {
-      try {
-
-        if (outputDir.exists()) {
-          if (outputDir.isFile()) {
-            throw new IOException(
-                "Invalid output directory '" + outputDir + "' that exists but is a file");
-          }
-
-          if (!outputDir.canWrite()) {
-            throw new IOException(
-                "Invalid output directory '" + outputDir + "' that cannot be written to");
-          }
-
-        } else {
-          // Create the output directory
-          outputDir.mkdirs();
+      if (outputDir.exists()) {
+        if (outputDir.isFile()) {
+          throw new OfficeException(
+              "Invalid output directory '" + outputDir + "' that exists but is a file");
         }
-
-      } catch (IOException ex) {
-        throw new OfficeException("Could not prepare the output directory", ex);
+        if (!outputDir.canWrite()) {
+          throw new OfficeException(
+              "Invalid output directory '" + outputDir + "' that cannot be written to");
+        }
+      } else {
+        // Create the output directory
+        outputDir.mkdirs();
       }
     }
   }
@@ -294,13 +340,6 @@ public final class CliConverter {
         printInfo(
             "Skipping file '%s' because the output file '%s' already exists and the "
                 + "overwrite switch is off",
-            inputFile, outputFile);
-        return false;
-      }
-
-      if (!outputFile.delete()) {
-        printInfo(
-            "Skipping file '%s' because the output file '%s' already exists and cannot be deleted",
             inputFile, outputFile);
         return false;
       }

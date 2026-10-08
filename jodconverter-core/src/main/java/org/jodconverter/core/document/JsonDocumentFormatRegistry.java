@@ -22,18 +22,15 @@ package org.jodconverter.core.document;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import org.jodconverter.core.document.DocumentFormat.Builder;
-import org.jodconverter.core.util.IOUtils;
 
 /**
  * A JsonDocumentFormatRegistry contains a collection of {@code DocumentFormat} supported by office
@@ -51,7 +48,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
   public static JsonDocumentFormatRegistry create(final @NonNull InputStream source)
       throws IOException {
 
-    return create(IOUtils.toString(source, StandardCharsets.UTF_8));
+    return create(new String(source.readAllBytes(), StandardCharsets.UTF_8));
   }
 
   /**
@@ -67,7 +64,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
       final @NonNull Map<@NonNull String, @NonNull DocumentFormatProperties> customProperties)
       throws IOException {
 
-    return create(IOUtils.toString(source, StandardCharsets.UTF_8), customProperties);
+    return create(new String(source.readAllBytes(), StandardCharsets.UTF_8), customProperties);
   }
 
   /**
@@ -78,7 +75,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
    */
   public static JsonDocumentFormatRegistry create(final @NonNull String source) {
 
-    final JsonDocumentFormatRegistry registry = new JsonDocumentFormatRegistry();
+    final var registry = new JsonDocumentFormatRegistry();
     registry.readJsonArray(source, null);
     return registry;
   }
@@ -94,7 +91,7 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
       final @NonNull String source,
       final @NonNull Map<@NonNull String, @NonNull DocumentFormatProperties> customProperties) {
 
-    final JsonDocumentFormatRegistry registry = new JsonDocumentFormatRegistry();
+    final var registry = new JsonDocumentFormatRegistry();
     registry.readJsonArray(source, customProperties);
     return registry;
   }
@@ -104,29 +101,49 @@ public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
     super();
   }
 
+  // Reads a JSON number as an Integer, or a Long when it is too big for an Integer. A number
+  // with a fraction or an exponent is read as a Double.
+  private static Number readNumber(final JsonReader in) throws IOException {
+
+    final var value = in.nextString();
+    if (value.indexOf('.') < 0 && value.indexOf('e') < 0 && value.indexOf('E') < 0) {
+      final var integer = new BigInteger(value);
+      if (integer.bitLength() < Integer.SIZE) {
+        return integer.intValue();
+      }
+      if (integer.bitLength() < Long.SIZE) {
+        return integer.longValue();
+      }
+    }
+    return Double.valueOf(value);
+  }
+
   // Fill the registry from the given JSON source
   private void readJsonArray(
       final String source, final Map<String, DocumentFormatProperties> customProperties) {
 
-    final GsonBuilder gsonBuilder = new GsonBuilder();
+    final var gsonBuilder = new GsonBuilder();
     gsonBuilder.registerTypeAdapter(
         DocumentFormat.class, new DocumentFormat.DocumentFormatInstanceCreator());
-    final Gson gson = gsonBuilder.create();
+    // Gson reads every number of a property map as a Double by default. Office ignores a
+    // property of an integer type given as a double, so whole numbers stay integers.
+    gsonBuilder.setObjectToNumberStrategy(JsonDocumentFormatRegistry::readNumber);
+    final var gson = gsonBuilder.create();
 
     // Deserialization
-    final Type collectionType = new TypeToken<Collection<DocumentFormat>>() {}.getType();
+    final var collectionType = new TypeToken<Collection<DocumentFormat>>() {}.getType();
     final Collection<DocumentFormat> formats = gson.fromJson(source, collectionType);
 
-    // Fill the registry with loaded formats. Note that we have to use
-    // the constructor in order top create read-only formats.
+    // Fill the registry with the loaded formats. Gson fills the fields without the constructor,
+    // so each format is rebuilt to get a validated, immutable one.
     formats.stream()
         .map(
             fmt -> {
               if (customProperties == null || !customProperties.containsKey(fmt.getExtension())) {
-                return DocumentFormat.unmodifiableCopy(fmt);
+                return DocumentFormat.builder(fmt).build();
               }
-              final DocumentFormatProperties props = customProperties.get(fmt.getExtension());
-              final Builder builder = DocumentFormat.builder().from(fmt).unmodifiable(true);
+              final var props = customProperties.get(fmt.getExtension());
+              final var builder = DocumentFormat.builder(fmt);
               // Add custom load/store properties.
               props.getLoad().forEach(builder::loadProperty);
               props

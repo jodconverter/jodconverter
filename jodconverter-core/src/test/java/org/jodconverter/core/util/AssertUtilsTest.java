@@ -25,9 +25,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -144,10 +143,7 @@ class AssertUtilsTest {
     void withNotEmptyCollection_NoExceptionThrown() {
 
       assertThatCode(
-              () ->
-                  AssertUtils.notEmpty(
-                      Arrays.stream(new Object[] {""}).collect(Collectors.toList()),
-                      "collection must not be null nor empty"))
+              () -> AssertUtils.notEmpty(List.of(""), "collection must not be null nor empty"))
           .doesNotThrowAnyException();
     }
 
@@ -173,26 +169,6 @@ class AssertUtilsTest {
 
       assertThatCode(
               () -> AssertUtils.notEmpty(new Object[] {""}, "array must not be null nor empty"))
-          .doesNotThrowAnyException();
-    }
-  }
-
-  @Nested
-  class NotNull {
-
-    @Test
-    @SuppressWarnings("ConstantConditions")
-    void withNullObject_ShouldThrowNullPointerException() {
-
-      assertThatNullPointerException()
-          .isThrownBy(() -> AssertUtils.notNull(null, "object must not be null"));
-    }
-
-    @Test
-    @SuppressWarnings("ObviousNullCheck")
-    void withNotNullObject_NoExceptionThrown() {
-
-      assertThatCode(() -> AssertUtils.notNull(new Object(), "object must not be null"))
           .doesNotThrowAnyException();
     }
   }

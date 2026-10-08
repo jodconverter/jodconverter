@@ -1,7 +1,9 @@
 [
   {
     "name": "Portable Document Format",
-    "extensions": ["pdf"],
+    "extensions": [
+      "pdf"
+    ],
     "mediaType": "application/pdf",
     "inputFamily": "DRAWING",
     "storeProperties": {
@@ -21,7 +23,9 @@
   },
   {
     "name": "Plain Text",
-    "extensions": ["txt"],
+    "extensions": [
+      "txt"
+    ],
     "mediaType": "text/plain",
     "inputFamily": "TEXT",
     "loadProperties": {

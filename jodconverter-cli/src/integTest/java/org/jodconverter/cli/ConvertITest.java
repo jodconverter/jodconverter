@@ -21,11 +21,10 @@
 package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Nested;
@@ -34,9 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
-import org.jodconverter.cli.util.ExitException;
-import org.jodconverter.cli.util.NoExitExtension;
-import org.jodconverter.cli.util.ResetExitExceptionExtension;
 import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.office.ExistingProcessAction;
@@ -45,11 +41,7 @@ import org.jodconverter.local.office.LocalOfficeUtils;
 /**
  * This class tests the {@link Convert} class, which contains the main function of the cli module.
  */
-@ExtendWith({
-  ConsoleStreamsListenerExtension.class,
-  NoExitExtension.class,
-  ResetExitExceptionExtension.class
-})
+@ExtendWith(ConsoleStreamsListenerExtension.class)
 class ConvertITest {
 
   private static final String CONFIG_DIR = "src/integTest/resources/config/";
@@ -63,179 +55,175 @@ class ConvertITest {
     @Test
     void withCustomFormatRegistry_ShouldSupportOnlyTargetTxtOrPdf(final @TempDir File testFolder) {
 
-      final File registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
-      final File inputFile = new File(SOURCE_FILE);
-      final File outputFile = new File(testFolder, "convert_WithMultipleFilters.doc");
+      final var registryFile = new File(CONFIG_DIR + "cli-document-formats.json");
+      final var inputFile = new File(SOURCE_FILE);
+      final var outputFile = new File(testFolder, "convert_WithMultipleFilters.doc");
 
       SystemLogHandler.startCapture();
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-r",
-                        registryFile.getPath(),
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                final String capturedlog = SystemLogHandler.stopCapture();
-                assertThat(e).hasFieldOrPropertyWithValue("status", 2);
-                assertThat(capturedlog).contains("The target format is missing or not supported");
-              });
+      final var status =
+          Convert.run(
+              "-r",
+              registryFile.getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(status).isEqualTo(2);
+      assertThat(capturedlog).contains("The target format is missing or not supported");
     }
 
     @Test
     void withFilenames_ShouldSucceed(final @TempDir File testFolder) {
 
-      final File inputFile = new File(SOURCE_FILE);
-      final File outputFile = new File(testFolder, "convert_WithFilenames.pdf");
+      final var inputFile = new File(SOURCE_FILE);
+      final var outputFile = new File(testFolder, "convert_WithFilenames.pdf");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e)
-                    .isExactlyInstanceOf(ExitException.class)
-                    .hasFieldOrPropertyWithValue("status", 0);
+      final var status =
+          Convert.run(
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      assertThat(status).isEqualTo(0);
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
+    }
 
-                assertThat(outputFile).isFile();
-                assertThat(outputFile.length()).isGreaterThan(0L);
-              });
+    @Test
+    void withPdfOptions_ShouldApplyThemToThePdfOutputsOnly(final @TempDir File testFolder)
+        throws Exception {
+
+      final var inputFile = new File(SOURCE_MULTI_FILE);
+      final var pdfFile = new File(testFolder, "convert_WithPdfOptions.pdf");
+      final var odtFile = new File(testFolder, "convert_WithPdfOptions.odt");
+
+      final var status =
+          Convert.run(
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              "--pdf-preset",
+              "compact",
+              "--pdf-option",
+              "version=1.5",
+              "--pdf-option",
+              "pages.range=1",
+              inputFile.getPath(),
+              pdfFile.getPath(),
+              inputFile.getPath(),
+              odtFile.getPath());
+
+      assertThat(status).isEqualTo(0);
+      assertThat(odtFile).isFile();
+      final var pdf = Files.readString(pdfFile.toPath(), StandardCharsets.ISO_8859_1);
+      assertThat(pdf).startsWith("%PDF-1.5");
+      // One page, and tagged by the preset.
+      assertThat(pdf.split("/Type\\s*/Page\\b(?!s)", -1)).hasSize(2);
+      assertThat(pdf).contains("/StructTreeRoot");
     }
 
     @Test
     void withOutputFormat_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
-      final File inputFile = new File(SOURCE_FILE);
-      FileUtils.copyFileToDirectory(inputFile, testFolder);
-      final File inputFileTmp =
+      final var inputFile = new File(SOURCE_FILE);
+      Files.copy(inputFile.toPath(), new File(testFolder, inputFile.getName()).toPath());
+      final var inputFileTmp =
           new File(testFolder, Objects.requireNonNull(FileUtils.getName(SOURCE_FILE)));
-      final File outputFile =
+      final var outputFile =
           new File(testFolder, FileUtils.getBaseName(inputFile.getName()) + ".pdf");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-f",
-                        "pdf",
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFileTmp.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-                assertThat(outputFile).isFile();
-                assertThat(outputFile.length()).isGreaterThan(0L);
-              });
+      final var status =
+          Convert.run(
+              "-f", "pdf", "-x", ExistingProcessAction.KILL.toString(), inputFileTmp.getPath());
+      assertThat(status).isEqualTo(0);
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
     }
 
     @Test
     void withMultipleFilters_ShouldSucceed(final @TempDir File testFolder) {
 
-      final File filterChainFile = new File(CONFIG_DIR + "applicationContext_multipleFilters.xml");
-      final File inputFile = new File(SOURCE_FILE);
-      final File outputFile = new File(testFolder, "convert_WithMultipleFilters.pdf");
+      final var configFile = new File(CONFIG_DIR + "multiple-filters.yml");
+      final var inputFile = new File(SOURCE_FILE);
+      final var outputFile = new File(testFolder, "convert_WithMultipleFilters.pdf");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-a",
-                        filterChainFile.getPath(),
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
-
-                assertThat(outputFile).isFile();
-                assertThat(outputFile.length()).isGreaterThan(0L);
-              });
+      final var status =
+          Convert.run(
+              "--config",
+              configFile.getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      assertThat(status).isEqualTo(0);
+      assertThat(outputFile).isFile();
+      assertThat(outputFile.length()).isGreaterThan(0L);
     }
 
     @Test
-    void withSingleFilter_ShouldSucceed(final @TempDir File testFolder) {
+    void withConfigWithoutFilters_ShouldSucceed(final @TempDir File testFolder) throws Exception {
 
-      final File filterChainFile =
-          new File(CONFIG_DIR + "applicationContext_pagesSelectorFilter.xml");
-      final File inputFile = new File(SOURCE_MULTI_FILE);
-      final File outputFile = new File(testFolder, "convert_WithSingleFilter.txt");
+      // A configuration that only has SSL options, of no use for a local conversion.
+      final var configFile = new File(CONFIG_DIR + "ssl.yml");
+      final var inputFile = new File(SOURCE_MULTI_FILE);
+      final var outputFile = new File(testFolder, "convert_WithConfigWithoutFilters.txt");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-a",
-                        filterChainFile.getPath(),
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
+      final var status =
+          Convert.run(
+              "--config",
+              configFile.getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
 
-                try {
-                  final String content =
-                      FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8);
-                  assertThat(content)
-                      .as("Check content: %s", content)
-                      .contains("Test document Page 2")
-                      .doesNotContain("Test document Page 1")
-                      .doesNotContain("Test document Page 3");
-                } catch (IOException ex) {
-                  assertThat(ex).isNull();
-                }
-              });
+      assertThat(status).isEqualTo(0);
+      assertThat(outputFile).isFile();
+    }
+
+    @Test
+    void withSingleFilter_ShouldSucceed(final @TempDir File testFolder) throws Exception {
+
+      final var configFile = new File(CONFIG_DIR + "pages-selector-filter.json");
+      final var inputFile = new File(SOURCE_MULTI_FILE);
+      final var outputFile = new File(testFolder, "convert_WithSingleFilter.txt");
+
+      final var status =
+          Convert.run(
+              "--config",
+              configFile.getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      assertThat(status).isEqualTo(0);
+      final var content = Files.readString(outputFile.toPath(), StandardCharsets.UTF_8);
+      assertThat(content)
+          .as("Check content: %s", content)
+          .contains("Test document Page 2")
+          .doesNotContain("Test document Page 1")
+          .doesNotContain("Test document Page 3");
     }
 
     @Test
     void withCustomStoreProperties_ShouldSucceed(final @TempDir File testFolder) {
 
-      final File inputFile = new File(SOURCE_MULTI_FILE);
-      final File outputFile = new File(testFolder, "convert_WithCustomStoreProperties.pdf");
+      final var inputFile = new File(SOURCE_MULTI_FILE);
+      final var outputFile = new File(testFolder, "convert_WithCustomStoreProperties.pdf");
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-sFDPageRange=2-2",
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        inputFile.getPath(),
-                        outputFile.getPath()
-                      }))
-          .satisfies(
-              e -> {
-                assertThat(e).hasFieldOrPropertyWithValue("status", 0);
+      final var status =
+          Convert.run(
+              "-sFDPageRange=2-2",
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              inputFile.getPath(),
+              outputFile.getPath());
+      assertThat(status).isEqualTo(0);
 
-                // If the document (with the image) is fully converted, it will
-                // be much greater that 30K (over 70K). Only the second page
-                // doesn't have an image.
-                assertThat(outputFile.length()).isLessThan(30_000L);
-              });
+      // If the document (with the image) is fully converted, it will
+      // be much greater that 30K (over 70K). Only the second page
+      // doesn't have an image.
+      assertThat(outputFile.length()).isLessThan(30_000L);
     }
   }
 
@@ -245,27 +233,23 @@ class ConvertITest {
     @Test
     void withAllCustomizableOption_ShouldExecuteAndExitWithCode0() {
 
-      assertThatExceptionOfType(ExitException.class)
-          .isThrownBy(
-              () ->
-                  Convert.main(
-                      new String[] {
-                        "-i",
-                        LocalOfficeUtils.getDefaultOfficeHome().getPath(),
-                        "-m",
-                        LocalOfficeUtils.findBestProcessManager().getClass().getName(),
-                        "-t",
-                        "30000",
-                        "-p",
-                        "2002",
-                        "-u",
-                        new File("src/integTest/resources/templateProfileDir").getPath(),
-                        "-x",
-                        ExistingProcessAction.KILL.toString(),
-                        "input1.txt",
-                        "output1.pdf"
-                      }))
-          .satisfies(e -> assertThat(e.getStatus()).isEqualTo(0));
+      final var status =
+          Convert.run(
+              "-i",
+              LocalOfficeUtils.getDefaultOfficeHome().getPath(),
+              "-m",
+              LocalOfficeUtils.findBestProcessManager().getClass().getName(),
+              "-t",
+              "30000",
+              "-p",
+              "2002",
+              "-u",
+              new File("src/integTest/resources/templateProfileDir").getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              "input1.txt",
+              "output1.pdf");
+      assertThat(status).isEqualTo(0);
     }
   }
 }

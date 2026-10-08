@@ -10,8 +10,8 @@ version = project.property("version") as String
 plugins {
     jacoco
     distribution
-    alias(libs.plugins.coveralls)
     alias(libs.plugins.dependency.check)
+    alias(libs.plugins.coveralls.jacoco)
 }
 
 allprojects {
@@ -34,14 +34,58 @@ dependencyCheck {
     }
 }
 
-val javadocAll by tasks.registering(Javadoc::class) {
+val javadocAll = tasks.register<Javadoc>("javadocAll") {
     description = "Aggregates Javadoc API documentation of all libraries."
     group = "Documentation"
 }
 
-val jacocoRootReport by tasks.registering(JacocoReport::class) {
+val jacocoRootReport = tasks.register<JacocoReport>("jacocoRootReport") {
     group = "verification"
     description = "Generates an aggregate Jacoco coverage report"
+}
+
+tasks.register("setVersion") {
+    group = "Release"
+    description = "Sets the version (-PnewVersion=X.Y.Z or X.Y.Z-SNAPSHOT) in gradle.properties and, for a release, in the documentation."
+
+    val newVersion = providers.gradleProperty("newVersion")
+    val releasedVersion = providers.gradleProperty("releasedVersion")
+    val propertiesFile = layout.projectDirectory.file("gradle.properties")
+    // The pages that show the dependency coordinates of the released version.
+    val docsFiles = listOf(
+        "docs/getting-started/java-library/index.md",
+        "docs/getting-started/libreoffice-online.md",
+        "docs/getting-started/modules.md"
+    ).map { layout.projectDirectory.file(it) }
+
+    doLast {
+        val version = newVersion.orNull
+            ?: throw GradleException("Give the version: ./gradlew setVersion -PnewVersion=X.Y.Z")
+        require(Regex("""\d+\.\d+\.\d+(-SNAPSHOT)?""").matches(version)) {
+            "Invalid version '$version': expected X.Y.Z or X.Y.Z-SNAPSHOT"
+        }
+        val previous = releasedVersion.get()
+        val release = !version.endsWith("-SNAPSHOT")
+
+        var properties = propertiesFile.asFile.readText()
+        properties = properties.replace(Regex("""(?m)^version\s*=.*$"""), "version = $version")
+        if (release) {
+            properties = properties.replace(Regex("""(?m)^releasedVersion\s*=.*$"""), "releasedVersion = $version")
+        }
+        propertiesFile.asFile.writeText(properties)
+        println("gradle.properties: version = $version")
+
+        if (release && previous != version) {
+            docsFiles.forEach { file ->
+                val text = file.asFile.readText()
+                val count = Regex(Regex.escape(previous)).findAll(text).count()
+                if (count > 0) {
+                    file.asFile.writeText(text.replace(previous, version))
+                }
+                println("${file.asFile.toRelativeString(projectDir)}: $count occurrence(s) of $previous replaced")
+            }
+        }
+    }
 }
 
 tasks.register("printConfigurations") {
@@ -76,17 +120,23 @@ gradle.projectsEvaluated {
         from(allDistZips.map { it.archiveFile.map { f -> f.asFile } })
     }
 
-    coveralls {
-        sourceDirs = libraryProjects.flatMap {
-            it.extensions.getByType<JavaPluginExtension>()
-                .sourceSets.getByName("main")
-                .allSource.srcDirs
-        }.map { it.absolutePath }
-        jacocoReportPath = layout.buildDirectory
-            .file("reports/jacoco/jacocoRootReport/jacocoRootReport.xml")
-            .get()
-            .asFile
-            .absolutePath
+    // Sends the aggregate report to Coveralls. The plugin looks each source file of the report up in
+    // these directories and sends its path relative to the repository root, which is what lets
+    // Coveralls show the sources of a multi-module build (the GitHub action sends the bare package
+    // paths of the JaCoCo report, which Coveralls cannot find).
+    coverallsJacoco {
+        reportPath = "build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+        reportSourceSets = javaProjects.map { it.layout.projectDirectory.dir("src/main/java").asFile }
+        // -PcoverallsDryRun writes the request to build/coveralls/request.json instead of sending it.
+        if (providers.gradleProperty("coverallsDryRun").isPresent) {
+            dryRun = true
+            coverallsRequest =
+                layout.buildDirectory.file("coveralls/request.json").get().asFile.also { it.parentFile.mkdirs() }
+        }
+    }
+    tasks.named("coverallsJacoco") {
+        // The plugin expects the standard jacocoTestReport; it gets the aggregate one.
+        dependsOn(jacocoRootReport)
     }
 
     javadocAll.configure {
@@ -108,7 +158,7 @@ gradle.projectsEvaluated {
         source(allSources)
         classpath = allClasspaths
 
-        setDestinationDir(layout.buildDirectory.dir("docs/javadoc").get().asFile)
+        destinationDir = layout.buildDirectory.dir("docs/javadoc").get().asFile
 
         val charset = "UTF-8"
         (options as StandardJavadocDocletOptions).apply {
@@ -121,12 +171,12 @@ gradle.projectsEvaluated {
             docEncoding = charset
             encoding = charset
             memberLevel = JavadocMemberLevel.PROTECTED
-            source = "8"
+            source = libs.versions.java.get()
             links(
-                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://docs.oracle.com/en/java/javase/17/docs/api/",
                 "https://api.libreoffice.org/docs/java/ref/",
                 "https://commons.apache.org/proper/commons-lang/javadocs/api-release/",
-                "https://docs.spring.io/spring-boot/docs/${libs.versions.spring.boot.get()}/api/"
+                "https://docs.spring.io/spring-boot/${libs.versions.spring.boot.get()}/api/java/"
             )
             addBooleanOption("Xdoclint:none")
         }

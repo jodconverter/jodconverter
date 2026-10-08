@@ -28,7 +28,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.jodconverter.core.job.SourceDocumentSpecs;
 import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.office.OfficeContext;
 
@@ -38,12 +37,12 @@ class AbstractOfficeTaskTest {
   @Test
   void toString_AsExpected(final @TempDir File testFolder) throws IOException {
 
-    final File file = new File(testFolder, getClass().getName() + ".txt");
+    final var file = new File(testFolder, getClass().getName() + ".txt");
     assertThat(file.createNewFile()).isTrue();
 
-    final SourceDocumentSpecs source = new SourceDocumentSpecsFromFile(file);
+    final var source = new SourceDocumentSpecsFromFile(file);
 
-    final AbstractOfficeTask obj =
+    final var obj =
         new AbstractOfficeTask(source) {
           @Override
           @SuppressWarnings("NullableProblems")

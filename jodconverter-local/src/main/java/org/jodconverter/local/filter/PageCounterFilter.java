@@ -20,7 +20,6 @@
 
 package org.jodconverter.local.filter;
 
-import com.sun.star.drawing.XDrawPages;
 import com.sun.star.drawing.XDrawPagesSupplier;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
@@ -49,32 +48,31 @@ public class PageCounterFilter implements Filter {
       final @NonNull FilterChain chain)
       throws Exception {
 
-    final DocumentFamily family = LocalOfficeUtils.getDocumentFamilySilently(document);
+    final var family = LocalOfficeUtils.getDocumentFamilySilently(document);
     if (family != null) {
 
-      switch (family) {
-        case TEXT:
-        case WEB:
-          LOGGER.debug("Applying the PageCounterFilter for a Text document");
-          pageCount =
-              (Integer)
+      pageCount =
+          switch (family) {
+            case TEXT, WEB -> {
+              LOGGER.debug("Applying the PageCounterFilter for a Text document");
+              yield (Integer)
                   Props.getProperty(
                       Lo.qi(XModel.class, document).getCurrentController(), "PageCount");
-          break;
-        case SPREADSHEET:
-          LOGGER.debug("Applying the PageCounterFilter for a Calc document");
-          pageCount =
-              Lo.qi(XSpreadsheetDocument.class, document).getSheets().getElementNames().length;
-          break;
-        case PRESENTATION:
-        case DRAWING:
-          LOGGER.debug(
-              "Applying the PageCounterFilter for a {} document",
-              family == DocumentFamily.DRAWING ? "Draw" : "Impress");
-          final XDrawPages xDrawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
-          pageCount = xDrawPages.getCount();
-          break;
-      }
+            }
+            case SPREADSHEET -> {
+              LOGGER.debug("Applying the PageCounterFilter for a Calc document");
+              yield Lo.qi(XSpreadsheetDocument.class, document)
+                  .getSheets()
+                  .getElementNames()
+                  .length;
+            }
+            case PRESENTATION, DRAWING -> {
+              LOGGER.debug(
+                  "Applying the PageCounterFilter for a {} document",
+                  family == DocumentFamily.DRAWING ? "Draw" : "Impress");
+              yield Lo.qi(XDrawPagesSupplier.class, document).getDrawPages().getCount();
+            }
+          };
     }
 
     // Invoke the next filter in the chain

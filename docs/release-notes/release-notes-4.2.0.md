@@ -6,11 +6,11 @@
 
 ### **Implemented enhancements**
 
-- Add JodConverter Online to the spring boot starter [\#56](https://github.com/jodconverter/jodconverter/issues/56)
+- Add JodConverter Online to the spring boot starter [#56](https://github.com/jodconverter/jodconverter/issues/56)
 
 ### **Closed issues**
 
-- Use of Spring 5 with Spring Boot 1.x is unusual [\#54](https://github.com/jodconverter/jodconverter/issues/54)
-- Wrong scope for `spring-boot-configuration-processor`  [\#53](https://github.com/jodconverter/jodconverter/issues/53)
-- Consider not adding "default to" in property description [\#52](https://github.com/jodconverter/jodconverter/issues/52)
-- Support for the latest LibreOffice [\#51](https://github.com/jodconverter/jodconverter/issues/51)
+- Use of Spring 5 with Spring Boot 1.x is unusual [#54](https://github.com/jodconverter/jodconverter/issues/54)
+- Wrong scope for `spring-boot-configuration-processor` [#53](https://github.com/jodconverter/jodconverter/issues/53)
+- Consider not adding "default to" in property description [#52](https://github.com/jodconverter/jodconverter/issues/52)
+- Support for the latest LibreOffice [#51](https://github.com/jodconverter/jodconverter/issues/51)

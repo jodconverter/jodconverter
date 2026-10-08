@@ -23,17 +23,19 @@ package org.jodconverter.core.office;
 import java.io.File;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** Provides services to create temporary files. */
 public interface TemporaryFileMaker {
 
   /**
-   * Creates a new temporary file without an extension.
+   * Creates a temporary file, without extension.
    *
-   * @return the created file.
+   * @return The created file.
    */
-  @NonNull
-  File makeTemporaryFile();
+  default @NonNull File makeTemporaryFile() {
+    return makeTemporaryFile(null);
+  }
 
   /**
    * Creates a new temporary file with the specified extension.
@@ -41,6 +43,5 @@ public interface TemporaryFileMaker {
    * @param extension the extension of the file to create.
    * @return the created file.
    */
-  @NonNull
-  File makeTemporaryFile(@NonNull String extension);
+  @NonNull File makeTemporaryFile(@Nullable String extension);
 }

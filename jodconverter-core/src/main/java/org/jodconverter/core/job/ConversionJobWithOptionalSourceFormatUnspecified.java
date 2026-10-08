@@ -34,6 +34,5 @@ public interface ConversionJobWithOptionalSourceFormatUnspecified
    * @param format The document format of the source document.
    * @return The current conversion specification.
    */
-  @NonNull
-  ConversionJobWithSourceSpecified as(@NonNull DocumentFormat format);
+  @NonNull ConversionJobWithSourceSpecified as(@NonNull DocumentFormat format);
 }

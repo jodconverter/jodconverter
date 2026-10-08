@@ -20,71 +20,30 @@
 
 package org.jodconverter.remote.office;
 
+import java.util.Objects;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-/** Contains the request configuration to communication with LibreOffice Online. */
-public class RequestConfig {
-
-  private final String url;
-  private final long connectTimeout;
-  private final long socketTimeout;
-
-  /**
-   * Constructs a new configuration with the specified arguments.
-   *
-   * @param url The URL for the conversion.
-   * @param connectTimeout The timeout in milliseconds until a connection is established. A timeout
-   *     value of zero is interpreted as an infinite timeout. A negative value is interpreted as
-   *     undefined (system default).
-   * @param socketTimeout The socket timeout ({@code SO_TIMEOUT}) in milliseconds, which is the
-   *     timeout for waiting for data or, put differently, a maximum period inactivity between two
-   *     consecutive data packets. A timeout value of zero is interpreted as an infinite timeout. A
-   *     negative value is interpreted as undefined (system default).
-   */
-  public RequestConfig(
-      final @NonNull String url, final long connectTimeout, final long socketTimeout) {
-
-    this.url = url;
-    this.connectTimeout = connectTimeout;
-    this.socketTimeout = socketTimeout;
-  }
+/**
+ * The configuration of the requests sent to a LibreOffice Online server.
+ *
+ * @param url The URL of the conversion service, ending with a slash: the extension of the target
+ *     format is appended to it.
+ * @param connectTimeout The timeout, in milliseconds, until a connection is established; 0 for no
+ *     timeout.
+ * @param socketTimeout The timeout, in milliseconds, for the response of the server once the
+ *     request is sent; 0 for no timeout.
+ */
+public record RequestConfig(@NonNull String url, long connectTimeout, long socketTimeout) {
 
   /**
-   * Gets the URL where conversion request can be sent.
+   * Creates a new configuration.
    *
-   * @return The URL where to send conversion request.
+   * @param url The URL of the conversion service.
+   * @param connectTimeout The connect timeout, in milliseconds.
+   * @param socketTimeout The response timeout, in milliseconds.
    */
-  public @NonNull String getUrl() {
-    return url;
-  }
-
-  /**
-   * Gets the timeout in milliseconds until a connection is established. A timeout value of zero is
-   * interpreted as an infinite timeout.
-   *
-   * <p>A timeout value of zero is interpreted as an infinite timeout. A negative value is
-   * interpreted as undefined (system default).
-   *
-   * <p>Default: {@code -1}
-   *
-   * @return The connection timeout.
-   */
-  public long getConnectTimeout() {
-    return connectTimeout;
-  }
-
-  /**
-   * Gets the socket timeout ({@code SO_TIMEOUT}) in milliseconds, which is the timeout for waiting
-   * for data or, put differently, a maximum period inactivity between two consecutive data packets.
-   *
-   * <p>A timeout value of zero is interpreted as an infinite timeout. A negative value is
-   * interpreted as undefined (system default).
-   *
-   * <p>Default: {@code -1}
-   *
-   * @return The socket timeout.
-   */
-  public long getSocketTimeout() {
-    return socketTimeout;
+  public RequestConfig {
+    Objects.requireNonNull(url, "url must not be null");
   }
 }

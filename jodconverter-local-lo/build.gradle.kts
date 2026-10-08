@@ -6,7 +6,6 @@ extra["moduleDescription"] = description
 
 plugins {
     id("library-conventions")
-    id("publish-conventions")
 }
 
 dependencies {

@@ -21,12 +21,10 @@
 package org.jodconverter.core.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 
 import org.junit.jupiter.api.Nested;
@@ -34,9 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.SimpleOfficeManager;
-import org.jodconverter.core.task.OfficeTask;
 
 /** Contains tests for the {@link AbstractConversionJob} class. */
 class AbstractConversionJobWithSourceFormatUnspecifiedTest {
@@ -60,7 +56,7 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
     void whenNullOfficeManager_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
       assertThatNullPointerException()
@@ -76,7 +72,7 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
     void whenNullRegistry_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
       assertThatNullPointerException()
@@ -97,7 +93,7 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
     void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
       assertThatNullPointerException()
           .isThrownBy(
@@ -112,11 +108,11 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
     @Test
     void whenNotNull_ShouldSetDocumentFormat(@TempDir final File testFolder) throws IOException {
 
-      final File sourceFile = new File(testFolder, "source");
+      final var sourceFile = new File(testFolder, "source");
 
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final AbstractConversionJobWithSourceFormatUnspecified job =
+      final var job =
           new SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified(
                   new SourceDocumentSpecsFromFile(sourceFile),
                   SimpleOfficeManager.make(),
@@ -133,11 +129,11 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
     void whenKnownExtension_ShouldCreateJobWithTargetFormat(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final AbstractConversionJob job =
+      final var job =
           new SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified(
                   new SourceDocumentSpecsFromFile(sourceFile),
                   SimpleOfficeManager.make(),
@@ -151,11 +147,11 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
     void whenUnknownExtension_ShouldCreateJobWithoutTargetFormat(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final AbstractConversionJob job =
+      final var job =
           new SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified(
                   new SourceDocumentSpecsFromFile(sourceFile),
                   SimpleOfficeManager.make(),
@@ -173,12 +169,12 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
     void withDefaultCloseStream_ShouldCreateJobWithCloseStreamSetToTrue(
         @TempDir final File testFolder) throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (OutputStream outputStream = Files.newOutputStream(targetFile.toPath())) {
-        final AbstractConversionJob job =
+      try (var outputStream = Files.newOutputStream(targetFile.toPath())) {
+        final var job =
             new SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified(
                     new SourceDocumentSpecsFromFile(sourceFile),
                     SimpleOfficeManager.make(),
@@ -192,62 +188,18 @@ class AbstractConversionJobWithSourceFormatUnspecifiedTest {
     void withCloseStreamIsFalse_ShouldCreateJobWithCloseStreamSetToFalse(
         @TempDir final File testFolder) throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      try (OutputStream outputStream = Files.newOutputStream(targetFile.toPath())) {
-        final AbstractConversionJob job =
+      try (var outputStream = Files.newOutputStream(targetFile.toPath())) {
+        final var job =
             new SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified(
                     new SourceDocumentSpecsFromFile(sourceFile),
                     SimpleOfficeManager.make(),
                     DefaultDocumentFormatRegistry.getInstance())
                 .to(outputStream, false);
         assertThat(job.target).hasFieldOrPropertyWithValue("closeStream", false);
-      }
-    }
-
-    @Test
-    void withManagerNotSupportingFileMaker_ShouldThrowIllegalStateException(
-        @TempDir final File testFolder) throws IOException {
-
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target.txt");
-      assertThat(sourceFile.createNewFile()).isTrue();
-
-      try (OutputStream outputStream = Files.newOutputStream(targetFile.toPath())) {
-        final SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified job =
-            new SimpleConverter.SimpleConversionJobWithSourceFormatUnspecified(
-                new SourceDocumentSpecsFromFile(sourceFile),
-                new OfficeManager() {
-
-                  @Override
-                  public void execute(@SuppressWarnings("NullableProblems") final OfficeTask task) {
-                    // Ignore
-                  }
-
-                  @Override
-                  public boolean isRunning() {
-                    return false;
-                  }
-
-                  @Override
-                  public void start() {
-                    // Ignore
-                  }
-
-                  @Override
-                  public void stop() {
-                    // Ignore
-                  }
-                },
-                DefaultDocumentFormatRegistry.getInstance());
-
-        assertThatIllegalStateException()
-            .isThrownBy(() -> job.to(outputStream))
-            .withMessage(
-                "An office manager must implements the TemporaryFileMaker "
-                    + "interface in order to be able to convert to OutputStream");
       }
     }
   }

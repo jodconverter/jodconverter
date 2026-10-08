@@ -69,11 +69,13 @@ public abstract class AbstractRetryable<T extends Throwable> {
    * @throws RetryTimeoutException If this Retryable fails to complete its task in the given time.
    * @throws T For all other error conditions.
    */
+  // The timeout exception carries the interruption, or the cause of the temporary exception.
+  @SuppressWarnings("PMD.PreserveStackTrace")
   public void execute(final long delay, final long interval, final long timeout)
       throws RetryTimeoutException, T {
 
-    final long start = System.currentTimeMillis();
-    int attempt = 0;
+    final var start = System.currentTimeMillis();
+    var attempt = 0;
 
     if (delay > NO_SLEEP) {
       sleep(delay);
@@ -87,6 +89,12 @@ public abstract class AbstractRetryable<T extends Throwable> {
         logger.debug("Execution succeeded on attempt #{}", attempt);
         return;
       } catch (TemporaryException temporaryException) {
+        if (Thread.currentThread().isInterrupted()) {
+          // Nobody waits for the task anymore: no retry, whatever the interval between the
+          // attempts.
+          throw new RetryTimeoutException(
+              new InterruptedException("Interrupted while executing the task"));
+        }
         if (System.currentTimeMillis() - start < timeout) {
           if (interval > NO_SLEEP) {
             logger.debug(
@@ -97,8 +105,13 @@ public abstract class AbstractRetryable<T extends Throwable> {
           }
         } else {
           logger.debug("Execution failed on attempt #{}", attempt);
-          throw new RetryTimeoutException( // NOPMD - Only cause is relevant
-              temporaryException.getCause());
+          // The temporary exception may only carry a message: it is then the cause itself.
+          final var cause = temporaryException.getCause();
+          throw new RetryTimeoutException(
+              String.format(
+                  "Execution failed after %d attempts and %d ms (timeout: %d ms)",
+                  attempt, System.currentTimeMillis() - start, timeout),
+              cause == null ? temporaryException : cause);
         }
       }
     }

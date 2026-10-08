@@ -7,4 +7,4 @@
 ### **Fixed bugs**
 
 - regression: Upgrade to jodconverter-local 4.2.3 imply to also add a dependency to
-  jodconverter-core [\#183](https://github.com/jodconverter/jodconverter/issues/183)
+    jodconverter-core [#183](https://github.com/jodconverter/jodconverter/issues/183)

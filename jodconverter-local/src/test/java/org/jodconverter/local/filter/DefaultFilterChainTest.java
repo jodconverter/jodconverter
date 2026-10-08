@@ -40,14 +40,14 @@ class DefaultFilterChainTest {
     @Test
     void shouldBeEditable() {
 
-      final DefaultFilterChain chain = new DefaultFilterChain(false);
+      final var chain = new DefaultFilterChain(false);
       assertThatCode(() -> chain.addFilter(new TestFilter())).doesNotThrowAnyException();
     }
 
     @Test
     void emptyCtor_ShouldEndsWithRefreshFilter() {
 
-      final DefaultFilterChain chain = new DefaultFilterChain();
+      final var chain = new DefaultFilterChain();
       assertThat(chain).hasFieldOrPropertyWithValue("endsWithRefreshFilter", true);
     }
   }
@@ -58,7 +58,7 @@ class DefaultFilterChainTest {
     @Test
     void withFilters_ShouldCopyWithFilters() {
 
-      final DefaultFilterChain chain =
+      final var chain =
           new DefaultFilterChain(
               false, new TestFilter(), new TestFilter(), new TestFilter(), new TestFilter());
       assertThat(chain.copy())
@@ -71,7 +71,7 @@ class DefaultFilterChainTest {
     @Test
     void withoutFilters_ShouldCopyWithoutFilters() {
 
-      final DefaultFilterChain chain = new DefaultFilterChain(true);
+      final var chain = new DefaultFilterChain(true);
       assertThat(chain.copy())
           .hasFieldOrPropertyWithValue("endsWithRefreshFilter", true)
           .extracting("filters")
@@ -87,7 +87,7 @@ class DefaultFilterChainTest {
     void withoutFilterAndEndsWithRefreshFilterIsFalse_ShouldNotExecuteLastRefresh()
         throws OfficeException {
 
-      final TestFilterChain chain = new TestFilterChain(false);
+      final var chain = new TestFilterChain(false);
       chain.doFilter(mock(OfficeContext.class), mock(XComponent.class));
 
       assertThat(chain.lastRefreshFilterExecutedCount).isEqualTo(0);
@@ -97,7 +97,7 @@ class DefaultFilterChainTest {
     void withMultipleFiltersAndEndsWithRefreshFilterIsFalse_ShouldNotExecuteLastRefresh()
         throws OfficeException {
 
-      final TestFilterChain chain =
+      final var chain =
           new TestFilterChain(
               false,
               new TestFilter(),
@@ -119,7 +119,7 @@ class DefaultFilterChainTest {
     void withoutFilterAndEndsWithRefreshFilterIsTrue_ShouldExecuteLastRefresh()
         throws OfficeException {
 
-      final TestFilterChain chain = new TestFilterChain(true);
+      final var chain = new TestFilterChain(true);
       chain.doFilter(mock(OfficeContext.class), mock(XComponent.class));
 
       assertThat(chain.lastRefreshFilterExecutedCount).isEqualTo(1);
@@ -129,7 +129,7 @@ class DefaultFilterChainTest {
     void withMultipleFiltersAndEndsWithRefreshFilterIsTrue_ShouldExecuteLastRefresh()
         throws OfficeException {
 
-      final TestFilterChain chain =
+      final var chain =
           new TestFilterChain(
               true,
               new TestFilter(),
@@ -151,7 +151,7 @@ class DefaultFilterChainTest {
     void withRefreshFilterAndEndsWithRefreshFilterSetToTrue_ShouldNotExecuteLastRefresh()
         throws OfficeException {
 
-      final TestFilterChain chain =
+      final var chain =
           new TestFilterChain(
               true,
               new TestFilter(),

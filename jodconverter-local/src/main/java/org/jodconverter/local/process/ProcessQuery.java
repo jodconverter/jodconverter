@@ -20,43 +20,39 @@
 
 package org.jodconverter.local.process;
 
+import java.util.Objects;
+import java.util.regex.Pattern;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-/** Contains the required information used to query for a running process. */
-public class ProcessQuery {
-
-  private final String command;
-  private final String argument;
+/**
+ * Describes a process to find: its command (the name of its executable, such as {@code soffice})
+ * and an argument of its command line (such as the {@code --accept} argument of an office process).
+ *
+ * @param command The command of the process to find.
+ * @param argument The argument that follows the command on the command line of the process.
+ */
+public record ProcessQuery(@NonNull String command, @NonNull String argument) {
 
   /**
-   * Constructs a new instance with the given command and argument.
+   * Creates a new query.
    *
-   * @param command The process command.
-   * @param argument The process argument.
+   * @param command The command of the process to find.
+   * @param argument The argument that follows the command on the command line of the process.
    */
-  public ProcessQuery(final @NonNull String command, final @NonNull String argument) {
-    super();
-
-    this.command = command;
-    this.argument = argument;
+  public ProcessQuery {
+    Objects.requireNonNull(command, "command must not be null");
+    Objects.requireNonNull(argument, "argument must not be null");
   }
 
   /**
-   * Gets the arguments of the process to query.
+   * Gets the pattern that the command line of a process must contain to match this query: the
+   * command, then the argument, with anything in between.
    *
-   * @return The process argument.
+   * @return The pattern.
    */
-  public @NonNull String getArgument() {
-    return argument;
-  }
-
-  /**
-   * Gets the command of the process to query.
-   *
-   * @return The process command.
-   */
-  public @NonNull String getCommand() {
-    return command;
+  public @NonNull Pattern commandLinePattern() {
+    return Pattern.compile(Pattern.quote(command) + ".*" + Pattern.quote(argument));
   }
 
   @Override

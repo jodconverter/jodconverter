@@ -1,7 +1,7 @@
 [versions]
 
 # Java
-java = "1.8"
+java = "17"
 
 #
 # Dependencies
@@ -9,70 +9,102 @@ java = "1.8"
 
 # Checker Framework
 # Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-checker-qual = "3.49.5"
+checker-qual = "4.3.0"
 
 # Apache Commons
 # Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
-commons-cli = "1.9.0"
+commons-cli = "1.11.0"
 # Latest version -> https://mvnrepository.com/artifact/commons-io/commons-io
-commons-io = "2.19.0"
+commons-io = "2.22.0"
 
 # Spring Boot
-# Spring boot 3+ requires java 17
+# Its BOM is only used by jodconverter-spring-boot-starter
 # Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-spring-boot = "2.7.18"
+spring-boot = "4.1.1"
+
+# Spring Framework, only spring-test is used, by the tests of the modules
+# Stay on the version managed by the Spring Boot version above
+# Latest version -> https://mvnrepository.com/artifact/org.springframework/spring-core
+spring = "7.0.9"
+
+# SLF4J
+# Latest version -> https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+slf4j = "2.0.20"
+
+# Log4j 2, the logging backend of jodconverter-cli and of the tests
+# Latest version -> https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+log4j = "2.26.1"
+
+# Gson
+# Latest version -> https://mvnrepository.com/artifact/com.google.code.gson/gson
+gson = "2.14.0"
+
+# SnakeYAML Engine, used by jodconverter-cli for the YAML configuration files
+# Latest version -> https://mvnrepository.com/artifact/org.snakeyaml/snakeyaml-engine
+snakeyaml-engine = "3.2"
 
 # LibreOffice
 # Latest version -> https://mvnrepository.com/artifact/org.libreoffice
-lo = "24.8.4"
+lo = "26.2.2"
 
 # OpenOffice
 # Latest version -> https://mvnrepository.com/artifact/org.openoffice
 oo = "4.1.2"
 
-# Javax Annotation
-# Latest version -> https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api
-javax-annotations = "1.3.2"
-
 #
 # Testing
 #
 
+# JUnit (BOM)
+# Latest version -> https://mvnrepository.com/artifact/org.junit/junit-bom
+# At least the version managed by the Spring Boot version above (JUnit 6 requires Java 17)
+junit = "6.1.3"
+
+# Latest version -> https://mvnrepository.com/artifact/org.assertj/assertj-core
+assertj = "3.27.7"
+
+# Latest version -> https://mvnrepository.com/artifact/org.mockito/mockito-core
+# Mockito 5 mocks final classes by default: the mockito-inline artifact is no longer needed
+mockito = "5.24.0"
+
+# Used by the integration tests to inspect the PDF documents produced with PdfOptions
+# Latest version -> https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
+pdfbox = "3.0.8"
+
 # We now have to use the wiremock standalone version since
 # spring boot provides jetty dependency
-# Latest version -> https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
-# 3+ required minimum java 11
-wiremock = "2.27.2"
+# Latest version -> https://mvnrepository.com/artifact/org.wiremock/wiremock-standalone
+wiremock = "3.13.2"
 
 #
 # Plugins
 #
 
 # Latest version -> https://github.com/checkstyle/checkstyle/releases/
-# 9.3 is the latest supporting java8, so stay with it until we set the minimal version to 11
 # Stay aligned with codacy version (log in into codacy and go to the "code patterns" menu)
-checkstyle = "9.3"
+# 12.x is the latest supporting java 17 (13+ requires java 21)
+checkstyle = "12.3.1"
 
 # Latest version -> https://pmd.github.io
 # Stay aligned with codacy version (log in into codacy and go to the "code patterns" menu)
-pmd = "6.55.0"     # Stay aligned with Codacy
+pmd = "7.28.0"
 
-# Coveralls plugin
-# Latest version -> https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
-coveralls = "2.12.2"
-
-# Nebula plugin
-# Latest version -> https://plugins.gradle.org/plugin/com.netflix.nebula.integtest
-nebula-integtest = "10.1.5"
+# Coveralls plugin, which sends the aggregate JaCoCo report with repository-relative source paths
+# Latest version -> https://plugins.gradle.org/plugin/com.github.nbaztec.coveralls-jacoco
+coveralls-jacoco = "1.2.20"
 
 # Spotless plugin
 # Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-# Latest spotless supporting java 8 is 6.13.0
-spotless = "6.13.0" # Latest version supporting Java 8
+spotless = "8.10.3"
+
+# Google Java Format, used by Spotless
+# Latest version -> https://github.com/google/google-java-format/releases
+# Spotless limits google-java-format to 1.28.0 when running on java 17
+google-java-format = "1.28.0"
 
 # Maven publish plugin
 # Latest version -> https://github.com/vanniktech/gradle-maven-publish-plugin/releases
-maven-publish = "0.34.0"
+maven-publish = "0.37.0"
 
 # OWASP Dependency Check plugin
 # Latest version -> https://plugins.gradle.org/plugin/org.owasp.dependencycheck
@@ -92,6 +124,9 @@ spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-depe
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
 spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+# The health contributors (HealthIndicator...), in their own module since Spring Boot 4
+spring-boot-health = { module = "org.springframework.boot:spring-boot-health" }
 
 # LibreOffice
 libreoffice = { module = "org.libreoffice:libreoffice", version.ref = "lo" }
@@ -103,43 +138,44 @@ oo-ridl = { module = "org.openoffice:ridl", version.ref = "oo" }
 oo-unoil = { module = "org.openoffice:unoil", version.ref = "oo" }
 
 # Spring Core
-spring-core = { module = "org.springframework:spring-core" }
-spring-context = { module = "org.springframework:spring-context" }
-spring-test = { module = "org.springframework:spring-test" }
+spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
-# Javax
-javax-annotations = { module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotations" }
+# Jakarta (version from the Spring Boot BOM)
+jakarta-annotations = { module = "jakarta.annotation:jakarta.annotation-api" }
 
 # HTTP Components
-httpcore = { module = "org.apache.httpcomponents:httpcore" }
-httpclient = { module = "org.apache.httpcomponents:httpclient" }
-httpmime = { module = "org.apache.httpcomponents:httpmime" }
-fluent-hc = { module = "org.apache.httpcomponents:fluent-hc" }
 
 # Logging
-slf4j-api = { module = "org.slf4j:slf4j-api" }
-slf4j-log4j = { module = "org.slf4j:slf4j-log4j12" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
 
 # Other
-gson = { module = "com.google.code.gson:gson" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyaml-engine" }
 
 # Test
-assertj = { module = "org.assertj:assertj-core" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+# The JUnit artifacts get their version from the JUnit BOM
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params" }
-mockito-core = { module = "org.mockito:mockito-core" }
-mockito-inline = { module = "org.mockito:mockito-inline" }
-wiremock = { module = "com.github.tomakehurst:wiremock-standalone", version.ref = "wiremock" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
+wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
 
 # Plugins
 spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
-nebula-integtest = { module = "com.netflix.nebula.integtest:com.netflix.nebula.integtest.gradle.plugin", version.ref = "nebula-integtest" }
 maven-publish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "maven-publish" }
+
+[bundles]
+# SLF4J 2 provider for Log4j 2, with its implementation
+log4j = ["log4j-slf4j", "log4j-core"]
 
 [plugins]
 # Use in settings.gradle.kts or plugins {} blocks
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-nebula-integtest = { id = "com.netflix.nebula.integtest", version.ref = "nebula-integtest" }
-coveralls = { id = "com.github.kt3k.coveralls", version.ref = "coveralls" }
+coveralls-jacoco = { id = "com.github.nbaztec.coveralls-jacoco", version.ref = "coveralls-jacoco" }
 dependency-check = { id = "org.owasp.dependencycheck", version.ref = "dependency-check" }

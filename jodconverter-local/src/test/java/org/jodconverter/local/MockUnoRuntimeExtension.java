@@ -75,7 +75,7 @@ public class MockUnoRuntimeExtension implements AfterEachCallback, ParameterReso
     private final UnoRuntime unoRuntime;
 
     /* default */ UnoRuntimeResource() {
-      final UnoRuntime runtime = UnoRuntime.getInstance();
+      final var runtime = UnoRuntime.getInstance();
       this.unoRuntime = runtime.getClass() == UnoRuntime.class ? runtime : new UnoRuntime();
     }
 

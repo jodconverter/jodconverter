@@ -36,8 +36,7 @@ public interface ConversionJobWithSourceSpecified {
    *     writable, an exception will be thrown.
    * @return The current conversion specification.
    */
-  @NonNull
-  ConversionJobWithOptionalTargetFormatUnspecified to(@NonNull File target);
+  @NonNull ConversionJobWithOptionalTargetFormatUnspecified to(@NonNull File target);
 
   /**
    * Configures the current conversion to write the result to the specified {@link OutputStream}.
@@ -46,8 +45,7 @@ public interface ConversionJobWithSourceSpecified {
    * @param target The output stream to which the conversion result is written to.
    * @return The current conversion specification.
    */
-  @NonNull
-  ConversionJobWithRequiredTargetFormatUnspecified to(@NonNull OutputStream target);
+  @NonNull ConversionJobWithRequiredTargetFormatUnspecified to(@NonNull OutputStream target);
 
   /**
    * Configures the current conversion to write the result to the specified {@link OutputStream}.
@@ -57,7 +55,6 @@ public interface ConversionJobWithSourceSpecified {
    * @param closeStream Determines whether the output stream is closed after writing the result.
    * @return The current conversion specification.
    */
-  @NonNull
-  ConversionJobWithRequiredTargetFormatUnspecified to(
+  @NonNull ConversionJobWithRequiredTargetFormatUnspecified to(
       @NonNull OutputStream target, boolean closeStream);
 }

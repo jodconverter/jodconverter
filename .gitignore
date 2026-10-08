@@ -210,5 +210,8 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,eclipse,intellij+all
 
-#MkDocs site
+# Zensical site
 site/
+
+# Kotlin compiler data of the build-logic included build
+.kotlin/

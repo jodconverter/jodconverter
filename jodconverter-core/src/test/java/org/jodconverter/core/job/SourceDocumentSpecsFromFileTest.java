@@ -39,7 +39,7 @@ class SourceDocumentSpecsFromFileTest {
     @Test
     void whenFileDoesNotExist_ShouldThrowIllegalArgumentsException(@TempDir final File testFolder) {
 
-      final File file = new File(testFolder, "test.txt");
+      final var file = new File(testFolder, "test.txt");
       assertThatIllegalArgumentException().isThrownBy(() -> new SourceDocumentSpecsFromFile(file));
     }
 
@@ -47,9 +47,9 @@ class SourceDocumentSpecsFromFileTest {
     void whenFileExists_ShouldCreateSpecsWithExpectedValues(@TempDir final File testFolder)
         throws IOException {
 
-      final File file = new File(testFolder, "test.txt");
+      final var file = new File(testFolder, "test.txt");
       assertThat(file.createNewFile()).isTrue();
-      final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(file);
+      final var specs = new SourceDocumentSpecsFromFile(file);
 
       assertThat(specs.getFile()).isEqualTo(file);
     }
@@ -61,9 +61,9 @@ class SourceDocumentSpecsFromFileTest {
     @Test
     void whenFileExists_ShouldNotDeleteFile(@TempDir final File testFolder) throws IOException {
 
-      final File file = new File(testFolder, "test.txt");
+      final var file = new File(testFolder, "test.txt");
       assertThat(file.createNewFile()).isTrue();
-      final SourceDocumentSpecsFromFile specs = new SourceDocumentSpecsFromFile(file);
+      final var specs = new SourceDocumentSpecsFromFile(file);
 
       specs.onConsumed(file);
 

@@ -1,0 +1,10 @@
+# Python packages used to build and deploy the documentation (see zensical.toml).
+# Pinned: Zensical 0.0.x is a pre-release line, so an upgrade is a deliberate change, checked with a strict build.
+zensical==0.0.67
+# Zensical-compatible fork of mike, only published on GitHub, until Zensical supports versioning natively.
+mike @ git+https://github.com/squidfunk/mike.git@2.2.0+zensical-0.1.0
+# Markdown formatter of the documentation, with the plugins for the Python-Markdown extensions and the
+# front matter used by the pages (see docs/contributing/documentation.md).
+mdformat==1.0.0
+mdformat-mkdocs==5.3.0
+mdformat-frontmatter==2.1.2

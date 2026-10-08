@@ -7,14 +7,14 @@ Here you will find sample projects using [JODConverter](https://github.com/jodco
 The projects demonstrate typical use cases using the JODConverter project. They include:
 
 - [`samples/basic-webapp`](basic-webapp.md): Demonstrates how to use the
-  [jodconverter-local-lo](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local-lo) module to
-  build a basic web application.
+    [jodconverter-local-lo](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local-lo) module to
+    build a basic web application.
 - [`samples/spring-boot-rest`](spring-boot-rest.md): Demonstrates how to use
-  the [jodconverter-spring-boot-starter](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-spring-boot-starter)
-  module to build a REST API supporting document conversions.
+    the [jodconverter-spring-boot-starter](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-spring-boot-starter)
+    module to build a REST API supporting document conversions.
 - [`samples/spring-boot-webapp`](spring-boot-webapp.md): Demonstrates how to use
-  the [jodconverter-spring-boot-starter](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-spring-boot-starter)
-  module to build a web application with thymeleaf and bootstrap.
+    the [jodconverter-spring-boot-starter](https://github.com/jodconverter/jodconverter/tree/master/jodconverter-spring-boot-starter)
+    module to build a web application with thymeleaf and bootstrap.
 
 ## Build and run
 

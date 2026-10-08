@@ -94,22 +94,21 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
   public void connect() throws OfficeConnectionException {
 
     synchronized (this) {
-      final String connectPart = officeUrl.getConnectString();
+      final var connectPart = officeUrl.getConnectString();
       LOGGER.debug("Connecting with connectString '{}'", connectPart);
       try {
         // Create default local component context.
-        final XComponentContext localContext = Bootstrap.createInitialComponentContext(null);
+        final var localContext = Bootstrap.createInitialComponentContext(null);
 
         // Get the initial service manager.
-        final XMultiComponentFactory localServiceManager = localContext.getServiceManager();
+        final var localServiceManager = localContext.getServiceManager();
 
         // Connect to the already started office process.
-        final XConnection connection =
-            createConnection(connectPart, localContext, localServiceManager);
+        final var connection = createConnection(connectPart, localContext, localServiceManager);
 
         // Create an interprocess bridge.
         LOGGER.trace("Connection done successfully, creating bridge...");
-        final XBridge bridge = createBridge(connection, localContext, localServiceManager);
+        final var bridge = createBridge(connection, localContext, localServiceManager);
 
         LOGGER.trace("Bridge created successfully, initializing...");
         initialize(connectPart, bridge);
@@ -119,7 +118,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
         LOGGER.info("Connected: '{}'", connectPart);
 
         // Inform all the listener that we are connected
-        final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
+        final var connectionEvent = new OfficeConnectionEvent(this);
         connectionEventListeners.forEach(listener -> listener.connected(connectionEvent));
 
       } catch (OfficeConnectionException ex) {
@@ -167,7 +166,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
       }
 
       // Inform listeners. Must be done at the end since a listener may recreate the bridge
-      final OfficeConnectionEvent connectionEvent = new OfficeConnectionEvent(this);
+      final var connectionEvent = new OfficeConnectionEvent(this);
       connectionEventListeners.forEach(listener -> listener.disconnected(connectionEvent));
     }
     // else we tried to connect to a server that doesn't speak URP
@@ -222,7 +221,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
     // See:
     // https://wiki.documentfoundation.org/Documentation/DevGuide/Professional_UNO#Importing_a_UNO_Object
     // https://wiki.documentfoundation.org/Documentation/DevGuide/Professional_UNO#Opening_a_Connection
-    final XConnector connector =
+    final var connector =
         Lo.qi(
             XConnector.class,
             factory.createInstanceWithContext("com.sun.star.connection.Connector", context));
@@ -238,7 +237,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
       final XMultiComponentFactory factory)
       throws Exception {
 
-    final XBridgeFactory bridgeFactory =
+    final var bridgeFactory =
         Lo.qi(
             XBridgeFactory.class,
             factory.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", context));
@@ -246,7 +245,7 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
     // Create a remote bridge with no instance provider using the urp protocol.
     return bridgeFactory.createBridge(
         "jodconverter_" + BRIDGE_INDEX.getAndIncrement(),
-        officeUrl.getUnoUrl().getProtocolAndParametersAsString(),
+        officeUrl.unoUrl().getProtocolAndParametersAsString(),
         connection,
         null);
   }
@@ -260,8 +259,8 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
 
     // Get the remote instance
     LOGGER.trace("Getting the bridge instance...");
-    final String rootOid = officeUrl.getUnoUrl().getRootOid();
-    final Object bridgeInstance = bridge.getInstance(rootOid);
+    final var rootOid = officeUrl.unoUrl().getRootOid();
+    final var bridgeInstance = bridge.getInstance(rootOid);
     // Did the remote server export this object?
     if (bridgeInstance == null) {
       throw new OfficeConnectionException(
@@ -270,14 +269,13 @@ public class OfficeConnection implements LocalOfficeContext, XEventListener {
 
     // Query the initial object for its main factory interface.
     LOGGER.trace("Query the initial object for its main factory interface...");
-    final XMultiComponentFactory officeMultiComponentFactory =
-        Lo.qi(XMultiComponentFactory.class, bridgeInstance);
+    final var officeMultiComponentFactory = Lo.qi(XMultiComponentFactory.class, bridgeInstance);
 
     // Retrieve the office component context (it's not yet exported from office).
 
     // Query for the XPropertySet interface.
     LOGGER.trace("Query the factory XPropertySet interface...");
-    final XPropertySet properties = Lo.qi(XPropertySet.class, officeMultiComponentFactory);
+    final var properties = Lo.qi(XPropertySet.class, officeMultiComponentFactory);
 
     // Query for the interface XComponentContext using the default context from the office server.
     LOGGER.trace("Query the XComponentContext using the default context from the office server...");

@@ -24,20 +24,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.TemporaryFileMaker;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.FileUtils;
 
 /** Target document specifications for from an input stream. */
-public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs
-    implements TargetDocumentSpecs {
+public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentSpecs {
 
   private final OutputStream outputStream;
   private final boolean closeStream;
+
+  // The file the conversion writes to, for the duration of a conversion.
+  private File tempFile;
   private final TemporaryFileMaker fileMaker;
 
   /**
@@ -53,8 +55,8 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
       final boolean closeStream) {
     super();
 
-    AssertUtils.notNull(outputStream, "outputStream must not be null");
-    AssertUtils.notNull(fileMaker, "fileMaker must not be null");
+    Objects.requireNonNull(outputStream, "outputStream must not be null");
+    Objects.requireNonNull(fileMaker, "fileMaker must not be null");
     this.outputStream = outputStream;
     this.closeStream = closeStream;
     this.fileMaker = fileMaker;
@@ -63,9 +65,14 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
   @Override
   public @NonNull File getFile() {
 
-    return Optional.ofNullable(getFormat())
-        .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
-        .orElse(fileMaker.makeTemporaryFile());
+    // The same temp file is given on every call.
+    if (tempFile == null) {
+      tempFile =
+          Optional.ofNullable(getFormat())
+              .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
+              .orElseGet(fileMaker::makeTemporaryFile);
+    }
+    return tempFile;
   }
 
   @Override
@@ -84,6 +91,14 @@ public class TargetDocumentSpecsFromOutputStream extends AbstractTargetDocumentS
     } finally {
       // Ensure the created tempFile is deleted
       FileUtils.deleteQuietly(tempFile);
+      this.tempFile = null;
     }
+  }
+
+  @Override
+  public void onFailure(final @NonNull File tempFile, final @NonNull Exception exception) {
+
+    FileUtils.deleteQuietly(tempFile);
+    this.tempFile = null;
   }
 }

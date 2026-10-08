@@ -21,27 +21,26 @@
 package org.jodconverter.core.job;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
+import java.nio.file.Files;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.TemporaryFileMaker;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.FileUtils;
-import org.jodconverter.core.util.IOUtils;
 
 /** Source document specifications for from an input stream. */
-public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs
-    implements SourceDocumentSpecs {
+public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSpecs {
 
   private final InputStream inputStream;
   private final TemporaryFileMaker fileMaker;
   private final boolean closeStream;
+
+  // The file the stream was written to, for the duration of a conversion.
+  private File tempFile;
 
   /**
    * Creates specs from the specified stream.
@@ -56,8 +55,8 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
       final boolean closeStream) {
     super();
 
-    AssertUtils.notNull(inputStream, "inputStream must not be null");
-    AssertUtils.notNull(fileMaker, "fileMaker must not be null");
+    Objects.requireNonNull(inputStream, "inputStream must not be null");
+    Objects.requireNonNull(fileMaker, "fileMaker must not be null");
     this.inputStream = inputStream;
     this.fileMaker = fileMaker;
     this.closeStream = closeStream;
@@ -66,20 +65,21 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
   @Override
   public @NonNull File getFile() {
 
-    // Write the InputStream to the temp file.
-    final File tempFile =
-        Optional.ofNullable(getFormat())
-            .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
-            .orElse(fileMaker.makeTemporaryFile());
-    try (FileOutputStream outputStream = new FileOutputStream(tempFile);
-        FileChannel channel = outputStream.getChannel();
-        FileLock ignored = channel.lock()) {
-      IOUtils.copy(inputStream, outputStream);
-      return tempFile;
-    } catch (IOException ex) {
-      throw new DocumentSpecsIOException(
-          String.format("Could not write stream to file '%s'", tempFile), ex);
+    // The stream can only be read once: the first call writes it to the temp file.
+    if (tempFile == null) {
+      final var file =
+          Optional.ofNullable(getFormat())
+              .map(format -> fileMaker.makeTemporaryFile(format.getExtension()))
+              .orElseGet(fileMaker::makeTemporaryFile);
+      try (var outputStream = Files.newOutputStream(file.toPath())) {
+        inputStream.transferTo(outputStream);
+      } catch (IOException ex) {
+        throw new DocumentSpecsIOException(
+            String.format("Could not write stream to file '%s'", file), ex);
+      }
+      tempFile = file;
     }
+    return tempFile;
   }
 
   @Override
@@ -87,6 +87,7 @@ public class SourceDocumentSpecsFromInputStream extends AbstractSourceDocumentSp
 
     // The temporary file must be deleted
     FileUtils.deleteQuietly(tempFile);
+    this.tempFile = null;
 
     if (closeStream) {
       try {

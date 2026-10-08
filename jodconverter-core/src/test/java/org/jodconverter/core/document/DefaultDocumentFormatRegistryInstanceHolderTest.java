@@ -39,7 +39,7 @@ class DefaultDocumentFormatRegistryInstanceHolderTest {
   @Test
   void setInstance_WithCustomRegistry_GetInstanceShouldReturnCustomRegistry() {
 
-    final DocumentFormatRegistry registry =
+    final var registry =
         new DocumentFormatRegistry() {
           @Override
           public DocumentFormat getFormatByExtension(
@@ -65,7 +65,7 @@ class DefaultDocumentFormatRegistryInstanceHolderTest {
           }
         };
 
-    final DocumentFormatRegistry saved = DefaultDocumentFormatRegistryInstanceHolder.getInstance();
+    final var saved = DefaultDocumentFormatRegistryInstanceHolder.getInstance();
     try {
       DefaultDocumentFormatRegistryInstanceHolder.setInstance(registry);
       Assertions.assertThat(DefaultDocumentFormatRegistryInstanceHolder.getInstance().toString())

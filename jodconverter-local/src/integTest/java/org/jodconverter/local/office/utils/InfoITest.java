@@ -26,7 +26,6 @@ import static org.jodconverter.local.ResourceUtil.documentFile;
 import java.io.File;
 import java.util.Objects;
 
-import com.sun.star.uno.XComponentContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -49,8 +48,8 @@ class InfoITest {
 
           // We can't predict the office product and version is installed, but we can
           // call everything to ensure no exceptions are thrown.
-          final LocalOfficeContext lcontext = (LocalOfficeContext) context;
-          final XComponentContext ccontext = lcontext.getComponentContext();
+          final var lcontext = (LocalOfficeContext) context;
+          final var ccontext = lcontext.getComponentContext();
           Info.getOfficeName(Objects.requireNonNull(ccontext));
           Info.getOfficeVersionLong(ccontext);
           Info.getOfficeVersionShort(ccontext);
@@ -58,8 +57,8 @@ class InfoITest {
           Info.isLibreOffice(ccontext);
         };
 
-    final File sourceFile = documentFile("test.odt");
-    final File outputFile = new File(testFolder, "out.pdf");
+    final var sourceFile = documentFile("test.odt");
+    final var outputFile = new File(testFolder, "out.pdf");
     assertThatCode(
             () ->
                 LocalConverter.builder()

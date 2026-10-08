@@ -20,6 +20,8 @@
 
 package org.jodconverter.core.office;
 
+import java.io.Serial;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -27,7 +29,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * execute its task within a specified amount of time.
  */
 public class RetryTimeoutException extends Exception {
-  private static final long serialVersionUID = -3704437769955257514L;
+  @Serial private static final long serialVersionUID = -3704437769955257514L;
 
   /**
    * Constructs a new exception with the specified cause.
@@ -36,5 +38,15 @@ public class RetryTimeoutException extends Exception {
    */
   public RetryTimeoutException(final @NonNull Throwable cause) {
     super(cause);
+  }
+
+  /**
+   * Constructs a new exception with the specified message and cause.
+   *
+   * @param message The message.
+   * @param cause The cause.
+   */
+  public RetryTimeoutException(final @NonNull String message, final @NonNull Throwable cause) {
+    super(message, cause);
   }
 }

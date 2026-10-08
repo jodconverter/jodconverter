@@ -51,10 +51,10 @@ class NoopFilterTest {
     @Test
     void shouldCallNextFilter() throws Exception {
 
-      final Filter filter = mock(Filter.class);
-      final OfficeContext context = mock(OfficeContext.class);
-      final XComponent document = mock(XComponent.class);
-      final DefaultFilterChain chain = new DefaultFilterChain(NoopFilter.NOOP, filter);
+      final var filter = mock(Filter.class);
+      final var context = mock(OfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var chain = new DefaultFilterChain(NoopFilter.NOOP, filter);
       chain.doFilter(context, document);
 
       // Verify that the filter is called.

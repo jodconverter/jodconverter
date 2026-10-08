@@ -26,9 +26,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -49,7 +46,7 @@ class RemoteConverterTest {
 
   /** Set up the office manager before each test. */
   @BeforeEach
-  public void setUp() {
+  void setUp() {
 
     officeManager = mock(OfficeManager.class);
   }
@@ -60,10 +57,10 @@ class RemoteConverterTest {
     @Test
     void withOfficeManagerInstalled_ShouldSuccess(final @TempDir File testFolder) {
 
-      final OfficeManager manager = InstalledOfficeManagerHolder.getInstance();
+      final var manager = InstalledOfficeManagerHolder.getInstance();
       InstalledOfficeManagerHolder.setInstance(officeManager);
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
       try {
         assertThatCode(() -> RemoteConverter.make().convert(SOURCE_FILE).to(targetFile).execute())
             .doesNotThrowAnyException();
@@ -76,7 +73,7 @@ class RemoteConverterTest {
     void withoutOfficeManagerInstalled_ShouldThrowIllegalStateException(
         final @TempDir File testFolder) {
 
-      final File targetFile = new File(testFolder, "test.pdf");
+      final var targetFile = new File(testFolder, "test.pdf");
       assertThatIllegalStateException()
           .isThrownBy(() -> RemoteConverter.make().convert(SOURCE_FILE).to(targetFile).execute());
     }
@@ -88,10 +85,10 @@ class RemoteConverterTest {
     @Test
     void withCustomFormatRegistry_ShouldUseCustomFormatRegistry() {
 
-      final SimpleDocumentFormatRegistry registry = new SimpleDocumentFormatRegistry();
+      final var registry = new SimpleDocumentFormatRegistry();
       registry.addFormat(DefaultDocumentFormatRegistry.DOC);
       registry.addFormat(DefaultDocumentFormatRegistry.PDF);
-      final RemoteConverter manager =
+      final var manager =
           RemoteConverter.builder().officeManager(officeManager).formatRegistry(registry).build();
 
       assertThat(manager)
@@ -107,48 +104,6 @@ class RemoteConverterTest {
                     .usingRecursiveComparison()
                     .isEqualTo(DefaultDocumentFormatRegistry.PDF);
               });
-    }
-  }
-
-  @Nested
-  class Convert {
-
-    @Test
-    void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForInputStream(
-        final @TempDir File testFolder) {
-
-      final File targetFile = new File(testFolder, "test.pdf");
-      assertThatIllegalStateException()
-          .isThrownBy(
-              () -> {
-                try (InputStream stream = Files.newInputStream(SOURCE_FILE.toPath())) {
-                  RemoteConverter.make(officeManager)
-                      .convert(stream)
-                      .as(DefaultDocumentFormatRegistry.TXT)
-                      .to(targetFile)
-                      .execute();
-                }
-              })
-          .withMessageMatching(".*TemporaryFileMaker.*InputStream.*");
-    }
-
-    @Test
-    void withNonTemporaryFileMaker_ShouldThrowIllegalStateExceptionForOutputStream(
-        final @TempDir File testFolder) {
-
-      final File targetFile = new File(testFolder, "test.pdf");
-      assertThatIllegalStateException()
-          .isThrownBy(
-              () -> {
-                try (OutputStream stream = Files.newOutputStream(targetFile.toPath())) {
-                  RemoteConverter.make(officeManager)
-                      .convert(SOURCE_FILE)
-                      .to(stream)
-                      .as(DefaultDocumentFormatRegistry.PDF)
-                      .execute();
-                }
-              })
-          .withMessageMatching(".*TemporaryFileMaker.*OutputStream.*");
     }
   }
 }

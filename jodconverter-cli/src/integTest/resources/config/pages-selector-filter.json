@@ -1,0 +1,5 @@
+{
+  "filters": [
+    { "type": "pages-selector", "pages": 2 }
+  ]
+}

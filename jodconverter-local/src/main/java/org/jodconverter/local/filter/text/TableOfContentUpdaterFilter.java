@@ -20,96 +20,29 @@
 
 package org.jodconverter.local.filter.text;
 
-import com.sun.star.beans.XPropertySet;
-import com.sun.star.container.XIndexAccess;
-import com.sun.star.lang.XComponent;
-import com.sun.star.text.XDocumentIndex;
-import com.sun.star.text.XDocumentIndexesSupplier;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+/**
+ * The former name of {@link DocumentIndexesUpdaterFilter}, which updates every index of a text
+ * document and not only its table of contents.
+ *
+ * @deprecated Use {@link DocumentIndexesUpdaterFilter}; this class will be removed in a later
+ *     release.
+ */
+@Deprecated(since = "5.0", forRemoval = true)
+public class TableOfContentUpdaterFilter extends DocumentIndexesUpdaterFilter {
 
-import org.jodconverter.core.office.OfficeContext;
-import org.jodconverter.local.filter.Filter;
-import org.jodconverter.local.filter.FilterChain;
-import org.jodconverter.local.office.utils.Lo;
-import org.jodconverter.local.office.utils.Write;
-
-/** This filter update all indexes in a document. */
-public class TableOfContentUpdaterFilter implements Filter {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(TableOfContentUpdaterFilter.class);
-
-  // This class has been inspired by these examples:
-  // https://forum.openoffice.org/en/forum/viewtopic.php?f=25&t=54982#
-
-  private final int level;
-
-  /** Creates a new filter that will update the table of content. */
+  /** Creates a new filter that updates the indexes. */
   public TableOfContentUpdaterFilter() {
-    this(0);
+    super();
   }
 
   /**
-   * Creates a new filter that will change the number of levels of the table of content and will
-   * update it.
+   * Creates a new filter that updates the indexes, and changes the number of levels of the tables
+   * of contents.
    *
-   * @param level The desired number of levels in the table of content.
+   * @param level The number of levels of the tables of contents; 0 keeps the levels of the
+   *     document.
    */
   public TableOfContentUpdaterFilter(final int level) {
-    super();
-
-    this.level = level;
-  }
-
-  @Override
-  public void doFilter(
-      final @NonNull OfficeContext context,
-      final @NonNull XComponent document,
-      final @NonNull FilterChain chain)
-      throws Exception {
-
-    // This filter can only be used with text document
-    if (Write.isText(document)) {
-      LOGGER.debug("Applying the TableOfContentUpdaterFilter");
-      updateToc(document);
-    }
-
-    // Invoke the next filter in the chain
-    chain.doFilter(context, document);
-  }
-
-  private void updateToc(final XComponent document) throws Exception {
-
-    // Get the DocumentIndexesSupplier interface of the document
-    final XDocumentIndexesSupplier documentIndexesSupplier =
-        Lo.qi(XDocumentIndexesSupplier.class, document);
-
-    // Get an XIndexAccess of DocumentIndexes
-    final XIndexAccess documentIndexes =
-        Lo.qi(XIndexAccess.class, documentIndexesSupplier.getDocumentIndexes());
-
-    for (int i = 0; i < documentIndexes.getCount(); i++) {
-
-      // Update each index
-      final XDocumentIndex docIndex = Lo.qi(XDocumentIndex.class, documentIndexes.getByIndex(i));
-
-      // Update the level if required
-      if (level > 0) {
-
-        // Get the service interface of the ContentIndex
-        final String indexType = docIndex.getServiceName();
-
-        if (indexType.contains("com.sun.star.text.ContentIndex")) {
-
-          final XPropertySet index = Lo.qi(XPropertySet.class, docIndex);
-
-          // Set TOC levels
-          index.setPropertyValue("Level", (short) level);
-        }
-      }
-
-      docIndex.update();
-    }
+    super(level);
   }
 }

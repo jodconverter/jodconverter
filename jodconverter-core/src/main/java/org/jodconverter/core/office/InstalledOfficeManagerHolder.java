@@ -27,8 +27,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * used by created {@link org.jodconverter.core.DocumentConverter} when no office manager is given
  * to the converter builder.
  */
-public final
-class InstalledOfficeManagerHolder { // NOPMD - Disable utility class name rule violation
+public final class InstalledOfficeManagerHolder {
 
   private static OfficeManager instance;
 
@@ -54,7 +53,7 @@ class InstalledOfficeManagerHolder { // NOPMD - Disable utility class name rule 
   public static @Nullable OfficeManager setInstance(final @Nullable OfficeManager manager) {
 
     synchronized (InstalledOfficeManagerHolder.class) {
-      final OfficeManager oldManager = instance;
+      final var oldManager = instance;
       instance = manager;
       return oldManager;
     }

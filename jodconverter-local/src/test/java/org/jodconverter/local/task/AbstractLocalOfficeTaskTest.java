@@ -25,9 +25,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 import static org.jodconverter.local.ResourceUtil.documentFile;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -70,7 +70,7 @@ class AbstractLocalOfficeTaskTest {
     @Test
     void withDefaultProperties_ShouldUseDefaultLoadProperties() {
 
-      final FooOfficeTask task = new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE));
       assertThat(task.getLoadProperties())
           .hasSize(4)
           .containsKey("InteractionHandler")
@@ -83,10 +83,9 @@ class AbstractLocalOfficeTaskTest {
     @Test
     void withCustomProperties_ShouldUseCustomLoadProperties() {
 
-      final Map<String, Object> customProps = new HashMap<>();
+      final var customProps = new HashMap<String, Object>();
       customProps.put("Key", "Val");
-      final FooOfficeTask task =
-          new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE), false, customProps);
+      final var task = new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE), false, customProps);
 
       assertThat(task.getLoadProperties()).contains(entry("Key", "Val"));
     }
@@ -94,7 +93,7 @@ class AbstractLocalOfficeTaskTest {
     @Test
     void withDefaultPropertiesAndNullSourceFormat_ShouldUseDefaultLoadProperties() {
 
-      final FooOfficeTask task = new FooOfficeTask(new NullSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new NullSourceSpecs(SOURCE_FILE));
       assertThat(task.getLoadProperties())
           .hasSize(4)
           .containsKey("InteractionHandler")
@@ -107,10 +106,9 @@ class AbstractLocalOfficeTaskTest {
     @Test
     void withCustomPropertiesAndNullSourceFormat_ShouldUseCustomLoadProperties() {
 
-      final Map<String, Object> customProps = new HashMap<>();
+      final var customProps = new HashMap<String, Object>();
       customProps.put("Key", "Val");
-      final FooOfficeTask task =
-          new FooOfficeTask(new NullSourceSpecs(SOURCE_FILE), false, customProps);
+      final var task = new FooOfficeTask(new NullSourceSpecs(SOURCE_FILE), false, customProps);
 
       assertThat(task.getLoadProperties()).contains(entry("Key", "Val"));
     }
@@ -118,7 +116,7 @@ class AbstractLocalOfficeTaskTest {
     @Test
     void withDefaultAndSourceProperties_ShouldUseDefaultAndSourceLoadProperties() {
 
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThat(task.getLoadProperties())
           .hasSize(6)
           .containsKey("InteractionHandler")
@@ -133,10 +131,9 @@ class AbstractLocalOfficeTaskTest {
     @Test
     void withCustomAndSourceProperties_ShouldUseCustomLoadProperties() {
 
-      final Map<String, Object> customProps = new HashMap<>();
+      final var customProps = new HashMap<String, Object>();
       customProps.put("Key", "Val");
-      final FooOfficeTask task =
-          new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), false, customProps);
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), false, customProps);
 
       assertThat(task.getLoadProperties())
           .contains(
@@ -153,15 +150,15 @@ class AbstractLocalOfficeTaskTest {
     void whenUnoExceptionExceptionCatched_ShouldThrowOfficeException()
         throws com.sun.star.uno.Exception {
 
-      final XComponentLoader loader = mock(XComponentLoader.class);
-      final LocalOfficeContext context = mock(LocalOfficeContext.class);
+      final var loader = mock(XComponentLoader.class);
+      final var context = mock(LocalOfficeContext.class);
       given(
               loader.loadComponentFromURL(
                   isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class)))
           .willThrow(com.sun.star.lang.IllegalArgumentException.class);
       given(context.getComponentLoader()).willReturn(loader);
 
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
           .withCauseExactlyInstanceOf(com.sun.star.lang.IllegalArgumentException.class);
@@ -171,15 +168,15 @@ class AbstractLocalOfficeTaskTest {
     void whenErrorCodeIOExceptionCatched_ShouldThrowOfficeException()
         throws com.sun.star.uno.Exception {
 
-      final XComponentLoader loader = mock(XComponentLoader.class);
-      final LocalOfficeContext context = mock(LocalOfficeContext.class);
+      final var loader = mock(XComponentLoader.class);
+      final var context = mock(LocalOfficeContext.class);
       given(
               loader.loadComponentFromURL(
                   isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class)))
           .willThrow(ErrorCodeIOException.class);
       given(context.getComponentLoader()).willReturn(loader);
 
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
           .withCauseExactlyInstanceOf(ErrorCodeIOException.class);
@@ -188,15 +185,15 @@ class AbstractLocalOfficeTaskTest {
     @Test
     void whenIOExceptionCatched_ShouldThrowOfficeException() throws com.sun.star.uno.Exception {
 
-      final XComponentLoader loader = mock(XComponentLoader.class);
-      final LocalOfficeContext context = mock(LocalOfficeContext.class);
+      final var loader = mock(XComponentLoader.class);
+      final var context = mock(LocalOfficeContext.class);
       given(
               loader.loadComponentFromURL(
                   isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class)))
           .willThrow(IOException.class);
       given(context.getComponentLoader()).willReturn(loader);
 
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThatExceptionOfType(OfficeException.class)
           .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
           .withCauseExactlyInstanceOf(IOException.class);
@@ -209,32 +206,32 @@ class AbstractLocalOfficeTaskTest {
     @Test
     void withNull_ShouldNotThrowAnyException() {
 
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThatCode(() -> task.closeDocument(null)).doesNotThrowAnyException();
     }
 
     @Test
     void whenCloseableIsNull_ShouldCallComponentDispose(final UnoRuntime unoRuntime) {
 
-      final XComponent document = mock(XComponent.class);
-      final XComponent component = mock(XComponent.class);
+      final var document = mock(XComponent.class);
       given(unoRuntime.queryInterface(XCloseable.class, document)).willReturn(null);
-      given(unoRuntime.queryInterface(XComponent.class, document)).willReturn(component);
 
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       task.closeDocument(document);
-      verify(component, times(1)).dispose();
+
+      // The document is the component: it is disposed once.
+      verify(document, times(1)).dispose();
     }
 
     @Test
     void whenCloseableIsNotNull_ShouldCallCloseableClose(final UnoRuntime unoRuntime)
         throws CloseVetoException {
 
-      final XComponent document = mock(XComponent.class);
-      final XCloseable closeable = mock(XCloseable.class);
+      final var document = mock(XComponent.class);
+      final var closeable = mock(XCloseable.class);
       given(unoRuntime.queryInterface(XCloseable.class, document)).willReturn(closeable);
 
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       task.closeDocument(document);
       verify(closeable, times(1)).close(isA(Boolean.class));
     }
@@ -243,12 +240,12 @@ class AbstractLocalOfficeTaskTest {
     void whenCloseVetoExceptionCatched_ShouldNotThrowAnyException(final UnoRuntime unoRuntime)
         throws CloseVetoException {
 
-      final XComponent document = mock(XComponent.class);
-      final XCloseable closeable = mock(XCloseable.class);
+      final var document = mock(XComponent.class);
+      final var closeable = mock(XCloseable.class);
       given(unoRuntime.queryInterface(XCloseable.class, document)).willReturn(closeable);
       willThrow(CloseVetoException.class).given(closeable).close(isA(Boolean.class));
 
-      final FooOfficeTask task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
       assertThatCode(() -> task.closeDocument(document)).doesNotThrowAnyException();
       verify(closeable, times(1)).close(isA(Boolean.class));
     }
@@ -260,11 +257,10 @@ class AbstractLocalOfficeTaskTest {
     @Test
     void shouldReturnExpectedValue() {
 
-      final TxtSourceSpecs sourceSpecs = new TxtSourceSpecs(SOURCE_FILE);
-      final Map<String, Object> customProps = new HashMap<>();
+      final var sourceSpecs = new TxtSourceSpecs(SOURCE_FILE);
+      final var customProps = new HashMap<String, Object>();
       customProps.put("Key", "Val");
-      final FooOfficeTask task =
-          new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), true, customProps);
+      final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE), true, customProps);
       assertThat(task.toString())
           .isEqualTo(
               "FooOfficeTask{"
@@ -280,15 +276,11 @@ class AbstractLocalOfficeTaskTest {
 
   private static class FooOfficeTask extends AbstractLocalOfficeTask {
 
-    public FooOfficeTask(final SourceDocumentSpecs source) {
+    FooOfficeTask(final SourceDocumentSpecs source) {
       super(source);
     }
 
-    public FooOfficeTask(final SourceDocumentSpecs source, final boolean useStreamAdapters) {
-      super(source, useStreamAdapters);
-    }
-
-    public FooOfficeTask(
+    FooOfficeTask(
         final SourceDocumentSpecs source,
         final boolean useStreamAdapters,
         final Map<String, Object> loadProperties) {
@@ -303,7 +295,7 @@ class AbstractLocalOfficeTaskTest {
 
   private static class DocSourceSpecs extends AbstractSourceDocumentSpecs {
 
-    public DocSourceSpecs(final File source) {
+    DocSourceSpecs(final File source) {
       super(source);
     }
 
@@ -315,7 +307,7 @@ class AbstractLocalOfficeTaskTest {
 
   private static class TxtSourceSpecs extends AbstractSourceDocumentSpecs {
 
-    public TxtSourceSpecs(final File source) {
+    TxtSourceSpecs(final File source) {
       super(source);
     }
 
@@ -327,7 +319,7 @@ class AbstractLocalOfficeTaskTest {
 
   private static class NullSourceSpecs extends AbstractSourceDocumentSpecs {
 
-    public NullSourceSpecs(final File source) {
+    NullSourceSpecs(final File source) {
       super(source);
     }
 

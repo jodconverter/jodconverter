@@ -21,28 +21,24 @@
 package org.jodconverter.local;
 
 import java.io.File;
-import java.io.OutputStreamWriter;
 import java.util.Objects;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
-import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.local.ConvertUtil.ConvertRunner;
 import org.jodconverter.local.office.LocalOfficeManager;
 
 /** Contain a stress test. */
 class StressITest {
 
-  private static final Logger LOGGER = Logger.getLogger(StressITest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StressITest.class);
 
   // private static final int MAX_CONVERSIONS = 10;
   private static final int MAX_CONVERSIONS = 1024;
@@ -50,11 +46,9 @@ class StressITest {
   private static final int MAX_PROCESS_TASKS = 10;
 
   private static final DocumentFormat INPUT_FORMAT =
-      DefaultDocumentFormatRegistry.getFormatByExtension("rtf");
+      DefaultDocumentFormatRegistry.getInstance().getFormatByExtension("rtf");
   private static final DocumentFormat OUTPUT_FORMAT =
-      DefaultDocumentFormatRegistry.getFormatByExtension("pdf");
-
-  private static final String PATTERN = "%d %-5p --- [%t] %c{1.} - %m%n";
+      DefaultDocumentFormatRegistry.getInstance().getFormatByExtension("pdf");
 
   /**
    * This test will run multiple parallel conversions, using 8 office processes. Just change the
@@ -66,50 +60,36 @@ class StressITest {
   @Test
   void runParallelConversions(final @TempDir File testFolder) throws Exception {
 
-    final File logFile = new File("build/integTest-results/test.log");
-    FileUtils.deleteQuietly(logFile);
-
-    // Create console appender
-    final ConsoleAppender console = new ConsoleAppender();
-    console.setWriter(new OutputStreamWriter(System.out));
-    console.setLayout(new PatternLayout(PATTERN));
-    console.setThreshold(Level.DEBUG);
-    console.activateOptions();
-    Logger.getRootLogger().addAppender(console);
-
-    // Keep a log file to be able to see if an error occurred
-    final FileAppender fileAppender = new FileAppender();
-    fileAppender.setName("FileLogger");
-    fileAppender.setFile(logFile.getPath());
-    fileAppender.setLayout(new PatternLayout(PATTERN));
-    fileAppender.setThreshold(Level.DEBUG);
-    fileAppender.setAppend(true);
-    fileAppender.activateOptions();
-    Logger.getRootLogger().addAppender(fileAppender);
+    // Log at DEBUG level, to the console and to a log file (build/integTest-results/test.log)
+    // to be able to see if an error occurred.
+    final var context = (LoggerContext) LogManager.getContext(false);
+    final var defaultConfig = context.getConfigLocation();
+    context.setConfigLocation(
+        Objects.requireNonNull(getClass().getResource("/log4j2-stress.xml")).toURI());
 
     // Configure the office manager in a way that maximizes possible race conditions.
-    final OfficeManager officeManager =
+    final var officeManager =
         LocalOfficeManager.builder()
             .portNumbers(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009)
             // .portNumbers(2002, 2003)
             .maxTasksPerProcess(MAX_PROCESS_TASKS)
             .build();
-    final LocalConverter converter = LocalConverter.make(officeManager);
+    final var converter = LocalConverter.make(officeManager);
 
     officeManager.start();
     try {
-      final File source =
+      final var source =
           new File(
               "src/integTest/resources/documents/test."
                   + Objects.requireNonNull(INPUT_FORMAT).getExtension());
 
-      final Thread[] threads = new Thread[MAX_THREADS];
+      final var threads = new Thread[MAX_THREADS];
 
-      boolean first = true;
-      int threadCount = 0;
+      var first = true;
+      var threadCount = 0;
 
-      for (int i = 0; i < MAX_CONVERSIONS; i++) {
-        final File target =
+      for (var i = 0; i < MAX_CONVERSIONS; i++) {
+        final var target =
             new File(
                 testFolder,
                 "test_" + i + "." + Objects.requireNonNull(OUTPUT_FORMAT).getExtension());
@@ -121,15 +101,13 @@ class StressITest {
           first = false;
         }
 
-        if (LOGGER.isInfoEnabled()) {
-          LOGGER.info("Creating thread " + threadCount);
-        }
-        final ConvertRunner runnable = new ConvertRunner(source, target, converter);
+        LOGGER.info("Creating thread {}", threadCount);
+        final var runnable = new ConvertRunner(source, target, converter);
         threads[threadCount] = new Thread(runnable);
         threads[threadCount++].start();
 
         if (threadCount == MAX_THREADS) {
-          for (int j = 0; j < threadCount; j++) {
+          for (var j = 0; j < threadCount; j++) {
             threads[j].join();
           }
           threadCount = 0;
@@ -137,14 +115,13 @@ class StressITest {
       }
 
       // Wait for remaining threads.
-      for (int j = 0; j < threadCount; j++) {
+      for (var j = 0; j < threadCount; j++) {
         threads[j].join();
       }
 
     } finally {
       officeManager.stop();
-      Logger.getRootLogger().removeAppender(console);
-      Logger.getRootLogger().removeAppender(fileAppender);
+      context.setConfigLocation(defaultConfig);
     }
   }
 }

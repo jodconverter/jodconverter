@@ -2,4 +2,4 @@ exclude_paths:
   - "**.md"
   - "**/test/**"
   - "**/integTest/**"
-  - "buildSrc/**"
+  - "build-logic/**"

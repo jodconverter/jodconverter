@@ -11,51 +11,72 @@
     <rule ref="category/java/bestpractices.xml">
         <exclude name="AccessorClassGeneration"/>
         <exclude name="AccessorMethodGeneration"/>
-        <exclude name="JUnitAssertionsShouldIncludeMessage"/>
-        <exclude name="JUnitTestsShouldIncludeAssert"/>
+        <!-- The code logs through SLF4J with parameters: a guard is only worth it when an argument is
+             expensive to compute, and the code adds one there by hand -->
+        <exclude name="GuardLogStatement"/>
+        <!-- Checkstyle (Google style) requires a default in every switch, including the exhaustive ones -->
+        <exclude name="ExhaustiveSwitchHasDefault"/>
+        <!-- An interface with one method is not always meant for lambdas -->
+        <exclude name="ImplicitFunctionalInterface"/>
+        <exclude name="UnitTestAssertionsShouldIncludeMessage"/>
+        <!-- A test that binds or parses every option asserts every option -->
+        <exclude name="UnitTestContainsTooManyAsserts"/>
+        <exclude name="UnitTestShouldIncludeAssert"/>
     </rule>
-    <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+    <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP">
         <properties>
-            <property name="maximumAsserts" value="10"/>
+            <!-- The tests use the loopback address, and office version numbers look like IP addresses -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
-    <rule ref="category/java/bestpractices.xml/GuardLogStatement">
+    <rule ref="category/java/errorprone.xml/TestClassWithoutTestCases">
         <properties>
-            <!-- Ignore the rule for test classes -->
-            <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+            <!-- Only a Test suffix names a test class; the Test prefix names a test double -->
+            <property name="testClassPattern" value="^(?:.*[\$.])?.*Tests?$|^(?:.*[\$.])?.*TestCase$"/>
         </properties>
     </rule>
 
     <!-- Use the 'code style' category -->
     <rule ref="category/java/codestyle.xml">
         <exclude name="AtLeastOneConstructor"/>
-        <exclude name="DefaultPackage"/>
         <exclude name="LinguisticNaming"/>
+        <!-- The code puts annotations such as @TempDir after final, like the type annotations -->
+        <exclude name="ModifierOrder"/>
         <exclude name="OnlyOneReturn"/>
         <exclude name="ShortVariable"/>
         <exclude name="TooManyStaticImports"/>
+        <!-- The code uses var when the initializer makes the type obvious -->
+        <exclude name="UseExplicitTypes"/>
+    </rule>
+    <rule ref="category/java/codestyle.xml/BooleanGetMethodName">
+        <properties>
+            <!-- The Spring Boot properties classes are JavaBeans whose Boolean properties need a getter
+                 named getX for the binder -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Properties')]"/>
+        </properties>
     </rule>
     <rule ref="category/java/codestyle.xml/CommentDefaultAccessModifier">
         <properties>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
     <rule ref="category/java/codestyle.xml/LongVariable">
         <properties>
-            <property name="minimum" value="35"/>
+            <property name="minimum" value="45"/>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
     <rule ref="category/java/codestyle.xml/MethodNamingConventions">
         <properties>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
     <rule ref="category/java/codestyle.xml/ShortClassName">
@@ -63,7 +84,7 @@
             <property name="minimum" value="3"/>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
     <rule ref="category/java/codestyle.xml/ShortMethodName">
@@ -74,7 +95,6 @@
 
     <!-- Use the 'design' category -->
     <rule ref="category/java/design.xml">
-        <exclude name="AvoidCatchingGenericException"/>
         <exclude name="AvoidThrowingRawExceptionTypes"/>
         <exclude name="DataClass"/>
         <exclude name="LawOfDemeter"/>
@@ -85,15 +105,15 @@
     <rule ref="category/java/design.xml/ExcessiveImports">
         <properties>
             <property name="minimum" value="50"/>
-            <!-- Ignore the rule for test classes -->
+            <!-- Ignore the rule for test classes (the violation is on the imports, not in the class) -->
             <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+                      value="//ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
 	<rule ref="category/java/design.xml/TooManyFields">
 		<properties>
 			<property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Properties')]"/>
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Properties')]"/>
 		</properties>
 	</rule>
     <rule ref="category/java/design.xml/TooManyMethods">
@@ -101,12 +121,14 @@
             <property name="maxmethods" value="15"/>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
-    <rule ref="category/java/design.xml/UseUtilityClass">
+    <rule ref="category/java/design.xml/InstantiableUtilityClass">
         <properties>
-            <property name="ignoredAnnotations" value="org.springframework.boot.autoconfigure.SpringBootApplication"/>
+            <!-- Ignore the rule for Spring Boot application classes -->
+            <property name="violationSuppressXPath"
+                      value="./ancestor-or-self::ClassDeclaration[pmd-java:hasAnnotation('org.springframework.boot.autoconfigure.SpringBootApplication')]"/>
         </properties>
     </rule>
 
@@ -116,18 +138,18 @@
     </rule>
     <rule ref="category/java/documentation.xml/CommentRequired">
         <properties>
-            <property name="fieldCommentRequirement" value="Ignored"/>
-            <property name="protectedMethodCommentRequirement" value="Ignored"/>
+            <property name="fieldCommentRequirement" value="ignored"/>
+            <property name="protectedMethodCommentRequirement" value="ignored"/>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
 
     <!-- Use the 'errorprone' category -->
     <rule ref="category/java/errorprone.xml">
+        <exclude name="AvoidCatchingGenericException"/>
         <exclude name="AvoidFieldNameMatchingMethodName"/>
-        <exclude name="DataflowAnomalyAnalysis"/>
         <exclude name="DoNotTerminateVM"/>
         <exclude name="NullAssignment"/>
     </rule>
@@ -135,12 +157,17 @@
         <properties>
             <!-- Ignore the rule for test classes -->
             <property name="violationSuppressXPath"
-                      value="./ancestor::ClassOrInterfaceDeclaration[matches(@Image, '^.*Test')]"/>
+                      value="./ancestor-or-self::ClassDeclaration[matches(@SimpleName, '^.*Test')]"/>
         </properties>
     </rule>
 
     <!-- Use the 'multithreading' category -->
     <rule ref="category/java/multithreading.xml">
+        <!-- The office manager pool and its workers synchronize on monitors and publish their state
+             through volatile fields on purpose; the rules that ask for locks instead are not followed -->
+        <exclude name="AvoidSynchronizedAtMethodLevel"/>
+        <exclude name="AvoidSynchronizedStatement"/>
+        <exclude name="AvoidUsingVolatile"/>
         <exclude name="DoNotUseThreads"/>
         <exclude name="UseConcurrentHashMap"/>
     </rule>

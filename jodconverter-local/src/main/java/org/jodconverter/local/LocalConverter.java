@@ -20,9 +20,16 @@
 
 package org.jodconverter.local;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -30,18 +37,29 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.job.*;
+import org.jodconverter.core.job.AbstractConversionJob;
+import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecified;
+import org.jodconverter.core.job.AbstractConverter;
+import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
+import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.job.ConversionJobWithOptionalSourceFormatUnspecified;
+import org.jodconverter.core.job.SourceDocumentSpecsFromInputStream;
+import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.util.FileUtils;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
 import org.jodconverter.local.filter.FilterChain;
-import org.jodconverter.local.office.ExternalOfficeManager;
+import org.jodconverter.local.filter.RefreshFilter;
+import org.jodconverter.local.filter.text.DocumentInserterFilter;
+import org.jodconverter.local.office.AttachedOfficeManager;
 import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.local.task.LocalConversionTask;
+import org.jodconverter.local.task.PageImagesTask;
 
 /**
  * Default implementation of a document converter. This implementation will use a provided office
@@ -83,12 +101,8 @@ public final class LocalConverter extends AbstractConverter {
   private final FilterChain filterChain;
 
   static {
-    final Map<String, Object> loadProperties = new HashMap<>();
-    loadProperties.put("Hidden", true);
-    loadProperties.put("ReadOnly", true);
-    loadProperties.put("UpdateDocMode", UpdateDocMode.NO_UPDATE);
-
-    DEFAULT_LOAD_PROPERTIES = Collections.unmodifiableMap(loadProperties);
+    DEFAULT_LOAD_PROPERTIES =
+        Map.of("Hidden", true, "ReadOnly", true, "UpdateDocMode", UpdateDocMode.NO_UPDATE);
   }
 
   /**
@@ -129,8 +143,9 @@ public final class LocalConverter extends AbstractConverter {
       final LoadDocumentMode loadDocumentMode,
       final Map<String, Object> loadProperties,
       final Map<String, Object> storeProperties,
-      final FilterChain filterChain) {
-    super(officeManager, formatRegistry);
+      final FilterChain filterChain,
+      final List<TargetOptions> defaultTargetOptions) {
+    super(officeManager, formatRegistry, defaultTargetOptions);
 
     this.loadDocumentMode = loadDocumentMode;
     this.loadProperties = loadProperties;
@@ -145,43 +160,199 @@ public final class LocalConverter extends AbstractConverter {
     return new LocalConversionJobWithSourceFormatUnspecified(source);
   }
 
+  /**
+   * Exports each page of a presentation or a drawing as an image: one image per slide or draw page,
+   * written in the directory given to the job.
+   *
+   * <pre>
+   * List&lt;File&gt; images =
+   *     converter.exportPages(new File("deck.pptx")).to(new File("out")).execute();
+   * </pre>
+   *
+   * @param source The presentation or drawing.
+   * @return The export job: the directory, the format, the size and the pages are given to it, then
+   *     it is executed.
+   */
+  public @NonNull PageImagesJob exportPages(final @NonNull File source) {
+    Objects.requireNonNull(source, "source must not be null");
+    final var baseName = FileUtils.getBaseName(source.getName());
+    return new PageImagesJob(
+        sourceSpecs(source),
+        baseName == null || baseName.isBlank() ? "page" : baseName,
+        officeManager,
+        this::pageImagesTask);
+  }
+
+  /**
+   * Exports each page of a presentation or a drawing read from a stream as an image. The stream is
+   * closed once read. The images are named {@code page-01.png}, {@code page-02.png}... unless a
+   * base name is given to the job.
+   *
+   * @param source The presentation or drawing.
+   * @return The export job.
+   */
+  public @NonNull PageImagesJob exportPages(final @NonNull InputStream source) {
+    return exportPages(source, true);
+  }
+
+  /**
+   * Exports each page of a presentation or a drawing read from a stream as an image. The images are
+   * named {@code page-01.png}, {@code page-02.png}... unless a base name is given to the job.
+   *
+   * @param source The presentation or drawing.
+   * @param closeStream Whether the stream is closed once read.
+   * @return The export job.
+   */
+  public @NonNull PageImagesJob exportPages(
+      final @NonNull InputStream source, final boolean closeStream) {
+    Objects.requireNonNull(source, "source must not be null");
+    return new PageImagesJob(
+        new SourceDocumentSpecsFromInputStream(source, officeManager, closeStream),
+        "page",
+        officeManager,
+        this::pageImagesTask);
+  }
+
+  // Creates the task of a page images job, with the load properties and the filters of this
+  // converter.
+  private PageImagesTask pageImagesTask(final PageImagesJob job) {
+    return new PageImagesTask(
+        job.getSource(),
+        useStreamAdapters(),
+        loadProperties,
+        filterChain,
+        job.getDirectory(),
+        job.getBaseName(),
+        job.getFormat(),
+        job.getWidth(),
+        job.getHeight(),
+        job.getQuality(),
+        job.getPages(),
+        job.isHiddenSlides());
+  }
+
+  // Whether the documents go through streams rather than files: always with the remote mode, and
+  // with the auto mode when the office processes may run elsewhere.
+  private boolean useStreamAdapters() {
+    return loadDocumentMode == LoadDocumentMode.REMOTE
+        || (loadDocumentMode == LoadDocumentMode.AUTO
+            && officeManager instanceof AttachedOfficeManager);
+  }
+
+  /**
+   * Merges text documents into one: the first document is loaded, the others are inserted at its
+   * end, each one starting on a new page, and the result is converted like any document.
+   *
+   * <pre>
+   * converter
+   *     .merge(new File("chapter1.docx"), new File("chapter2.docx"), new File("chapter3.docx"))
+   *     .to(new File("book.pdf"))
+   *     .execute();
+   * </pre>
+   *
+   * <p>The filters of the converter are applied after the insertions. To insert the documents
+   * without a page break, or at another place, use a {@link
+   * org.jodconverter.local.filter.text.DocumentInserterFilter} in the filter chain instead.
+   *
+   * @param first The first document; its page styles, headers and footers are those of the result.
+   * @param others The documents inserted after it, in order.
+   * @return The conversion job of the merged document.
+   * @throws IllegalArgumentException If a document to insert does not exist.
+   */
+  public @NonNull ConversionJobWithOptionalSourceFormatUnspecified merge(
+      final @NonNull File first, final @NonNull File... others) {
+    Objects.requireNonNull(others, "others must not be null");
+    return merge(Stream.concat(Stream.of(first), Stream.of(others)).toList());
+  }
+
+  /**
+   * Merges text documents into one: the first document is loaded, the others are inserted at its
+   * end, each one starting on a new page, and the result is converted like any document.
+   *
+   * @param documents The documents, in order; at least one.
+   * @return The conversion job of the merged document.
+   * @throws IllegalArgumentException If the list is empty, or if a document to insert does not
+   *     exist.
+   * @see #merge(File, File...)
+   */
+  public @NonNull ConversionJobWithOptionalSourceFormatUnspecified merge(
+      final @NonNull List<@NonNull File> documents) {
+    AssertUtils.notEmpty(documents, "documents must not be null nor empty");
+    final var inserters = new ArrayList<Filter>();
+    for (final var document : documents.subList(1, documents.size())) {
+      Objects.requireNonNull(document, "documents must not contain null");
+      AssertUtils.isTrue(document.isFile(), "File not found: " + document);
+      inserters.add(new DocumentInserterFilter(document, true));
+    }
+    return new LocalConversionJobWithSourceFormatUnspecified(
+        sourceSpecs(documents.get(0)), jobFilterChain(inserters));
+  }
+
+  // The filters of a job, followed by the filters of the converter.
+  private FilterChain jobFilterChain(final List<Filter> filters) {
+    final var converterChain = filterChain == null ? RefreshFilter.CHAIN : filterChain;
+    final var all = new ArrayList<>(filters);
+    all.add(
+        (context, document, chain) -> {
+          converterChain.copy().doFilter(context, document);
+          chain.doFilter(context, document);
+        });
+    return new DefaultFilterChain(false, all.toArray(new Filter[0]));
+  }
+
   /** Local implementation of a conversion job with source format unspecified. */
-  private class LocalConversionJobWithSourceFormatUnspecified
+  private final class LocalConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
+
+    // The filter chain of this job, or null for the filter chain of the converter.
+    private final @Nullable FilterChain jobFilterChain;
 
     private LocalConversionJobWithSourceFormatUnspecified(
         final AbstractSourceDocumentSpecs source) {
+      this(source, null);
+    }
+
+    private LocalConversionJobWithSourceFormatUnspecified(
+        final AbstractSourceDocumentSpecs source, final @Nullable FilterChain jobFilterChain) {
       super(source, LocalConverter.this.officeManager, LocalConverter.this.formatRegistry);
+      this.jobFilterChain = jobFilterChain;
+      setDefaultTargetOptions(LocalConverter.this.defaultTargetOptions);
     }
 
     @Override
     protected @NonNull AbstractConversionJob to(final @NonNull AbstractTargetDocumentSpecs target) {
-      return new LocalConversionJob(source, target);
+      return new LocalConversionJob(source, target, jobFilterChain);
     }
   }
 
   /** Local implementation of a conversion job. */
-  private class LocalConversionJob extends AbstractConversionJob {
+  private final class LocalConversionJob extends AbstractConversionJob {
+
+    private final @Nullable FilterChain jobFilterChain;
 
     private LocalConversionJob(
-        final AbstractSourceDocumentSpecs source, final AbstractTargetDocumentSpecs target) {
+        final AbstractSourceDocumentSpecs source,
+        final AbstractTargetDocumentSpecs target,
+        final @Nullable FilterChain jobFilterChain) {
       super(source, target);
+      this.jobFilterChain = jobFilterChain;
     }
 
     @Override
-    public void doExecute() throws OfficeException {
+    protected @NonNull OfficeManager getOfficeManager() {
+      return officeManager;
+    }
 
-      // Determine whether we must use stream adapters.
-      final boolean useStreamAdapters =
-          loadDocumentMode == LoadDocumentMode.REMOTE
-              || (loadDocumentMode == LoadDocumentMode.AUTO
-                  && officeManager instanceof ExternalOfficeManager);
+    @Override
+    protected @NonNull OfficeTask createTask() {
 
-      // Create a conversion task and execute it.
-      final LocalConversionTask task =
-          new LocalConversionTask(
-              source, target, useStreamAdapters, loadProperties, storeProperties, filterChain);
-      officeManager.execute(task);
+      return new LocalConversionTask(
+          source,
+          target,
+          useStreamAdapters(),
+          loadProperties,
+          storeProperties,
+          jobFilterChain == null ? filterChain : jobFilterChain);
     }
   }
 
@@ -208,7 +379,7 @@ public final class LocalConverter extends AbstractConverter {
     public @NonNull LocalConverter build() {
 
       // An office manager is required.
-      OfficeManager manager = officeManager;
+      var manager = officeManager;
       if (manager == null) {
         manager = InstalledOfficeManagerHolder.getInstance();
         if (manager == null) {
@@ -217,7 +388,7 @@ public final class LocalConverter extends AbstractConverter {
         }
       }
 
-      final Map<String, Object> loadProperties = new HashMap<>();
+      final var loadProperties = new HashMap<String, Object>();
       if (applyDefaultLoadProperties) {
         loadProperties.putAll(DEFAULT_LOAD_PROPERTIES);
         if (useUnsafeQuietUpdate) {
@@ -228,14 +399,18 @@ public final class LocalConverter extends AbstractConverter {
         loadProperties.putAll(this.loadProperties);
       }
 
-      // Create the converter
+      // Create the converter, with its own copies of the maps so that a reused builder does not
+      // change it.
       return new LocalConverter(
           manager,
           formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry,
           loadDocumentMode,
-          loadProperties,
-          storeProperties,
-          filterChain);
+          Collections.unmodifiableMap(loadProperties),
+          storeProperties == null
+              ? Map.of()
+              : Collections.unmodifiableMap(new HashMap<>(storeProperties)),
+          filterChain,
+          defaultTargetOptions);
     }
 
     /**
@@ -321,7 +496,7 @@ public final class LocalConverter extends AbstractConverter {
 
       return StringUtils.isBlank(loadDocumentMode)
           ? this
-          : loadDocumentMode(LoadDocumentMode.valueOf(loadDocumentMode.toUpperCase()));
+          : loadDocumentMode(LoadDocumentMode.valueOf(loadDocumentMode.toUpperCase(Locale.ROOT)));
     }
 
     /**
@@ -331,8 +506,8 @@ public final class LocalConverter extends AbstractConverter {
      * <p>When building the load properties map that will be used to load a source document, the
      * load properties of the input {@link org.jodconverter.core.document.DocumentFormat}, if any,
      * are put in the map first. Then, the {@link #DEFAULT_LOAD_PROPERTIES}, if required, are added
-     * to the map. Finally, any properties specified in the {@link #loadProperty(String, Object)} or
-     * {@link #loadProperties(Map)} are put in the map.
+     * to the map. Finally, any properties specified with this method or {@link
+     * #loadProperties(Map)} are put in the map.
      *
      * <p>Any property set here will override the property with the same name from the input
      * document format or the default load properties.
@@ -343,8 +518,8 @@ public final class LocalConverter extends AbstractConverter {
      */
     public @NonNull Builder loadProperty(final @NonNull String name, final @NonNull Object value) {
 
-      AssertUtils.notNull(name, "name must not be null");
-      AssertUtils.notNull(value, "value must not be null");
+      Objects.requireNonNull(name, "name must not be null");
+      Objects.requireNonNull(value, "value must not be null");
       if (this.loadProperties == null) {
         this.loadProperties = new HashMap<>();
       }
@@ -359,8 +534,8 @@ public final class LocalConverter extends AbstractConverter {
      * <p>When building the load properties map that will be used to load a source document, the
      * load properties of the input {@link org.jodconverter.core.document.DocumentFormat}, if any,
      * are put in the map first. Then, the {@link #DEFAULT_LOAD_PROPERTIES}, if required, are added
-     * to the map. Finally, any properties specified in the {@link #loadProperty(String, Object)} or
-     * {@link #loadProperties(Map)} are put in the map.
+     * to the map. Finally, any properties specified with {@link #loadProperty(String, Object)} or
+     * this method are put in the map.
      *
      * <p>Any property set here will override the property with the same name from the input
      * document format or the default load properties.
@@ -371,7 +546,7 @@ public final class LocalConverter extends AbstractConverter {
     public @NonNull Builder loadProperties(
         final @NonNull Map<@NonNull String, @NonNull Object> loadProperties) {
 
-      AssertUtils.notNull(loadProperties, "loadProperties must not be null");
+      Objects.requireNonNull(loadProperties, "loadProperties must not be null");
       if (this.loadProperties == null) {
         this.loadProperties = new HashMap<>();
       }
@@ -406,7 +581,7 @@ public final class LocalConverter extends AbstractConverter {
      */
     public @NonNull Builder filterChain(final @NonNull FilterChain filterChain) {
 
-      AssertUtils.notNull(filterChain, "filterChain must not be null");
+      Objects.requireNonNull(filterChain, "filterChain must not be null");
       this.filterChain = filterChain;
       return this;
     }
@@ -425,8 +600,8 @@ public final class LocalConverter extends AbstractConverter {
      */
     public @NonNull Builder storeProperty(final @NonNull String name, final @NonNull Object value) {
 
-      AssertUtils.notNull(name, "name must not be null");
-      AssertUtils.notNull(value, "value must not be null");
+      Objects.requireNonNull(name, "name must not be null");
+      Objects.requireNonNull(value, "value must not be null");
       if (this.storeProperties == null) {
         this.storeProperties = new HashMap<>();
       }
@@ -449,7 +624,7 @@ public final class LocalConverter extends AbstractConverter {
     public @NonNull Builder storeProperties(
         final @NonNull Map<@NonNull String, @NonNull Object> storeProperties) {
 
-      AssertUtils.notNull(storeProperties, "storeProperties must not be null");
+      Objects.requireNonNull(storeProperties, "storeProperties must not be null");
       if (this.storeProperties == null) {
         this.storeProperties = new HashMap<>();
       }

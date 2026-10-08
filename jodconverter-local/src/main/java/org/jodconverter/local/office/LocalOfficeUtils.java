@@ -21,13 +21,15 @@
 package org.jodconverter.local.office;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Objects;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.lang.XComponent;
@@ -39,13 +41,11 @@ import org.slf4j.LoggerFactory;
 
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.core.util.StringUtils;
+import org.jodconverter.local.office.utils.Info;
 import org.jodconverter.local.office.utils.Lo;
 import org.jodconverter.local.office.utils.Props;
-import org.jodconverter.local.process.FreeBSDProcessManager;
-import org.jodconverter.local.process.MacProcessManager;
 import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.PureJavaProcessManager;
 import org.jodconverter.local.process.UnixProcessManager;
@@ -63,12 +63,12 @@ public final class LocalOfficeUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeUtils.class);
 
   /**
-   * This class is required in order to create a default office home only on demand, as explained by
-   * the Initialization-on-demand holder idiom: <a
+   * Creates the default office home only on demand. This is the Initialization-on-demand holder
+   * idiom: <a
    * href="https://www.wikiwand.com/en/Initialization-on-demand_holder_idiom">Initialization-on-demand
    * holder idiom</a>
    */
-  private static class DefaultOfficeHomeHolder {
+  private static final class DefaultOfficeHomeHolder {
 
     /* default */ static final File INSTANCE;
 
@@ -78,67 +78,48 @@ public final class LocalOfficeUtils {
 
       } else if (OSUtils.IS_OS_WINDOWS) {
 
-        // Try to find the most recent version of LibreOffice or OpenOffice,
-        // starting with the 64-bit version. %ProgramFiles(x86)% on 64-bit
-        // machines; %ProgramFiles% on 32-bit ones
-        final String programFiles64 = System.getenv("ProgramFiles");
-        final String programFiles32 = System.getenv("ProgramFiles(x86)");
+        // The most recent LibreOffice first, 64-bit before 32-bit (%ProgramFiles(x86)% on
+        // 64-bit machines; %ProgramFiles% on 32-bit ones), then OpenOffice.
+        final var programFiles64 = System.getenv("ProgramFiles");
+        final var programFiles32 = System.getenv("ProgramFiles(x86)");
 
-        INSTANCE =
-            findOfficeHome(
-                EXECUTABLE_WINDOWS,
-                programFiles64 + File.separator + "LibreOffice",
-                programFiles32 + File.separator + "LibreOffice",
-                programFiles64 + File.separator + "LibreOffice 5",
-                programFiles32 + File.separator + "LibreOffice 5",
-                programFiles64 + File.separator + "LibreOffice 4",
-                programFiles32 + File.separator + "LibreOffice 4",
-                programFiles32 + File.separator + "OpenOffice 4",
-                programFiles64 + File.separator + "LibreOffice 3",
-                programFiles32 + File.separator + "LibreOffice 3",
-                programFiles32 + File.separator + "OpenOffice.org 3");
+        final var homes = new ArrayList<String>();
+        homes.addAll(listOfficeHomes("LibreOffice", programFiles64, programFiles32));
+        homes.add(programFiles32 + File.separator + "OpenOffice 4");
+        homes.add(programFiles32 + File.separator + "OpenOffice.org 3");
+        INSTANCE = findOfficeHome(EXECUTABLE_WINDOWS, homes);
 
       } else if (OSUtils.IS_OS_MAC) {
 
-        File homeDir =
-            findOfficeHome(
-                EXECUTABLE_MAC_41,
+        final var homes =
+            List.of(
                 "/Applications/LibreOffice.app/Contents",
                 "/Applications/OpenOffice.app/Contents",
                 "/Applications/OpenOffice.org.app/Contents");
-
+        var homeDir = findOfficeHome(EXECUTABLE_MAC_41, homes);
         if (homeDir == null) {
-          homeDir =
-              findOfficeHome(
-                  EXECUTABLE_MAC,
-                  "/Applications/LibreOffice.app/Contents",
-                  "/Applications/OpenOffice.app/Contents",
-                  "/Applications/OpenOffice.org.app/Contents");
+          homeDir = findOfficeHome(EXECUTABLE_MAC, homes);
         }
-
         INSTANCE = homeDir;
 
       } else {
 
         // UNIX
 
-        // Linux or other *nix variants
-        INSTANCE =
-            findOfficeHome(
-                EXECUTABLE_DEFAULT,
-                // LibreOffice
-                "/usr/lib64/libreoffice",
-                "/usr/lib/libreoffice",
-                "/usr/local/lib64/libreoffice",
-                "/usr/local/lib/libreoffice",
-                "/opt/libreoffice",
-                // https://github.com/jodconverter/jodconverter/issues/386
-                "/opt/libreoffice24.2",
-                "/usr/lib64/libreoffice24.2",
-                "/usr/lib/libreoffice24.2",
-                "/usr/local/lib64/libreoffice24.2",
-                "/usr/local/lib/libreoffice24.2",
-                // OpenOffice
+        // Linux or other *nix variants: the LibreOffice of the distribution or of the
+        // packages of The Document Foundation (libreoffice24.2...), the most recent first
+        // (https://github.com/jodconverter/jodconverter/issues/386), then OpenOffice.
+        final var homes = new ArrayList<String>();
+        homes.addAll(
+            listOfficeHomes(
+                "libreoffice",
+                "/usr/lib64",
+                "/usr/lib",
+                "/usr/local/lib64",
+                "/usr/local/lib",
+                "/opt"));
+        homes.addAll(
+            List.of(
                 "/usr/lib64/openoffice",
                 "/usr/lib64/openoffice.org3",
                 "/usr/lib64/openoffice.org",
@@ -146,20 +127,65 @@ public final class LocalOfficeUtils {
                 "/usr/lib/openoffice.org3",
                 "/usr/lib/openoffice.org",
                 "/opt/openoffice4",
-                "/opt/openoffice.org3");
+                "/opt/openoffice.org3"));
+        INSTANCE = findOfficeHome(EXECUTABLE_DEFAULT, homes);
       }
 
       LOGGER.debug("Default office home set to {}", INSTANCE);
     }
 
-    private static File findOfficeHome(final String executablePath, final String... homePaths) {
+    private static File findOfficeHome(final String executablePath, final List<String> homePaths) {
 
-      return Stream.of(homePaths)
-          .filter(homePath -> Files.isRegularFile(Paths.get(homePath, executablePath)))
+      return homePaths.stream()
+          .filter(homePath -> Files.isRegularFile(Path.of(homePath, executablePath)))
           .findFirst()
           .map(File::new)
           .orElse(null);
     }
+  }
+
+  /**
+   * Lists the directories of the given parents whose name starts with the given prefix, ignoring
+   * the case: {@code libreoffice}, {@code libreoffice24.2}, {@code LibreOffice 7}... The
+   * directories named with the prefix only come first (the installation of the distribution, or a
+   * link to the latest), then the versioned ones, the most recent first; the parents keep their
+   * order. A parent that is null, missing or not readable is skipped.
+   *
+   * @param prefix The start of the directory names.
+   * @param parents The directories to look into.
+   * @return The paths of the directories found.
+   */
+  /* default */
+  static List<String> listOfficeHomes(final String prefix, final String... parents) {
+
+    final Comparator<String> byVersion =
+        (name1, name2) -> {
+          final var version1 = name1.substring(prefix.length()).trim();
+          final var version2 = name2.substring(prefix.length()).trim();
+          if (version1.isEmpty() || version2.isEmpty()) {
+            return Boolean.compare(version2.isEmpty(), version1.isEmpty());
+          }
+          return Info.compareVersions(version2, version1, 2);
+        };
+
+    final var homes = new ArrayList<String>();
+    for (final var parent : parents) {
+      if (parent == null) {
+        continue;
+      }
+      try (var children = Files.list(Path.of(parent))) {
+        children
+            .filter(Files::isDirectory)
+            .map(child -> child.getFileName().toString())
+            .filter(name -> name.regionMatches(true, 0, prefix, 0, prefix.length()))
+            .sorted(byVersion)
+            .map(name -> parent + File.separator + name)
+            .forEach(homes::add);
+      } catch (IOException | RuntimeException ex) {
+        LOGGER.trace("Could not list the directory '{}'", parent, ex);
+      }
+    }
+    return homes;
   }
 
   /**
@@ -170,25 +196,52 @@ public final class LocalOfficeUtils {
    */
   public static @NonNull ProcessManager findBestProcessManager() {
 
-    if (OSUtils.IS_OS_MAC) {
-      return MacProcessManager.getDefault();
-    } else if (OSUtils.IS_OS_FREE_BSD) {
-      return FreeBSDProcessManager.getDefault();
-    } else if (OSUtils.IS_OS_UNIX) {
+    if (OSUtils.IS_OS_UNIX) {
+      // Linux, macOS, FreeBSD...: the JVM reads the command lines of the processes.
       return UnixProcessManager.getDefault();
     } else if (OSUtils.IS_OS_WINDOWS) {
-      final WindowsProcessManager windowsProcessManager = WindowsProcessManager.getDefault();
+      final var windowsProcessManager = WindowsProcessManager.getDefault();
       if (windowsProcessManager.isUsable()) {
         return windowsProcessManager;
       }
       LOGGER.warn(
-          "The commands required to manage processes on Windows are not available;"
+          "The running processes cannot be listed with PowerShell;"
               + " an office process that is already running will not be detected.");
       return PureJavaProcessManager.getDefault();
     } else {
-      // NOTE: UnixProcessManager can't be trusted to work on Solaris
-      // because of the 80-char limit on ps output there
       return PureJavaProcessManager.getDefault();
+    }
+  }
+
+  /**
+   * Finds the specified number of distinct TCP ports that are free at the time of the call. The
+   * ports are released before returning, so another program could take one of them before it is
+   * used.
+   *
+   * @param count The number of ports to find, greater than 0.
+   * @return The free port numbers.
+   * @throws IllegalStateException If the free ports cannot be found.
+   */
+  // The sockets are all kept open until every port is found, so that the ports are distinct,
+  // and closed together in the finally block.
+  @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
+  /* default */ static @NonNull List<@NonNull Integer> findFreePorts(final int count) {
+    final var sockets = new ArrayList<ServerSocket>(count);
+    try {
+      for (var i = 0; i < count; i++) {
+        sockets.add(new ServerSocket(0));
+      }
+      return sockets.stream().map(ServerSocket::getLocalPort).toList();
+    } catch (IOException ex) {
+      throw new IllegalStateException(String.format("Could not find %d free ports", count), ex);
+    } finally {
+      for (final var socket : sockets) {
+        try {
+          socket.close();
+        } catch (IOException ex) {
+          LOGGER.debug("Could not close the socket used to find a free port", ex);
+        }
+      }
     }
   }
 
@@ -200,7 +253,7 @@ public final class LocalOfficeUtils {
    * @return an list of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
+  /* default */ static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames) {
     return buildOfficeUrls(null, portNumbers, pipeNames, null);
@@ -216,7 +269,8 @@ public final class LocalOfficeUtils {
    * @return a list of office URL. If both arguments are null, then an array is returned with a
    *     single office URL, using the default port number 2002.
    */
-  /* default */ static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
+  /* default */
+  static @NonNull List<@NonNull OfficeUrl> buildOfficeUrls(
       final @Nullable String host,
       final @Nullable List<@NonNull Integer> portNumbers,
       final @Nullable List<@NonNull String> pipeNames,
@@ -226,11 +280,11 @@ public final class LocalOfficeUtils {
     if ((portNumbers == null || portNumbers.isEmpty())
         && (pipeNames == null || pipeNames.isEmpty())
         && (websocketUrls == null || websocketUrls.isEmpty())) {
-      return Collections.singletonList(new OfficeUrl(host, DEFAULT_PORT));
+      return List.of(new OfficeUrl(host, DEFAULT_PORT));
     }
 
     // Build the office URL list and return it
-    final List<OfficeUrl> officeUrls = new ArrayList<>();
+    final var officeUrls = new ArrayList<OfficeUrl>();
     if (portNumbers != null) {
       portNumbers.stream().map(p -> new OfficeUrl(host, p)).forEach(officeUrls::add);
     }
@@ -263,9 +317,9 @@ public final class LocalOfficeUtils {
    */
   public static @Nullable DocumentFamily getDocumentFamilySilently(
       final @NonNull XComponent document) {
-    AssertUtils.notNull(document, "document must not be null");
+    Objects.requireNonNull(document, "document must not be null");
 
-    final XServiceInfo serviceInfo = Lo.qi(XServiceInfo.class, document);
+    final var serviceInfo = Lo.qi(XServiceInfo.class, document);
     // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument.
     // So we must test for WebDocument first.
     if (serviceInfo.supportsService(Lo.WEB_SERVICE)) {
@@ -293,7 +347,7 @@ public final class LocalOfficeUtils {
   public static @NonNull DocumentFamily getDocumentFamily(final @NonNull XComponent document)
       throws OfficeException {
 
-    final DocumentFamily family = getDocumentFamilySilently(document);
+    final var family = getDocumentFamilySilently(document);
     if (family == null) {
       throw new OfficeException("Document of unknown family: " + document.getClass().getName());
     }
@@ -312,7 +366,7 @@ public final class LocalOfficeUtils {
     if (OSUtils.IS_OS_MAC) {
       // Starting with LibreOffice 4.1 the location of the executable has changed on Mac.
       // It's now in program/soffice. Handle both cases!
-      File executableFile = new File(officeHome, EXECUTABLE_MAC_41);
+      var executableFile = new File(officeHome, EXECUTABLE_MAC_41);
       if (!executableFile.isFile()) {
         executableFile = new File(officeHome, EXECUTABLE_MAC);
       }
@@ -338,13 +392,13 @@ public final class LocalOfficeUtils {
   public static @NonNull PropertyValue[] toUnoProperties(
       final @NonNull Map<@NonNull String, @NonNull Object> properties) {
 
-    final List<PropertyValue> propertyValues = new ArrayList<>(properties.size());
-    for (final Map.Entry<String, Object> entry : properties.entrySet()) {
-      Object value = entry.getValue();
-      if (value instanceof Map) {
+    final var propertyValues = new ArrayList<PropertyValue>(properties.size());
+    for (final var entry : properties.entrySet()) {
+      var value = entry.getValue();
+      if (value instanceof Map<?, ?> subProperties) {
         @SuppressWarnings("unchecked")
-        final Map<String, Object> subProperties = (Map<String, Object>) value;
-        value = toUnoProperties(subProperties);
+        final var typed = (Map<String, Object>) subProperties;
+        value = toUnoProperties(typed);
       }
       propertyValues.add(Props.makeProperty(entry.getKey(), value));
     }
@@ -359,8 +413,8 @@ public final class LocalOfficeUtils {
    */
   public static @NonNull String toUrl(final @NonNull File file) {
 
-    final String path = file.toURI().getRawPath();
-    final String url = path.startsWith("//") ? "file:" + path : "file://" + path;
+    final var path = file.toURI().getRawPath();
+    final var url = path.startsWith("//") ? "file:" + path : "file://" + path;
     return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
   }
 
@@ -368,11 +422,10 @@ public final class LocalOfficeUtils {
    * Validates that the specified File instance is a valid office home directory.
    *
    * @param officeHome The home to validate.
-   * @exception IllegalStateException If the specified directory if not a valid office home
-   *     directory.
+   * @throws IllegalStateException If the specified directory if not a valid office home directory.
    */
   public static void validateOfficeHome(final @NonNull File officeHome) {
-    AssertUtils.notNull(officeHome, "officeHome must not be null");
+    Objects.requireNonNull(officeHome, "officeHome must not be null");
 
     if (!officeHome.isDirectory()) {
       throw new IllegalStateException(
@@ -381,7 +434,8 @@ public final class LocalOfficeUtils {
 
     if (!getOfficeExecutable(officeHome).isFile()) {
       throw new IllegalStateException(
-          "Invalid officeHome: it doesn't contain soffice.bin: " + officeHome);
+          "Invalid officeHome: it doesn't contain the office executable: "
+              + getOfficeExecutable(officeHome));
     }
   }
 
@@ -389,8 +443,8 @@ public final class LocalOfficeUtils {
    * Validates that the specified File instance is a valid office template profile directory.
    *
    * @param templateProfileDir The directory to validate.
-   * @exception IllegalStateException If the specified directory is not a valid office template
-   *     profile directory.
+   * @throws IllegalStateException If the specified directory is not a valid office template profile
+   *     directory.
    */
   public static void validateOfficeTemplateProfileDirectory(
       final @Nullable File templateProfileDir) {

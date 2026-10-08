@@ -20,6 +20,7 @@
 
 package org.jodconverter.core.document;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +36,8 @@ public class DocumentFormatProperties {
   private final Map<String, Object> load = new HashMap<>();
 
   /** Properties applied when storing(saving) a document for each supported family. */
-  private final Map<DocumentFamily, Map<String, Object>> store = new HashMap<>();
+  private final Map<DocumentFamily, Map<String, Object>> store =
+      new EnumMap<>(DocumentFamily.class);
 
   /**
    * Gets the properties applied when loading(opening) a document.

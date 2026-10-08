@@ -1,7 +1,7 @@
 rootProject.name = "jodconverter"
 
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention").version("0.10.0")
+    id("org.gradle.toolchains.foojay-resolver-convention").version("1.0.0")
 }
 
 includeBuild("build-logic")
@@ -13,6 +13,5 @@ include(
     "jodconverter-local-oo",
     "jodconverter-remote",
     "jodconverter-cli",
-    "jodconverter-spring",
     "jodconverter-spring-boot-starter"
 )

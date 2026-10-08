@@ -21,8 +21,6 @@
 package org.jodconverter.core.office;
 
 import java.io.File;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.jodconverter.core.util.AssertUtils;
@@ -31,8 +29,7 @@ import org.jodconverter.core.util.AssertUtils;
  * {@link OfficeManager} pool implementation that does not depend on an office installation to
  * process conversion tasks.
  */
-public final class SimpleOfficeManager
-    extends AbstractOfficeManagerPool<SimpleOfficeManagerPoolEntry> {
+public final class SimpleOfficeManager extends AbstractOfficeWorkerPool {
 
   // The default size of the pool
   private static final int DEFAULT_POOL_SIZE = 1;
@@ -73,19 +70,11 @@ public final class SimpleOfficeManager
       final File workingDir,
       final int poolSize,
       final long taskExecutionTimeout,
-      final long taskQueueTimeout) {
-    super(poolSize, workingDir, taskQueueTimeout);
+      final long taskQueueTimeout,
+      final int taskQueueCapacity) {
+    super(workingDir, taskQueueTimeout, taskExecutionTimeout, taskQueueCapacity, true);
 
-    setEntries(
-        IntStream.range(0, poolSize)
-            .mapToObj(i -> new SimpleOfficeManagerPoolEntry(taskExecutionTimeout))
-            .collect(Collectors.toList()));
-  }
-
-  // Change visibility in order to be able to mock the entries
-  @Override
-  public void setEntries(final List<SimpleOfficeManagerPoolEntry> entries) {
-    super.setEntries(entries);
+    setWorkers(IntStream.range(0, poolSize).mapToObj(i -> new SimpleOfficeWorker()).toList());
   }
 
   /**
@@ -93,7 +82,7 @@ public final class SimpleOfficeManager
    *
    * @see SimpleOfficeManager
    */
-  public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
+  public static final class Builder extends AbstractOfficeWorkerPoolBuilder<Builder> {
 
     private int poolSize = DEFAULT_POOL_SIZE;
 
@@ -105,8 +94,9 @@ public final class SimpleOfficeManager
     @Override
     public SimpleOfficeManager build() {
 
-      final SimpleOfficeManager manager =
-          new SimpleOfficeManager(workingDir, poolSize, taskExecutionTimeout, taskQueueTimeout);
+      final var manager =
+          new SimpleOfficeManager(
+              workingDir, poolSize, taskExecutionTimeout, taskQueueTimeout, taskQueueCapacity);
       if (install) {
         InstalledOfficeManagerHolder.setInstance(manager);
       }

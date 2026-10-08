@@ -27,8 +27,9 @@ dependencies {
 
     implementation(libs.slf4j.api)
 
-    testImplementation(libs.slf4j.log4j)
-    testImplementation(libs.mockito.inline)
+    // Compile scope: StressITest configures Log4j 2 itself
+    testImplementation(libs.bundles.log4j)
+    testImplementation(libs.pdfbox)
     testImplementation(libs.spring.test)
     testImplementation(project(":jodconverter-core", configuration = "tests"))
 }

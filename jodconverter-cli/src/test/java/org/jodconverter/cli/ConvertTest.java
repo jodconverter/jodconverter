@@ -21,36 +21,40 @@
 package org.jodconverter.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.*;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS_PER_PROCESS;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_TASK_QUEUE_TIMEOUT;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import org.jodconverter.cli.util.*;
+import org.jodconverter.cli.util.ConsoleStreamsListenerExtension;
+import org.jodconverter.cli.util.SystemLogHandler;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.office.*;
+import org.jodconverter.local.office.ExistingProcessAction;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.office.LocalOfficeUtils;
 
 /** Contains tests for the {@link Convert} class. */
-@ExtendWith({
-  ConsoleStreamsListenerExtension.class,
-  NoExitExtension.class,
-  ResetExitExceptionExtension.class
-})
+@ExtendWith(ConsoleStreamsListenerExtension.class)
 class ConvertTest {
 
   @TempDir File testFolder;
@@ -71,87 +75,86 @@ class ConvertTest {
     @Test
     void withOptionHelp_ShouldPrintHelpAndExitWithCode0() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {"-h"});
-
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog)
-            .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 0);
-      }
+      SystemLogHandler.startCapture();
+      final var status = Convert.run("-h");
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(status).isEqualTo(0);
     }
 
     @Test
     void withOptionHelp_ShouldPrintVersionAndExitWithCode0() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {"-v"});
-
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog).contains("jodconverter-cli version");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 0);
-      }
+      SystemLogHandler.startCapture();
+      final var status = Convert.run("-v");
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("jodconverter-cli version");
+      assertThat(status).isEqualTo(0);
     }
 
     @Test
-    void withUnknownArgument_ShouldPrintErrorHelpAndExitWithCode2() {
+    void withOptionHelp_ShouldDescribeThePdfOptions() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {"-yz"});
+      SystemLogHandler.startCapture();
+      Convert.run("-h");
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("--pdf-preset <name>", "--pdf-option <name=value>");
+    }
 
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog)
-            .contains(
-                "Unrecognized option: -yz",
-                "jodconverter-cli [options] infile outfile [infile outfile ...]");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 2);
-      }
+    @Test
+    void withInvalidPdfOption_ShouldPrintErrorAndExitWithCode255() {
+
+      SystemLogHandler.startCapture();
+      final var status = Convert.run("--pdf-option", "pages.rang=1", "input.doc", "output.pdf");
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("jodconverter-cli: Unknown PDF option 'pages.rang'");
+      assertThat(status).isEqualTo(255);
+    }
+
+    @Test
+    void withInvalidPdfPreset_ShouldPrintErrorAndExitWithCode255() {
+
+      SystemLogHandler.startCapture();
+      final var status = Convert.run("--pdf-preset", "tiny", "input.doc", "output.pdf");
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("jodconverter-cli: Unknown PDF preset 'tiny'");
+      assertThat(status).isEqualTo(255);
+    }
+
+    @Test
+    void withUnknownArgument_ShouldPrintErrorHelpAndExitWithCode255() {
+
+      SystemLogHandler.startCapture();
+      final var status = Convert.run("-yz");
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains(
+              "Unrecognized option: -yz",
+              "jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(status).isEqualTo(255);
     }
 
     @Test
     void withMissingsFilenames_ShouldPrintErrorHelpAndExitWithCode255() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {""});
-
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog)
-            .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 255);
-      }
+      SystemLogHandler.startCapture();
+      final var status = Convert.run("");
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(status).isEqualTo(255);
     }
 
     @Test
     void withWrongFilenamesLength_ShouldPrintErrorHelpAndExitWithCode255() {
 
-      try {
-        SystemLogHandler.startCapture();
-        Convert.main(new String[] {"input1.txt", "output1.pdf", "input2.txt"});
-
-      } catch (Exception ex) {
-        final String capturedlog = SystemLogHandler.stopCapture();
-        assertThat(capturedlog)
-            .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
-        assertThat(ex)
-            .isExactlyInstanceOf(ExitException.class)
-            .hasFieldOrPropertyWithValue("status", 255);
-      }
+      SystemLogHandler.startCapture();
+      final var status = Convert.run("input1.txt", "output1.pdf", "input2.txt");
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog)
+          .contains("jodconverter-cli [options] infile outfile [infile outfile ...]");
+      assertThat(status).isEqualTo(255);
     }
   }
 
@@ -159,13 +162,35 @@ class ConvertTest {
   class CreateOfficeManager {
 
     @Test
+    void withUnknownExistingProcessAction_ShouldUseTheDefault() throws Exception {
+
+      final OfficeManager manager =
+          ReflectionTestUtils.invokeMethod(
+              Convert.class,
+              "createOfficeManager",
+              Convert.parse("-x", "whatever", "in", "out"),
+              null);
+
+      assertThat(manager).isInstanceOf(LocalOfficeManager.class);
+    }
+
+    @Test
+    void withConnectionUrl_ShouldCreateARemoteOfficeManager() throws Exception {
+
+      final OfficeManager manager =
+          ReflectionTestUtils.invokeMethod(
+              Convert.class,
+              "createOfficeManager",
+              Convert.parse("-c", "http://localhost:9980/lool", "in", "out"),
+              null);
+
+      assertThat(manager).isInstanceOf(org.jodconverter.remote.office.RemoteOfficeManager.class);
+    }
+
+    @Test
     void withDefaultProperties_ShouldCreateManagerWithDefaultProperties() throws Exception {
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {"output1.pdf", "input2.txt"});
+      final var commandLine = Convert.parse("output1.pdf", "input2.txt");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
@@ -178,9 +203,11 @@ class ConvertTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(officeManager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
+          .hasFieldOrPropertyWithValue("startFailFast", true);
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
@@ -188,7 +215,6 @@ class ConvertTest {
               o ->
                   assertThat(o)
                       .extracting(
-                          "taskExecutionTimeout",
                           "maxTasksPerProcess",
                           "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.officeHome",
@@ -199,11 +225,9 @@ class ConvertTest {
                           "officeProcessManager.processRetryInterval",
                           "officeProcessManager.afterStartProcessDelay",
                           "officeProcessManager.existingProcessAction",
-                          "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
                           "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
                           "socket,host=127.0.0.1,port=2002,tcpNoDelay=1",
                           LocalOfficeUtils.getDefaultOfficeHome(),
@@ -214,7 +238,6 @@ class ConvertTest {
                           DEFAULT_PROCESS_RETRY_INTERVAL,
                           DEFAULT_AFTER_START_PROCESS_DELAY,
                           DEFAULT_EXISTING_PROCESS_ACTION,
-                          true,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                           "socket,host=127.0.0.1,port=2002,tcpNoDelay=1"));
     }
@@ -223,41 +246,37 @@ class ConvertTest {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void withCustomValues_ShouldInitializedManagerWithCustomValues() throws Exception {
 
-      final File ooHome = new File(testFolder, "oohomecustom");
-      final File program = new File(ooHome, "program");
+      final var ooHome = new File(testFolder, "oohomecustom");
+      final var program = new File(ooHome, "program");
       program.mkdirs();
       new File(program, "soffice.bin").createNewFile(); // EXECUTABLE_DEFAULT
       new File(program, "soffice").createNewFile(); // EXECUTABLE_MAC
       new File(program, "soffice.exe").createNewFile(); // EXECUTABLE_WINDOWS
-      final File macos = new File(ooHome, "MacOS");
+      final var macos = new File(ooHome, "MacOS");
       macos.mkdirs();
       new File(macos, "soffice").createNewFile(); // EXECUTABLE_MAC_41
       program.mkdirs();
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {
-                    "-i",
-                    ooHome.getPath(),
-                    "-k",
-                    "true",
-                    "-m",
-                    LocalOfficeUtils.findBestProcessManager().getClass().getName(),
-                    "-n",
-                    "localhost",
-                    "-t",
-                    "30",
-                    "-p",
-                    "2003",
-                    "-u",
-                    new File("src/test/resources/templateProfileDir").getPath(),
-                    "-x",
-                    ExistingProcessAction.KILL.toString(),
-                    "input1.txt",
-                    "output1.pdf"
-                  });
+      final var commandLine =
+          Convert.parse(
+              "-i",
+              ooHome.getPath(),
+              "-k",
+              "true",
+              "-m",
+              LocalOfficeUtils.findBestProcessManager().getClass().getName(),
+              "-n",
+              "localhost",
+              "-t",
+              "30",
+              "-p",
+              "2003",
+              "-u",
+              new File("src/test/resources/templateProfileDir").getPath(),
+              "-x",
+              ExistingProcessAction.KILL.toString(),
+              "input1.txt",
+              "output1.pdf");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
@@ -269,9 +288,11 @@ class ConvertTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(officeManager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", 30_000L)
+          .hasFieldOrPropertyWithValue("startFailFast", true);
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
@@ -279,7 +300,6 @@ class ConvertTest {
               o ->
                   assertThat(o)
                       .extracting(
-                          "taskExecutionTimeout",
                           "maxTasksPerProcess",
                           "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.officeHome",
@@ -290,11 +310,9 @@ class ConvertTest {
                           "officeProcessManager.processRetryInterval",
                           "officeProcessManager.afterStartProcessDelay",
                           "officeProcessManager.existingProcessAction",
-                          "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
                           "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
-                          30_000L,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
                           "socket,host=localhost,port=2003,tcpNoDelay=1",
                           ooHome,
@@ -306,26 +324,20 @@ class ConvertTest {
                           DEFAULT_AFTER_START_PROCESS_DELAY,
                           ExistingProcessAction.KILL,
                           true,
-                          true,
                           "socket,host=localhost,port=2003,tcpNoDelay=1"));
     }
 
     @Test
     void withExistingProcessActionFail_ShouldInitializedManagerWithCustomValues() throws Exception {
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {
-                    "-x", ExistingProcessAction.FAIL.toString(), "input1.txt", "output1.pdf"
-                  });
+      final var commandLine =
+          Convert.parse("-x", ExistingProcessAction.FAIL.toString(), "input1.txt", "output1.pdf");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
 
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
@@ -341,19 +353,15 @@ class ConvertTest {
     void withExistingProcessActionConnect_ShouldInitializedManagerWithCustomValues()
         throws Exception {
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {
-                    "-x", ExistingProcessAction.CONNECT.toString(), "input1.txt", "output1.pdf"
-                  });
+      final var commandLine =
+          Convert.parse(
+              "-x", ExistingProcessAction.CONNECT.toString(), "input1.txt", "output1.pdf");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
 
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
@@ -369,22 +377,15 @@ class ConvertTest {
     void withExistingProcessActionConnectOrKill_ShouldInitializedManagerWithCustomValues()
         throws Exception {
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {
-                    "-x",
-                    ExistingProcessAction.CONNECT_OR_KILL.toString(),
-                    "input1.txt",
-                    "output1.pdf"
-                  });
+      final var commandLine =
+          Convert.parse(
+              "-x", ExistingProcessAction.CONNECT_OR_KILL.toString(), "input1.txt", "output1.pdf");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
 
       assertThat(officeManager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
@@ -403,25 +404,26 @@ class ConvertTest {
     @Test
     void withLoadProperties_ShouldCreateConverterWithExpectedProperties() throws Exception {
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {"-lPassword=myPassword", "output1.pdf", "input2.txt"});
+      final var commandLine = Convert.parse("-lPassword=myPassword", "output1.pdf", "input2.txt");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
-      final LocalConverter localConverter =
+      final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
       Assertions.assertNotNull(localConverter);
 
-      final Map<String, Object> expectedLoadProperties =
-          new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      final var expectedLoadProperties = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
       expectedLoadProperties.put("Password", "myPassword");
       assertThat(localConverter).extracting("loadProperties").isEqualTo(expectedLoadProperties);
     }
@@ -429,26 +431,28 @@ class ConvertTest {
     @Test
     void withFilterDataProperties_ShouldCreateConverterWithExpectedProperties() throws Exception {
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {"-sFDPageRange=2-2", "output1.pdf", "input2.txt"});
+      final var commandLine = Convert.parse("-sFDPageRange=2-2", "output1.pdf", "input2.txt");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
-      final LocalConverter localConverter =
+      final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
       Assertions.assertNotNull(localConverter);
 
-      final Map<String, Object> expectedFilterData = new HashMap<>();
+      final var expectedFilterData = new HashMap<String, Object>();
       expectedFilterData.put("PageRange", "2-2");
-      final Map<String, Object> expectedStoreProperties = new HashMap<>();
+      final var expectedStoreProperties = new HashMap<String, Object>();
       expectedStoreProperties.put("FilterData", expectedFilterData);
       assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
     }
@@ -456,24 +460,26 @@ class ConvertTest {
     @Test
     void withStoreProperties_ShouldCreateConverterWithExpectedProperties() throws Exception {
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {"-sOverwrite=true", "output1.pdf", "input2.txt"});
+      final var commandLine = Convert.parse("-sOverwrite=true", "output1.pdf", "input2.txt");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
-      final LocalConverter localConverter =
+      final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
       Assertions.assertNotNull(localConverter);
 
-      final Map<String, Object> expectedStoreProperties = new HashMap<>();
+      final var expectedStoreProperties = new HashMap<String, Object>();
       expectedStoreProperties.put("Overwrite", true);
       assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
     }
@@ -482,35 +488,37 @@ class ConvertTest {
     void withStoreAndFilterDataProperties_ShouldCreateConverterWithExpectedProperties()
         throws Exception {
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {
-                    "-sOverwrite=true",
-                    "-sReadOnly=false",
-                    "-sFDPageRange=2-4",
-                    "-sFDIntProp=5",
-                    "-sFD=NotFilterData",
-                    "output1.pdf",
-                    "input2.txt"
-                  });
+      final var commandLine =
+          Convert.parse(
+              "-sOverwrite=true",
+              "-sReadOnly=false",
+              "-sFDPageRange=2-4",
+              "-sFDIntProp=5",
+              "-sFD=NotFilterData",
+              "output1.pdf",
+              "input2.txt");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
-      final LocalConverter localConverter =
+      final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
       Assertions.assertNotNull(localConverter);
 
-      final Map<String, Object> expectedFilterData = new HashMap<>();
+      final var expectedFilterData = new HashMap<String, Object>();
       expectedFilterData.put("PageRange", "2-4");
       expectedFilterData.put("IntProp", 5);
-      final Map<String, Object> expectedStoreProperties = new HashMap<>();
+      final var expectedStoreProperties = new HashMap<String, Object>();
       expectedStoreProperties.put("Overwrite", true);
       expectedStoreProperties.put("ReadOnly", false);
       expectedStoreProperties.put("FD", "NotFilterData");
@@ -519,28 +527,65 @@ class ConvertTest {
     }
 
     @Test
-    void withBadLoadProperties_ShouldIgnoreBadLoadProperties() throws Exception {
+    void withValuesContainingEqualSigns_ShouldKeepTheWholeValues() throws Exception {
 
-      final CommandLine commandLine =
-          new DefaultParser()
-              .parse(
-                  (Options) ReflectionTestUtils.getField(Convert.class, "OPTIONS"),
-                  new String[] {"-lPassword", "output1.pdf", "input2.txt"});
+      final var commandLine =
+          Convert.parse(
+              "-lPassword=a=b",
+              "-s",
+              "FDSignCertificateSubjectName=CN=My Company,O=Me",
+              "--store-properties",
+              "FDSignPDF=true",
+              "--store-properties=Base64=YWJj==",
+              "output1.pdf",
+              "input2.txt");
 
       final OfficeManager officeManager =
           ReflectionTestUtils.invokeMethod(Convert.class, "createOfficeManager", commandLine, null);
       Assertions.assertNotNull(officeManager);
       final CliConverter cliConverter =
           ReflectionTestUtils.invokeMethod(
-              Convert.class, "createCliConverter", commandLine, null, officeManager, null);
+              Convert.class,
+              "createCliConverter",
+              commandLine,
+              null,
+              officeManager,
+              null,
+              Convert.ConversionOptions.parse(commandLine));
       Assertions.assertNotNull(cliConverter);
-      final LocalConverter localConverter =
+      final var localConverter =
           (LocalConverter) ReflectionTestUtils.getField(cliConverter, "converter");
       Assertions.assertNotNull(localConverter);
 
-      assertThat(localConverter)
-          .extracting("loadProperties")
-          .isEqualTo(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      final var expectedLoadProperties = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
+      expectedLoadProperties.put("Password", "a=b");
+      assertThat(localConverter).extracting("loadProperties").isEqualTo(expectedLoadProperties);
+
+      final var expectedFilterData = new HashMap<String, Object>();
+      expectedFilterData.put("SignCertificateSubjectName", "CN=My Company,O=Me");
+      expectedFilterData.put("SignPDF", true);
+      final var expectedStoreProperties = new HashMap<String, Object>();
+      expectedStoreProperties.put("Base64", "YWJj==");
+      expectedStoreProperties.put("FilterData", expectedFilterData);
+      assertThat(localConverter).extracting("storeProperties").isEqualTo(expectedStoreProperties);
+
+      // The file names are not taken for properties.
+      assertThat(commandLine.getArgs()).containsExactly("output1.pdf", "input2.txt");
+    }
+
+    @Test
+    void withPropertyThatIsNotNameValue_ShouldPrintErrorAndExitWithCode255() {
+
+      SystemLogHandler.startCapture();
+      final var loadStatus = Convert.run("-lPassword", "input.doc", "output.pdf");
+      final var storeStatus = Convert.run("-s", "=true", "input.doc", "output.pdf");
+      final var capturedlog = SystemLogHandler.stopCapture();
+
+      assertThat(capturedlog)
+          .contains("jodconverter-cli: Invalid load property 'Password'; expected name=value")
+          .contains("jodconverter-cli: Invalid store property '=true'; expected name=value");
+      assertThat(loadStatus).isEqualTo(255);
+      assertThat(storeStatus).isEqualTo(255);
     }
   }
 }

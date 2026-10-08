@@ -154,6 +154,20 @@
     }
   },
   {
+    "name": "Markdown",
+    "extensions": [
+      "md",
+      "markdown"
+    ],
+    "mediaType": "text/markdown",
+    "inputFamily": "TEXT",
+    "storeProperties": {
+      "TEXT": {
+        "FilterName": "Markdown"
+      }
+    }
+  },
+  {
     "name": "OpenOffice.org 1.0 Text Document",
     "extensions": [
       "sxw"
@@ -242,7 +256,8 @@
   {
     "name": "Microsoft Excel 2007-2013 XML Template",
     "extensions": [
-      "xltx", "xltm"
+      "xltx",
+      "xltm"
     ],
     "mediaType": "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
     "inputFamily": "SPREADSHEET",

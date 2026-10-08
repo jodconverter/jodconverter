@@ -22,6 +22,8 @@ package org.jodconverter.boot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +34,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.jodconverter.boot.autoconfigure.JodConverterLocalProperties;
 import org.jodconverter.boot.autoconfigure.JodConverterRemoteProperties;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.task.LoadDocumentMode;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
 /**
@@ -57,7 +61,7 @@ class AutoConfigurationDefaultPropertiesITest {
 
     @Bean
     /* default */ OfficeManager remoteOfficeManager() {
-      return RemoteOfficeManager.make("some url");
+      return RemoteOfficeManager.make("http://localhost:8001");
     }
   }
 
@@ -79,10 +83,10 @@ class AutoConfigurationDefaultPropertiesITest {
             "existingProcessAction",
             "startFailFast",
             "keepAliveOnShutdown",
+            "taskQueueCapacity",
             "taskQueueTimeout",
             "taskExecutionTimeout",
             "maxTasksPerProcess",
-            "documentFormatRegistry",
             "applyDefaultLoadProperties",
             "useUnsafeQuietUpdate",
             "loadDocumentMode")
@@ -90,23 +94,23 @@ class AutoConfigurationDefaultPropertiesITest {
             true,
             null,
             "127.0.0.1",
-            new int[] {2002},
+            null,
             new String[] {},
             null,
             null,
-            120_000L,
-            250L,
-            0L,
-            "kill",
+            Duration.ofMillis(120_000L),
+            Duration.ofMillis(250L),
+            Duration.ZERO,
+            ExistingProcessAction.KILL,
             false,
             false,
-            30_000L,
-            120_000L,
+            0,
+            Duration.ofMillis(30_000L),
+            Duration.ofMillis(120_000L),
             200,
-            null,
             true,
             false,
-            "auto");
+            LoadDocumentMode.AUTO);
   }
 
   @Test
@@ -116,11 +120,24 @@ class AutoConfigurationDefaultPropertiesITest {
         .extracting(
             "enabled",
             "url",
+            "connectTimeout",
+            "socketTimeout",
             "workingDir",
             "poolSize",
             "taskExecutionTimeout",
+            "taskQueueCapacity",
             "taskQueueTimeout",
             "ssl")
-        .containsExactly(true, "https://localhost:8001", null, 1, 120_000L, 30_000L, null);
+        .containsExactly(
+            true,
+            "https://localhost:8001",
+            Duration.ofMillis(RemoteOfficeManager.DEFAULT_CONNECT_TIMEOUT),
+            Duration.ofMillis(RemoteOfficeManager.DEFAULT_SOCKET_TIMEOUT),
+            null,
+            1,
+            Duration.ofMillis(120_000L),
+            0,
+            Duration.ofMillis(30_000L),
+            null);
   }
 }

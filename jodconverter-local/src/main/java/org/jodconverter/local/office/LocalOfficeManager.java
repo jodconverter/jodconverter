@@ -23,17 +23,15 @@ package org.jodconverter.local.office;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Locale;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.jodconverter.core.office.AbstractOfficeManagerPool;
-import org.jodconverter.core.office.InstalledOfficeManagerHolder;
+import org.jodconverter.core.office.AbstractOfficeWorkerPool;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.AssertUtils;
 import org.jodconverter.core.util.StringUtils;
@@ -42,14 +40,17 @@ import org.jodconverter.local.process.ProcessManager;
 /**
  * Default {@link org.jodconverter.core.office.OfficeManager} implementation that uses a pool of
  * office processes to execute conversion tasks.
+ *
+ * <p>Each office process has its own worker. A task is only given to a worker whose office process
+ * is ready: while a process is starting or restarting, the tasks go to the other ones.
  */
-public final class LocalOfficeManager
-    extends AbstractOfficeManagerPool<LocalOfficeManagerPoolEntry> {
+public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOfficeManager.class);
 
   // The default value for hostName.
-  public static final String DEFAULT_HOSTNAME = "127.0.0.1";
+  public static final String DEFAULT_HOSTNAME =
+      "127.0.0.1"; // NOPMD - the loopback address is the default host
   // The default timeout when executing a process call (start/terminate).
   public static final long DEFAULT_PROCESS_TIMEOUT = 120_000L; // 2 minutes
   // The default delay between each try when executing a process call (start/terminate).
@@ -71,12 +72,12 @@ public final class LocalOfficeManager
   public static final int DEFAULT_MAX_TASKS_PER_PROCESS = 200;
   // The minimum value for the delay between each try when executing a process call
   // (start/terminate).
-  public static final long MIN_PROCESS_RETRY_INTERVAL = 0L; // No delay.
+  /* default */ static final long MIN_PROCESS_RETRY_INTERVAL = 0L; // No delay.
   // The maximum value for the delay between each try when executing a process call
   // (start/terminate).
   public static final long MAX_PROCESS_RETRY_INTERVAL = 10_000L; // 10 sec.
   // The minimum value for the delay after a start process attempt.
-  public static final long MIN_AFTER_START_PROCESS_DELAY = 0L; // No delay.
+  /* default */ static final long MIN_AFTER_START_PROCESS_DELAY = 0L; // No delay.
   // The maximum value for the delay after a start process attempt.
   public static final long MAX_AFTER_START_PROCESS_DELAY = 10_000L; // 10 sec.
 
@@ -114,6 +115,7 @@ public final class LocalOfficeManager
   private LocalOfficeManager(
       final List<OfficeUrl> officeUrls,
       final File officeHome,
+      final File officeExecutable,
       final File workingDir,
       final ProcessManager processManager,
       final List<String> runAsArgs,
@@ -126,19 +128,20 @@ public final class LocalOfficeManager
       final boolean keepAliveOnShutdown,
       final int maxTasksPerProcess,
       final long taskExecutionTimeout,
-      final long taskQueueTimeout) {
-    super(officeUrls.size(), workingDir, taskQueueTimeout);
+      final long taskQueueTimeout,
+      final int taskQueueCapacity) {
+    super(workingDir, taskQueueTimeout, taskExecutionTimeout, taskQueueCapacity, startFailFast);
 
-    setEntries(
+    setWorkers(
         officeUrls.stream()
             .map(
                 officeUrl ->
-                    new LocalOfficeManagerPoolEntry(
+                    new LocalOfficeWorker(
                         maxTasksPerProcess,
-                        taskExecutionTimeout,
                         new LocalOfficeProcessManager(
                             officeUrl,
                             officeHome,
+                            officeExecutable,
                             workingDir,
                             processManager,
                             runAsArgs,
@@ -147,10 +150,9 @@ public final class LocalOfficeManager
                             processRetryInterval,
                             afterStartProcessDelay,
                             existingProcessAction,
-                            startFailFast,
                             keepAliveOnShutdown,
                             new OfficeConnection(officeUrl))))
-            .collect(Collectors.toList()));
+            .toList());
   }
 
   /**
@@ -158,12 +160,14 @@ public final class LocalOfficeManager
    *
    * @see LocalOfficeManager
    */
-  public static final class Builder extends AbstractOfficeManagerPoolBuilder<Builder> {
+  public static final class Builder extends AbstractOfficeWorkerPoolBuilder<Builder> {
 
     private List<String> pipeNames;
     private String hostName = DEFAULT_HOSTNAME;
     private List<Integer> portNumbers;
+    private Integer poolSize;
     private File officeHome;
+    private File officeExecutable;
     private ProcessManager processManager;
     private List<String> runAsArgs;
     private File templateProfileDir;
@@ -184,20 +188,27 @@ public final class LocalOfficeManager
     @Override
     public @NonNull LocalOfficeManager build() {
 
-      // Set non-constant default values.
-      if (officeHome == null) {
+      // Set non-constant default values. The office home is only needed to find the office
+      // executable when none is specified.
+      if (officeHome == null && officeExecutable == null) {
         officeHome = LocalOfficeUtils.getDefaultOfficeHome();
       }
       if (processManager == null) {
         processManager = LocalOfficeUtils.findBestProcessManager();
       }
       if (runAsArgs == null) {
-        runAsArgs = Collections.emptyList();
+        runAsArgs = List.of();
       }
 
       // Validate the directories we are working with
       OfficeUtils.validateWorkingDir(workingDir);
-      LocalOfficeUtils.validateOfficeHome(officeHome);
+      if (officeExecutable == null) {
+        LocalOfficeUtils.validateOfficeHome(officeHome);
+      } else {
+        AssertUtils.isTrue(
+            officeExecutable.isFile(),
+            "officeExecutable doesn't exist or is not a file: " + officeExecutable);
+      }
       if (useDefaultOnInvalidTemplateProfileDir) {
         try {
           LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
@@ -212,11 +223,21 @@ public final class LocalOfficeManager
         LocalOfficeUtils.validateOfficeTemplateProfileDirectory(templateProfileDir);
       }
 
+      // A pool size alone: use that many free ports.
+      if (poolSize != null) {
+        AssertUtils.isTrue(
+            portNumbers == null && pipeNames == null,
+            "poolSize cannot be used with portNumbers or pipeNames:"
+                + " the pool size comes from one or the other");
+        portNumbers = LocalOfficeUtils.findFreePorts(poolSize);
+      }
+
       // Build the office URLs
-      final LocalOfficeManager manager =
+      final var manager =
           new LocalOfficeManager(
               LocalOfficeUtils.buildOfficeUrls(hostName, portNumbers, pipeNames, null),
               officeHome,
+              officeExecutable,
               workingDir,
               processManager,
               runAsArgs,
@@ -229,11 +250,9 @@ public final class LocalOfficeManager
               keepAliveOnShutdown,
               maxTasksPerProcess,
               taskExecutionTimeout,
-              taskQueueTimeout);
-      if (install) {
-        InstalledOfficeManagerHolder.setInstance(manager);
-      }
-      return manager;
+              taskQueueTimeout,
+              taskQueueCapacity);
+      return installed(manager);
     }
 
     /**
@@ -276,8 +295,28 @@ public final class LocalOfficeManager
     public @NonNull Builder portNumbers(final int... portNumbers) {
 
       if (portNumbers != null && portNumbers.length != 0) {
-        this.portNumbers = Arrays.stream(portNumbers).boxed().collect(Collectors.toList());
+        this.portNumbers = Arrays.stream(portNumbers).boxed().toList();
       }
+      return this;
+    }
+
+    /**
+     * Specifies the number of office processes to start, using free port numbers picked when the
+     * manager is built. It is an alternative to {@link #portNumbers(int...)} and {@link
+     * #pipeNames(String...)}, and cannot be combined with them.
+     *
+     * <p>Two applications started at the same instant may pick the same free port. The office
+     * process started last then fails to start, with an error saying that the port is already used.
+     * To avoid it, configure distinct port numbers or pipe names instead.
+     *
+     * @param poolSize The number of office processes, which must be greater than 0.
+     * @return This builder instance.
+     */
+    public @NonNull Builder poolSize(final int poolSize) {
+
+      AssertUtils.isTrue(
+          poolSize > 0, String.format("poolSize %s must be greater than 0", poolSize));
+      this.poolSize = poolSize;
       return this;
     }
 
@@ -304,6 +343,37 @@ public final class LocalOfficeManager
     public @NonNull Builder officeHome(final @Nullable String officeHome) {
 
       return StringUtils.isBlank(officeHome) ? this : officeHome(new File(officeHome));
+    }
+
+    /**
+     * Specifies the program that starts the office processes, instead of the executable found in
+     * the office home ({@code program/soffice.bin}). Use it when the office program must be started
+     * through a launcher, for example the one of a snap ({@code /snap/bin/libreoffice}) or an
+     * AppImage. When it is set, the office home is not required.
+     *
+     * @param officeExecutable The office executable or launcher.
+     * @return This builder instance.
+     */
+    public @NonNull Builder officeExecutable(final @Nullable File officeExecutable) {
+
+      if (officeExecutable != null) {
+        this.officeExecutable = officeExecutable;
+      }
+      return this;
+    }
+
+    /**
+     * Specifies the program that starts the office processes, instead of the executable found in
+     * the office home. See {@link #officeExecutable(File)}.
+     *
+     * @param officeExecutable The path of the office executable or launcher.
+     * @return This builder instance.
+     */
+    public @NonNull Builder officeExecutable(final @Nullable String officeExecutable) {
+
+      return StringUtils.isBlank(officeExecutable)
+          ? this
+          : officeExecutable(new File(officeExecutable));
     }
 
     /**
@@ -362,7 +432,7 @@ public final class LocalOfficeManager
     public @NonNull Builder runAsArgs(final @Nullable String... runAsArgs) {
 
       if (runAsArgs != null && runAsArgs.length != 0) {
-        this.runAsArgs = Collections.unmodifiableList(Arrays.asList(runAsArgs));
+        this.runAsArgs = List.of(runAsArgs);
       }
       return this;
     }
@@ -435,14 +505,12 @@ public final class LocalOfficeManager
      * @param processTimeout The process timeout, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder processTimeout(final @Nullable Long processTimeout) {
+    public @NonNull Builder processTimeout(final long processTimeout) {
 
-      if (processTimeout != null) {
-        AssertUtils.isTrue(
-            processTimeout >= 0,
-            String.format("processTimeout %s must be greater than or equal to 0", processTimeout));
-        this.processTimeout = processTimeout;
-      }
+      AssertUtils.isTrue(
+          processTimeout >= 0,
+          String.format("processTimeout %s must be greater than or equal to 0", processTimeout));
+      this.processTimeout = processTimeout;
       return this;
     }
 
@@ -455,17 +523,15 @@ public final class LocalOfficeManager
      * @param processRetryInterval The retry interval, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder processRetryInterval(final @Nullable Long processRetryInterval) {
+    public @NonNull Builder processRetryInterval(final long processRetryInterval) {
 
-      if (processRetryInterval != null) {
-        AssertUtils.isTrue(
-            processRetryInterval >= MIN_PROCESS_RETRY_INTERVAL
-                && processRetryInterval <= MAX_PROCESS_RETRY_INTERVAL,
-            String.format(
-                "processRetryInterval %s must be in the inclusive range of %s to %s",
-                processRetryInterval, MIN_PROCESS_RETRY_INTERVAL, MAX_PROCESS_RETRY_INTERVAL));
-        this.processRetryInterval = processRetryInterval;
-      }
+      AssertUtils.isTrue(
+          processRetryInterval >= MIN_PROCESS_RETRY_INTERVAL
+              && processRetryInterval <= MAX_PROCESS_RETRY_INTERVAL,
+          String.format(
+              "processRetryInterval %s must be in the inclusive range of %s to %s",
+              processRetryInterval, MIN_PROCESS_RETRY_INTERVAL, MAX_PROCESS_RETRY_INTERVAL));
+      this.processRetryInterval = processRetryInterval;
       return this;
     }
 
@@ -481,19 +547,17 @@ public final class LocalOfficeManager
      * @param afterStartProcessDelay The delay, in milliseconds.
      * @return This builder instance.
      */
-    public @NonNull Builder afterStartProcessDelay(final @Nullable Long afterStartProcessDelay) {
+    public @NonNull Builder afterStartProcessDelay(final long afterStartProcessDelay) {
 
-      if (afterStartProcessDelay != null) {
-        AssertUtils.isTrue(
-            afterStartProcessDelay >= MIN_AFTER_START_PROCESS_DELAY
-                && afterStartProcessDelay <= MAX_AFTER_START_PROCESS_DELAY,
-            String.format(
-                "afterStartProcessDelay %s must be in the inclusive range of %s to %s",
-                afterStartProcessDelay,
-                MIN_AFTER_START_PROCESS_DELAY,
-                MAX_AFTER_START_PROCESS_DELAY));
-        this.afterStartProcessDelay = afterStartProcessDelay;
-      }
+      AssertUtils.isTrue(
+          afterStartProcessDelay >= MIN_AFTER_START_PROCESS_DELAY
+              && afterStartProcessDelay <= MAX_AFTER_START_PROCESS_DELAY,
+          String.format(
+              "afterStartProcessDelay %s must be in the inclusive range of %s to %s",
+              afterStartProcessDelay,
+              MIN_AFTER_START_PROCESS_DELAY,
+              MAX_AFTER_START_PROCESS_DELAY));
+      this.afterStartProcessDelay = afterStartProcessDelay;
       return this;
     }
 
@@ -529,28 +593,26 @@ public final class LocalOfficeManager
       return StringUtils.isBlank(existingProcessAction)
           ? this
           : existingProcessAction(
-              ExistingProcessAction.valueOf(existingProcessAction.toUpperCase()));
+              ExistingProcessAction.valueOf(existingProcessAction.toUpperCase(Locale.ROOT)));
     }
 
     /**
      * Controls whether the manager will "fail fast" if an office process cannot be started or the
-     * connection to the started process fails. If set to {@code true}, the start of a process will
-     * wait for the task to be completed, and will throw an exception if the office process is not
-     * started successfully or if the connection to the started process fails. If set to {@code
-     * false}, the task of starting the process and connecting to it will be submitted and will
-     * return immediately, meaning a faster starting process. Only error logs will be produced if
-     * anything goes wrong.
+     * connection to the started process fails. If set to {@code true}, the start of the manager
+     * waits for all the office processes to be started and connected, and throws an exception if
+     * one of them cannot be; the manager cannot be used after that. If set to {@code false}, the
+     * start of the manager returns immediately, meaning a faster start: the tasks wait for an
+     * office process to be ready, and a process that cannot be started is retried, with a growing
+     * delay between the attempts. Only logs will be produced if anything goes wrong.
      *
      * <p>&nbsp; <b><i>Default</i></b>: false
      *
      * @param startFailFast {@code true} to "fail fast", {@code false} otherwise.
      * @return This builder instance.
      */
-    public @NonNull Builder startFailFast(final @Nullable Boolean startFailFast) {
+    public @NonNull Builder startFailFast(final boolean startFailFast) {
 
-      if (startFailFast != null) {
-        this.startFailFast = startFailFast;
-      }
+      this.startFailFast = startFailFast;
       return this;
     }
 
@@ -565,11 +627,9 @@ public final class LocalOfficeManager
      * @param keepAliveOnShutdown {@code true} to keep the process alive, {@code false} otherwise.
      * @return This builder instance.
      */
-    public @NonNull Builder keepAliveOnShutdown(final @Nullable Boolean keepAliveOnShutdown) {
+    public @NonNull Builder keepAliveOnShutdown(final boolean keepAliveOnShutdown) {
 
-      if (keepAliveOnShutdown != null) {
-        this.keepAliveOnShutdown = keepAliveOnShutdown;
-      }
+      this.keepAliveOnShutdown = keepAliveOnShutdown;
       return this;
     }
 
@@ -582,15 +642,13 @@ public final class LocalOfficeManager
      * @param maxTasksPerProcess The new maximum number of tasks an office process can execute.
      * @return This builder instance.
      */
-    public @NonNull Builder maxTasksPerProcess(final @Nullable Integer maxTasksPerProcess) {
+    public @NonNull Builder maxTasksPerProcess(final int maxTasksPerProcess) {
 
-      if (maxTasksPerProcess != null) {
-        AssertUtils.isTrue(
-            maxTasksPerProcess >= 0,
-            String.format(
-                "maxTasksPerProcess %s must be greater than or equal to 0", maxTasksPerProcess));
-        this.maxTasksPerProcess = maxTasksPerProcess;
-      }
+      AssertUtils.isTrue(
+          maxTasksPerProcess >= 0,
+          String.format(
+              "maxTasksPerProcess %s must be greater than or equal to 0", maxTasksPerProcess));
+      this.maxTasksPerProcess = maxTasksPerProcess;
       return this;
     }
   }

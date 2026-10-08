@@ -30,7 +30,7 @@ import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.office.OfficeContext;
 
 /** Contains tests for the {@link AbstractRemoteOfficeTask} class. */
-public class AbstractRemoteOfficeTaskTest {
+class AbstractRemoteOfficeTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
@@ -40,8 +40,8 @@ public class AbstractRemoteOfficeTaskTest {
     @Test
     void shouldReturnExpectedValue() {
 
-      final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
-      final AbstractRemoteOfficeTask obj =
+      final var source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
+      final var obj =
           new AbstractRemoteOfficeTask(source) {
             @Override
             public void execute(@SuppressWarnings("NullableProblems") final OfficeContext context) {

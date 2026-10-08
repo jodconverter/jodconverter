@@ -24,13 +24,15 @@ jobs:
     name: test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
+    env:
+      # Read by the Coveralls step; a step cannot test its own env in its condition, so the job
+      # carries it.
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
     # A job allowed to fail still runs and reports, but does not fail the "build" check below.
     continue-on-error: ${{ matrix.allow-failure == true }}
     strategy:
       # Let every OS report, so an OS-specific failure is not hidden by another one.
       fail-fast: false
-      # libreoffice: the version installed on Windows and macOS (Linux uses the distribution's
-      # package). It must be a version still published under stable/ on the LibreOffice mirrors.
       matrix:
         include:
           - os: ubuntu-latest
@@ -38,13 +40,11 @@ jobs:
           # hangs in the middle of conversions, a different conversion on each run, with both
           # 25.8.7 and 26.2.6. Disabled until this is understood.
           # - os: windows-latest
-          #   libreoffice: '26.2.6'
           #   allow-failure: true
-          - os: macos-latest
-            libreoffice: '26.2.6'
-
-    env:
-      LIBREOFFICE_VERSION: ${{ matrix.libreoffice }}
+          # On the macOS runner, LibreOffice takes about 37 s to start (about 1 s on Linux), most of
+          # it waiting for the answer to the first UNO request, which makes the job last about 25 min.
+          # Disabled while the dependencies are upgraded; the cause is still to be investigated.
+          # - os: macos-latest
 
     steps:
       - name: 🪟 Use CRLF line endings on Windows
@@ -72,61 +72,34 @@ jobs:
           sudo apt-get -q update
           sudo apt-get -y -q install libreoffice
 
-      # Windows and macOS: the installer is downloaded here instead of through Chocolatey or
-      # Homebrew. Both fetch it from download.documentfoundation.org only, and when that host
-      # is unreachable the Chocolatey install fails and the Homebrew one hangs.
-      - name: 💾 Restore the LibreOffice installer
-        if: runner.os != 'Linux'
-        id: lo-installer
-        uses: actions/cache@v6
-        with:
-          path: ${{ runner.temp }}/lo-installer
-          key: libreoffice-${{ runner.os }}-${{ runner.arch }}-${{ env.LIBREOFFICE_VERSION }}
-
-      - name: ⬇️ Download the LibreOffice installer
-        if: runner.os != 'Linux' && steps.lo-installer.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          case "$RUNNER_OS-$RUNNER_ARCH" in
-            Windows-*)   file="win/x86_64/LibreOffice_${LIBREOFFICE_VERSION}_Win_x86-64.msi" ;;
-            macOS-ARM64) file="mac/aarch64/LibreOffice_${LIBREOFFICE_VERSION}_MacOS_aarch64.dmg" ;;
-            macOS-*)     file="mac/x86_64/LibreOffice_${LIBREOFFICE_VERSION}_MacOS_x86-64.dmg" ;;
-          esac
-          mkdir -p "$RUNNER_TEMP/lo-installer"
-          for base in \
-            https://download.documentfoundation.org/libreoffice/stable \
-            https://ftp.osuosl.org/pub/tdf/libreoffice/stable; do
-            url="$base/$LIBREOFFICE_VERSION/$file"
-            echo "Downloading $url"
-            if curl -fL --connect-timeout 15 --max-time 600 --retry 2 \
-              -o "$RUNNER_TEMP/lo-installer/$(basename "$file")" "$url"; then
-              exit 0
-            fi
-          done
-          echo "::error::LibreOffice $LIBREOFFICE_VERSION could not be downloaded. If it is no longer under stable/ on the mirrors, update LIBREOFFICE_VERSION in this workflow."
-          exit 1
-
+      # Windows and macOS: both package managers download LibreOffice from
+      # download.documentfoundation.org. The timeout stops the job early when that host is
+      # unreachable, instead of hanging until the job timeout.
       - name: 📥 Install LibreOffice (Windows)
         if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $msi = Get-ChildItem "$env:RUNNER_TEMP\lo-installer\*.msi" | Select-Object -First 1
-          $install = Start-Process msiexec -ArgumentList '/i', "`"$($msi.FullName)`"", '/qn', '/norestart' -Wait -PassThru
-          exit $install.ExitCode
+        timeout-minutes: 10
+        run: choco install libreoffice-still -y --no-progress
 
       - name: 📥 Install LibreOffice (macOS)
         if: runner.os == 'macOS'
-        run: |
-          hdiutil attach -nobrowse -quiet -mountpoint /Volumes/LibreOfficeInstaller "$RUNNER_TEMP"/lo-installer/*.dmg
-          cp -R /Volumes/LibreOfficeInstaller/LibreOffice.app /Applications/
-          hdiutil detach -quiet /Volumes/LibreOfficeInstaller
+        timeout-minutes: 10
+        run: brew install --cask libreoffice
 
       - name: 🛠️ Build and test
         # bash on every OS, so the same wrapper script runs everywhere.
         # --continue: a failing module does not hide the results of the others.
         shell: bash
         run: ./gradlew build -x javadoc --continue --stacktrace
+
+      - name: 📤 Send the coverage to Coveralls
+        # The coveralls-jacoco plugin aggregates the JaCoCo reports of the build above (no test
+        # runs again: they are excluded) and sends them with the source paths relative to the
+        # repository, so that Coveralls shows the sources of every module. Pull requests and pushes
+        # to develop and master; Coveralls lists the branches it receives. Skipped while the
+        # COVERALLS_REPO_TOKEN secret is not set.
+        if: runner.os == 'Linux' && env.COVERALLS_REPO_TOKEN != ''
+        shell: bash
+        run: ./gradlew coverallsJacoco -x test -x integrationTest
 
       - name: 📤 Upload test reports on failure
         if: failure()
@@ -135,9 +108,7 @@ jobs:
           name: test-reports-${{ matrix.os }}
           path: |
             **/build/reports/tests/
-            **/build/reports/integTest/
             **/build/test-results/
-            **/build/integTest-results/
           retention-days: 7
 
   # The single check to require in the branch rulesets: it passes only when every OS that is

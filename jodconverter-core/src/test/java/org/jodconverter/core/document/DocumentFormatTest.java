@@ -21,8 +21,9 @@
 package org.jodconverter.core.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ class DocumentFormatTest {
 
     // If an exception is thrown, the test will automatically fail.
 
-    final DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+    final var registry = DefaultDocumentFormatRegistry.getInstance();
     // TEXT output format
     toString(registry.getOutputFormats(DocumentFamily.TEXT));
     // SPREADSHEET output format
@@ -57,16 +58,42 @@ class DocumentFormatTest {
   }
 
   @Test
-  void copy_ShouldCreateModifiableCopy() {
+  void builderFrom_ShouldCreateAnEqualFormat() {
 
-    // If an exception is thrown, the test will automatically fail.
-    final DocumentFormat copy = DocumentFormat.copy(DefaultDocumentFormatRegistry.CSV);
-    assertThat(copy).isNotEqualTo(DefaultDocumentFormatRegistry.CSV);
-    assertThat(copy.getName()).isEqualTo(DefaultDocumentFormatRegistry.CSV.getName());
+    final var copy = DocumentFormat.builder(DefaultDocumentFormatRegistry.CSV).build();
 
-    // Ensure it is modifiable
-    final Map<String, Object> map = copy.getLoadProperties();
-    assertThat(map).isNotNull();
-    map.put("PropertyX", "ValueX");
+    assertThat(copy)
+        .isEqualTo(DefaultDocumentFormatRegistry.CSV)
+        .isNotSameAs(DefaultDocumentFormatRegistry.CSV);
+    assertThat(copy.hashCode()).isEqualTo(DefaultDocumentFormatRegistry.CSV.hashCode());
+    assertThat(DocumentFormat.builder(copy).loadProperty("PropertyX", "ValueX").build())
+        .isNotEqualTo(DefaultDocumentFormatRegistry.CSV);
+  }
+
+  @Test
+  void getProperties_ShouldBeUnmodifiableAndNeverNull() {
+
+    final var format =
+        DocumentFormat.builder().name("Test").extension("tst").mediaType("test/x").build();
+
+    assertThat(format.getLoadProperties()).isEmpty();
+    assertThat(format.getStoreProperties()).isEmpty();
+    assertThat(format.getStoreProperties(DocumentFamily.TEXT)).isNull();
+    assertThatThrownBy(() -> DefaultDocumentFormatRegistry.CSV.getLoadProperties().put("X", "Y"))
+        .isInstanceOf(UnsupportedOperationException.class);
+    assertThatThrownBy(
+            () ->
+                DefaultDocumentFormatRegistry.CSV
+                    .getStoreProperties(DocumentFamily.SPREADSHEET)
+                    .put("X", "Y"))
+        .isInstanceOf(UnsupportedOperationException.class);
+  }
+
+  @Test
+  void build_WithoutExtension_ShouldThrowIllegalArgumentException() {
+
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> DocumentFormat.builder().name("Test").mediaType("test/x").build())
+        .withMessage("extensions must not be null nor empty");
   }
 }

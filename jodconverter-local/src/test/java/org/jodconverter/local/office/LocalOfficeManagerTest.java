@@ -22,8 +22,6 @@ package org.jodconverter.local.office;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_EXECUTION_TIMEOUT;
-import static org.jodconverter.core.office.AbstractOfficeManagerPool.DEFAULT_TASK_QUEUE_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_AFTER_START_PROCESS_DELAY;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
@@ -31,6 +29,8 @@ import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_MAX_TASKS
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_TASK_QUEUE_TIMEOUT;
 import static org.jodconverter.local.office.LocalOfficeManager.MAX_PROCESS_RETRY_INTERVAL;
 import static org.jodconverter.local.office.LocalOfficeManager.MIN_PROCESS_RETRY_INTERVAL;
 import static org.jodconverter.local.office.LocalOfficeManager.builder;
@@ -40,8 +40,8 @@ import static org.jodconverter.local.office.LocalOfficeManager.make;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Locale;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
@@ -51,9 +51,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.local.process.ProcessManager;
 import org.jodconverter.local.process.TestProcessManager;
 
 /** Contains tests for the {@link LocalOfficeManager} class. */
@@ -77,7 +75,7 @@ class LocalOfficeManagerTest {
     @Test
     void shouldInitializedManagerWithDefaultValues() {
 
-      final OfficeManager manager = make();
+      final var manager = make();
 
       assertThat(manager).isInstanceOf(LocalOfficeManager.class);
       assertThat(manager)
@@ -88,18 +86,19 @@ class LocalOfficeManagerTest {
                       .asInstanceOf(InstanceOfAssertFactories.FILE)
                       .hasParent(OfficeUtils.getDefaultWorkingDir()));
       assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
+          .hasFieldOrPropertyWithValue("startFailFast", DEFAULT_START_FAIL_FAST);
       assertThat(manager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
           .satisfies(
               o ->
                   assertThat(o)
-                      .isInstanceOf(LocalOfficeManagerPoolEntry.class)
+                      .isInstanceOf(LocalOfficeWorker.class)
                       .extracting(
-                          "taskExecutionTimeout",
                           "maxTasksPerProcess",
                           "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.officeHome",
@@ -110,11 +109,9 @@ class LocalOfficeManagerTest {
                           "officeProcessManager.processRetryInterval",
                           "officeProcessManager.afterStartProcessDelay",
                           "officeProcessManager.existingProcessAction",
-                          "officeProcessManager.startFailFast",
                           "officeProcessManager.keepAliveOnShutdown",
                           "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
                           DEFAULT_MAX_TASKS_PER_PROCESS,
                           new OfficeUrl(2002).getConnectString(),
                           LocalOfficeUtils.getDefaultOfficeHome(),
@@ -125,7 +122,6 @@ class LocalOfficeManagerTest {
                           DEFAULT_PROCESS_RETRY_INTERVAL,
                           DEFAULT_AFTER_START_PROCESS_DELAY,
                           DEFAULT_EXISTING_PROCESS_ACTION,
-                          DEFAULT_START_FAIL_FAST,
                           DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                           new OfficeUrl(2002).getConnectString()));
     }
@@ -138,9 +134,9 @@ class LocalOfficeManagerTest {
     void shouldSetInstalledOfficeManagerHolder() {
 
       // Ensure we do not replace the current installed manager
-      final OfficeManager installedManager = InstalledOfficeManagerHolder.getInstance();
+      final var installedManager = InstalledOfficeManagerHolder.getInstance();
       try {
-        final OfficeManager manager = install();
+        final var manager = install();
         assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
       } finally {
         InstalledOfficeManagerHolder.setInstance(installedManager);
@@ -152,114 +148,101 @@ class LocalOfficeManagerTest {
   class Build {
 
     @Test
-    @SuppressWarnings("RedundantArrayCreation")
-    void withNullValues_ShouldInitializedManagerWithDefaultValues() {
+    void withMissingOfficeExecutable_ShouldThrowIllegalArgumentException(
+        final @TempDir File folder) {
 
-      final OfficeManager manager =
+      final var missing = new File(folder, "missing-launcher");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> builder().officeExecutable(missing).build())
+          .withMessage("officeExecutable doesn't exist or is not a file: " + missing);
+    }
+
+    @Test
+    void withOfficeExecutable_ShouldNotRequireOfficeHomeAndUseTheExecutable(
+        final @TempDir File folder) throws IOException {
+
+      final var launcher = new File(folder, "launcher");
+      assertThat(launcher.createNewFile()).isTrue();
+
+      // An office home without office in it is accepted when the executable is specified
+      final var manager =
           builder()
-              .workingDir((String) null)
-              .workingDir((File) null)
-              .taskExecutionTimeout(null)
-              .taskQueueTimeout(null)
-              .pipeNames((String[]) null)
-              .pipeNames(new String[] {})
-              .hostName(null)
-              .portNumbers((int[]) null)
-              .portNumbers(new int[] {})
-              .officeHome((String) null)
-              .officeHome((File) null)
-              .processManager((String) null)
-              .processManager((ProcessManager) null)
-              .officeHome((File) null)
-              .runAsArgs((String[]) null)
-              .runAsArgs(new String[] {})
-              .templateProfileDir((String) null)
-              .templateProfileDir((File) null)
-              .templateProfileDirOrDefault((String) null)
-              .templateProfileDirOrDefault((File) null)
-              .processTimeout(null)
-              .processRetryInterval(null)
-              .afterStartProcessDelay(null)
-              .existingProcessAction((String) null)
-              .existingProcessAction((ExistingProcessAction) null)
-              .startFailFast(null)
-              .keepAliveOnShutdown(null)
-              .maxTasksPerProcess(null)
+              .officeHome(new File(folder, "not-an-office-home"))
+              .officeExecutable(launcher.getPath())
+              .portNumbers(2003, 2004)
               .build();
 
-      assertThat(manager).isInstanceOf(LocalOfficeManager.class);
       assertThat(manager)
-          .extracting("tempDir")
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .asInstanceOf(InstanceOfAssertFactories.FILE)
-                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
-      assertThat(manager)
-          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT);
-      assertThat(manager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
-          .hasSize(1)
-          .element(0)
-          .satisfies(
-              o ->
-                  assertThat(o)
-                      .isInstanceOf(LocalOfficeManagerPoolEntry.class)
-                      .extracting(
-                          "taskExecutionTimeout",
-                          "maxTasksPerProcess",
-                          "officeProcessManager.officeUrl.connectString",
-                          "officeProcessManager.officeHome",
-                          "officeProcessManager.processManager.class.name",
-                          "officeProcessManager.runAsArgs",
-                          "officeProcessManager.templateProfileDir",
-                          "officeProcessManager.processTimeout",
-                          "officeProcessManager.processRetryInterval",
-                          "officeProcessManager.afterStartProcessDelay",
-                          "officeProcessManager.existingProcessAction",
-                          "officeProcessManager.startFailFast",
-                          "officeProcessManager.keepAliveOnShutdown",
-                          "officeProcessManager.connection.officeUrl.connectString")
-                      .containsExactly(
-                          DEFAULT_TASK_EXECUTION_TIMEOUT,
-                          DEFAULT_MAX_TASKS_PER_PROCESS,
-                          new OfficeUrl(2002).getConnectString(),
-                          LocalOfficeUtils.getDefaultOfficeHome(),
-                          LocalOfficeUtils.findBestProcessManager().getClass().getName(),
-                          Collections.EMPTY_LIST,
-                          null,
-                          DEFAULT_PROCESS_TIMEOUT,
-                          DEFAULT_PROCESS_RETRY_INTERVAL,
-                          DEFAULT_AFTER_START_PROCESS_DELAY,
-                          DEFAULT_EXISTING_PROCESS_ACTION,
-                          DEFAULT_START_FAIL_FAST,
-                          DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
-                          new OfficeUrl(2002).getConnectString()));
+          .hasSize(2)
+          .extracting("officeProcessManager.officeExecutable")
+          .containsOnly(launcher);
+    }
+
+    @Test
+    void withPoolSize_ShouldUseThatManyDistinctPorts() {
+
+      final var manager = builder().poolSize(3).build();
+
+      assertThat(manager)
+          .extracting("workers")
+          .asList()
+          .hasSize(3)
+          .extracting("officeProcessManager.officeUrl.connectString")
+          .doesNotHaveDuplicates()
+          .allSatisfy(
+              connectString ->
+                  assertThat((String) connectString)
+                      .matches("socket,host=127\\.0\\.0\\.1,port=\\d+,tcpNoDelay=1"));
+    }
+
+    @Test
+    void withPoolSizeAndPortNumbers_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> builder().portNumbers(2003).poolSize(2).build())
+          .withMessageStartingWith("poolSize cannot be used with portNumbers or pipeNames");
+    }
+
+    @Test
+    void withPoolSizeAndPipeNames_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> builder().pipeNames("jodconverter").poolSize(2).build())
+          .withMessageStartingWith("poolSize cannot be used with portNumbers or pipeNames");
+    }
+
+    @Test
+    void withInvalidPoolSize_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> builder().poolSize(0))
+          .withMessage("poolSize 0 must be greater than 0");
     }
 
     @Test
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void withCustomValues_ShouldInitializedManagerWithCustomValues() throws IOException {
 
-      final File workingDir = new File(testFolder, "temp");
+      final var workingDir = new File(testFolder, "temp");
       workingDir.mkdirs();
 
-      final File ooHome = new File(testFolder, "oohomecustom");
-      final File program = new File(ooHome, "program");
+      final var ooHome = new File(testFolder, "oohomecustom");
+      final var program = new File(ooHome, "program");
       program.mkdirs();
       new File(program, "soffice.bin").createNewFile(); // EXECUTABLE_DEFAULT
       new File(program, "soffice").createNewFile(); // EXECUTABLE_MAC
       new File(program, "soffice.exe").createNewFile(); // EXECUTABLE_WINDOWS
-      final File macos = new File(ooHome, "MacOS");
+      final var macos = new File(ooHome, "MacOS");
       macos.mkdirs();
       new File(macos, "soffice").createNewFile(); // EXECUTABLE_MAC_41
       program.mkdirs();
 
-      final File templateProfileDir = new File(testFolder, "template");
+      final var templateProfileDir = new File(testFolder, "template");
       new File(templateProfileDir, "user").mkdirs();
 
-      final OfficeManager manager =
+      final var manager =
           builder()
               .workingDir(workingDir.getPath())
               .taskExecutionTimeout(500L)
@@ -290,9 +273,12 @@ class LocalOfficeManagerTest {
           .satisfies(
               o ->
                   assertThat(o).asInstanceOf(InstanceOfAssertFactories.FILE).hasParent(workingDir));
-      assertThat(manager).hasFieldOrPropertyWithValue("taskQueueTimeout", 501L);
       assertThat(manager)
-          .extracting("entries")
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", 501L)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", 500L)
+          .hasFieldOrPropertyWithValue("startFailFast", true);
+      assertThat(manager)
+          .extracting("workers")
           .asList()
           .hasSize(2)
           .allSatisfy(
@@ -301,9 +287,8 @@ class LocalOfficeManagerTest {
                     .extracting("officeProcessManager.processManager")
                     .isInstanceOf(TestProcessManager.class);
                 assertThat(o)
-                    .isInstanceOf(LocalOfficeManagerPoolEntry.class)
+                    .isInstanceOf(LocalOfficeWorker.class)
                     .extracting(
-                        "taskExecutionTimeout",
                         "maxTasksPerProcess",
                         "officeProcessManager.officeHome",
                         "officeProcessManager.processManager.class.name",
@@ -313,26 +298,23 @@ class LocalOfficeManagerTest {
                         "officeProcessManager.processRetryInterval",
                         "officeProcessManager.afterStartProcessDelay",
                         "officeProcessManager.existingProcessAction",
-                        "officeProcessManager.startFailFast",
                         "officeProcessManager.keepAliveOnShutdown")
                     .containsExactly(
-                        500L,
                         99,
                         ooHome,
                         TestProcessManager.class.getName(),
-                        Stream.of("sudo").collect(Collectors.toList()),
+                        List.of("sudo"),
                         templateProfileDir,
                         502L,
                         503L,
                         10L,
                         ExistingProcessAction.CONNECT,
-                        true,
                         true);
               })
           .satisfies(
               o ->
                   assertThat(o.get(0))
-                      .isInstanceOf(LocalOfficeManagerPoolEntry.class)
+                      .isInstanceOf(LocalOfficeWorker.class)
                       .extracting(
                           "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.connection.officeUrl.connectString")
@@ -342,13 +324,33 @@ class LocalOfficeManagerTest {
           .satisfies(
               o ->
                   assertThat(o.get(1))
-                      .isInstanceOf(LocalOfficeManagerPoolEntry.class)
+                      .isInstanceOf(LocalOfficeWorker.class)
                       .extracting(
                           "officeProcessManager.officeUrl.connectString",
                           "officeProcessManager.connection.officeUrl.connectString")
                       .containsExactly(
                           new OfficeUrl("test").getConnectString(),
                           new OfficeUrl("test").getConnectString()));
+    }
+
+    @Test
+    void withExistingProcessActionName_ShouldNotDependOnTheDefaultLocale() {
+
+      // The dotless i of the Turkish locale would break "kill".
+      final var locale = Locale.getDefault();
+      Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+      try {
+        final var manager = builder().existingProcessAction("kill").build();
+
+        assertThat(manager)
+            .extracting("workers")
+            .asInstanceOf(InstanceOfAssertFactories.LIST)
+            .first()
+            .hasFieldOrPropertyWithValue(
+                "officeProcessManager.existingProcessAction", ExistingProcessAction.KILL);
+      } finally {
+        Locale.setDefault(locale);
+      }
     }
 
     @Test
@@ -383,21 +385,21 @@ class LocalOfficeManagerTest {
     @Test
     void withInvalidTemplateProfileDir_ShouldUseDefaultTemplateProfileDir() {
 
-      final File templateProfileDir = new File(testFolder, "template");
+      final var templateProfileDir = new File(testFolder, "template");
 
-      final OfficeManager manager =
+      final var manager =
           builder().templateProfileDirOrDefault(templateProfileDir.getPath()).build();
 
       assertThat(manager).isInstanceOf(LocalOfficeManager.class);
       assertThat(manager)
-          .extracting("entries")
+          .extracting("workers")
           .asList()
           .hasSize(1)
           .element(0)
           .satisfies(
               o ->
                   assertThat(o)
-                      .isInstanceOf(LocalOfficeManagerPoolEntry.class)
+                      .isInstanceOf(LocalOfficeWorker.class)
                       .hasFieldOrPropertyWithValue(
                           "officeProcessManager.templateProfileDir", null));
     }

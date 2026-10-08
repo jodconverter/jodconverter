@@ -23,7 +23,6 @@ package org.jodconverter.local;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -45,16 +44,16 @@ public final class ConvertUtil {
   // Input format to be skipped when testing al possible conversion.
   // They may fail on some OS or LO/OO version.
   private static final List<String> SKIPPED_INPUT_FORMAT =
-      Arrays.asList(
+      List.of(
           "odg", "svg", "fodg", "fodp", "fods", "fodt", "docx", "dotx", "xlsx", "xltx", "pptx",
           "potx");
 
   // Output formats to be skipped when testing al possible conversion.
-  // They may fail on some OS or LO/OO version.
+  // They may fail on some OS or LO/OO version (md requires LibreOffice 26.2 or later).
   private static final List<String> SKIPPED_OUTPUT_FORMAT =
-      Arrays.asList(
+      List.of(
           "svg", "png", "jpg", "jpeg", "tif", "tiff", "gif", "swf", "sxc", "sxi", "sxw", "fodg",
-          "fodp", "fods", "fodt", "docx", "dotx", "xlsx", "xltx", "pptx", "potx", "xhtml");
+          "fodp", "fods", "fodt", "docx", "dotx", "xlsx", "xltx", "pptx", "potx", "xhtml", "md");
 
   /**
    * Runnable used to convert a document. This kind of runner is useful when a conversion must be
@@ -84,21 +83,21 @@ public final class ConvertUtil {
     @Override
     public void run() {
 
-      final DocumentFormat sourceFmt =
+      final var sourceFmt =
           converter
               .getFormatRegistry()
               .getFormatByExtension(
                   Objects.requireNonNull(FileUtils.getExtension(source.getName())));
       assert sourceFmt != null;
-      final String sourceExt = sourceFmt.getExtension();
+      final var sourceExt = sourceFmt.getExtension();
 
-      final DocumentFormat targetFmt =
+      final var targetFmt =
           converter
               .getFormatRegistry()
               .getFormatByExtension(
                   Objects.requireNonNull(FileUtils.getExtension(target.getName())));
       assert targetFmt != null;
-      final String targetExt = targetFmt.getExtension();
+      final var targetExt = targetFmt.getExtension();
 
       try {
 
@@ -114,16 +113,14 @@ public final class ConvertUtil {
       } catch (Exception ex) {
 
         // Log the error.
-        final String message = "Could not convert from " + sourceExt + " to " + targetExt + ".";
-        if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException) {
-          final com.sun.star.task.ErrorCodeIOException ioEx =
-              (com.sun.star.task.ErrorCodeIOException) ex.getCause();
+        final var message = "Could not convert from " + sourceExt + " to " + targetExt + ".";
+        if (ex.getCause() instanceof com.sun.star.task.ErrorCodeIOException ioEx) {
           if (LOGGER.isErrorEnabled()) {
-            LOGGER.error(message + " " + ioEx.getMessage(), ioEx);
+            LOGGER.error("{} {}", message, ioEx.getMessage(), ioEx);
           }
         } else {
           if (LOGGER.isErrorEnabled()) {
-            LOGGER.error(message + " " + ex.getMessage(), ex);
+            LOGGER.error("{} {}", message, ex.getMessage(), ex);
           }
         }
 
@@ -143,9 +140,10 @@ public final class ConvertUtil {
       final File sourceFile, final File outputDir, final DocumentConverter converter) {
 
     // Detect input format
-    final String inputExt = FileUtils.getExtension(sourceFile.getName());
-    final DocumentFormat inputFormat =
-        DefaultDocumentFormatRegistry.getFormatByExtension(Objects.requireNonNull(inputExt));
+    final var inputExt = FileUtils.getExtension(sourceFile.getName());
+    final var inputFormat =
+        DefaultDocumentFormatRegistry.getInstance()
+            .getFormatByExtension(Objects.requireNonNull(inputExt));
     if (inputFormat == null) {
       LOGGER.info("Skipping unsupported input format {}", inputExt);
       return;
@@ -156,11 +154,12 @@ public final class ConvertUtil {
     final Set<DocumentFormat> outputFormats =
         inputFormat.getInputFamily() == null
             ? new HashSet<>()
-            : DefaultDocumentFormatRegistry.getOutputFormats(inputFormat.getInputFamily());
+            : DefaultDocumentFormatRegistry.getInstance()
+                .getOutputFormats(inputFormat.getInputFamily());
 
     // Convert the input file into all the supported output formats.
     // This will create 1 output file per output format.
-    for (final DocumentFormat outputFormat : outputFormats) {
+    for (final var outputFormat : outputFormats) {
 
       // Skip test that doesn't work on all os or with all office installation.
       if (checkSkipConversion(inputFormat, outputFormat)) {
@@ -168,7 +167,7 @@ public final class ConvertUtil {
       }
 
       // Create an output file
-      final File targetFile =
+      final var targetFile =
           new File(outputDir, sourceFile.getName() + "." + outputFormat.getExtension());
       targetFile.deleteOnExit();
 

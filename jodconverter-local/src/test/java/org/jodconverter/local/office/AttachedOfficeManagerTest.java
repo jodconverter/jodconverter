@@ -1,0 +1,218 @@
+/*
+ * Copyright (c) 2004 - 2012; Mirko Nasato and contributors
+ *               2016 - 2022; Simon Braconnier and contributors
+ *               2022 - present; JODConverter
+ *
+ * This file is part of JODConverter - Java OpenDocument Converter.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.jodconverter.local.office;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_FAIL_FAST;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_ON_START;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_RETRY_INTERVAL;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_CONNECT_TIMEOUT;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_HOSTNAME;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_MAX_TASKS_PER_CONNECTION;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_TASK_EXECUTION_TIMEOUT;
+import static org.jodconverter.local.office.AttachedOfficeManager.DEFAULT_TASK_QUEUE_TIMEOUT;
+import static org.jodconverter.local.office.AttachedOfficeManager.MAX_CONNECT_RETRY_INTERVAL;
+
+import java.io.File;
+
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import org.jodconverter.core.office.InstalledOfficeManagerHolder;
+import org.jodconverter.core.office.OfficeUtils;
+import org.jodconverter.core.test.util.AssertUtil;
+
+/** Contains tests for the {@link AttachedOfficeManager} class. */
+class AttachedOfficeManagerTest {
+
+  @Nested
+  @SuppressWarnings("removal")
+  class FormerName {
+
+    @Test
+    void externalOfficeManager_ShouldGiveAnAttachedOfficeManager() {
+
+      assertThat(ExternalOfficeManager.make()).isInstanceOf(AttachedOfficeManager.class);
+      assertThat(ExternalOfficeManager.builder().portNumbers(2003).build())
+          .isInstanceOf(AttachedOfficeManager.class);
+      assertThat(ExternalOfficeManager.DEFAULT_CONNECT_TIMEOUT).isEqualTo(DEFAULT_CONNECT_TIMEOUT);
+      AssertUtil.assertUtilityClassWellDefined(ExternalOfficeManager.class);
+    }
+  }
+
+  @Nested
+  class Make {
+
+    @Test
+    void shouldInitializedManagerWithDefaultValues() {
+
+      final var manager = AttachedOfficeManager.make();
+
+      assertThat(manager).isInstanceOf(AttachedOfficeManager.class);
+      assertThat(manager)
+          .extracting("tempDir")
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .asInstanceOf(InstanceOfAssertFactories.FILE)
+                      .hasParent(OfficeUtils.getDefaultWorkingDir()));
+      assertThat(manager)
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", DEFAULT_TASK_QUEUE_TIMEOUT)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", DEFAULT_TASK_EXECUTION_TIMEOUT)
+          .hasFieldOrPropertyWithValue("startFailFast", DEFAULT_CONNECT_FAIL_FAST);
+      assertThat(manager)
+          .extracting("workers")
+          .asList()
+          .hasSize(1)
+          .element(0)
+          .satisfies(
+              o ->
+                  assertThat(o)
+                      .isInstanceOf(AttachedOfficeWorker.class)
+                      .extracting(
+                          "connectOnStart",
+                          "maxTasksPerConnection",
+                          "connectionManager.connectTimeout",
+                          "connectionManager.connectRetryInterval",
+                          "connectionManager.connection.officeUrl.connectString")
+                      .containsExactly(
+                          DEFAULT_CONNECT_ON_START,
+                          DEFAULT_MAX_TASKS_PER_CONNECTION,
+                          DEFAULT_CONNECT_TIMEOUT,
+                          DEFAULT_CONNECT_RETRY_INTERVAL,
+                          new OfficeUrl(DEFAULT_HOSTNAME, 2002).getConnectString()));
+    }
+  }
+
+  @Nested
+  class Install {
+
+    @Test
+    void shouldSetInstalledOfficeManagerHolder() {
+
+      // Ensure we do not replace the current installed manager
+      final var installedManager = InstalledOfficeManagerHolder.getInstance();
+      try {
+        final var manager = AttachedOfficeManager.install();
+        assertThat(InstalledOfficeManagerHolder.getInstance()).isEqualTo(manager);
+      } finally {
+        InstalledOfficeManagerHolder.setInstance(installedManager);
+      }
+    }
+  }
+
+  @Nested
+  class Build {
+
+    @Test
+    void withCustomValues_ShouldInitializedManagerWithCustomValues(final @TempDir File testFolder) {
+
+      final var manager =
+          AttachedOfficeManager.builder()
+              .workingDir(testFolder.getPath())
+              .taskExecutionTimeout(11_000L)
+              .taskQueueTimeout(12_000L)
+              .pipeNames("test")
+              .hostName("localhost")
+              .portNumbers(2003)
+              .websocketUrls("test")
+              .connectOnStart(false)
+              .connectTimeout(5_000L)
+              .connectRetryInterval(1_000L)
+              .connectFailFast(true)
+              .maxTasksPerConnection(99)
+              .build();
+
+      assertThat(manager).isInstanceOf(AttachedOfficeManager.class);
+      assertThat(manager)
+          .extracting("tempDir")
+          .satisfies(
+              o ->
+                  assertThat(o).asInstanceOf(InstanceOfAssertFactories.FILE).hasParent(testFolder));
+      assertThat(manager)
+          .hasFieldOrPropertyWithValue("taskQueueTimeout", 12_000L)
+          .hasFieldOrPropertyWithValue("taskExecutionTimeout", 11_000L)
+          .hasFieldOrPropertyWithValue("startFailFast", true);
+      assertThat(manager)
+          .extracting("workers")
+          .asList()
+          .hasSize(3)
+          .allSatisfy(
+              o ->
+                  assertThat(o)
+                      .isInstanceOf(AttachedOfficeWorker.class)
+                      .extracting(
+                          "connectOnStart",
+                          "maxTasksPerConnection",
+                          "connectionManager.connectTimeout",
+                          "connectionManager.connectRetryInterval")
+                      .containsExactly(false, 99, 5_000L, 1_000L))
+          .satisfies(
+              o ->
+                  assertThat(o.get(0))
+                      .hasFieldOrPropertyWithValue(
+                          "connectionManager.connection.officeUrl.connectString",
+                          new OfficeUrl("localhost", 2003).getConnectString()))
+          .satisfies(
+              o ->
+                  assertThat(o.get(1))
+                      .hasFieldOrPropertyWithValue(
+                          "connectionManager.connection.officeUrl.connectString",
+                          new OfficeUrl("test").getConnectString()))
+          .satisfies(
+              o ->
+                  assertThat(o.get(2))
+                      .hasFieldOrPropertyWithValue(
+                          "connectionManager.connection.officeUrl.connectString",
+                          OfficeUrl.createForWebsocket("test").getConnectString()));
+    }
+
+    @Test
+    void whenInvalidConnectTimeout_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> AttachedOfficeManager.builder().connectTimeout(-1L).build());
+    }
+
+    @Test
+    void whenInvalidConnectRetryInterval_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> AttachedOfficeManager.builder().connectRetryInterval(-1L).build());
+      assertThatIllegalArgumentException()
+          .isThrownBy(
+              () ->
+                  AttachedOfficeManager.builder()
+                      .connectRetryInterval(MAX_CONNECT_RETRY_INTERVAL + 1)
+                      .build());
+    }
+
+    @Test
+    void whenInvalidMaxTasksPerConnection_ShouldThrowIllegalArgumentException() {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> AttachedOfficeManager.builder().maxTasksPerConnection(-1).build());
+    }
+  }
+}

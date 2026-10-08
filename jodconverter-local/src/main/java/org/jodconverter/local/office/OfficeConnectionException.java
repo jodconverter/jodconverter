@@ -20,13 +20,15 @@
 
 package org.jodconverter.local.office;
 
+import java.io.Serial;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.office.OfficeException;
 
 /** Exceptions thrown when a connection to an office process failed. */
 public class OfficeConnectionException extends OfficeException {
-  private static final long serialVersionUID = -8746059688633528678L;
+  @Serial private static final long serialVersionUID = -8746059688633528678L;
 
   private final String connectString;
 

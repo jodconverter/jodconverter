@@ -22,19 +22,16 @@ package org.jodconverter.core.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.Charset;
 import java.nio.file.CopyOption;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -45,78 +42,13 @@ public final class FileUtils {
   private static final char UNIX_SEPARATOR = '/';
   private static final char WINDOWS_SEPARATOR = '\\';
 
-  //  private static int lastIndexOfSeparator(final @NonNull String filename) {
-  //
-  //    final int idx = filename.lastIndexOf(UNIX_SEPARATOR);
-  //    if (idx == -1) {
-  //      return filename.lastIndexOf(WINDOWS_SEPARATOR);
-  //    }
-  //    return idx;
-  //  }
-
   private static boolean endsWithSeparator(final @NonNull String filename) {
 
     if (filename.isEmpty()) {
       return false;
     }
-    final char lastChar = filename.charAt(filename.length() - 1);
+    final var lastChar = filename.charAt(filename.length() - 1);
     return lastChar == UNIX_SEPARATOR || lastChar == WINDOWS_SEPARATOR;
-  }
-
-  /**
-   * Copies a file to another path, preserving the last modified date.
-   *
-   * @param srcFile An existing file to copy, must not be {@code null}.
-   * @param destFile The target file, must not be {@code null}.
-   * @param options Options specifying how the copy should be done.
-   * @throws IOException If an IO error occurs.
-   */
-  @SuppressWarnings("ResultOfMethodCallIgnored")
-  public static void copyFile(
-      final @NonNull File srcFile,
-      final @NonNull File destFile,
-      final @Nullable CopyOption... options)
-      throws IOException {
-    AssertUtils.notNull(srcFile, "srcFile must not be null");
-    AssertUtils.notNull(destFile, "destFile must not be null");
-
-    final Path srcPath = srcFile.toPath();
-
-    AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
-
-    Files.copy(srcPath, destFile.toPath(), options);
-    destFile.setLastModified(srcFile.lastModified());
-  }
-
-  /**
-   * Copies a file to a directory, preserving the last modified date.
-   *
-   * @param srcFile An existing file to copy, must not be {@code null}.
-   * @param destDir The directory to place the copy in, must not be {@code null}.
-   * @param options Options specifying how the copy should be done.
-   * @throws IOException If an IO error occurs.
-   */
-  @SuppressWarnings("ResultOfMethodCallIgnored")
-  public static void copyFileToDirectory(
-      final @NonNull File srcFile,
-      final @NonNull File destDir,
-      final @Nullable CopyOption... options)
-      throws IOException {
-    AssertUtils.notNull(srcFile, "srcFile must not be null");
-    AssertUtils.notNull(destDir, "destDir must not be null");
-
-    final Path srcPath = srcFile.toPath();
-    final Path destPath = destDir.toPath();
-
-    AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
-    AssertUtils.isTrue(!Files.isRegularFile(destPath), "destDir cannot be an existing file");
-
-    // Ensure the target directory exists
-    destPath.toFile().mkdirs();
-
-    final Path destFilePath = destPath.resolve(srcFile.getName());
-    Files.copy(srcPath, destFilePath, options);
-    destFilePath.toFile().setLastModified(srcFile.lastModified());
   }
 
   /**
@@ -132,11 +64,11 @@ public final class FileUtils {
       final @NonNull File destDir,
       final @Nullable CopyOption... options)
       throws IOException {
-    AssertUtils.notNull(srcDir, "srcDir must not be null");
-    AssertUtils.notNull(destDir, "destDir must not be null");
+    Objects.requireNonNull(srcDir, "srcDir must not be null");
+    Objects.requireNonNull(destDir, "destDir must not be null");
 
-    final Path srcPath = srcDir.toPath();
-    final Path destPath = destDir.toPath();
+    final var srcPath = srcDir.toPath();
+    final var destPath = destDir.toPath();
 
     AssertUtils.isTrue(Files.isDirectory(srcPath), "srcDir must be an existing directory");
     AssertUtils.isTrue(!Files.isRegularFile(destPath), "destDir cannot be an existing file");
@@ -170,23 +102,10 @@ public final class FileUtils {
       return false;
     }
 
-    final Path pathToDelete = file.toPath();
+    final var pathToDelete = file.toPath();
 
     if (Files.isDirectory(pathToDelete)) {
-      try {
-        Files.walk(pathToDelete)
-            .sorted(Comparator.reverseOrder())
-            .forEach(
-                path -> {
-                  try {
-                    Files.delete(path);
-                  } catch (IOException ex) {
-                    throw new UncheckedIOException(ex);
-                  }
-                });
-      } catch (UncheckedIOException ex) { // NOPMD - Only cause is relevant
-        throw ex.getCause();
-      }
+      Files.walkFileTree(pathToDelete, new DeleteDir());
     } else {
       Files.delete(pathToDelete);
     }
@@ -223,8 +142,8 @@ public final class FileUtils {
     if (endsWithSeparator(filename)) {
       return "";
     }
-    final String name = Paths.get(filename).getFileName().toString();
-    final int i = name.lastIndexOf('.');
+    final var name = Path.of(filename).getFileName().toString();
+    final var i = name.lastIndexOf('.');
     if (i == -1) {
       return name;
     }
@@ -244,9 +163,9 @@ public final class FileUtils {
     if (endsWithSeparator(filename)) {
       return "";
     }
-    final String name = Paths.get(filename).getFileName().toString();
-    final int i = name.lastIndexOf('.');
-    if (i == -1 || i == name.length()) {
+    final var name = Path.of(filename).getFileName().toString();
+    final var i = name.lastIndexOf('.');
+    if (i == -1) {
       return "";
     }
     return name.substring(i + 1);
@@ -266,32 +185,33 @@ public final class FileUtils {
     if (endsWithSeparator(filename)) {
       return "";
     }
-    return Paths.get(filename).getFileName().toString();
-  }
-
-  /**
-   * Reads the contents of a file into a String.
-   *
-   * @param file The file to read, must not be {@code null}.
-   * @param encoding The encoding to use, must not be {@code null}.
-   * @return the file contents, never {@code null}.
-   * @throws IOException If an IO error occurs.
-   */
-  public static @NonNull String readFileToString(
-      final @NonNull File file, final @NonNull Charset encoding) throws IOException {
-    AssertUtils.notNull(file, "file must not be null");
-    AssertUtils.notNull(encoding, "encoding must not be null");
-
-    final Path srcPath = file.toPath();
-
-    AssertUtils.isTrue(Files.isRegularFile(srcPath), "srcFile must be an existing file");
-
-    return new String(Files.readAllBytes(srcPath), encoding);
+    return Path.of(filename).getFileName().toString();
   }
 
   // Suppresses default constructor, ensuring non-instantiability.
   private FileUtils() {
     throw new AssertionError("Utility class must not be instantiated");
+  }
+
+  /** Deletes a directory tree, the files first and every directory once it is empty. */
+  private static final class DeleteDir extends SimpleFileVisitor<Path> {
+
+    @Override
+    public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes)
+        throws IOException {
+      Files.delete(file);
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult postVisitDirectory(final Path dir, final @Nullable IOException ex)
+        throws IOException {
+      if (ex != null) {
+        throw ex;
+      }
+      Files.delete(dir);
+      return FileVisitResult.CONTINUE;
+    }
   }
 
   /** Visitor that helps copy a directory recursively. */
@@ -305,7 +225,7 @@ public final class FileUtils {
 
       this.sourceDir = sourceDir;
       this.targetDir = targetDir;
-      this.options = options;
+      this.options = options.clone();
     }
 
     @Override
@@ -313,7 +233,7 @@ public final class FileUtils {
     public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes)
         throws IOException {
 
-      final Path targetFile = targetDir.resolve(sourceDir.relativize(file));
+      final var targetFile = targetDir.resolve(sourceDir.relativize(file));
       Files.copy(file, targetFile, options);
       targetFile.toFile().setLastModified(file.toFile().lastModified());
 
@@ -324,7 +244,7 @@ public final class FileUtils {
     public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attributes)
         throws IOException {
 
-      final Path newDir = targetDir.resolve(sourceDir.relativize(dir));
+      final var newDir = targetDir.resolve(sourceDir.relativize(dir));
       Files.createDirectory(newDir);
 
       return FileVisitResult.CONTINUE;

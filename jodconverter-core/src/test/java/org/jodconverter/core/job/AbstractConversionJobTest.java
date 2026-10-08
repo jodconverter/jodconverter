@@ -22,10 +22,15 @@ package org.jodconverter.core.job;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,6 +41,8 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.office.SimpleOfficeManager;
+import org.jodconverter.core.pdf.PdfOptions;
+import org.jodconverter.core.task.OfficeTask;
 
 /** Contains tests for the {@link AbstractConversionJob} class. */
 class AbstractConversionJobTest {
@@ -46,7 +53,7 @@ class AbstractConversionJobTest {
     @Test
     void whenNullSource_ShouldThrowNullPointerException(@TempDir final File testFolder) {
 
-      final File targetFile = new File(testFolder, "target.txt");
+      final var targetFile = new File(testFolder, "target.txt");
       assertThatNullPointerException()
           .isThrownBy(
               () ->
@@ -60,7 +67,7 @@ class AbstractConversionJobTest {
     void whenNullTarget_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
 
       assertThatNullPointerException()
@@ -81,8 +88,8 @@ class AbstractConversionJobTest {
     void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target.txt");
       assertThat(sourceFile.createNewFile()).isTrue();
       assertThatNullPointerException()
           .isThrownBy(
@@ -97,12 +104,12 @@ class AbstractConversionJobTest {
     @Test
     void whenNotNull_ShouldSetDocumentFormat(@TempDir final File testFolder) throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target.txt");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target.txt");
 
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final AbstractConversionJob job =
+      final var job =
           new SimpleConverter.SimpleConversionJob(
                   SimpleOfficeManager.make(),
                   new SourceDocumentSpecsFromFile(sourceFile),
@@ -113,17 +120,304 @@ class AbstractConversionJobTest {
   }
 
   @Nested
+  class With {
+
+    private AbstractConversionJob newJob(final File testFolder, final String targetName)
+        throws IOException {
+      return newJob(SimpleOfficeManager.make(), testFolder, targetName);
+    }
+
+    private AbstractConversionJob newJob(
+        final OfficeManager manager, final File testFolder, final String targetName)
+        throws IOException {
+
+      final var sourceFile = new File(testFolder, "source.txt");
+      assertThat(sourceFile.createNewFile()).isTrue();
+      final var target = new TargetDocumentSpecsFromFile(new File(testFolder, targetName));
+      target.setDocumentFormat(
+          DefaultDocumentFormatRegistry.getInstance()
+              .getFormatByExtension(targetName.substring(targetName.lastIndexOf('.') + 1)));
+      return new SimpleConverter.SimpleConversionJob(
+          manager, new SourceDocumentSpecsFromFile(sourceFile), target);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void whenNull_ShouldThrowNullPointerException(@TempDir final File testFolder)
+        throws IOException {
+
+      final var job = newJob(testFolder, "target.pdf");
+      assertThatNullPointerException().isThrownBy(() -> job.with(null));
+    }
+
+    @Test
+    void whenNotNull_ShouldSetTargetOptions(@TempDir final File testFolder) throws IOException {
+
+      final var options = PdfOptions.archive();
+      final var job = newJob(testFolder, "target.pdf");
+
+      assertThat(job.target.getOptions()).isNull();
+      assertThat(job.with(options)).isSameAs(job);
+      assertThat(job.target.getOptions()).isSameAs(options);
+    }
+
+    @Test
+    void whenOptionsSupportTargetFormat_ShouldExecute(@TempDir final File testFolder)
+        throws IOException, OfficeException {
+
+      final var manager = SimpleOfficeManager.make();
+      try {
+        manager.start();
+        final var job = newJob(manager, testFolder, "target.pdf");
+        assertThatCode(() -> job.with(PdfOptions.archive()).execute()).doesNotThrowAnyException();
+      } finally {
+        OfficeUtils.stopQuietly(manager);
+      }
+    }
+
+    @Test
+    void whenOptionsDoNotSupportTargetFormat_ShouldThrowIllegalArgumentException(
+        @TempDir final File testFolder) throws IOException {
+
+      final var job = newJob(testFolder, "target.odt");
+      assertThatIllegalArgumentException()
+          .isThrownBy(() -> job.with(PdfOptions.archive()).execute())
+          .withMessage("PdfOptions cannot be applied to a target document of format 'odt'");
+    }
+
+    @Test
+    void whenJobDoesNotSupportOptions_ShouldThrowUnsupportedOperationException() {
+
+      final ConversionJob job =
+          new ConversionJob() {
+            @Override
+            public void execute() {
+              // Nothing to do.
+            }
+
+            @Override
+            public CompletableFuture<Void> executeAsync() {
+              return CompletableFuture.completedFuture(null);
+            }
+          };
+      assertThatExceptionOfType(UnsupportedOperationException.class)
+          .isThrownBy(() -> job.with(PdfOptions.archive()));
+    }
+  }
+
+  @Nested
+  class DefaultTargetOptions {
+
+    // Executes a conversion to the given target with the given converter options, and returns
+    // the options the conversion ended up with.
+    private TargetOptions execute(
+        final File testFolder,
+        final String targetName,
+        final TargetOptions conversionOptions,
+        final TargetOptions... converterOptions)
+        throws IOException, OfficeException {
+
+      final var sourceFile = new File(testFolder, "source.txt");
+      assertThat(sourceFile.createNewFile()).isTrue();
+
+      final var manager = SimpleOfficeManager.make();
+      try {
+        manager.start();
+        final var builder =
+            SimpleConverter.builder()
+                .officeManager(manager)
+                .formatRegistry(DefaultDocumentFormatRegistry.getInstance());
+        for (final var options : converterOptions) {
+          builder.defaultTargetOptions(options);
+        }
+        final var job =
+            (AbstractConversionJob)
+                builder.build().convert(sourceFile).to(new File(testFolder, targetName));
+        if (conversionOptions != null) {
+          job.with(conversionOptions);
+        }
+        job.execute();
+        return job.target.getOptions();
+      } finally {
+        OfficeUtils.stopQuietly(manager);
+      }
+    }
+
+    @Test
+    void withoutOptions_ShouldHaveNoOptions(@TempDir final File testFolder) throws Exception {
+      assertThat(execute(testFolder, "target.pdf", null)).isNull();
+    }
+
+    @Test
+    void whenDefaultOptionsSupportTargetFormat_ShouldUseThem(@TempDir final File testFolder)
+        throws Exception {
+
+      final var defaultOptions = PdfOptions.archive();
+      assertThat(execute(testFolder, "target.pdf", null, defaultOptions)).isSameAs(defaultOptions);
+    }
+
+    @Test
+    void whenDefaultOptionsDoNotSupportTargetFormat_ShouldIgnoreThem(@TempDir final File testFolder)
+        throws Exception {
+
+      assertThat(execute(testFolder, "target.odt", null, PdfOptions.archive())).isNull();
+    }
+
+    @Test
+    void whenSeveralDefaultOptionsSupportTargetFormat_ShouldUseTheFirst(
+        @TempDir final File testFolder) throws Exception {
+
+      final var first = PdfOptions.archive();
+      final var second = PdfOptions.compact();
+      assertThat(execute(testFolder, "target.pdf", null, first, second)).isSameAs(first);
+    }
+
+    @Test
+    void whenConversionHasOptions_ShouldUseThemInsteadOfTheDefaultOnes(
+        @TempDir final File testFolder) throws Exception {
+
+      final var conversionOptions = PdfOptions.compact();
+      assertThat(execute(testFolder, "target.pdf", conversionOptions, PdfOptions.archive()))
+          .isSameAs(conversionOptions);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void whenNullDefaultOptions_ShouldThrowNullPointerException() {
+      assertThatNullPointerException()
+          .isThrownBy(() -> SimpleConverter.builder().defaultTargetOptions(null));
+    }
+  }
+
+  @Nested
+  class ExecuteAsync {
+
+    @Test
+    void withUnknownTargetFormat_ShouldThrowNullPointerException(@TempDir final File testFolder)
+        throws IOException {
+
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target");
+      assertThat(sourceFile.createNewFile()).isTrue();
+
+      final var job =
+          new SimpleConverter.SimpleConversionJob(
+              SimpleOfficeManager.make(),
+              new SourceDocumentSpecsFromFile(sourceFile),
+              new TargetDocumentSpecsFromFile(targetFile));
+      // The conversion is checked before it is submitted.
+      assertThatNullPointerException().isThrownBy(job::executeAsync);
+    }
+
+    @Test
+    void whenManagerNotRunning_ShouldThrowIllegalStateException(@TempDir final File testFolder)
+        throws IOException {
+
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target.pdf");
+      assertThat(sourceFile.createNewFile()).isTrue();
+
+      final var job =
+          new SimpleConverter.SimpleConversionJob(
+                  SimpleOfficeManager.make(),
+                  new SourceDocumentSpecsFromFile(sourceFile),
+                  new TargetDocumentSpecsFromFile(targetFile))
+              .as(DefaultDocumentFormatRegistry.PDF);
+      assertThatIllegalStateException().isThrownBy(job::executeAsync);
+    }
+
+    @Test
+    void withKnownTargetFormat_ShouldCompleteWhenTheConversionIsDone(@TempDir final File testFolder)
+        throws IOException, OfficeException {
+
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target");
+      assertThat(sourceFile.createNewFile()).isTrue();
+
+      final var manager = SimpleOfficeManager.make();
+      try {
+        manager.start();
+        final var job =
+            new SimpleConverter.SimpleConversionJob(
+                    manager,
+                    new SourceDocumentSpecsFromFile(sourceFile),
+                    new TargetDocumentSpecsFromFile(targetFile))
+                .as(DefaultDocumentFormatRegistry.PDF);
+
+        final var future = job.executeAsync();
+
+        assertThat(future.join()).isNull();
+        assertThat(future).isCompleted();
+      } finally {
+        manager.stop();
+      }
+    }
+
+    @Test
+    void whenTheConversionFails_ShouldCompleteExceptionally(@TempDir final File testFolder)
+        throws IOException {
+
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target.pdf");
+      assertThat(sourceFile.createNewFile()).isTrue();
+
+      // A manager whose tasks all fail.
+      final var failure = new OfficeException("The conversion failed");
+      final OfficeManager manager =
+          new OfficeManager() {
+            @Override
+            public void execute(final OfficeTask task) throws OfficeException {
+              throw failure;
+            }
+
+            @Override
+            public boolean isRunning() {
+              return true;
+            }
+
+            @Override
+            public void start() {
+              // Nothing to do.
+            }
+
+            @Override
+            public void stop() {
+              // Nothing to do.
+            }
+
+            @Override
+            public File makeTemporaryFile(final String extension) {
+              return new File(testFolder, "temp." + extension);
+            }
+          };
+      final var job =
+          new SimpleConverter.SimpleConversionJob(
+                  manager,
+                  new SourceDocumentSpecsFromFile(sourceFile),
+                  new TargetDocumentSpecsFromFile(targetFile))
+              .as(DefaultDocumentFormatRegistry.PDF);
+
+      final var future = job.executeAsync();
+
+      assertThat(future).isCompletedExceptionally();
+      assertThatExceptionOfType(CompletionException.class)
+          .isThrownBy(future::join)
+          .withCause(failure);
+    }
+  }
+
+  @Nested
   class Execute {
 
     @Test
     void withUnknownTargetFormat_ShouldThrowNullPointerException(@TempDir final File testFolder)
         throws IOException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final AbstractConversionJob job =
+      final var job =
           new SimpleConverter.SimpleConversionJob(
               SimpleOfficeManager.make(),
               new SourceDocumentSpecsFromFile(sourceFile),
@@ -135,14 +429,14 @@ class AbstractConversionJobTest {
     void withKnownTargetFormat_ShouldExecute(@TempDir final File testFolder)
         throws IOException, OfficeException {
 
-      final File sourceFile = new File(testFolder, "source.txt");
-      final File targetFile = new File(testFolder, "target");
+      final var sourceFile = new File(testFolder, "source.txt");
+      final var targetFile = new File(testFolder, "target");
       assertThat(sourceFile.createNewFile()).isTrue();
 
-      final OfficeManager manager = SimpleOfficeManager.make();
+      final var manager = SimpleOfficeManager.make();
       try {
         manager.start();
-        final AbstractConversionJob job =
+        final var job =
             new SimpleConverter.SimpleConversionJob(
                     manager,
                     new SourceDocumentSpecsFromFile(sourceFile),

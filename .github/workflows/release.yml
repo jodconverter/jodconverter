@@ -1,0 +1,118 @@
+name: release
+
+# A tag vX.Y.Z pushed on master releases X.Y.Z: the build, the GitHub release with the command line
+# tool archives, and the publication on Maven Central. The tag must match the version of
+# gradle.properties. The release notes of the GitHub release are generated from the pull requests
+# (.github/release.yml) and point to the release notes page of the documentation.
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  # A dry run from the Actions tab, on any branch: the build, the signing of the publications with the
+  # secrets, and a check of the Maven Central credentials. Nothing is published, no release is created.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0  # Needed to check that the tag is on master
+
+      - name: 🧮 Check the tag against the version
+        if: github.event_name == 'push'
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(grep "^version\s*=" gradle.properties | cut -d'=' -f2 | tr -d ' ')"
+          if [[ "v$version" != "$TAG" ]]; then
+            echo "::error::The tag $TAG does not match the version $version of gradle.properties"
+            exit 1
+          fi
+          if ! git branch -r --contains "$TAG" | grep -q "origin/master$"; then
+            echo "::error::The tag $TAG is not on master"
+            exit 1
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: ☕ Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: ⚙️ Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: 🔨 Build
+        # The unit tests ran on the pull request to master; the integration tests run on the release
+        # machine, with a real office installation, before the tag is pushed. The runner has no office.
+        run: ./gradlew build -x test -x integrationTest --no-daemon
+
+      - name: 🔏 Sign the publications (dry run)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew signMavenPublication --no-daemon --no-configuration-cache
+
+      - name: 🔑 Check the Maven Central credentials (dry run)
+        # The portal answers 401 to a wrong token; the published check needs no deployment.
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+        run: |
+          token="$(printf '%s:%s' "$USERNAME" "$PASSWORD" | base64 -w 0)"
+          status="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $token" \
+            'https://central.sonatype.com/api/v1/publisher/published?namespace=org.jodconverter&name=jodconverter-core&version=4.4.11')"
+          echo "The portal answered $status"
+          if [[ "$status" == "401" || "$status" == "403" ]]; then
+            echo "::error::The Maven Central credentials are refused"
+            exit 1
+          fi
+
+      - name: 📤 Publish to Maven Central
+        # Signed in memory with the key of the repository secrets; released automatically once
+        # validated by the portal (automaticRelease in publish-conventions.gradle.kts).
+        if: github.event_name == 'push'
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew publishToMavenCentral --no-daemon --no-configuration-cache
+
+      - name: 🏷️ Create the GitHub release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          {
+            echo "JODConverter $VERSION is out."
+            echo
+            echo "* Release notes: https://jodconverter.github.io/jodconverter/latest/release-notes/release-notes-$VERSION/"
+            echo "* Migration guide: https://jodconverter.github.io/jodconverter/latest/migration-guides/migration-guide-$VERSION/"
+            echo "* Maven Central: https://central.sonatype.com/search?q=g:org.jodconverter+v:$VERSION"
+            echo
+          } > notes.md
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes-file notes.md \
+            --generate-notes \
+            jodconverter-cli/build/distributions/jodconverter-cli-"$VERSION".zip \
+            jodconverter-cli/build/distributions/jodconverter-cli-"$VERSION".tar

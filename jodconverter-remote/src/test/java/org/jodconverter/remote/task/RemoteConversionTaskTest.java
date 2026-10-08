@@ -31,7 +31,7 @@ import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
 import org.jodconverter.core.job.TargetDocumentSpecsFromFile;
 
 /** Contains tests for the {@link RemoteConversionTask} class. */
-public class RemoteConversionTaskTest {
+class RemoteConversionTaskTest {
 
   private static final File SOURCE_FILE = new File("src/test/resources/documents/test.txt");
 
@@ -41,11 +41,11 @@ public class RemoteConversionTaskTest {
     @Test
     void shouldReturnExpectedValue(final @TempDir File testFolder) {
 
-      final File targetFile = new File(testFolder, "target.txt");
-      final SourceDocumentSpecsFromFile source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
-      final TargetDocumentSpecsFromFile target = new TargetDocumentSpecsFromFile(targetFile);
+      final var targetFile = new File(testFolder, "target.txt");
+      final var source = new SourceDocumentSpecsFromFile(SOURCE_FILE);
+      final var target = new TargetDocumentSpecsFromFile(targetFile);
 
-      final RemoteConversionTask obj = new RemoteConversionTask(source, target);
+      final var obj = new RemoteConversionTask(source, target);
       Assertions.assertThat(obj.toString()).contains("test.txt").contains("target.txt");
     }
   }

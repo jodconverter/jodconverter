@@ -28,16 +28,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Nested;
@@ -56,254 +54,6 @@ class FileUtilsTest {
   }
 
   @Nested
-  class CopyFile {
-
-    @Nested
-    class Failure {
-
-      @Test
-      void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
-          final @TempDir File testFolder) {
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> FileUtils.copyFile(dir, new File(dir, "to.txt")))
-            .withMessage("srcFile must be an existing file");
-      }
-
-      @Test
-      void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
-          final @TempDir File testFolder) {
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> FileUtils.copyFile(from, new File(dir, "to.txt")))
-            .withMessage("srcFile must be an existing file");
-      }
-
-      @Test
-      void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
-          final @TempDir File testFolder) throws IOException {
-
-        final Charset encoding = StandardCharsets.UTF_8;
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-        from.createNewFile();
-        final File to = new File(dir, "to.txt");
-        to.createNewFile();
-
-        Files.write(from.toPath(), "Whatever".getBytes(encoding));
-        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
-
-        assertThatExceptionOfType(FileAlreadyExistsException.class)
-            .isThrownBy(() -> FileUtils.copyFile(from, to));
-
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Yihaa");
-      }
-    }
-
-    @Nested
-    class Success {
-
-      @Test
-      void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(final @TempDir File testFolder)
-          throws IOException {
-
-        final Charset encoding = StandardCharsets.UTF_8;
-        final String test = "ABDCEF\nGHIJKL  \nMNOPQRS\n\tTUVWXYZééé^ç^ç^ç^ç^pawewew";
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-        from.createNewFile();
-        final File to = new File(dir, "to.txt");
-
-        Files.write(from.toPath(), test.getBytes(encoding));
-
-        FileUtils.copyFile(from, to);
-
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo(test);
-        assertThat(from.lastModified()).isEqualTo(to.lastModified());
-      }
-
-      @Test
-      void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFileAndModifiedDate(
-          final @TempDir File testFolder) throws IOException {
-
-        final Charset encoding = StandardCharsets.UTF_8;
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-        from.createNewFile();
-        final File to = new File(dir, "to.txt");
-        to.createNewFile();
-
-        Files.write(from.toPath(), "Whatever".getBytes(encoding));
-        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
-
-        FileUtils.copyFile(from, to, StandardCopyOption.REPLACE_EXISTING);
-
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Whatever");
-        assertThat(from.lastModified()).isEqualTo(to.lastModified());
-      }
-    }
-  }
-
-  @Nested
-  class CopyFileToDirectory {
-
-    @Nested
-    class Failure {
-
-      @Test
-      void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
-          final @TempDir File testFolder) {
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> FileUtils.copyFileToDirectory(dir, new File(dir, "to")))
-            .withMessage("srcFile must be an existing file");
-      }
-
-      @Test
-      void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
-          final @TempDir File testFolder) {
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> FileUtils.copyFileToDirectory(from, new File(dir, "to.txt")))
-            .withMessage("srcFile must be an existing file");
-      }
-
-      @Test
-      void whenTargetIsFile_ShouldThrowIllegalArgumentException(final @TempDir File testFolder)
-          throws IOException {
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-        from.createNewFile();
-        final File to = new File(dir, "to.txt");
-        to.createNewFile();
-
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> FileUtils.copyFileToDirectory(from, to))
-            .withMessage("destDir cannot be an existing file");
-      }
-
-      @Test
-      void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
-          final @TempDir File testFolder) throws IOException {
-
-        final Charset encoding = StandardCharsets.UTF_8;
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-        from.createNewFile();
-        final File toDir = new File(dir, "to");
-        toDir.mkdir();
-        final File to = new File(toDir, "from.txt");
-        to.createNewFile();
-
-        Files.write(from.toPath(), "Whatever".getBytes(encoding));
-        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
-
-        assertThatExceptionOfType(FileAlreadyExistsException.class)
-            .isThrownBy(() -> FileUtils.copyFileToDirectory(from, toDir));
-
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Yihaa");
-      }
-    }
-
-    @Nested
-    class Success {
-
-      @Test
-      void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(final @TempDir File testFolder)
-          throws IOException {
-
-        final Charset encoding = StandardCharsets.UTF_8;
-        final String test = "test";
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-        from.createNewFile();
-        final File toDir = new File(dir, "to");
-        toDir.mkdir();
-
-        Files.write(from.toPath(), test.getBytes(encoding));
-
-        FileUtils.copyFileToDirectory(from, toDir);
-
-        final File to = new File(toDir, "from.txt");
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo(test);
-        assertThat(from.lastModified()).isEqualTo(to.lastModified());
-      }
-
-      @Test
-      void whenTargetHerarchyDoesNotExist_ShouldCopyFileAndModifiedDate(
-          final @TempDir File testFolder) throws IOException {
-
-        final Charset encoding = StandardCharsets.UTF_8;
-        final String test = "test";
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-        from.createNewFile();
-        final File toDir = new File(new File(new File(new File(dir, "to"), "to"), "to"), "to");
-
-        Files.write(from.toPath(), test.getBytes(encoding));
-
-        FileUtils.copyFileToDirectory(from, toDir);
-
-        final File to = new File(toDir, "from.txt");
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo(test);
-        assertThat(from.lastModified()).isEqualTo(to.lastModified());
-      }
-
-      @Test
-      void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFileAndModifiedDate(
-          final @TempDir File testFolder) throws IOException {
-
-        final Charset encoding = StandardCharsets.UTF_8;
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-        from.createNewFile();
-        final File toDir = new File(dir, "to");
-        toDir.mkdir();
-        final File to = new File(toDir, "from.txt");
-        to.createNewFile();
-
-        Files.write(from.toPath(), "Whatever".getBytes(encoding));
-        Files.write(to.toPath(), "Yihaa".getBytes(encoding));
-
-        FileUtils.copyFileToDirectory(from, toDir, StandardCopyOption.REPLACE_EXISTING);
-
-        assertThat(new String(Files.readAllBytes(to.toPath()), encoding)).isEqualTo("Whatever");
-        assertThat(from.lastModified()).isEqualTo(to.lastModified());
-      }
-    }
-  }
-
-  @Nested
   class CopyDirectory {
 
     @Nested
@@ -313,9 +63,9 @@ class FileUtilsTest {
       void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
           final @TempDir File testFolder) {
 
-        final File dir = new File(testFolder, "test");
+        final var dir = new File(testFolder, "test");
         dir.mkdir();
-        final File from = new File(dir, "from");
+        final var from = new File(dir, "from");
 
         assertThatIllegalArgumentException()
             .isThrownBy(() -> FileUtils.copyDirectory(from, new File(dir, "to.txt")))
@@ -326,9 +76,9 @@ class FileUtilsTest {
       void whenSourceIsFile_ShouldThrowIllegalArgumentException(final @TempDir File testFolder)
           throws IOException {
 
-        final File dir = new File(testFolder, "test");
+        final var dir = new File(testFolder, "test");
         dir.mkdir();
-        final File from = new File(dir, "from.txt");
+        final var from = new File(dir, "from.txt");
         from.createNewFile();
 
         assertThatIllegalArgumentException()
@@ -340,11 +90,11 @@ class FileUtilsTest {
       void whenTargetAlreadyExists_ShouldThrowFileAlreadyExistsException(
           final @TempDir File testFolder) {
 
-        final File dir = new File(testFolder, "test");
+        final var dir = new File(testFolder, "test");
         dir.mkdir();
-        final File from = new File(dir, "from");
+        final var from = new File(dir, "from");
         from.mkdir();
-        final File to = new File(dir, "to");
+        final var to = new File(dir, "to");
         to.mkdir();
 
         assertThatExceptionOfType(FileAlreadyExistsException.class)
@@ -355,11 +105,11 @@ class FileUtilsTest {
       void whenTargetIsFile_ShouldThrowIllegalArgumentException(final @TempDir File testFolder)
           throws IOException {
 
-        final File dir = new File(testFolder, "test");
+        final var dir = new File(testFolder, "test");
         dir.mkdir();
-        final File from = new File(dir, "from");
+        final var from = new File(dir, "from");
         from.mkdir();
-        final File to = new File(dir, "to.txt");
+        final var to = new File(dir, "to.txt");
         to.createNewFile();
 
         assertThatIllegalArgumentException()
@@ -371,13 +121,13 @@ class FileUtilsTest {
       void whenTargetIsChildOfSource_ShouldThrowIllagalArgumentException(
           final @TempDir File testFolder) {
 
-        final File dir = new File(testFolder, "test");
+        final var dir = new File(testFolder, "test");
         dir.mkdir();
-        final File from = new File(dir, "from");
+        final var from = new File(dir, "from");
         from.mkdir();
-        final File to = new File(from, "to");
+        final var to = new File(from, "to");
         to.mkdir();
-        final File to1 = new File(to, "to");
+        final var to1 = new File(to, "to");
 
         assertThatIllegalArgumentException()
             .isThrownBy(() -> FileUtils.copyDirectory(from, to1))
@@ -392,34 +142,34 @@ class FileUtilsTest {
       void whenTargetDoesNotExist_ShouldCopyFileAndModifiedDate(final @TempDir File testFolder)
           throws IOException {
 
-        final Charset encoding = StandardCharsets.UTF_8;
+        final var encoding = StandardCharsets.UTF_8;
 
-        final File from = new File(testFolder, "test");
+        final var from = new File(testFolder, "test");
         from.mkdir();
-        final File from1 = new File(from, "from1.txt");
+        final var from1 = new File(from, "from1.txt");
         from1.createNewFile();
-        final File from2 = new File(from, "from2/from2.txt");
+        final var from2 = new File(from, "from2/from2.txt");
         from2.getParentFile().mkdirs();
         from2.createNewFile();
-        final File from3 = new File(from, "from3/from3/from1.txt");
+        final var from3 = new File(from, "from3/from3/from1.txt");
         from3.getParentFile().mkdirs();
         from3.createNewFile();
-        final File toDir = new File(testFolder, "to");
+        final var toDir = new File(testFolder, "to");
 
-        Files.write(from1.toPath(), "Whatever1".getBytes(encoding));
-        Files.write(from2.toPath(), "Whatever2".getBytes(encoding));
-        Files.write(from3.toPath(), "Whatever3".getBytes(encoding));
+        Files.writeString(from1.toPath(), "Whatever1", encoding);
+        Files.writeString(from2.toPath(), "Whatever2", encoding);
+        Files.writeString(from3.toPath(), "Whatever3", encoding);
 
         FileUtils.copyDirectory(from, toDir);
 
-        final File to1 = new File(toDir, "from1.txt");
-        assertThat(new String(Files.readAllBytes(to1.toPath()), encoding)).isEqualTo("Whatever1");
+        final var to1 = new File(toDir, "from1.txt");
+        assertThat(Files.readString(to1.toPath(), encoding)).isEqualTo("Whatever1");
         assertThat(from1.lastModified()).isEqualTo(to1.lastModified());
-        final File to2 = new File(toDir, "from2/from2.txt");
-        assertThat(new String(Files.readAllBytes(to2.toPath()), encoding)).isEqualTo("Whatever2");
+        final var to2 = new File(toDir, "from2/from2.txt");
+        assertThat(Files.readString(to2.toPath(), encoding)).isEqualTo("Whatever2");
         assertThat(from2.lastModified()).isEqualTo(to2.lastModified());
-        final File to3 = new File(toDir, "from3/from3/from1.txt");
-        assertThat(new String(Files.readAllBytes(to3.toPath()), encoding)).isEqualTo("Whatever3");
+        final var to3 = new File(toDir, "from3/from3/from1.txt");
+        assertThat(Files.readString(to3.toPath(), encoding)).isEqualTo("Whatever3");
         assertThat(from3.lastModified()).isEqualTo(to3.lastModified());
       }
 
@@ -427,35 +177,35 @@ class FileUtilsTest {
       void whenTargetAlreadyExistsWithReplaceOption_ShouldCopyFilesAndModifiedDate(
           final @TempDir File testFolder) throws IOException {
 
-        final Charset encoding = StandardCharsets.UTF_8;
+        final var encoding = StandardCharsets.UTF_8;
 
-        final File from = new File(testFolder, "test");
+        final var from = new File(testFolder, "test");
         from.mkdir();
-        final File from1 = new File(from, "from1.txt");
+        final var from1 = new File(from, "from1.txt");
         from1.createNewFile();
-        final File from2 = new File(from, "from2/from2.txt");
+        final var from2 = new File(from, "from2/from2.txt");
         from2.getParentFile().mkdirs();
         from2.createNewFile();
-        final File from3 = new File(from, "from3/from3/from1.txt");
+        final var from3 = new File(from, "from3/from3/from1.txt");
         from3.getParentFile().mkdirs();
         from3.createNewFile();
-        final File toDir = new File(testFolder, "to");
+        final var toDir = new File(testFolder, "to");
         toDir.mkdir();
 
-        Files.write(from1.toPath(), "Whatever1".getBytes(encoding));
-        Files.write(from2.toPath(), "Whatever2".getBytes(encoding));
-        Files.write(from3.toPath(), "Whatever3".getBytes(encoding));
+        Files.writeString(from1.toPath(), "Whatever1", encoding);
+        Files.writeString(from2.toPath(), "Whatever2", encoding);
+        Files.writeString(from3.toPath(), "Whatever3", encoding);
 
         FileUtils.copyDirectory(from, toDir, StandardCopyOption.REPLACE_EXISTING);
 
-        final File to1 = new File(toDir, "from1.txt");
-        assertThat(new String(Files.readAllBytes(to1.toPath()), encoding)).isEqualTo("Whatever1");
+        final var to1 = new File(toDir, "from1.txt");
+        assertThat(Files.readString(to1.toPath(), encoding)).isEqualTo("Whatever1");
         assertThat(from1.lastModified()).isEqualTo(to1.lastModified());
-        final File to2 = new File(toDir, "from2/from2.txt");
-        assertThat(new String(Files.readAllBytes(to2.toPath()), encoding)).isEqualTo("Whatever2");
+        final var to2 = new File(toDir, "from2/from2.txt");
+        assertThat(Files.readString(to2.toPath(), encoding)).isEqualTo("Whatever2");
         assertThat(from2.lastModified()).isEqualTo(to2.lastModified());
-        final File to3 = new File(toDir, "from3/from3/from1.txt");
-        assertThat(new String(Files.readAllBytes(to3.toPath()), encoding)).isEqualTo("Whatever3");
+        final var to3 = new File(toDir, "from3/from3/from1.txt");
+        assertThat(Files.readString(to3.toPath(), encoding)).isEqualTo("Whatever3");
         assertThat(from3.lastModified()).isEqualTo(to3.lastModified());
       }
     }
@@ -474,22 +224,20 @@ class FileUtilsTest {
         // TODO: Find a way to make that test work on non-windows OS.
         assumeTrue(OSUtils.IS_OS_WINDOWS);
 
-        final File dir = new File(testFolder, "test");
+        final var dir = new File(testFolder, "test");
         dir.mkdir();
-        final File file = new File(dir, "test.txt");
+        final var file = new File(dir, "test.txt");
         file.createNewFile();
 
-        try (FileChannel channel = new RandomAccessFile(file, "rw").getChannel()) {
-          // Use the file channel to create a lock on the file.
-          // This method blocks until it can retrieve the lock.
-          final FileLock lock = channel.lock();
+        // Use the file channel to create a lock on the file.
+        // This method blocks until it can retrieve the lock.
+        try (var channel = new RandomAccessFile(file, "rw").getChannel();
+            var lock = channel.lock()) {
+          assertThat(lock.isValid()).isTrue();
 
           // Call FileUtils.delete on the root directory. It should throw
           // an exception since we have a lock on the file.
           assertThatIOException().isThrownBy(() -> FileUtils.delete(dir));
-
-          // Release the lock
-          lock.release();
         }
       }
     }
@@ -511,12 +259,12 @@ class FileUtilsTest {
       void withFolderNotEmpty_ShouldDeleteFolderRecursivelyAndReturnTrue(
           final @TempDir File testFolder) throws IOException {
 
-        final File root = new File(testFolder, "test");
+        final var root = new File(testFolder, "test");
         root.mkdir();
 
-        File dir = new File(root, "test1");
+        var dir = new File(root, "test1");
         dir.mkdir();
-        File file = new File(dir, "test1.txt");
+        var file = new File(dir, "test1.txt");
         file.createNewFile();
         file = new File(dir, "test2.txt");
         file.createNewFile();
@@ -554,13 +302,14 @@ class FileUtilsTest {
     void whenIOExceptionOccured_ShouldSwallowIOException(final @TempDir File testFolder)
         throws IOException {
 
-      final File dir = new File(testFolder, "test");
+      final var dir = new File(testFolder, "test");
       dir.mkdir();
-      final File file = new File(dir, "test.txt");
+      final var file = new File(dir, "test.txt");
       file.createNewFile();
 
-      try (FileOutputStream outputStream = new FileOutputStream(file)) {
-        outputStream.getChannel().lock();
+      try (var channel = FileChannel.open(file.toPath(), StandardOpenOption.WRITE);
+          var lock = channel.lock()) {
+        assertThat(lock.isValid()).isTrue();
         assertThatCode(() -> FileUtils.deleteQuietly(dir)).doesNotThrowAnyException();
       }
     }
@@ -709,60 +458,6 @@ class FileUtilsTest {
     @Test
     void withNull_ShouldReturnNull() {
       assertThat(FileUtils.getBaseName(null)).isNull();
-    }
-  }
-
-  @Nested
-  class ReadFileToString {
-
-    @Nested
-    class Failure {
-
-      @Test
-      void whenSourceIsDirectory_ShouldThrowIllegalArgumentException(
-          final @TempDir File testFolder) {
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> FileUtils.readFileToString(dir, StandardCharsets.UTF_8))
-            .withMessage("srcFile must be an existing file");
-      }
-
-      @Test
-      void whenSourceDoesNotExist_ShouldThrowIllegalArgumentException(
-          final @TempDir File testFolder) {
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File from = new File(dir, "from.txt");
-
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> FileUtils.readFileToString(from, StandardCharsets.UTF_8))
-            .withMessage("srcFile must be an existing file");
-      }
-    }
-
-    @Nested
-    class Success {
-
-      @Test
-      void withFile_ShouldReturnFilecontentAsString(final @TempDir File testFolder)
-          throws IOException {
-
-        final Charset encoding = StandardCharsets.UTF_8;
-        final String test = "ABDCEF\nGHIJKL  \nMNOPQRS\n\tTUVWXYZééé^ç^ç^ç^ç^pawewew";
-
-        final File dir = new File(testFolder, "test");
-        dir.mkdir();
-        final File file = new File(dir, "file.txt");
-        file.createNewFile();
-
-        Files.write(file.toPath(), test.getBytes(encoding));
-
-        assertThat(FileUtils.readFileToString(file, encoding)).isEqualTo(test);
-      }
     }
   }
 }

@@ -21,8 +21,8 @@
 package org.jodconverter.local.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,12 +55,12 @@ class PageCounterFilterTest {
     @Test
     void withText_ShouldCallNextFilter(final UnoRuntime unoRuntime) throws Exception {
 
-      final OfficeContext context = mock(OfficeContext.class);
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
-      final XModel model = mock(XModel.class);
-      final XController controller = mock(XController.class);
-      final XPropertySet set = mock(XPropertySet.class);
+      final var context = mock(OfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
+      final var model = mock(XModel.class);
+      final var controller = mock(XController.class);
+      final var set = mock(XPropertySet.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.WRITER_SERVICE)).willReturn(true);
       given(unoRuntime.queryInterface(XModel.class, document)).willReturn(model);
@@ -68,10 +68,10 @@ class PageCounterFilterTest {
       given(unoRuntime.queryInterface(XPropertySet.class, controller)).willReturn(set);
       given(set.getPropertyValue("PageCount")).willReturn(1);
 
-      final PageCounterFilter filter = new PageCounterFilter();
-      final Filter next = mock(Filter.class);
+      final var filter = new PageCounterFilter();
+      final var next = mock(Filter.class);
 
-      final DefaultFilterChain chain = new DefaultFilterChain(false, filter, next);
+      final var chain = new DefaultFilterChain(false, filter, next);
       chain.doFilter(context, document);
 
       assertThat(filter.getPageCount()).isEqualTo(1);
@@ -81,11 +81,11 @@ class PageCounterFilterTest {
     @Test
     void withCalc_ShouldCallNextFilter(final UnoRuntime unoRuntime) throws Exception {
 
-      final OfficeContext context = mock(OfficeContext.class);
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
-      final XSpreadsheetDocument calcDocument = mock(XSpreadsheetDocument.class);
-      final XSpreadsheets sheets = mock(XSpreadsheets.class);
+      final var context = mock(OfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
+      final var calcDocument = mock(XSpreadsheetDocument.class);
+      final var sheets = mock(XSpreadsheets.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.CALC_SERVICE)).willReturn(true);
       given(unoRuntime.queryInterface(XSpreadsheetDocument.class, document))
@@ -93,10 +93,10 @@ class PageCounterFilterTest {
       given(calcDocument.getSheets()).willReturn(sheets);
       given(sheets.getElementNames()).willReturn(new String[] {"Page1"});
 
-      final PageCounterFilter filter = new PageCounterFilter();
-      final Filter next = mock(Filter.class);
+      final var filter = new PageCounterFilter();
+      final var next = mock(Filter.class);
 
-      final DefaultFilterChain chain = new DefaultFilterChain(false, filter, next);
+      final var chain = new DefaultFilterChain(false, filter, next);
       chain.doFilter(context, document);
 
       assertThat(filter.getPageCount()).isEqualTo(1);
@@ -106,21 +106,21 @@ class PageCounterFilterTest {
     @Test
     void withImpress_ShouldCallNextFilter(final UnoRuntime unoRuntime) throws Exception {
 
-      final OfficeContext context = mock(OfficeContext.class);
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
-      final XDrawPagesSupplier supplier = mock(XDrawPagesSupplier.class);
-      final XDrawPages drawPages = mock(XDrawPages.class);
+      final var context = mock(OfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
+      final var supplier = mock(XDrawPagesSupplier.class);
+      final var drawPages = mock(XDrawPages.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.IMPRESS_SERVICE)).willReturn(true);
       given(unoRuntime.queryInterface(XDrawPagesSupplier.class, document)).willReturn(supplier);
       given(supplier.getDrawPages()).willReturn(drawPages);
       given(drawPages.getCount()).willReturn(1);
 
-      final PageCounterFilter filter = new PageCounterFilter();
-      final Filter next = mock(Filter.class);
+      final var filter = new PageCounterFilter();
+      final var next = mock(Filter.class);
 
-      final DefaultFilterChain chain = new DefaultFilterChain(false, filter, next);
+      final var chain = new DefaultFilterChain(false, filter, next);
       chain.doFilter(context, document);
 
       assertThat(filter.getPageCount()).isEqualTo(1);
@@ -130,21 +130,21 @@ class PageCounterFilterTest {
     @Test
     void withDraw_ShouldCallNextFilter(final UnoRuntime unoRuntime) throws Exception {
 
-      final OfficeContext context = mock(OfficeContext.class);
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
-      final XDrawPagesSupplier supplier = mock(XDrawPagesSupplier.class);
-      final XDrawPages drawPages = mock(XDrawPages.class);
+      final var context = mock(OfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
+      final var supplier = mock(XDrawPagesSupplier.class);
+      final var drawPages = mock(XDrawPages.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(Lo.DRAW_SERVICE)).willReturn(true);
       given(unoRuntime.queryInterface(XDrawPagesSupplier.class, document)).willReturn(supplier);
       given(supplier.getDrawPages()).willReturn(drawPages);
       given(drawPages.getCount()).willReturn(1);
 
-      final PageCounterFilter filter = new PageCounterFilter();
-      final Filter next = mock(Filter.class);
+      final var filter = new PageCounterFilter();
+      final var next = mock(Filter.class);
 
-      final DefaultFilterChain chain = new DefaultFilterChain(false, filter, next);
+      final var chain = new DefaultFilterChain(false, filter, next);
       chain.doFilter(context, document);
 
       assertThat(filter.getPageCount()).isEqualTo(1);
@@ -155,16 +155,16 @@ class PageCounterFilterTest {
     void withUnsupportedDocument_ShouldCallNextFilterAndReturn0(final UnoRuntime unoRuntime)
         throws Exception {
 
-      final OfficeContext context = mock(OfficeContext.class);
-      final XComponent document = mock(XComponent.class);
-      final XServiceInfo serviceInfo = mock(XServiceInfo.class);
+      final var context = mock(OfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var serviceInfo = mock(XServiceInfo.class);
       given(unoRuntime.queryInterface(XServiceInfo.class, document)).willReturn(serviceInfo);
       given(serviceInfo.supportsService(anyString())).willReturn(false);
 
-      final PageCounterFilter filter = new PageCounterFilter();
-      final Filter next = mock(Filter.class);
+      final var filter = new PageCounterFilter();
+      final var next = mock(Filter.class);
 
-      final DefaultFilterChain chain = new DefaultFilterChain(false, filter, next);
+      final var chain = new DefaultFilterChain(false, filter, next);
       chain.doFilter(context, document);
 
       assertThat(filter.getPageCount()).isEqualTo(0);

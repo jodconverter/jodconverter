@@ -26,7 +26,7 @@ drawing and image formats.
 - `DocumentFormat`: The immutable description of a format (`org.jodconverter.core.document.DocumentFormat`).
 - `DocumentFormatRegistry`: Interface to look up formats (`org.jodconverter.core.document.DocumentFormatRegistry`).
 - `DefaultDocumentFormatRegistry`: Static convenience access to the default registry and well-known constants (e.g.,
-  `DefaultDocumentFormatRegistry.PDF`).
+    `DefaultDocumentFormatRegistry.PDF`).
 - `SimpleDocumentFormatRegistry`: A mutable in-memory registry you can build programmatically.
 - `JsonDocumentFormatRegistry`: A registry that can be loaded from JSON.
 
@@ -40,15 +40,17 @@ top of the defaults (overrides existing formats or adds new ones).
 #### Typical Usage
 
 - Let **JODConverter** pick formats automatically by file extension: If you pass File or stream with an explicit target
-  format, converters will use the registry to resolve the correct configuration.
+    format, converters will use the registry to resolve the correct configuration.
 - Query formats yourself: Access by extension or media type
 
 ```java
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.document.DocumentFormatRegistry;
 
-DocumentFormat pdf = DefaultDocumentFormatRegistry.getFormatByExtension("pdf");
-DocumentFormat docx = DefaultDocumentFormatRegistry.getFormatByMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+DocumentFormatRegistry registry = DefaultDocumentFormatRegistry.getInstance();
+DocumentFormat pdf = registry.getFormatByExtension("pdf");
+DocumentFormat docx = registry.getFormatByMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 ```
 
 - List available output formats for a given family
@@ -57,7 +59,7 @@ DocumentFormat docx = DefaultDocumentFormatRegistry.getFormatByMediaType("applic
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFamily;
 
-var outputForText = DefaultDocumentFormatRegistry.getOutputFormats(DocumentFamily.TEXT);
+var outputForText = DefaultDocumentFormatRegistry.getInstance().getOutputFormats(DocumentFamily.TEXT);
 ```
 
 ### Custom Registry
@@ -77,6 +79,27 @@ LocalConverter converter = LocalConverter.builder()
     .build();
 ```
 
+### Spring Boot
+
+With the Spring Boot starter, one registry is shared by every converter it creates, local, external or remote, and
+is also exposed as the `documentFormatRegistry` bean. It is configured under `jodconverter.document-formats`:
+
+```yaml
+jodconverter:
+  document-formats:
+    registry: classpath:my-document-formats.json   # defaults to the registry shipped with JODConverter
+    options:                                        # load/store properties added to a format, by extension
+      txt:
+        load:
+          FilterOptions: utf16
+        store:
+          TEXT:
+            FilterOptions: utf16
+```
+
+A `classpath:custom-document-formats.json` resource, if present, is added to the registry. An application that
+declares its own `DocumentFormatRegistry` bean replaces the one of the starter.
+
 ### Programmatic Customization
 
 Build a registry in code when you only need a few tweaks:
@@ -93,7 +116,6 @@ DocumentFormat myPdf = DocumentFormat.builder()
     // Customize store properties for TEXT family (export as PDF/A-1)
     .storeProperty(DocumentFamily.TEXT, "FilterName", "writer_pdf_Export")
     .storeProperty(DocumentFamily.TEXT, "SelectPdfVersion", 1)
-    .unmodifiable(true)
     .build();
 
 reg.addFormat(myPdf);
@@ -101,7 +123,10 @@ reg.addFormat(myPdf);
 
 ### Overriding the Default Registry
 
-If you prefer to change the global default used by `DefaultDocumentFormatRegistry` constants, set the instance:
+If you prefer to change the global default returned by `DefaultDocumentFormatRegistry.getInstance()`, which the
+converters use when no registry is given to their builder, set the instance before anything uses it. The constants of
+`DefaultDocumentFormatRegistry` (`PDF`, `DOCX`...) are read once, when that class is loaded, so set it before they
+are touched too:
 
 ```java
 import org.jodconverter.core.document.*;
@@ -115,7 +140,7 @@ Load properties used when opening a document are determined as follows:
 
 1. Input `DocumentFormat` load properties (from the registry), then
 2. Converter default load properties (`Hidden=true`, `ReadOnly=true`, `UpdateDocMode=NO_UPDATE` unless configured
-   otherwise), then
+    otherwise), then
 3. Explicit per-converter loadProperty/loadProperties you set in the builder
 
 Store properties used when saving the output are determined as follows:
@@ -126,7 +151,7 @@ Store properties used when saving the output are determined as follows:
 ### Where to put custom JSON
 
 - Place `custom-document-formats.json` on your application’s runtime classpath (e.g., in `src/main/resources`) to have
-  it automatically merged with the defaults
+    it automatically merged with the defaults
 - Or load any JSON at runtime and pass a `JsonDocumentFormatRegistry` instance to your converter
 
 ### Troubleshooting

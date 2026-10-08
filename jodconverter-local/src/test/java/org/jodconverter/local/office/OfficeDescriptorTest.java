@@ -34,8 +34,7 @@ class OfficeDescriptorTest {
     @Test
     void fromExecutablePath_ShouldReturnLibreOfficeAndGnuStyle() {
 
-      final OfficeDescriptor descr =
-          OfficeDescriptor.fromExecutablePath("C:\\Program Files\\LibreOffice");
+      final var descr = OfficeDescriptor.fromExecutablePath("C:\\Program Files\\LibreOffice");
       assertThat(descr.getProduct()).isEqualTo("LibreOffice");
       assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(true);
     }
@@ -47,7 +46,7 @@ class OfficeDescriptorTest {
     @Test
     void fromExecutablePath_ShouldReturnOpenOffice() {
 
-      final OfficeDescriptor descr =
+      final var descr =
           OfficeDescriptor.fromExecutablePath("C:\\Program Files (x86)\\OpenOffice 4");
       assertThat(descr.getProduct()).isEqualTo("OpenOffice");
       assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(false);
@@ -60,8 +59,7 @@ class OfficeDescriptorTest {
     @Test
     void shouldReturnUnknownInformation() {
 
-      final OfficeDescriptor descr =
-          OfficeDescriptor.fromExecutablePath("C:\\Program Files (x86)\\Foo");
+      final var descr = OfficeDescriptor.fromExecutablePath("C:\\Program Files (x86)\\Foo");
       assertThat(descr.getProduct()).isEqualTo("???");
       assertThat(descr.useLongOptionNameGnuStyle()).isEqualTo(false);
     }

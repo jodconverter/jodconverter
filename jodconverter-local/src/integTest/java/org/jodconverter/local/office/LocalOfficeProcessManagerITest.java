@@ -27,9 +27,10 @@ import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_EXISTING_
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_KEEP_ALIVE_ON_SHUTDOWN;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_RETRY_INTERVAL;
 import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_PROCESS_TIMEOUT;
-import static org.jodconverter.local.office.LocalOfficeManager.DEFAULT_START_FAIL_FAST;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -63,9 +64,9 @@ class LocalOfficeProcessManagerITest {
         throws Exception {
 
       // Starts an office process
-      final LocalOfficeProcessManager existingManager = startOfficeProcess();
+      final var existingManager = startOfficeProcess();
 
-      final LocalOfficeProcessManager manager =
+      final var manager =
           new LocalOfficeProcessManager(
               CONNECT_URL,
               LocalOfficeUtils.getDefaultOfficeHome(),
@@ -77,7 +78,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.KILL,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               new OfficeConnection(CONNECT_URL));
       try {
@@ -93,13 +93,44 @@ class LocalOfficeProcessManagerITest {
     }
 
     @Test
+    void whenPortUsedByAnotherProgram_ShouldThrowOfficeException() throws Exception {
+
+      // Another program (Tomcat for example) listening on the office port
+      try (var otherProgram = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
+        final var url = new OfficeUrl(otherProgram.getLocalPort());
+        final var manager =
+            new LocalOfficeProcessManager(
+                url,
+                LocalOfficeUtils.getDefaultOfficeHome(),
+                OfficeUtils.getDefaultWorkingDir(),
+                LocalOfficeUtils.findBestProcessManager(),
+                new ArrayList<>(),
+                null,
+                DEFAULT_PROCESS_TIMEOUT,
+                DEFAULT_PROCESS_RETRY_INTERVAL,
+                10L,
+                ExistingProcessAction.KILL,
+                DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
+                new OfficeConnection(url));
+        try {
+          assertThatExceptionOfType(OfficeException.class)
+              .isThrownBy(manager::start)
+              .withMessageContaining("is already used by another program");
+        } finally {
+          manager.stop();
+          assertStoppedAndDisconnected(manager);
+        }
+      }
+    }
+
+    @Test
     void whenProcessAlreadyExistsAndExistingProcessActionIsFail_ShouldThrowOfficeException()
         throws Exception {
 
       // Starts an office process
-      final LocalOfficeProcessManager existingManager = startOfficeProcess();
+      final var existingManager = startOfficeProcess();
 
-      final LocalOfficeProcessManager manager =
+      final var manager =
           new LocalOfficeProcessManager(
               CONNECT_URL,
               LocalOfficeUtils.getDefaultOfficeHome(),
@@ -111,7 +142,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               10L,
               ExistingProcessAction.FAIL,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               new OfficeConnection(CONNECT_URL));
       try {
@@ -135,9 +165,9 @@ class LocalOfficeProcessManagerITest {
         throws Exception {
 
       // Starts an office process
-      final LocalOfficeProcessManager existingManager = startOfficeProcess();
+      final var existingManager = startOfficeProcess();
 
-      final LocalOfficeProcessManager manager =
+      final var manager =
           new LocalOfficeProcessManager(
               CONNECT_URL,
               LocalOfficeUtils.getDefaultOfficeHome(),
@@ -149,7 +179,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.CONNECT,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               new OfficeConnection(CONNECT_URL));
       try {
@@ -171,9 +200,9 @@ class LocalOfficeProcessManagerITest {
             throws Exception {
 
       // Starts an office process
-      final LocalOfficeProcessManager existingManager = startOfficeProcess();
+      final var existingManager = startOfficeProcess();
 
-      final LocalOfficeProcessManager manager =
+      final var manager =
           new LocalOfficeProcessManager(
               CONNECT_URL,
               LocalOfficeUtils.getDefaultOfficeHome(),
@@ -185,7 +214,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.CONNECT_OR_KILL,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               new OfficeConnection(CONNECT_URL));
       try {
@@ -206,18 +234,18 @@ class LocalOfficeProcessManagerITest {
             throws Exception {
 
       // Starts an office process
-      final LocalOfficeProcessManager existingManager = startOfficeProcess();
+      final var existingManager = startOfficeProcess();
 
-      final AtomicReference<LocalOfficeProcessManager> managerRef = new AtomicReference<>();
-      final AtomicInteger connectAttempt = new AtomicInteger();
-      final OfficeConnection connection =
+      final var managerRef = new AtomicReference<LocalOfficeProcessManager>();
+      final var connectAttempt = new AtomicInteger();
+      final var connection =
           new OfficeConnection(CONNECT_URL) {
             @Override
             public void connect() throws OfficeConnectionException {
               // Ensure we throw an exception for the connectToExistingProcess attempt.
               // According to our setting, the number of tries would be 2
               // (counting the initial try).
-              final int attempt = connectAttempt.getAndIncrement();
+              final var attempt = connectAttempt.getAndIncrement();
               if (attempt < TRY_COUNT) {
                 throw new OfficeConnectionException("Test", "Test");
               } else if (attempt == TRY_COUNT) {
@@ -232,7 +260,7 @@ class LocalOfficeProcessManagerITest {
               super.connect();
             }
           };
-      final LocalOfficeProcessManager manager =
+      final var manager =
           new LocalOfficeProcessManager(
               CONNECT_URL,
               LocalOfficeUtils.getDefaultOfficeHome(),
@@ -244,7 +272,6 @@ class LocalOfficeProcessManagerITest {
               1000L,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.CONNECT_OR_KILL,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               connection);
       managerRef.set(manager);
@@ -268,8 +295,8 @@ class LocalOfficeProcessManagerITest {
     @Test
     void withCustomProfileDir_ShouldCopyProfileDirToWorkingDir() throws OfficeException {
 
-      final OfficeConnection connection = new OfficeConnection(CONNECT_URL);
-      final LocalOfficeProcessManager manager =
+      final var connection = new OfficeConnection(CONNECT_URL);
+      final var manager =
           new LocalOfficeProcessManager(
               CONNECT_URL,
               LocalOfficeUtils.getDefaultOfficeHome(),
@@ -281,7 +308,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               DEFAULT_EXISTING_PROCESS_ACTION,
-              true,
               DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
               connection);
       try {
@@ -289,7 +315,7 @@ class LocalOfficeProcessManagerITest {
         assertStartedAndConnected(manager);
 
         // Check the profile dir existence
-        final File instanceProfileDir =
+        final var instanceProfileDir =
             (File) ReflectionTestUtils.getField(manager, "instanceProfileDir");
         assertThat(new File(instanceProfileDir, "user/customFile")).isFile();
 
@@ -308,8 +334,8 @@ class LocalOfficeProcessManagerITest {
     void whenKeepAliveOnShutdown_ShouldKeepProcessAlive() throws Exception {
 
       // Starts an office process
-      final OfficeConnection connection = new OfficeConnection(CONNECT_URL);
-      LocalOfficeProcessManager manager =
+      final var connection = new OfficeConnection(CONNECT_URL);
+      var manager =
           new LocalOfficeProcessManager(
               CONNECT_URL,
               LocalOfficeUtils.getDefaultOfficeHome(),
@@ -321,7 +347,6 @@ class LocalOfficeProcessManagerITest {
               DEFAULT_PROCESS_RETRY_INTERVAL,
               DEFAULT_AFTER_START_PROCESS_DELAY,
               ExistingProcessAction.KILL,
-              true,
               true,
               connection);
       try {
@@ -343,7 +368,6 @@ class LocalOfficeProcessManagerITest {
                 DEFAULT_PROCESS_RETRY_INTERVAL,
                 DEFAULT_AFTER_START_PROCESS_DELAY,
                 ExistingProcessAction.FAIL,
-                true,
                 DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                 connection);
 
@@ -365,7 +389,6 @@ class LocalOfficeProcessManagerITest {
                 DEFAULT_PROCESS_RETRY_INTERVAL,
                 DEFAULT_AFTER_START_PROCESS_DELAY,
                 ExistingProcessAction.CONNECT_OR_KILL,
-                true,
                 DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
                 connection);
 
@@ -379,11 +402,11 @@ class LocalOfficeProcessManagerITest {
 
   private static LocalOfficeProcessManager startOfficeProcess() throws OfficeException {
 
-    final long start = System.currentTimeMillis();
+    final var start = System.currentTimeMillis();
 
     // Starts an office process
-    final OfficeConnection connection = new OfficeConnection(CONNECT_URL);
-    final LocalOfficeProcessManager processManager =
+    final var connection = new OfficeConnection(CONNECT_URL);
+    final var processManager =
         new LocalOfficeProcessManager(
             CONNECT_URL,
             LocalOfficeUtils.getDefaultOfficeHome(),
@@ -395,11 +418,10 @@ class LocalOfficeProcessManagerITest {
             DEFAULT_PROCESS_RETRY_INTERVAL,
             DEFAULT_AFTER_START_PROCESS_DELAY,
             DEFAULT_EXISTING_PROCESS_ACTION,
-            DEFAULT_START_FAIL_FAST,
             DEFAULT_KEEP_ALIVE_ON_SHUTDOWN,
             connection);
     processManager.start();
-    final long limit = start + START_WAIT_TIMEOUT;
+    final var limit = start + START_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (connection.isConnected()) {
         break;
@@ -413,11 +435,11 @@ class LocalOfficeProcessManagerITest {
 
   private static void assertStartedAndConnected(final LocalOfficeProcessManager manager) {
 
-    final long start = System.currentTimeMillis();
+    final var start = System.currentTimeMillis();
 
     TestUtil.sleepQuietly(START_INITIAL_WAIT);
 
-    final long limit = start + START_WAIT_TIMEOUT;
+    final var limit = start + START_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (manager.getConnection().isConnected()) {
         return;
@@ -434,11 +456,11 @@ class LocalOfficeProcessManagerITest {
 
   private static void assertStoppedAndDisconnected(final LocalOfficeProcessManager manager) {
 
-    final long start = System.currentTimeMillis();
+    final var start = System.currentTimeMillis();
 
     TestUtil.sleepQuietly(STOP_INITIAL_WAIT);
 
-    final long limit = start + STOP_WAIT_TIMEOUT;
+    final var limit = start + STOP_WAIT_TIMEOUT;
     while (System.currentTimeMillis() < limit) {
       if (!manager.getConnection().isConnected()) {
         return;

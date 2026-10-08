@@ -20,10 +20,13 @@
 
 package org.jodconverter.boot.autoconfigure;
 
+import java.util.Objects;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,13 +34,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.util.AssertUtils;
+import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter remote module. */
-@AutoConfiguration
+@AutoConfiguration(after = JodConverterDocumentFormatsAutoConfiguration.class)
 @ConditionalOnClass(RemoteConverter.class)
 @ConditionalOnProperty(prefix = "jodconverter.remote", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(JodConverterRemoteProperties.class)
@@ -58,19 +62,17 @@ public class JodConverterRemoteAutoConfiguration {
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager() {
 
-    AssertUtils.notNull(properties.getUrl(), "urlConnection is required");
+    Objects.requireNonNull(properties.url(), "urlConnection is required");
 
-    final RemoteOfficeManager.Builder builder =
+    final var builder =
         RemoteOfficeManager.builder()
-            .urlConnection(properties.getUrl())
-            .connectTimeout(properties.getConnectTimeout())
-            .socketTimeout(properties.getSocketTimeout())
-            .poolSize(properties.getPoolSize())
-            .workingDir(properties.getWorkingDir())
-            .taskQueueTimeout(properties.getTaskQueueTimeout())
-            .taskExecutionTimeout(properties.getTaskExecutionTimeout());
-    if (properties.getSsl() != null) {
-      builder.sslConfig(properties.getSsl().sslConfig());
+            .urlConnection(properties.url())
+            .connectTimeout(properties.connectTimeout().toMillis())
+            .socketTimeout(properties.socketTimeout().toMillis())
+            .poolSize(properties.poolSize());
+    properties.applyTo(builder);
+    if (properties.ssl() != null) {
+      builder.sslConfig(properties.ssl());
     }
 
     // Starts the manager
@@ -84,12 +86,22 @@ public class JodConverterRemoteAutoConfiguration {
     return createOfficeManager();
   }
 
-  // Must appear after the OfficeManager bean creation. Do not reorder this class by name.
   @Bean
   @ConditionalOnMissingBean(name = "remoteDocumentConverter")
-  @ConditionalOnBean(name = "remoteOfficeManager")
-  /* default */ DocumentConverter remoteDocumentConverter(final OfficeManager remoteOfficeManager) {
+  // The qualifier is required when the local office manager also exists: since Spring 6.1, a
+  // parameter name is no longer used to choose between beans of the same type.
+  /* default */ DocumentConverter remoteDocumentConverter(
+      final @Qualifier("remoteOfficeManager") OfficeManager remoteOfficeManager,
+      final DocumentFormatRegistry documentFormatRegistry,
+      final ObjectProvider<PdfOptions> pdfOptions) {
 
-    return RemoteConverter.make(remoteOfficeManager);
+    final var builder =
+        RemoteConverter.builder()
+            .officeManager(remoteOfficeManager)
+            .formatRegistry(documentFormatRegistry);
+    // Apply the PDF options, from the jodconverter.pdf properties or from the application, to
+    // all the conversions to PDF.
+    pdfOptions.ifUnique(builder::defaultTargetOptions);
+    return builder.build();
   }
 }

@@ -77,7 +77,7 @@ public class SystemLogHandler extends PrintStream {
     } else {
       log = new CaptureLog();
     }
-    Stack<CaptureLog> stack = logs.get();
+    var stack = logs.get();
     if (stack == null) {
       stack = new Stack<>();
       logs.set(stack);
@@ -91,15 +91,15 @@ public class SystemLogHandler extends PrintStream {
    * @return The captured data
    */
   public static String stopCapture() {
-    final Stack<CaptureLog> stack = logs.get();
+    final var stack = logs.get();
     if (stack == null || stack.isEmpty()) {
       return null;
     }
-    final CaptureLog log = stack.pop();
+    final var log = stack.pop();
     if (log == null) {
       return null;
     }
-    final String capture = log.getCapture();
+    final var capture = log.getCapture();
     log.reset();
     reuse.push(log);
     return capture;
@@ -113,11 +113,11 @@ public class SystemLogHandler extends PrintStream {
    * @return the print stream
    */
   protected PrintStream findStream() {
-    final Stack<CaptureLog> stack = logs.get();
+    final var stack = logs.get();
     if (stack != null && !stack.isEmpty()) {
-      final CaptureLog log = stack.peek();
+      final var log = stack.peek();
       if (log != null) {
-        final PrintStream ps = log.getStream();
+        final var ps = log.getStream();
         if (ps != null) {
           return ps;
         }

@@ -21,9 +21,15 @@
 package org.jodconverter.core.document;
 
 import java.lang.reflect.Type;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonDeserializationContext;
@@ -63,21 +69,21 @@ public final class DocumentFormat {
    * Special adapter used to support backward compatibility when loading a document format JSON
    * file. The former JSON file doesn't support multiple document format extensions.
    */
-  private static class ExtensionsAdapter implements JsonDeserializer<List<String>> {
+  private static final class ExtensionsAdapter implements JsonDeserializer<List<String>> {
 
     @Override
     public List<String> deserialize(
         final JsonElement json, final Type type, final JsonDeserializationContext cxt) {
 
       if (json.isJsonArray()) {
-        final Type listType = new TypeToken<List<String>>() {}.getType();
+        final var listType = new TypeToken<List<String>>() {}.getType();
         return cxt.deserialize(json, listType);
       }
-      return Stream.of(json.getAsString()).collect(Collectors.toList());
+      return List.of(json.getAsString());
     }
   }
 
-  /** Instance creator used to avoid a runtime exception with java17 (see #408) */
+  /** Instance creator used to avoid a runtime exception with Java 17 (see #408). */
   /* default */ static class DocumentFormatInstanceCreator
       implements InstanceCreator<DocumentFormat> {
     @Override
@@ -106,29 +112,6 @@ public final class DocumentFormat {
   }
 
   /**
-   * Creates a new modifiable {@link DocumentFormat} from the specified format.
-   *
-   * @param sourceFormat The source document format.
-   * @return A {@link DocumentFormat}, which will be modifiable, unlike the default document formats
-   *     are.
-   */
-  public static @NonNull DocumentFormat copy(final @NonNull DocumentFormat sourceFormat) {
-    return builder(sourceFormat).unmodifiable(false).build();
-  }
-
-  /**
-   * Creates a new unmodifiable {@link DocumentFormat} from the specified format.
-   *
-   * @param sourceFormat The source document format.
-   * @return A {@link DocumentFormat}, which will be unmodifiable, like the default document formats
-   *     are.
-   */
-  public static @NonNull DocumentFormat unmodifiableCopy(
-      final @NonNull DocumentFormat sourceFormat) {
-    return builder(sourceFormat).unmodifiable(true).build();
-  }
-
-  /**
    * Empty constructor used by the instance creator (needed for Gson with Java 17+). See: <a
    * href="https://github.com/jodconverter/jodconverter/issues/408">Issue 408</a>.
    */
@@ -142,7 +125,7 @@ public final class DocumentFormat {
   }
 
   /**
-   * Creates a new read-only document format with the specified name, extension and mime-type.
+   * Creates a new document format with the specified name, extensions and media type.
    *
    * @param name The name of the format.
    * @param extensions The file name extensions of the format.
@@ -151,8 +134,6 @@ public final class DocumentFormat {
    * @param loadProperties The properties required to load(open) a document of this format.
    * @param storeProperties The properties required to store(save) a document of this format to a
    *     document of another family.
-   * @param unmodifiable {@code true} if the created document format cannot be modified after
-   *     creation, {@code false} otherwise.
    */
   private DocumentFormat(
       final String name,
@@ -160,38 +141,23 @@ public final class DocumentFormat {
       final String mediaType,
       final DocumentFamily inputFamily,
       final Map<String, Object> loadProperties,
-      final Map<DocumentFamily, Map<String, Object>> storeProperties,
-      final boolean unmodifiable) {
+      final Map<DocumentFamily, Map<String, Object>> storeProperties) {
 
     checkName(name);
-    AssertUtils.notNull(extensions, "extensions must not be null");
+    AssertUtils.notEmpty(extensions, "extensions must not be null nor empty");
     AssertUtils.notBlank(mediaType, "mediaType must not be null nor blank");
 
     this.name = name;
-    this.extensions = new ArrayList<>(extensions);
+    this.extensions = List.copyOf(extensions);
     this.mediaType = mediaType;
     this.inputFamily = inputFamily;
-    if (loadProperties == null) {
-      this.loadProperties = null;
+    this.loadProperties = loadProperties == null ? Map.of() : Map.copyOf(loadProperties);
+    if (storeProperties == null || storeProperties.isEmpty()) {
+      this.storeProperties = Map.of();
     } else {
-      this.loadProperties =
-          unmodifiable
-              ? Collections.unmodifiableMap(new HashMap<>(loadProperties))
-              : new HashMap<>(loadProperties);
-    }
-    if (storeProperties == null) {
-      this.storeProperties = null;
-    } else {
-      final Map<DocumentFamily, Map<String, Object>> familyMap =
-          new EnumMap<>(DocumentFamily.class);
-      storeProperties.forEach(
-          (family, props) ->
-              familyMap.put(
-                  family,
-                  unmodifiable
-                      ? Collections.unmodifiableMap(new HashMap<>(props))
-                      : new HashMap<>(props)));
-      this.storeProperties = unmodifiable ? Collections.unmodifiableMap(familyMap) : familyMap;
+      final var familyMap = new EnumMap<DocumentFamily, Map<String, Object>>(DocumentFamily.class);
+      storeProperties.forEach((family, props) -> familyMap.put(family, Map.copyOf(props)));
+      this.storeProperties = Collections.unmodifiableMap(familyMap);
     }
   }
 
@@ -228,7 +194,7 @@ public final class DocumentFormat {
    *
    * @return A map containing the properties to apply when loading a document of this format.
    */
-  public @Nullable Map<@NonNull String, @NonNull Object> getLoadProperties() {
+  public @NonNull Map<@NonNull String, @NonNull Object> getLoadProperties() {
     return loadProperties;
   }
 
@@ -257,7 +223,7 @@ public final class DocumentFormat {
    * @return A DocumentFamily/Map pair containing the properties to apply when storing a document of
    *     this format, by DocumentFamily.
    */
-  public @Nullable Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
+  public @NonNull Map<@NonNull DocumentFamily, @NonNull Map<@NonNull String, @NonNull Object>>
       getStoreProperties() {
     return storeProperties;
   }
@@ -272,7 +238,28 @@ public final class DocumentFormat {
   public @Nullable Map<@NonNull String, @NonNull Object> getStoreProperties(
       @NonNull final DocumentFamily family) {
 
-    return storeProperties == null ? null : storeProperties.get(family);
+    return storeProperties.get(family);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof DocumentFormat other)) {
+      return false;
+    }
+    return Objects.equals(name, other.name)
+        && Objects.equals(extensions, other.extensions)
+        && Objects.equals(mediaType, other.mediaType)
+        && inputFamily == other.inputFamily
+        && Objects.equals(loadProperties, other.loadProperties)
+        && Objects.equals(storeProperties, other.storeProperties);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, extensions, mediaType, inputFamily, loadProperties, storeProperties);
   }
 
   @Override
@@ -307,7 +294,6 @@ public final class DocumentFormat {
     private DocumentFamily inputFamily;
     private Map<String, Object> loadProperties;
     private Map<DocumentFamily, Map<String, Object>> storeProperties;
-    private boolean unmodifiable = true;
 
     // Private constructor so only DocumentFormat can initialize an instance of this builder.
     private Builder() {
@@ -323,7 +309,12 @@ public final class DocumentFormat {
     public DocumentFormat build() {
 
       return new DocumentFormat(
-          name, extensions, mediaType, inputFamily, loadProperties, storeProperties, unmodifiable);
+          name,
+          extensions == null ? Set.of() : extensions,
+          mediaType,
+          inputFamily,
+          loadProperties,
+          storeProperties);
     }
 
     /**
@@ -335,22 +326,22 @@ public final class DocumentFormat {
     @NonNull
     public Builder from(@NonNull final DocumentFormat sourceFormat) {
 
-      AssertUtils.notNull(sourceFormat, "sourceFormat must not be null");
+      Objects.requireNonNull(sourceFormat, "sourceFormat must not be null");
       this.name = sourceFormat.getName();
       this.extensions = new LinkedHashSet<>(sourceFormat.getExtensions());
       this.mediaType = sourceFormat.getMediaType();
       this.inputFamily = sourceFormat.getInputFamily();
+      // A format read by Gson has null maps until it is rebuilt here.
       this.loadProperties =
-          sourceFormat.getLoadProperties() == null
+          sourceFormat.loadProperties == null || sourceFormat.loadProperties.isEmpty()
               ? null
-              : new HashMap<>(sourceFormat.getLoadProperties());
-      if (sourceFormat.getStoreProperties() != null) {
+              : new HashMap<>(sourceFormat.loadProperties);
+      this.storeProperties = null;
+      if (sourceFormat.storeProperties != null && !sourceFormat.storeProperties.isEmpty()) {
         this.storeProperties = new EnumMap<>(DocumentFamily.class);
-        sourceFormat
-            .getStoreProperties()
-            .forEach((family, propMap) -> this.storeProperties.put(family, new HashMap<>(propMap)));
+        sourceFormat.storeProperties.forEach(
+            (family, propMap) -> this.storeProperties.put(family, new HashMap<>(propMap)));
       }
-
       return this;
     }
 
@@ -479,21 +470,6 @@ public final class DocumentFormat {
     }
 
     /**
-     * Specifies whether the document format is unmodifiable after creation. Default to {@code
-     * true}.
-     *
-     * @param unmodifiable {@code true} if the created document format cannot be modified after
-     *     creation, {@code false} otherwise.
-     * @return This builder instance.
-     */
-    @NonNull
-    public Builder unmodifiable(final boolean unmodifiable) {
-
-      this.unmodifiable = unmodifiable;
-      return this;
-    }
-
-    /**
      * Adds a property to the builder that will be applied when storing (save) a document to this
      * format from a document of the specified family.
      *
@@ -509,7 +485,7 @@ public final class DocumentFormat {
         @NonNull final String name,
         final @Nullable Object value) {
 
-      AssertUtils.notNull(documentFamily, "documentFamily must not be null");
+      Objects.requireNonNull(documentFamily, "documentFamily must not be null");
       checkName(name);
 
       if (value == null) {
@@ -530,7 +506,7 @@ public final class DocumentFormat {
 
       // Remove the property if the value is null.
       if (storeProperties != null) {
-        final Map<String, Object> props = storeProperties.get(documentFamily);
+        final var props = storeProperties.get(documentFamily);
         if (props != null) {
           props.remove(name);
           if (props.isEmpty()) {

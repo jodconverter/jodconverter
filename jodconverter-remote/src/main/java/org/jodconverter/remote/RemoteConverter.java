@@ -20,6 +20,8 @@
 
 package org.jodconverter.remote;
 
+import java.util.List;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
@@ -29,9 +31,10 @@ import org.jodconverter.core.job.AbstractConversionJobWithSourceFormatUnspecifie
 import org.jodconverter.core.job.AbstractConverter;
 import org.jodconverter.core.job.AbstractSourceDocumentSpecs;
 import org.jodconverter.core.job.AbstractTargetDocumentSpecs;
+import org.jodconverter.core.job.TargetOptions;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
-import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.task.OfficeTask;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 import org.jodconverter.remote.task.RemoteConversionTask;
 
@@ -78,8 +81,10 @@ public final class RemoteConverter extends AbstractConverter {
   }
 
   private RemoteConverter(
-      final OfficeManager officeManager, final DocumentFormatRegistry formatRegistry) {
-    super(officeManager, formatRegistry);
+      final OfficeManager officeManager,
+      final DocumentFormatRegistry formatRegistry,
+      final List<TargetOptions> defaultTargetOptions) {
+    super(officeManager, formatRegistry, defaultTargetOptions);
   }
 
   @Override
@@ -90,7 +95,7 @@ public final class RemoteConverter extends AbstractConverter {
   }
 
   /** Remote implementation of a conversion job with source format unspecified. */
-  private class RemoteConversionJobWithSourceFormatUnspecified
+  private final class RemoteConversionJobWithSourceFormatUnspecified
       extends AbstractConversionJobWithSourceFormatUnspecified {
 
     private RemoteConversionJobWithSourceFormatUnspecified(
@@ -106,7 +111,7 @@ public final class RemoteConverter extends AbstractConverter {
   }
 
   /** Remote implementation of a conversion job. */
-  private class RemoteConversionJob extends AbstractConversionJob {
+  private final class RemoteConversionJob extends AbstractConversionJob {
 
     private RemoteConversionJob(
         final AbstractSourceDocumentSpecs source, final AbstractTargetDocumentSpecs target) {
@@ -114,11 +119,13 @@ public final class RemoteConverter extends AbstractConverter {
     }
 
     @Override
-    public void doExecute() throws OfficeException {
+    protected @NonNull OfficeManager getOfficeManager() {
+      return officeManager;
+    }
 
-      // Create a default conversion task and execute it
-      final RemoteConversionTask task = new RemoteConversionTask(source, target);
-      officeManager.execute(task);
+    @Override
+    protected @NonNull OfficeTask createTask() {
+      return new RemoteConversionTask(source, target);
     }
   }
 
@@ -138,7 +145,7 @@ public final class RemoteConverter extends AbstractConverter {
     public @NonNull RemoteConverter build() {
 
       // An office manager is required.
-      OfficeManager manager = officeManager;
+      var manager = officeManager;
       if (manager == null) {
         manager = InstalledOfficeManagerHolder.getInstance();
         if (manager == null) {
@@ -150,7 +157,8 @@ public final class RemoteConverter extends AbstractConverter {
       // Create the converter
       return new RemoteConverter(
           manager,
-          formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry);
+          formatRegistry == null ? DefaultDocumentFormatRegistry.getInstance() : formatRegistry,
+          defaultTargetOptions);
     }
   }
 }

@@ -50,9 +50,9 @@ class: hide-toc
 
     By default, JODConverter will start a single office instance, listening for conversion request on port 2002. In
     order to process more than 1 conversion at the time, you must start multiple office instances.
-    
+
     This behavior can be achieved using the portNumbers configuration:
-    
+
     ```java
     // This example will use 4 TCP ports, which will cause
     // JODConverter to start 4 office processes when the
@@ -63,28 +63,37 @@ class: hide-toc
             .portNumbers(2002, 2003, 2004, 2005)
             .build();
     ```
-    
+
     The example above shows how to start an office manager that would be able to process 4 conversions at the time.
     Note that the more office process you start, the more RAM will be consumed by LibreOffice or Apache OpenOffice.
 
 ??? question "How could I set password protection when converting a file to PDF?"
 
-    If you want to set password protection when converting to PDF, you must set 2 filter properties, `EncryptFile` and
-    `DocumentOpenPassword`.
-    
+    Since JODConverter 5.0, use the [PDF options](getting-started/pdf-options.md#security-security):
+
+    ```java
+    converter
+        .convert(inputFile)
+        .to(outputFile)
+        .with(PdfOptions.builder().security(security -> security.openPassword("test")).build())
+        .execute();
+    ```
+
+    With older versions, you must set 2 filter properties, `EncryptFile` and `DocumentOpenPassword`.
+
     Here's how this could be done:
-    
+
     ```java
     File inputFile = new File("document.doc");
     File outputFile = new File("document.pdf");
-    
+
     Map<String, Object> filterData = new HashMap<>();
     filterData.put("EncryptFile",true);
     filterData.put("DocumentOpenPassword","test");
-    
+
     Map<String, Object> customProperties = new HashMap<>();
     customProperties.put("FilterData",filterData);
-    
+
     LocalConverter
         .builder()
         .storeProperties(customProperties)
@@ -93,21 +102,21 @@ class: hide-toc
         .to(outputFile)
         .execute();
     ```
-    
+
     OR
-    
+
     ```java
     Map<String, Object> filterData = new HashMap<>();
     filterData.put("EncryptFile",true);
     filterData.put("DocumentOpenPassword","test");
-    
+
     DocumentFormat format =
         DocumentFormat
             .builder()
             .from(DefaultDocumentFormatRegistry.PDF)
             .storeProperty(DocumentFamily.TEXT, "FilterData", filterData)
             .build();
-    
+
     JodConverter
         .convert(source)
         .to(target)
@@ -118,19 +127,19 @@ class: hide-toc
 ??? question "How could I specify the password of a password-protected file (input file) to convert?"
 
     If you want to be able to convert a password-protected file, you must set the `Password` load property.
-    
+
     Here's how this could be done:
-    
+
     ```java
     final File in = new File("path_to_password_protected_file");
     final File out = new File("path_to_output_file");
-    
+
     final OfficeManager manager = LocalOfficeManager.builder().startFailFast(true).build();
     try{
         manager.start();
         Map<String, Object> loadProperties = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
         loadProperties.put("Password","myPassword");
-      
+
         LocalConverter
             .builder()
             .officeManager(manager)
@@ -139,13 +148,18 @@ class: hide-toc
             .convert(in)
             .to(out)
             .execute();
-        
+
     } catch(Exception e) {
         e.printStackTrace();
     } finally {
         OfficeUtils.stopQuietly(manager);
     }
     ```
+
+??? question "Can I merge several documents into one?"
+
+    Yes, for text documents: the `DocumentInserterFilter` inserts another document at the end of the one being
+    converted. See [Merging documents](getting-started/using-filters.md#merging-documents).
 
 ## Troubleshooting
 
@@ -172,5 +186,60 @@ class: hide-toc
     on your particular requirements. In some cases you may want to package HTML and images into a ZIP file in order
     to return a single file. In other cases you may want to copy HTML and images to a public path on your web server to
     access them directly. In all cases you should think about security implications. It's up to you.
+
+??? question "The conversion fails with `URL seems to be an unsupported one` (or `Could not open document`). Why?"
+
+    The office installation is most probably incomplete: the module that handles the document is missing (Writer for
+    text documents, Calc for spreadsheets, Impress for presentations). It happens with distribution packages that
+    install only part of the office suite, for example the Apache OpenOffice Debian packages without `openoffice-calc`,
+    `openoffice-writer` and their siblings. Install the missing modules; see
+    [Running in containers](getting-started/containers.md#install-a-complete-office).
+
+??? question "The converted document has extra pages or a different layout. Why?"
+
+    Most of the time, a font used by the document is not installed on the server, and LibreOffice replaced it with a
+    font that has different metrics. Install the fonts the documents use, or metric-compatible ones; see
+    [Install the fonts your documents use](getting-started/containers.md#install-the-fonts-your-documents-use).
+
+??? question "Zombie processes (`<defunct>`) pile up in my container. Why?"
+
+    The helper processes of LibreOffice are re-parented to process 1 of the container when an office process stops.
+    If process 1 is your Java application, nobody reaps them. Run the container with an init process (`docker run --init`, `init: true` in Docker Compose, or tini); see
+    [Use an init process](getting-started/containers.md#use-an-init-process).
+
+??? question "A conversion sometimes fails with `Task did not complete within timeout`. What happens?"
+
+    The office process did not finish the conversion within the `taskExecutionTimeout`. **JODConverter** then kills
+    the process and starts a new one, so the following conversions work again. Common causes are a document that makes
+    LibreOffice hang, a document too big for the timeout, or an overloaded machine. Check the `DEBUG` logs of the
+    `org.jodconverter` logger, raise the timeout for big documents, and keep LibreOffice up to date. If a specific
+    document always fails, try converting it with LibreOffice alone.
+
+??? question "The logs show `Entity: line 1: parser error : Document is empty` when an office process starts. Is it a problem?"
+
+    No. LibreOffice writes this message on its error output when it starts with a new profile, and
+    **JODConverter** relays the output of the office process to its logs. Conversions are not affected.
+
+??? question "Hidden sheets appear when converting a spreadsheet to PDF. How can I skip them?"
+
+    Recent LibreOffice versions don't export hidden sheets. If they still appear, check the same export in LibreOffice
+    itself: hidden rows or columns are a different setting from hidden sheets, and an old LibreOffice version may
+    behave differently.
+
+## Known LibreOffice issues
+
+These are LibreOffice behaviors that **JODConverter** can't change, with the workarounds known so far.
+
+??? question "With `SinglePageSheets`, hyperlinks in the PDF point to local paths"
+
+    When a spreadsheet is exported to PDF with the `SinglePageSheets` filter option, web hyperlinks may become local
+    file paths. See the [LibreOffice discussion](https://ask.libreoffice.org/t/web-hyperlinks-not-preserved-after-export-to-pdf/96762)
+    and a [workaround shared by a user](https://github.com/jodconverter/jodconverter/issues/400).
+
+??? question "Converting a presentation to HTML no longer creates one image per slide"
+
+    The HTML export of presentations changed in LibreOffice 24.2 and no longer produces the image-per-slide output of
+    earlier versions ([#396](https://github.com/jodconverter/jodconverter/issues/396)). Use another output format, or
+    an earlier LibreOffice version if you depend on that output.
 
 --8<-- "note.md"

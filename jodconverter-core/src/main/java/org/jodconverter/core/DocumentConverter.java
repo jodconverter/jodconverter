@@ -41,8 +41,7 @@ public interface DocumentConverter {
    * @param source The conversion input as a file.
    * @return The current conversion specification.
    */
-  @NonNull
-  ConversionJobWithOptionalSourceFormatUnspecified convert(@NonNull File source);
+  @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(@NonNull File source);
 
   /**
    * Converts a source stream input stream.
@@ -50,8 +49,7 @@ public interface DocumentConverter {
    * @param source The conversion input as an input stream.
    * @return The current conversion specification.
    */
-  @NonNull
-  ConversionJobWithOptionalSourceFormatUnspecified convert(@NonNull InputStream source);
+  @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(@NonNull InputStream source);
 
   /**
    * Converts a source stream input stream.
@@ -60,8 +58,7 @@ public interface DocumentConverter {
    * @param closeStream Whether the {@link InputStream} is closed after the conversion terminates.
    * @return The current conversion specification.
    */
-  @NonNull
-  ConversionJobWithOptionalSourceFormatUnspecified convert(
+  @NonNull ConversionJobWithOptionalSourceFormatUnspecified convert(
       @NonNull InputStream source, boolean closeStream);
 
   /**
@@ -69,6 +66,5 @@ public interface DocumentConverter {
    *
    * @return A {@link DocumentFormatRegistry} containing the supported formats.
    */
-  @NonNull
-  DocumentFormatRegistry getFormatRegistry();
+  @NonNull DocumentFormatRegistry getFormatRegistry();
 }

@@ -32,8 +32,8 @@ public final class TestUtil {
   public static void sleepQuietly(final long millisec) {
     try {
       Thread.sleep(millisec);
-    } catch (InterruptedException ignore) {
-      // ignore
+    } catch (InterruptedException ignored) {
+      // Ignored on purpose.
     }
   }
 

@@ -20,6 +20,7 @@
 
 package org.jodconverter.local.office.utils;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.sun.star.lang.XComponent;
@@ -27,8 +28,6 @@ import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.XComponentContext;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import org.jodconverter.core.util.AssertUtils;
 
 /**
  * A collection of utility functions to make Office easier to use.
@@ -42,8 +41,6 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
   // See here for document hierarchy:
   // https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
   // NOTE: a GenericTextDocument is either a TextDocument, a WebDocument, or a GlobalDocument
-  // but this further distinction doesn't seem to matter for conversions
-  // public static final String WRITER_SERVICE = "com.sun.star.text.TextDocument";
   public static final String WRITER_SERVICE = "com.sun.star.text.GenericTextDocument";
   public static final String WEB_SERVICE = "com.sun.star.text.WebDocument";
   public static final String CALC_SERVICE = "com.sun.star.sheet.SpreadsheetDocument";
@@ -63,12 +60,12 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
    */
   public static <T> @NonNull T qi(final @NonNull Class<T> type, final @NonNull Object object) {
 
-    AssertUtils.notNull(type, "type must not be null");
-    AssertUtils.notNull(type, "object must not be null");
+    Objects.requireNonNull(type, "type must not be null");
+    Objects.requireNonNull(object, "object must not be null");
 
-    final T obj = UnoRuntime.getInstance().queryInterface(type, object);
+    final var obj = UnoRuntime.getInstance().queryInterface(type, object);
 
-    AssertUtils.notNull(
+    Objects.requireNonNull(
         obj,
         String.format(
             "UNO object of type %s must not be null for object of type %s",
@@ -125,7 +122,7 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
     // Create service component using the specified factory.
     // Then uses bridge to obtain proxy to remote interface inside service;
     // implements casting across process boundaries
-    return createInstanceMSF(getServiceFactory(component), type, serviceName);
+    return createInstance(getServiceFactory(component), type, serviceName);
   }
 
   /**
@@ -182,71 +179,6 @@ public final class Lo { // NOPMD - Disable utility class name rule violation
     } catch (com.sun.star.uno.Exception ex) {
       throw new WrappedUnoException(ex);
     }
-  }
-
-  /**
-   * Create an interface object of the given class from the given named service; uses given
-   * XComponent and 'old' XMultiServiceFactory, so a document must have been already loaded/created.
-   *
-   * @param <T> The requested UNO interface type.
-   * @param component The component.
-   * @param type A Java class representing a UNO interface type.
-   * @param serviceName The service name.
-   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
-   * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
-   *     the {@link WrappedUnoException}.
-   * @deprecated Use {@link #createInstance(XComponent, Class, String)} instead.
-   */
-  public static <T> @NonNull T createInstanceMSF(
-      final @NonNull XComponent component,
-      final @NonNull Class<T> type,
-      final @NonNull String serviceName) {
-
-    // Create service component using the specified factory.
-    // Then uses bridge to obtain proxy to remote interface inside service;
-    // implements casting across process boundaries
-    return createInstanceMSF(getServiceFactory(component), type, serviceName);
-  }
-
-  /**
-   * Create an interface object of the given class from the given named service; uses given 'old'
-   * XMultiServiceFactory, so a document must have been already loaded/created.
-   *
-   * @param <T> The requested UNO interface type.
-   * @param factory The service factory.
-   * @param type A Java class representing a UNO interface type.
-   * @param serviceName The service name.
-   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
-   * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
-   *     the {@link WrappedUnoException}.
-   * @deprecated Use {@link #createInstance(XMultiServiceFactory, Class, String)} instead.
-   */
-  public static <T> @NonNull T createInstanceMSF(
-      final @NonNull XMultiServiceFactory factory,
-      final @NonNull Class<T> type,
-      final @NonNull String serviceName) {
-    return createInstance(factory, type, serviceName);
-  }
-
-  /**
-   * Create an interface object of the given class from the given named service; uses given
-   * XComponentContext and 'new' XMultiComponentFactory so only a bridge to office is needed.
-   *
-   * @param <T> The requested UNO interface type.
-   * @param context The component context.
-   * @param type A Java class representing a UNO interface type.
-   * @param serviceName The service name.
-   * @return A reference to the requested UNO interface type if available, otherwise {@code null}.
-   * @throws WrappedUnoException If an UNO exception occurs. The UNO exception will be the cause of
-   *     the {@link WrappedUnoException}.
-   * @deprecated Use {@link #createInstance(XComponentContext, Class, String)} instead.
-   */
-  @Deprecated
-  public static <T> @Nullable T createInstanceMCF(
-      final @NonNull XComponentContext context,
-      final @NonNull Class<T> type,
-      final @NonNull String serviceName) {
-    return createInstance(context, type, serviceName);
   }
 
   // Suppresses default constructor, ensuring non-instantiability.

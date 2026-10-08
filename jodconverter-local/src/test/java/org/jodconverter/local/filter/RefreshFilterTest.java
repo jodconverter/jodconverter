@@ -51,10 +51,10 @@ class RefreshFilterTest {
     @Test
     void whenLastFilterIsFalse_shouldCallNextFilter() throws Exception {
 
-      final Filter filter = mock(Filter.class);
-      final OfficeContext context = mock(OfficeContext.class);
-      final XComponent document = mock(XComponent.class);
-      final DefaultFilterChain chain = new DefaultFilterChain(RefreshFilter.REFRESH, filter);
+      final var filter = mock(Filter.class);
+      final var context = mock(OfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var chain = new DefaultFilterChain(RefreshFilter.REFRESH, filter);
       chain.doFilter(context, document);
 
       // Verify that the filter is called.
@@ -64,10 +64,10 @@ class RefreshFilterTest {
     @Test
     void whenLastFilterIsTrue_shouldCallNextFilter() throws Exception {
 
-      final Filter filter = mock(Filter.class);
-      final OfficeContext context = mock(OfficeContext.class);
-      final XComponent document = mock(XComponent.class);
-      final DefaultFilterChain chain = new DefaultFilterChain(RefreshFilter.LAST_REFRESH, filter);
+      final var filter = mock(Filter.class);
+      final var context = mock(OfficeContext.class);
+      final var document = mock(XComponent.class);
+      final var chain = new DefaultFilterChain(RefreshFilter.LAST_REFRESH, filter);
       chain.doFilter(context, document);
 
       // Verify that the filter is called.

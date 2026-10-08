@@ -20,31 +20,41 @@
 
 package org.jodconverter.remote.office;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Objects;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
- * An RemoteOfficeConnection holds the request configuration to communicate with the LibreOffice
- * Online server.
+ * The context given to the tasks of a {@link RemoteOfficeWorker}: it sends their requests with the
+ * HTTP client of the worker, and cancels the request in flight when the task is aborted.
  */
 public class RemoteOfficeConnection implements RemoteOfficeContext {
 
-  private final CloseableHttpClient httpClient;
+  private final HttpClient httpClient;
   private final RequestConfig requestConfig;
+  // The request in flight, cancelled to abort the task.
+  private volatile CompletableFuture<?> inFlight;
+  private volatile boolean aborted;
 
   /**
-   * Constructs a new connection with the specified client and URL.
+   * Creates a new context.
    *
-   * @param httpClient The HTTP client (already initialized) used to communicate with the
-   *     LibreOffice Online server.
-   * @param requestConfig The request configuration for the conversion.
+   * @param httpClient The HTTP client of the worker.
+   * @param requestConfig The configuration of the requests.
    */
   public RemoteOfficeConnection(
-      final @NonNull CloseableHttpClient httpClient, final @NonNull RequestConfig requestConfig) {
+      final @NonNull HttpClient httpClient, final @NonNull RequestConfig requestConfig) {
+    super();
 
-    this.httpClient = httpClient;
-    this.requestConfig = requestConfig;
+    this.httpClient = Objects.requireNonNull(httpClient, "httpClient must not be null");
+    this.requestConfig = Objects.requireNonNull(requestConfig, "requestConfig must not be null");
   }
 
   @Override
@@ -55,5 +65,42 @@ public class RemoteOfficeConnection implements RemoteOfficeContext {
   @Override
   public @NonNull RequestConfig getRequestConfig() {
     return requestConfig;
+  }
+
+  @Override
+  public <T> @NonNull HttpResponse<T> send(
+      final @NonNull HttpRequest request, final HttpResponse.@NonNull BodyHandler<T> handler)
+      throws IOException, InterruptedException {
+
+    if (aborted) {
+      throw new IOException("The task was aborted");
+    }
+    final var future = httpClient.sendAsync(request, handler);
+    inFlight = future; // NOPMD - read by abort() from another thread
+    try {
+      return future.get();
+    } catch (CancellationException ex) {
+      throw new IOException("The request was aborted", ex);
+    } catch (ExecutionException ex) {
+      final var cause = ex.getCause();
+      if (cause instanceof IOException ioEx) {
+        throw ioEx; // NOPMD - the cause of the execution exception is rethrown as it is
+      }
+      if (cause instanceof RuntimeException runtimeEx) {
+        throw runtimeEx; // NOPMD - the cause of the execution exception is rethrown as it is
+      }
+      throw new IOException(cause); // NOPMD - the cause of the execution exception is the cause
+    } finally {
+      inFlight = null;
+    }
+  }
+
+  /** Aborts the task: the request in flight, if any, is cancelled, and no other one is sent. */
+  /* default */ void abort() {
+    aborted = true;
+    final var future = inFlight;
+    if (future != null) {
+      future.cancel(true);
+    }
   }
 }

@@ -1,0 +1,36 @@
+# Opens pull requests to update the dependencies, against develop.
+# Docs: https://docs.github.com/en/code-security/dependabot
+version: 2
+
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    target-branch: "develop"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    # Major versions usually need code or configuration changes, and some tools are pinned to the last
+    # version that runs on Java 17 (see gradle/libs.versions.toml). They are upgraded deliberately, so
+    # they are not proposed.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      gradle-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "develop"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    groups:
+      actions:
+        update-types:
+          - "minor"
+          - "patch"

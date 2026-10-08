@@ -20,30 +20,26 @@
 
 package org.jodconverter.boot.autoconfigure;
 
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.sun.star.document.UpdateDocMode;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 import org.jodconverter.core.DocumentConverter;
-import org.jodconverter.core.document.DefaultDocumentFormatRegistryInstanceHolder;
 import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeManager;
+import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.core.util.StringUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
@@ -51,14 +47,12 @@ import org.jodconverter.local.office.LocalOfficeUtils;
 import org.jodconverter.local.process.ProcessManager;
 
 /** {@link EnableAutoConfiguration Auto-configuration} for JodConverter local module. */
-@AutoConfiguration
+@AutoConfiguration(after = JodConverterDocumentFormatsAutoConfiguration.class)
 @ConditionalOnClass(LocalConverter.class)
 @ConditionalOnProperty(prefix = "jodconverter.local", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(JodConverterLocalProperties.class)
 public class JodConverterLocalAutoConfiguration {
 
-  private static final String DEFAULT_FORMATS_PATH = "classpath:document-formats.json";
-  private static final String CUSTOM_FORMATS_PATH = "classpath:custom-document-formats.json";
   private static final Logger LOGGER =
       LoggerFactory.getLogger(JodConverterLocalAutoConfiguration.class);
 
@@ -76,27 +70,29 @@ public class JodConverterLocalAutoConfiguration {
   // Creates the OfficeManager bean.
   private OfficeManager createOfficeManager(final ProcessManager processManager) {
 
-    final LocalOfficeManager.Builder builder =
+    final var builder =
         LocalOfficeManager.builder()
-            .officeHome(properties.getOfficeHome())
-            .hostName(properties.getHostName())
-            .portNumbers(properties.getPortNumbers())
-            .pipeNames(properties.getPipeNames())
-            .workingDir(properties.getWorkingDir())
-            .templateProfileDir(properties.getTemplateProfileDir())
-            .existingProcessAction(properties.getExistingProcessAction())
-            .processTimeout(properties.getProcessTimeout())
-            .processRetryInterval(properties.getProcessRetryInterval())
-            .afterStartProcessDelay(properties.getAfterStartProcessDelay())
-            .startFailFast(properties.isStartFailFast())
-            .keepAliveOnShutdown(properties.isKeepAliveOnShutdown())
-            .taskQueueTimeout(properties.getTaskQueueTimeout())
-            .taskExecutionTimeout(properties.getTaskExecutionTimeout())
-            .maxTasksPerProcess(properties.getMaxTasksPerProcess());
-    if (StringUtils.isBlank(properties.getProcessManagerClass())) {
+            .officeHome(properties.officeHome())
+            .officeExecutable(properties.officeExecutable())
+            .hostName(properties.hostName())
+            .portNumbers(properties.portNumbers())
+            .pipeNames(properties.pipeNames())
+            .templateProfileDir(properties.templateProfileDir())
+            .existingProcessAction(properties.existingProcessAction())
+            .processTimeout(properties.processTimeout().toMillis())
+            .processRetryInterval(properties.processRetryInterval().toMillis())
+            .afterStartProcessDelay(properties.afterStartProcessDelay().toMillis())
+            .startFailFast(properties.startFailFast())
+            .keepAliveOnShutdown(properties.keepAliveOnShutdown())
+            .maxTasksPerProcess(properties.maxTasksPerProcess());
+    properties.applyTo(builder);
+    if (properties.poolSize() != null) {
+      builder.poolSize(properties.poolSize());
+    }
+    if (StringUtils.isBlank(properties.processManagerClass())) {
       builder.processManager(processManager);
     } else {
-      builder.processManager(properties.getProcessManagerClass());
+      builder.processManager(properties.processManagerClass());
     }
 
     // Starts the manager
@@ -109,41 +105,6 @@ public class JodConverterLocalAutoConfiguration {
     return LocalOfficeUtils.findBestProcessManager();
   }
 
-  @Bean
-  @ConditionalOnMissingBean(name = "documentFormatRegistry")
-  /* default */ DocumentFormatRegistry documentFormatRegistry(final ResourceLoader resourceLoader)
-      throws Exception {
-
-    // Load the json resource containing default document formats.
-    final String registryResourceName =
-        StringUtils.isBlank(properties.getDocumentFormatRegistry())
-            ? DEFAULT_FORMATS_PATH
-            : properties.getDocumentFormatRegistry();
-    LOGGER.debug("Loading document formats registry from resource [{}]", registryResourceName);
-    try (InputStream in = resourceLoader.getResource(registryResourceName).getInputStream()) {
-
-      // Create the registry.
-      final JsonDocumentFormatRegistry registry =
-          properties.getFormatOptions() == null
-              ? JsonDocumentFormatRegistry.create(in)
-              : JsonDocumentFormatRegistry.create(in, properties.getFormatOptions());
-
-      // Load the custom formats, if any.
-      final Resource resource = resourceLoader.getResource(CUSTOM_FORMATS_PATH);
-      if (resource.exists()) {
-        LOGGER.debug(
-            "Loading custom document formats registry from resource [{}]", CUSTOM_FORMATS_PATH);
-        registry.addRegistry(JsonDocumentFormatRegistry.create(resource.getInputStream()));
-      }
-
-      // Set as default.
-      DefaultDocumentFormatRegistryInstanceHolder.setInstance(registry);
-
-      // Return it.
-      return registry;
-    }
-  }
-
   @Bean(name = "localOfficeManager", initMethod = "start", destroyMethod = "stop")
   @ConditionalOnMissingBean(name = "localOfficeManager")
   /* default */ OfficeManager localOfficeManager(final ProcessManager processManager) {
@@ -151,26 +112,32 @@ public class JodConverterLocalAutoConfiguration {
     return createOfficeManager(processManager);
   }
 
-  // Must appear after the localOfficeManager bean creation. Do not reorder this class by name.
   @Bean
   @ConditionalOnMissingBean(name = "localDocumentConverter")
-  @ConditionalOnBean(name = {"localOfficeManager", "documentFormatRegistry"})
+  // The qualifier is required when the remote office manager also exists: since Spring 6.1, a
+  // parameter name is no longer used to choose between beans of the same type.
   /* default */ DocumentConverter localDocumentConverter(
-      final OfficeManager localOfficeManager, final DocumentFormatRegistry documentFormatRegistry) {
+      final @Qualifier("localOfficeManager") OfficeManager localOfficeManager,
+      final DocumentFormatRegistry documentFormatRegistry,
+      final ObjectProvider<PdfOptions> pdfOptions) {
 
-    final Map<String, Object> loadProperties = new HashMap<>();
-    if (properties.isApplyDefaultLoadProperties()) {
+    final var loadProperties = new HashMap<String, Object>();
+    if (properties.applyDefaultLoadProperties()) {
       loadProperties.putAll(LocalConverter.DEFAULT_LOAD_PROPERTIES);
-      if (properties.isUseUnsafeQuietUpdate()) {
+      if (properties.useUnsafeQuietUpdate()) {
         loadProperties.put("UpdateDocMode", UpdateDocMode.QUIET_UPDATE);
       }
     }
 
-    return LocalConverter.builder()
-        .officeManager(localOfficeManager)
-        .formatRegistry(documentFormatRegistry)
-        .loadDocumentMode(properties.getLoadDocumentMode())
-        .loadProperties(loadProperties)
-        .build();
+    final var builder =
+        LocalConverter.builder()
+            .officeManager(localOfficeManager)
+            .formatRegistry(documentFormatRegistry)
+            .loadDocumentMode(properties.loadDocumentMode())
+            .loadProperties(loadProperties);
+    // Apply the PDF options, from the jodconverter.pdf properties or from the application, to
+    // all the conversions to PDF.
+    pdfOptions.ifUnique(builder::defaultTargetOptions);
+    return builder.build();
   }
 }

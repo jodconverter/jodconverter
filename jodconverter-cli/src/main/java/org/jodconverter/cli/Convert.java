@@ -23,153 +23,163 @@ package org.jodconverter.cli;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.regex.Pattern;
 
-import org.apache.commons.cli.*;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
+import org.apache.commons.cli.help.TextHelpAppendable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
+import org.jodconverter.core.document.PropertyValues;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.core.util.FileUtils;
+import org.jodconverter.core.pdf.PdfOptions;
 import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
-import org.jodconverter.remote.ssl.SslConfig;
 
 /** Command line interface executable. */
-@SuppressWarnings("PMD.UseUtilityClass")
 public final class Convert {
+
+  private static final String ARG_DIR = "dir";
 
   /** Status returned when the program runs without errors. */
   public static final int STATUS_OK = 0;
-  // public static final int STATUS_MISSING_INPUT_FILE = 1;
-  /** Status returned an error occurred while running the program. */
+
+  /** Status returned when an error occurred while running the program. */
   public static final int STATUS_ERROR = 2;
+
   /** Status returned when the program arguments are invalid. */
   public static final int STATUS_INVALID_ARGUMENTS = 255;
 
-  private static final Option OPT_APPLICATION_CONTEXT =
-      Option.builder("a")
-          .longOpt("application-context")
+  // Wide enough for most option descriptions to fit on one line (the default is 74).
+  private static final int HELP_WIDTH = 120;
+
+  private static final Option OPT_CONFIG =
+      Option.builder()
+          .longOpt("config")
           .argName("file")
           .hasArg()
-          .desc("Application context file (optional)")
-          .build();
+          .desc(
+              "configuration file, JSON or YAML, with the filters applied to the documents"
+                  + " and the SSL options of a remote conversion (optional)")
+          .get();
   private static final Option OPT_CONNECTION_URL =
       Option.builder("c")
           .longOpt("connection-url")
           .argName("url")
           .hasArg()
           .desc("remote LibreOffice Online server URL for conversion")
-          .build();
+          .get();
   private static final Option OPT_OUTPUT_DIRECTORY =
       Option.builder("d")
           .longOpt("output-directory")
-          .argName("dir")
+          .argName(ARG_DIR)
           .hasArg()
           .desc("output directory (optional; defaults to input directory)")
-          .build();
+          .get();
   private static final Option OPT_OUTPUT_FORMAT =
-      Option.builder("f")
-          .longOpt("output-format")
-          .hasArg()
-          .desc("output format (e.g. pdf)")
-          .build();
+      Option.builder("f").longOpt("output-format").hasArg().desc("output format (e.g. pdf)").get();
   private static final Option OPT_HELP =
-      Option.builder("h").longOpt("help").desc("displays help at the command prompt").build();
+      Option.builder("h").longOpt("help").desc("displays help at the command prompt").get();
   private static final Option OPT_OFFICE_HOME =
       Option.builder("i")
           .longOpt("office-home")
-          .argName("dir")
+          .argName(ARG_DIR)
           .hasArg()
           .desc("office home directory (optional; defaults to auto-detect)")
-          .build();
+          .get();
   private static final Option OPT_KEEP_ALIVE =
       Option.builder("k")
           .longOpt("keep-alive")
           .desc("keep the office process alive on shutdown (optional; defaults to false)")
-          .build();
+          .get();
   private static final Option OPT_LOAD_PROPERTIES =
       Option.builder("l")
           .longOpt("load-properties")
-          .valueSeparator()
-          .hasArgs()
-          .desc("load properties (optional; eg. -lPassword=myPassword)")
-          .build();
+          .argName("name=value")
+          .hasArg()
+          .desc("load property; can be repeated (optional; eg. -lPassword=myPassword)")
+          .get();
   private static final Option OPT_PROCESS_MANAGER =
       Option.builder("m")
           .longOpt("process-manager")
           .argName("classname")
           .hasArg()
           .desc("class name of the process manager to use (optional; defaults to auto-detect)")
-          .build();
+          .get();
   private static final Option OPT_HOSTNAME =
       Option.builder("n")
           .longOpt("host-name")
           .hasArg()
           .desc("host name that will be used in the --accept argument when starting a process")
-          .build();
+          .get();
   private static final Option OPT_OVERWRITE =
       Option.builder("o")
           .longOpt("overwrite")
           .desc("overwrite existing output file (optional; defaults to false)")
-          .build();
+          .get();
   private static final Option OPT_PORT =
       Option.builder("p")
           .longOpt("port")
           .hasArg()
           .desc("office socket port (optional; defaults to 2002)")
-          .build();
+          .get();
   private static final Option OPT_REGISTRY =
       Option.builder("r")
           .longOpt("registry")
           .argName("file")
           .hasArg()
           .desc("document formats registry configuration file (optional)")
-          .build();
+          .get();
   private static final Option OPT_STORE_PROPERTIES =
       Option.builder("s")
           .longOpt("store-properties")
-          .valueSeparator()
-          .hasArgs()
-          .desc("store properties (optional; eg. -sOverwrite=true -sFDPageRange=1-2)")
-          .build();
+          .argName("name=value")
+          .hasArg()
+          .desc(
+              "store property; can be repeated"
+                  + " (optional; eg. -sOverwrite=true -sFDPageRange=1-2)")
+          .get();
   private static final Option OPT_TIMEOUT =
       Option.builder("t")
           .longOpt("timeout")
           .hasArg()
           .desc("maximum conversion time in seconds (optional; defaults to 120)")
-          .build();
+          .get();
   private static final Option OPT_USER_PROFILE =
       Option.builder("u")
           .longOpt("user-profile")
-          .argName("dir")
+          .argName(ARG_DIR)
           .hasArg()
           .desc("use settings from the given user installation dir (optional)")
-          .build();
+          .get();
   private static final Option OPT_WORKING_DIR =
       Option.builder("w")
           .longOpt("working-dir")
-          .argName("dir")
+          .argName(ARG_DIR)
           .hasArg()
           .desc(
-              "directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir)")
-          .build();
+              "directory where temporary office profile directories will be created"
+                  + " (optional; defaults to java.io.tmpdir)")
+          .get();
   private static final Option OPT_VERSION =
-      Option.builder("v").longOpt("version").desc("displays version information and exit").build();
+      Option.builder("v").longOpt("version").desc("displays version information and exit").get();
   private static final Option OPT_EXISTING_PROCESS_ACTION =
       Option.builder("x")
           .longOpt("existing-process-action")
@@ -181,36 +191,59 @@ public final class Convert {
                   + " with kill: kill existing process;"
                   + " with connect: connect to existing process;"
                   + " with connect_or_kill: connect to existing process with kill fallback")
-          .build();
+          .get();
+
+  private static final Option OPT_PDF_PRESET =
+      Option.builder()
+          .longOpt("pdf-preset")
+          .argName("name")
+          .hasArg()
+          .desc("PDF options to start from: archive, accessible or compact (optional)")
+          .get();
+  private static final Option OPT_PDF_OPTION =
+      Option.builder()
+          .longOpt("pdf-option")
+          .argName("name=value")
+          .hasArg()
+          .desc(
+              "option applied to the PDF outputs; can be repeated"
+                  + " (optional; eg. --pdf-option version=pdf-a-2b --pdf-option pages.range=1-3)")
+          .get();
 
   private static final Options OPTIONS = initOptions();
 
-  private static void checkPrintInfoAndExit(final CommandLine commandLine) {
+  // A load or store property attached to its short option, such as -sOverwrite=true.
+  private static final Pattern ATTACHED_PROPERTY = Pattern.compile("^(-[ls])([^=]+=.*)$");
+
+  // Returns true if the command line asked for some info, which is printed, and nothing else.
+  private static boolean printInfoIfRequested(final CommandLine commandLine) {
 
     if (commandLine.hasOption(OPT_HELP.getOpt())) {
       printHelp();
-      System.exit(STATUS_OK);
+      return true;
     }
 
     if (commandLine.hasOption(OPT_VERSION.getOpt())) {
-      final Package pack = Convert.class.getPackage();
+      final var pack = Convert.class.getPackage();
       printInfo("jodconverter-cli version %s", pack.getImplementationVersion());
-      System.exit(STATUS_OK);
+      return true;
     }
+
+    return false;
   }
 
   private static OfficeManager createOfficeManager(
-      final CommandLine commandLine, final AbstractApplicationContext context) {
+      final CommandLine commandLine, final @Nullable CliConfig config) {
 
     // If the URL is present, we will use the remote office manager and thus,
     // an office installation won't be required locally.
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
-      return createRemoteOfficeManager(commandLine, context);
+      return createRemoteOfficeManager(commandLine, config);
     }
 
     // Not remote conversion...
 
-    final LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
+    final var builder = LocalOfficeManager.builder();
 
     // Always fail fast!!
     builder.startFailFast(true);
@@ -226,21 +259,15 @@ public final class Convert {
     applyOption(
         OPT_EXISTING_PROCESS_ACTION,
         commandLine,
-        opt -> {
-          switch (opt.toLowerCase(Locale.ROOT).replace('-', '_')) {
-            case "fail":
-              return builder.existingProcessAction(ExistingProcessAction.FAIL);
-            case "kill":
-              return builder.existingProcessAction(ExistingProcessAction.KILL);
-            case "connect":
-              return builder.existingProcessAction(ExistingProcessAction.CONNECT);
-            case "connect_or_kill":
-              return builder.existingProcessAction(ExistingProcessAction.CONNECT_OR_KILL);
-            default:
-              return builder.existingProcessAction(
-                  LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION);
-          }
-        });
+        opt ->
+            builder.existingProcessAction(
+                switch (opt.toLowerCase(Locale.ROOT).replace('-', '_')) {
+                  case "fail" -> ExistingProcessAction.FAIL;
+                  case "kill" -> ExistingProcessAction.KILL;
+                  case "connect" -> ExistingProcessAction.CONNECT;
+                  case "connect_or_kill" -> ExistingProcessAction.CONNECT_OR_KILL;
+                  default -> LocalOfficeManager.DEFAULT_EXISTING_PROCESS_ACTION;
+                }));
 
     return builder.install().build();
   }
@@ -256,31 +283,23 @@ public final class Convert {
   }
 
   private static OfficeManager createRemoteOfficeManager(
-      final CommandLine commandLine, final AbstractApplicationContext context) {
+      final CommandLine commandLine, final @Nullable CliConfig config) {
 
-    final String connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
+    final var connectionUrl = getStringOption(commandLine, OPT_CONNECTION_URL.getOpt());
     assert connectionUrl != null;
     return RemoteOfficeManager.builder()
         .urlConnection(connectionUrl)
-        .sslConfig(context == null ? null : context.getBean(SslConfig.class))
+        .sslConfig(config == null ? null : config.ssl())
         .build();
   }
 
-  private static AbstractApplicationContext getApplicationContextOption(
-      final CommandLine commandLine) {
+  private static @Nullable CliConfig getConfigOption(final CommandLine commandLine) {
 
-    if (commandLine.hasOption(OPT_APPLICATION_CONTEXT.getOpt())) {
-
-      return new FileSystemXmlApplicationContext(
-          commandLine.getOptionValue(OPT_APPLICATION_CONTEXT.getOpt()));
+    if (commandLine.hasOption(OPT_CONFIG.getLongOpt())) {
+      return CliConfigReader.read(new File(commandLine.getOptionValue(OPT_CONFIG.getLongOpt())));
     }
 
     return null;
-  }
-
-  private static FilterChain getFilterChain(final ApplicationContext context) {
-
-    return Optional.ofNullable(context).map(ctx -> ctx.getBean(FilterChain.class)).orElse(null);
   }
 
   private static DocumentFormatRegistry getRegistryOption(final CommandLine commandLine)
@@ -288,8 +307,8 @@ public final class Convert {
 
     if (commandLine.hasOption(OPT_REGISTRY.getOpt())) {
       return JsonDocumentFormatRegistry.create(
-          FileUtils.readFileToString(
-              new File(commandLine.getOptionValue(OPT_REGISTRY.getOpt())), StandardCharsets.UTF_8));
+          Files.readString(
+              Path.of(commandLine.getOptionValue(OPT_REGISTRY.getOpt())), StandardCharsets.UTF_8));
     }
 
     return null;
@@ -307,26 +326,28 @@ public final class Convert {
 
   private static Options initOptions() {
 
-    final Options options = new Options();
-    options.addOption(OPT_APPLICATION_CONTEXT); // -a, --application-context
-    options.addOption(OPT_CONNECTION_URL); // -c, --connection-url
-    options.addOption(OPT_OUTPUT_DIRECTORY); // -d, --output-directory
-    options.addOption(OPT_OUTPUT_FORMAT); // -f, --output-format
-    options.addOption(OPT_HELP); // -h, --help
-    options.addOption(OPT_OFFICE_HOME); // -i, --office-home
-    options.addOption(OPT_KEEP_ALIVE); // -o, --keep-alive
-    options.addOption(OPT_LOAD_PROPERTIES); // -l, --load-properties
-    options.addOption(OPT_PROCESS_MANAGER); // -m, --process-manager
-    options.addOption(OPT_HOSTNAME); // -n, --host-name
-    options.addOption(OPT_OVERWRITE); // -o, --overwrite
-    options.addOption(OPT_PORT); // -p, --port
-    options.addOption(OPT_REGISTRY); // -r, --registry
-    options.addOption(OPT_STORE_PROPERTIES); // -s, --store-properties
-    options.addOption(OPT_TIMEOUT); // -u, --timeout
-    options.addOption(OPT_USER_PROFILE); // -u, --user-profile
-    options.addOption(OPT_VERSION); // -v, --version
-    options.addOption(OPT_WORKING_DIR); // -i, --office-home
-    options.addOption(OPT_EXISTING_PROCESS_ACTION); // -x, --existing-process-action
+    final var options = new Options();
+    options.addOption(OPT_CONNECTION_URL);
+    options.addOption(OPT_OUTPUT_DIRECTORY);
+    options.addOption(OPT_OUTPUT_FORMAT);
+    options.addOption(OPT_HELP);
+    options.addOption(OPT_OFFICE_HOME);
+    options.addOption(OPT_KEEP_ALIVE);
+    options.addOption(OPT_LOAD_PROPERTIES);
+    options.addOption(OPT_PROCESS_MANAGER);
+    options.addOption(OPT_HOSTNAME);
+    options.addOption(OPT_OVERWRITE);
+    options.addOption(OPT_PORT);
+    options.addOption(OPT_REGISTRY);
+    options.addOption(OPT_STORE_PROPERTIES);
+    options.addOption(OPT_TIMEOUT);
+    options.addOption(OPT_USER_PROFILE);
+    options.addOption(OPT_VERSION);
+    options.addOption(OPT_WORKING_DIR);
+    options.addOption(OPT_EXISTING_PROCESS_ACTION);
+    options.addOption(OPT_CONFIG);
+    options.addOption(OPT_PDF_PRESET);
+    options.addOption(OPT_PDF_OPTION);
 
     return options;
   }
@@ -338,31 +359,54 @@ public final class Convert {
    */
   public static void main(final String[] arguments) {
 
+    System.exit(run(arguments));
+  }
+
+  /**
+   * Runs the program, without exiting the JVM.
+   *
+   * @param arguments program arguments.
+   * @return The exit status of the program.
+   */
+  /* default */
+  static int run(final String... arguments) {
+
     try {
-      final CommandLine commandLine = new DefaultParser().parse(OPTIONS, arguments);
+      final var commandLine = parse(arguments);
 
       // Check if the command line contains arguments that is supposed
       // to print some info and then exit.
-      checkPrintInfoAndExit(commandLine);
+      if (printInfoIfRequested(commandLine)) {
+        return STATUS_OK;
+      }
 
       // Get conversion arguments
-      final String outputFormat = getStringOption(commandLine, OPT_OUTPUT_FORMAT.getOpt());
-      final String outputDirPath = getStringOption(commandLine, OPT_OUTPUT_DIRECTORY.getOpt());
-      final DocumentFormatRegistry registry = getRegistryOption(commandLine);
-      final boolean overwrite = commandLine.hasOption(OPT_OVERWRITE.getOpt());
-      final String[] filenames = commandLine.getArgs();
+      final var outputFormat = getStringOption(commandLine, OPT_OUTPUT_FORMAT.getOpt());
+      final var outputDirPath = getStringOption(commandLine, OPT_OUTPUT_DIRECTORY.getOpt());
+      final var registry = getRegistryOption(commandLine);
+      final var overwrite = commandLine.hasOption(OPT_OVERWRITE.getOpt());
+      final var filenames = commandLine.getArgs();
 
       // Validate arguments length
       if (outputFormat == null && filenames.length % 2 != 0 || filenames.length == 0) {
         printHelp();
-        System.exit(STATUS_INVALID_ARGUMENTS);
+        return STATUS_INVALID_ARGUMENTS;
       }
 
-      // Load the application context if provided
-      final AbstractApplicationContext context = getApplicationContextOption(commandLine);
+      // Build the conversion options and read the configuration file, before anything is
+      // started, since they may be invalid.
+      final ConversionOptions options;
+      final CliConfig config;
+      try {
+        options = ConversionOptions.parse(commandLine);
+        config = getConfigOption(commandLine);
+      } catch (IllegalArgumentException ex) {
+        printErr(ex.getMessage());
+        return STATUS_INVALID_ARGUMENTS;
+      }
 
       // Create a default office manager from the command line
-      final OfficeManager officeManager = createOfficeManager(commandLine, context);
+      final var officeManager = createOfficeManager(commandLine, config);
 
       try {
         // Starts the manager
@@ -370,15 +414,15 @@ public final class Convert {
         officeManager.start();
 
         // Build a client converter and start the conversion
-        final CliConverter converter =
-            createCliConverter(commandLine, context, officeManager, registry);
+        final var converter =
+            createCliConverter(commandLine, config, officeManager, registry, options);
 
         if (outputFormat == null) {
 
           // Build 2 arrays; one containing the input files and the other
           // containing the output files.
-          final String[] inputFilenames = new String[filenames.length / 2];
-          final String[] outputFilenames = new String[inputFilenames.length];
+          final var inputFilenames = new String[filenames.length / 2];
+          final var outputFilenames = new String[inputFilenames.length];
           for (int i = 0, j = 0; // NOPMD - Disable for loop variables count
               i < filenames.length;
               i += 2, j++) {
@@ -394,73 +438,70 @@ public final class Convert {
       } finally {
         printInfo("Stopping office");
         OfficeUtils.stopQuietly(officeManager);
-
-        // Close the application context if required
-        if (context != null) {
-          context.close();
-        }
       }
 
-      System.exit(STATUS_OK);
+      return STATUS_OK;
 
     } catch (ParseException e) {
       printErr(e.getMessage());
       printHelp();
-      System.exit(STATUS_ERROR);
+      return STATUS_INVALID_ARGUMENTS;
     } catch (Exception e) {
       printErr(e.getMessage());
       e.printStackTrace(System.err);
-      System.exit(STATUS_ERROR);
+      return STATUS_ERROR;
     }
   }
 
-  private static Map<String, Object> toMap(final String... options) {
+  /**
+   * Parses the arguments of the program.
+   *
+   * @param arguments program arguments.
+   * @return The parsed command line.
+   * @throws ParseException If the arguments are not valid.
+   */
+  /* default */
+  static CommandLine parse(final String... arguments) throws ParseException {
 
-    if (options.length % 2 != 0) {
-      return new HashMap<>();
-    }
-
-    return IntStream.range(0, options.length)
-        .filter(i -> i % 2 == 0)
-        .boxed()
-        .collect(
-            Collectors.toMap(
-                i -> options[i],
-                i -> {
-                  final String val = options[i + 1];
-                  if ("true".equalsIgnoreCase(val)) {
-                    return Boolean.TRUE;
-                  }
-                  if ("false".equalsIgnoreCase(val)) {
-                    return Boolean.FALSE;
-                  }
-                  try {
-                    return Integer.parseInt(val);
-                  } catch (NumberFormatException nfe) {
-                    return val;
-                  }
-                }));
-  }
-
-  private static Map<String, Object> buildProperties(final String... args) {
-
-    if (args == null || args.length == 0) {
-      return new HashMap<>();
-    }
-
-    final Map<String, Object> argsMap = toMap(args);
-    if (argsMap.isEmpty()) {
-      return new HashMap<>();
-    }
-
-    final Map<String, Object> properties = new HashMap<>();
-    final Map<String, Object> filterDataProperties = new HashMap<>();
-    for (final Map.Entry<String, Object> entry : argsMap.entrySet()) {
-      final String key = entry.getKey();
-      if (key.length() > 2 && key.startsWith("FD")) {
-        filterDataProperties.put(key.substring("FD".length()), entry.getValue());
+    // A property is written -lName=value or -sName=value, and its value may contain the equal
+    // sign. The name=value part is separated from its option here, since the parser would
+    // otherwise split it on every equal sign.
+    final var normalized = new ArrayList<String>();
+    for (final var argument : arguments) {
+      final var matcher = ATTACHED_PROPERTY.matcher(argument);
+      if (matcher.matches()) {
+        normalized.add(matcher.group(1));
+        normalized.add(matcher.group(2));
       } else {
-        properties.put(key, entry.getValue());
+        normalized.add(argument);
+      }
+    }
+    return new DefaultParser().parse(OPTIONS, normalized.toArray(new String[0]));
+  }
+
+  // Builds the properties given as "name=value" arguments. The properties whose name starts
+  // with FD are properties of the FilterData.
+  private static Map<String, Object> buildProperties(final String kind, final String... args) {
+
+    final var properties = new HashMap<String, Object>();
+    if (args == null) {
+      return properties;
+    }
+
+    final var filterDataProperties = new HashMap<String, Object>();
+    for (final var arg : args) {
+      // Only the first equal sign separates the name from the value.
+      final var separator = arg.indexOf('=');
+      if (separator <= 0) {
+        throw new IllegalArgumentException(
+            "Invalid " + kind + " property '" + arg + "'; expected name=value");
+      }
+      final var key = arg.substring(0, separator);
+      final var value = PropertyValues.parse(arg.substring(separator + 1));
+      if (key.length() > 2 && key.startsWith("FD")) {
+        filterDataProperties.put(key.substring("FD".length()), value);
+      } else {
+        properties.put(key, value);
       }
     }
     if (!filterDataProperties.isEmpty()) {
@@ -472,40 +513,65 @@ public final class Convert {
 
   private static CliConverter createCliConverter(
       final CommandLine commandLine,
-      final AbstractApplicationContext context,
+      final @Nullable CliConfig config,
       final OfficeManager officeManager,
-      final DocumentFormatRegistry registry) {
+      final @Nullable DocumentFormatRegistry registry,
+      final ConversionOptions options) {
 
     if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
-      final RemoteConverter.Builder builder =
-          RemoteConverter.builder().officeManager(officeManager);
+      final var builder = RemoteConverter.builder().officeManager(officeManager);
       if (registry != null) {
         builder.formatRegistry(registry);
       }
-      return new CliConverter(builder.build());
+      return new CliConverter(builder.build(), options.pdfOptions());
     }
 
-    final LocalConverter.Builder builder = LocalConverter.builder().officeManager(officeManager);
+    final var builder =
+        LocalConverter.builder()
+            .officeManager(officeManager)
+            .loadProperties(options.loadProperties())
+            .storeProperties(options.storeProperties());
     if (registry != null) {
       builder.formatRegistry(registry);
     }
 
-    // Specify custom load properties if required
-    final Map<String, Object> loadProperties =
-        buildProperties(commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt()));
-    builder.loadProperties(loadProperties);
-
-    // Specify custom store properties if required
-    final Map<String, Object> storeProperties =
-        buildProperties(commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt()));
-    builder.storeProperties(storeProperties);
-
     // Specify a filter chain if required
-    final FilterChain filterChain = getFilterChain(context);
+    final var filterChain = config == null ? null : config.filterChain();
     if (filterChain != null) {
       builder.filterChain(filterChain);
     }
-    return new CliConverter(builder.build());
+    return new CliConverter(builder.build(), options.pdfOptions());
+  }
+
+  /**
+   * The options of the conversions given on the command line, parsed before the office manager is
+   * started since they may be invalid.
+   *
+   * @param loadProperties The load properties, from the {@code -l} arguments.
+   * @param storeProperties The store properties, from the {@code -s} arguments.
+   * @param pdfOptions The PDF options, from the {@code --pdf-preset} and {@code --pdf-option}
+   *     arguments, or null if there is none.
+   */
+  /* default */ record ConversionOptions(
+      Map<String, Object> loadProperties,
+      Map<String, Object> storeProperties,
+      @Nullable PdfOptions pdfOptions) {
+
+    /**
+     * Parses the options of the given command line.
+     *
+     * @param commandLine The command line.
+     * @return The options.
+     * @throws IllegalArgumentException If an option is not valid.
+     */
+    /* default */ static ConversionOptions parse(final CommandLine commandLine) {
+      return new ConversionOptions(
+          buildProperties("load", commandLine.getOptionValues(OPT_LOAD_PROPERTIES.getOpt())),
+          buildProperties("store", commandLine.getOptionValues(OPT_STORE_PROPERTIES.getOpt())),
+          PdfOptionsParser.parse(
+              commandLine.getOptionValue(OPT_PDF_PRESET.getLongOpt()),
+              commandLine.getOptionValues(OPT_PDF_OPTION.getLongOpt())));
+    }
   }
 
   private static void printHelp() {
@@ -515,7 +581,17 @@ public final class Convert {
       "  or:",
       "jodconverter-cli [options] -f output-format infile [infile ...]"
     };
-    new HelpFormatter().printHelp(String.join("\n", help), OPTIONS);
+    final var appendable = new TextHelpAppendable(System.out);
+    appendable.setMaxWidth(HELP_WIDTH);
+    try {
+      HelpFormatter.builder()
+          .setShowSince(false)
+          .setHelpAppendable(appendable)
+          .get()
+          .printHelp(String.join("\n", help), null, OPTIONS, null, false);
+    } catch (IOException ex) {
+      printErr(ex.getMessage());
+    }
   }
 
   private static void printErr(final Object... values) {
@@ -526,7 +602,8 @@ public final class Convert {
 
   private static void printInfo(final String message, final Object... values) {
 
-    System.out.printf(message + "%n", values); // NOPMD - Allow System.out.println
+    System.out.printf(message, values); // NOPMD - Allow System.out.println
+    System.out.println(); // NOPMD - Allow System.out.println
     System.out.flush();
   }
 }

@@ -43,7 +43,7 @@ class LoTest {
   @Test
   void createInstFromSvcFactory_WithUnoException_ThrowWrappedUnoException() throws Exception {
 
-    final XMultiServiceFactory sfactory = mock(XMultiServiceFactory.class);
+    final var sfactory = mock(XMultiServiceFactory.class);
 
     given(sfactory.createInstance("Whatever")).willThrow(Exception.class);
     assertThatExceptionOfType(WrappedUnoException.class)
@@ -51,36 +51,14 @@ class LoTest {
   }
 
   @Test
-  void createInstFromSvcFactoryDep_WithUnoException_ThrowWrappedUnoException() throws Exception {
-
-    final XMultiServiceFactory sfactory = mock(XMultiServiceFactory.class);
-
-    given(sfactory.createInstance("Whatever")).willThrow(Exception.class);
-    assertThatExceptionOfType(WrappedUnoException.class)
-        .isThrownBy(() -> Lo.createInstanceMSF(sfactory, Object.class, "Whatever"));
-  }
-
-  @Test
   void createInstFromCompFact_WithUnoException_ThrowWrappedUnoException() throws Exception {
 
-    final XComponentContext context = mock(XComponentContext.class);
-    final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
+    final var context = mock(XComponentContext.class);
+    final var cfactory = mock(XMultiComponentFactory.class);
     given(context.getServiceManager()).willReturn(cfactory);
     given(cfactory.createInstanceWithContext("Whatever", context)).willThrow(Exception.class);
 
     assertThatExceptionOfType(WrappedUnoException.class)
         .isThrownBy(() -> Lo.createInstance(context, Object.class, "Whatever"));
-  }
-
-  @Test
-  void createInstFromCompFactDep_WithUnoException_ThrowWrappedUnoException() throws Exception {
-
-    final XComponentContext context = mock(XComponentContext.class);
-    final XMultiComponentFactory cfactory = mock(XMultiComponentFactory.class);
-    given(context.getServiceManager()).willReturn(cfactory);
-    given(cfactory.createInstanceWithContext("Whatever", context)).willThrow(Exception.class);
-
-    assertThatExceptionOfType(WrappedUnoException.class)
-        .isThrownBy(() -> Lo.createInstanceMCF(context, Object.class, "Whatever"));
   }
 }

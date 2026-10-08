@@ -30,9 +30,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * <p>Inspired by the work of Dr. Andrew Davison from the website <a
  * href="http://fivedots.coe.psu.ac.th/~ad/jlop">Java LibreOffice Programming</a>.
  */
-public final class Props { // NOPMD - Disable utility class name rule violation
-
-  // private static final Logger LOGGER = LoggerFactory.getLogger(Props.class);
+public final class Props {
 
   /**
    * Gets a property value from the properties of the specified object.
@@ -77,7 +75,7 @@ public final class Props { // NOPMD - Disable utility class name rule violation
   public static @NonNull PropertyValue makeProperty(
       final @NonNull String name, final @NonNull Object value) {
 
-    final PropertyValue prop = new PropertyValue();
+    final var prop = new PropertyValue();
     prop.Name = name;
     prop.Value = value;
     return prop;
@@ -124,6 +122,7 @@ public final class Props { // NOPMD - Disable utility class name rule violation
    * @param values The property values.
    * @return An array of properties.
    */
+  @SuppressWarnings("PMD.UseVarargs") // Two arrays of the same length, not a list of values
   public static @NonNull PropertyValue[] makeProperties(
       final @NonNull String[] names, final @NonNull Object[] values) {
 
@@ -131,8 +130,8 @@ public final class Props { // NOPMD - Disable utility class name rule violation
       throw new IllegalArgumentException("Mismatch in lengths of names and values");
     }
 
-    final PropertyValue[] props = new PropertyValue[names.length];
-    for (int i = 0; i < names.length; i++) {
+    final var props = new PropertyValue[names.length];
+    for (var i = 0; i < names.length; i++) {
       props[i] = makeProperty(names[i], values[i]);
     }
     return props;
