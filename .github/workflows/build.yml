@@ -41,10 +41,11 @@ jobs:
           # 25.8.7 and 26.2.6. Disabled until this is understood.
           # - os: windows-latest
           #   allow-failure: true
-          # On the macOS runner, LibreOffice takes about 37 s to start (about 1 s on Linux), most of
-          # it waiting for the answer to the first UNO request, which makes the job last about 25 min.
-          # Disabled while the dependencies are upgraded; the cause is still to be investigated.
-          # - os: macos-latest
+          # On the macOS runner, LibreOffice 26.2 took about 37 s to listen after each start, which
+          # made the job last about 25 min; LibreOffice 26.8 listens after 1 to 2 s (checked on
+          # 2026-10-08), so the entry is back. It reports but does not block a merge.
+          - os: macos-latest
+            allow-failure: true
 
     steps:
       - name: 🪟 Use CRLF line endings on Windows
