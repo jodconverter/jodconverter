@@ -70,8 +70,11 @@ jobs:
       - name: ⚙️ Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      # The timeout stops the job early when a download stalls, instead of hanging until the job
+      # timeout: the Ubuntu mirror was seen to stop answering in the middle of the packages.
       - name: 📥 Install LibreOffice (Linux)
         if: runner.os == 'Linux'
+        timeout-minutes: 10
         run: |
           sudo apt-get -q update
           sudo apt-get -y -q install libreoffice
