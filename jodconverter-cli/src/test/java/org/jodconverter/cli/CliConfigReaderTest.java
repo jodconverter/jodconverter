@@ -41,6 +41,7 @@ import org.jodconverter.local.filter.NoopFilter;
 import org.jodconverter.local.filter.PageOrientationFilter;
 import org.jodconverter.local.filter.PagesSelectorFilter;
 import org.jodconverter.local.filter.RefreshFilter;
+import org.jodconverter.local.filter.text.DocumentComparerFilter;
 import org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter;
 import org.jodconverter.local.filter.text.DocumentInserterFilter;
 import org.jodconverter.local.filter.text.GraphicInserterFilter;
@@ -293,6 +294,16 @@ class CliConfigReaderTest {
           .satisfies(list -> assertThat(list.get(2)).isInstanceOf(LinkedImagesEmbedderFilter.class))
           .satisfies(
               list -> assertThat(list.get(3)).isInstanceOf(LinkedImagesEmbedderFilter.class));
+    }
+
+    @Test
+    void withDocumentComparer_ShouldCreateIt(final @TempDir File dir) throws IOException {
+
+      final var filters =
+          filters("filters:\n  - type: document-comparer\n    document: /docs/v1.odt\n", dir);
+
+      assertThat(filters).hasSize(1).first().isInstanceOf(DocumentComparerFilter.class);
+      assertThat(filters.get(0)).extracting("original").isEqualTo(new File("/docs/v1.odt"));
     }
 
     @Test
