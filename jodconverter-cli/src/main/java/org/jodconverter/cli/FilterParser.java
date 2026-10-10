@@ -40,6 +40,7 @@ import org.jodconverter.local.filter.NoopFilter;
 import org.jodconverter.local.filter.PageOrientationFilter;
 import org.jodconverter.local.filter.PagesSelectorFilter;
 import org.jodconverter.local.filter.RefreshFilter;
+import org.jodconverter.local.filter.text.DocumentComparerFilter;
 import org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter;
 import org.jodconverter.local.filter.text.DocumentInserterFilter;
 import org.jodconverter.local.filter.text.GraphicInserterFilter;
@@ -58,6 +59,8 @@ import org.jodconverter.local.filter.text.TextReplacerFilter;
  *   <li>{@code noop}, {@code refresh}, {@code linked-images-embedder}: no key.
  *   <li>{@code pages-selector}: {@code pages}, a page number or a list of page numbers.
  *   <li>{@code document-inserter}: {@code document}, the path of the document to insert.
+ *   <li>{@code document-comparer}: {@code document}, the path of the original document the
+ *       converted one is compared with.
  *   <li>{@code graphic-inserter}: {@code image}, the path of the image; {@code horizontal-position}
  *       and {@code vertical-position} in millimeters, or {@code shape-properties}, a map of shape
  *       properties; optionally {@code width} and {@code height} in millimeters.
@@ -83,6 +86,7 @@ final class FilterParser {
   private static final String VERTICAL_POSITION = "vertical-position";
   private static final String WIDTH = "width";
   private static final String HEIGHT = "height";
+  private static final String DOCUMENT = "document";
 
   private static final Map<String, Function<Section, Filter>> TYPES = initTypes();
 
@@ -174,6 +178,11 @@ final class FilterParser {
     map.put("linked-images-embedder", section -> new LinkedImagesEmbedderFilter());
     map.put("pages-selector", FilterParser::pagesSelector);
     map.put("document-inserter", FilterParser::documentInserter);
+    map.put(
+        "document-comparer",
+        section ->
+            new DocumentComparerFilter(
+                new File(Values.string(section.required(DOCUMENT), DOCUMENT))));
     map.put("graphic-inserter", FilterParser::graphicInserter);
     map.put("text-inserter", FilterParser::textInserter);
     map.put("text-replacer", FilterParser::textReplacer);
@@ -201,7 +210,7 @@ final class FilterParser {
 
   private static Filter documentInserter(final Section section) {
     return new DocumentInserterFilter(
-        new File(Values.string(section.required("document"), "document")));
+        new File(Values.string(section.required(DOCUMENT), DOCUMENT)));
   }
 
   private static Filter graphicInserter(final Section section) {
