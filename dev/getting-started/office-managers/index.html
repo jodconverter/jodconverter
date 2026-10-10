@@ -2705,6 +2705,44 @@ fast, and two timeouts apply to a task: <code>taskQueueTimeout</code>, from its 
 attempts in a row, plus the number of tasks waiting in the queue. With the Spring Boot starter and Spring Boot Actuator
 on the classpath, the <code>jodconverter</code> health indicator reports these details for every office manager bean, and is down
 when a manager has no worker able to execute tasks (<code>management.health.jodconverter.enabled=false</code> disables it).</p>
+<p>With <a href="https://micrometer.io/">Micrometer</a> on the classpath too, which Spring Boot Actuator brings, the starter also exposes the same numbers as meters, read from <code>getStatus()</code> each time they are collected. Each meter has a <code>name</code> tag, the name of the office manager bean (<code>localOfficeManager</code>, <code>attachedOfficeManager</code> or <code>remoteOfficeManager</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Meter</th>
+<th>Type</th>
+<th>What it measures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>jodconverter.queue.size</code></td>
+<td>Gauge</td>
+<td>The tasks waiting in the queue for a worker.</td>
+</tr>
+<tr>
+<td><code>jodconverter.workers</code></td>
+<td>Gauge</td>
+<td>The workers in a state, given by the <code>state</code> tag: <code>starting</code>, <code>ready</code>, <code>busy</code>, <code>restarting</code> or <code>stopped</code>.</td>
+</tr>
+<tr>
+<td><code>jodconverter.workers.tasks</code></td>
+<td>Gauge</td>
+<td>The tasks executed by the workers since each was last made ready.</td>
+</tr>
+<tr>
+<td><code>jodconverter.workers.restarts</code></td>
+<td>Counter</td>
+<td>The restarts of the workers since the manager was started.</td>
+</tr>
+<tr>
+<td><code>jodconverter.workers.start.failures</code></td>
+<td>Gauge</td>
+<td>The start attempts in a row that failed, for all the workers; above zero, an office process does not come back.</td>
+</tr>
+</tbody>
+</table>
+<p>A queue that keeps growing while every worker is busy means the pool is too small for the load, and a restart counter that climbs faster than <code>maxTasksPerProcess</code> explains is the sign of crashes or of timed-out tasks. <code>jodconverter.metrics.enabled=false</code> disables the meters.</p>
 <h2 id="typical-usage-patterns">Typical usage patterns<a class="headerlink" href="#typical-usage-patterns" title="Permanent link">&para;</a></h2>
 <p><strong>1)</strong> Install a global (default) manager.</p>
 <ul>
