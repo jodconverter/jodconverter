@@ -3677,7 +3677,7 @@ property; set it with <code>filterData("SignatureCertificate", certificate)</cod
 </tr>
 </tbody>
 </table>
-<p>LibreOffice ignores <code>sheetRange</code> when <code>singlePageSheets</code> is set.</p>
+<p>LibreOffice ignores <code>sheetRange</code> when <code>singlePageSheets</code> is set. With an <code>.xlsx</code> workbook, <code>singlePageSheets</code> may leave out the top rows or the first columns of a sheet that was saved scrolled; see the <a href="../../faq/#known-libreoffice-issues">known LibreOffice issues</a>.</p>
 <h3 id="any-other-property">Any other property<a class="headerlink" href="#any-other-property" title="Permanent link">&para;</a></h3>
 <p><code>filterData(name, value)</code> sets any <code>FilterData</code> property that has no dedicated method. These properties are applied
 last and are not validated.</p>
