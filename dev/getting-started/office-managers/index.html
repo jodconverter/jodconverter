@@ -2702,7 +2702,7 @@ fast, and two timeouts apply to a task: <code>taskQueueTimeout</code>, from its 
 <code>taskExecutionTimeout</code>, from the moment a worker starts it.</p>
 <p>The pool can be observed: <code>getStatus()</code> returns a snapshot with the state of each worker (<code>STARTING</code>, <code>READY</code>, <code>BUSY</code>,
 <code>RESTARTING</code> or <code>STOPPED</code>), the tasks it executed since it was last made ready, its restarts and its failed start
-attempts in a row, plus the number of tasks waiting in the queue. With the Spring Boot starter and Spring Boot Actuator
+attempts in a row, plus the number of tasks waiting in the queue and the number of times a task was executed again after its worker was lost (see <code>taskRetries</code>). With the Spring Boot starter and Spring Boot Actuator
 on the classpath, the <code>jodconverter</code> health indicator reports these details for every office manager bean, and is down
 when a manager has no worker able to execute tasks (<code>management.health.jodconverter.enabled=false</code> disables it).</p>
 <p>With <a href="https://micrometer.io/">Micrometer</a> on the classpath too, which Spring Boot Actuator brings, the starter also exposes the same numbers as meters, read from <code>getStatus()</code> each time they are collected. Each meter has a <code>name</code> tag, the name of the office manager bean (<code>localOfficeManager</code>, <code>attachedOfficeManager</code> or <code>remoteOfficeManager</code>):</p>
@@ -2719,6 +2719,11 @@ when a manager has no worker able to execute tasks (<code>management.health.jodc
 <td><code>jodconverter.queue.size</code></td>
 <td>Gauge</td>
 <td>The tasks waiting in the queue for a worker.</td>
+</tr>
+<tr>
+<td><code>jodconverter.tasks.retries</code></td>
+<td>Counter</td>
+<td>The times a task was executed again after its worker was lost; stays at zero without <code>taskRetries</code>.</td>
 </tr>
 <tr>
 <td><code>jodconverter.workers</code></td>
