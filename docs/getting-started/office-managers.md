@@ -66,6 +66,22 @@ With [Micrometer](https://micrometer.io/) on the classpath too, which Spring Boo
 
 A queue that keeps growing while every worker is busy means the pool is too small for the load, and a restart counter that climbs faster than `maxTasksPerProcess` explains is the sign of crashes or of timed-out tasks. `jodconverter.metrics.enabled=false` disables the meters.
 
+## Describing the office
+
+`OfficeInfoTask` asks the office behind a local or an attached manager what it is: its product name, its version, and the filters it has to load and to store documents. No document is loaded.
+
+```java
+OfficeInfo info = OfficeInfoTask.query(officeManager);
+
+info.productName();   // LibreOffice
+info.version();       // 25.2.7.2
+info.exportFilters(); // writer_pdf_Export, calc_pdf_Export, MS Word 97...
+```
+
+Each `OfficeFilterInfo` gives the name of the filter (the value of the `FilterName` store property of a [custom format](document-format-registry.md)), the name the office shows for it, the service of the documents it applies to, the media type and the extensions of its file type, and whether it loads documents, stores them, or both. It answers "which office is this application really talking to, and can it write that format?" at startup or behind a support endpoint.
+
+The task asks the office for each of its filters, a few hundred calls: execute it once and keep the result, not for each conversion. It is not available with a `RemoteOfficeManager`.
+
 ## Typical usage patterns
 
 **1)** Install a global (default) manager.
