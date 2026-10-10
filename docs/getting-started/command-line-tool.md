@@ -103,6 +103,23 @@ See [Configuration](../../configuration/local-configuration#templateprofiledir).
 
 Displays version information and exit.
 
+#### --info
+
+Starts the office, displays its name, its version and its import and export filters, and exit. The office is the one the other options describe (`-i`, `-p`, `-u`...), so the option tells which office a conversion would use, and whether it has the filter of a format; it cannot be used with `-c`. Each line gives the name of a filter (the `FilterName` of a store property), the name the office shows for it and the extensions of its file type:
+
+```text
+LibreOffice 25.2.7.2
+
+Import filters (190):
+  MS Word 97         Word 97–2003 (doc, wps)
+  ...
+
+Export filters (121):
+  calc_pdf_Export    PDF - Portable Document Format (pdf)
+  writer_pdf_Export  PDF - Portable Document Format (pdf)
+  ...
+```
+
 #### -w, --working-dir `<dir>`
 
 Directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir).

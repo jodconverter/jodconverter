@@ -44,6 +44,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.document.JsonDocumentFormatRegistry;
 import org.jodconverter.core.document.PropertyValues;
+import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.pdf.PdfOptions;
@@ -51,6 +52,7 @@ import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.ExistingProcessAction;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.local.task.AbstractLocalOfficeTask;
+import org.jodconverter.local.task.OfficeInfoTask;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 
@@ -208,6 +210,13 @@ public final class Convert {
           .hasArg()
           .desc("password of the input documents, when they are protected (optional)")
           .get();
+  private static final Option OPT_INFO =
+      Option.builder()
+          .longOpt("info")
+          .desc(
+              "starts the office, displays its name, its version and its import and export"
+                  + " filters, and exit")
+          .get();
   private static final Option OPT_PDF_OPTION =
       Option.builder()
           .longOpt("pdf-option")
@@ -238,6 +247,24 @@ public final class Convert {
     }
 
     return false;
+  }
+
+  // Starts the office the other options describe, prints what it says about itself, and stops it.
+  private static int printOfficeInfo(final CommandLine commandLine) throws OfficeException {
+
+    if (commandLine.hasOption(OPT_CONNECTION_URL.getOpt())) {
+      printErr("--info describes a local office: it cannot be used with a connection URL");
+      return STATUS_INVALID_ARGUMENTS;
+    }
+
+    final var officeManager = createOfficeManager(commandLine, null);
+    try {
+      officeManager.start();
+      printInfo("%s", OfficeInfoPrinter.format(OfficeInfoTask.query(officeManager)));
+    } finally {
+      OfficeUtils.stopQuietly(officeManager);
+    }
+    return STATUS_OK;
   }
 
   private static OfficeManager createOfficeManager(
@@ -357,6 +384,7 @@ public final class Convert {
     options.addOption(OPT_PDF_PRESET);
     options.addOption(OPT_PDF_OPTION);
     options.addOption(OPT_PASSWORD);
+    options.addOption(OPT_INFO);
 
     return options;
   }
@@ -387,6 +415,9 @@ public final class Convert {
       // to print some info and then exit.
       if (printInfoIfRequested(commandLine)) {
         return STATUS_OK;
+      }
+      if (commandLine.hasOption(OPT_INFO.getLongOpt())) {
+        return printOfficeInfo(commandLine);
       }
 
       // Get conversion arguments

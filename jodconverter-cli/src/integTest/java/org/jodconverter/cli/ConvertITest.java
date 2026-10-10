@@ -50,6 +50,25 @@ class ConvertITest {
       "src/integTest/resources/documents/test_multi_page.doc";
 
   @Nested
+  class Info {
+
+    @Test
+    void withOptionInfo_ShouldPrintTheOfficeAndItsFilters() {
+
+      SystemLogHandler.startCapture();
+      final var status = Convert.run("--info", "-x", ExistingProcessAction.KILL.toString());
+      final var capturedlog = SystemLogHandler.stopCapture();
+
+      assertThat(status).isEqualTo(0);
+      assertThat(capturedlog)
+          .containsPattern("(?m)^\\S+ \\d+\\.\\d+")
+          .containsPattern("Import filters \\(\\d+\\):")
+          .containsPattern("Export filters \\(\\d+\\):")
+          .containsPattern("(?m)^  writer_pdf_Export +\\S.* \\(pdf\\)$");
+    }
+  }
+
+  @Nested
   class ConvertTests {
 
     @Test

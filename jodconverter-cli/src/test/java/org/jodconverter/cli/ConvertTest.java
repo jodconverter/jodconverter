@@ -94,6 +94,16 @@ class ConvertTest {
     }
 
     @Test
+    void withOptionInfoAndConnectionUrl_ShouldPrintErrorAndExitWithCode255() {
+
+      SystemLogHandler.startCapture();
+      final var status = Convert.run("--info", "-c", "http://localhost:9980");
+      final var capturedlog = SystemLogHandler.stopCapture();
+      assertThat(capturedlog).contains("--info describes a local office");
+      assertThat(status).isEqualTo(255);
+    }
+
+    @Test
     void withOptionHelp_ShouldDescribeThePdfOptions() {
 
       SystemLogHandler.startCapture();
