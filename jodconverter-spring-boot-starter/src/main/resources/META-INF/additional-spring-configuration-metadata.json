@@ -1,5 +1,6 @@
 {
   "properties": [
+    { "name": "jodconverter.metrics.enabled", "type": "java.lang.Boolean", "description": "Enable the Micrometer meters of the office managers, when Micrometer is on the classpath.", "defaultValue": true },
     { "name": "jodconverter.remote.ssl.enabled", "type": "java.lang.Boolean", "description": "Enable SSL support.", "defaultValue": true },
     { "name": "jodconverter.remote.ssl.ciphers", "type": "java.lang.String[]", "description": "Supported SSL ciphers." },
     { "name": "jodconverter.remote.ssl.enabled-protocols", "type": "java.lang.String[]", "description": "Enabled SSL protocols." },

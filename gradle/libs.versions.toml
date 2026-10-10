@@ -127,6 +127,8 @@ spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-star
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 # The health contributors (HealthIndicator...), in their own module since Spring Boot 4
 spring-boot-health = { module = "org.springframework.boot:spring-boot-health" }
+# Micrometer, for the meters of the starter; its version is the one of the Spring Boot BOM
+micrometer-core = { module = "io.micrometer:micrometer-core" }
 
 # LibreOffice
 libreoffice = { module = "org.libreoffice:libreoffice", version.ref = "lo" }
