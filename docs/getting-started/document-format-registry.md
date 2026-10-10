@@ -79,6 +79,27 @@ LocalConverter converter = LocalConverter.builder()
     .build();
 ```
 
+### Formats of the office
+
+The default registry describes the common formats, not every format an office can write: converting to `epub`, `webp` or `docm`, for example, fails with "The target format is missing or not supported". `OfficeFormatRegistry` (local module) completes a registry with the formats of the office itself, built from the filters the office says it has:
+
+```java
+import org.jodconverter.local.office.OfficeFormatRegistry;
+import org.jodconverter.local.office.OfficeInfo;
+import org.jodconverter.local.task.OfficeInfoTask;
+
+OfficeInfo info = OfficeInfoTask.query(officeManager); // once, the manager being started
+
+LocalConverter converter = LocalConverter.builder()
+    .officeManager(officeManager)
+    .formatRegistry(OfficeFormatRegistry.create(info))
+    .build();
+
+converter.convert(new File("book.odt")).to(new File("book.epub")).execute();
+```
+
+`OfficeFormatRegistry.create(info)` completes the default registry, and `create(registry, info)` any other. The completed registry always wins: its formats carry choices the office does not tell, such as the filter options of a text file. A format taken from the office has, for each family of documents, the export filter that writes the extension; when the office has several, the first by name is taken, so describe the format in a registry of your own when another one is wanted. `jodconverter-cli --info` lists the filters and their extensions.
+
 ### Spring Boot
 
 With the Spring Boot starter, one registry is shared by every converter it creates, local, external or remote, and
