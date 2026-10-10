@@ -53,6 +53,18 @@ attempts in a row, plus the number of tasks waiting in the queue. With the Sprin
 on the classpath, the `jodconverter` health indicator reports these details for every office manager bean, and is down
 when a manager has no worker able to execute tasks (`management.health.jodconverter.enabled=false` disables it).
 
+With [Micrometer](https://micrometer.io/) on the classpath too, which Spring Boot Actuator brings, the starter also exposes the same numbers as meters, read from `getStatus()` each time they are collected. Each meter has a `name` tag, the name of the office manager bean (`localOfficeManager`, `attachedOfficeManager` or `remoteOfficeManager`):
+
+| Meter                                 | Type    | What it measures                                                                                                |
+| ------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------- |
+| `jodconverter.queue.size`             | Gauge   | The tasks waiting in the queue for a worker.                                                                    |
+| `jodconverter.workers`                | Gauge   | The workers in a state, given by the `state` tag: `starting`, `ready`, `busy`, `restarting` or `stopped`.       |
+| `jodconverter.workers.tasks`          | Gauge   | The tasks executed by the workers since each was last made ready.                                               |
+| `jodconverter.workers.restarts`       | Counter | The restarts of the workers since the manager was started.                                                      |
+| `jodconverter.workers.start.failures` | Gauge   | The start attempts in a row that failed, for all the workers; above zero, an office process does not come back. |
+
+A queue that keeps growing while every worker is busy means the pool is too small for the load, and a restart counter that climbs faster than `maxTasksPerProcess` explains is the sign of crashes or of timed-out tasks. `jodconverter.metrics.enabled=false` disables the meters.
+
 ## Typical usage patterns
 
 **1)** Install a global (default) manager.
