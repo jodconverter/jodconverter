@@ -15,6 +15,7 @@
 [![Build Status](https://github.com/jodconverter/jodconverter/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/jodconverter/jodconverter/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/jodconverter/jodconverter/badge.svg?branch=master)](https://coveralls.io/github/jodconverter/jodconverter?branch=master)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/90c9707226c6406abbea2353274ac773)](https://www.codacy.com/gh/jodconverter/jodconverter/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jodconverter/jodconverter&utm_campaign=Badge_Grade)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/jodconverter/jodconverter/badge)](https://scorecard.dev/viewer/?uri=github.com/jodconverter/jodconverter)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central Version](https://img.shields.io/maven-central/v/org.jodconverter/jodconverter-local)](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local)
 [![Javadocs](https://javadoc.io/badge/org.jodconverter/jodconverter-local.svg)](https://javadoc.io/doc/org.jodconverter/jodconverter-local)
