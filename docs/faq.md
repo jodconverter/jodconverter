@@ -229,6 +229,24 @@ These are LibreOffice behaviors that **JODConverter** can't change, with the wor
     file paths. See the [LibreOffice discussion](https://ask.libreoffice.org/t/web-hyperlinks-not-preserved-after-export-to-pdf/96762)
     and a [workaround shared by a user](https://github.com/jodconverter/jodconverter/issues/400).
 
+??? question "With `SinglePageSheets`, the top rows or the first columns of an `.xlsx` sheet are missing"
+
+    An Excel workbook remembers where each sheet was scrolled to when it was saved. When LibreOffice exports such a workbook to PDF with the `SinglePageSheets` filter option (`spreadsheet.singlePageSheets` of the [PDF options](getting-started/pdf-options.md)), the page of a scrolled sheet starts at the saved position: the rows above it and the columns on its left are not in the PDF, while the page keeps the size of the whole sheet. A sheet saved 119 rows down loses its first 119 rows.
+
+    It happens with `.xlsx` files only: the same workbook stored as `.xls` or `.ods` is exported in full, and so is an `.xlsx` exported without `SinglePageSheets`. Seen with LibreOffice 25.2; the [Gotenberg](https://github.com/gotenberg/gotenberg/issues/1222) project met it too. A [filter](getting-started/using-filters.md) cannot repair it: moving the view of the loaded document back to the first cell does not change the export.
+
+    The workaround is to convert in two steps, so that the PDF is exported from a document that was not loaded from an `.xlsx` file:
+
+    ```java
+    File ods = File.createTempFile("workbook", ".ods");
+    converter.convert(new File("workbook.xlsx")).to(ods).execute();
+    converter
+      .convert(ods)
+      .to(new File("workbook.pdf"))
+      .with(PdfOptions.builder().spreadsheet(s -> s.singlePageSheets(true)).build())
+      .execute();
+    ```
+
 ??? question "Converting a presentation to HTML no longer creates one image per slide"
 
     The HTML export of presentations changed in LibreOffice 24.2 and no longer produces the image-per-slide output of
