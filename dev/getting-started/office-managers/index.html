@@ -1422,6 +1422,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#describing-the-office" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Describing the office
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#typical-usage-patterns" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2598,6 +2609,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#describing-the-office" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Describing the office
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#typical-usage-patterns" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2748,6 +2770,16 @@ when a manager has no worker able to execute tasks (<code>management.health.jodc
 </tbody>
 </table>
 <p>A queue that keeps growing while every worker is busy means the pool is too small for the load, and a restart counter that climbs faster than <code>maxTasksPerProcess</code> explains is the sign of crashes or of timed-out tasks. <code>jodconverter.metrics.enabled=false</code> disables the meters.</p>
+<h2 id="describing-the-office">Describing the office<a class="headerlink" href="#describing-the-office" title="Permanent link">&para;</a></h2>
+<p><code>OfficeInfoTask</code> asks the office behind a local or an attached manager what it is: its product name, its version, and the filters it has to load and to store documents. No document is loaded.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeInfo</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OfficeInfoTask</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">officeManager</span><span class="p">);</span>
+
+<span class="n">info</span><span class="p">.</span><span class="na">productName</span><span class="p">();</span><span class="w">   </span><span class="c1">// LibreOffice</span>
+<span class="n">info</span><span class="p">.</span><span class="na">version</span><span class="p">();</span><span class="w">       </span><span class="c1">// 25.2.7.2</span>
+<span class="n">info</span><span class="p">.</span><span class="na">exportFilters</span><span class="p">();</span><span class="w"> </span><span class="c1">// writer_pdf_Export, calc_pdf_Export, MS Word 97...</span>
+</code></pre></div>
+<p>Each <code>OfficeFilterInfo</code> gives the name of the filter (the value of the <code>FilterName</code> store property of a <a href="../document-format-registry/">custom format</a>), the name the office shows for it, the service of the documents it applies to, the media type and the extensions of its file type, and whether it loads documents, stores them, or both. It answers "which office is this application really talking to, and can it write that format?" at startup or behind a support endpoint.</p>
+<p>The task asks the office for each of its filters, a few hundred calls: execute it once and keep the result, not for each conversion. It is not available with a <code>RemoteOfficeManager</code>.</p>
 <h2 id="typical-usage-patterns">Typical usage patterns<a class="headerlink" href="#typical-usage-patterns" title="Permanent link">&para;</a></h2>
 <p><strong>1)</strong> Install a global (default) manager.</p>
 <ul>
