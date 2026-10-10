@@ -164,6 +164,7 @@ A profile can be customized in OOo by selecting the Tools > Options menu item. S
 for automated conversions include e.g.
 
 - Load/Save > General: you may e.g., want to disable "Save URLs relative to Internet" for security reasons.
+- Security: block the links of untrusted documents, or set a proxy; the [security page](../getting-started/security.md#harden-the-office-profile) has a ready-made profile.
 - Load/Save > Microsoft Office: these options affect conversions of embedded documents, e.g., an Excel table contained
     in a Word document. If not enabled, the embedded table will likely be lost when converting the Word document to
     another format.
