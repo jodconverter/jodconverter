@@ -210,8 +210,9 @@ tasks.named("check") {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Artifacts
 
+// The license and the copyright notice go with every jar, as the license asks.
 tasks.withType<Jar>().configureEach {
-    from(rootProject.layout.projectDirectory.file("LICENSE")) {
+    from(rootProject.layout.projectDirectory.files("LICENSE", "NOTICE")) {
         into("META-INF")
     }
 }

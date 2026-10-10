@@ -39,6 +39,11 @@ application {
         into("")
     }
 
+    // The license and the copyright notice, at the root of the distribution
+    applicationDistribution.from(rootProject.layout.projectDirectory.files("LICENSE", "NOTICE")) {
+        into("")
+    }
+
     // use the log4j2.xml from the configuration directory
     applicationDefaultJvmArgs = listOf("-Dlog4j2.configurationFile=MY_APP_HOME/conf/log4j2.xml")
 }
