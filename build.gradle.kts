@@ -52,6 +52,7 @@ tasks.register("setVersion") {
     val propertiesFile = layout.projectDirectory.file("gradle.properties")
     // The pages that show the dependency coordinates of the released version.
     val docsFiles = listOf(
+        "README.md",
         "docs/getting-started/java-library/index.md",
         "docs/getting-started/libreoffice-online.md",
         "docs/getting-started/modules.md"
