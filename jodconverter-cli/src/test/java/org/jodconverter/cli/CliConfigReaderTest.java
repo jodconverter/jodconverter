@@ -36,7 +36,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.local.filter.DefaultFilterChain;
 import org.jodconverter.local.filter.Filter;
+import org.jodconverter.local.filter.HeaderFooterRemoverFilter;
 import org.jodconverter.local.filter.NoopFilter;
+import org.jodconverter.local.filter.PageOrientationFilter;
 import org.jodconverter.local.filter.PagesSelectorFilter;
 import org.jodconverter.local.filter.RefreshFilter;
 import org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter;
@@ -565,6 +567,48 @@ class CliConfigReaderTest {
           .hasFieldOrPropertyWithValue("topMargin", null)
           .hasFieldOrPropertyWithValue("rightMargin", null)
           .hasFieldOrPropertyWithValue("bottomMargin", 20);
+    }
+
+    @Test
+    void withPageOrientation_ShouldBeLandscapeByDefault(final @TempDir File dir)
+        throws IOException {
+
+      final var filters =
+          filters(
+              "filters:\n"
+                  + "  - type: page-orientation\n"
+                  + "  - type: page-orientation\n    landscape: true\n"
+                  + "  - type: page-orientation\n    landscape: false\n",
+              dir);
+
+      assertThat(filters).hasSize(3).allMatch(PageOrientationFilter.class::isInstance);
+      assertThat(filters).extracting("landscape").containsExactly(true, true, false);
+    }
+
+    @Test
+    void withPageOrientationThatIsNotABoolean_ShouldThrow(final @TempDir File dir) {
+
+      assertThatIllegalArgumentException()
+          .isThrownBy(
+              () -> filters("filters:\n  - type: page-orientation\n    landscape: up\n", dir))
+          .withMessageContaining("'landscape' expects true or false");
+    }
+
+    @Test
+    void withHeaderFooterRemover_ShouldRemoveBothByDefault(final @TempDir File dir)
+        throws IOException {
+
+      final var filters =
+          filters(
+              "filters:\n"
+                  + "  - type: header-footer-remover\n"
+                  + "  - type: header-footer-remover\n    footer: false\n"
+                  + "  - type: header-footer-remover\n    header: false\n",
+              dir);
+
+      assertThat(filters).hasSize(3).allMatch(HeaderFooterRemoverFilter.class::isInstance);
+      assertThat(filters).extracting("header").containsExactly(true, true, false);
+      assertThat(filters).extracting("footer").containsExactly(true, false, true);
     }
 
     @Test

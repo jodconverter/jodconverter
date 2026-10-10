@@ -35,7 +35,9 @@ import org.jodconverter.cli.CliConfigReader.Section;
 import org.jodconverter.cli.CliConfigReader.Values;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.local.filter.Filter;
+import org.jodconverter.local.filter.HeaderFooterRemoverFilter;
 import org.jodconverter.local.filter.NoopFilter;
+import org.jodconverter.local.filter.PageOrientationFilter;
 import org.jodconverter.local.filter.PagesSelectorFilter;
 import org.jodconverter.local.filter.RefreshFilter;
 import org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter;
@@ -65,6 +67,10 @@ import org.jodconverter.local.filter.text.TextReplacerFilter;
  *       replacements.
  *   <li>{@code page-margins}: {@code left}, {@code top}, {@code right} and {@code bottom} in
  *       millimeters, each optional.
+ *   <li>{@code page-orientation}: {@code landscape}, {@code true} (the default) for landscape
+ *       pages, {@code false} for portrait pages.
+ *   <li>{@code header-footer-remover}: {@code header} and {@code footer}, {@code true} (the
+ *       default) to remove it, {@code false} to keep it.
  *   <li>{@code document-indexes-updater} (or its former name {@code table-of-content-updater}):
  *       {@code level}, the number of levels of the tables of contents, optional.
  * </ul>
@@ -172,6 +178,12 @@ final class FilterParser {
     map.put("text-inserter", FilterParser::textInserter);
     map.put("text-replacer", FilterParser::textReplacer);
     map.put("page-margins", FilterParser::pageMargins);
+    map.put(
+        "page-orientation", section -> new PageOrientationFilter(enabled(section, "landscape")));
+    map.put(
+        "header-footer-remover",
+        section ->
+            new HeaderFooterRemoverFilter(enabled(section, "header"), enabled(section, "footer")));
     map.put("document-indexes-updater", FilterParser::documentIndexesUpdater);
     map.put("table-of-content-updater", FilterParser::documentIndexesUpdater);
     return map;
@@ -257,6 +269,11 @@ final class FilterParser {
 
   private static Integer margin(final Section section, final String key) {
     return section.optional(key).map(value -> Values.integer(value, key)).orElse(null);
+  }
+
+  // An optional boolean key that is true when it is not given.
+  private static boolean enabled(final Section section, final String key) {
+    return section.optional(key).map(value -> Values.bool(value, key)).orElse(true);
   }
 
   private static Filter documentIndexesUpdater(final Section section) {
