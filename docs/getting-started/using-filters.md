@@ -103,6 +103,21 @@ LocalConverter
 The filter is not applied by default: rebuilding an index replaces its entries, so a document whose index was edited by
 hand, or that holds links to the entries of its index, is better exported as it is.
 
+## Converting a CSV file
+
+A CSV file has no page setup, so the office prints it with the defaults of a new spreadsheet: the name of the sheet, which is the name of the file, at the top of each page, and the page number at the bottom. The `HeaderFooterRemoverFilter` switches both off, and the `PageOrientationFilter` gives the columns more room:
+
+```java
+LocalConverter.builder()
+  .filterChain(new HeaderFooterRemoverFilter(), new PageOrientationFilter())
+  .build()
+  .convert(new File("data.csv"))
+  .to(new File("data.pdf"))
+  .execute();
+```
+
+`new HeaderFooterRemoverFilter(true, false)` removes the header and keeps the footer; `new PageOrientationFilter(false)` sets the pages to portrait. Both filters change every page style of the document, apply to spreadsheets and text documents, and leave presentations and drawings as they are.
+
 ## Available filters
 
 **JODConverter** provides these filters out of the box, in the
@@ -113,6 +128,8 @@ package of the local module:
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `RefreshFilter`                     | Refreshes the document (fields, layout). Applied by default when no filter chain is given to the converter.                                    |
 | `PagesSelectorFilter`               | Keeps only the given pages (text documents), sheets (spreadsheets) or slides (presentations and drawings).                                     |
+| `PageOrientationFilter`             | Sets the pages of a text document or of a spreadsheet to landscape or to portrait.                                                             |
+| `HeaderFooterRemoverFilter`         | Removes the page header, the page footer or both from a spreadsheet or a text document; see [Converting a CSV file](#converting-a-csv-file).   |
 | `PageCounterFilter`                 | Counts the pages, sheets or slides of the document, available after the conversion with `getPageCount()`.                                      |
 | `text.DocumentIndexesUpdaterFilter` | Updates the indexes of a text document, and optionally the number of levels of its tables of contents. Replaces `TableOfContentUpdaterFilter`. |
 | `text.PageMarginsFilter`            | Changes the page margins of a text document.                                                                                                   |
