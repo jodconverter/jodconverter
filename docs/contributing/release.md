@@ -43,7 +43,11 @@ credentials and the signing key, which live in the repository secrets; the rest 
 8. **Check** the [release](https://github.com/jodconverter/jodconverter/releases), the artifacts on
     [Maven Central](https://central.sonatype.com/search?q=g:org.jodconverter) (they appear within a few hours) and the
     [documentation](https://jodconverter.github.io/jodconverter/latest/).
-9. **Announce** on Gitter:
+9. **Javadoc.** [javadoc.io](https://javadoc.io) does not publish a new version by itself: on the versions page of
+    a module, such as <https://javadoc.io/versions/org.jodconverter/jodconverter-local>, select the new version and
+    click **Upload selected**. It then reads the Javadoc jar from Maven Central, and the Javadoc badge follows. Each
+    published module has its own page; `jodconverter-local` is the one the badge and the documentation link to.
+10. **Announce** on Gitter:
     ```
     JODConverter X.Y.Z is out!
     * Release Notes: https://jodconverter.github.io/jodconverter/latest/release-notes/release-notes-X.Y.Z/
@@ -52,13 +56,13 @@ credentials and the signing key, which live in the repository secrets; the rest 
 
 ## After the release
 
-10. **Next snapshot.** On a branch from `develop`:
+11. **Next snapshot.** On a branch from `develop`:
     ```bash
     ./gradlew setVersion -PnewVersion=X.Y.Z+1-SNAPSHOT
     ```
     Commit `Post release X.Y.Z` and open its pull request to `develop`. The merge commit of the release leaves
     `master` one commit ahead of `develop`, with no change in it: no need to merge it back.
-11. **Milestone.** Close the milestone of the release and create the next one.
+12. **Milestone.** Close the milestone of the release and create the next one.
 
 ## Secrets of the release workflow
 
