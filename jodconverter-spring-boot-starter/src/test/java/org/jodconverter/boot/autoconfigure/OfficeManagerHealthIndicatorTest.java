@@ -71,6 +71,7 @@ class OfficeManagerHealthIndicatorTest {
     assertThat(details)
         .containsEntry("running", false)
         .containsEntry("queueSize", 0)
+        .containsEntry("taskRetries", 0L)
         .containsEntry("workers", List.of());
   }
 }

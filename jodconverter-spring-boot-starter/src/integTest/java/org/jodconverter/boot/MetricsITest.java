@@ -66,6 +66,13 @@ class MetricsITest {
                 .gauge()
                 .value())
         .isZero();
+    assertThat(
+            registry
+                .get(OfficeManagerMetrics.TASKS_RETRIES)
+                .tag("name", NAME)
+                .functionCounter()
+                .count())
+        .isZero();
     assertThat(gauge(OfficeManagerMetrics.WORKERS_TASKS)).isZero();
     assertThat(gauge(OfficeManagerMetrics.WORKERS_START_FAILURES)).isZero();
     assertThat(

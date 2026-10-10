@@ -66,4 +66,11 @@ class OfficeWorkerPoolStatusTest {
 
     assertThat(status.workers()).hasSize(1);
   }
+
+  @Test
+  void new_WithoutTaskRetries_ShouldCountNone() {
+
+    assertThat(new OfficeWorkerPoolStatus(List.of(), 3).taskRetries()).isZero();
+    assertThat(new OfficeWorkerPoolStatus(List.of(), 3, 4L).taskRetries()).isEqualTo(4L);
+  }
 }

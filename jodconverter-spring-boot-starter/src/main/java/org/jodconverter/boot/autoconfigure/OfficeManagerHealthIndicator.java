@@ -34,7 +34,8 @@ import org.jodconverter.core.office.OfficeWorkerStatus;
 /**
  * A {@link HealthIndicator} of the office managers of the application: up when every manager is
  * running, down otherwise. For a manager that is a pool of workers, the details give the status of
- * each worker and the number of tasks waiting in the queue.
+ * each worker, the number of tasks waiting in the queue and the number of tasks executed again
+ * after their worker was lost.
  */
 public class OfficeManagerHealthIndicator implements HealthIndicator {
 
@@ -70,6 +71,7 @@ public class OfficeManagerHealthIndicator implements HealthIndicator {
     if (manager instanceof AbstractOfficeWorkerPool pool) {
       final var status = pool.getStatus();
       details.put("queueSize", status.queueSize());
+      details.put("taskRetries", status.taskRetries());
       details.put(
           "workers",
           status.workers().stream().map(OfficeManagerHealthIndicator::detailsOf).toList());

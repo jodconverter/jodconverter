@@ -533,6 +533,7 @@ class AbstractOfficeWorkerPoolTest {
       assertThat(task.executions).hasValue(1);
       assertThat(worker.calls).containsExactly("start", "execute", "restart", "execute");
       assertThat(pool.getStatus().workers().get(0).restarts()).isEqualTo(1);
+      assertThat(pool.getStatus().taskRetries()).isEqualTo(1);
     }
 
     @Test
