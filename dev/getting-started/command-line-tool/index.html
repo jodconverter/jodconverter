@@ -1779,6 +1779,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        --info
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-w-working-dir-dir" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3016,6 +3027,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        --info
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-w-working-dir-dir" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3181,6 +3203,19 @@ See <a href="../../../configuration/local-configuration#taskexecutiontimeout">Co
 See <a href="../../../configuration/local-configuration#templateprofiledir">Configuration</a>.</p>
 <h4 id="-v-version">-v, --version<a class="headerlink" href="#-v-version" title="Permanent link">&para;</a></h4>
 <p>Displays version information and exit.</p>
+<h4 id="-info">--info<a class="headerlink" href="#-info" title="Permanent link">&para;</a></h4>
+<p>Starts the office, displays its name, its version and its import and export filters, and exit. The office is the one the other options describe (<code>-i</code>, <code>-p</code>, <code>-u</code>...), so the option tells which office a conversion would use, and whether it has the filter of a format; it cannot be used with <code>-c</code>. Each line gives the name of a filter (the <code>FilterName</code> of a store property), the name the office shows for it and the extensions of its file type:</p>
+<div class="language-text highlight"><pre><span></span><code>LibreOffice 25.2.7.2
+
+Import filters (190):
+  MS Word 97         Word 97–2003 (doc, wps)
+  ...
+
+Export filters (121):
+  calc_pdf_Export    PDF - Portable Document Format (pdf)
+  writer_pdf_Export  PDF - Portable Document Format (pdf)
+  ...
+</code></pre></div>
 <h4 id="-w-working-dir-dir">-w, --working-dir <code>&lt;dir&gt;</code><a class="headerlink" href="#-w-working-dir-dir" title="Permanent link">&para;</a></h4>
 <p>Directory where temporary office profile directories will be created (optional; defaults to java.io.tmpdir).
 See <a href="../../../configuration/local-configuration#workingdir">Configuration</a>.</p>
