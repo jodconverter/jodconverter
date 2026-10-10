@@ -105,6 +105,7 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
   private final AtomicInteger poolState = new AtomicInteger(POOL_STOPPED);
   private final File tempDir;
   private final AtomicLong tempFileCounter = new AtomicLong(0);
+  private final AtomicLong retriedCounter = new AtomicLong(0);
   private final long taskQueueTimeout;
   private final long taskExecutionTimeout;
   private final int taskQueueCapacity;
@@ -335,14 +336,17 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
   }
 
   /**
-   * Gets a snapshot of this pool: the status of each worker, in the order of the workers, and the
-   * number of tasks waiting in the queue.
+   * Gets a snapshot of this pool: the status of each worker, in the order of the workers, the
+   * number of tasks waiting in the queue, and the number of times a task was executed again after
+   * its worker was lost.
    *
    * @return The status of the pool; without any worker if the pool was never started.
    */
   public @NonNull OfficeWorkerPoolStatus getStatus() {
     return new OfficeWorkerPoolStatus(
-        runners.stream().map(OfficeWorkerRunner::getStatus).toList(), queue.size());
+        runners.stream().map(OfficeWorkerRunner::getStatus).toList(),
+        queue.size(),
+        retriedCounter.get());
   }
 
   /**
@@ -519,6 +523,8 @@ public abstract class AbstractOfficeWorkerPool implements OfficeManager {
     if (job.getRetries() >= taskRetries || !job.getTask().isRetryable() || !job.tryRetry()) {
       return false;
     }
+
+    retriedCounter.incrementAndGet();
 
     // The execution timeout of the lost attempt is replaced before any worker can take the job.
     job.setTimeout(schedule(() -> onQueueTimeout(job), taskQueueTimeout));

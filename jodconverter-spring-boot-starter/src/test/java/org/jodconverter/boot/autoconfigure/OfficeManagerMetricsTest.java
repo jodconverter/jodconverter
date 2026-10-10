@@ -84,12 +84,20 @@ class OfficeManagerMetricsTest {
                       new OfficeWorkerStatus(OfficeWorkerState.BUSY, 2, 2, 0),
                       new OfficeWorkerStatus(OfficeWorkerState.BUSY, 7, 0, 0),
                       new OfficeWorkerStatus(OfficeWorkerState.RESTARTING, 0, 4, 2)),
-                  5));
+                  5,
+                  3L));
       final var registry = new SimpleMeterRegistry();
 
       new OfficeManagerMetrics(Map.of(POOL, pool)).bindTo(registry);
 
       assertThat(gauge(registry, OfficeManagerMetrics.QUEUE_SIZE)).isEqualTo(5);
+      assertThat(
+              registry
+                  .get(OfficeManagerMetrics.TASKS_RETRIES)
+                  .tag("name", POOL)
+                  .functionCounter()
+                  .count())
+          .isEqualTo(3);
       assertThat(workers(registry, "starting")).isZero();
       assertThat(workers(registry, "ready")).isEqualTo(1);
       assertThat(workers(registry, "busy")).isEqualTo(2);

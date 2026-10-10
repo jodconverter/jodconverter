@@ -49,7 +49,7 @@ fast, and two timeouts apply to a task: `taskQueueTimeout`, from its submission 
 
 The pool can be observed: `getStatus()` returns a snapshot with the state of each worker (`STARTING`, `READY`, `BUSY`,
 `RESTARTING` or `STOPPED`), the tasks it executed since it was last made ready, its restarts and its failed start
-attempts in a row, plus the number of tasks waiting in the queue. With the Spring Boot starter and Spring Boot Actuator
+attempts in a row, plus the number of tasks waiting in the queue and the number of times a task was executed again after its worker was lost (see `taskRetries`). With the Spring Boot starter and Spring Boot Actuator
 on the classpath, the `jodconverter` health indicator reports these details for every office manager bean, and is down
 when a manager has no worker able to execute tasks (`management.health.jodconverter.enabled=false` disables it).
 
@@ -58,6 +58,7 @@ With [Micrometer](https://micrometer.io/) on the classpath too, which Spring Boo
 | Meter                                 | Type    | What it measures                                                                                                |
 | ------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------- |
 | `jodconverter.queue.size`             | Gauge   | The tasks waiting in the queue for a worker.                                                                    |
+| `jodconverter.tasks.retries`          | Counter | The times a task was executed again after its worker was lost; stays at zero without `taskRetries`.             |
 | `jodconverter.workers`                | Gauge   | The workers in a state, given by the `state` tag: `starting`, `ready`, `busy`, `restarting` or `stopped`.       |
 | `jodconverter.workers.tasks`          | Gauge   | The tasks executed by the workers since each was last made ready.                                               |
 | `jodconverter.workers.restarts`       | Counter | The restarts of the workers since the manager was started.                                                      |

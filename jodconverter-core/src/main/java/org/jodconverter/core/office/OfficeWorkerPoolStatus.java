@@ -29,18 +29,32 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @param workers The status of each worker, in the order of the workers of the pool.
  * @param queueSize The number of tasks waiting in the queue for a worker.
+ * @param taskRetries The number of times a task was executed again after its worker was lost, since
+ *     the pool was created; always 0 for a pool without task retries.
  */
 public record OfficeWorkerPoolStatus(
-    @NonNull List<@NonNull OfficeWorkerStatus> workers, int queueSize) {
+    @NonNull List<@NonNull OfficeWorkerStatus> workers, int queueSize, long taskRetries) {
 
   /**
    * Creates a status.
    *
    * @param workers The status of each worker.
    * @param queueSize The number of tasks waiting in the queue.
+   * @param taskRetries The number of times a task was executed again after its worker was lost.
    */
   public OfficeWorkerPoolStatus {
     workers = List.copyOf(workers);
+  }
+
+  /**
+   * Creates a status without any task retry.
+   *
+   * @param workers The status of each worker.
+   * @param queueSize The number of tasks waiting in the queue.
+   */
+  public OfficeWorkerPoolStatus(
+      final @NonNull List<@NonNull OfficeWorkerStatus> workers, final int queueSize) {
+    this(workers, queueSize, 0L);
   }
 
   /**

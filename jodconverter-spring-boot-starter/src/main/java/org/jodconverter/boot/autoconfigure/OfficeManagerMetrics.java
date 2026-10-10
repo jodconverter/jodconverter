@@ -38,9 +38,9 @@ import org.jodconverter.core.office.OfficeWorkerStatus;
 
 /**
  * A {@link MeterBinder} that exposes the status of the office managers that are pools of workers:
- * the tasks waiting in the queue, the workers in each state, the tasks they executed since they
- * were last made ready, their restarts and their failed start attempts. Each meter has a {@code
- * name} tag, the name of the office manager bean.
+ * the tasks waiting in the queue, the tasks executed again after their worker was lost, the workers
+ * in each state, the tasks they executed since they were last made ready, their restarts and their
+ * failed start attempts. Each meter has a {@code name} tag, the name of the office manager bean.
  *
  * <p>The meters read {@link AbstractOfficeWorkerPool#getStatus()} when they are collected; nothing
  * is recorded while a task is executed.
@@ -49,6 +49,9 @@ public class OfficeManagerMetrics implements MeterBinder {
 
   /** The tasks waiting in the queue of the manager for a worker. */
   public static final String QUEUE_SIZE = "jodconverter.queue.size";
+
+  /** The times a task of the manager was executed again after its worker was lost. */
+  public static final String TASKS_RETRIES = "jodconverter.tasks.retries";
 
   /** The workers of the manager in a state, given by the {@code state} tag. */
   public static final String WORKERS = "jodconverter.workers";
@@ -95,6 +98,11 @@ public class OfficeManagerMetrics implements MeterBinder {
     Gauge.builder(QUEUE_SIZE, pool, p -> p.getStatus().queueSize())
         .description("Tasks waiting in the queue for a worker")
         .baseUnit(TASKS_UNIT)
+        .tag(NAME_TAG, name)
+        .register(registry);
+
+    FunctionCounter.builder(TASKS_RETRIES, pool, p -> p.getStatus().taskRetries())
+        .description("Times a task was executed again after its worker was lost")
         .tag(NAME_TAG, name)
         .register(registry);
 
