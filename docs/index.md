@@ -17,7 +17,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/90c9707226c6406abbea2353274ac773)](https://www.codacy.com/gh/jodconverter/jodconverter/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jodconverter/jodconverter&utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central Version](https://img.shields.io/maven-central/v/org.jodconverter/jodconverter-local)](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local)
-[![Javadocs](http://javadoc.io/badge/org.jodconverter/jodconverter-local.svg)](http://javadoc.io/doc/org.jodconverter/jodconverter-local)
+[![Javadocs](https://javadoc.io/badge/org.jodconverter/jodconverter-local.svg)](https://javadoc.io/doc/org.jodconverter/jodconverter-local)
 [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink.svg)](https://github.com/sponsors/jodconverter)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XUYFM5NLLK628)
