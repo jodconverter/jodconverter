@@ -1,0 +1,61 @@
+name: codeql
+
+# Static analysis of the Java code and of the workflows with CodeQL, the code scanner of GitHub.
+# The findings appear in the Security tab of the repository (Code scanning), and on the pull
+# request that introduces them.
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+  push:
+    branches:
+      - develop
+      - master
+  schedule:
+    # Every Monday at 05:17 UTC: the queries improve over time, so the code is analyzed even when
+    # nothing was pushed.
+    - cron: '17 5 * * 1'
+
+# A new push to the same pull request or branch cancels the analysis in progress.
+concurrency:
+  group: codeql-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write # to upload the findings to the Security tab
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The Java code is analyzed from its sources, without building it: no JDK, no Gradle and
+          # no office are needed here.
+          - language: java-kotlin
+            build-mode: none
+          # The workflows themselves (script injection, token permissions...).
+          - language: actions
+            build-mode: none
+
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 🔎 Initialize CodeQL
+        uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      - name: 🔬 Analyze
+        uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          category: /language:${{ matrix.language }}
