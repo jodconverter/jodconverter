@@ -1492,6 +1492,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#converting-a-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Converting a CSV file
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#available-filters" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2543,6 +2554,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#converting-a-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Converting a CSV file
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#available-filters" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2655,6 +2677,16 @@ layout. It can also change the number of levels of the tables of contents.</p>
 </code></pre></div>
 <p>The filter is not applied by default: rebuilding an index replaces its entries, so a document whose index was edited by
 hand, or that holds links to the entries of its index, is better exported as it is.</p>
+<h2 id="converting-a-csv-file">Converting a CSV file<a class="headerlink" href="#converting-a-csv-file" title="Permanent link">&para;</a></h2>
+<p>A CSV file has no page setup, so the office prints it with the defaults of a new spreadsheet: the name of the sheet, which is the name of the file, at the top of each page, and the page number at the bottom. The <code>HeaderFooterRemoverFilter</code> switches both off, and the <code>PageOrientationFilter</code> gives the columns more room:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">filterChain</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HeaderFooterRemoverFilter</span><span class="p">(),</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PageOrientationFilter</span><span class="p">())</span>
+<span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"data.csv"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"data.pdf"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p><code>new HeaderFooterRemoverFilter(true, false)</code> removes the header and keeps the footer; <code>new PageOrientationFilter(false)</code> sets the pages to portrait. Both filters change every page style of the document, apply to spreadsheets and text documents, and leave presentations and drawings as they are.</p>
 <h2 id="available-filters">Available filters<a class="headerlink" href="#available-filters" title="Permanent link">&para;</a></h2>
 <p><strong>JODConverter</strong> provides these filters out of the box, in the
 <a href="https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter">filter</a>
@@ -2674,6 +2706,14 @@ package of the local module:</p>
 <tr>
 <td><code>PagesSelectorFilter</code></td>
 <td>Keeps only the given pages (text documents), sheets (spreadsheets) or slides (presentations and drawings).</td>
+</tr>
+<tr>
+<td><code>PageOrientationFilter</code></td>
+<td>Sets the pages of a text document or of a spreadsheet to landscape or to portrait.</td>
+</tr>
+<tr>
+<td><code>HeaderFooterRemoverFilter</code></td>
+<td>Removes the page header, the page footer or both from a spreadsheet or a text document; see <a href="#converting-a-csv-file">Converting a CSV file</a>.</td>
 </tr>
 <tr>
 <td><code>PageCounterFilter</code></td>
