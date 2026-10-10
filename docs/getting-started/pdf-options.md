@@ -239,7 +239,7 @@ property; set it with `filterData("SignatureCertificate", certificate)` and `fil
 | `singlePageSheets(boolean)` | `SinglePageSheets`                            | LibreOffice 6.4+  |
 | `sheetRange(String)`        | `SheetRange`, sheet positions such as `"1-3"` | LibreOffice 24.8+ |
 
-LibreOffice ignores `sheetRange` when `singlePageSheets` is set.
+LibreOffice ignores `sheetRange` when `singlePageSheets` is set. With an `.xlsx` workbook, `singlePageSheets` may leave out the top rows or the first columns of a sheet that was saved scrolled; see the [known LibreOffice issues](../faq.md#known-libreoffice-issues).
 
 ### Any other property
 
