@@ -81,6 +81,7 @@ the conversion does not work. All conversions supported by your OOo installation
             <samp><b>*.sxi</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenOffice.org 1.0 Presentation<sup>3</sup><br>
             <samp><b>*.ppt</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Microsoft PowerPoint<br>
             <samp><b>*.pptx</b>&nbsp;&nbsp;&nbsp;</samp>Microsoft PowerPoint XML<br>
+            <samp><b>*.svg</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Scalable Vector Graphics<sup>4</sup><br>
             <samp><b>*.html</b>&nbsp;&nbsp;&nbsp;</samp>HTML<sup>2</sup>
         </td>
     </tr>
@@ -93,7 +94,7 @@ the conversion does not work. All conversions supported by your OOo installation
             <samp><b>*.vsdx</b>&nbsp;&nbsp;&nbsp;</samp>Microsoft Visio XML
         </td>
         <td>
-            <samp><b>*.svg</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Scalable Vector Graphics<br>
+            <samp><b>*.svg</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Scalable Vector Graphics<sup>4</sup><br>
             <samp><b>*.swf</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Macromedia Flash<sup>3</sup>
         </td>
     </tr>
@@ -106,5 +107,7 @@ the conversion does not work. All conversions supported by your OOo installation
 >     be saved in the same directory. This requires extra care in your code, especially in a web environment.
 > 3. Written by Apache OpenOffice and by old versions of LibreOffice only: LibreOffice 25.2 has no export filter for the
 >     OpenOffice.org 1.0 formats nor for Flash, and such a conversion fails. These formats are still read.
+> 4. LibreOffice exports presentations and drawings to SVG, not text documents nor spreadsheets: it lists SVG filters
+>     for them too, but storing a whole document with these filters fails (seen with LibreOffice 24.2 and 25.2).
 
 --8<-- "note.md"
