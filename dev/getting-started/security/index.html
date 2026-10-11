@@ -1688,6 +1688,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#harden-the-office-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Harden the office profile
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Harden the office profile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#block-the-links-of-untrusted-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Block the links of untrusted documents
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#send-the-remaining-requests-through-a-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Send the remaining requests through a proxy
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#converting-through-a-separate-server" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2552,6 +2591,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#harden-the-office-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Harden the office profile
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Harden the office profile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#block-the-links-of-untrusted-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Block the links of untrusted documents
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#send-the-remaining-requests-through-a-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Send the remaining requests through a proxy
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#converting-through-a-separate-server" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2605,8 +2683,7 @@ updated on load. The previous default, <code>QUIET_UPDATE</code>, updated them s
 <a href="https://nvd.nist.gov/vuln/detail/CVE-2020-25820">CVE-2020-25820</a>. The <code>useUnsafeQuietUpdate</code> option of the
 <a href="../../configuration/local-converter/#useunsafequietupdate">LocalConverter</a> brings the old behavior back: don't enable it
 for untrusted documents.</p>
-<p><strong>What it does not cover:</strong> <code>NO_UPDATE</code> does not stop every external resource from being loaded; for example, linked
-images in a document can still be fetched while it is loaded. Isolation is what protects you.</p>
+<p><strong>What it does not cover:</strong> <code>NO_UPDATE</code> does not stop every external resource from being loaded. A linked image is still fetched while the document is loaded: with the default settings of LibreOffice 25.2, an image linked to a <code>file:///</code> URL ends up in the converted PDF, and an image linked to an <code>http://</code> URL makes the office send three requests (<code>OPTIONS</code>, <code>HEAD</code>, <code>GET</code>) to that address. The <a href="#harden-the-office-profile">profile settings below</a> stop both, and isolation protects you from what settings miss.</p>
 <h2 id="isolate-the-office-process">Isolate the office process<a class="headerlink" href="#isolate-the-office-process" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Network:</strong> run the office processes where they can't reach internal services, cloud metadata endpoints or the
@@ -2618,8 +2695,50 @@ images in a document can still be fetched while it is loaded. Isolation is what 
 <li><strong>Limits:</strong> keep a <code>taskExecutionTimeout</code>, and limit the size of the uploaded documents in your application.</li>
 <li><strong>Updates:</strong> keep LibreOffice up to date; security fixes in document filters are released regularly.</li>
 </ul>
-<p>Office settings (Tools &gt; Options), such as the security and load/save options, can be applied to the office processes
-started by <strong>JODConverter</strong> with a <a href="../../configuration/local-manager/#templateprofiledir">templateProfileDir</a>.</p>
+<h2 id="harden-the-office-profile">Harden the office profile<a class="headerlink" href="#harden-the-office-profile" title="Permanent link">&para;</a></h2>
+<p>The office processes started by a <code>LocalOfficeManager</code> get a new, empty user profile, so they run with the default settings of the office. A <a href="../../configuration/local-manager/#templateprofiledir">templateProfileDir</a> gives them settings of your own: the directory is copied to the profile of each process before it starts. It only needs a <code>user</code> directory with one file, <code>registrymodifications.xcu</code>, which is where the office keeps the settings changed in Tools &gt; Options.</p>
+<h3 id="block-the-links-of-untrusted-documents">Block the links of untrusted documents<a class="headerlink" href="#block-the-links-of-untrusted-documents" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code>hardened-profile/
+└── user/
+    └── registrymodifications.xcu
+</code></pre></div>
+<div class="language-xml highlight"><span class="filename">hardened-profile/user/registrymodifications.xcu</span><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;oor:items</span><span class="w"> </span><span class="na">xmlns:oor=</span><span class="s">"http://openoffice.org/2001/registry"</span><span class="w"> </span><span class="na">xmlns:xs=</span><span class="s">"http://www.w3.org/2001/XMLSchema"</span><span class="w"> </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;item</span><span class="w"> </span><span class="na">oor:path=</span><span class="s">"/org.openoffice.Office.Common/Security/Scripting"</span><span class="nt">&gt;&lt;prop</span><span class="w"> </span><span class="na">oor:name=</span><span class="s">"BlockUntrustedRefererLinks"</span><span class="w"> </span><span class="na">oor:op=</span><span class="s">"fuse"</span><span class="nt">&gt;&lt;value&gt;</span>true<span class="nt">&lt;/value&gt;&lt;/prop&gt;&lt;/item&gt;</span>
+<span class="nt">&lt;/oor:items&gt;</span>
+</code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Java</label><label for="__tabbed_1_2">Spring Boot</label><label for="__tabbed_1_3">Command Line</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-java highlight"><pre><span></span><code><span class="n">OfficeManager</span><span class="w"> </span><span class="n">officeManager</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">LocalOfficeManager</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">templateProfileDir</span><span class="p">(</span><span class="s">"/opt/jodconverter/hardened-profile"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-yml highlight"><span class="filename">application.yml</span><pre><span></span><code><span class="nt">jodconverter</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">local</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">template-profile-dir</span><span class="p">:</span><span class="w"> </span><span class="s">"/opt/jodconverter/hardened-profile"</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-shell highlight"><pre><span></span><code>jodconverter-cli<span class="w"> </span>-u<span class="w"> </span>/opt/jodconverter/hardened-profile<span class="w"> </span>infile<span class="w"> </span>outfile
+</code></pre></div>
+</div>
+</div>
+</div>
+<p><code>BlockUntrustedRefererLinks</code> is the setting behind the "Block any links from documents not among the trusted locations" option of <em>Tools &gt; Options &gt; LibreOffice &gt; Security &gt; Security Options and Warnings</em>. With it, the office does not follow the links of a document that is not in one of its trusted file locations, and a new profile has none: the linked image of the examples above is neither read from the file system nor requested from the network. The integration tests of <strong>JODConverter</strong> check both with this very file.</p>
+<p>The setting does not tell a hostile link from a wanted one. Documents that legitimately link to images lose them in the output, and the <a href="../using-filters/#available-filters">LinkedImagesEmbedderFilter</a> has nothing left to embed. It is a setting of LibreOffice; with another office, check that it has the same effect before relying on it.</p>
+<h3 id="send-the-remaining-requests-through-a-proxy">Send the remaining requests through a proxy<a class="headerlink" href="#send-the-remaining-requests-through-a-proxy" title="Permanent link">&para;</a></h3>
+<p>To control what the office may still reach, for example when the links must stay enabled, give it a proxy that filters the destinations. The proxy settings of the office are in the same file:</p>
+<div class="language-xml highlight"><span class="filename">registrymodifications.xcu (inside oor:items)</span><pre><span></span><code><span class="nt">&lt;item</span><span class="w"> </span><span class="na">oor:path=</span><span class="s">"/org.openoffice.Inet/Settings"</span><span class="nt">&gt;&lt;prop</span><span class="w"> </span><span class="na">oor:name=</span><span class="s">"ooInetProxyType"</span><span class="w"> </span><span class="na">oor:op=</span><span class="s">"fuse"</span><span class="nt">&gt;&lt;value&gt;</span>2<span class="nt">&lt;/value&gt;&lt;/prop&gt;&lt;/item&gt;</span>
+<span class="nt">&lt;item</span><span class="w"> </span><span class="na">oor:path=</span><span class="s">"/org.openoffice.Inet/Settings"</span><span class="nt">&gt;&lt;prop</span><span class="w"> </span><span class="na">oor:name=</span><span class="s">"ooInetHTTPProxyName"</span><span class="w"> </span><span class="na">oor:op=</span><span class="s">"fuse"</span><span class="nt">&gt;&lt;value&gt;</span>proxy.internal<span class="nt">&lt;/value&gt;&lt;/prop&gt;&lt;/item&gt;</span>
+<span class="nt">&lt;item</span><span class="w"> </span><span class="na">oor:path=</span><span class="s">"/org.openoffice.Inet/Settings"</span><span class="nt">&gt;&lt;prop</span><span class="w"> </span><span class="na">oor:name=</span><span class="s">"ooInetHTTPProxyPort"</span><span class="w"> </span><span class="na">oor:op=</span><span class="s">"fuse"</span><span class="nt">&gt;&lt;value&gt;</span>3128<span class="nt">&lt;/value&gt;&lt;/prop&gt;&lt;/item&gt;</span>
+<span class="nt">&lt;item</span><span class="w"> </span><span class="na">oor:path=</span><span class="s">"/org.openoffice.Inet/Settings"</span><span class="nt">&gt;&lt;prop</span><span class="w"> </span><span class="na">oor:name=</span><span class="s">"ooInetHTTPSProxyName"</span><span class="w"> </span><span class="na">oor:op=</span><span class="s">"fuse"</span><span class="nt">&gt;&lt;value&gt;</span>proxy.internal<span class="nt">&lt;/value&gt;&lt;/prop&gt;&lt;/item&gt;</span>
+<span class="nt">&lt;item</span><span class="w"> </span><span class="na">oor:path=</span><span class="s">"/org.openoffice.Inet/Settings"</span><span class="nt">&gt;&lt;prop</span><span class="w"> </span><span class="na">oor:name=</span><span class="s">"ooInetHTTPSProxyPort"</span><span class="w"> </span><span class="na">oor:op=</span><span class="s">"fuse"</span><span class="nt">&gt;&lt;value&gt;</span>3128<span class="nt">&lt;/value&gt;&lt;/prop&gt;&lt;/item&gt;</span>
+</code></pre></div>
+<p><code>ooInetProxyType</code> 2 means a manual proxy (0 is none, 1 the proxy of the system). With these settings, LibreOffice 25.2 sends the request of an <code>http://</code> link to the proxy and opens the tunnel of an <code>https://</code> link through it (<code>CONNECT</code>), which the integration tests check too. A proxy does nothing about <code>file:///</code> links: the file system isolation above does.</p>
 <h2 id="converting-through-a-separate-server">Converting through a separate server<a class="headerlink" href="#converting-through-a-separate-server" title="Permanent link">&para;</a></h2>
 <p>Converting through a remote server, such as <a href="../libreoffice-online/">LibreOffice Online or Collabora Online</a>, keeps the
 office program out of your application's host altogether. The isolation advice above then applies to that server.</p>
