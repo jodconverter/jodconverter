@@ -115,8 +115,7 @@ class DefaultDocumentFormatRegistryTest {
           "sxw",
           "pdf",
           "jpg",
-          "png",
-          "svg");
+          "png");
 
       // SPREADSHEET output format
       assertExpectedExtensions(
@@ -136,8 +135,7 @@ class DefaultDocumentFormatRegistryTest {
           "sxc",
           "pdf",
           "jpg",
-          "png",
-          "svg");
+          "png");
 
       // PRESENTATION output format
       assertExpectedExtensions(
@@ -185,8 +183,7 @@ class DefaultDocumentFormatRegistryTest {
           "ott",
           "pdf",
           "jpg",
-          "png",
-          "svg");
+          "png");
     }
   }
 
