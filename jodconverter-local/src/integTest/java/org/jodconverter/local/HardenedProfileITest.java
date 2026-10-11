@@ -198,14 +198,15 @@ class HardenedProfileITest {
 
     convert(null, () -> !requests.isEmpty(), REQUESTS_TIMEOUT, local, remote);
 
-    // The image of the file system is in the PDF.
-    assertThat(imageCount(pdfOf(local))).isEqualTo(1);
-    // And the web server was asked for the other one. This is what the office does, not what
-    // JODConverter does: an office that no longer does it by default (none was requested with
-    // LibreOffice 26.8 on macOS) is good news, and nothing to test.
+    // The image of the file system is in the PDF, and the web server was asked for the other one.
+    // This is what the office does, not what JODConverter does: an office that follows neither
+    // link by default (LibreOffice 26.8 on macOS does not) is good news, and nothing to test.
+    final var localImages = imageCount(pdfOf(local));
     assumeFalse(
-        requests.isEmpty(),
-        "This office does not request a linked image over HTTP with its default settings");
+        localImages == 0 && requests.isEmpty(),
+        "This office does not follow the links of a document with its default settings");
+    assertThat(localImages).isEqualTo(1);
+    assertThat(requests).isNotEmpty();
     assertThat(requests).allMatch(request -> request.contains(" /image.png "));
   }
 
