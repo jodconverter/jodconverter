@@ -552,6 +552,8 @@
         
       
         
+      
+        
           
         
       
@@ -603,6 +605,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/release-notes-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -828,6 +857,8 @@
         
       
         
+      
+        
           
         
       
@@ -879,6 +910,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-guide-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Migration 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -1485,6 +1543,28 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         Updating the indexes of a document
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-a-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Converting a CSV file
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparing-two-versions-of-a-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Comparing two versions of a document
       </span>
     </span>
   </a>
@@ -2543,6 +2623,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#converting-a-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Converting a CSV file
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparing-two-versions-of-a-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Comparing two versions of a document
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#available-filters" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2655,6 +2757,28 @@ layout. It can also change the number of levels of the tables of contents.</p>
 </code></pre></div>
 <p>The filter is not applied by default: rebuilding an index replaces its entries, so a document whose index was edited by
 hand, or that holds links to the entries of its index, is better exported as it is.</p>
+<h2 id="converting-a-csv-file">Converting a CSV file<a class="headerlink" href="#converting-a-csv-file" title="Permanent link">&para;</a></h2>
+<p>A CSV file has no page setup, so the office prints it with the defaults of a new spreadsheet: the name of the sheet, which is the name of the file, at the top of each page, and the page number at the bottom. The <code>HeaderFooterRemoverFilter</code> switches both off, and the <code>PageOrientationFilter</code> gives the columns more room:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">filterChain</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HeaderFooterRemoverFilter</span><span class="p">(),</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PageOrientationFilter</span><span class="p">())</span>
+<span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"data.csv"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"data.pdf"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p><code>new HeaderFooterRemoverFilter(true, false)</code> removes the header and keeps the footer; <code>new PageOrientationFilter(false)</code> sets the pages to portrait. Both filters change every page style of the document, apply to spreadsheets and text documents, and leave presentations and drawings as they are.</p>
+<h2 id="comparing-two-versions-of-a-document">Comparing two versions of a document<a class="headerlink" href="#comparing-two-versions-of-a-document" title="Permanent link">&para;</a></h2>
+<p>The <code>DocumentComparerFilter</code> does what the <em>Edit &gt; Track Changes &gt; Compare Document</em> command of the office does: the document being converted is compared with an earlier version of it, and the differences become tracked changes. What the converted document has and the original has not is an insertion, what the original had and it has not is a deletion.</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">loadProperty</span><span class="p">(</span><span class="s">"ReadOnly"</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="na">filterChain</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DocumentComparerFilter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"contract-v1.docx"</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"contract-v2.docx"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"changes.pdf"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p>Exported to PDF, the result shows the changes as the office displays them, the inserted and the deleted text both present; stored as a text document (<code>.odt</code>, <code>.docx</code>), it keeps them, to accept or to reject in the office.</p>
+<p>The office only compares a document it can edit, and a converter loads documents read-only by default: <code>loadProperty("ReadOnly", false)</code> is required, and the filter fails with a message that says so without it. The filter applies to text documents, and the office compares the words character by character, so two words that share letters may be shown as a partial change.</p>
 <h2 id="available-filters">Available filters<a class="headerlink" href="#available-filters" title="Permanent link">&para;</a></h2>
 <p><strong>JODConverter</strong> provides these filters out of the box, in the
 <a href="https://github.com/jodconverter/jodconverter/tree/master/jodconverter-local/src/main/java/org/jodconverter/local/filter">filter</a>
@@ -2674,6 +2798,14 @@ package of the local module:</p>
 <tr>
 <td><code>PagesSelectorFilter</code></td>
 <td>Keeps only the given pages (text documents), sheets (spreadsheets) or slides (presentations and drawings).</td>
+</tr>
+<tr>
+<td><code>PageOrientationFilter</code></td>
+<td>Sets the pages of a text document or of a spreadsheet to landscape or to portrait.</td>
+</tr>
+<tr>
+<td><code>HeaderFooterRemoverFilter</code></td>
+<td>Removes the page header, the page footer or both from a spreadsheet or a text document; see <a href="#converting-a-csv-file">Converting a CSV file</a>.</td>
 </tr>
 <tr>
 <td><code>PageCounterFilter</code></td>
@@ -2702,6 +2834,10 @@ package of the local module:</p>
 <tr>
 <td><code>text.DocumentInserterFilter</code></td>
 <td>Inserts another document at the end of the loaded one, on a new page or not (see <a href="#merging-documents">Merging documents</a>).</td>
+</tr>
+<tr>
+<td><code>text.DocumentComparerFilter</code></td>
+<td>Compares a text document with an earlier version of it; the differences become tracked changes (see <a href="#comparing-two-versions-of-a-document">Comparing two versions of a document</a>).</td>
 </tr>
 <tr>
 <td><code>text.LinkedImagesEmbedderFilter</code></td>

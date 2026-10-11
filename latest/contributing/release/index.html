@@ -552,6 +552,8 @@
         
       
         
+      
+        
           
         
       
@@ -603,6 +605,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/release-notes-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -828,6 +857,8 @@
         
       
         
+      
+        
           
         
       
@@ -879,6 +910,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-guide-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Migration 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -2645,8 +2703,8 @@ credentials and the signing key, which live in the repository secrets; the rest 
 </code></pre></div>
     The task writes <code>version</code> in <code>gradle.properties</code> and, for a release version, replaces the previous released
     version in the pages of the documentation that show dependency coordinates.</li>
-<li><strong>Full build and integration tests, locally.</strong> The continuous integration runs them on Linux only; a release
-    deserves a run with the office installation of another platform:
+<li><strong>Full build and integration tests, locally.</strong> The continuous integration runs them on Linux, Windows and macOS,
+    but the two last ones do not block a merge; a release deserves a run on the release machine too:
     <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>clean<span class="w"> </span>build<span class="w"> </span>integrationTest
 </code></pre></div></li>
 <li><strong>Release commit.</strong> On a <code>release/X.Y.Z</code> branch, commit with the message <code>Release X.Y.Z</code> and open its pull
@@ -2665,6 +2723,10 @@ credentials and the signing key, which live in the repository secrets; the rest 
 <li><strong>Check</strong> the <a href="https://github.com/jodconverter/jodconverter/releases">release</a>, the artifacts on
     <a href="https://central.sonatype.com/search?q=g:org.jodconverter">Maven Central</a> (they appear within a few hours) and the
     <a href="https://jodconverter.github.io/jodconverter/latest/">documentation</a>.</li>
+<li><strong>Javadoc.</strong> <a href="https://javadoc.io">javadoc.io</a> does not publish a new version by itself: on the versions page of
+    a module, such as <a href="https://javadoc.io/versions/org.jodconverter/jodconverter-local">https://javadoc.io/versions/org.jodconverter/jodconverter-local</a>, select the new version and
+    click <strong>Upload selected</strong>. It then reads the Javadoc jar from Maven Central, and the Javadoc badge follows. Each
+    published module has its own page; <code>jodconverter-local</code> is the one the badge and the documentation link to.</li>
 <li><strong>Announce</strong> on Gitter:
     <div class="language-text highlight"><pre><span></span><code>JODConverter X.Y.Z is out!
 * Release Notes: https://jodconverter.github.io/jodconverter/latest/release-notes/release-notes-X.Y.Z/

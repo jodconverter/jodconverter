@@ -552,6 +552,8 @@
         
       
         
+      
+        
           
         
       
@@ -603,6 +605,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-notes/release-notes-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -828,6 +857,8 @@
         
       
         
+      
+        
           
         
       
@@ -879,6 +910,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration-guides/migration-guide-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Migration 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -2695,31 +2753,21 @@ Note that the more office process you start, the more RAM will be consumed by Li
 </details>
 <details class="question">
 <summary>How could I specify the password of a password-protected file (input file) to convert?</summary>
-<p>If you want to be able to convert a password-protected file, you must set the <code>Password</code> load property.</p>
-<p>Here's how this could be done:</p>
-<div class="language-java highlight"><pre><span></span><code><span class="kd">final</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"path_to_password_protected_file"</span><span class="p">);</span>
-<span class="kd">final</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"path_to_output_file"</span><span class="p">);</span>
-
-<span class="kd">final</span><span class="w"> </span><span class="n">OfficeManager</span><span class="w"> </span><span class="n">manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LocalOfficeManager</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">startFailFast</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
-<span class="k">try</span><span class="p">{</span>
-<span class="w">    </span><span class="n">manager</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>
-<span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">loadProperties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">LocalConverter</span><span class="p">.</span><span class="na">DEFAULT_LOAD_PROPERTIES</span><span class="p">);</span>
-<span class="w">    </span><span class="n">loadProperties</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"Password"</span><span class="p">,</span><span class="s">"myPassword"</span><span class="p">);</span>
-
-<span class="w">    </span><span class="n">LocalConverter</span>
-<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">        </span><span class="p">.</span><span class="na">officeManager</span><span class="p">(</span><span class="n">manager</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="na">loadProperties</span><span class="p">(</span><span class="n">loadProperties</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
-<span class="w">        </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">in</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
-
-<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
-<span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">OfficeUtils</span><span class="p">.</span><span class="na">stopQuietly</span><span class="p">(</span><span class="n">manager</span><span class="p">);</span>
-<span class="p">}</span>
+<p>Give it to the conversion:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span><span class="p">.</span><span class="na">make</span><span class="p">(</span><span class="n">manager</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"path_to_password_protected_file"</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"path_to_output_file"</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"myPassword"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p>Without the password, or with a wrong one, the conversion fails with a <code>PasswordProtectedException</code>, whose
+message says which of the two. The command line tool takes the password with <code>--password</code>.</p>
+<p>When every document of a converter has the same password, the <code>Password</code> load property of the converter does
+the same for all of them:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">LocalConverter</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">officeManager</span><span class="p">(</span><span class="n">manager</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">loadProperty</span><span class="p">(</span><span class="s">"Password"</span><span class="p">,</span><span class="w"> </span><span class="s">"myPassword"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
 </details>
 <details class="question">
@@ -2800,6 +2848,20 @@ file paths. See the <a href="https://ask.libreoffice.org/t/web-hyperlinks-not-pr
 and a <a href="https://github.com/jodconverter/jodconverter/issues/400">workaround shared by a user</a>.</p>
 </details>
 <details class="question">
+<summary>With <code>SinglePageSheets</code>, the top rows or the first columns of an <code>.xlsx</code> sheet are missing</summary>
+<p>An Excel workbook remembers where each sheet was scrolled to when it was saved. When LibreOffice exports such a workbook to PDF with the <code>SinglePageSheets</code> filter option (<code>spreadsheet.singlePageSheets</code> of the <a href="../getting-started/pdf-options/">PDF options</a>), the page of a scrolled sheet starts at the saved position: the rows above it and the columns on its left are not in the PDF, while the page keeps the size of the whole sheet. A sheet saved 119 rows down loses its first 119 rows.</p>
+<p>It happens with <code>.xlsx</code> files only: the same workbook stored as <code>.xls</code> or <code>.ods</code> is exported in full, and so is an <code>.xlsx</code> exported without <code>SinglePageSheets</code>. Seen with LibreOffice 25.2; the <a href="https://github.com/gotenberg/gotenberg/issues/1222">Gotenberg</a> project met it too. A <a href="../getting-started/using-filters/">filter</a> cannot repair it: moving the view of the loaded document back to the first cell does not change the export.</p>
+<p>The workaround is to convert in two steps, so that the PDF is exported from a document that was not loaded from an <code>.xlsx</code> file:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">File</span><span class="w"> </span><span class="n">ods</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">createTempFile</span><span class="p">(</span><span class="s">"workbook"</span><span class="p">,</span><span class="w"> </span><span class="s">".ods"</span><span class="p">);</span>
+<span class="n">converter</span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"workbook.xlsx"</span><span class="p">)).</span><span class="na">to</span><span class="p">(</span><span class="n">ods</span><span class="p">).</span><span class="na">execute</span><span class="p">();</span>
+<span class="n">converter</span>
+<span class="w">  </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">ods</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"workbook.pdf"</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">spreadsheet</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">singlePageSheets</span><span class="p">(</span><span class="kc">true</span><span class="p">)).</span><span class="na">build</span><span class="p">())</span>
+<span class="w">  </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+</details>
+<details class="question">
 <summary>Converting a presentation to HTML no longer creates one image per slide</summary>
 <p>The HTML export of presentations changed in LibreOffice 24.2 and no longer produces the image-per-slide output of
 earlier versions (<a href="https://github.com/jodconverter/jodconverter/issues/396">#396</a>). Since <strong>JODConverter</strong> 5.0,
@@ -2817,8 +2879,10 @@ conversion, and it happens with text documents as well as with presentations and
 <a href="https://github.com/unoconv/unoserver/issues/212">unoserver</a>). It is not reproduced on Linux nor on macOS. The
 last version without it is 25.8.2, and it is reported fixed in 26.8.0.</p>
 <p><strong>JODConverter</strong> restarts the office process, so the following conversions work. Since version 5.0.1, a crash
-while the document is closed no longer fails the conversion, whose output is complete at that point; a crash
-earlier in a conversion still fails it. On Windows, prefer LibreOffice 26.8 or later, or 25.8.2 or earlier.</p>
+while the document is closed no longer fails the conversion, whose output is complete at that point. A crash
+earlier in a conversion still fails it, unless the manager has
+<a href="../configuration/local-manager/#taskretries">task retries</a> (since 5.1). On Windows, prefer LibreOffice 26.8 or
+later, or 25.8.2 or earlier.</p>
 </details>
 <details class="question">
 <summary>On macOS, every office process takes about 35 seconds to accept its first connection</summary>

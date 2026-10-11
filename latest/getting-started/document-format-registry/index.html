@@ -552,6 +552,8 @@
         
       
         
+      
+        
           
         
       
@@ -603,6 +605,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/release-notes-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -828,6 +857,8 @@
         
       
         
+      
+        
           
         
       
@@ -879,6 +910,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-guide-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Migration 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -1514,6 +1572,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         Custom Registry
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formats-of-the-office" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Formats of the office
       </span>
     </span>
   </a>
@@ -2721,6 +2790,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#formats-of-the-office" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Formats of the office
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#spring-boot" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2881,6 +2961,22 @@ top of the defaults (overrides existing formats or adds new ones).</p>
 <span class="w">    </span><span class="p">.</span><span class="na">formatRegistry</span><span class="p">(</span><span class="n">custom</span><span class="p">)</span><span class="w"> </span><span class="c1">// use your registry</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
+<h3 id="formats-of-the-office">Formats of the office<a class="headerlink" href="#formats-of-the-office" title="Permanent link">&para;</a></h3>
+<p>The default registry describes the common formats, not every format an office can write: converting to <code>epub</code>, <code>webp</code> or <code>docm</code>, for example, fails with "The target format is missing or not supported". <code>OfficeFormatRegistry</code> (local module) completes a registry with the formats of the office itself, built from the filters the office says it has:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.local.office.OfficeFormatRegistry</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.local.office.OfficeInfo</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.jodconverter.local.task.OfficeInfoTask</span><span class="p">;</span>
+
+<span class="n">OfficeInfo</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OfficeInfoTask</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">officeManager</span><span class="p">);</span><span class="w"> </span><span class="c1">// once, the manager being started</span>
+
+<span class="n">LocalConverter</span><span class="w"> </span><span class="n">converter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LocalConverter</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">officeManager</span><span class="p">(</span><span class="n">officeManager</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">formatRegistry</span><span class="p">(</span><span class="n">OfficeFormatRegistry</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">info</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+<span class="n">converter</span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"book.odt"</span><span class="p">)).</span><span class="na">to</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"book.epub"</span><span class="p">)).</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<p><code>OfficeFormatRegistry.create(info)</code> completes the default registry, and <code>create(registry, info)</code> any other. The completed registry always wins: its formats carry choices the office does not tell, such as the filter options of a text file. A format taken from the office has, for each family of documents, the export filter that writes the extension; when the office has several, the first by name is taken, so describe the format in a registry of your own when another one is wanted. <code>jodconverter-cli --info</code> lists the filters and their extensions.</p>
 <h3 id="spring-boot">Spring Boot<a class="headerlink" href="#spring-boot" title="Permanent link">&para;</a></h3>
 <p>With the Spring Boot starter, one registry is shared by every converter it creates, local, external or remote, and
 is also exposed as the <code>documentFormatRegistry</code> bean. It is configured under <code>jodconverter.document-formats</code>:</p>

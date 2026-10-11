@@ -552,6 +552,8 @@
         
       
         
+      
+        
           
         
       
@@ -603,6 +605,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/release-notes-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -828,6 +857,8 @@
         
       
         
+      
+        
           
         
       
@@ -879,6 +910,33 @@
 
             </label>
             <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-guide-5.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Migration 5.1.0
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
               
                 
                   
@@ -1661,10 +1719,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#set-a-utf-8-locale" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Set a UTF-8 locale
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#install-the-fonts-your-documents-use" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
         Install the fonts your documents use
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-reference-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A reference image
       </span>
     </span>
   </a>
@@ -2563,10 +2643,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#set-a-utf-8-locale" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Set a UTF-8 locale
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#install-the-fonts-your-documents-use" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
         Install the fonts your documents use
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-reference-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A reference image
       </span>
     </span>
   </a>
@@ -2615,9 +2717,7 @@
 
 
 <h1 id="running-in-containers">Running in Containers<a class="headerlink" href="#running-in-containers" title="Permanent link">&para;</a></h1>
-<p><strong>JODConverter</strong> runs well in a container, as long as the image provides a complete office installation, an init process
-that reaps child processes, and the fonts your documents use. This page covers the points that cause most container
-issues.</p>
+<p><strong>JODConverter</strong> runs well in a container, as long as the image provides a complete office installation, an init process that reaps child processes, a UTF-8 locale, and the fonts your documents use. This page covers the points that cause most container issues.</p>
 <h2 id="use-an-init-process">Use an init process<a class="headerlink" href="#use-an-init-process" title="Permanent link">&para;</a></h2>
 <p>LibreOffice starts helper processes of its own. When <strong>JODConverter</strong> stops or kills an office process, those children
 are re-parented to process 1 of the container. If process 1 is your Java application, nobody reaps them and they pile up
@@ -2658,6 +2758,10 @@ Calc for spreadsheets, Impress for presentations and Draw for drawings. A partia
 connection), try the official packages
 from <a href="https://www.libreoffice.org/download/download-libreoffice/">libreoffice.org</a>
 instead.</p>
+<h2 id="set-a-utf-8-locale">Set a UTF-8 locale<a class="headerlink" href="#set-a-utf-8-locale" title="Permanent link">&para;</a></h2>
+<p>A minimal image has no locale set, which means the <code>POSIX</code> locale and ASCII file names. A document whose name has an accent or a non-Latin character then fails before the office is even asked: Java cannot map the name to a path and throws <code>InvalidPathException: Malformed input or input contains unmappable characters</code>. Set a UTF-8 locale in the image; <code>C.UTF-8</code> needs no extra package on Debian and Ubuntu:</p>
+<div class="language-dockerfile highlight"><pre><span></span><code><span class="k">ENV</span><span class="w"> </span><span class="nv">LANG</span><span class="o">=</span>C.UTF-8<span class="w"> </span><span class="nv">LC_ALL</span><span class="o">=</span>C.UTF-8
+</code></pre></div>
 <h2 id="install-the-fonts-your-documents-use">Install the fonts your documents use<a class="headerlink" href="#install-the-fonts-your-documents-use" title="Permanent link">&para;</a></h2>
 <p>When a font used by a document is missing, LibreOffice substitutes another one. If the substitute has different metrics,
 lines wrap differently and the output can get extra pages or a shifted layout, typically when converting Word documents
@@ -2692,11 +2796,19 @@ to PDF. This is the most common reason why a converted document doesn't look lik
 <td>Noto CJK</td>
 <td><code>fonts-noto-cjk</code></td>
 </tr>
+<tr>
+<td>Emoji</td>
+<td>Noto Color Emoji</td>
+<td><code>fonts-noto-color-emoji</code></td>
+</tr>
 </tbody>
 </table>
 <p>Check which font replaces a missing one with <code>fc-match</code>, for example <code>fc-match "Calibri"</code>. To compare candidate
 replacement fonts visually, the community tool
 <a href="https://github.com/cuipengfei/LibreOffice-fonts-compare">LibreOffice-fonts-compare</a> can help.</p>
+<p>The fonts are not the only thing that moves the line breaks. A document with automatic hyphenation is hyphenated with the dictionary of its language, and without that dictionary the words are not split, so the lines wrap elsewhere. On Debian and Ubuntu the dictionaries are the <code>hyphen-*</code> packages (<code>hyphen-en-us</code>, <code>hyphen-fr</code>, <code>hyphen-de</code>...); install those of the languages of your documents.</p>
+<h2 id="a-reference-image">A reference image<a class="headerlink" href="#a-reference-image" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/jodconverter/docker-image-jodconverter-runtime">jodconverter/docker-image-jodconverter-runtime</a> is the image the project maintains as a base for applications that use <strong>JODConverter</strong>: a Debian image with a Java runtime, LibreOffice, a UTF-8 locale and a user that is not root. Use it as it is, or read its <code>Dockerfile</code> as a working example of this page; add the fonts your documents need and the init process.</p>
 <h2 id="size-the-container">Size the container<a class="headerlink" href="#size-the-container" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Each port number (or pipe name) starts one office process, and each process has its own memory footprint, typically
