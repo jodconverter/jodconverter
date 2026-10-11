@@ -39,7 +39,7 @@ jodconverter:
 ```
 
 When the office processes run in another container or on another host, set `load-document-mode` to `remote`: the
-documents are then sent through the connection instead of being read from (and written to) the local file system.
+documents are then sent through the connection instead of being read from (and written to) the local file system. When the office processes run on the same host, or share a volume with the application, `local` is the better choice: a few export filters give an incomplete output through streams, see [loadDocumentMode](local-converter.md#loaddocumentmodeloaddocumentmode).
 The local and attached auto-configurations can be enabled together; inject the converter you need with
 `@Qualifier("attachedDocumentConverter")` or `@Qualifier("localDocumentConverter")`.
 
