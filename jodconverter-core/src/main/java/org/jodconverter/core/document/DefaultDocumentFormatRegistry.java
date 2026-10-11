@@ -417,17 +417,18 @@ public final class DefaultDocumentFormatRegistry {
   public static final @NonNull DocumentFormat SVG = byExtension("svg");
 
   /**
-   * Visio format.
+   * Visio format. An input format only: the office reads Visio drawings and does not write them.
    *
    * <ul>
    *   <li>Extension: vsd
-   *   <li>Media Type: application/x-visio
+   *   <li>Media Type: application/vnd-visio
    * </ul>
    */
   public static final @NonNull DocumentFormat VSD = byExtension("vsd");
 
   /**
-   * New Visio format.
+   * New Visio format. An input format only: the office reads Visio drawings and does not write
+   * them.
    *
    * <ul>
    *   <li>Extension: vsdx
