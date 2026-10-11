@@ -31,7 +31,7 @@ the conversion does not work. All conversions supported by your OOo installation
             <samp><b>*.pdf</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Portable Document Format<br>
             <samp><b>*.odt</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenDocument Text<br>
             <samp><b>*.ott</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenDocument Text Template<br>
-            <samp><b>*.sxw</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenOffice.org 1.0 Text<br>
+            <samp><b>*.sxw</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenOffice.org 1.0 Text<sup>3</sup><br>
             <samp><b>*.rtf</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Rich Text Format<br>
             <samp><b>*.doc</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Microsoft Word<br>
             <samp><b>*.docx</b>&nbsp;&nbsp;&nbsp;</samp>Microsoft Word XML<br>
@@ -56,7 +56,7 @@ the conversion does not work. All conversions supported by your OOo installation
             <samp><b>*.pdf</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Portable Document Format<br>
             <samp><b>*.ods</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenDocument Spreadsheet<br>
             <samp><b>*.ots</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenDocument Spreadsheet Template<br>
-            <samp><b>*.sxc</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenOffice.org 1.0 Spreadsheet<br>
+            <samp><b>*.sxc</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenOffice.org 1.0 Spreadsheet<sup>3</sup><br>
             <samp><b>*.xls</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Microsoft Excel<br>
             <samp><b>*.xlsx</b>&nbsp;&nbsp;&nbsp;</samp>Microsoft Excel XML<br>
             <samp><b>*.csv</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Comma-Separated Values<br>
@@ -75,10 +75,10 @@ the conversion does not work. All conversions supported by your OOo installation
         </td>
         <td>
             <samp><b>*.pdf</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Portable Document Format<br>
-            <samp><b>*.swf</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Macromedia Flash<br>
+            <samp><b>*.swf</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Macromedia Flash<sup>3</sup><br>
             <samp><b>*.odp</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenDocument Presentation<br>
             <samp><b>*.otp</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenDocument Presentation Template<br>
-            <samp><b>*.sxi</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenOffice.org 1.0 Presentation<br>
+            <samp><b>*.sxi</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenOffice.org 1.0 Presentation<sup>3</sup><br>
             <samp><b>*.ppt</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Microsoft PowerPoint<br>
             <samp><b>*.pptx</b>&nbsp;&nbsp;&nbsp;</samp>Microsoft PowerPoint XML<br>
             <samp><b>*.html</b>&nbsp;&nbsp;&nbsp;</samp>HTML<sup>2</sup>
@@ -88,11 +88,13 @@ the conversion does not work. All conversions supported by your OOo installation
         <th align="left">Drawing</th>
         <td>
             <samp><b>*.odg</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenDocument Drawing<br>
-            <samp><b>*.otg</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenDocument Drawing Template
+            <samp><b>*.otg</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>OpenDocument Drawing Template<br>
+            <samp><b>*.vsd</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Microsoft Visio<br>
+            <samp><b>*.vsdx</b>&nbsp;&nbsp;&nbsp;</samp>Microsoft Visio XML
         </td>
         <td>
             <samp><b>*.svg</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Scalable Vector Graphics<br>
-            <samp><b>*.swf</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Macromedia Flash
+            <samp><b>*.swf</b>&nbsp;&nbsp;&nbsp;&nbsp;</samp>Macromedia Flash<sup>3</sup>
         </td>
     </tr>
 </table>
@@ -102,5 +104,7 @@ the conversion does not work. All conversions supported by your OOo installation
 > 2. HTML can be used as an output format but while all other formats always generate a single output file, HTML can
 >     produce multiple files. In addition to the HTML file in fact, any images contained in the input document will also
 >     be saved in the same directory. This requires extra care in your code, especially in a web environment.
+> 3. Written by Apache OpenOffice and by old versions of LibreOffice only: LibreOffice 25.2 has no export filter for the
+>     OpenOffice.org 1.0 formats nor for Flash, and such a conversion fails. These formats are still read.
 
 --8<-- "note.md"

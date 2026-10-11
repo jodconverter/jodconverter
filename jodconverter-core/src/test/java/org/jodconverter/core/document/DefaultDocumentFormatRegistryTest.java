@@ -170,8 +170,6 @@ class DefaultDocumentFormatRegistryTest {
           "fodg",
           "pdf",
           "swf",
-          "vsdx",
-          "vsd",
           "bmp",
           "gif",
           "jpg",
