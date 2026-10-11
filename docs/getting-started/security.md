@@ -16,7 +16,7 @@ updated on load. The previous default, `QUIET_UPDATE`, updated them silently, wh
 [LocalConverter](../configuration/local-converter.md#useunsafequietupdate) brings the old behavior back: don't enable it
 for untrusted documents.
 
-**What it does not cover:** `NO_UPDATE` does not stop every external resource from being loaded. A linked image is still fetched while the document is loaded: with the default settings of LibreOffice 25.2, an image linked to a `file:///` URL ends up in the converted PDF, and an image linked to an `http://` URL makes the office send three requests (`OPTIONS`, `HEAD`, `GET`) to that address. The [profile settings below](#harden-the-office-profile) stop both, and isolation protects you from what settings miss.
+**What it does not cover:** `NO_UPDATE` does not stop every external resource from being loaded. A linked image is still fetched while the document is loaded: with the default settings of LibreOffice 25.2, an image linked to a `file:///` URL ends up in the converted PDF, and an image linked to an `http://` URL makes the office send three requests (`OPTIONS`, `HEAD`, `GET`) to that address. Newer versions may be stricter (in the tests of **JODConverter**, LibreOffice 26.8 on macOS followed neither link), but do not count on the version you run today. The [profile settings below](#harden-the-office-profile) stop both, and isolation protects you from what settings miss.
 
 ## Isolate the office process
 
