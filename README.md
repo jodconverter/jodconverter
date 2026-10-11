@@ -45,12 +45,12 @@ Add the library, here for LibreOffice (see the [modules](https://jodconverter.gi
 <dependency>
     <groupId>org.jodconverter</groupId>
     <artifactId>jodconverter-local-lo</artifactId>
-    <version>5.0.1</version>
+    <version>5.1.0</version>
 </dependency>
 ```
 
 ```kotlin
-implementation("org.jodconverter:jodconverter-local-lo:5.0.1")
+implementation("org.jodconverter:jodconverter-local-lo:5.1.0")
 ```
 
 Then start an office manager once, and convert:
@@ -86,8 +86,8 @@ An office manager is meant to live as long as the application, and to be shared 
 Add the starter next to the library:
 
 ```kotlin
-implementation("org.jodconverter:jodconverter-spring-boot-starter:5.0.1")
-implementation("org.jodconverter:jodconverter-local-lo:5.0.1")
+implementation("org.jodconverter:jodconverter-spring-boot-starter:5.1.0")
+implementation("org.jodconverter:jodconverter-local-lo:5.1.0")
 ```
 
 enable it:

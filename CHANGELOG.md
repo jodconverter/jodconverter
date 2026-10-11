@@ -1,5 +1,60 @@
 # Changelog
 
+## [v5.1.0](https://github.com/jodconverter/jodconverter/tree/v5.1.0) (2026-10-11)
+
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v5.0.1...v5.1.0)
+
+JODConverter 5.1 adds to 5.0 without changing it: passwords for protected documents, the retry of a task whose office process was lost, four filters, meters for the Spring Boot starter, and a way to ask the office what it is and to use the formats it has.
+
+**Implemented enhancements:**
+
+- Open a password-protected document with `password(String)` on a conversion job or a page images job, and `--password` on the command line
+- Execute a task again when its office process is lost, with `taskRetries` on the local and attached office managers
+- `HeaderFooterRemoverFilter` and `PageOrientationFilter`, to remove the page header and footer of a CSV file or a spreadsheet and to set the orientation of the pages
+- `DocumentComparerFilter`, to record the differences with an earlier version of a text document as tracked changes
+- Micrometer meters of the office manager pools in the Spring Boot starter, and the count of task retries in the status of a pool
+- `OfficeInfoTask` and the `--info` option of the command line tool, to get the product name, the version and the filters of the office
+- `OfficeFormatRegistry`, to convert to the formats of the office that the default registry does not describe
+
+**Changed behaviors:**
+
+- Converting a drawing to `vsd` or `vsdx` fails instead of writing a PDF file with a Visio extension
+- Converting a text document or a spreadsheet to `svg` fails with "Unsupported conversion" instead of an IO error
+
+**Merged pull requests:**
+
+- Write the release notes and the migration guide of version 5.1.0 [#580](https://github.com/jodconverter/jodconverter/pull/580)
+- Make the hardened profile test pass on macOS, where the office follows no link of a document by default [#579](https://github.com/jodconverter/jodconverter/pull/579)
+- Stop offering SVG as an output of text documents and spreadsheets, which LibreOffice cannot export, so the conversion fails with a clear message instead of an IO error [#578](https://github.com/jodconverter/jodconverter/pull/578)
+- Add the UTF-8 locale, the emoji font, the hyphenation dictionaries and the reference image to the containers page [#577](https://github.com/jodconverter/jodconverter/pull/577)
+- Stop converting drawings to Visio by writing a PDF under a Visio name, and say which output formats of the registry need an old office [#576](https://github.com/jodconverter/jodconverter/pull/576)
+- Say what a conversion through streams cannot do, and when to use files instead, in the load document mode documentation [#575](https://github.com/jodconverter/jodconverter/pull/575)
+- Give the security page a ready-made office profile that blocks the links of untrusted documents, and the proxy settings of the office, both checked by an integration test [#574](https://github.com/jodconverter/jodconverter/pull/574)
+- Add a format registry that completes another one with the formats of the office itself, so a document can be converted to a format the default registry does not describe [#573](https://github.com/jodconverter/jodconverter/pull/573)
+- Document that SinglePageSheets leaves out the rows and columns before the saved scroll position of an .xlsx sheet, with the two-step conversion that avoids it [#572](https://github.com/jodconverter/jodconverter/pull/572)
+- Add a filter that compares the document being converted with an earlier version of it and records the differences as tracked changes [#571](https://github.com/jodconverter/jodconverter/pull/571)
+- Add an --info option to the command line tool that prints the office it would use and its filters, to diagnose an installation without converting anything [#570](https://github.com/jodconverter/jodconverter/pull/570)
+- Add a task that asks a running office for its product name, its version and its filters, to tell which office an application is really talking to [#569](https://github.com/jodconverter/jodconverter/pull/569)
+- Count the task retries of a pool and expose the count in its status, in the health details and as a meter, so that lost office processes show up even when the retry hides them [#568](https://github.com/jodconverter/jodconverter/pull/568)
+- Expose the status of the office manager pools as Micrometer meters in the Spring Boot starter, so the queue and the restarts can be charted and alerted on [#567](https://github.com/jodconverter/jodconverter/pull/567)
+- Add two filters that change the page styles before a conversion: one removes the page header and footer, the other sets the orientation of the pages [#566](https://github.com/jodconverter/jodconverter/pull/566)
+- Show the OpenSSF Best Practices badge, earned at the passing level [#565](https://github.com/jodconverter/jodconverter/pull/565)
+- Describe the build on three systems in the contributing guide, the agent guidelines and the release page, and add the javadoc.io step of a release [#564](https://github.com/jodconverter/jodconverter/pull/564)
+- Validate the Gradle wrapper jar against the checksums Gradle publishes, before it runs [#563](https://github.com/jodconverter/jodconverter/pull/563)
+- Show the OpenSSF Scorecard of the repository among the badges [#562](https://github.com/jodconverter/jodconverter/pull/562)
+- Analyze the code with CodeQL, and publish the OpenSSF Scorecard of the repository [#561](https://github.com/jodconverter/jodconverter/pull/561)
+- Make the README an introduction, with the requirements and a quick start, and the badges of the documentation [#560](https://github.com/jodconverter/jodconverter/pull/560)
+- Show on the README the badges of the documentation home page, whose Maven Central badge works [#559](https://github.com/jodconverter/jodconverter/pull/559)
+- Put the text of the Apache License 2.0 in the LICENSE file, and the copyright lines in a NOTICE file [#558](https://github.com/jodconverter/jodconverter/pull/558)
+- Give the Linux install of LibreOffice a 10 minutes limit, so that a stalled download fails early [#557](https://github.com/jodconverter/jodconverter/pull/557)
+- Harden the workflows: pinned actions, read-only tokens by default, signed release archives, and a security policy with a link [#556](https://github.com/jodconverter/jodconverter/pull/556)
+- Make the pool status test independent of timing, after it failed on the macOS runner [#555](https://github.com/jodconverter/jodconverter/pull/555)
+- Say in the FAQ that a crash while closing the document no longer fails the conversion [#551](https://github.com/jodconverter/jodconverter/pull/551)
+- Execute a task again when its office process is lost, with taskRetries, and fix two bugs the work uncovered [#549](https://github.com/jodconverter/jodconverter/pull/549)
+- Document the Windows crash on document close and the 35 s start on macOS under the known LibreOffice issues [#548](https://github.com/jodconverter/jodconverter/pull/548)
+- Bring the Windows and macOS entries back in the build matrix, allowed to fail, with macOS on the image that starts the office in a second [#547](https://github.com/jodconverter/jodconverter/pull/547)
+- Give the password of a protected document to its conversion, and say whether it was missing or wrong [#545](https://github.com/jodconverter/jodconverter/pull/545)
+
 ## [v5.0.1](https://github.com/jodconverter/jodconverter/tree/v5.0.1) (2026-10-08)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v5.0.0...v5.0.1)
