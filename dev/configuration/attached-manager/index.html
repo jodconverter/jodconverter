@@ -2638,7 +2638,7 @@ it. Each property below matches the builder property of the same name; the value
 <span class="w">    </span><span class="nt">load-document-mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w">        </span><span class="c1"># remote: stream documents to an office process on another host</span>
 </code></pre></div>
 <p>When the office processes run in another container or on another host, set <code>load-document-mode</code> to <code>remote</code>: the
-documents are then sent through the connection instead of being read from (and written to) the local file system.
+documents are then sent through the connection instead of being read from (and written to) the local file system. When the office processes run on the same host, or share a volume with the application, <code>local</code> is the better choice: a few export filters give an incomplete output through streams, see <a href="../local-converter/#loaddocumentmodeloaddocumentmode">loadDocumentMode</a>.
 The local and attached auto-configurations can be enabled together; inject the converter you need with
 <code>@Qualifier("attachedDocumentConverter")</code> or <code>@Qualifier("localDocumentConverter")</code>.</p>
 <h2 id="builder-properties">Builder properties<a class="headerlink" href="#builder-properties" title="Permanent link">&para;</a></h2>
