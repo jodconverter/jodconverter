@@ -60,9 +60,13 @@ credentials and the signing key, which live in the repository secrets; the rest 
     ```bash
     ./gradlew setVersion -PnewVersion=X.Y.Z+1-SNAPSHOT
     ```
-    Commit `Post release X.Y.Z` and open its pull request to `develop`. The merge commit of the release leaves
-    `master` one commit ahead of `develop`, with no change in it: no need to merge it back.
-12. **Milestone.** Close the milestone of the release and create the next one.
+    Commit `Post release X.Y.Z` and open its pull request to `develop`.
+12. **Merge `master` back.** The merge commit of the release leaves `master` one commit ahead of `develop`. It changes no file, but GitHub counts it, and the count grows at each release. On a branch from `develop`:
+    ```bash
+    git merge --no-ff origin/master -m "Merge master back into develop after the release of X.Y.Z"
+    ```
+    Open its pull request to `develop`, whose diff is empty, and merge it with a **merge commit**: a squash would make a new commit that `master` does not know, and `master` would stay ahead.
+13. **Milestone.** Close the milestone of the release and create the next one.
 
 ## Secrets of the release workflow
 
