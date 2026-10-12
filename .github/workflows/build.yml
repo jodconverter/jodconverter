@@ -110,7 +110,11 @@ jobs:
         # repository, so that Coveralls shows the sources of every module. Pull requests and pushes
         # to develop and master; Coveralls lists the branches it receives. Skipped while the
         # COVERALLS_REPO_TOKEN secret is not set.
+        # A failure here does not fail the job: the code is built and tested by then, and an upload
+        # that times out (seen on 2026-10-12) must not block a merge. The step is then shown with
+        # a warning, and the coverage of that run is missing on Coveralls.
         if: runner.os == 'Linux' && env.COVERALLS_REPO_TOKEN != ''
+        continue-on-error: true
         shell: bash
         run: ./gradlew coverallsJacoco -x test -x integrationTest
 
