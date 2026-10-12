@@ -62,4 +62,17 @@ public interface ConversionJob {
     throw new UnsupportedOperationException(
         getClass().getName() + " does not support target options");
   }
+
+  /**
+   * Gives the password that opens the source document of this conversion, when it is protected.
+   * Without it, the conversion of a protected document fails with a {@code
+   * PasswordProtectedException}; with a wrong one, it fails the same way.
+   *
+   * @param password The password of the source document.
+   * @return The current conversion specification.
+   * @throws UnsupportedOperationException If this conversion job cannot open protected documents.
+   */
+  default @NonNull ConversionJob password(final @NonNull String password) {
+    throw new UnsupportedOperationException(getClass().getName() + " does not support a password");
+  }
 }

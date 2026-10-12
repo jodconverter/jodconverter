@@ -33,6 +33,7 @@ is gone.
 | `pages(String)`       | The pages to export, such as `1-3,7`; all of them by default. A page beyond the last one fails the export.                                 |
 | `hiddenSlides(bool)`  | Whether the hidden slides of a presentation are exported; they are skipped by default, and their numbers are missing from the sequence.    |
 | `baseName(String)`    | The start of the file names; the name of the source file by default, or `page` for a document given as a stream.                           |
+| `password(String)`    | The password of the document, when it is protected.                                                                                        |
 | `executeAsync()`      | Exports without waiting: a `CompletableFuture` of the list of files.                                                                       |
 
 ```java

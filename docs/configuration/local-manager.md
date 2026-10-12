@@ -164,6 +164,7 @@ A profile can be customized in OOo by selecting the Tools > Options menu item. S
 for automated conversions include e.g.
 
 - Load/Save > General: you may e.g., want to disable "Save URLs relative to Internet" for security reasons.
+- Security: block the links of untrusted documents, or set a proxy; the [security page](../getting-started/security.md#harden-the-office-profile) has a ready-made profile.
 - Load/Save > Microsoft Office: these options affect conversions of embedded documents, e.g., an Excel table contained
     in a Word document. If not enabled, the embedded table will likely be lost when converting the Word document to
     another format.
@@ -720,6 +721,49 @@ answer right away that it is overloaded. 0 means no limit.
 === "Command Line"
 
     `taskQueueCapacity` can't be set with the command line tool, it will always be 0.
+
+#### 🔢`taskRetries`
+
+This property sets how many times a task is executed again when the office process executing it is lost (it
+crashed, it was killed, its connection dropped). Instead of failing, the task goes back to the head of the queue and
+is executed by the process once it is restarted, or by another one; the queue timeout and the execution timeout
+start again for the new attempt.
+
+Only the tasks that can be executed again from the start are retried: a conversion from a file to a file, and an
+export of [page images](../getting-started/page-images.md) from a file. A conversion from or to a stream is not,
+since a stream is read, or written, only once. A task that exceeds the execution timeout, and the conversion of a
+password-protected document without its password, are not retried either: the task itself is the reason.
+
+A document that makes the office crash is converted, and makes it crash, that many more times before its
+conversion fails; keep the number low.
+
+&#160;***Default***: 0 (a task whose office process is lost fails)
+
+=== "Java"
+
+    ```java hl_lines="4"
+    OfficeManager officeManager =
+        LocalOfficeManager
+            .builder()
+            .taskRetries(1)
+            .build();
+    ```
+
+=== "Spring Boot"
+
+    ```yml title="application.yml"
+    jodconverter:
+      local:
+        task-retries: 1
+    ```
+
+    ```conf title="application.properties"
+    jodconverter.local.task-retries = 1
+    ```
+
+=== "Command Line"
+
+    `taskRetries` can't be set with the command line tool, it will always be 0.
 
 #### ⌚`taskQueueTimeout`
 

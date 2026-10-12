@@ -126,6 +126,15 @@ class AttachedOfficeManagerTest {
   class Build {
 
     @Test
+    void withTaskRetries_ShouldGiveThemToThePool() {
+
+      assertThat(AttachedOfficeManager.builder().build()).extracting("taskRetries").isEqualTo(0);
+      assertThat(AttachedOfficeManager.builder().taskRetries(2).build())
+          .extracting("taskRetries")
+          .isEqualTo(2);
+    }
+
+    @Test
     void withCustomValues_ShouldInitializedManagerWithCustomValues(final @TempDir File testFolder) {
 
       final var manager =

@@ -146,6 +146,7 @@ public abstract class AbstractProcessManager implements ProcessManager {
           Thread.sleep(getRetryDelay(attempt - 1));
         } catch (InterruptedException interrupted) {
           Thread.currentThread().interrupt();
+          ex.addSuppressed(interrupted);
           throw ex;
         }
       }

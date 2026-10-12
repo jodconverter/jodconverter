@@ -35,4 +35,10 @@ public class TargetDocumentSpecsFromFile extends AbstractTargetDocumentSpecs {
   public TargetDocumentSpecsFromFile(final @NonNull File file) {
     super(file);
   }
+
+  @Override
+  public boolean isRepeatable() {
+    // A file can be read, or written, again.
+    return true;
+  }
 }

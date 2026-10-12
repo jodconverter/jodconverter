@@ -69,6 +69,9 @@ import org.jodconverter.local.task.LoadDocumentMode;
  *     of retrying in the background.
  * @param maxTasksPerConnection Maximum number of tasks executed through a connection before
  *     reconnecting. 0 means an infinite number of tasks (never reconnects).
+ * @param taskRetries Number of times a conversion is executed again when the office process (or the
+ *     connection) executing it is lost. Only the conversions from a file to a file are executed
+ *     again. 0 means that such a conversion fails.
  * @param applyDefaultLoadProperties Whether the default load properties (Hidden, ReadOnly and
  *     UpdateDocMode NO_UPDATE) are applied when loading a document.
  * @param loadDocumentMode How documents are loaded and stored: local (the office process reads and
@@ -91,6 +94,7 @@ public record JodConverterAttachedProperties(
     @DefaultValue("250") @DurationUnit(ChronoUnit.MILLIS) @NonNull Duration connectRetryInterval,
     boolean connectFailFast,
     @DefaultValue("1000") int maxTasksPerConnection,
+    int taskRetries,
     @DefaultValue("true") boolean applyDefaultLoadProperties,
     @DefaultValue("auto") @NonNull LoadDocumentMode loadDocumentMode)
     implements JodConverterPoolProperties {}

@@ -31,6 +31,7 @@ jodconverter:
     connect-fail-fast: false
     max-tasks-per-connection: 1000
     task-queue-capacity: 0          # no limit
+    task-retries: 0                 # a task whose connection is lost fails
     task-queue-timeout: 30000
     task-execution-timeout: 120000
     apply-default-load-properties: true
@@ -38,7 +39,7 @@ jodconverter:
 ```
 
 When the office processes run in another container or on another host, set `load-document-mode` to `remote`: the
-documents are then sent through the connection instead of being read from (and written to) the local file system.
+documents are then sent through the connection instead of being read from (and written to) the local file system. When the office processes run on the same host, or share a volume with the application, `local` is the better choice: a few export filters give an incomplete output through streams, see [loadDocumentMode](local-converter.md#loaddocumentmodeloaddocumentmode).
 The local and attached auto-configurations can be enabled together; inject the converter you need with
 `@Qualifier("attachedDocumentConverter")` or `@Qualifier("localDocumentConverter")`.
 
@@ -197,6 +198,23 @@ OfficeManager officeManager =
     AttachedOfficeManager
         .builder()
         .taskQueueCapacity(100)
+        .build();
+```
+
+#### 🔢`taskRetries`
+
+This property sets how many times a task is executed again when the connection executing it is lost. Instead of
+failing, the task goes back to the head of the queue and is executed once the manager is connected again, or through
+another connection. Only a conversion from a file to a file, and an export of page images from a file, are executed
+again; see the [same property of the local manager](local-manager.md#taskretries) for the details.
+
+&#160;***Default***: 0 (a task whose connection is lost fails)
+
+```java hl_lines="4"
+OfficeManager officeManager =
+    AttachedOfficeManager
+        .builder()
+        .taskRetries(1)
         .build();
 ```
 

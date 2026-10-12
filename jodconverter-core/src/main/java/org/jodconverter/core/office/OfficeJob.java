@@ -50,6 +50,10 @@ final class OfficeJob {
   // The worker that runs this job, once it is running.
   private volatile OfficeWorkerRunner runner;
 
+  // The number of times this job went back to the queue after its worker was lost. Only changed
+  // by the worker that wins the change of state.
+  private volatile int retries;
+
   /* default */ OfficeJob(final OfficeTask task) {
     this.task = task;
   }
@@ -87,6 +91,26 @@ final class OfficeJob {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Makes this running job a waiting job again, to be executed once more.
+   *
+   * @return {@code true} if the job is waiting again and the caller must put it in the queue,
+   *     {@code false} if it was no longer running (it timed out or was cancelled).
+   */
+  /* default */ boolean tryRetry() {
+    if (state.compareAndSet(RUNNING, WAITING)) {
+      runner = null;
+      // Only the worker that won the change of state gets here.
+      retries++;
+      return true;
+    }
+    return false;
+  }
+
+  /* default */ int getRetries() {
+    return retries;
   }
 
   /**

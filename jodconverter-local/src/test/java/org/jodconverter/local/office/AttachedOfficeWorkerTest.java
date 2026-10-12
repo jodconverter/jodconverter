@@ -32,8 +32,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.task.OfficeTask;
+import org.jodconverter.local.task.PasswordProtectedExceptionSupportTask;
 
 /** Contains tests for the {@link AttachedOfficeWorker} class. */
 class AttachedOfficeWorkerTest {
@@ -227,6 +229,59 @@ class AttachedOfficeWorkerTest {
       connection.disconnect();
 
       assertThat(Thread.interrupted()).isFalse();
+    }
+  }
+
+  @Nested
+  class IsLost {
+
+    @Test
+    void whenConnected_ShouldReturnFalse() throws OfficeException {
+
+      final var worker = newWorker(true);
+      worker.start();
+      worker.execute(context -> {});
+
+      assertThat(worker.isLost()).isFalse();
+    }
+
+    @Test
+    void whenTheConnectionWasLostDuringTheTask_ShouldReturnTrue() throws OfficeException {
+
+      final var worker = newWorker(true);
+      worker.start();
+      worker.execute(
+          context -> {
+            connection.disconnect();
+            Thread.interrupted();
+          });
+
+      assertThat(worker.isLost()).isTrue();
+    }
+
+    @Test
+    void whenThePasswordRequestClosedTheConnection_ShouldReturnFalse() throws OfficeException {
+
+      final var worker = newWorker(true);
+      worker.start();
+      worker.execute(new PasswordTask());
+
+      assertThat(worker.isLost()).isFalse();
+    }
+
+    /** A task whose password request made the office drop the connection. */
+    private final class PasswordTask implements OfficeTask, PasswordProtectedExceptionSupportTask {
+
+      @Override
+      public void execute(final OfficeContext context) {
+        connection.disconnect();
+        Thread.interrupted();
+      }
+
+      @Override
+      public boolean hasPasswordInteractionRequest() {
+        return true;
+      }
     }
   }
 

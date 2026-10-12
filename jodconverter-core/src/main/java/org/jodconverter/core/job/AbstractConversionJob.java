@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
@@ -43,6 +44,7 @@ public abstract class AbstractConversionJob
   protected final AbstractTargetDocumentSpecs target;
 
   private List<TargetOptions> defaultTargetOptions = List.of();
+  private @Nullable String password;
 
   /**
    * Creates a job from a source document to a target document.
@@ -75,6 +77,23 @@ public abstract class AbstractConversionJob
     Objects.requireNonNull(options, "options must not be null");
     target.setOptions(options);
     return this;
+  }
+
+  @Override
+  public @NonNull AbstractConversionJob password(final @NonNull String password) {
+
+    Objects.requireNonNull(password, "password must not be null");
+    this.password = password;
+    return this;
+  }
+
+  /**
+   * Gets the password of the source document, if one was given.
+   *
+   * @return The password, or null when none was given.
+   */
+  protected @Nullable String getPassword() {
+    return password;
   }
 
   @Override

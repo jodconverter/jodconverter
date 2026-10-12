@@ -46,4 +46,15 @@ public interface DocumentSpecs {
    * @return The document format.
    */
   @Nullable DocumentFormat getFormat();
+
+  /**
+   * Gets whether a conversion can use this document more than once, as a file can and a stream
+   * cannot. A task whose documents are all repeatable can be executed again after the office
+   * process executing it was lost.
+   *
+   * @return {@code true} if the document can be used again, {@code false} otherwise (the default).
+   */
+  default boolean isRepeatable() {
+    return false;
+  }
 }

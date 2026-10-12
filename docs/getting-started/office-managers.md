@@ -49,9 +49,38 @@ fast, and two timeouts apply to a task: `taskQueueTimeout`, from its submission 
 
 The pool can be observed: `getStatus()` returns a snapshot with the state of each worker (`STARTING`, `READY`, `BUSY`,
 `RESTARTING` or `STOPPED`), the tasks it executed since it was last made ready, its restarts and its failed start
-attempts in a row, plus the number of tasks waiting in the queue. With the Spring Boot starter and Spring Boot Actuator
+attempts in a row, plus the number of tasks waiting in the queue and the number of times a task was executed again after its worker was lost (see `taskRetries`). With the Spring Boot starter and Spring Boot Actuator
 on the classpath, the `jodconverter` health indicator reports these details for every office manager bean, and is down
 when a manager has no worker able to execute tasks (`management.health.jodconverter.enabled=false` disables it).
+
+With [Micrometer](https://micrometer.io/) on the classpath too, which Spring Boot Actuator brings, the starter also exposes the same numbers as meters, read from `getStatus()` each time they are collected. Each meter has a `name` tag, the name of the office manager bean (`localOfficeManager`, `attachedOfficeManager` or `remoteOfficeManager`):
+
+| Meter                                 | Type    | What it measures                                                                                                |
+| ------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------- |
+| `jodconverter.queue.size`             | Gauge   | The tasks waiting in the queue for a worker.                                                                    |
+| `jodconverter.tasks.retries`          | Counter | The times a task was executed again after its worker was lost; stays at zero without `taskRetries`.             |
+| `jodconverter.workers`                | Gauge   | The workers in a state, given by the `state` tag: `starting`, `ready`, `busy`, `restarting` or `stopped`.       |
+| `jodconverter.workers.tasks`          | Gauge   | The tasks executed by the workers since each was last made ready.                                               |
+| `jodconverter.workers.restarts`       | Counter | The restarts of the workers since the manager was started.                                                      |
+| `jodconverter.workers.start.failures` | Gauge   | The start attempts in a row that failed, for all the workers; above zero, an office process does not come back. |
+
+A queue that keeps growing while every worker is busy means the pool is too small for the load, and a restart counter that climbs faster than `maxTasksPerProcess` explains is the sign of crashes or of timed-out tasks. `jodconverter.metrics.enabled=false` disables the meters.
+
+## Describing the office
+
+`OfficeInfoTask` asks the office behind a local or an attached manager what it is: its product name, its version, and the filters it has to load and to store documents. No document is loaded.
+
+```java
+OfficeInfo info = OfficeInfoTask.query(officeManager);
+
+info.productName();   // LibreOffice
+info.version();       // 25.2.7.2
+info.exportFilters(); // writer_pdf_Export, calc_pdf_Export, MS Word 97...
+```
+
+Each `OfficeFilterInfo` gives the name of the filter (the value of the `FilterName` store property of a [custom format](document-format-registry.md)), the name the office shows for it, the service of the documents it applies to, the media type and the extensions of its file type, and whether it loads documents, stores them, or both. It answers "which office is this application really talking to, and can it write that format?" at startup or behind a support endpoint.
+
+The task asks the office for each of its filters, a few hundred calls: execute it once and keep the result, not for each conversion. It is not available with a `RemoteOfficeManager`.
 
 ## Typical usage patterns
 

@@ -1,0 +1,56 @@
+name: scorecard
+
+# The OpenSSF Scorecard of the repository: a set of automated checks of its security practices
+# (branch protection, pinned dependencies, token permissions, signed releases...), each scored from
+# 0 to 10. The result is published to the public Scorecard dataset, which the Sonatype Safety
+# Rating shown on Maven Central draws on, and to the Security tab of the repository.
+#
+# The Scorecard only analyzes the default branch, and refuses to publish from a workflow that does
+# more than this one: do not add steps or other actions here.
+on:
+  # When the rules of a branch change, since a check is about them.
+  branch_protection_rule:
+  push:
+    branches:
+      - develop
+  schedule:
+    # Every Monday at 06:23 UTC.
+    - cron: '23 6 * * 1'
+
+# Read-only by default; the job asks for the two write accesses it needs.
+permissions: read-all
+
+jobs:
+  analysis:
+    name: analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      security-events: write # to upload the results to the Security tab
+      id-token: write # to sign the published results, so that the dataset can trust them
+
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 🧮 Run the Scorecard
+        uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Publishes the results to https://scorecard.dev/viewer/?uri=github.com/jodconverter/jodconverter
+          publish_results: true
+
+      - name: 📤 Keep the results as an artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: scorecard-results
+          path: results.sarif
+          retention-days: 7
+
+      - name: 📤 Upload the results to the Security tab
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          sarif_file: results.sarif

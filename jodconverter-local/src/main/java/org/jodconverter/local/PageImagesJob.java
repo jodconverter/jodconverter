@@ -73,6 +73,7 @@ public final class PageImagesJob {
   private int quality = DEFAULT_QUALITY;
   private String pages;
   private boolean hiddenSlides;
+  private @Nullable String password;
 
   /* default */ PageImagesJob(
       final SourceDocumentSpecs source,
@@ -208,6 +209,18 @@ public final class PageImagesJob {
   }
 
   /**
+   * Gives the password that opens the document, when it is protected.
+   *
+   * @param password The password of the document.
+   * @return This job.
+   */
+  public @NonNull PageImagesJob password(final @NonNull String password) {
+    Objects.requireNonNull(password, "password must not be null");
+    this.password = password;
+    return this;
+  }
+
+  /**
    * Exports the pages, and waits for the export to be done.
    *
    * @return The image files, in the order of the pages.
@@ -246,6 +259,10 @@ public final class PageImagesJob {
 
   /* default */ File getDirectory() {
     return directory;
+  }
+
+  /* default */ @Nullable String getPassword() {
+    return password;
   }
 
   /* default */ String getBaseName() {

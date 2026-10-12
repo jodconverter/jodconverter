@@ -12,7 +12,7 @@ Modules: `jodconverter-core` (API, formats, the office manager pool, PDF options
 
 Always the wrapper. `.github/CONTRIBUTING.md` has the table of commands; the essentials:
 
-- `./gradlew build -x javadoc`: everything, as CI does on Linux, including the integration tests.
+- `./gradlew build -x javadoc`: everything, as CI does on Linux, Windows and macOS, including the integration tests.
 - `./gradlew build -x javadoc -x integrationTest`: without the tests that need an office.
 - `./gradlew spotlessApply`: format before committing; `spotlessCheck` fails the build otherwise.
 - Unit tests are in `src/test/java`; tests that need a running office or a WireMock server are in `src/integTest/java` and run with the `integrationTest` task.
@@ -43,4 +43,4 @@ Checkstyle (`checkstyle.xml`) and PMD (`ruleset.xml`) run with the build; PMD do
 - `jodconverter-cli` is published as a distribution archive, not as a Maven artifact.
 - `TableOfContentUpdaterFilter`, `ExternalOfficeManager` and the `jodconverter.external.*` properties exist only as deprecated aliases of their renamed counterparts.
 - Checkstyle, google-java-format and a few tools are pinned to the last version that runs on the Java baseline; `gradle/libs.versions.toml` says which and why. Dependabot ignores major versions for that reason.
-- The Windows and macOS CI matrix entries are commented out on purpose; `.github/workflows/build.yml` says why.
+- The Windows and macOS CI jobs are allowed to fail, and the macOS one runs on an older image on purpose; `.github/workflows/build.yml` says why.

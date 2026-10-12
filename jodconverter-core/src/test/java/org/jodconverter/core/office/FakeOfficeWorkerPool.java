@@ -41,7 +41,8 @@ public final class FakeOfficeWorkerPool extends AbstractOfficeWorkerPool {
         builder.taskQueueTimeout,
         builder.taskExecutionTimeout,
         builder.taskQueueCapacity,
-        builder.startFailFast);
+        builder.startFailFast,
+        builder.taskRetries);
 
     if (builder.workers != null) {
       setWorkers(builder.workers);

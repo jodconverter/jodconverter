@@ -36,15 +36,19 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-          # On the GitHub Windows runners (windows-2022 and windows-latest), LibreOffice exits or
-          # hangs in the middle of conversions, a different conversion on each run, with both
-          # 25.8.7 and 26.2.6. Disabled until this is understood.
-          # - os: windows-latest
-          #   allow-failure: true
-          # On the macOS runner, LibreOffice takes about 37 s to start (about 1 s on Linux), most of
-          # it waiting for the answer to the first UNO request, which makes the job last about 25 min.
-          # Disabled while the dependencies are upgraded; the cause is still to be investigated.
-          # - os: macos-latest
+          # On the GitHub Windows runners, LibreOffice 26.2 crashes now and then when it closes a
+          # presentation or a drawing it has just stored or exported, a different test on each run
+          # (seen on 2026-10-08, and with an unpacked 26.2 on a workstation; the still and fresh
+          # packages of Chocolatey are both 26.2.6). It reports but does not block a merge.
+          - os: windows-latest
+            allow-failure: true
+          # macOS 14 on purpose. On the macOS 15 and 26 images (macos-latest), the first reverse
+          # lookup of 127.0.0.1 in a process takes 35 s (seven resolver scopes of 5 s each, measured
+          # on 2026-10-08 with getnameinfo, on arm64 and Intel), and LibreOffice does that lookup
+          # when it accepts a UNO connection: every office start waited 35 s for the answer to its
+          # first request. The macOS 14 image answers at once. It reports but does not block a merge.
+          - os: macos-14
+            allow-failure: true
 
     steps:
       - name: 🪟 Use CRLF line endings on Windows
@@ -53,21 +57,30 @@ jobs:
         run: git config --global core.autocrlf true
 
       - name: 📦 Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 🛡️ Validate the Gradle wrapper
+        # gradle/wrapper/gradle-wrapper.jar is the one binary of the repository, and it runs at
+        # every build: its checksum must be one that Gradle published. A pull request that replaces
+        # it with something else fails here, before the wrapper runs.
+        uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       - name: ☕ Set up JDK 17
         # Runs Gradle. The code is compiled and tested on the Java version set in
         # gradle/libs.versions.toml, through a Gradle toolchain that is downloaded when missing.
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: ⚙️ Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
+      # The timeout stops the job early when a download stalls, instead of hanging until the job
+      # timeout: the Ubuntu mirror was seen to stop answering in the middle of the packages.
       - name: 📥 Install LibreOffice (Linux)
         if: runner.os == 'Linux'
+        timeout-minutes: 10
         run: |
           sudo apt-get -q update
           sudo apt-get -y -q install libreoffice
@@ -103,7 +116,7 @@ jobs:
 
       - name: 📤 Upload test reports on failure
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: test-reports-${{ matrix.os }}
           path: |

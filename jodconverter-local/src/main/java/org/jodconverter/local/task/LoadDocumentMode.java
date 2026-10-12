@@ -25,15 +25,18 @@ public enum LoadDocumentMode {
 
   /**
    * When using this mode, it is assumed that the OO instance responsible for the conversion is able
-   * to read the file from the disk, and thus the file being converted will be sent as a stream to
-   * the OO instance. This mode provides the best performance.
+   * to read the file from the disk, and thus the OO instance opens the file being converted, and
+   * writes the converted one, by their paths. This mode provides the best performance, and every
+   * export filter works with it.
    */
   LOCAL,
 
   /**
-   * When using this mode, the file being converted will be sent as a stream to the OO instance. Use
-   * this mode when the OO instance responsible for the conversion is running on another server or
-   * in a docker container.
+   * When using this mode, the file being converted will be sent as a stream to the OO instance, and
+   * the converted one is received as a stream. Use this mode when the OO instance responsible for
+   * the conversion is running on another server or in a docker container, without access to the
+   * files. A few export filters need a real file: with a stream, the HTML export of a text document
+   * leaves out its embedded images, and the HTML export of a presentation is empty.
    */
   REMOTE,
 

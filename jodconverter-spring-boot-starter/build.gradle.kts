@@ -19,6 +19,9 @@ dependencies {
     // The health indicator is only configured when the application has the health module, which
     // the actuator brings.
     compileOnly(libs.spring.boot.health)
+    // The meters are only configured when the application has Micrometer, which the actuator
+    // brings too.
+    compileOnly(libs.micrometer.core)
 
     testImplementation(project(":jodconverter-local"))
     testImplementation(project(":jodconverter-remote"))

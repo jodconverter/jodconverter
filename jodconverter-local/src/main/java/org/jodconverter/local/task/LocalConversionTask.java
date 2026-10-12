@@ -230,7 +230,9 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
       final @NonNull OfficeContext context, final @NonNull XComponent document)
       throws OfficeException {
 
-    filterChain.doFilter(context, document);
+    // A chain keeps its position: each execution of the task goes through a copy, so that the
+    // filters are applied again when the task is executed again.
+    filterChain.copy().doFilter(context, document);
   }
 
   /**
@@ -277,13 +279,19 @@ public class LocalConversionTask extends AbstractLocalOfficeTask {
   }
 
   @Override
+  public boolean isRetryable() {
+    // A source stream is read once, and a target stream must not be written twice.
+    return source.isRepeatable() && target.isRepeatable();
+  }
+
+  @Override
   public @NonNull String toString() {
     return getClass().getSimpleName()
         + "{"
         + "source="
         + source
         + ", loadProperties="
-        + loadProperties
+        + describeLoadProperties()
         + ", target="
         + target
         + ", storeProperties="

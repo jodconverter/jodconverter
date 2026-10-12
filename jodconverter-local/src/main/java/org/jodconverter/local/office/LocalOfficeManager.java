@@ -129,8 +129,15 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
       final int maxTasksPerProcess,
       final long taskExecutionTimeout,
       final long taskQueueTimeout,
-      final int taskQueueCapacity) {
-    super(workingDir, taskQueueTimeout, taskExecutionTimeout, taskQueueCapacity, startFailFast);
+      final int taskQueueCapacity,
+      final int taskRetries) {
+    super(
+        workingDir,
+        taskQueueTimeout,
+        taskExecutionTimeout,
+        taskQueueCapacity,
+        startFailFast,
+        taskRetries);
 
     setWorkers(
         officeUrls.stream()
@@ -251,7 +258,8 @@ public final class LocalOfficeManager extends AbstractOfficeWorkerPool {
               maxTasksPerProcess,
               taskExecutionTimeout,
               taskQueueTimeout,
-              taskQueueCapacity);
+              taskQueueCapacity,
+              taskRetries);
       return installed(manager);
     }
 

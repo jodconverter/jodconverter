@@ -12,8 +12,9 @@ on:
   # secrets, and a check of the Maven Central credentials. Nothing is published, no release is created.
   workflow_dispatch:
 
+# Read-only by default; the job that creates the GitHub release asks for the write access itself.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release
@@ -23,10 +24,12 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: write # gh release create
 
     steps:
       - name: 📦 Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0  # Needed to check that the tag is on master
 
@@ -47,13 +50,13 @@ jobs:
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
       - name: ☕ Set up JDK 17
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: ⚙️ Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       - name: 🔨 Build
         # The unit tests ran on the pull request to master; the integration tests run on the release
@@ -96,6 +99,26 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
         run: ./gradlew publishToMavenCentral --no-daemon --no-configuration-cache
 
+      - name: 🔏 Sign the command line tool archives
+        # A detached signature (.asc) next to each archive, made with the key that signs the Maven
+        # artifacts, so that a download from the GitHub release can be verified the same way:
+        # gpg --verify jodconverter-cli-X.Y.Z.zip.asc jodconverter-cli-X.Y.Z.zip
+        # The key lives in a temporary keyring that is deleted at the end of the step.
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          GNUPGHOME="$(mktemp -d)"
+          export GNUPGHOME
+          trap 'rm -rf "$GNUPGHOME"' EXIT
+          printf '%s\n' "$SIGNING_KEY" | gpg --batch --quiet --import
+          for archive in jodconverter-cli/build/distributions/jodconverter-cli-*.zip \
+                         jodconverter-cli/build/distributions/jodconverter-cli-*.tar; do
+            gpg --batch --yes --pinentry-mode loopback --passphrase-fd 3 \
+              --armor --detach-sign "$archive" 3<<<"$SIGNING_PASSWORD"
+            gpg --batch --verify "$archive.asc" "$archive"
+          done
+
       - name: 🏷️ Create the GitHub release
         if: github.event_name == 'push'
         env:
@@ -115,4 +138,6 @@ jobs:
             --notes-file notes.md \
             --generate-notes \
             jodconverter-cli/build/distributions/jodconverter-cli-"$VERSION".zip \
-            jodconverter-cli/build/distributions/jodconverter-cli-"$VERSION".tar
+            jodconverter-cli/build/distributions/jodconverter-cli-"$VERSION".zip.asc \
+            jodconverter-cli/build/distributions/jodconverter-cli-"$VERSION".tar \
+            jodconverter-cli/build/distributions/jodconverter-cli-"$VERSION".tar.asc

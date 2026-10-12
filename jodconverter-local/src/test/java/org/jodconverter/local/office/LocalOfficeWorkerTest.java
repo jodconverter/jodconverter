@@ -105,6 +105,51 @@ class LocalOfficeWorkerTest {
   }
 
   @Nested
+  class IsLost {
+
+    @Test
+    void whenConnected_ShouldReturnFalse() throws OfficeException {
+
+      final var worker = newWorker(2);
+      connection.connect();
+      worker.execute(context -> {});
+
+      assertThat(worker.isLost()).isFalse();
+    }
+
+    @Test
+    void whenTheConnectionWasLostDuringTheTask_ShouldReturnTrue() throws OfficeException {
+
+      final var worker = newWorker(2);
+      connection.connect();
+      worker.execute(new DisconnectedTask(false));
+
+      assertThat(worker.isLost()).isTrue();
+    }
+
+    @Test
+    void whenThePasswordRequestClosedTheConnection_ShouldReturnFalse() throws OfficeException {
+
+      final var worker = newWorker(2);
+      connection.connect();
+      worker.execute(new DisconnectedTask(true));
+
+      assertThat(worker.isLost()).isFalse();
+    }
+
+    @Test
+    void whenAborted_ShouldReturnFalse() throws OfficeException {
+
+      final var worker = newWorker(2);
+      connection.connect();
+      worker.execute(new DisconnectedTask(false));
+      worker.abort();
+
+      assertThat(worker.isLost()).isFalse();
+    }
+  }
+
+  @Nested
   class IsReady {
 
     @Test

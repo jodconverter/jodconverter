@@ -62,10 +62,31 @@ Spreadsheet File Conversions</a>
 
 #### loadDocumentMode(LoadDocumentMode)
 
-This property specifies how a document is loaded/stored when converting a document, whether it is loaded assuming the
-office process has access to the file on disk or not. If not, the conversion process will use stream adapters
+This property specifies how the office reads the source document and writes the converted one:
+
+| Mode     | How the documents travel                                                                                                                                                                          |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LOCAL`  | The office opens the source file and writes the target file itself, by their paths. It must see the same file system as the application.                                                          |
+| `REMOTE` | The application reads the source file and sends its content to the office as a stream, and writes the target file from the stream the office sends back. The office needs no access to the files. |
+| `AUTO`   | `REMOTE` with an [AttachedOfficeManager](attached-manager.md), since the office may run on another host or in a container; `LOCAL` otherwise.                                                     |
 
 &#160;***Default***: LoadDocumentMode.AUTO
+
+Prefer `LOCAL` whenever the office can reach the files: with a `LocalOfficeManager`, which is what `AUTO` does, and also with an `AttachedOfficeManager` whose office runs on the same host or shares a volume with the application. A stream gives the office the content of a document and nothing else, no name and no folder, and a few export filters need more than that. Comparing every output format of the default registry both ways with LibreOffice 25.2, two conversions differ:
+
+- **A text document to HTML.** The HTML filter writes each embedded image to a file next to the HTML file. A stream has no "next to": the images are left out of the HTML, without any error.
+- **A presentation to HTML.** The output is empty, without any error.
+
+All the other formats give the same output both ways. The [unoserver](https://github.com/unoconv/unoserver) project met failures of the same kind and no longer uses streams at all. So when a conversion fails, or gives an incomplete output, with an attached office and not with a local one, try it with `LOCAL` first:
+
+```java
+LocalConverter.builder()
+    .officeManager(attachedOfficeManager)
+    .loadDocumentMode(LoadDocumentMode.LOCAL)
+    .build();
+```
+
+With the Spring Boot starter, the property is `jodconverter.attached.load-document-mode`.
 
 #### `loadProperty(String, Object)` / `loadProperties(Map<String, Object>)`
 

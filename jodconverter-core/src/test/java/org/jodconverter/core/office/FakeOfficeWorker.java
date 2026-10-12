@@ -59,6 +59,11 @@ public final class FakeOfficeWorker implements OfficeWorker {
   /** When true, abort and stop throw. */
   public volatile boolean failAbortAndStop;
 
+  /** The number of the next tasks during which the worker is lost, before it executes them. */
+  public final AtomicInteger losingTasks = new AtomicInteger();
+
+  private volatile boolean lost;
+
   private volatile boolean ready;
   private volatile int tasksSinceStart;
 
@@ -128,8 +133,20 @@ public final class FakeOfficeWorker implements OfficeWorker {
   public void execute(final OfficeTask task) throws OfficeException {
     calls.add("execute");
     tasksSinceStart++;
+    lost = false;
+    if (losingTasks.getAndUpdate(count -> count > 0 ? count - 1 : 0) > 0) {
+      // The office process dies in the middle of the task.
+      ready = false;
+      lost = true;
+      throw new OfficeException("The office process was lost");
+    }
     task.execute(new SimpleOfficeContext());
     executedTasks.incrementAndGet();
+  }
+
+  @Override
+  public boolean isLost() {
+    return lost;
   }
 
   @Override

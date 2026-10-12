@@ -35,9 +35,12 @@ import org.jodconverter.cli.CliConfigReader.Section;
 import org.jodconverter.cli.CliConfigReader.Values;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.local.filter.Filter;
+import org.jodconverter.local.filter.HeaderFooterRemoverFilter;
 import org.jodconverter.local.filter.NoopFilter;
+import org.jodconverter.local.filter.PageOrientationFilter;
 import org.jodconverter.local.filter.PagesSelectorFilter;
 import org.jodconverter.local.filter.RefreshFilter;
+import org.jodconverter.local.filter.text.DocumentComparerFilter;
 import org.jodconverter.local.filter.text.DocumentIndexesUpdaterFilter;
 import org.jodconverter.local.filter.text.DocumentInserterFilter;
 import org.jodconverter.local.filter.text.GraphicInserterFilter;
@@ -56,6 +59,8 @@ import org.jodconverter.local.filter.text.TextReplacerFilter;
  *   <li>{@code noop}, {@code refresh}, {@code linked-images-embedder}: no key.
  *   <li>{@code pages-selector}: {@code pages}, a page number or a list of page numbers.
  *   <li>{@code document-inserter}: {@code document}, the path of the document to insert.
+ *   <li>{@code document-comparer}: {@code document}, the path of the original document the
+ *       converted one is compared with.
  *   <li>{@code graphic-inserter}: {@code image}, the path of the image; {@code horizontal-position}
  *       and {@code vertical-position} in millimeters, or {@code shape-properties}, a map of shape
  *       properties; optionally {@code width} and {@code height} in millimeters.
@@ -65,6 +70,10 @@ import org.jodconverter.local.filter.text.TextReplacerFilter;
  *       replacements.
  *   <li>{@code page-margins}: {@code left}, {@code top}, {@code right} and {@code bottom} in
  *       millimeters, each optional.
+ *   <li>{@code page-orientation}: {@code landscape}, {@code true} (the default) for landscape
+ *       pages, {@code false} for portrait pages.
+ *   <li>{@code header-footer-remover}: {@code header} and {@code footer}, {@code true} (the
+ *       default) to remove it, {@code false} to keep it.
  *   <li>{@code document-indexes-updater} (or its former name {@code table-of-content-updater}):
  *       {@code level}, the number of levels of the tables of contents, optional.
  * </ul>
@@ -77,6 +86,7 @@ final class FilterParser {
   private static final String VERTICAL_POSITION = "vertical-position";
   private static final String WIDTH = "width";
   private static final String HEIGHT = "height";
+  private static final String DOCUMENT = "document";
 
   private static final Map<String, Function<Section, Filter>> TYPES = initTypes();
 
@@ -168,10 +178,21 @@ final class FilterParser {
     map.put("linked-images-embedder", section -> new LinkedImagesEmbedderFilter());
     map.put("pages-selector", FilterParser::pagesSelector);
     map.put("document-inserter", FilterParser::documentInserter);
+    map.put(
+        "document-comparer",
+        section ->
+            new DocumentComparerFilter(
+                new File(Values.string(section.required(DOCUMENT), DOCUMENT))));
     map.put("graphic-inserter", FilterParser::graphicInserter);
     map.put("text-inserter", FilterParser::textInserter);
     map.put("text-replacer", FilterParser::textReplacer);
     map.put("page-margins", FilterParser::pageMargins);
+    map.put(
+        "page-orientation", section -> new PageOrientationFilter(enabled(section, "landscape")));
+    map.put(
+        "header-footer-remover",
+        section ->
+            new HeaderFooterRemoverFilter(enabled(section, "header"), enabled(section, "footer")));
     map.put("document-indexes-updater", FilterParser::documentIndexesUpdater);
     map.put("table-of-content-updater", FilterParser::documentIndexesUpdater);
     return map;
@@ -189,7 +210,7 @@ final class FilterParser {
 
   private static Filter documentInserter(final Section section) {
     return new DocumentInserterFilter(
-        new File(Values.string(section.required("document"), "document")));
+        new File(Values.string(section.required(DOCUMENT), DOCUMENT)));
   }
 
   private static Filter graphicInserter(final Section section) {
@@ -257,6 +278,11 @@ final class FilterParser {
 
   private static Integer margin(final Section section, final String key) {
     return section.optional(key).map(value -> Values.integer(value, key)).orElse(null);
+  }
+
+  // An optional boolean key that is true when it is not given.
+  private static boolean enabled(final Section section, final String key) {
+    return section.optional(key).map(value -> Values.bool(value, key)).orElse(true);
   }
 
   private static Filter documentIndexesUpdater(final Section section) {

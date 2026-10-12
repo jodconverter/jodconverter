@@ -103,7 +103,8 @@ public class JodConverterAttachedAutoConfiguration {
             .connectTimeout(properties.connectTimeout().toMillis())
             .connectRetryInterval(properties.connectRetryInterval().toMillis())
             .connectFailFast(properties.connectFailFast())
-            .maxTasksPerConnection(properties.maxTasksPerConnection());
+            .maxTasksPerConnection(properties.maxTasksPerConnection())
+            .taskRetries(properties.taskRetries());
     properties.applyTo(builder);
     return builder.build();
   }

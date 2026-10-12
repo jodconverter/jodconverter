@@ -156,6 +156,23 @@ LocalConverter
     .execute();
 ```
 
+**6)** Converting a password-protected document.
+
+```java
+import java.io.File;
+
+converter
+    .convert(new File("protected.docx"))
+    .to(new File("out.pdf"))
+    .password("secret")
+    .execute();
+```
+
+Without the password, or with a wrong one, the conversion fails with a `PasswordProtectedException`, whose message
+says which of the two. The password of a conversion wins over a `Password` load property of the converter, which
+applies to every conversion. The remote converter cannot open protected documents: its `password(...)` throws an
+`UnsupportedOperationException`.
+
 Notes:
 
 - [Filters](using-filters.md) modify the loaded document (update its indexes, remove pages, add text) before it is

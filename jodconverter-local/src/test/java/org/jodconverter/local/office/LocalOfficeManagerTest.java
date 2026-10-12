@@ -181,6 +181,13 @@ class LocalOfficeManagerTest {
     }
 
     @Test
+    void withTaskRetries_ShouldGiveThemToThePool() {
+
+      assertThat(builder().build()).extracting("taskRetries").isEqualTo(0);
+      assertThat(builder().taskRetries(2).build()).extracting("taskRetries").isEqualTo(2);
+    }
+
+    @Test
     void withPoolSize_ShouldUseThatManyDistinctPorts() {
 
       final var manager = builder().poolSize(3).build();

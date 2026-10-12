@@ -59,7 +59,12 @@ See [Configuration](../../configuration/local-configuration#keepaliveonshutdown)
 
 #### -l, --load-properties
 
-Load properties (optional; eg. -lPassword=myPassword).
+Load properties (optional; eg. -lHidden=true).
+
+#### --password `<password>`
+
+Password of the input documents, when they are protected (optional). Without it, or with a wrong one, the
+conversion of a protected document fails with a message that says which of the two.
 
 #### -m, --process-manager `<classname>`
 
@@ -97,6 +102,23 @@ See [Configuration](../../configuration/local-configuration#templateprofiledir).
 #### -v, --version
 
 Displays version information and exit.
+
+#### --info
+
+Starts the office, displays its name, its version and its import and export filters, and exit. The office is the one the other options describe (`-i`, `-p`, `-u`...), so the option tells which office a conversion would use, and whether it has the filter of a format; it cannot be used with `-c`. Each line gives the name of a filter (the `FilterName` of a store property), the name the office shows for it and the extensions of its file type:
+
+```text
+LibreOffice 25.2.7.2
+
+Import filters (190):
+  MS Word 97         Word 97–2003 (doc, wps)
+  ...
+
+Export filters (121):
+  calc_pdf_Export    PDF - Portable Document Format (pdf)
+  writer_pdf_Export  PDF - Portable Document Format (pdf)
+  ...
+```
 
 #### -w, --working-dir `<dir>`
 
@@ -182,8 +204,11 @@ The built-in filters and their keys are (the positions and sizes are in millimet
 | `text-inserter`            | `text`, `width`, `height`; `horizontal-position` and `vertical-position`, or `shape-properties`, a map of the properties of the created text shape.                                                                                                      |
 | `graphic-inserter`         | `image`, the path of the image; `horizontal-position` and `vertical-position`, or `shape-properties`; optionally `width` and `height`, which resize the image.                                                                                           |
 | `document-inserter`        | `document`, the path of the document appended to the converted one.                                                                                                                                                                                      |
+| `document-comparer`        | `document`, the path of the original document; the differences with the converted document become tracked changes. Needs `-lReadOnly=false` on the command line.                                                                                         |
 | `text-replacer`            | `replacements`, a map of the texts to search and their replacements.                                                                                                                                                                                     |
 | `page-margins`             | `left`, `top`, `right`, `bottom`, each optional.                                                                                                                                                                                                         |
+| `page-orientation`         | `landscape`, `true` (the default) for landscape pages, `false` for portrait pages; the pages of a text document or of a spreadsheet are turned.                                                                                                          |
+| `header-footer-remover`    | `header` and `footer`, `true` (the default) to remove it, `false` to keep it; for a CSV file, the header is the name of the file and the footer the page number.                                                                                         |
 | `document-indexes-updater` | `level`, the number of levels of the tables of contents, optional; the indexes of a text document (table of contents, alphabetical index, table of figures...) are updated before the document is stored. `table-of-content-updater` is its former name. |
 | `linked-images-embedder`   | None; the linked images are embedded in the document.                                                                                                                                                                                                    |
 | `refresh`                  | None; the document is refreshed.                                                                                                                                                                                                                         |

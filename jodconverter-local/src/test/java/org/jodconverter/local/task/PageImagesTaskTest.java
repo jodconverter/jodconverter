@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.mockito.Mockito.mock;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.jodconverter.core.job.SourceDocumentSpecsFromFile;
+import org.jodconverter.core.job.SourceDocumentSpecsFromInputStream;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.local.ImageFormat;
 import org.jodconverter.local.office.LocalOfficeContext;
@@ -162,6 +164,31 @@ class PageImagesTaskTest {
                     null,
                     false));
     assertThatIllegalArgumentException().isThrownBy(() -> task(testFolder, "x"));
+  }
+
+  @Test
+  void isRetryable_ShouldFollowTheSource(final @TempDir File testFolder) {
+
+    assertThat(task(testFolder, null).isRetryable()).isTrue();
+
+    final var fromStream =
+        new PageImagesTask(
+            new SourceDocumentSpecsFromInputStream(
+                new ByteArrayInputStream(new byte[0]),
+                extension -> new File(testFolder, "temp." + extension),
+                true),
+            false,
+            null,
+            null,
+            testFolder,
+            "page",
+            ImageFormat.PNG,
+            0,
+            0,
+            90,
+            null,
+            false);
+    assertThat(fromStream.isRetryable()).isFalse();
   }
 
   @Test

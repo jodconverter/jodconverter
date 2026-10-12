@@ -126,34 +126,27 @@ class: hide-toc
 
 ??? question "How could I specify the password of a password-protected file (input file) to convert?"
 
-    If you want to be able to convert a password-protected file, you must set the `Password` load property.
-
-    Here's how this could be done:
+    Give it to the conversion:
 
     ```java
-    final File in = new File("path_to_password_protected_file");
-    final File out = new File("path_to_output_file");
+    LocalConverter.make(manager)
+        .convert(new File("path_to_password_protected_file"))
+        .to(new File("path_to_output_file"))
+        .password("myPassword")
+        .execute();
+    ```
 
-    final OfficeManager manager = LocalOfficeManager.builder().startFailFast(true).build();
-    try{
-        manager.start();
-        Map<String, Object> loadProperties = new HashMap<>(LocalConverter.DEFAULT_LOAD_PROPERTIES);
-        loadProperties.put("Password","myPassword");
+    Without the password, or with a wrong one, the conversion fails with a `PasswordProtectedException`, whose
+    message says which of the two. The command line tool takes the password with `--password`.
 
-        LocalConverter
-            .builder()
-            .officeManager(manager)
-            .loadProperties(loadProperties)
-            .build()
-            .convert(in)
-            .to(out)
-            .execute();
+    When every document of a converter has the same password, the `Password` load property of the converter does
+    the same for all of them:
 
-    } catch(Exception e) {
-        e.printStackTrace();
-    } finally {
-        OfficeUtils.stopQuietly(manager);
-    }
+    ```java
+    LocalConverter.builder()
+        .officeManager(manager)
+        .loadProperty("Password", "myPassword")
+        .build();
     ```
 
 ??? question "Can I merge several documents into one?"
@@ -236,6 +229,24 @@ These are LibreOffice behaviors that **JODConverter** can't change, with the wor
     file paths. See the [LibreOffice discussion](https://ask.libreoffice.org/t/web-hyperlinks-not-preserved-after-export-to-pdf/96762)
     and a [workaround shared by a user](https://github.com/jodconverter/jodconverter/issues/400).
 
+??? question "With `SinglePageSheets`, the top rows or the first columns of an `.xlsx` sheet are missing"
+
+    An Excel workbook remembers where each sheet was scrolled to when it was saved. When LibreOffice exports such a workbook to PDF with the `SinglePageSheets` filter option (`spreadsheet.singlePageSheets` of the [PDF options](getting-started/pdf-options.md)), the page of a scrolled sheet starts at the saved position: the rows above it and the columns on its left are not in the PDF, while the page keeps the size of the whole sheet. A sheet saved 119 rows down loses its first 119 rows.
+
+    It happens with `.xlsx` files only: the same workbook stored as `.xls` or `.ods` is exported in full, and so is an `.xlsx` exported without `SinglePageSheets`. Seen with LibreOffice 25.2; the [Gotenberg](https://github.com/gotenberg/gotenberg/issues/1222) project met it too. A [filter](getting-started/using-filters.md) cannot repair it: moving the view of the loaded document back to the first cell does not change the export.
+
+    The workaround is to convert in two steps, so that the PDF is exported from a document that was not loaded from an `.xlsx` file:
+
+    ```java
+    File ods = File.createTempFile("workbook", ".ods");
+    converter.convert(new File("workbook.xlsx")).to(ods).execute();
+    converter
+      .convert(ods)
+      .to(new File("workbook.pdf"))
+      .with(PdfOptions.builder().spreadsheet(s -> s.singlePageSheets(true)).build())
+      .execute();
+    ```
+
 ??? question "Converting a presentation to HTML no longer creates one image per slide"
 
     The HTML export of presentations changed in LibreOffice 24.2 and no longer produces the image-per-slide output of
@@ -256,8 +267,10 @@ These are LibreOffice behaviors that **JODConverter** can't change, with the wor
     last version without it is 25.8.2, and it is reported fixed in 26.8.0.
 
     **JODConverter** restarts the office process, so the following conversions work. Since version 5.0.1, a crash
-    while the document is closed no longer fails the conversion, whose output is complete at that point; a crash
-    earlier in a conversion still fails it. On Windows, prefer LibreOffice 26.8 or later, or 25.8.2 or earlier.
+    while the document is closed no longer fails the conversion, whose output is complete at that point. A crash
+    earlier in a conversion still fails it, unless the manager has
+    [task retries](configuration/local-manager.md#taskretries) (since 5.1). On Windows, prefer LibreOffice 26.8 or
+    later, or 25.8.2 or earlier.
 
 ??? question "On macOS, every office process takes about 35 seconds to accept its first connection"
 

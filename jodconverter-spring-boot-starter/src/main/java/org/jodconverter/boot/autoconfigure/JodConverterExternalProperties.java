@@ -98,6 +98,7 @@ public record JodConverterExternalProperties(
         connectRetryInterval,
         connectFailFast,
         maxTasksPerConnection,
+        0,
         applyDefaultLoadProperties,
         loadDocumentMode);
   }

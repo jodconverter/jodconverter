@@ -506,12 +506,7 @@
       "vsdx"
     ],
     "mediaType": "application/vnd-ms-visio.drawing",
-    "inputFamily": "DRAWING",
-    "storeProperties": {
-      "DRAWING": {
-        "FilterName": "draw_pdf_Export"
-      }
-    }
+    "inputFamily": "DRAWING"
   },
   {
     "name": "Visio",
@@ -519,12 +514,7 @@
       "vsd"
     ],
     "mediaType": "application/vnd-visio",
-    "inputFamily": "DRAWING",
-    "storeProperties": {
-      "DRAWING": {
-        "FilterName": "draw_pdf_Export"
-      }
-    }
+    "inputFamily": "DRAWING"
   },
   {
     "name": "Windows Bitmap",
@@ -620,17 +610,8 @@
       "DRAWING": {
         "FilterName": "draw_svg_Export"
       },
-      "SPREADSHEET": {
-        "FilterName": "calc_svg_Export"
-      },
       "PRESENTATION": {
         "FilterName": "impress_svg_Export"
-      },
-      "TEXT": {
-        "FilterName": "writer_svg_Export"
-      },
-      "WEB": {
-        "FilterName": "writer_svg_Export"
       }
     }
   },

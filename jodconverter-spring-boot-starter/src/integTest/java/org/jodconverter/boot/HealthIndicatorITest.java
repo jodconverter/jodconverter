@@ -58,7 +58,10 @@ class HealthIndicatorITest {
     assertThat(health.getStatus()).isEqualTo(Status.UP);
     assertThat(health.getDetails()).containsOnlyKeys("remoteOfficeManager");
     final var details = (Map<String, Object>) health.getDetails().get("remoteOfficeManager");
-    assertThat(details).containsEntry("running", true).containsEntry("queueSize", 0);
+    assertThat(details)
+        .containsEntry("running", true)
+        .containsEntry("queueSize", 0)
+        .containsEntry("taskRetries", 0L);
     final var workers = (List<Map<String, Object>>) details.get("workers");
     assertThat(workers)
         .hasSize(1)
