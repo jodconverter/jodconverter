@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 import static org.mockito.BDDMockito.given;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,12 +45,17 @@ import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.IOException;
 import com.sun.star.lang.DisposedException;
 import com.sun.star.lang.XComponent;
+import com.sun.star.task.DocumentPasswordRequest;
 import com.sun.star.task.ErrorCodeIOException;
+import com.sun.star.task.XInteractionHandler;
+import com.sun.star.task.XInteractionRequest;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
@@ -58,6 +65,7 @@ import org.jodconverter.core.office.OfficeContext;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.local.MockUnoRuntimeExtension;
 import org.jodconverter.local.office.LocalOfficeContext;
+import org.jodconverter.local.office.PasswordProtectedException;
 import org.jodconverter.local.office.utils.UnoRuntime;
 
 /** Contains tests for the {@link AbstractLocalOfficeTask} class. */
@@ -161,9 +169,18 @@ class AbstractLocalOfficeTaskTest {
       given(context.getComponentLoader()).willReturn(loader);
 
       final var task = new FooOfficeTask(new TxtSourceSpecs(SOURCE_FILE));
-      assertThatExceptionOfType(OfficeException.class)
-          .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
-          .withCauseExactlyInstanceOf(com.sun.star.lang.IllegalArgumentException.class);
+
+      // This exception is a checked one in the office libraries of OpenOffice, and a runtime
+      // exception in those of LibreOffice, which is then thrown as it is.
+      if (com.sun.star.uno.RuntimeException.class.isAssignableFrom(
+          com.sun.star.lang.IllegalArgumentException.class)) {
+        assertThatExceptionOfType(com.sun.star.lang.IllegalArgumentException.class)
+            .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE));
+      } else {
+        assertThatExceptionOfType(OfficeException.class)
+            .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+            .withCauseExactlyInstanceOf(com.sun.star.lang.IllegalArgumentException.class);
+      }
     }
 
     @Test
@@ -345,6 +362,174 @@ class AbstractLocalOfficeTaskTest {
                   + ", useStreamAdapters="
                   + true
                   + '}');
+    }
+  }
+
+  @Nested
+  class LoadDocumentWithPassword {
+
+    private final XComponentLoader loader = mock(XComponentLoader.class);
+    private final LocalOfficeContext context = mock(LocalOfficeContext.class);
+
+    private static Object property(final Object[] arguments, final String name) {
+      return Arrays.stream((PropertyValue[]) arguments[3])
+          .filter(property -> name.equals(property.Name))
+          .map(property -> property.Value)
+          .findFirst()
+          .orElse(null);
+    }
+
+    // An office that loads nothing with the password given, and that does the given thing when
+    // the file is loaded again without the password.
+    private void officeWillRefuseThePassword(final Answer<XComponent> withoutPassword)
+        throws com.sun.star.uno.Exception {
+
+      given(context.getComponentLoader()).willReturn(loader);
+      given(
+              loader.loadComponentFromURL(
+                  isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class)))
+          .willAnswer(
+              invocation ->
+                  property(invocation.getArguments(), "Password") == null
+                      ? withoutPassword.answer(invocation)
+                      : null);
+    }
+
+    // What the office does with a protected document and no password: it asks for one.
+    private static XComponent askForThePassword(final InvocationOnMock invocation) {
+
+      final var request = mock(XInteractionRequest.class);
+      given(request.getRequest()).willReturn(new DocumentPasswordRequest());
+      ((XInteractionHandler) property(invocation.getArguments(), "InteractionHandler"))
+          .handle(request);
+      return null;
+    }
+
+    private FooOfficeTask taskWithPassword(final boolean useStreamAdapters) {
+      final var properties = new HashMap<String, Object>();
+      properties.put("Password", "wrong");
+      return new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE), useStreamAdapters, properties);
+    }
+
+    @Test
+    void whenNothingIsLoadedAndTheDocumentIsProtected_ShouldThrowWrongPassword()
+        throws com.sun.star.uno.Exception {
+
+      officeWillRefuseThePassword(LoadDocumentWithPassword::askForThePassword);
+      final var task = taskWithPassword(false);
+
+      assertThatExceptionOfType(PasswordProtectedException.class)
+          .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+          .withMessage("Wrong password for " + SOURCE_FILE.getName())
+          .withCauseInstanceOf(DocumentPasswordRequest.class);
+      assertThat(task.hasPasswordInteractionRequest()).isTrue();
+
+      // Once with the password, once without.
+      verify(loader, times(2))
+          .loadComponentFromURL(
+              isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class));
+    }
+
+    @Test
+    void whenLoadedThroughAStream_ShouldThrowWrongPasswordToo() throws com.sun.star.uno.Exception {
+
+      officeWillRefuseThePassword(LoadDocumentWithPassword::askForThePassword);
+      final var task = taskWithPassword(true);
+
+      assertThatExceptionOfType(PasswordProtectedException.class)
+          .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+          .withMessage("Wrong password for " + SOURCE_FILE.getName());
+    }
+
+    @Test
+    void whenNothingIsLoadedAndTheDocumentIsNotProtected_ShouldNotBlameThePassword()
+        throws com.sun.star.uno.Exception {
+
+      // A file the office cannot read, given with a password it does not need.
+      officeWillRefuseThePassword(invocation -> null);
+      final var task = taskWithPassword(false);
+
+      assertThatNullPointerException()
+          .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+          .withMessage("Could not open document: " + SOURCE_FILE.getName());
+      assertThat(task.hasPasswordInteractionRequest()).isFalse();
+    }
+
+    @Test
+    void whenTheSecondLoadFails_ShouldNotBlameThePassword() throws com.sun.star.uno.Exception {
+
+      officeWillRefuseThePassword(
+          invocation -> {
+            throw new com.sun.star.lang.IllegalArgumentException("no");
+          });
+      final var task = taskWithPassword(false);
+
+      assertThatNullPointerException()
+          .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+          .withMessage("Could not open document: " + SOURCE_FILE.getName());
+    }
+
+    @Test
+    void whenTheSecondLoadGivesADocument_ShouldCloseItAndNotBlameThePassword()
+        throws com.sun.star.uno.Exception {
+
+      final var document = mock(XComponent.class);
+      officeWillRefuseThePassword(invocation -> document);
+      final var task = taskWithPassword(false);
+
+      assertThatNullPointerException().isThrownBy(() -> task.loadDocument(context, SOURCE_FILE));
+      verify(document).dispose();
+    }
+
+    @Test
+    void whenTheOfficeAsksAgainThenAbortsWithARuntimeException_ShouldThrowWrongPassword()
+        throws com.sun.star.uno.Exception {
+
+      // What LibreOffice does with a wrong password on a Microsoft document: it asks for the
+      // password, then aborts the type detection, with an exception that is a runtime exception
+      // in the office libraries of LibreOffice.
+      given(context.getComponentLoader()).willReturn(loader);
+      given(
+              loader.loadComponentFromURL(
+                  isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class)))
+          .willAnswer(
+              invocation -> {
+                askForThePassword(invocation);
+                throw new com.sun.star.uno.RuntimeException("type detection aborted");
+              });
+      final var task = taskWithPassword(false);
+
+      assertThatExceptionOfType(PasswordProtectedException.class)
+          .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+          .withMessage("Wrong password for " + SOURCE_FILE.getName());
+    }
+
+    @Test
+    void whenARuntimeExceptionIsThrownWithoutPasswordRequest_ShouldThrowIt()
+        throws com.sun.star.uno.Exception {
+
+      given(context.getComponentLoader()).willReturn(loader);
+      given(
+              loader.loadComponentFromURL(
+                  isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class)))
+          .willThrow(new com.sun.star.uno.RuntimeException("other"));
+      final var task = new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE));
+
+      assertThatExceptionOfType(com.sun.star.uno.RuntimeException.class)
+          .isThrownBy(() -> task.loadDocument(context, SOURCE_FILE))
+          .withMessage("other");
+    }
+
+    @Test
+    void withoutPassword_ShouldLoadOnce() throws com.sun.star.uno.Exception {
+
+      given(context.getComponentLoader()).willReturn(loader);
+      final var task = new FooOfficeTask(new DocSourceSpecs(SOURCE_FILE));
+
+      assertThatNullPointerException().isThrownBy(() -> task.loadDocument(context, SOURCE_FILE));
+      verify(loader, times(1))
+          .loadComponentFromURL(
+              isA(String.class), isA(String.class), isA(int.class), isA(PropertyValue[].class));
     }
   }
 
