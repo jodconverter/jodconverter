@@ -84,19 +84,43 @@ jobs:
         run: |
           sudo apt-get -q update
           sudo apt-get -y -q install libreoffice
+          soffice --version
 
       # Windows and macOS: both package managers download LibreOffice from
       # download.documentfoundation.org. The timeout stops the job early when that host is
       # unreachable, instead of hanging until the job timeout.
+      #
+      # Each install step ends by checking that the office is there. Chocolatey in particular
+      # exits with success when it cannot reach its package feed ("installed 0/0 packages", seen
+      # on 2026-10-12): the job then went on without an office, and every test that needs one
+      # failed. The install is tried three times, since such a failure does not last.
       - name: 📥 Install LibreOffice (Windows)
         if: runner.os == 'Windows'
-        timeout-minutes: 10
-        run: choco install libreoffice-still -y --no-progress
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          $soffice = 'C:\Program Files\LibreOffice\program\soffice.exe'
+          foreach ($attempt in 1..3) {
+            choco install libreoffice-still -y --no-progress
+            if (Test-Path $soffice) { break }
+            Write-Host "LibreOffice is not installed after attempt $attempt."
+            Start-Sleep -Seconds 20
+          }
+          if (-not (Test-Path $soffice)) {
+            Write-Host '::error::LibreOffice was not installed.'
+            exit 1
+          }
+          Write-Host "Installed: $soffice"
+          # The office is there: an exit code of the package manager that asks for a restart, for
+          # example, must not fail the step.
+          exit 0
 
       - name: 📥 Install LibreOffice (macOS)
         if: runner.os == 'macOS'
         timeout-minutes: 10
-        run: brew install --cask libreoffice
+        run: |
+          brew install --cask libreoffice
+          test -x /Applications/LibreOffice.app/Contents/MacOS/soffice
 
       - name: 🛠️ Build and test
         # bash on every OS, so the same wrapper script runs everywhere.
